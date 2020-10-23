@@ -30,6 +30,7 @@ class WebGestureEvent;
 
 namespace gfx {
 class Point;
+class Rect;
 class Size;
 }
 
@@ -330,6 +331,12 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // in the tree. Otherwise, the RenderWidgetHost is for a popup which was
   // opened by a frame in the FrameTree.
   virtual FrameTree* GetFrameTree();
+
+  // Show the newly created widget with the specified bounds.
+  // The widget is identified by the route_id passed to CreateNewWidget.
+  virtual void ShowCreatedWidget(int process_id,
+                                 int widget_route_id,
+                                 const gfx::Rect& initial_rect_in_dips) {}
 
  protected:
   virtual ~RenderWidgetHostDelegate() {}

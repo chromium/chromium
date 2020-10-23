@@ -391,8 +391,17 @@ void WebPagePopupImpl::Initialize(WebViewImpl* web_view,
 
   popup_owner_client_rect_ =
       popup_client_->OwnerElement().getBoundingClientRect();
-  WidgetClient()->Show(WebNavigationPolicy());
+  popup_widget_host_->ShowPopup(
+      initial_rect_,
+      WTF::Bind(&WebPagePopupImpl::DidShowPopup, WTF::Unretained(this)));
+  should_defer_setting_window_rect_ = false;
+  widget_base_->SetPendingWindowRect(initial_rect_);
+
   SetFocus(true);
+}
+
+void WebPagePopupImpl::DidShowPopup() {
+  widget_base_->AckPendingWindowRect();
 }
 
 cc::LayerTreeHost* WebPagePopupImpl::InitializeCompositing(
@@ -489,8 +498,12 @@ gfx::Size WebPagePopupImpl::VisibleViewportSizeInDIPs() {
 }
 
 void WebPagePopupImpl::SetPendingWindowRect(
-    const gfx::Rect* window_screen_rect) {
+    const gfx::Rect& window_screen_rect) {
   widget_base_->SetPendingWindowRect(window_screen_rect);
+}
+
+void WebPagePopupImpl::AckPendingWindowRect() {
+  widget_base_->AckPendingWindowRect();
 }
 
 bool WebPagePopupImpl::IsHidden() const {
@@ -565,7 +578,11 @@ void WebPagePopupImpl::SetWindowRect(const IntRect& rect_in_screen) {
   if (opener_emulator_scale_)
     EmulatedToScreenRect(window_rect);
 
-  WidgetClient()->SetWindowRect(window_rect);
+  if (!should_defer_setting_window_rect_) {
+    WidgetClient()->SetWindowRect(window_rect);
+  } else {
+    initial_rect_ = window_rect;
+  }
 }
 
 void WebPagePopupImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {

@@ -4180,6 +4180,13 @@ void RenderFrameHostImpl::SetCommitCallbackInterceptorForTesting(
   commit_callback_interceptor_ = interceptor;
 }
 
+void RenderFrameHostImpl::SetCreateNewPopupCallbackForTesting(
+    const CreateNewPopupWidgetCallbackForTesting& callback) {
+  // This DCHECK aims to avoid unexpected replacement of a callback.
+  DCHECK(!create_new_popup_widget_callback_ || !callback);
+  create_new_popup_widget_callback_ = callback;
+}
+
 void RenderFrameHostImpl::DidBlockNavigation(
     const GURL& blocked_url,
     const GURL& initiator_url,
@@ -5302,10 +5309,12 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
     CreateNewPopupWidgetCallback callback) {
   int32_t widget_route_id = GetProcess()->GetNextRoutingID();
   std::move(callback).Run(widget_route_id);
-  delegate_->CreateNewPopupWidget(agent_scheduling_group_, widget_route_id,
-                                  std::move(blink_popup_widget_host),
-                                  std::move(blink_widget_host),
-                                  std::move(blink_widget));
+  RenderWidgetHostImpl* widget = delegate_->CreateNewPopupWidget(
+      agent_scheduling_group_, widget_route_id,
+      std::move(blink_popup_widget_host), std::move(blink_widget_host),
+      std::move(blink_widget));
+  if (create_new_popup_widget_callback_)
+    create_new_popup_widget_callback_.Run(widget);
 }
 
 void RenderFrameHostImpl::IssueKeepAliveHandle(

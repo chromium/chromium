@@ -148,8 +148,7 @@ class CONTENT_EXPORT RenderWidget
   // Initialize a new RenderWidget for a popup. The |show_callback| is called
   // when RenderWidget::Show() happens. The |opener_widget| is the local root
   // of the frame that is opening the popup.
-  void InitForPopup(ShowCallback show_callback,
-                    RenderWidget* opener_widget,
+  void InitForPopup(RenderWidget* opener_widget,
                     blink::WebPagePopup* web_page_popup,
                     const blink::ScreenInfo& screen_info);
 
@@ -305,10 +304,6 @@ class CONTENT_EXPORT RenderWidget
   // True once Close() is called, during the self-destruction process, and to
   // verify destruction always goes through Close().
   bool closing_ = false;
-
-  // While we are waiting for the browser to update window sizes, we track the
-  // pending size temporarily.
-  int pending_window_rect_count_ = 0;
 
   // The time spent in input handlers this frame. Used to throttle input acks.
   base::TimeDelta total_input_handling_time_this_frame_;

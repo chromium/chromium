@@ -562,46 +562,19 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   event.text[0] = ' ';
 
-  // A class to wait for ViewHostMsg_ShowWidget.
-  class WaitForShowWidgetFilter : public ObserveMessageFilter {
-   public:
-    explicit WaitForShowWidgetFilter()
-        : ObserveMessageFilter(ViewMsgStart, ViewHostMsg_ShowWidget::ID) {}
-
-    bool OnMessageReceived(const IPC::Message& message) override {
-      IPC_BEGIN_MESSAGE_MAP(WaitForShowWidgetFilter, message)
-        IPC_MESSAGE_HANDLER(ViewHostMsg_ShowWidget, OnShowWidget)
-      IPC_END_MESSAGE_MAP()
-      return ObserveMessageFilter::OnMessageReceived(message);
-    }
-
-    int routing_id() const { return routing_id_; }
-
-   private:
-    ~WaitForShowWidgetFilter() override = default;
-
-    void OnShowWidget(int routing_id, const gfx::Rect& initial_rect) {
-      routing_id_ = routing_id;
-    }
-
-    int routing_id_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(WaitForShowWidgetFilter);
-  };
-
   for (int i = 0; i < 2; ++i) {
     bool browser_closes = i == 0;
 
     // This focuses and opens the select box, creating a popup RenderWidget. We
     // wait for the RenderWidgetHost to be shown.
-    auto filter = base::MakeRefCounted<WaitForShowWidgetFilter>();
-    process->AddFilter(filter.get());
+    auto filter =
+        std::make_unique<ShowPopupWidgetWaiter>(contents, root_frame_host);
     EXPECT_TRUE(ExecuteScript(root_frame_host, "focusSelectMenu();"));
     root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
     filter->Wait();
 
     // The popup RenderWidget will get its own routing id.
-    int popup_routing_id = filter->routing_id();
+    int popup_routing_id = filter->last_routing_id();
     EXPECT_TRUE(popup_routing_id);
     // Grab a pointer to the popup RenderWidget.
     RenderWidgetHost* popup_widget_host =

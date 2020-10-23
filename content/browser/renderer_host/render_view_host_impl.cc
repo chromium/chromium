@@ -750,27 +750,11 @@ bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
   // with URL of the main frame.
   ScopedActiveURL scoped_active_url(this);
 
-  if (delegate_->OnMessageReceived(this, msg))
-    return true;
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(RenderViewHostImpl, msg)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_ShowWidget, OnShowWidget)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  return handled;
+  return delegate_->OnMessageReceived(this, msg);
 }
 
 void RenderViewHostImpl::RenderWidgetDidInit() {
   PostRenderViewReady();
-}
-
-void RenderViewHostImpl::OnShowWidget(int widget_route_id,
-                                      const gfx::Rect& initial_rect) {
-  delegate_->ShowCreatedWidget(GetProcess()->GetID(), widget_route_id,
-                               initial_rect);
-  Send(new WidgetMsg_SetBounds_ACK(widget_route_id));
 }
 
 void RenderViewHostImpl::OnDidContentsPreferredSizeChange(

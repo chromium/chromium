@@ -112,12 +112,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // The contents' preferred size changed.
   virtual void UpdatePreferredSize(const gfx::Size& pref_size) {}
 
-  // Show the newly created widget with the specified bounds.
-  // The widget is identified by the route_id passed to CreateNewWidget.
-  virtual void ShowCreatedWidget(int process_id,
-                                 int widget_route_id,
-                                 const gfx::Rect& initial_rect) {}
-
   // Returns the SessionStorageNamespace the render view should use. Might
   // create the SessionStorageNamespace on the fly.
   virtual SessionStorageNamespace* GetSessionStorageNamespace(

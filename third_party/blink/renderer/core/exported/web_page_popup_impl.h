@@ -192,7 +192,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect) override;
   gfx::Size VisibleViewportSizeInDIPs() override;
-  void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
+  void SetPendingWindowRect(const gfx::Rect& window_screen_rect) override;
+  void AckPendingWindowRect() override;
   bool IsHidden() const override;
 
   // This may only be called if page_ is non-null.
@@ -230,6 +231,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
                                 WebInputEvent::Type injected_type);
 
   void WidgetHostDisconnected();
+  void DidShowPopup();
 
   WebPagePopupClient* web_page_popup_client_;
   WebViewImpl* web_view_ = nullptr;
@@ -260,6 +262,12 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // The channel associated with the browser. When this is closed the popup will
   // be destroyed.
   mojo::AssociatedRemote<mojom::blink::PopupWidgetHost> popup_widget_host_;
+
+  // The rect before the widget is shown.
+  gfx::Rect initial_rect_;
+
+  // Defer setting the window rect until the widget is shown.
+  bool should_defer_setting_window_rect_ = true;
 
   // Base functionality all widgets have. This is a member as to avoid
   // complicated inheritance structures.

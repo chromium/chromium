@@ -241,7 +241,13 @@ class WebWidget {
   // the window rect is delivered asynchronously to the browser. Pass in nullptr
   // to clear the pending window rect once the browser has acknowledged the
   // request.
-  virtual void SetPendingWindowRect(const gfx::Rect* window_screen_rect) = 0;
+  virtual void SetPendingWindowRect(const gfx::Rect& window_screen_rect) = 0;
+
+  // Acknowledge a pending window rect, must correspond to a prior
+  // SetPendingWindowRect call. This method is temporary and will be removed
+  // when WidgetMsg_SetBounds_ACK/WidgetHostMsg_RequestSetBounds are moved to
+  // mojo.
+  virtual void AckPendingWindowRect() = 0;
 
   virtual bool IsHidden() const = 0;
 

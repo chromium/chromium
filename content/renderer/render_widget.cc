@@ -143,12 +143,11 @@ RenderWidget::~RenderWidget() {
       << " RenderWidget must be destroyed via RenderWidget::Close()";
 }
 
-void RenderWidget::InitForPopup(ShowCallback show_callback,
-                                RenderWidget* opener_widget,
+void RenderWidget::InitForPopup(RenderWidget* opener_widget,
                                 blink::WebPagePopup* web_page_popup,
                                 const blink::ScreenInfo& screen_info) {
   for_popup_ = true;
-  Initialize(std::move(show_callback), web_page_popup, screen_info);
+  Initialize(base::NullCallback(), web_page_popup, screen_info);
 }
 
 void RenderWidget::InitForMainFrame(ShowCallback show_callback,
@@ -235,15 +234,11 @@ void RenderWidget::BrowserClosedIpcChannelForPopupWidget() {
 }
 
 void RenderWidget::OnRequestSetBoundsAck() {
-  DCHECK(pending_window_rect_count_);
-  pending_window_rect_count_--;
-  if (pending_window_rect_count_ == 0)
-    GetWebWidget()->SetPendingWindowRect(nullptr);
+  GetWebWidget()->AckPendingWindowRect();
 }
 
 void RenderWidget::SetPendingWindowRect(const gfx::Rect& rect) {
-  pending_window_rect_count_++;
-  GetWebWidget()->SetPendingWindowRect(&rect);
+  GetWebWidget()->SetPendingWindowRect(rect);
 }
 
 void RenderWidget::RequestPresentation(PresentationTimeCallback callback) {

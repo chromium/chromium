@@ -386,13 +386,15 @@ RenderFrameHostDelegate* TestWebContents::CreateNewWindow(
   return nullptr;
 }
 
-void TestWebContents::CreateNewPopupWidget(
+RenderWidgetHostImpl* TestWebContents::CreateNewPopupWidget(
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t route_id,
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         blink_popup_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {}
+    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
+  return nullptr;
+}
 
 void TestWebContents::ShowCreatedWindow(RenderFrameHost* opener,
                                         int route_id,

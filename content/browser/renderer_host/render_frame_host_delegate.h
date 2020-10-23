@@ -86,6 +86,7 @@ namespace content {
 class AgentSchedulingGroupHost;
 class FrameTreeNode;
 class RenderFrameHostImpl;
+class RenderWidgetHostImpl;
 class SessionStorageNamespace;
 class WebContents;
 struct AXEventNotificationDetails;
@@ -572,14 +573,14 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // widget should be created associated with the given
   // |agent_scheduling_group|, but it should not be shown yet. That should
   // happen in response to ShowCreatedWidget.
-  virtual void CreateNewPopupWidget(
+  virtual RenderWidgetHostImpl* CreateNewPopupWidget(
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t route_id,
       mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
           blink_popup_widget_host,
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
           blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {}
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget);
 
   // Return true if the popup is shown through WebContentsObserver.
   // BrowserPluginGuest for the guest WebContents will show the popup on Mac,

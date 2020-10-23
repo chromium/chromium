@@ -8056,59 +8056,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(orig_site_instance, child->current_frame_host()->GetSiteInstance());
 }
 
-// Helper filter class to wait for a ShowWidget message, record the routing ID
-// from the message, and then drop the message.
-const uint32_t kMessageClasses[] = {ViewMsgStart, FrameMsgStart};
-class PendingWidgetMessageFilter : public BrowserMessageFilter {
- public:
-  PendingWidgetMessageFilter()
-      : BrowserMessageFilter(kMessageClasses, base::size(kMessageClasses)),
-        routing_id_(MSG_ROUTING_NONE) {}
-
-  bool OnMessageReceived(const IPC::Message& message) override {
-    bool handled = true;
-    IPC_BEGIN_MESSAGE_MAP(PendingWidgetMessageFilter, message)
-      IPC_MESSAGE_HANDLER(ViewHostMsg_ShowWidget, OnShowWidget)
-      IPC_MESSAGE_UNHANDLED(handled = false)
-    IPC_END_MESSAGE_MAP()
-    return handled;
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  int routing_id() { return routing_id_; }
-
- private:
-  ~PendingWidgetMessageFilter() override {}
-
-  void OnShowCreatedWindow(int pending_widget_routing_id,
-                           WindowOpenDisposition disposition,
-                           const gfx::Rect& initial_rect,
-                           bool user_gesture) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PendingWidgetMessageFilter::OnReceivedRoutingIDOnUI,
-                       this, pending_widget_routing_id));
-  }
-
-  void OnShowWidget(int routing_id, const gfx::Rect& initial_rect) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PendingWidgetMessageFilter::OnReceivedRoutingIDOnUI,
-                       this, routing_id));
-  }
-
-  void OnReceivedRoutingIDOnUI(int widget_routing_id) {
-    routing_id_ = widget_routing_id;
-    run_loop_.Quit();
-  }
-
-  int routing_id_;
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingWidgetMessageFilter);
-};
-
 // Intercepts calls to RenderFramHost's ShowCreatedWindow mojo method, and
 // invokes the provided callback.
 class ShowCreatedWindowInterceptor
@@ -8124,7 +8071,7 @@ class ShowCreatedWindowInterceptor
         this);
   }
 
-  ~ShowCreatedWindowInterceptor() override {}
+  ~ShowCreatedWindowInterceptor() override = default;
 
   FrameHost* GetForwardingInterface() override { return render_frame_host_; }
 
@@ -8239,6 +8186,80 @@ class RequestCloseWidgetInterceptor
   RenderWidgetHostImpl* render_widget_host_;
 };
 
+// Intercepts calls to PopupWidgetHost's ShowPopup mojo method, and
+// invokes the provided callback.
+class ShowCreatedPopupWidgetInterceptor
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
+ public:
+  ShowCreatedPopupWidgetInterceptor(
+      RenderWidgetHostImpl* render_widget_host,
+      base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
+      : render_widget_host_(render_widget_host),
+        test_callback_(std::move(test_callback)) {
+    render_widget_host_->popup_widget_host_receiver_for_testing()
+        .SwapImplForTesting(this);
+  }
+
+  ~ShowCreatedPopupWidgetInterceptor() override = default;
+
+  blink::mojom::PopupWidgetHost* GetForwardingInterface() override {
+    return render_widget_host_;
+  }
+
+  void ShowPopup(const gfx::Rect& initial_rect,
+                 ShowPopupCallback callback) override {
+    show_callback_ = std::move(callback);
+    initial_rect_ = initial_rect;
+    std::move(test_callback_).Run(render_widget_host_->GetRoutingID());
+  }
+
+  void ResumeShowPopupWidget() {
+    GetForwardingInterface()->ShowPopup(initial_rect_,
+                                        std::move(show_callback_));
+  }
+
+ private:
+  RenderWidgetHostImpl* render_widget_host_;
+  base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
+  ShowPopupCallback show_callback_;
+  gfx::Rect initial_rect_;
+};
+
+// Listens for the source RenderFrameHost opening the new popup widget then
+// attaches a show listener to the widget.
+class NewPopupWidgetCreatedObserver {
+ public:
+  NewPopupWidgetCreatedObserver(
+      RenderFrameHostImpl* frame_host,
+      base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
+      : frame_host_(frame_host), test_callback_(std::move(test_callback)) {
+    frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
+        &NewPopupWidgetCreatedObserver::DidCreatePopupWidget,
+        base::Unretained(this)));
+  }
+
+  ~NewPopupWidgetCreatedObserver() {
+    if (frame_host_)
+      frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
+  }
+
+  void ResumeShowPopupWidget() { show_interceptor_->ResumeShowPopupWidget(); }
+
+ private:
+  void DidCreatePopupWidget(RenderWidgetHostImpl* widget) {
+    show_interceptor_ = std::make_unique<ShowCreatedPopupWidgetInterceptor>(
+        widget, std::move(test_callback_));
+
+    // Stop observing now.
+    frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
+    frame_host_ = nullptr;
+  }
+
+  RenderFrameHostImpl* frame_host_;
+  std::unique_ptr<ShowCreatedPopupWidgetInterceptor> show_interceptor_;
+  base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
+};
+
 // Test for https://crbug.com/612276.  Similar to
 // TwoSubframesOpenWindowsSimultaneously, but use popup menu widgets instead of
 // windows.
@@ -8283,16 +8304,20 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   event.text[0] = ' ';
 
-  scoped_refptr<PendingWidgetMessageFilter> filter1 =
-      new PendingWidgetMessageFilter();
-  process1->AddFilter(filter1.get());
+  base::RunLoop run_loop1;
+  int32_t routing_id1;
+  NewPopupWidgetCreatedObserver interceptor1(
+      child1->current_frame_host(),
+      base::BindLambdaForTesting([&](int32_t pending_widget_routing_id) {
+        routing_id1 = pending_widget_routing_id;
+        run_loop1.Quit();
+      }));
   EXPECT_TRUE(ExecuteScript(child1, "focusSelectMenu();"));
   child1->current_frame_host()->GetRenderWidgetHost()->ForwardKeyboardEvent(
       event);
-  filter1->Wait();
+  run_loop1.Run();
 
-  auto first_popup_global_id =
-      GlobalRoutingID(process1->GetID(), filter1->routing_id());
+  auto first_popup_global_id = GlobalRoutingID(process1->GetID(), routing_id1);
   // Add an incerceptor for first popup widget so it doesn't get closed
   // immediately while the other one is being opened.
   EXPECT_TRUE(base::Contains(web_contents()->pending_widget_views_,
@@ -8304,37 +8329,37 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
               ->pending_widget_views_[first_popup_global_id]
               ->GetRenderWidgetHost()));
 
-  scoped_refptr<PendingWidgetMessageFilter> filter2 =
-      new PendingWidgetMessageFilter();
-  process2->AddFilter(filter2.get());
+  base::RunLoop run_loop2;
+  int32_t routing_id2;
+  NewPopupWidgetCreatedObserver interceptor2(
+      child2->current_frame_host(),
+      base::BindLambdaForTesting([&](int32_t pending_widget_routing_id) {
+        routing_id2 = pending_widget_routing_id;
+        run_loop2.Quit();
+      }));
   EXPECT_TRUE(ExecuteScript(child2, "focusSelectMenu();"));
   child2->current_frame_host()->GetRenderWidgetHost()->ForwardKeyboardEvent(
       event);
-  filter2->Wait();
+  run_loop2.Run();
 
   // At this point, we should have two pending widgets.
   EXPECT_TRUE(base::Contains(web_contents()->pending_widget_views_,
                              first_popup_global_id));
-  EXPECT_TRUE(base::Contains(
-      web_contents()->pending_widget_views_,
-      GlobalRoutingID(process2->GetID(), filter2->routing_id())));
+  EXPECT_TRUE(base::Contains(web_contents()->pending_widget_views_,
+                             GlobalRoutingID(process2->GetID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
   // new popup widgets should match up (this led to the collision in the
   // pending widgets map in the original bug).
-  EXPECT_EQ(filter1->routing_id(), filter2->routing_id());
+  EXPECT_EQ(routing_id1, routing_id2);
 
   // Now simulate both widgets being shown.
-  web_contents()->ShowCreatedWidget(process1->GetID(), filter1->routing_id(),
-                                    gfx::Rect());
-  web_contents()->ShowCreatedWidget(process2->GetID(), filter2->routing_id(),
-                                    gfx::Rect());
-  EXPECT_FALSE(base::Contains(
-      web_contents()->pending_widget_views_,
-      GlobalRoutingID(process1->GetID(), filter1->routing_id())));
-  EXPECT_FALSE(base::Contains(
-      web_contents()->pending_widget_views_,
-      GlobalRoutingID(process2->GetID(), filter2->routing_id())));
+  interceptor1.ResumeShowPopupWidget();
+  interceptor2.ResumeShowPopupWidget();
+  EXPECT_FALSE(base::Contains(web_contents()->pending_widget_views_,
+                              GlobalRoutingID(process1->GetID(), routing_id1)));
+  EXPECT_FALSE(base::Contains(web_contents()->pending_widget_views_,
+                              GlobalRoutingID(process2->GetID(), routing_id2)));
 }
 #endif
 
@@ -12808,13 +12833,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     loop.Run();
   }
 
-  scoped_refptr<ShowWidgetMessageFilter> show_widget_filter =
-      base::MakeRefCounted<ShowWidgetMessageFilter>(web_contents());
-  base::ScopedClosureRunner shutdown_show_widget_filter(
-      base::BindOnce(&ShowWidgetMessageFilter::Shutdown, show_widget_filter));
-  child_node->current_frame_host()->GetProcess()->AddFilter(
-      show_widget_filter.get());
-
+  auto show_popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
+      web_contents(), child_node->current_frame_host());
   SimulateMouseClick(child_node->current_frame_host()->GetRenderWidgetHost(),
                      55, 2005);
 
@@ -12825,7 +12845,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // The test passes if this wait returns, indicating that the popup was
   // scrolled into view and the OOPIF renderer displayed it. Other tests verify
   // the correctness of popup menu coordinates.
-  show_widget_filter->Wait();
+  show_popup_waiter->Wait();
 }
 
 #if defined(OS_ANDROID)

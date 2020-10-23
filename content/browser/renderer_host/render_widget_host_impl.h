@@ -289,6 +289,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // blink::mojom::PopupWidgetHost implementation.
   void RequestClosePopup() override;
+  void ShowPopup(const gfx::Rect& initial_rect,
+                 ShowPopupCallback callback) override;
 
   // Notification that the screen info has changed.
   void NotifyScreenInfoChanged();

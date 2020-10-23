@@ -3684,7 +3684,7 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
   return new_contents_impl;
 }
 
-void WebContentsImpl::CreateNewPopupWidget(
+RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t route_id,
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
@@ -3692,7 +3692,7 @@ void WebContentsImpl::CreateNewPopupWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
   OPTIONAL_TRACE_EVENT1(
-      "content", "WebContentsImpl::CreateNewWidget", "params",
+      "content", "WebContentsImpl::CreateNewPopupWidget", "params",
       base::trace_event::TracedValue::Build({{"route_id", route_id}}));
   RenderProcessHost* process = agent_scheduling_group.GetProcess();
   // A message to create a new widget can only come from an active process for
@@ -3700,7 +3700,7 @@ void WebContentsImpl::CreateNewPopupWidget(
   // it is invalid and the process must be terminated.
   if (!HasMatchingProcess(&frame_tree_, process->GetID())) {
     ReceivedBadMessage(process, bad_message::WCI_NEW_WIDGET_PROCESS_MISMATCH);
-    return;
+    return nullptr;
   }
 
   RenderWidgetHostImpl* widget_host = new RenderWidgetHostImpl(
@@ -3714,11 +3714,12 @@ void WebContentsImpl::CreateNewPopupWidget(
       static_cast<RenderWidgetHostViewBase*>(
           view_->CreateViewForChildWidget(widget_host));
   if (!widget_view)
-    return;
+    return nullptr;
   widget_view->SetWidgetType(WidgetType::kPopup);
   // Save the created widget associated with the route so we can show it later.
   pending_widget_views_[GlobalRoutingID(process->GetID(), route_id)] =
       widget_view;
+  return widget_host;
 }
 
 void WebContentsImpl::ShowCreatedWindow(RenderFrameHost* opener,

@@ -1239,8 +1239,12 @@ gfx::Size WebFrameWidgetBase::VisibleViewportSizeInDIPs() {
 }
 
 void WebFrameWidgetBase::SetPendingWindowRect(
-    const gfx::Rect* window_screen_rect) {
+    const gfx::Rect& window_screen_rect) {
   widget_base_->SetPendingWindowRect(window_screen_rect);
+}
+
+void WebFrameWidgetBase::AckPendingWindowRect() {
+  widget_base_->AckPendingWindowRect();
 }
 
 bool WebFrameWidgetBase::IsHidden() const {

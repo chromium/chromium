@@ -1266,6 +1266,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetCommitCallbackInterceptorForTesting(
       CommitCallbackInterceptor* interceptor);
 
+  using CreateNewPopupWidgetCallbackForTesting =
+      base::RepeatingCallback<void(RenderWidgetHostImpl*)>;
+
+  // Set a callback to listen to the |CreateNewPopupWidget| for testing.
+  void SetCreateNewPopupCallbackForTesting(
+      const CreateNewPopupWidgetCallbackForTesting& callback);
+
   // Posts a message from a frame in another process to the current renderer.
   void PostMessageEvent(
       const base::Optional<base::UnguessableToken>& source_token,
@@ -3103,6 +3110,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Used to intercept DidCommit* calls in tests.
   CommitCallbackInterceptor* commit_callback_interceptor_;
+
+  // Used to hear about CreateNewPopupWidget calls in tests.
+  CreateNewPopupWidgetCallbackForTesting create_new_popup_widget_callback_;
 
   // Mask of the active features tracked by the scheduler used by this frame.
   // This is used only for metrics.

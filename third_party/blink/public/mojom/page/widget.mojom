@@ -267,8 +267,9 @@ interface WidgetCompositor {
 // process, so the PopupWidgetHost channel disconnecting indicates that the
 // widget in the renderer should be destroyed.
 interface PopupWidgetHost {
-  // TODO(dtapuska): Add ShowPopup method that will replace ViewHostMsg_ShowWidget
-
   // Request that this popup be dismissed.
   RequestClosePopup();
+
+  // Request the popup be shown.
+  ShowPopup(gfx.mojom.Rect initial_rect) => ();
 };

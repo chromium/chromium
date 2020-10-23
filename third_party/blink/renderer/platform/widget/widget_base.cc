@@ -1384,17 +1384,21 @@ void WidgetBase::SetScreenRects(const gfx::Rect& widget_screen_rect,
   window_screen_rect_ = window_screen_rect;
 }
 
-void WidgetBase::SetPendingWindowRect(const gfx::Rect* rect) {
-  if (rect) {
-    pending_window_rect_ = *rect;
-    // Popups don't get size updates back from the browser so just store the set
-    // values.
-    if (!client_->FrameWidget()) {
-      SetScreenRects(*rect, *rect);
-    }
-  } else {
-    pending_window_rect_.reset();
+void WidgetBase::SetPendingWindowRect(const gfx::Rect& rect) {
+  pending_window_rect_count_++;
+  pending_window_rect_ = rect;
+  // Popups don't get size updates back from the browser so just store the set
+  // values.
+  if (!client_->FrameWidget()) {
+    SetScreenRects(rect, rect);
   }
+}
+
+void WidgetBase::AckPendingWindowRect() {
+  DCHECK(pending_window_rect_count_);
+  pending_window_rect_count_--;
+  if (pending_window_rect_count_ == 0)
+    pending_window_rect_.reset();
 }
 
 gfx::Rect WidgetBase::WindowRect() {

@@ -329,13 +329,6 @@ void RenderViewImpl::OnSetHistoryOffsetAndLength(int history_offset,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void RenderViewImpl::ShowCreatedPopupWidget(RenderWidget* popup_widget,
-                                            WebNavigationPolicy policy,
-                                            const gfx::Rect& initial_rect) {
-  Send(new ViewHostMsg_ShowWidget(GetRoutingID(), popup_widget->routing_id(),
-                                  initial_rect));
-}
-
 void RenderViewImpl::SendFrameStateUpdates() {
   // Tell each frame with pending state to send its UpdateState message.
   for (int render_frame_routing_id : frames_with_pending_state_) {
@@ -551,9 +544,6 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
     return nullptr;
   }
 
-  RenderWidget::ShowCallback opener_callback = base::BindOnce(
-      &RenderViewImpl::ShowCreatedPopupWidget, weak_ptr_factory_.GetWeakPtr());
-
   RenderWidget* opener_render_widget =
       RenderFrameImpl::FromWebFrame(creator)->GetLocalRootRenderWidget();
 
@@ -571,7 +561,7 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
   // when leaving scope. The WebPagePopup takes responsibility for Close()ing
   // and thus destroying the RenderWidget.
   popup_widget->InitForPopup(
-      std::move(opener_callback), opener_render_widget, popup_web_widget,
+      opener_render_widget, popup_web_widget,
       opener_render_widget->GetWebWidget()->GetOriginalScreenInfo());
   return popup_web_widget;
 }

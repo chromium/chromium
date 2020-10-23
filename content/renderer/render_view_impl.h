@@ -162,11 +162,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // be coalesced into one update.
   void StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame);
 
-  // A popup widget opened by this view needs to be shown.
-  void ShowCreatedPopupWidget(RenderWidget* popup_widget,
-                              blink::WebNavigationPolicy policy,
-                              const gfx::Rect& initial_rect);
-
   // Returns the length of the session history of this RenderView. Note that
   // this only coincides with the actual length of the session history if this
   // RenderView is the currently active RenderView of a WebContents.

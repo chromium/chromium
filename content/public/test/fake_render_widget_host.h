@@ -19,6 +19,7 @@
 namespace content {
 
 class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
+                             public blink::mojom::PopupWidgetHost,
                              public blink::mojom::WidgetHost,
                              public blink::mojom::WidgetInputHandlerHost {
  public:
@@ -71,6 +72,11 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
           render_frame_metadata_observer_client_receiver,
       mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
           render_frame_metadata_observer) override;
+
+  // blink::mojom::PopupWidgetHost overrides.
+  void RequestClosePopup() override;
+  void ShowPopup(const gfx::Rect& initial_rect,
+                 ShowPopupCallback callback) override;
 
   // blink::mojom::WidgetInputHandlerHost overrides.
   void SetTouchActionFromMain(cc::TouchAction touch_action) override;

@@ -74,6 +74,11 @@ void FakeRenderWidgetHost::RegisterRenderFrameMetadataObserver(
     mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
         render_frame_metadata_observer) {}
 
+void FakeRenderWidgetHost::RequestClosePopup() {}
+
+void FakeRenderWidgetHost::ShowPopup(const gfx::Rect& initial_rect,
+                                     ShowPopupCallback callback) {}
+
 void FakeRenderWidgetHost::SetTouchActionFromMain(
     cc::TouchAction touch_action) {}
 

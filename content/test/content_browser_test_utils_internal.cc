@@ -405,55 +405,53 @@ RenderProcessHostBadIpcMessageWaiter::Wait() {
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
-ShowWidgetMessageFilter::ShowWidgetMessageFilter(WebContents* web_contents)
-#if defined(OS_MAC) || defined(OS_ANDROID)
-    : BrowserMessageFilter(FrameMsgStart),
-#else
-    : BrowserMessageFilter(ViewMsgStart),
-#endif
-      run_loop_(std::make_unique<base::RunLoop>()) {
-  WebContentsObserver::Observe(web_contents);
+ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContents* web_contents,
+                                             RenderFrameHostImpl* frame_host)
+    : WebContentsObserver(web_contents), frame_host_(frame_host) {
+  frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
+      &ShowPopupWidgetWaiter::DidCreatePopupWidget, base::Unretained(this)));
 }
 
-ShowWidgetMessageFilter::~ShowWidgetMessageFilter() {
-  DCHECK(is_shut_down_);
+ShowPopupWidgetWaiter::~ShowPopupWidgetWaiter() {
+  if (auto* rwhi = RenderWidgetHostImpl::FromID(process_id_, routing_id_)) {
+    rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(rwhi);
+  }
+  if (frame_host_)
+    frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
 }
 
-void ShowWidgetMessageFilter::Shutdown() {
-  WebContentsObserver::Observe(nullptr);
-  is_shut_down_ = true;
+void ShowPopupWidgetWaiter::Wait() {
+  run_loop_.Run();
 }
 
-bool ShowWidgetMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  IPC_BEGIN_MESSAGE_MAP(ShowWidgetMessageFilter, message)
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_ShowWidget, OnShowWidget)
-#endif
-  IPC_END_MESSAGE_MAP()
-  return false;
+void ShowPopupWidgetWaiter::Stop() {
+  Observe(nullptr);
+  frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
+  frame_host_ = nullptr;
 }
 
-void ShowWidgetMessageFilter::Wait() {
-  DCHECK(!is_shut_down_);
-  run_loop_->Run();
+blink::mojom::PopupWidgetHost* ShowPopupWidgetWaiter::GetForwardingInterface() {
+  DCHECK_NE(MSG_ROUTING_NONE, routing_id_);
+  return RenderWidgetHostImpl::FromID(process_id_, routing_id_);
 }
 
-void ShowWidgetMessageFilter::Reset() {
-  DCHECK(!is_shut_down_);
-  initial_rect_ = gfx::Rect();
-  routing_id_ = MSG_ROUTING_NONE;
-  run_loop_ = std::make_unique<base::RunLoop>();
+void ShowPopupWidgetWaiter::ShowPopup(const gfx::Rect& initial_rect,
+                                      ShowPopupCallback callback) {
+  GetForwardingInterface()->ShowPopup(initial_rect, std::move(callback));
+  initial_rect_ = initial_rect;
+  run_loop_.Quit();
 }
 
-void ShowWidgetMessageFilter::OnShowWidget(int route_id,
-                                           const gfx::Rect& initial_rect) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ShowWidgetMessageFilter::OnShowWidgetOnUI,
-                                this, route_id, initial_rect));
+void ShowPopupWidgetWaiter::DidCreatePopupWidget(
+    RenderWidgetHostImpl* render_widget_host) {
+  process_id_ = render_widget_host->GetProcess()->GetID();
+  routing_id_ = render_widget_host->GetRoutingID();
+  render_widget_host->popup_widget_host_receiver_for_testing()
+      .SwapImplForTesting(this);
 }
 
 #if defined(OS_MAC) || defined(OS_ANDROID)
-bool ShowWidgetMessageFilter::ShowPopupMenu(
+bool ShowPopupWidgetWaiter::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
     const gfx::Rect& bounds,
@@ -463,19 +461,11 @@ bool ShowWidgetMessageFilter::ShowPopupMenu(
     std::vector<blink::mojom::MenuItemPtr>* menu_items,
     bool right_aligned,
     bool allow_multiple_selection) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ShowWidgetMessageFilter::OnShowWidgetOnUI,
-                                this, MSG_ROUTING_NONE, bounds));
+  initial_rect_ = bounds;
+  run_loop_.Quit();
   return true;
 }
 #endif
-
-void ShowWidgetMessageFilter::OnShowWidgetOnUI(int route_id,
-                                               const gfx::Rect& initial_rect) {
-  initial_rect_ = initial_rect;
-  routing_id_ = route_id;
-  run_loop_->Quit();
-}
 
 DropMessageFilter::DropMessageFilter(uint32_t message_class,
                                      uint32_t drop_message_id)

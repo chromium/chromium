@@ -2254,6 +2254,13 @@ void RenderWidgetHostImpl::RequestClosePopup() {
   ShutdownAndDestroyWidget(true);
 }
 
+void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_rect,
+                                     ShowPopupCallback callback) {
+  delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
+                               initial_rect);
+  std::move(callback).Run();
+}
+
 void RenderWidgetHostImpl::SetToolTipText(
     const base::string16& tooltip_text,
     base::i18n::TextDirection text_direction_hint) {

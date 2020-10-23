@@ -330,7 +330,8 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect) override;
   gfx::Size VisibleViewportSizeInDIPs() override;
-  void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
+  void SetPendingWindowRect(const gfx::Rect& window_screen_rect) override;
+  void AckPendingWindowRect() override;
   bool IsHidden() const override;
 
   // WidgetBaseClient methods.

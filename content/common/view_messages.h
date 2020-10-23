@@ -99,14 +99,6 @@ IPC_MESSAGE_ROUTED0(ViewMsg_MoveOrResizeStarted)
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.
 
-// This message is sent to the parent RenderViewHost to display a widget
-// that was created by CreateWidget. |route_id| refers
-// to the id that was returned from the corresponding Create message above.
-// |initial_rect| is in screen coordinates.
-IPC_MESSAGE_ROUTED2(ViewHostMsg_ShowWidget,
-                    int /* route_id */,
-                    gfx::Rect /* initial_rect */)
-
 // Adding a new message? Stick to the sort order above: first platform
 // independent ViewMsg, then ifdefs for platform specific ViewMsg, then platform
 // independent ViewHostMsg, then ifdefs for platform specific ViewHostMsg.

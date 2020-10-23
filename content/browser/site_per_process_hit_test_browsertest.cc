@@ -5824,11 +5824,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
             child_node->current_frame_host()->GetSiteInstance());
 
-  scoped_refptr<ShowWidgetMessageFilter> filter =
-      base::MakeRefCounted<ShowWidgetMessageFilter>(web_contents());
-  base::ScopedClosureRunner shut_down_filter(
-      base::BindOnce(&ShowWidgetMessageFilter::Shutdown, filter));
-  child_node->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  auto popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
+      web_contents(), child_node->current_frame_host());
 
   // Target left-click event to child frame.
   blink::WebMouseEvent click_event(
@@ -5848,8 +5845,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo(
       &screen_info);
 
-  filter->Wait();
-  gfx::Rect popup_rect = filter->last_initial_rect();
+  popup_waiter->Wait();
+  gfx::Rect popup_rect = popup_waiter->last_initial_rect();
   if (IsUseZoomForDSFEnabled()) {
     popup_rect = gfx::ScaleToRoundedRect(popup_rect,
                                          1 / screen_info.device_scale_factor);
@@ -5873,7 +5870,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   // convention (it requires separate clicks to open the menu and select an
   // option). See https://crbug.com/703191.
   int process_id = child_node->current_frame_host()->GetProcess()->GetID();
-  filter->Reset();
+  popup_waiter->Stop();
+  popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
+      web_contents(), child_node->current_frame_host());
   RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
@@ -5882,22 +5881,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   click_event.click_count = 1;
   router->RouteMouseEvent(rwhv_root, &click_event, ui::LatencyInfo());
 
-  filter->Wait();
+  popup_waiter->Wait();
 
   RenderWidgetHostViewAura* popup_view = static_cast<RenderWidgetHostViewAura*>(
-      RenderWidgetHost::FromID(process_id, filter->last_routing_id())
+      RenderWidgetHost::FromID(process_id, popup_waiter->last_routing_id())
           ->GetView());
-  // The IO thread posts to ViewMsg_ShowWidget handlers in both the message
-  // filter above and the WebContents, which initializes the popup's view.
-  // It is possible for this code to execute before the WebContents handler,
-  // in which case OnMouseEvent would be called on an uninitialized RWHVA.
-  // This loop ensures that the initialization completes before proceeding.
-  while (!popup_view->window()) {
-    base::RunLoop loop;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  loop.QuitClosure());
-    loop.Run();
-  }
+  EXPECT_TRUE(popup_view);
 
   RenderWidgetHostMouseEventMonitor popup_monitor(
       popup_view->GetRenderWidgetHost());
@@ -5957,11 +5946,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
             c_node->current_frame_host()->GetSiteInstance());
 
-  scoped_refptr<ShowWidgetMessageFilter> filter =
-      base::MakeRefCounted<ShowWidgetMessageFilter>(web_contents());
-  base::ScopedClosureRunner shut_down_filter(
-      base::BindOnce(&ShowWidgetMessageFilter::Shutdown, filter));
-  c_node->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  auto popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
+      web_contents(), c_node->current_frame_host());
 
   WaitForHitTestData(c_node->current_frame_host());
 
@@ -5979,9 +5965,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   SetWebEventPositions(&click_event, gfx::Point(1, 1), rwhv_root);
   rwhv_c_node->ProcessMouseEvent(click_event, ui::LatencyInfo());
 
-  filter->Wait();
+  popup_waiter->Wait();
 
-  gfx::Rect popup_rect = filter->last_initial_rect();
+  gfx::Rect popup_rect = popup_waiter->last_initial_rect();
 
 #if defined(OS_MAC) || defined(OS_ANDROID)
   EXPECT_EQ(popup_rect.x(), 9);
@@ -6009,7 +5995,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       "iframe.style.top = 150;";
   EXPECT_TRUE(ExecuteScript(root, script));
 
-  filter->Reset();
+  popup_waiter->Stop();
+  popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
+      web_contents(), c_node->current_frame_host());
 
   // Busy loop to wait for b_node's screen rect to get updated. There
   // doesn't seem to be any better way to find out when this happens.
@@ -6031,9 +6019,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   SetWebEventPositions(&click_event, gfx::Point(1, 1), rwhv_root);
   rwhv_c_node->ProcessMouseEvent(click_event, ui::LatencyInfo());
 
-  filter->Wait();
+  popup_waiter->Wait();
 
-  popup_rect = filter->last_initial_rect();
+  popup_rect = popup_waiter->last_initial_rect();
 
 #if defined(OS_MAC) || defined(OS_ANDROID)
   EXPECT_EQ(popup_rect.x(), 9);
@@ -6099,11 +6087,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
               ->GetRenderWidgetHost()
               ->GetView());
 
-  scoped_refptr<ShowWidgetMessageFilter> filter =
-      base::MakeRefCounted<ShowWidgetMessageFilter>(web_contents());
-  base::ScopedClosureRunner shut_down_filter(
-      base::BindOnce(&ShowWidgetMessageFilter::Shutdown, filter));
-  grandchild_node->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  auto popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
+      web_contents(), grandchild_node->current_frame_host());
 
   // Target left-click event to the select element in the innermost frame.
   DispatchMouseDownEventAndWaitUntilDispatch(
@@ -6114,11 +6099,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   DispatchMouseDownEventAndWaitUntilDispatch(web_contents(), rwhv_grandchild,
                                              gfx::PointF(2, 2), rwhv_grandchild,
                                              gfx::PointF(2, 2));
-  filter->Wait();
+  popup_waiter->Wait();
 
   // This test isn't verifying correctness of these coordinates, this is just
   // to ensure that they change after scroll.
-  gfx::Rect unscrolled_popup_rect = filter->last_initial_rect();
+  gfx::Rect unscrolled_popup_rect = popup_waiter->last_initial_rect();
   gfx::Rect initial_grandchild_view_bounds = rwhv_grandchild->GetViewBounds();
 
   // Scroll the main frame.
@@ -6135,7 +6120,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       break;
   }
 
-  filter->Reset();
+  popup_waiter->Stop();
+  popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
+      web_contents(), grandchild_node->current_frame_host());
   // This sends the message directly to the rwhv_grandchild, avoiding using
   // the helper methods, to avert a race condition with the surfaces or
   // HitTestRegions needing to update post-scroll. The event won't hit test
@@ -6155,8 +6142,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   DispatchMouseDownEventAndWaitUntilDispatch(web_contents(), rwhv_root,
                                              gfx::PointF(1, 1), rwhv_root,
                                              gfx::PointF(1, 1));
-  filter->Wait();
-  EXPECT_EQ(unscrolled_popup_rect.y(), filter->last_initial_rect().y() + 20);
+  popup_waiter->Wait();
+  EXPECT_EQ(unscrolled_popup_rect.y(),
+            popup_waiter->last_initial_rect().y() + 20);
 }
 #endif  // !defined(OS_ANDROID)
 

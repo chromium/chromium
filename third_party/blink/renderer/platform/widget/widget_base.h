@@ -238,7 +238,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // the window rect is delivered asynchronously to the browser. Pass in nullptr
   // to clear the pending window rect once the browser has acknowledged the
   // request.
-  void SetPendingWindowRect(const gfx::Rect* rect);
+  void SetPendingWindowRect(const gfx::Rect& rect);
+
+  // Must correspond with a previous call to SetPendingWindowRect.
+  void AckPendingWindowRect();
 
   // Returns the location/bounds of the widget (in screen coordinates).
   const gfx::Rect& WidgetScreenRect() const { return widget_screen_rect_; }
@@ -413,6 +416,14 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // physical device pixels.
   gfx::Rect widget_screen_rect_;
   gfx::Rect window_screen_rect_;
+
+  // While we are waiting for the browser to update window sizes, we track the
+  // pending size temporarily.
+  int pending_window_rect_count_ = 0;
+
+  // A pending window rect that is inflight and hasn't been acknowledged by the
+  // browser yet. This should only be set if |pending_window_rect_count_| is
+  // non-zero.
   base::Optional<gfx::Rect> pending_window_rect_;
 
   // The size of the visible viewport (in DIPs).
