@@ -32,14 +32,16 @@ class MockNativeFileSystemPermissionContext
 
   void ConfirmSensitiveDirectoryAccess(
       const url::Origin& origin,
-      const std::vector<base::FilePath>& paths,
+      PathType path_type,
+      const base::FilePath& path,
       HandleType handle_type,
       GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
-  MOCK_METHOD5(
+  MOCK_METHOD6(
       ConfirmSensitiveDirectoryAccess_,
       void(const url::Origin& origin,
-           const std::vector<base::FilePath>& paths,
+           PathType path_type,
+           const base::FilePath& path,
            HandleType handle_type,
            GlobalFrameRoutingId frame_id,
            base::OnceCallback<void(SensitiveDirectoryResult)>& callback));

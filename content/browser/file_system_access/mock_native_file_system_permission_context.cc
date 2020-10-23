@@ -13,12 +13,13 @@ MockNativeFileSystemPermissionContext::
 
 void MockNativeFileSystemPermissionContext::ConfirmSensitiveDirectoryAccess(
     const url::Origin& origin,
-    const std::vector<base::FilePath>& paths,
+    PathType path_type,
+    const base::FilePath& path,
     HandleType handle_type,
     GlobalFrameRoutingId frame_id,
     base::OnceCallback<void(SensitiveDirectoryResult)> callback) {
-  ConfirmSensitiveDirectoryAccess_(origin, paths, handle_type, frame_id,
-                                   callback);
+  ConfirmSensitiveDirectoryAccess_(origin, path_type, path, handle_type,
+                                   frame_id, callback);
 }
 
 void MockNativeFileSystemPermissionContext::PerformAfterWriteChecks(

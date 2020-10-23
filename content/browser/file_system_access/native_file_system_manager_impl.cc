@@ -832,7 +832,7 @@ void NativeFileSystemManagerImpl::DidChooseEntries(
     std::vector<FileSystemChooser::ResultEntry> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (result->status != NativeFileSystemStatus::kOk) {
+  if (result->status != NativeFileSystemStatus::kOk || entries.empty()) {
     std::move(callback).Run(
         std::move(result),
         std::vector<blink::mojom::NativeFileSystemEntryPtr>());
@@ -846,15 +846,14 @@ void NativeFileSystemManagerImpl::DidChooseEntries(
     return;
   }
 
-  std::vector<base::FilePath> paths;
-  paths.reserve(entries.size());
-  for (const auto& entry : entries)
-    paths.push_back(entry.path);
-
+  // It is enough to only verify access to the first path, as multiple
+  // file selection is only supported if all files are in the same
+  // directory.
+  FileSystemChooser::ResultEntry first_entry = entries.front();
   const bool is_directory =
       options.type() == blink::mojom::ChooseFileSystemEntryType::kOpenDirectory;
   permission_context_->ConfirmSensitiveDirectoryAccess(
-      binding_context.origin, std::move(paths),
+      binding_context.origin, first_entry.type, first_entry.path,
       is_directory ? HandleType::kDirectory : HandleType::kFile,
       binding_context.frame_id,
       base::BindOnce(

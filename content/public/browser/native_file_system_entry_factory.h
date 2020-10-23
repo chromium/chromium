@@ -25,6 +25,7 @@ class CONTENT_EXPORT NativeFileSystemEntryFactory
                                         BrowserThread::DeleteOnUIThread> {
  public:
   using UserAction = NativeFileSystemPermissionContext::UserAction;
+  using PathType = NativeFileSystemPermissionContext::PathType;
 
   // Context from which a created handle is going to be used. This is used for
   // security and permission checks. Pass in the URL most relevant as the url
@@ -46,19 +47,6 @@ class CONTENT_EXPORT NativeFileSystemEntryFactory
     GlobalFrameRoutingId frame_id;
     bool is_worker() const { return !frame_id; }
     int process_id() const { return frame_id.child_id; }
-  };
-
-  enum class PathType {
-    // A path on the local file system. Files with these paths can be operated
-    // on by base::File.
-    kLocal,
-
-    // A path on an "external" file system. These paths can only be accessed via
-    // the filesystem abstraction in //storage/browser/file_system, and a
-    // storage::kFileSystemTypeExternal storage::FileSystemURL.
-    // This path type should be used for paths retrieved via the `virtual_path`
-    // member of a ui::SelectedFileInfo struct.
-    kExternal
   };
 
   // Creates a new NativeFileSystemEntryPtr from the path to a file. Assumes the

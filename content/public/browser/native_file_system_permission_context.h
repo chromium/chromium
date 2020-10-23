@@ -46,6 +46,19 @@ class NativeFileSystemPermissionContext {
   // handles.
   enum class HandleType { kFile, kDirectory };
 
+  enum class PathType {
+    // A path on the local file system. Files with these paths can be operated
+    // on by base::File.
+    kLocal,
+
+    // A path on an "external" file system. These paths can only be accessed via
+    // the filesystem abstraction in //storage/browser/file_system, and a
+    // storage::FileSystemURL of type storage::kFileSystemTypeExternal.
+    // This path type should be used for paths retrieved via the `virtual_path`
+    // member of a ui::SelectedFileInfo struct.
+    kExternal
+  };
+
   // Returns the read permission grant to use for a particular path.
   virtual scoped_refptr<NativeFileSystemPermissionGrant> GetReadPermissionGrant(
       const url::Origin& origin,
@@ -72,14 +85,15 @@ class NativeFileSystemPermissionContext {
     kAbort = 2,     // Abandon entirely, as if picking was cancelled.
     kMaxValue = kAbort
   };
-  // Checks if access to the given |paths| should be allowed or blocked. This is
+  // Checks if access to the given |path| should be allowed or blocked. This is
   // used to implement blocks for certain sensitive directories such as the
   // "Windows" system directory, as well as the root of the "home" directory.
   // Calls |callback| with the result of the check, after potentially showing
   // some UI to the user if the path should not be accessed.
   virtual void ConfirmSensitiveDirectoryAccess(
       const url::Origin& origin,
-      const std::vector<base::FilePath>& paths,
+      PathType path_type,
+      const base::FilePath& path,
       HandleType handle_type,
       GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback) = 0;

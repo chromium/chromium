@@ -474,18 +474,23 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   auto write_grant = base::MakeRefCounted<FixedNativeFileSystemPermissionGrant>(
       PermissionStatus::ASK, base::FilePath());
 
-  EXPECT_CALL(permission_context,
-              CanObtainReadPermission(url::Origin::Create(
-                  embedded_test_server()->GetURL("/title1.html"))))
-      .WillOnce(testing::Return(true));
-
-  EXPECT_CALL(permission_context,
-              ConfirmSensitiveDirectoryAccess_(
-                  testing::_, testing::_, testing::_, testing::_, testing::_))
-      .WillOnce(RunOnceCallback<4>(SensitiveDirectoryResult::kAllowed));
-
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
+  auto frame_id = GlobalFrameRoutingId(
+      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
+      .WillOnce(testing::Return(true));
+
+  EXPECT_CALL(
+      permission_context,
+      ConfirmSensitiveDirectoryAccess_(
+          origin, NativeFileSystemPermissionContext::PathType::kLocal, test_dir,
+          NativeFileSystemPermissionContext::HandleType::kDirectory, frame_id,
+          testing::_))
+      .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAllowed));
+
   EXPECT_CALL(permission_context,
               GetReadPermissionGrant(
                   origin, test_dir,
@@ -502,9 +507,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   EXPECT_CALL(
       *read_grant,
       RequestPermission_(
-          GlobalFrameRoutingId(
-              shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-              shell()->web_contents()->GetMainFrame()->GetRoutingID()),
+          frame_id,
           NativeFileSystemPermissionGrant::UserActivationState::kNotRequired,
           testing::_))
       .WillOnce(RunOnceCallback<2>(NativeFileSystemPermissionGrant::
@@ -536,10 +539,19 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
           ->GetNativeFileSystemEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
-  EXPECT_CALL(permission_context,
-              ConfirmSensitiveDirectoryAccess_(
-                  testing::_, testing::_, testing::_, testing::_, testing::_))
-      .WillOnce(RunOnceCallback<4>(SensitiveDirectoryResult::kAbort));
+  auto origin =
+      url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
+  auto frame_id = GlobalFrameRoutingId(
+      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(
+      permission_context,
+      ConfirmSensitiveDirectoryAccess_(
+          origin, NativeFileSystemPermissionContext::PathType::kLocal,
+          test_file, NativeFileSystemPermissionContext::HandleType::kFile,
+          frame_id, testing::_))
+      .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAbort));
 
   EXPECT_CALL(permission_context,
               CanObtainReadPermission(url::Origin::Create(
@@ -587,18 +599,23 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
           ->GetNativeFileSystemEntryFactory())
       ->SetPermissionContextForTesting(&permission_context);
 
-  EXPECT_CALL(permission_context,
-              ConfirmSensitiveDirectoryAccess_(
-                  testing::_, testing::_, testing::_, testing::_, testing::_))
-      .WillOnce(RunOnceCallback<4>(SensitiveDirectoryResult::kAbort));
+  auto origin =
+      url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
+  auto frame_id = GlobalFrameRoutingId(
+      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetMainFrame()->GetRoutingID());
 
-  EXPECT_CALL(permission_context,
-              CanObtainReadPermission(url::Origin::Create(
-                  embedded_test_server()->GetURL("/title1.html"))))
+  EXPECT_CALL(
+      permission_context,
+      ConfirmSensitiveDirectoryAccess_(
+          origin, NativeFileSystemPermissionContext::PathType::kLocal,
+          test_file, NativeFileSystemPermissionContext::HandleType::kFile,
+          frame_id, testing::_))
+      .WillOnce(RunOnceCallback<5>(SensitiveDirectoryResult::kAbort));
+
+  EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(permission_context,
-              CanObtainWritePermission(url::Origin::Create(
-                  embedded_test_server()->GetURL("/title1.html"))))
+  EXPECT_CALL(permission_context, CanObtainWritePermission(origin))
       .WillOnce(testing::Return(true));
 
   ASSERT_TRUE(

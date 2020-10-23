@@ -350,25 +350,29 @@ bool ChromeNativeFileSystemPermissionContext::CanObtainWritePermission(
 
 void ChromeNativeFileSystemPermissionContext::ConfirmSensitiveDirectoryAccess(
     const url::Origin& origin,
-    const std::vector<base::FilePath>& paths,
+    PathType path_type,
+    const base::FilePath& path,
     HandleType handle_type,
     content::GlobalFrameRoutingId frame_id,
-
     base::OnceCallback<void(SensitiveDirectoryResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (paths.empty()) {
+
+  // TODO(https://crbug.com/1009970): Figure out what external paths should be
+  // blocked. We could resolve the external path to a local path, and check for
+  // blocked directories based on that, but that doesn't work well. Instead we
+  // should have a separate Chrome OS only code path to block for example the
+  // root of certain external file systems.
+  if (path_type == PathType::kExternal) {
     std::move(callback).Run(SensitiveDirectoryResult::kAllowed);
     return;
   }
-  // It is enough to only verify access to the first path, as multiple
-  // file selection is only supported if all files are in the same
-  // directory.
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ShouldBlockAccessToPath, paths[0], handle_type),
+      base::BindOnce(&ShouldBlockAccessToPath, path, handle_type),
       base::BindOnce(&ChromeNativeFileSystemPermissionContext::
                          DidConfirmSensitiveDirectoryAccess,
-                     GetWeakPtr(), origin, paths, handle_type, frame_id,
+                     GetWeakPtr(), origin, path, handle_type, frame_id,
                      std::move(callback)));
 }
 
@@ -398,7 +402,7 @@ void ChromeNativeFileSystemPermissionContext::PerformAfterWriteChecks(
 void ChromeNativeFileSystemPermissionContext::
     DidConfirmSensitiveDirectoryAccess(
         const url::Origin& origin,
-        const std::vector<base::FilePath>& paths,
+        const base::FilePath& path,
         HandleType handle_type,
         content::GlobalFrameRoutingId frame_id,
         base::OnceCallback<void(SensitiveDirectoryResult)> callback,
@@ -415,7 +419,7 @@ void ChromeNativeFileSystemPermissionContext::
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ShowNativeFileSystemRestrictedDirectoryDialogOnUIThread,
-                     frame_id, origin, paths[0], handle_type,
+                     frame_id, origin, path, handle_type,
                      std::move(result_callback)));
 }
 
