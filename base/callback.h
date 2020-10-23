@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_internal.h"
 #include "base/notreached.h"
@@ -99,6 +100,31 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
         reinterpret_cast<PolymorphicInvoke>(cb.polymorphic_invoke());
     return f(cb.bind_state_.get(), std::forward<Args>(args)...);
   }
+
+  // Then() returns a new OnceCallback that receives the same arguments as
+  // |this|, and with the return type of |then|. The returned callback will:
+  // 1) Run the functor currently bound to |this| callback.
+  // 2) Run the |then| callback with the result from step 1 as its single
+  //    argument.
+  // 3) Return the value from running the |then| callback.
+  //
+  // Since this method generates a callback that is a replacement for `this`,
+  // `this` will be consumed and reset to a null callback to ensure the
+  // originally-bound functor can be run at most once.
+  template <typename U, typename R2 = internal::ExtractReturnType<U>>
+  OnceCallback<R2(Args...)> Then(OnceCallback<U> then) && {
+    using ThenCallbackArgs = internal::ExtractArgs<U>;
+    static_assert(
+        (std::is_void<R>::value &&
+         std::is_same<internal::TypeList<>, ThenCallbackArgs>::value) ||
+            std::is_same<internal::TypeList<R>, ThenCallbackArgs>::value,
+        "The |then| callback must accept the return value from the original "
+        "callback as its only parameter.");
+    CHECK(then);
+    return BindOnce(
+        internal::ThenHelper<OnceCallback, OnceCallback<U>, R, Args...>(),
+        std::move(*this), std::move(then));
+  }
 };
 
 template <typename R, typename... Args>
@@ -144,6 +170,49 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
     PolymorphicInvoke f =
         reinterpret_cast<PolymorphicInvoke>(cb.polymorphic_invoke());
     return f(std::move(cb).bind_state_.get(), std::forward<Args>(args)...);
+  }
+
+  // Then() returns a new RepeatingCallback that receives the same arguments as
+  // |this|, and with the return type of |then|. The
+  // returned callback will:
+  // 1) Run the functor currently bound to |this| callback.
+  // 2) Run the |then| callback with the result from step 1 as its single
+  //    argument.
+  // 3) Return the value from running the |then| callback.
+  //
+  // If called on an rvalue (e.g. std::move(cb).Then(...)), this method
+  // generates a callback that is a replacement for `this`. Therefore, `this`
+  // will be consumed and reset to a null callback to ensure the
+  // originally-bound functor can be run at most once.
+  template <typename U, typename R2 = internal::ExtractReturnType<U>>
+  RepeatingCallback<R2(Args...)> Then(RepeatingCallback<U> then) const& {
+    using ThenCallbackArgs = internal::ExtractArgs<U>;
+    static_assert(
+        (std::is_void<R>::value &&
+         std::is_same<internal::TypeList<>, ThenCallbackArgs>::value) ||
+            std::is_same<internal::TypeList<R>, ThenCallbackArgs>::value,
+        "The |then| callback must accept the return value from the original "
+        "callback as its only parameter.");
+    CHECK(then);
+    return BindRepeating(
+        internal::ThenHelper<RepeatingCallback, RepeatingCallback<U>, R,
+                             Args...>(),
+        *this, std::move(then));
+  }
+  template <typename U, typename R2 = internal::ExtractReturnType<U>>
+  RepeatingCallback<R2(Args...)> Then(RepeatingCallback<U> then) && {
+    using ThenCallbackArgs = internal::ExtractArgs<U>;
+    static_assert(
+        (std::is_void<R>::value &&
+         std::is_same<internal::TypeList<>, ThenCallbackArgs>::value) ||
+            std::is_same<internal::TypeList<R>, ThenCallbackArgs>::value,
+        "The |then| callback must accept the return value from the original "
+        "callback as its only parameter.");
+    CHECK(then);
+    return BindRepeating(
+        internal::ThenHelper<RepeatingCallback, RepeatingCallback<U>, R,
+                             Args...>(),
+        std::move(*this), std::move(then));
   }
 };
 

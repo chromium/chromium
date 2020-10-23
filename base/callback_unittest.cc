@@ -11,6 +11,7 @@
 #include "base/callback_internal.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -167,6 +168,437 @@ TEST_F(CallbackTest, MaybeValidReturnsTrue) {
   EXPECT_TRUE(cb.MaybeValid());
   cb.Run();
   EXPECT_TRUE(cb.MaybeValid());
+}
+
+TEST_F(CallbackTest, ThenResetsOriginalCallback) {
+  {
+    // OnceCallback::Then() always destroys the original callback.
+    OnceClosure orig = base::BindOnce([]() {});
+    EXPECT_TRUE(!!orig);
+    OnceClosure joined = std::move(orig).Then(base::BindOnce([]() {}));
+    EXPECT_TRUE(!!joined);
+    EXPECT_FALSE(!!orig);
+  }
+  {
+    // RepeatingCallback::Then() destroys the original callback if it's an
+    // rvalue.
+    RepeatingClosure orig = base::BindRepeating([]() {});
+    EXPECT_TRUE(!!orig);
+    RepeatingClosure joined =
+        std::move(orig).Then(base::BindRepeating([]() {}));
+    EXPECT_TRUE(!!joined);
+    EXPECT_FALSE(!!orig);
+  }
+  {
+    // RepeatingCallback::Then() doesn't destroy the original callback if it's
+    // not an rvalue.
+    RepeatingClosure orig = base::BindRepeating([]() {});
+    RepeatingClosure copy = orig;
+    EXPECT_TRUE(!!orig);
+    RepeatingClosure joined = orig.Then(base::BindRepeating([]() {}));
+    EXPECT_TRUE(!!joined);
+    EXPECT_TRUE(!!orig);
+    // The original callback is not changed.
+    EXPECT_EQ(orig, copy);
+    EXPECT_NE(joined, copy);
+  }
+}
+
+// A factory class for building an outer and inner callback for calling
+// Then() on either a OnceCallback or RepeatingCallback with combinations of
+// void return types, non-void, and move-only return types.
+template <bool use_once, typename R, typename ThenR, typename... Args>
+class CallbackThenTest;
+template <bool use_once, typename R, typename ThenR, typename... Args>
+class CallbackThenTest<use_once, R(Args...), ThenR> {
+ public:
+  using CallbackType =
+      typename std::conditional<use_once,
+                                OnceCallback<R(Args...)>,
+                                RepeatingCallback<R(Args...)>>::type;
+  using ThenType =
+      typename std::conditional<use_once, OnceClosure, RepeatingClosure>::type;
+
+  // Gets the Callback that will have Then() called on it. Has a return type
+  // of `R`, which would chain to the inner callback for Then(). Has inputs of
+  // type `Args...`.
+  static auto GetOuter(std::string& s) {
+    s = "";
+    return Bind(
+        [](std::string* s, Args... args) {
+          return Outer(s, std::forward<Args>(args)...);
+        },
+        &s);
+  }
+  // Gets the Callback that will be passed to Then(). Has a return type of
+  // `ThenR`, specified for the class instance. Receives as input the return
+  // type `R` from the function bound and returned in GetOuter().
+  static auto GetInner(std::string& s) { return Bind(&Inner<R, ThenR>, &s); }
+
+ private:
+  template <bool bind_once = use_once,
+            typename F,
+            typename... FArgs,
+            std::enable_if_t<bind_once, int> = 0>
+  static auto Bind(F function, FArgs... args) {
+    return BindOnce(function, std::forward<FArgs>(args)...);
+  }
+  template <bool bind_once = use_once,
+            typename F,
+            typename... FArgs,
+            std::enable_if_t<!bind_once, int> = 0>
+  static auto Bind(F function, FArgs... args) {
+    return BindRepeating(function, std::forward<FArgs>(args)...);
+  }
+
+  template <typename R2 = R,
+            std::enable_if_t<!std::is_void<R2>::value, int> = 0>
+  static int Outer(std::string* s,
+                   std::unique_ptr<int> a,
+                   std::unique_ptr<int> b) {
+    *s += "Outer";
+    *s += base::NumberToString(*a) + base::NumberToString(*b);
+    return *a + *b;
+  }
+  template <typename R2 = R,
+            std::enable_if_t<!std::is_void<R2>::value, int> = 0>
+  static int Outer(std::string* s, int a, int b) {
+    *s += "Outer";
+    *s += base::NumberToString(a) + base::NumberToString(b);
+    return a + b;
+  }
+  template <typename R2 = R,
+            std::enable_if_t<!std::is_void<R2>::value, int> = 0>
+  static int Outer(std::string* s) {
+    *s += "Outer";
+    *s += "None";
+    return 99;
+  }
+
+  template <typename R2 = R, std::enable_if_t<std::is_void<R2>::value, int> = 0>
+  static void Outer(std::string* s,
+                    std::unique_ptr<int> a,
+                    std::unique_ptr<int> b) {
+    *s += "Outer";
+    *s += base::NumberToString(*a) + base::NumberToString(*b);
+  }
+  template <typename R2 = R, std::enable_if_t<std::is_void<R2>::value, int> = 0>
+  static void Outer(std::string* s, int a, int b) {
+    *s += "Outer";
+    *s += base::NumberToString(a) + base::NumberToString(b);
+  }
+  template <typename R2 = R, std::enable_if_t<std::is_void<R2>::value, int> = 0>
+  static void Outer(std::string* s) {
+    *s += "Outer";
+    *s += "None";
+  }
+
+  template <typename OuterR,
+            typename InnerR,
+            std::enable_if_t<!std::is_void<OuterR>::value, int> = 0,
+            std::enable_if_t<!std::is_void<InnerR>::value, int> = 0>
+  static int Inner(std::string* s, OuterR a) {
+    static_assert(std::is_same<InnerR, int>::value, "Use int return type");
+    *s += "Inner";
+    *s += base::NumberToString(a);
+    return a;
+  }
+  template <typename OuterR,
+            typename InnerR,
+            std::enable_if_t<std::is_void<OuterR>::value, int> = 0,
+            std::enable_if_t<!std::is_void<InnerR>::value, int> = 0>
+  static int Inner(std::string* s) {
+    static_assert(std::is_same<InnerR, int>::value, "Use int return type");
+    *s += "Inner";
+    *s += "None";
+    return 99;
+  }
+
+  template <typename OuterR,
+            typename InnerR,
+            std::enable_if_t<!std::is_void<OuterR>::value, int> = 0,
+            std::enable_if_t<std::is_void<InnerR>::value, int> = 0>
+  static void Inner(std::string* s, OuterR a) {
+    *s += "Inner";
+    *s += base::NumberToString(a);
+  }
+  template <typename OuterR,
+            typename InnerR,
+            std::enable_if_t<std::is_void<OuterR>::value, int> = 0,
+            std::enable_if_t<std::is_void<InnerR>::value, int> = 0>
+  static void Inner(std::string* s) {
+    *s += "Inner";
+    *s += "None";
+  }
+};
+
+template <typename R, typename ThenR = void, typename... Args>
+using CallbackThenOnceTest = CallbackThenTest<true, R, ThenR, Args...>;
+template <typename R, typename ThenR = void, typename... Args>
+using CallbackThenRepeatingTest = CallbackThenTest<false, R, ThenR, Args...>;
+
+TEST_F(CallbackTest, ThenOnce) {
+  std::string s;
+
+  // Void return from outer + void return from Then().
+  {
+    using VoidReturnWithoutArgs = void();
+    using ThenReturn = void;
+    using Test = CallbackThenOnceTest<VoidReturnWithoutArgs, ThenReturn>;
+    Test::GetOuter(s).Then(Test::GetInner(s)).Run();
+    EXPECT_EQ(s, "OuterNoneInnerNone");
+  }
+  {
+    using VoidReturnWithArgs = void(int, int);
+    using ThenReturn = void;
+    using Test = CallbackThenOnceTest<VoidReturnWithArgs, ThenReturn>;
+    Test::GetOuter(s).Then(Test::GetInner(s)).Run(1, 2);
+    EXPECT_EQ(s, "Outer12InnerNone");
+  }
+  {
+    using VoidReturnWithMoveOnlyArgs =
+        void(std::unique_ptr<int>, std::unique_ptr<int>);
+    using ThenReturn = void;
+    using Test = CallbackThenOnceTest<VoidReturnWithMoveOnlyArgs, ThenReturn>;
+    Test::GetOuter(s)
+        .Then(Test::GetInner(s))
+        .Run(std::make_unique<int>(1), std::make_unique<int>(2));
+    EXPECT_EQ(s, "Outer12InnerNone");
+  }
+
+  // Void return from outer + non-void return from Then().
+  {
+    using VoidReturnWithoutArgs = void();
+    using ThenReturn = int;
+    using Test = CallbackThenOnceTest<VoidReturnWithoutArgs, ThenReturn>;
+    EXPECT_EQ(99, Test::GetOuter(s).Then(Test::GetInner(s)).Run());
+    EXPECT_EQ(s, "OuterNoneInnerNone");
+  }
+  {
+    using VoidReturnWithArgs = void(int, int);
+    using ThenReturn = int;
+    using Test = CallbackThenOnceTest<VoidReturnWithArgs, ThenReturn>;
+    EXPECT_EQ(99, Test::GetOuter(s).Then(Test::GetInner(s)).Run(1, 2));
+    EXPECT_EQ(s, "Outer12InnerNone");
+  }
+  {
+    using VoidReturnWithMoveOnlyArgs =
+        void(std::unique_ptr<int>, std::unique_ptr<int>);
+    using ThenReturn = int;
+    using Test = CallbackThenOnceTest<VoidReturnWithMoveOnlyArgs, ThenReturn>;
+    EXPECT_EQ(99, Test::GetOuter(s)
+                      .Then(Test::GetInner(s))
+                      .Run(std::make_unique<int>(1), std::make_unique<int>(2)));
+    EXPECT_EQ(s, "Outer12InnerNone");
+  }
+
+  // Non-void return from outer + void return from Then().
+  {
+    using NonVoidReturnWithoutArgs = int();
+    using ThenReturn = void;
+    using Test = CallbackThenOnceTest<NonVoidReturnWithoutArgs, ThenReturn>;
+    Test::GetOuter(s).Then(Test::GetInner(s)).Run();
+    EXPECT_EQ(s, "OuterNoneInner99");
+  }
+  {
+    using NonVoidReturnWithArgs = int(int, int);
+    using ThenReturn = void;
+    using Test = CallbackThenOnceTest<NonVoidReturnWithArgs, ThenReturn>;
+    Test::GetOuter(s).Then(Test::GetInner(s)).Run(1, 2);
+    EXPECT_EQ(s, "Outer12Inner3");
+  }
+  {
+    using NonVoidReturnWithMoveOnlyArgs =
+        int(std::unique_ptr<int>, std::unique_ptr<int>);
+    using ThenReturn = void;
+    using Test =
+        CallbackThenOnceTest<NonVoidReturnWithMoveOnlyArgs, ThenReturn>;
+    Test::GetOuter(s)
+        .Then(Test::GetInner(s))
+        .Run(std::make_unique<int>(1), std::make_unique<int>(2));
+    EXPECT_EQ(s, "Outer12Inner3");
+  }
+
+  // Non-void return from outer + non-void return from Then().
+  {
+    using NonVoidReturnWithoutArgs = int();
+    using ThenReturn = int;
+    using Test = CallbackThenOnceTest<NonVoidReturnWithoutArgs, ThenReturn>;
+    EXPECT_EQ(99, Test::GetOuter(s).Then(Test::GetInner(s)).Run());
+    EXPECT_EQ(s, "OuterNoneInner99");
+  }
+  {
+    using NonVoidReturnWithArgs = int(int, int);
+    using ThenReturn = int;
+    using Test = CallbackThenOnceTest<NonVoidReturnWithArgs, ThenReturn>;
+    EXPECT_EQ(3, Test::GetOuter(s).Then(Test::GetInner(s)).Run(1, 2));
+    EXPECT_EQ(s, "Outer12Inner3");
+  }
+  {
+    using NonVoidReturnWithMoveOnlyArgs =
+        int(std::unique_ptr<int>, std::unique_ptr<int>);
+    using ThenReturn = int;
+    using Test =
+        CallbackThenOnceTest<NonVoidReturnWithMoveOnlyArgs, ThenReturn>;
+    EXPECT_EQ(3, Test::GetOuter(s)
+                     .Then(Test::GetInner(s))
+                     .Run(std::make_unique<int>(1), std::make_unique<int>(2)));
+    EXPECT_EQ(s, "Outer12Inner3");
+  }
+}
+
+TEST_F(CallbackTest, ThenRepeating) {
+  std::string s;
+
+  // Void return from outer + void return from Then().
+  {
+    using VoidReturnWithoutArgs = void();
+    using ThenReturn = void;
+    using Test = CallbackThenRepeatingTest<VoidReturnWithoutArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    outer.Then(Test::GetInner(s)).Run();
+    EXPECT_EQ(s, "OuterNoneInnerNone");
+    std::move(outer).Then(Test::GetInner(s)).Run();
+    EXPECT_EQ(s, "OuterNoneInnerNoneOuterNoneInnerNone");
+  }
+  {
+    using VoidReturnWithArgs = void(int, int);
+    using ThenReturn = void;
+    using Test = CallbackThenRepeatingTest<VoidReturnWithArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    outer.Then(Test::GetInner(s)).Run(1, 2);
+    EXPECT_EQ(s, "Outer12InnerNone");
+    std::move(outer).Then(Test::GetInner(s)).Run(1, 2);
+    EXPECT_EQ(s, "Outer12InnerNoneOuter12InnerNone");
+  }
+  {
+    using VoidReturnWithMoveOnlyArgs =
+        void(std::unique_ptr<int>, std::unique_ptr<int>);
+    using ThenReturn = void;
+    using Test =
+        CallbackThenRepeatingTest<VoidReturnWithMoveOnlyArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    outer.Then(Test::GetInner(s))
+        .Run(std::make_unique<int>(1), std::make_unique<int>(2));
+    EXPECT_EQ(s, "Outer12InnerNone");
+    std::move(outer)
+        .Then(Test::GetInner(s))
+        .Run(std::make_unique<int>(1), std::make_unique<int>(2));
+    EXPECT_EQ(s, "Outer12InnerNoneOuter12InnerNone");
+  }
+
+  // Void return from outer + non-void return from Then().
+  {
+    using VoidReturnWithoutArgs = void();
+    using ThenReturn = int;
+    using Test = CallbackThenRepeatingTest<VoidReturnWithoutArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    EXPECT_EQ(99, outer.Then(Test::GetInner(s)).Run());
+    EXPECT_EQ(s, "OuterNoneInnerNone");
+    EXPECT_EQ(99, std::move(outer).Then(Test::GetInner(s)).Run());
+    EXPECT_EQ(s, "OuterNoneInnerNoneOuterNoneInnerNone");
+  }
+  {
+    using VoidReturnWithArgs = void(int, int);
+    using ThenReturn = int;
+    using Test = CallbackThenRepeatingTest<VoidReturnWithArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    EXPECT_EQ(99, outer.Then(Test::GetInner(s)).Run(1, 2));
+    EXPECT_EQ(s, "Outer12InnerNone");
+    EXPECT_EQ(99, std::move(outer).Then(Test::GetInner(s)).Run(1, 2));
+    EXPECT_EQ(s, "Outer12InnerNoneOuter12InnerNone");
+  }
+  {
+    using VoidReturnWithMoveOnlyArgs =
+        void(std::unique_ptr<int>, std::unique_ptr<int>);
+    using ThenReturn = int;
+    using Test =
+        CallbackThenRepeatingTest<VoidReturnWithMoveOnlyArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    EXPECT_EQ(99, outer.Then(Test::GetInner(s))
+                      .Run(std::make_unique<int>(1), std::make_unique<int>(2)));
+    EXPECT_EQ(s, "Outer12InnerNone");
+    EXPECT_EQ(99, std::move(outer)
+                      .Then(Test::GetInner(s))
+                      .Run(std::make_unique<int>(1), std::make_unique<int>(2)));
+    EXPECT_EQ(s, "Outer12InnerNoneOuter12InnerNone");
+  }
+
+  // Non-void return from outer + void return from Then().
+  {
+    using NonVoidReturnWithoutArgs = int();
+    using ThenReturn = void;
+    using Test =
+        CallbackThenRepeatingTest<NonVoidReturnWithoutArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    outer.Then(Test::GetInner(s)).Run();
+    EXPECT_EQ(s, "OuterNoneInner99");
+    std::move(outer).Then(Test::GetInner(s)).Run();
+    EXPECT_EQ(s, "OuterNoneInner99OuterNoneInner99");
+  }
+  {
+    using NonVoidReturnWithArgs = int(int, int);
+    using ThenReturn = void;
+    using Test = CallbackThenRepeatingTest<NonVoidReturnWithArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    outer.Then(Test::GetInner(s)).Run(1, 2);
+    EXPECT_EQ(s, "Outer12Inner3");
+    std::move(outer).Then(Test::GetInner(s)).Run(1, 2);
+    EXPECT_EQ(s, "Outer12Inner3Outer12Inner3");
+  }
+  {
+    using NonVoidReturnWithMoveOnlyArgs =
+        int(std::unique_ptr<int>, std::unique_ptr<int>);
+    using ThenReturn = void;
+    using Test =
+        CallbackThenRepeatingTest<NonVoidReturnWithMoveOnlyArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    outer.Then(Test::GetInner(s))
+        .Run(std::make_unique<int>(1), std::make_unique<int>(2));
+    EXPECT_EQ(s, "Outer12Inner3");
+    std::move(outer)
+        .Then(Test::GetInner(s))
+        .Run(std::make_unique<int>(1), std::make_unique<int>(2));
+    EXPECT_EQ(s, "Outer12Inner3Outer12Inner3");
+  }
+
+  // Non-void return from outer + non-void return from Then().
+  {
+    using NonVoidReturnWithoutArgs = int();
+    using ThenReturn = int;
+    using Test =
+        CallbackThenRepeatingTest<NonVoidReturnWithoutArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    EXPECT_EQ(99, outer.Then(Test::GetInner(s)).Run());
+    EXPECT_EQ(s, "OuterNoneInner99");
+    EXPECT_EQ(99, std::move(outer).Then(Test::GetInner(s)).Run());
+    EXPECT_EQ(s, "OuterNoneInner99OuterNoneInner99");
+  }
+  {
+    using NonVoidReturnWithArgs = int(int, int);
+    using ThenReturn = int;
+    using Test = CallbackThenRepeatingTest<NonVoidReturnWithArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    EXPECT_EQ(3, outer.Then(Test::GetInner(s)).Run(1, 2));
+    EXPECT_EQ(s, "Outer12Inner3");
+    EXPECT_EQ(3, std::move(outer).Then(Test::GetInner(s)).Run(1, 2));
+    EXPECT_EQ(s, "Outer12Inner3Outer12Inner3");
+  }
+  {
+    using NonVoidReturnWithMoveOnlyArgs =
+        int(std::unique_ptr<int>, std::unique_ptr<int>);
+    using ThenReturn = int;
+    using Test =
+        CallbackThenRepeatingTest<NonVoidReturnWithMoveOnlyArgs, ThenReturn>;
+    auto outer = Test::GetOuter(s);
+    EXPECT_EQ(3, outer.Then(Test::GetInner(s))
+                     .Run(std::make_unique<int>(1), std::make_unique<int>(2)));
+    EXPECT_EQ(s, "Outer12Inner3");
+    EXPECT_EQ(3, std::move(outer)
+                     .Then(Test::GetInner(s))
+                     .Run(std::make_unique<int>(1), std::make_unique<int>(2)));
+    EXPECT_EQ(s, "Outer12Inner3Outer12Inner3");
+  }
 }
 
 // WeakPtr detection in BindRepeating() requires a method, not just any
