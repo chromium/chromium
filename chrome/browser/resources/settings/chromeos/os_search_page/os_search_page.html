@@ -2,16 +2,15 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="os_search_selection_dialog.html">
 <link rel="import" href="../../controls/extension_controlled_indicator.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../search_engines_page/search_engines_browser_proxy.html">
@@ -32,16 +31,6 @@
         min-height: var(--settings-row-min-height);
       }
 
-      paper-tooltip {
-        --paper-tooltip-padding: 12px 10px;
-      }
-
-      iron-icon {
-        --iron-icon-fill-color: var(--cros-search-page-question-icon-color);
-        height: 16px;
-        width: 16px;
-      }
-
       cr-policy-pref-indicator {
         padding-inline-end: 8px;
       }
@@ -52,16 +41,13 @@
         <!-- Omnibox and launcher search engine. This shares the same pref with
              browser search engine because users probably don't want one engine
              in the omnibox and a different one in the launcher. -->
-        <div class="settings-box first block">
+        <div class="settings-box two-line first block">
           <div id="search-wrapper">
-            <div id="searchExplanation" class="start settings-box-text"
-                aria-hidden="true">
-              $i18n{osSearchEngineLabel}
-              <iron-icon id="help-icon" icon="cr:help-outline"></iron-icon>
-              <paper-tooltip id="tooltip" for="help-icon" position="bottom"
-                  fit-to-visible-bounds>
-                $i18n{osSearchEngineTooltip}
-              </paper-tooltip>
+            <div class="start settings-box-text" aria-hidden="true">
+              <div id="searchExplanation">$i18n{osSearchEngineLabel}</div>
+              <div class="secondary" id="currentSearchEngine">
+                [[currentSearchEngine_.name]]
+              </div>
             </div>
             <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
                 prefs.default_search_provider_data.template_url_data)]]">
@@ -69,16 +55,16 @@
                   prefs.default_search_provider_data.template_url_data]]">
               </cr-policy-pref-indicator>
             </template>
-            <select class="md-select" on-change="onChange_"
-                aria-label="$i18n{osSearchEngineLabel}
-                    $i18n{osSearchEngineTooltip}"
+            <div class="separator"></div>
+            <cr-button id="searchSelectionDialogButton"
+                aria-labelledby="searchExplanation"
+                aria-describedby="currentSearchEngine"
                 disabled$="[[isDefaultSearchEngineEnforced_(
                     prefs.default_search_provider_data.template_url_data)]]"
+                on-click="onShowSearchSelectionDialogClick_"
                 deep-link-focus-id$="[[Setting.kPreferredSearchEngine]]">
-              <template is="dom-repeat" items="[[searchEngines_]]">
-                <option selected="[[item.default]]">[[item.name]]</option>
-              </template>
-            </select>
+              $i18n{osSearchEngineButtonLabel}
+            </cr-button>
           </div>
           <template is="dom-if"
               if="[[prefs.default_search_provider_data.template_url_data.extensionId]]">
@@ -118,6 +104,13 @@
         </template>
       </template>
     </settings-animated-pages>
+
+    <!-- Default Search Engine Selection Dialog -->
+    <template is="dom-if" if="[[showSearchSelectionDialog_]]" restamp>
+      <os-settings-search-selection-dialog
+          on-close="onSearchSelectionDialogClose_">
+      </os-settings-search-selection-dialog>
+    </template>
   </template>
   <script src="os_search_page.js"></script>
 </dom-module>

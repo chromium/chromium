@@ -212,6 +212,7 @@ SearchSection::~SearchSection() {
 void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"osSearchEngineLabel", IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
+      {"osSearchEngineButtonLabel", IDS_OS_SETTINGS_SEARCH_ENGINE_BUTTON_LABEL},
       {"searchGoogleAssistant", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT},
       {"searchGoogleAssistantEnabled",
        IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ENABLED},
@@ -229,9 +230,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                                   is_assistant_allowed
                                       ? IDS_SETTINGS_SEARCH_AND_ASSISTANT
                                       : IDS_SETTINGS_SEARCH);
-  html_source->AddString(
-      "osSearchEngineTooltip",
-      ui::SubstituteChromeOSDeviceType(IDS_OS_SETTINGS_SEARCH_ENGINE_TOOLTIP));
+  html_source->AddString("osSearchEngineDescription",
+                         ui::SubstituteChromeOSDeviceType(
+                             IDS_OS_SETTINGS_SEARCH_ENGINE_DESCRIPTION));
 
   AddGoogleAssistantStrings(html_source);
 }

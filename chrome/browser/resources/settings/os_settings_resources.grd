@@ -1069,6 +1069,12 @@
       <structure name="IDR_OS_SETTINGS_SEARCH_PAGE_HTML"
                  file="chromeos/os_search_page/os_search_page.html"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_SEARCH_SELECTION_DIALOG_JS"
+                 file="chromeos/os_search_page/os_search_selection_dialog.js"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_SEARCH_SELECTION_DIALOG_HTML"
+                 file="chromeos/os_search_page/os_search_selection_dialog.html"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_SYNC_CONTROLS_JS"
                  file="people_page/sync_controls.js"
                  compress="false" type="chrome_html"

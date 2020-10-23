@@ -658,8 +658,11 @@
   <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL" desc="Label in OS settings describing search engine behavior.">
     Preferred search engine
   </message>
-  <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_TOOLTIP" desc="Tooltip in OS settings explaining that search engine is used in both the Chrome browser and the Chrome OS app launcher.">
-    Used by Chrome browser and <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> Launcher
+  <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_BUTTON_LABEL" desc="Label in OS settings for the button to configure search engine behavior.">
+    Configure
+  </message>
+  <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_DESCRIPTION" desc="Description in the search engine dialog in OS settings explaining that search engine is used in both the Chrome browser and the Chrome OS app launcher.">
+    Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> Launcher
   </message>
   <message name="IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT" desc="Label for the Google Assistant button.">
     Google Assistant
