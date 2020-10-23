@@ -456,24 +456,6 @@ void KeyframeEffect::Trace(Visitor* visitor) const {
   AnimationEffect::Trace(visitor);
 }
 
-bool KeyframeEffect::AnimationsPreserveAxisAlignment(
-    const PropertyHandle& property) const {
-  const auto* keyframes = Model()->GetPropertySpecificKeyframes(property);
-  if (!keyframes)
-    return true;
-  for (const auto& keyframe : *keyframes) {
-    const auto* value = keyframe->GetCompositorKeyframeValue();
-    if (!value)
-      continue;
-    DCHECK(value->IsTransform());
-    const auto& transform_operations =
-        To<CompositorKeyframeTransform>(value)->GetTransformOperations();
-    if (!transform_operations.PreservesAxisAlignment())
-      return false;
-  }
-  return true;
-}
-
 namespace {
 
 static const size_t num_transform_properties = 4;
@@ -487,14 +469,52 @@ const CSSProperty** TransformProperties() {
 
 }  // namespace
 
-bool KeyframeEffect::AnimationsPreserveAxisAlignment() const {
+bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
+    const FloatSize& box_size) {
   static const auto** properties = TransformProperties();
+  bool preserves_axis_alignment = true;
+  bool has_transform = false;
+  TransformOperation::BoxSizeDependency size_dependencies =
+      TransformOperation::kDependsNone;
   for (size_t i = 0; i < num_transform_properties; i++) {
-    if (!AnimationsPreserveAxisAlignment(PropertyHandle(*properties[i])))
-      return false;
+    const auto* keyframes =
+        Model()->GetPropertySpecificKeyframes(PropertyHandle(*properties[i]));
+    if (!keyframes)
+      continue;
+
+    has_transform = true;
+    for (const auto& keyframe : *keyframes) {
+      const auto* value = keyframe->GetCompositorKeyframeValue();
+      if (!value)
+        continue;
+      const auto& transform_operations =
+          To<CompositorKeyframeTransform>(value)->GetTransformOperations();
+      if (!transform_operations.PreservesAxisAlignment())
+        preserves_axis_alignment = false;
+      size_dependencies = TransformOperation::CombineDependencies(
+          size_dependencies, transform_operations.BoxSizeDependencies());
+    }
   }
 
-  return true;
+  if (!has_transform)
+    return true;
+
+  if (HasAnimation()) {
+    if (effect_target_size_) {
+      if ((size_dependencies & TransformOperation::kDependsWidth) &&
+          (effect_target_size_->Width() != box_size.Width()))
+        GetAnimation()->RestartAnimationOnCompositor();
+      else if ((size_dependencies & TransformOperation::kDependsHeight) &&
+               (effect_target_size_->Width() != box_size.Height()))
+        GetAnimation()->RestartAnimationOnCompositor();
+    } else if (size_dependencies) {
+      GetAnimation()->RestartAnimationOnCompositor();
+    }
+  }
+
+  effect_target_size_ = box_size;
+
+  return preserves_axis_alignment;
 }
 
 EffectModel::CompositeOperation KeyframeEffect::CompositeInternal() const {

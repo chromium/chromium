@@ -88,7 +88,7 @@ class CORE_EXPORT ElementAnimations final
                                std::unique_ptr<CSSBitset> base_important_set);
   void ClearBaseComputedStyle();
 
-  bool AnimationsPreserveAxisAlignment() const;
+  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const FloatSize& box_size);
 
   void Trace(Visitor*) const;
 

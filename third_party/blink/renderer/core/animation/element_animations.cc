@@ -136,15 +136,17 @@ void ElementAnimations::ClearBaseComputedStyle() {
   base_important_set_ = nullptr;
 }
 
-bool ElementAnimations::AnimationsPreserveAxisAlignment() const {
-  for (const auto& entry : animations_) {
-    const Animation& animation = *entry.key;
-    if (const auto* effect = DynamicTo<KeyframeEffect>(animation.effect())) {
-      if (!effect->AnimationsPreserveAxisAlignment())
-        return false;
+bool ElementAnimations::UpdateBoxSizeAndCheckTransformAxisAlignment(
+    const FloatSize& box_size) {
+  bool preserves_axis_alignment = true;
+  for (auto& entry : animations_) {
+    Animation& animation = *entry.key;
+    if (auto* effect = DynamicTo<KeyframeEffect>(animation.effect())) {
+      if (!effect->UpdateBoxSizeAndCheckTransformAxisAlignment(box_size))
+        preserves_axis_alignment = false;
     }
   }
-  return true;
+  return preserves_axis_alignment;
 }
 
 }  // namespace blink

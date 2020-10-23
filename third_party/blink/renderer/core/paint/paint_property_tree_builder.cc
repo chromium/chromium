@@ -844,8 +844,8 @@ static bool NeedsTransform(const LayoutObject& object,
   return false;
 }
 
-static bool ActiveTransformAnimationIsAxisAligned(
-    const LayoutObject& object,
+static bool UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
+    const LayoutBox& object,
     CompositingReasons compositing_reasons) {
   if (!(compositing_reasons & CompositingReason::kActiveTransformAnimation))
     return false;
@@ -853,9 +853,10 @@ static bool ActiveTransformAnimationIsAxisAligned(
   if (!object.GetNode() || !object.GetNode()->IsElementNode())
     return false;
   const Element* element = To<Element>(object.GetNode());
-  const auto* animations = element->GetElementAnimations();
+  auto* animations = element->GetElementAnimations();
   DCHECK(animations);
-  return animations->AnimationsPreserveAxisAlignment();
+  return animations->UpdateBoxSizeAndCheckTransformAxisAlignment(
+      FloatSize(object.Size()));
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
@@ -912,8 +913,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
         // calculate most of the compositable animation reasons up front to
         // only consider animations which are candidates for compositing.
         state.flags.animation_is_axis_aligned =
-            ActiveTransformAnimationIsAxisAligned(
-                object_, full_context_.direct_compositing_reasons);
+            UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
+                box, full_context_.direct_compositing_reasons);
       }
 
       state.direct_compositing_reasons =

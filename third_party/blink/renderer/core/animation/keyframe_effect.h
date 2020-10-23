@@ -31,11 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_KEYFRAME_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_KEYFRAME_EFFECT_H_
 
+#include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 
 namespace blink {
 
@@ -133,7 +135,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   void Trace(Visitor*) const override;
 
-  bool AnimationsPreserveAxisAlignment() const;
+  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const FloatSize& box_size);
 
   ActiveInterpolationsMap InterpolationsForCommitStyles();
 
@@ -164,8 +166,6 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   bool HasIncompatibleStyle() const;
   bool HasMultipleTransformProperties() const;
 
-  bool AnimationsPreserveAxisAlignment(const PropertyHandle&) const;
-
   Member<Element> effect_target_;
   Member<Element> target_element_;
   String target_pseudo_;
@@ -177,6 +177,8 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   Vector<int> compositor_keyframe_model_ids_;
 
   bool ignore_css_keyframes_;
+
+  base::Optional<FloatSize> effect_target_size_;
 };
 
 template <>
