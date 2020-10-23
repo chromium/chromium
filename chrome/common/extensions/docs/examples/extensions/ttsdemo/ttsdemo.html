@@ -98,8 +98,8 @@
       <textarea id="srctext" rows="6" cols="40">This is a demo of text-to-speech in Chrome.</textarea>
 
       <p>
-        <button class="large_button" onclick="speakUserText()">Speak</button>
-        <button class="large_button" onclick="stop()">Stop</button>
+        <button class="large_button" id="speakUserTextButton">Speak</button>
+        <button class="large_button" id="stopButton">Stop</button>
       </p>
 
       <div class="box" id="ttsStatusBox">
@@ -112,12 +112,12 @@
 
       <p>
 
-      <span tabindex="0" class="tabbable" onfocus='speak("Alpha");'>Alpha</span>
-      <span tabindex="0" class="tabbable" onfocus='speak("Bravo");'>Bravo</span>
-      <span tabindex="0" class="tabbable" onfocus='speak("Charlie");'>Charlie</span>
-      <span tabindex="0" class="tabbable" onfocus='speak("Delta");'>Delta</span>
-      <span tabindex="0" class="tabbable" onfocus='speak("Echo");'>Echo</span>
-      <span tabindex="0" class="tabbable" onfocus='speak("Foxtrot");'>Foxtrot</span>
+      <span tabindex="0" class="tabbable" id="speakAlpha">Alpha</span>
+      <span tabindex="0" class="tabbable" id="speakBravo">Bravo</span>
+      <span tabindex="0" class="tabbable" id="speakCharlie">Charlie</span>
+      <span tabindex="0" class="tabbable" id="speakDelta">Delta</span>
+      <span tabindex="0" class="tabbable" id="speakEcho">Echo</span>
+      <span tabindex="0" class="tabbable" id="speakFoxtrot">Foxtrot</span>
 
     </div>
   </div>

@@ -23,6 +23,25 @@ function load() {
   voices = document.getElementById('voices');
   voiceInfo = document.getElementById('voiceInfo');
 
+  document.getElementById('speakUserTextButton')
+      .addEventListener('click', speakUserText);
+  document.getElementById('stopButton')
+      .addEventListener('click', stop);
+
+  const speechOptions = [
+    { id: 'speakAlpha', text: 'Alpha' },
+    { id: 'speakBravo', text: 'Bravo' },
+    { id: 'speakCharlie', text: 'Charlie' },
+    { id: 'speakDelta', text: 'Delta' },
+    { id: 'speakEcho', text: 'Echo' },
+    { id: 'speakFoxtrot', text: 'Foxtrot' },
+  ];
+
+  for (const option of speechOptions) {
+    document.getElementById(option.id)
+        .addEventListener('focus', function(){ speak(option.text); });
+  }
+
   chrome.tts.getVoices(function(va) {
     voiceArray = va;
     for (var i = 0; i < voiceArray.length; i++) {
