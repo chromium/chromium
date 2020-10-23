@@ -47,7 +47,8 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
       button_provider->GetAnchorView(PageActionIconType::kManagePasswords);
 
   PasswordBubbleViewBase* bubble =
-      CreateBubble(web_contents, anchor_view, reason);
+      CreateBubble(web_contents, anchor_view, reason,
+                   browser_view->feature_promo_controller());
   DCHECK(bubble);
   DCHECK_EQ(bubble, g_manage_passwords_bubble_);
 
@@ -64,7 +65,8 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
 PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    DisplayReason reason) {
+    DisplayReason reason,
+    FeaturePromoControllerViews* promo_controller) {
   PasswordBubbleViewBase* view = nullptr;
   password_manager::ui::State model_state =
       PasswordsModelDelegateFromWebContents(web_contents)->GetState();
@@ -80,8 +82,8 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
              model_state == password_manager::ui::PENDING_PASSWORD_STATE) {
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnablePasswordsAccountStorage)) {
-      view = new PasswordSaveUpdateWithAccountStoreView(web_contents,
-                                                        anchor_view, reason);
+      view = new PasswordSaveUpdateWithAccountStoreView(
+          web_contents, anchor_view, reason, promo_controller);
     } else {
       view = new PasswordSaveUpdateView(web_contents, anchor_view, reason);
     }

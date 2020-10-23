@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
+#include "base/token.h"
 #include "chrome/browser/ui/in_product_help/feature_promo_controller.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
@@ -21,6 +23,7 @@ class FeaturePromoSnoozeService;
 
 namespace base {
 struct Feature;
+class Token;
 }
 
 namespace feature_engagement {
@@ -45,6 +48,18 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   // if it is infeasible to pre-register your IPH.
   bool MaybeShowPromoWithParams(const base::Feature& iph_feature,
                                 const FeaturePromoBubbleParams& params);
+
+  // Only for security or privacy critical promos. Immedialy shows a
+  // promo with |params|, cancelling any normal promo and blocking any
+  // further promos until it's done.
+  //
+  // Returns an ID that can be passed to CloseBubbleForCriticalPromo()
+  // if successful. This can fail if another critical promo is showing.
+  base::Optional<base::Token> ShowCriticalPromo(
+      const FeaturePromoBubbleParams& params);
+
+  // Ends a promo started by ShowCriticalPromo() if it's still showing.
+  void CloseBubbleForCriticalPromo(const base::Token& critical_promo_id);
 
   // FeaturePromoController:
   bool MaybeShowPromo(const base::Feature& iph_feature) override;
@@ -78,6 +93,8 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   // Called when PromoHandle is destroyed to finish the promo.
   void FinishContinuedPromo() override;
 
+  void ShowPromoBubbleImpl(const FeaturePromoBubbleParams& params);
+
   void HandleBubbleClosed();
 
   // Call these methods when the user actively snooze or dismiss the IPH.
@@ -98,6 +115,13 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   // Non-null as long as a promo is showing. Corresponds to an IPH
   // feature registered with |tracker_|.
   const base::Feature* current_iph_feature_ = nullptr;
+
+  // Has a value if a critical promo is showing. If this has a value,
+  // |current_iph_feature_| will usually be null. There is one edge case
+  // where this may not be true: when a critical promo is requested
+  // between a normal promo's CloseBubbleAndContinuePromo() call and its
+  // end.
+  base::Optional<base::Token> current_critical_promo_;
 
   // The bubble currently showing, if any.
   FeaturePromoBubbleView* promo_bubble_ = nullptr;

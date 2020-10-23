@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
-#include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_view.h"
+#include "chrome/browser/ui/views/in_product_help/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -350,7 +350,8 @@ class PasswordSaveUpdateWithAccountStoreView::AutoResizingLayout
 PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    DisplayReason reason)
+    DisplayReason reason,
+    FeaturePromoControllerViews* promo_controller)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*auto_dismissable=*/false),
@@ -362,7 +363,8 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
       is_update_bubble_(controller_.state() ==
                         password_manager::ui::PENDING_PASSWORD_UPDATE_STATE),
       are_passwords_revealed_(
-          controller_.are_passwords_revealed_when_bubble_is_opened()) {
+          controller_.are_passwords_revealed_when_bubble_is_opened()),
+      promo_controller_(promo_controller) {
   // If kEnablePasswordsAccountStorage is disabled, then PasswordSaveUpdateView
   // should be used instead of this class.
   DCHECK(base::FeatureList::IsEnabled(
@@ -527,37 +529,18 @@ void PasswordSaveUpdateWithAccountStoreView::DestinationChanged() {
   controller_.OnToggleAccountStore(is_account_store_selected);
   // Saving in account and local stores have different header images.
   UpdateHeaderImage();
-  // If the user explicitly switched to "save on this device only", record this
-  // with the IPH tracker (so it can decide not to show the IPH again).
-  if (!is_account_store_selected) {
-    if (!iph_tracker_) {
-      iph_tracker_ = feature_engagement::TrackerFactory::GetForBrowserContext(
-          controller_.GetProfile());
-    }
-    iph_tracker_->NotifyEvent("passwords_account_storage_unselected");
+  // If the user explicitly switched to "save on this device only",
+  // record this with the IPH tracker (so it can decide not to show the
+  // IPH again). It may be null in tests, so handle that case.
+  if (!is_account_store_selected && promo_controller_) {
+    promo_controller_->feature_engagement_tracker()->NotifyEvent(
+        "passwords_account_storage_unselected");
   }
   // The IPH shown upon failure in reauth is used to informs the user that the
   // password will be stored on device. This is why it's important to close it
   // if the user changes the destination to account.
-  if (currenly_shown_iph_type_ == IPHType::kFailedReauth)
+  if (failed_reauth_promo_id_)
     CloseIPHBubbleIfOpen();
-}
-
-void PasswordSaveUpdateWithAccountStoreView::OnWidgetDestroying(
-    views::Widget* widget) {
-  // IPH bubble is getting closed.
-  if (account_storage_promo_ && account_storage_promo_->GetWidget() == widget) {
-    observed_account_storage_promo_.Remove(widget);
-    // If the reauth failed, we have shown the IPH unconditionally. No need to
-    // inform the tracker. Only regular IPH's are tracked
-    if (currenly_shown_iph_type_ == IPHType::kRegular) {
-      DCHECK(iph_tracker_);
-      iph_tracker_->Dismissed(
-          feature_engagement::kIPHPasswordsAccountStorageFeature);
-    }
-    currenly_shown_iph_type_ = IPHType::kNone;
-    account_storage_promo_ = nullptr;
-  }
 }
 
 views::View* PasswordSaveUpdateWithAccountStoreView::GetInitiallyFocusedView() {
@@ -588,9 +571,9 @@ void PasswordSaveUpdateWithAccountStoreView::AddedToWidget() {
       ->SetAllowCharacterBreak(true);
 
   if (ShouldShowFailedReauthIPH())
-    ShowIPH(IPHType::kFailedReauth);
-  else if (ShouldShowRegularIPH())
-    ShowIPH(IPHType::kRegular);
+    MaybeShowIPH(IPHType::kFailedReauth);
+  else
+    MaybeShowIPH(IPHType::kRegular);
 }
 
 void PasswordSaveUpdateWithAccountStoreView::OnThemeChanged() {
@@ -615,8 +598,8 @@ void PasswordSaveUpdateWithAccountStoreView::OnThemeChanged() {
 void PasswordSaveUpdateWithAccountStoreView::OnLayoutIsAnimatingChanged(
     views::AnimatingLayoutManager* source,
     bool is_animating) {
-  if (!is_animating && ShouldShowRegularIPH())
-    ShowIPH(IPHType::kRegular);
+  if (!is_animating)
+    MaybeShowIPH(IPHType::kRegular);
 }
 
 void PasswordSaveUpdateWithAccountStoreView::TogglePasswordVisibility() {
@@ -703,27 +686,7 @@ void PasswordSaveUpdateWithAccountStoreView::UpdateHeaderImage() {
   GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(id));
 }
 
-bool PasswordSaveUpdateWithAccountStoreView::ShouldShowRegularIPH() {
-  // IPH is shown only where the destination dropdown is shown (i.e. only for
-  // Save bubble).
-  if (!destination_dropdown_ || controller_.IsCurrentStateUpdate())
-    return false;
-
-  if (!iph_tracker_) {
-    iph_tracker_ = feature_engagement::TrackerFactory::GetForBrowserContext(
-        controller_.GetProfile());
-  }
-
-  return iph_tracker_->ShouldTriggerHelpUI(
-      feature_engagement::kIPHPasswordsAccountStorageFeature);
-}
-
 bool PasswordSaveUpdateWithAccountStoreView::ShouldShowFailedReauthIPH() {
-  // IPH is shown only where the destination dropdown is shown (i.e. only for
-  // Save bubble).
-  if (!destination_dropdown_ || controller_.IsCurrentStateUpdate())
-    return false;
-
   // If the reauth failed, we should have automatically switched to local mdoe,
   // and we should show the reauth failed IPH unconditionally as long as the
   // user didn't change the save location.
@@ -731,21 +694,17 @@ bool PasswordSaveUpdateWithAccountStoreView::ShouldShowFailedReauthIPH() {
          !controller_.IsUsingAccountStore();
 }
 
-void PasswordSaveUpdateWithAccountStoreView::ShowIPH(IPHType type) {
+void PasswordSaveUpdateWithAccountStoreView::MaybeShowIPH(IPHType type) {
   DCHECK_NE(IPHType::kNone, type);
-  DCHECK(destination_dropdown_);
-  DCHECK(destination_dropdown_->GetVisible());
 
-  base::Optional<int> title_string_specificer;
-  if (type == IPHType::kRegular) {
-    // IPH when reauth fails has no title.
-    title_string_specificer = IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT;
-  }
+  // IPH is shown only where the destination dropdown is shown (i.e. only for
+  // Save bubble).
+  if (!destination_dropdown_ || controller_.IsCurrentStateUpdate())
+    return;
 
-  int body_string_specificer =
-      type == IPHType::kRegular
-          ? IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT
-          : IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL;
+  // The promo controller may not exist in tests.
+  if (!promo_controller_)
+    return;
 
   // Make sure the Save/Update bubble doesn't get closed when the IPH bubble is
   // opened.
@@ -753,8 +712,6 @@ void PasswordSaveUpdateWithAccountStoreView::ShowIPH(IPHType type) {
   set_close_on_deactivate(false);
 
   FeaturePromoBubbleParams bubble_params;
-  bubble_params.body_string_specifier = body_string_specificer;
-  bubble_params.title_string_specifier = title_string_specificer;
   bubble_params.anchor_view = destination_dropdown_;
   bubble_params.arrow = views::BubbleBorder::RIGHT_CENTER;
   bubble_params.preferred_width = kAccountStoragePromoWidth;
@@ -763,18 +720,48 @@ void PasswordSaveUpdateWithAccountStoreView::ShowIPH(IPHType type) {
   bubble_params.timeout_default = GetRegularIPHTimeout();
   bubble_params.timeout_short = GetShortIPHTimeout();
 
-  account_storage_promo_ =
-      FeaturePromoBubbleView::Create(std::move(bubble_params));
-  set_close_on_deactivate(close_save_bubble_on_deactivate_original_value);
-  observed_account_storage_promo_.Add(account_storage_promo_->GetWidget());
+  if (type == IPHType::kRegular) {
+    bubble_params.body_string_specifier =
+        IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT;
+    bubble_params.title_string_specifier =
+        IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT;
 
-  currenly_shown_iph_type_ = type;
+    if (promo_controller_->MaybeShowPromoWithParams(
+            feature_engagement::kIPHPasswordsAccountStorageFeature,
+            bubble_params)) {
+      // If the regular promo was shown, the failed reauth promo is
+      // definitely finished. If not, we can't be confident it hasn't
+      // finished.
+      failed_reauth_promo_id_ = base::nullopt;
+    }
+  } else {
+    bubble_params.body_string_specifier =
+        IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL;
+
+    failed_reauth_promo_id_ =
+        promo_controller_->ShowCriticalPromo(bubble_params);
+  }
+
+  set_close_on_deactivate(close_save_bubble_on_deactivate_original_value);
 }
 
 void PasswordSaveUpdateWithAccountStoreView::CloseIPHBubbleIfOpen() {
-  if (!account_storage_promo_)
+  // The promo controller may not exist in tests.
+  if (!promo_controller_)
     return;
-  account_storage_promo_->CloseBubble();
+
+  if (!failed_reauth_promo_id_) {
+    promo_controller_->CloseBubble(
+        feature_engagement::kIPHPasswordsAccountStorageFeature);
+    return;
+  }
+
+  // |failed_reauth_promo_id_| may have a value if it closed on its
+  // own. This is fine; CloseBubbleForCriticalPromo() handles expired
+  // IDs, and we reset ours when showing a normal IPH bubble.
+  promo_controller_->CloseBubbleForCriticalPromo(
+      failed_reauth_promo_id_.value());
+  failed_reauth_promo_id_ = base::nullopt;
 }
 
 void PasswordSaveUpdateWithAccountStoreView::AnnounceSaveUpdateChange() {

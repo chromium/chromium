@@ -267,8 +267,7 @@ TEST_F(FeaturePromoControllerViewsTest, GetsParamsFromRegistry) {
 
 TEST_F(FeaturePromoControllerViewsTest, TestCanBlockPromos) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
-      .Times(0)
-      .WillOnce(Return(true));
+      .Times(0);
 
   controller_->BlockPromosForTesting();
   EXPECT_FALSE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
@@ -288,4 +287,87 @@ TEST_F(FeaturePromoControllerViewsTest, TestCanStopCurrentPromo) {
   controller_->BlockPromosForTesting();
   EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_FALSE(controller_->promo_bubble_for_testing());
+}
+
+TEST_F(FeaturePromoControllerViewsTest, CriticalPromoBlocksNormalPromo) {
+  EXPECT_TRUE(controller_->ShowCriticalPromo(DefaultBubbleParams()));
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
+
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(0);
+  EXPECT_FALSE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
+                                                     DefaultBubbleParams()));
+
+  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
+}
+
+TEST_F(FeaturePromoControllerViewsTest, CriticalPromoPreemptsNormalPromo) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
+                                                    DefaultBubbleParams()));
+  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
+
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  EXPECT_TRUE(controller_->ShowCriticalPromo(DefaultBubbleParams()));
+  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
+}
+
+TEST_F(FeaturePromoControllerViewsTest, FirstCriticalPromoHasPrecedence) {
+  EXPECT_TRUE(controller_->ShowCriticalPromo(DefaultBubbleParams()));
+
+  const auto* first_bubble = controller_->promo_bubble_for_testing();
+  EXPECT_TRUE(first_bubble);
+
+  EXPECT_FALSE(controller_->ShowCriticalPromo(DefaultBubbleParams()));
+  EXPECT_EQ(controller_->promo_bubble_for_testing(), first_bubble);
+}
+
+TEST_F(FeaturePromoControllerViewsTest, CloseBubbleForCriticalPromo) {
+  base::Optional<base::Token> maybe_id =
+      controller_->ShowCriticalPromo(DefaultBubbleParams());
+  ASSERT_TRUE(maybe_id);
+  base::Token id = maybe_id.value();
+
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
+  controller_->CloseBubbleForCriticalPromo(id);
+  EXPECT_FALSE(controller_->promo_bubble_for_testing());
+}
+
+TEST_F(FeaturePromoControllerViewsTest,
+       CloseBubbleForCriticalPromoDoesNothingAfterClose) {
+  base::Optional<base::Token> maybe_id =
+      controller_->ShowCriticalPromo(DefaultBubbleParams());
+  ASSERT_TRUE(maybe_id);
+  base::Token id = maybe_id.value();
+
+  auto* bubble = controller_->promo_bubble_for_testing();
+  ASSERT_TRUE(bubble);
+  bubble->GetWidget()->Close();
+  EXPECT_FALSE(controller_->promo_bubble_for_testing());
+
+  EXPECT_TRUE(controller_->ShowCriticalPromo(DefaultBubbleParams()));
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
+
+  // Since |id| has expired, this should do nothing.
+  controller_->CloseBubbleForCriticalPromo(id);
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
+}
+
+TEST_F(FeaturePromoControllerViewsTest, ShowNewCriticalPromoAfterClose) {
+  base::Optional<base::Token> maybe_id =
+      controller_->ShowCriticalPromo(DefaultBubbleParams());
+  ASSERT_TRUE(maybe_id);
+  base::Token id = maybe_id.value();
+
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
+  controller_->CloseBubbleForCriticalPromo(id);
+  EXPECT_FALSE(controller_->promo_bubble_for_testing());
+
+  EXPECT_TRUE(controller_->ShowCriticalPromo(DefaultBubbleParams()));
+  EXPECT_TRUE(controller_->promo_bubble_for_testing());
 }

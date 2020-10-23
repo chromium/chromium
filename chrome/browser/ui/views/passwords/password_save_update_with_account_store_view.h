@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_WITH_ACCOUNT_STORE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_WITH_ACCOUNT_STORE_VIEW_H_
 
+#include "base/optional.h"
+#include "base/token.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_with_account_store_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -17,11 +19,7 @@ class EditableCombobox;
 class ToggleImageButton;
 }  // namespace views
 
-namespace feature_engagement {
-class Tracker;
-}
-
-class FeaturePromoBubbleView;
+class FeaturePromoControllerViews;
 
 // A view offering the user the ability to save or update credentials (depending
 // on |is_update_bubble|) either in the profile and/or account stores. Contains
@@ -33,9 +31,11 @@ class PasswordSaveUpdateWithAccountStoreView
       public views::WidgetObserver,
       public views::AnimatingLayoutManager::Observer {
  public:
-  PasswordSaveUpdateWithAccountStoreView(content::WebContents* web_contents,
-                                         views::View* anchor_view,
-                                         DisplayReason reason);
+  PasswordSaveUpdateWithAccountStoreView(
+      content::WebContents* web_contents,
+      views::View* anchor_view,
+      DisplayReason reason,
+      FeaturePromoControllerViews* promo_controller);
 
   views::Combobox* DestinationDropdownForTesting() {
     return destination_dropdown_;
@@ -58,9 +58,6 @@ class PasswordSaveUpdateWithAccountStoreView
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
   // PasswordBubbleViewBase:
   views::View* GetInitiallyFocusedView() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
@@ -81,19 +78,13 @@ class PasswordSaveUpdateWithAccountStoreView
 
   void DestinationChanged();
 
-  // Whether we should show the IPH informing the user about the destination
-  // picker and that they can now select where to store the passwords. It
-  // creates (if needed) and queries the |iph_tracker_|
-  bool ShouldShowRegularIPH();
-
   // Whether we should shown an IPH upon account reauth failure that informs the
   // user that the destination has been automatically switched to device.
   bool ShouldShowFailedReauthIPH();
 
-  // Opens an IPH bubble of |type|. Callers should make sure the
-  // pre-conditions are satisfied by calling the corresponding ShouldShow*IPH()
-  // methods before invoking this method.
-  void ShowIPH(IPHType type);
+  // Tries to show an IPH bubble of |type|. For kFailedReauth,
+  // ShouldShowFailedReauthIPH() should be checked first.
+  void MaybeShowIPH(IPHType type);
 
   void CloseIPHBubbleIfOpen();
 
@@ -119,18 +110,12 @@ class PasswordSaveUpdateWithAccountStoreView
   views::EditableCombobox* password_dropdown_ = nullptr;
   bool are_passwords_revealed_;
 
-  feature_engagement::Tracker* iph_tracker_ = nullptr;
+  // Used to display IPH. May be null in tests.
+  FeaturePromoControllerViews* const promo_controller_;
 
-  // Promotional UI that appears next to the |destination_dropdown_|. Owned by
-  // its NativeWidget.
-  FeaturePromoBubbleView* account_storage_promo_ = nullptr;
-
-  IPHType currenly_shown_iph_type_ = IPHType::kNone;
-
-  // Observes the |account_storage_promo_|'s Widget.  Used to tell whether the
-  // promo is open and get called back when it closes.
-  ScopedObserver<views::Widget, views::WidgetObserver>
-      observed_account_storage_promo_{this};
+  // When showing kReauthFailure IPH, |promo_controller_| gives back an
+  // ID. This is used to close the bubble later.
+  base::Optional<base::Token> failed_reauth_promo_id_;
 
   // Hidden view that will contain status text for immediate output by
   // screen readers when the bubble changes state between Save and Update.
