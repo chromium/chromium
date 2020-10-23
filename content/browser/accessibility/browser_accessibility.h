@@ -533,9 +533,23 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   base::Optional<int> GetPosInSet() const override;
   base::Optional<int> GetSetSize() const override;
 
+  // Returns true if this node is a list marker or if it's a descendant
+  // of a list marker node. Returns false otherwise.
   bool IsInListMarker() const;
+
+  // Returns true if this node is a collapsed popup button that is parent to a
+  // menu list popup.
   bool IsCollapsedMenuListPopUpButton() const;
+
+  // Returns the popup button ancestor of this current node if any. The popup
+  // button needs to be the parent of a menu list popup and needs to be
+  // collapsed.
   BrowserAccessibility* GetCollapsedMenuListPopUpButtonAncestor() const;
+
+  // If this node is within an editable region, returns the node that is at the
+  // root of that editable region, otherwise returns nullptr. In accessibility,
+  // an editable region is synonymous to a text field.
+  BrowserAccessibility* GetTextFieldAncestor() const;
 
   // Returns true if:
   // 1. This node is a list, AND

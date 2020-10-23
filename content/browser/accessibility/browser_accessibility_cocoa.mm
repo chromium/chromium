@@ -1309,18 +1309,11 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 - (id)editableAncestor {
   if (![self instanceActive])
     return nil;
-
-  BrowserAccessibilityCocoa* editableRoot = self;
-  while (![editableRoot owner]->GetBoolAttribute(
-      ax::mojom::BoolAttribute::kEditableRoot)) {
-    BrowserAccessibilityCocoa* parent = [editableRoot parent];
-    if (!parent || ![parent isKindOfClass:[self class]] ||
-        ![parent instanceActive]) {
-      return nil;
-    }
-    editableRoot = parent;
-  }
-  return editableRoot;
+  const BrowserAccessibility* text_field_ancestor =
+      _owner->GetTextFieldAncestor();
+  if (text_field_ancestor)
+    return ToBrowserAccessibilityCocoa(text_field_ancestor);
+  return nil;
 }
 
 - (NSNumber*)elementBusy {

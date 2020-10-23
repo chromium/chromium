@@ -457,7 +457,9 @@ class AX_EXPORT AXNode final {
   // collapsed.
   AXNode* GetCollapsedMenuListPopUpButtonAncestor() const;
 
-  // Returns the text field ancestor of this current node if any.
+  // If this node is within an editable region, returns the node that is at the
+  // root of that editable region, otherwise returns nullptr. In accessibility,
+  // an editable region is synonymous to a text field.
   AXNode* GetTextFieldAncestor() const;
 
   // Returns true if the ancestor of the current node is a plain text field.

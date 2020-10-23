@@ -1298,15 +1298,12 @@ bool AXNode::IsEmbeddedGroup() const {
 }
 
 AXNode* AXNode::GetTextFieldAncestor() const {
-  AXNode* parent = GetUnignoredParent();
-
-  while (parent && parent->data().HasState(ax::mojom::State::kEditable)) {
-    if (parent->data().IsTextField())
-      return parent;
-
-    parent = parent->GetUnignoredParent();
+  for (AXNode* ancestor = const_cast<AXNode*>(this);
+       ancestor && ancestor->data().HasState(ax::mojom::State::kEditable);
+       ancestor = ancestor->GetUnignoredParent()) {
+    if (ancestor->data().IsTextField())
+      return ancestor;
   }
-
   return nullptr;
 }
 
