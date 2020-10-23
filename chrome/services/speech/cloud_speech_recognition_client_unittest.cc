@@ -137,9 +137,9 @@ CloudSpeechRecognitionClientUnitTest::CloudSpeechRecognitionClientUnitTest() =
 
 void CloudSpeechRecognitionClientUnitTest::SetUp() {
   client_under_test_ = std::make_unique<CloudSpeechRecognitionClient>(
-      media::BindToCurrentLoop(
-          base::Bind(&CloudSpeechRecognitionClientUnitTest::OnRecognitionEvent,
-                     base::Unretained(this))),
+      media::BindToCurrentLoop(base::BindRepeating(
+          &CloudSpeechRecognitionClientUnitTest::OnRecognitionEvent,
+          base::Unretained(this))),
       nullptr);
 
   speech_recognition_service_impl_ =
