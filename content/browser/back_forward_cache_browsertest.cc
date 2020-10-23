@@ -4691,12 +4691,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestSkipSameSiteUnload,
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestSkipSameSiteUnload,
     SameSiteNavigationFromPageWithUnloadInCrossSiteSubframe) {
-  if (AreAllSitesIsolatedForTesting()) {
-    // Currently this test will crash because of a bug that happens when we
-    // bfcache pages with subframes that have unload handlers.
-    // TODO(crbug.com/1109742): Enable this test once the bug is fixed.
-    return;
-  }
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
@@ -4786,6 +4780,42 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // The page is still eligible for back forward cache during commit, so
   // we should note it as such in the metrics.
   ExpectUniqueSample(kEligibilityDuringCommitHistogramName, true, 1);
+}
+
+// Sub-frame doesn't transition from LifecycleState::kInBackForwardCache to
+// LifecycleState::kRunningUnloadHandlers even when the sub-frame having unload
+// handlers is being evicted from BackForwardCache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithUnloadHandler) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a.com(a.com)"));
+  GURL child_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a.com()");
+  GURL url_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // 1) Navigate to |main_url|.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImpl* main_rfh = current_frame_host();
+  ASSERT_EQ(1U, main_rfh->child_count());
+  RenderFrameHostImpl* child_rfh = main_rfh->child_at(0)->current_frame_host();
+  RenderFrameDeletedObserver main_rfh_observer(main_rfh),
+      child_rfh_observer(child_rfh);
+
+  // 2) Add an unload handler to the child RFH.
+  EXPECT_TRUE(ExecJs(child_rfh, "window.onunload = () => {} "));
+
+  // 3) Navigate to |url_2|.
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+
+  // 4) The previous main RFH and child RFH should be in the back-forward
+  // cache.
+  EXPECT_FALSE(main_rfh_observer.deleted());
+  EXPECT_FALSE(child_rfh_observer.deleted());
+  EXPECT_TRUE(main_rfh->IsInBackForwardCache());
+  EXPECT_TRUE(child_rfh->IsInBackForwardCache());
+
+  // Destruction of bfcached page happens after shutdown and it should not
+  // trigger unload handlers and be destroyed directly.
 }
 
 class GeolocationBackForwardCacheBrowserTest

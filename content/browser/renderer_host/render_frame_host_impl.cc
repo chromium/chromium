@@ -2287,16 +2287,26 @@ void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
   if (IsPendingDeletion())
     return;
 
+  // In case of BackForwardCache, page is evicted directly from the cache and
+  // deleted immediately, without waiting for unload handlers.
+  bool wait_for_unload_handlers =
+      has_unload_handlers() && !IsInBackForwardCache();
+
   if (render_frame_created_) {
     Send(new UnfreezableFrameMsg_Delete(routing_id_, intent));
 
     if (!frame_tree_node_->IsMainFrame() && IsCurrent()) {
       DCHECK_NE(lifecycle_state(), LifecycleState::kSpeculative);
-      // If this subframe has unload handlers (and isn't speculative), ensure
-      // that they have a chance to execute by delaying process cleanup. This
-      // will prevent the process from shutting down immediately in the case
-      // where this is the last active frame in the process.
-      // See https://crbug.com/852204.
+      // Documents from the page in the BackForwardCache don't run their unload
+      // handlers, even if they have one. As a result, this should never delay
+      // process shutdown.
+      DCHECK_NE(lifecycle_state(), LifecycleState::kInBackForwardCache);
+
+      // If this document has unload handlers (and isn't speculative or in the
+      // back-forward cache), ensure that they have a chance to execute by
+      // delaying process cleanup. This will prevent the process from shutting
+      // down immediately in the case where this is the last active frame in the
+      // process. See https://crbug.com/852204.
       if (has_unload_handlers()) {
         RenderProcessHostImpl* process =
             static_cast<RenderProcessHostImpl*>(GetProcess());
@@ -2310,7 +2320,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
     }
   }
 
-  LifecycleState lifecycle_state = has_unload_handlers()
+  LifecycleState lifecycle_state = wait_for_unload_handlers
                                        ? LifecycleState::kRunningUnloadHandlers
                                        : LifecycleState::kReadyToBeDeleted;
   SetLifecycleState(lifecycle_state);
@@ -5884,10 +5894,13 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
 
       local_ancestor->DeleteRenderFrame(FrameDeleteIntention::kNotMainFrame);
       if (local_ancestor != child) {
+        // In case of BackForwardCache, page is evicted directly from the cache
+        // and deleted immediately, without waiting for unload handlers.
+        bool wait_for_unload_handlers =
+            child->has_unload_handlers() && !child->IsInBackForwardCache();
         LifecycleState child_lifecycle_state =
-            child->has_unload_handlers()
-                ? LifecycleState::kRunningUnloadHandlers
-                : LifecycleState::kReadyToBeDeleted;
+            wait_for_unload_handlers ? LifecycleState::kRunningUnloadHandlers
+                                     : LifecycleState::kReadyToBeDeleted;
         child->SetLifecycleState(child_lifecycle_state);
       }
 
