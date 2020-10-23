@@ -57,6 +57,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -1931,27 +1932,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerWithURL) {
   EXPECT_EQ(url, tab_strip->GetWebContentsAt(0)->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerWithGuest) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitch(switches::kGuest);
-
-  // The guest profile needs to get created before it gets opened.
-  Profile* guest_profile = nullptr;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    guest_profile =
-        profile_manager->GetProfile(profile_manager->GetGuestProfilePath());
-  }
-
-  StartWithTwoProfiles(command_line);
-  // Skips the picker and creates a new browser window for the guest profile (by
-  // definition, it opens the OTR profile).
-  Browser* new_browser =
-      chrome::FindBrowserWithProfile(guest_profile->GetPrimaryOTRProfile());
-  EXPECT_TRUE(new_browser);
-}
-
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest,
                        SkipsPickerWithIncognito) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -1998,4 +1978,44 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerWithAppId) {
   Browser* new_browser = FindOneOtherBrowser(browser());
   EXPECT_TRUE(new_browser);
 }
+
+class GuestStartupBrowserCreatorPickerTest
+    : public StartupBrowserCreatorPickerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  GuestStartupBrowserCreatorPickerTest() {
+    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+        scoped_feature_list_, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GuestStartupBrowserCreatorPickerTest,
+                       SkipsPickerWithGuest) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kGuest);
+
+  // The guest profile needs to get created before it gets opened.
+  Profile* guest_profile = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    guest_profile =
+        profile_manager->GetProfile(profile_manager->GetGuestProfilePath());
+  }
+
+  StartWithTwoProfiles(command_line);
+  // Skips the picker and creates a new browser window for the guest profile (by
+  // definition, it opens the OTR profile).
+  if (!Profile::IsEphemeralGuestProfileEnabled())
+    guest_profile = guest_profile->GetPrimaryOTRProfile();
+  Browser* new_browser = chrome::FindBrowserWithProfile(guest_profile);
+  EXPECT_TRUE(new_browser);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GuestStartupBrowserCreatorPickerTest,
+                         /*ephemeral_guest_profile_enabled=*/testing::Bool());
 #endif  // !defined(OS_CHROMEOS)
