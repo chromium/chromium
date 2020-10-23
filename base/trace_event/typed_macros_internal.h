@@ -91,7 +91,7 @@ CreateTrackEvent(char phase,
                  const char* name,
                  unsigned int flags,
                  base::TimeTicks timestamp,
-                 bool explicit_track);
+                 uint64_t track_uuid);
 
 base::trace_event::TracePacketHandle BASE_EXPORT CreateTracePacket();
 
@@ -121,9 +121,8 @@ inline void AddTraceEvent(char phase,
                           TrackEventArgumentFunction argument_func) {
   bool emit_track_descriptor = false;
   {
-    base::trace_event::TrackEventHandle track_event =
-        CreateTrackEvent(phase, category_group_enabled, name, flags, timestamp,
-                         track.uuid != perfetto::Track().uuid);
+    base::trace_event::TrackEventHandle track_event = CreateTrackEvent(
+        phase, category_group_enabled, name, flags, timestamp, track.uuid);
     if (!track_event)
       return;
 
