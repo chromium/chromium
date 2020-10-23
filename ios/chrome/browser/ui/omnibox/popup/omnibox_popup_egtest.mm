@@ -411,7 +411,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [[EarlGrey selectElementWithMatcher:row]
       assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
   // Scroll the popup.
@@ -426,10 +426,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // The keyboard should only be dismissed on phones. Ipads, even in
   // multitasking, are considered tall enough to fit all suggestions.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+    GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                    @"Keyboard Should be Shown");
   } else {
-    GREYAssertFalse([ChromeEarlGrey isKeyboardShownWithError:nil],
+    GREYAssertFalse([EarlGrey isKeyboardShownWithError:nil],
                     @"Keyboard Should not be Shown");
   }
 }

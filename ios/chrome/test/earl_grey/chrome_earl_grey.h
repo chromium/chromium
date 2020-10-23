@@ -51,11 +51,6 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 - (void)rotateDeviceToOrientation:(UIDeviceOrientation)deviceOrientation
                             error:(NSError**)error;
 
-// Returns |YES| if the keyboard is on screen. |error| is only supported if the
-// test is running in EG2.
-// TODO(crbug.com/1017281): Remove along EG1 support.
-- (BOOL)isKeyboardShownWithError:(NSError**)error;
-
 // Returns YES if running on an iPad.
 - (BOOL)isIPadIdiom;
 

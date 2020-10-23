@@ -266,7 +266,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       performAction:grey_tap()];
 
   // Verify keyboard is shown without the password controller.
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
@@ -294,7 +294,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   // Tap the password search.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordSearchBarMatcher()]
       performAction:grey_tap()];
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
   // Select a username.
@@ -505,7 +505,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       performAction:TapWebElementWithIdInFrame(kFormElementUsername, 0)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
   // Tap on the passwords icon.
@@ -541,7 +541,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
   // Tap on the passwords icon.
@@ -570,7 +570,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Wait for the keyboard to appear.
-  GREYAssertTrue([ChromeEarlGrey isKeyboardShownWithError:nil],
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
                  @"Keyboard Should be Shown");
 
   // Assert the password icon is not enabled and not visible.

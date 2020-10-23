@@ -84,10 +84,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   [EarlGrey rotateDeviceToOrientation:deviceOrientation error:error];
 }
 
-- (BOOL)isKeyboardShownWithError:(NSError**)error {
-  return [EarlGrey isKeyboardShownWithError:error];
-}
-
 - (BOOL)isIPadIdiom {
   UIUserInterfaceIdiom idiom =
       [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] userInterfaceIdiom];
