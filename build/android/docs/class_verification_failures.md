@@ -146,6 +146,46 @@ public class ApiHelperForOMR1 {
 * Don't put any `SDK_INT` checks inside this class, because it must only be
   called on >= OMR1.
 
+### Out-of-lining if your method has a new type in its signature
+
+Sometimes you'll run into a situation where a class **needs** to have a method
+which either accepts a parameter which is a new type or returns a new type
+(e.g., externally-facing code, such as WebView's glue layer). Even though it's
+impossible to write such a class without referring to the new type, it's still
+possible to avoid failing class verification. ART has a useful optimization: if
+your class only moves a value between registers (i.e., it doesn't call any
+methods or fields on the value), then ART will not check for the existence of
+that value's type. This means you can write your class like so:
+
+```java
+public class FooBar {
+    // FooBar needs to have the getNewTypeInAndroidP method, but it would be
+    // expensive to fail verification. This method will only be called on >= P
+    // but other methods on the class will be used on lower OS versions (and
+    // also can't be factored into another class).
+    public NewTypeInAndroidP getNewTypeInAndroidP() {
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+        // Stores a NewTypeInAndroidP in the return register, but doesn't do
+        // anything else with it
+        return ApiHelperForP.getNewTypeInAndroidP();
+    }
+
+    // ...
+}
+
+@VerifiesOnP
+@TargetApi(Build.VERSION_CODES.P)
+public class ApiHelperForP {
+    public static NewTypeInAndroidP getNewTypeInAndroidP() {
+        return new NewTypeInAndroidP();
+    }
+
+    // ...
+}
+```
+
+**Note:** this only works in ART (L+), not Dalvik (KitKat and earlier).
+
 ## Investigating class verification failures
 
 Class verification is generally surprising and nonintuitive. Fortunately, the
