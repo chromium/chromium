@@ -22,12 +22,12 @@ gn gen out/caspian --args='is_official_build=true treat_warnings_as_errors=false
 
 Then run locally via:
 ```sh
-tools/binary_size/supersize start_server out.size
+tools/binary_size/libsupersize/upload_html_viewer.py --local
 ```
 
 or upload to hosted site via:
 ```sh
-tools/binary_size/libsupersize/upload_html_viewer.py
+tools/binary_size/libsupersize/upload_html_viewer.py [--prod | --staging]
 ```
 
 To re-create .patch file:

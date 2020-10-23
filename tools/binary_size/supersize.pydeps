@@ -61,6 +61,5 @@ libsupersize/nm.py
 libsupersize/obj_analyzer.py
 libsupersize/parallel.py
 libsupersize/path_util.py
-libsupersize/start_server.py
 libsupersize/string_extract.py
 libsupersize/zip_util.py

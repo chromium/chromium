@@ -287,7 +287,7 @@ def Run(args, on_config_error):
   logging.warning('Done!')
   msg = [
       'View using a local server via: ',
-      '    {0} start_server {1}',
+      '    {0}/upload_html_viwer.py --local',
       'or run:',
       '    gsutil.py cp -a public-read {1} gs://chrome-supersize/oneoffs/'
       '{2}.ndjson',
@@ -296,8 +296,7 @@ def Run(args, on_config_error):
       '?load_url=oneoffs/{2}.ndjson',
   ]
   supersize_path = os.path.relpath(
-      os.path.join(path_util.TOOLS_SRC_ROOT, 'tools', 'binary_size',
-                   'supersize'))
+      os.path.join(path_util.TOOLS_SRC_ROOT, 'tools', 'binary_size'))
   # Use a random UUID as the filename so user can copy-and-paste command
   # directly without a name collision.
   upload_id = uuid.uuid4()
