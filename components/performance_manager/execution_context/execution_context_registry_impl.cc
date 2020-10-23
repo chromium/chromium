@@ -52,6 +52,12 @@ class DummyExecutionContextForLookup : public ExecutionContext {
     return nullptr;
   }
 
+  const PriorityAndReason& GetPriorityAndReason() const override {
+    NOTREACHED();
+    static const PriorityAndReason kPriorityAndReason;
+    return kPriorityAndReason;
+  }
+
   const FrameNode* GetFrameNode() const override {
     NOTREACHED();
     return nullptr;
@@ -149,6 +155,21 @@ ExecutionContextRegistryImpl::GetExecutionContextForWorkerNode(
   return GetOrCreateExecutionContextForWorkerNode(worker_node);
 }
 
+void ExecutionContextRegistryImpl::OnPassedToGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(graph->IsEmpty());
+  graph->RegisterObject(this);
+  graph->AddFrameNodeObserver(this);
+  graph->AddWorkerNodeObserver(this);
+}
+
+void ExecutionContextRegistryImpl::OnTakenFromGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  graph->RemoveWorkerNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
+  graph->UnregisterObject(this);
+}
+
 void ExecutionContextRegistryImpl::OnFrameNodeAdded(
     const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -171,19 +192,14 @@ void ExecutionContextRegistryImpl::OnBeforeFrameNodeRemoved(
   DCHECK_EQ(1u, erased);
 }
 
-void ExecutionContextRegistryImpl::OnPassedToGraph(Graph* graph) {
+void ExecutionContextRegistryImpl::OnPriorityAndReasonChanged(
+    const FrameNode* frame_node,
+    const PriorityAndReason& previous_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(graph->IsEmpty());
-  graph->RegisterObject(this);
-  graph->AddFrameNodeObserver(this);
-  graph->AddWorkerNodeObserver(this);
-}
-
-void ExecutionContextRegistryImpl::OnTakenFromGraph(Graph* graph) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph->RemoveWorkerNodeObserver(this);
-  graph->RemoveFrameNodeObserver(this);
-  graph->UnregisterObject(this);
+  auto* ec = GetOrCreateExecutionContextForFrameNode(frame_node);
+  DCHECK(ec);
+  for (auto& observer : observers_)
+    observer.OnPriorityAndReasonChanged(ec, previous_value);
 }
 
 void ExecutionContextRegistryImpl::OnWorkerNodeAdded(
@@ -209,6 +225,16 @@ void ExecutionContextRegistryImpl::OnBeforeWorkerNodeRemoved(
 
   size_t erased = execution_contexts_.erase(ec);
   DCHECK_EQ(1u, erased);
+}
+
+void ExecutionContextRegistryImpl::OnPriorityAndReasonChanged(
+    const WorkerNode* worker_node,
+    const PriorityAndReason& previous_value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* ec = GetOrCreateExecutionContextForWorkerNode(worker_node);
+  DCHECK(ec);
+  for (auto& observer : observers_)
+    observer.OnPriorityAndReasonChanged(ec, previous_value);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

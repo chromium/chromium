@@ -87,4 +87,26 @@ MockMultiplePagesWithMultipleProcessesGraph::
 MockMultiplePagesWithMultipleProcessesGraph::
     ~MockMultiplePagesWithMultipleProcessesGraph() = default;
 
+MockSinglePageWithFrameAndWorkerInSingleProcessGraph::
+    MockSinglePageWithFrameAndWorkerInSingleProcessGraph(TestGraphImpl* graph)
+    : MockSinglePageInSingleProcessGraph(graph),
+      worker(TestNodeWrapper<WorkerNodeImpl>::Create(
+          graph,
+          WorkerNode::WorkerType::kDedicated,
+          process.get())) {
+  worker->AddClientFrame(frame.get());
+}
+
+MockSinglePageWithFrameAndWorkerInSingleProcessGraph::
+    ~MockSinglePageWithFrameAndWorkerInSingleProcessGraph() {
+  if (worker.get())
+    worker->RemoveClientFrame(frame.get());
+}
+
+void MockSinglePageWithFrameAndWorkerInSingleProcessGraph::DeleteWorker() {
+  DCHECK(worker.get());
+  worker->RemoveClientFrame(frame.get());
+  worker.reset();
+}
+
 }  // namespace performance_manager

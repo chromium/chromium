@@ -116,6 +116,30 @@ struct MockMultiplePagesWithMultipleProcessesGraph
   TestNodeWrapper<FrameNodeImpl> child_frame;
 };
 
+// The following graph topology is created to emulate a scenario where a page
+// contains a single frame that creates a single dedicated worker.
+//
+// Pg  Pr_
+//  \ /   |
+//   F    |
+//    \   |
+//     W__|
+//
+// Where:
+// Pg: page
+// F: frame(frame_tree_id:0)
+// W: worker
+// Pr: process(pid:1)
+struct MockSinglePageWithFrameAndWorkerInSingleProcessGraph
+    : public MockSinglePageInSingleProcessGraph {
+  explicit MockSinglePageWithFrameAndWorkerInSingleProcessGraph(
+      TestGraphImpl* graph);
+  ~MockSinglePageWithFrameAndWorkerInSingleProcessGraph();
+  TestNodeWrapper<WorkerNodeImpl> worker;
+
+  void DeleteWorker();
+};
+
 }  // namespace performance_manager
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_MOCK_GRAPHS_H_

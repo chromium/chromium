@@ -35,6 +35,11 @@ class LenientMockExecutionContextObserver : public ExecutionContextObserver {
               OnBeforeExecutionContextRemoved,
               (const ExecutionContext*),
               ());
+  MOCK_METHOD(void,
+              OnPriorityAndReasonChanged,
+              (const ExecutionContext*,
+               const PriorityAndReason& previous_value),
+              ());
 };
 using MockExecutionContextObserver =
     testing::StrictMock<LenientMockExecutionContextObserver>;
@@ -70,31 +75,16 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
   // Ensure that the public getter works.
   EXPECT_EQ(registry_, ExecutionContextRegistry::GetFromGraph(graph()));
 
-  // Create an observer.
-  MockExecutionContextObserver obs;
-  EXPECT_FALSE(registry_->HasObserver(&obs));
-  registry_->AddObserver(&obs);
-  EXPECT_TRUE(registry_->HasObserver(&obs));
-
   // Create some mock nodes. This creates a graph with 1 page containing 2
   // frames in 1 process.
-  std::vector<const ExecutionContext*> ecs;
-  EXPECT_CALL(obs, OnExecutionContextAdded(testing::_))
-      .Times(2)
-      .WillRepeatedly(
-          [&ecs](const ExecutionContext* ec) { ecs.push_back(ec); });
   MockMultiplePagesInSingleProcessGraph mock_graph(graph());
 
   // Only the frames are in the map at this point.
-  EXPECT_EQ(2u, ecs.size());
   EXPECT_EQ(2u, registry_->GetExecutionContextCountForTesting());
 
   // Creating a worker should create another entry in the map.
-  EXPECT_CALL(obs, OnExecutionContextAdded(testing::_))
-      .WillOnce([&ecs](const ExecutionContext* ec) { ecs.push_back(ec); });
   auto worker_node = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, mock_graph.process.get());
-  EXPECT_EQ(3u, ecs.size());
   EXPECT_EQ(3u, registry_->GetExecutionContextCountForTesting());
 
   auto* frame1 = mock_graph.frame.get();
@@ -105,11 +95,6 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
   auto* frame1_ec = GetOrCreateExecutionContextForFrameNode(frame1);
   auto* frame2_ec = GetOrCreateExecutionContextForFrameNode(frame2);
   auto* worker_ec = GetOrCreateExecutionContextForWorkerNode(worker);
-
-  // Expect them to match those that were seen by the observer.
-  EXPECT_EQ(ecs[0], frame1_ec);
-  EXPECT_EQ(ecs[1], frame2_ec);
-  EXPECT_EQ(ecs[2], worker_ec);
 
   // Expect the FrameExecutionContext implementation to work.
   EXPECT_EQ(ExecutionContextType::kFrameNode, frame1_ec->GetType());
@@ -154,15 +139,45 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
       registry_->GetExecutionContextByToken(blink::ExecutionContextToken()));
   EXPECT_FALSE(registry_->GetFrameNodeByFrameToken(blink::LocalFrameToken()));
   EXPECT_FALSE(registry_->GetWorkerNodeByWorkerToken(blink::WorkerToken()));
+}
+
+TEST_F(ExecutionContextRegistryImplTest, Observers) {
+  // Create an observer.
+  MockExecutionContextObserver obs;
+  EXPECT_FALSE(registry_->HasObserver(&obs));
+  registry_->AddObserver(&obs);
+  EXPECT_TRUE(registry_->HasObserver(&obs));
+
+  // Create some mock nodes. This creates a graph with 1 page containing 1 frame
+  // and 1 worker in a single process.
+  EXPECT_CALL(obs, OnExecutionContextAdded(testing::_)).Times(2);
+  MockSinglePageWithFrameAndWorkerInSingleProcessGraph mock_graph(graph());
+
+  // The registry has 2 entries: the frame and the worker.
+  EXPECT_EQ(2u, registry_->GetExecutionContextCountForTesting());
+
+  auto* frame = mock_graph.frame.get();
+  auto* worker = mock_graph.worker.get();
+
+  // Get the execution contexts for each node directly.
+  auto* frame_ec = GetOrCreateExecutionContextForFrameNode(frame);
+  auto* worker_ec = GetOrCreateExecutionContextForWorkerNode(worker);
+
+  // Set the priority and reason of the frame and expect a notification.
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame_ec, testing::_));
+  frame->SetPriorityAndReason(
+      PriorityAndReason(base::TaskPriority::HIGHEST, "frame reason"));
+
+  // Set the priority and reason of the worker and expect a notification.
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker_ec, testing::_));
+  worker->SetPriorityAndReason(
+      PriorityAndReason(base::TaskPriority::HIGHEST, "worker reason"));
 
   // Destroy nodes one by one and expect observer notifications.
   EXPECT_CALL(obs, OnBeforeExecutionContextRemoved(worker_ec));
-  worker_node.reset();
-  EXPECT_EQ(2u, registry_->GetExecutionContextCountForTesting());
-  EXPECT_CALL(obs, OnBeforeExecutionContextRemoved(frame2_ec));
-  mock_graph.other_frame.reset();
+  mock_graph.DeleteWorker();
   EXPECT_EQ(1u, registry_->GetExecutionContextCountForTesting());
-  EXPECT_CALL(obs, OnBeforeExecutionContextRemoved(frame1_ec));
+  EXPECT_CALL(obs, OnBeforeExecutionContextRemoved(frame_ec));
   mock_graph.frame.reset();
   EXPECT_EQ(0u, registry_->GetExecutionContextCountForTesting());
 

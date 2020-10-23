@@ -68,6 +68,13 @@ class ExecutionContextImpl : public ExecutionContext,
     return node_->process_node();
   }
 
+  // Returns the current priority of the execution context, and the reason for
+  // the execution context having that particular priority.
+  const PriorityAndReason& GetPriorityAndReason() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return node_->priority_and_reason();
+  }
+
   const FrameNode* GetFrameNode() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (std::is_same<FrameNodeImpl, NodeImplType>::value)

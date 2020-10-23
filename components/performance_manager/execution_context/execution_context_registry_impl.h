@@ -25,9 +25,9 @@ class ExecutionContext;
 // to any nodes being created.
 class ExecutionContextRegistryImpl
     : public ExecutionContextRegistry,
-      public FrameNode::ObserverDefaultImpl,
       public GraphOwned,
       public GraphRegisteredImpl<ExecutionContextRegistryImpl>,
+      public FrameNode::ObserverDefaultImpl,
       public WorkerNode::ObserverDefaultImpl {
  public:
   ExecutionContextRegistryImpl();
@@ -56,17 +56,23 @@ class ExecutionContextRegistryImpl
   }
 
  private:
-  // FrameNode::ObserverDefaultImpl implementation:
-  void OnFrameNodeAdded(const FrameNode* frame_node) override;
-  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
+  // FrameNode::ObserverDefaultImpl implementation:
+  void OnFrameNodeAdded(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnPriorityAndReasonChanged(
+      const FrameNode* frame_node,
+      const PriorityAndReason& previous_value) override;
+
   // WorkerNode::ObserverDefaultImpl implementation:
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override;
+  void OnPriorityAndReasonChanged(
+      const WorkerNode* worker_node,
+      const PriorityAndReason& previous_value) override;
 
   // Maintains the collection of all currently known ExecutionContexts in the
   // Graph. It is expected that there are O(100s) to O(1000s) of these being
