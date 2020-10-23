@@ -4851,7 +4851,7 @@
   {
     "name": "well-known-change-password",
     "owners": ["jdoerrie", "vasilii"],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "wifi-sync-android",
