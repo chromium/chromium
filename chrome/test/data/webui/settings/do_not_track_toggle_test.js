@@ -3,24 +3,29 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
-import {TestMetricsBrowserProxy} from 'chrome://test/settings/test_metrics_browser_proxy.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
 // clang-format on
 
 suite('CrSettingsDoNotTrackToggleTest', function() {
-  /** @type {settings.TestMetricsBrowserProxy} */
+  /** @type {TestMetricsBrowserProxy} */
   let testMetricsBrowserProxy;
 
-  /** @type {SettingsDoNotTrackToggle} */
+  /** @type {SettingsDoNotTrackToggleElement} */
   let testElement;
 
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
-    PolymerTest.clearBody();
-    testElement = document.createElement('settings-do-not-track-toggle');
+    document.body.innerHTML = '';
+    testElement = /** @type {SettingsDoNotTrackToggleElement} */ (
+        document.createElement('settings-do-not-track-toggle'));
     testElement.prefs = {
       enable_do_not_track: {value: false},
     };

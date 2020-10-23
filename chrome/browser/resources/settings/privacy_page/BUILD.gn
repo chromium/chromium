@@ -64,6 +64,7 @@ js_type_check("closure_compile_module") {
 js_library("cookies_page") {
   deps = [
     ":collapse_radio_button",
+    ":do_not_track_toggle",
     "..:metrics_browser_proxy",
     "..:route",
     "..:router.m",

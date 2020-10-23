@@ -3,21 +3,22 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {isChildVisible} from 'chrome://test/test_util.m.js';
+import {assertFalse, assertTrue} from '../chai_assert.js';
+import {isChildVisible} from '../test_util.m.js';
 
 // clang-format on
 
 suite('CrCollapseRadioButton', function() {
-  /** @type {SettingsCollapseRadioButtonElement} */
+  /** @type {!SettingsCollapseRadioButtonElement} */
   let collapseRadioButton;
 
   setup(function() {
-    PolymerTest.clearBody();
-    collapseRadioButton =
-        document.createElement('settings-collapse-radio-button');
+    document.body.innerHTML = '';
+    collapseRadioButton = /** @type {!SettingsCollapseRadioButtonElement} */ (
+        document.createElement('settings-collapse-radio-button'));
     document.body.appendChild(collapseRadioButton);
     flush();
   });

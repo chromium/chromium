@@ -85,13 +85,15 @@ js_type_check("closure_compile") {
     #":chooser_exception_list_tests",
     #":chrome_cleanup_page_test",
     #":clear_browsing_data_test",
-    #":collapse_radio_button_tests",
+    ":collapse_radio_button_tests",
+
     #":controlled_button_tests",
     #":controlled_radio_button_tests",
     ":cookies_page_test",
 
     #":default_browser_browsertest",
-    #":do_not_track_toggle_test",
+    ":do_not_track_toggle_test",
+
     #":downloads_page_test",
     #":dropdown_menu_tests",
     #":edit_dictionary_page_test",
@@ -131,7 +133,8 @@ js_type_check("closure_compile") {
     ":privacy_page_test",
 
     #":protocol_handlers_tests",
-    #":recent_site_permissions_test",
+    ":recent_site_permissions_test",
+
     #":reset_page_test",
     #":reset_profile_banner_test",
     #":route_tests",
@@ -225,11 +228,32 @@ js_library("advanced_page_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("collapse_radio_button_tests") {
+  deps = [
+    "..:chai_assert",
+    "..:test_util.m",
+    "//chrome/browser/resources/settings:lazy_load",
+    "//chrome/browser/resources/settings:settings",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("cookies_page_test") {
   deps = [
     ":test_metrics_browser_proxy",
     ":test_site_settings_prefs_browser_proxy",
     ":test_util",
+    "..:chai_assert",
+    "..:test_util.m",
+    "//chrome/browser/resources/settings:lazy_load",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("do_not_track_toggle_test") {
+  deps = [
+    ":test_metrics_browser_proxy",
     "..:chai_assert",
     "..:test_util.m",
     "//chrome/browser/resources/settings:lazy_load",
@@ -300,6 +324,19 @@ js_library("privacy_page_test") {
     ":test_privacy_page_browser_proxy",
     ":test_site_settings_prefs_browser_proxy",
     ":test_sync_browser_proxy.m",
+    "..:chai_assert",
+    "..:test_util.m",
+    "//chrome/browser/resources/settings:lazy_load",
+    "//chrome/browser/resources/settings:settings",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("recent_site_permissions_test") {
+  deps = [
+    ":test_site_settings_prefs_browser_proxy",
     "..:chai_assert",
     "..:test_util.m",
     "//chrome/browser/resources/settings:lazy_load",
