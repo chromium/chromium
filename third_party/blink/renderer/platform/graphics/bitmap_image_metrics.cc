@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
@@ -50,10 +51,8 @@ void BitmapImageMetrics::CountImageOrientation(
 }
 
 void BitmapImageMetrics::CountImageDensityCorrection(bool density_correction_present) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      BooleanHistogram, density_correction_histogram,
-      ("Blink.DecodedImage.DensitySizeCorrectionDetected"));
-  density_correction_histogram.Count(density_correction_present);
+  UMA_HISTOGRAM_BOOLEAN("Blink.DecodedImage.DensitySizeCorrectionDetected",
+                        density_correction_present);
 }
 
 void BitmapImageMetrics::CountImageJpegDensity(int image_min_side,
