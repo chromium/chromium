@@ -14,7 +14,7 @@ package metrics;
 import "omnibox_input_type.proto";
 
 // Stores information about an omnibox interaction.
-// Next tag: 22
+// Next tag: 23
 message OmniboxEventProto {
   // The timestamp for the event, in seconds.
   // This value comes from Chromium's TimeTicks::Now(), which is an abstract
@@ -394,4 +394,11 @@ message OmniboxEventProto {
   // Whether the omnibox input is a search query that is started
   // by clicking on a image tile.
   optional bool is_query_started_from_tile = 21;
+
+  // The set of features that triggered within the current omnibox session.
+  // Each element is a value of |OmniboxTriggeredFeatureService::Features| enum
+  // in components/omnibox/browser/omnibox_triggered_feature_service.h .
+  // See AutocompleteController::ResetSession() for more details on the
+  // definition of a session.
+  repeated int32 feature_triggered_in_session = 22;
 }
