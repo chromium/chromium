@@ -16,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 
 using base::ASCIIToUTF16;
+using search_engines_helper::SearchEnginesMatchChecker;
 
 class TwoClientSearchEnginesSyncTest : public SyncTest {
  public:
@@ -304,4 +305,72 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   search_engines_helper::ChangeDefaultSearchProvider(0, 1);
   search_engines_helper::DeleteSearchEngineBySeed(0, 0);
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
+}
+
+// Same as above that forces the deletion to propagate faster than the
+// preference, which is complex to deal with for the receiving client (deletion
+// of the default search engine), and currently leads to search engines with
+// underscores being created. This is achieved in the test by throttling
+// PREFERENCES in FakeServer, which prevents the sync-ing of the default search
+// engine change.
+IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
+                       DeleteSyncedDefaultWithoutPrefSync) {
+  ASSERT_TRUE(SetupClients());
+
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, /*seed=*/0);
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, /*seed=*/1);
+  search_engines_helper::AddSearchEngine(/*profile_index=*/1, /*seed=*/0);
+  search_engines_helper::AddSearchEngine(/*profile_index=*/1, /*seed=*/1);
+  search_engines_helper::ChangeDefaultSearchProvider(/*profile_index=*/0,
+                                                     /*seed=*/0);
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
+
+  // Throttle PREFERENCES to block any commits to them, which in this case
+  // prevents the default search engine selection from sync-ing.
+  GetFakeServer()->SetThrottledTypes({syncer::PREFERENCES});
+
+  // Rule out search engines with underscores existing at this point.
+  // Note that seed==0 corresponds to keyword "test0".
+  ASSERT_TRUE(search_engines_helper::HasSearchEngineWithKeyword(
+      /*profile_index=*/0, ASCIIToUTF16("test0")));
+  ASSERT_FALSE(search_engines_helper::HasSearchEngineWithKeyword(
+      /*profile_index=*/0, ASCIIToUTF16("test0_")));
+  ASSERT_TRUE(search_engines_helper::HasSearchEngineWithKeyword(
+      /*profile_index=*/1, ASCIIToUTF16("test0")));
+  ASSERT_FALSE(search_engines_helper::HasSearchEngineWithKeyword(
+      /*profile_index=*/1, ASCIIToUTF16("test0_")));
+
+  // Change the default on the first client (profile index 0) and delete the old
+  // default.
+  search_engines_helper::ChangeDefaultSearchProvider(/*profile_index=*/0,
+                                                     /*seed=*/1);
+  search_engines_helper::DeleteSearchEngineBySeed(/*profile_index=*/0,
+                                                  /*seed=*/0);
+
+  // The test needs to wait until the second client (profile index 1) receives
+  // the deletion. In order to do so, use the first client (profile index 0) to
+  // create a third search engine (seed 2) and wait until it gets sync-ed to the
+  // second client (profile index 1).
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0, /*seed=*/2);
+  ASSERT_TRUE(search_engines_helper::HasSearchEngineChecker(/*profile_index=*/1,
+                                                            /*seed=*/2)
+                  .Wait());
+
+  // In the receiving end (profile index 1), the deletion cannot be honored as
+  // is, so instead the keyword is changed for the default search engine by
+  // appending an underscore.
+  EXPECT_TRUE(search_engines_helper::HasSearchEngineWithKeyword(
+      /*profile_index=*/1, ASCIIToUTF16("test0_")));
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineWithKeyword(
+      /*profile_index=*/1, ASCIIToUTF16("test0")));
+  EXPECT_EQ(
+      search_engines_helper::GetDefaultSearchEngineKeyword(/*profile_index=*/1),
+      ASCIIToUTF16("test0_"));
+
+  // The search engine with an underscore should sync back to profile index 0.
+  EXPECT_TRUE(search_engines_helper::HasSearchEngineChecker(
+                  /*profile_index=*/0, ASCIIToUTF16("test0_"))
+                  .Wait());
 }

@@ -19,7 +19,6 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
 
 using sync_datatype_helper::test;
 
@@ -54,7 +53,7 @@ bool TURLsMatch(const TemplateURL& turl1, const TemplateURL& turl2) {
   return result;
 }
 
-bool ServicesMatch(int profile_a, int profile_b) {
+bool ServicesMatch(int profile_a, int profile_b, std::ostream* os) {
   TemplateURLService* service_a =
       search_engines_helper::GetServiceForBrowserContext(profile_a);
   TemplateURLService* service_b =
@@ -66,14 +65,14 @@ bool ServicesMatch(int profile_a, int profile_b) {
   GUIDToTURLMap b_turls = CreateGUIDToTURLMap(service_b);
 
   if (a_turls.size() != b_turls.size()) {
-    DVLOG(1) << "Service a and b do not match in size: " << a_turls.size()
-             << " vs " << b_turls.size() << " respectively.";
+    *os << "Service a and b do not match in size: " << a_turls.size() << " vs "
+        << b_turls.size() << " respectively.";
     return false;
   }
 
   for (auto it = a_turls.begin(); it != a_turls.end(); ++it) {
     if (b_turls.find(it->first) == b_turls.end()) {
-      DVLOG(1) << "TURL GUID from a not found in b's TURLs: " << it->first;
+      *os << "TURL GUID from a not found in b's TURLs: " << it->first;
       return false;
     }
     if (!TURLsMatch(*b_turls[it->first], *it->second))
@@ -83,13 +82,12 @@ bool ServicesMatch(int profile_a, int profile_b) {
   const TemplateURL* default_a = service_a->GetDefaultSearchProvider();
   const TemplateURL* default_b = service_b->GetDefaultSearchProvider();
   if (!TURLsMatch(*default_a, *default_b)) {
-    DVLOG(1) << "Default search providers do not match: A's default: "
-             << default_a->keyword()
-             << " B's default: " << default_b->keyword();
+    *os << "Default search providers do not match: A's default: "
+        << default_a->keyword() << " B's default: " << default_b->keyword();
     return false;
   } else {
-    DVLOG(1) << "A had default with URL: " << default_a->url()
-             << " and keyword: " << default_a->keyword();
+    *os << "A had default with URL: " << default_a->url()
+        << " and keyword: " << default_a->keyword();
   }
 
   return true;
@@ -145,16 +143,20 @@ bool ServiceMatchesVerifier(int profile_index) {
 }
 
 bool AllServicesMatch() {
+  return AllServicesMatch(&VLOG_STREAM(1));
+}
+
+bool AllServicesMatch(std::ostream* os) {
   // Use 0 as the baseline.
   if (test()->UseVerifier() && !ServiceMatchesVerifier(0)) {
-    DVLOG(1) << "TemplateURLService 0 does not match verifier.";
+    *os << "TemplateURLService 0 does not match verifier.";
     return false;
   }
 
   for (int it = 1; it < test()->num_clients(); ++it) {
-    if (!ServicesMatch(0, it)) {
-      DVLOG(1) << "TemplateURLService " << it << " does not match with "
-               << "service 0.";
+    if (!ServicesMatch(0, it, os)) {
+      *os << "TemplateURLService " << it << " does not match with "
+          << "service 0.";
       return false;
     }
   }
@@ -252,15 +254,58 @@ void ChangeDefaultSearchProvider(int profile_index, int seed) {
 }
 
 bool HasSearchEngine(int profile_index, int seed) {
+  return HasSearchEngineWithKeyword(profile_index, CreateKeyword(seed));
+}
+
+bool HasSearchEngineWithKeyword(int profile_index,
+                                const base::string16& keyword) {
   TemplateURLService* service = GetServiceForBrowserContext(profile_index);
-  base::string16 keyword(CreateKeyword(seed));
   TemplateURL* turl = service->GetTemplateURLForKeyword(keyword);
   return turl != nullptr;
 }
 
-}  // namespace search_engines_helper
+base::string16 GetDefaultSearchEngineKeyword(int profile_index) {
+  TemplateURLService* service = GetServiceForBrowserContext(profile_index);
+  return service->GetDefaultSearchProvider()->keyword();
+}
 
-SearchEnginesMatchChecker::SearchEnginesMatchChecker()
-    : AwaitMatchStatusChangeChecker(
-          base::Bind(search_engines_helper::AllServicesMatch),
-          "All search engines match") {}
+SearchEnginesMatchChecker::SearchEnginesMatchChecker() {
+  if (test()->UseVerifier()) {
+    observer_.Add(GetVerifierService());
+  }
+
+  for (int i = 0; i < test()->num_clients(); ++i) {
+    observer_.Add(GetServiceForBrowserContext(i));
+  }
+}
+
+SearchEnginesMatchChecker::~SearchEnginesMatchChecker() = default;
+
+bool SearchEnginesMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return AllServicesMatch(os);
+}
+
+void SearchEnginesMatchChecker::OnTemplateURLServiceChanged() {
+  CheckExitCondition();
+}
+
+HasSearchEngineChecker::HasSearchEngineChecker(int profile_index, int seed)
+    : HasSearchEngineChecker(profile_index, CreateKeyword(seed)) {}
+
+HasSearchEngineChecker::HasSearchEngineChecker(int profile_index,
+                                               const base::string16& keyword)
+    : service_(GetServiceForBrowserContext(profile_index)), keyword_(keyword) {
+  observer_.Add(service_);
+}
+
+HasSearchEngineChecker::~HasSearchEngineChecker() = default;
+
+bool HasSearchEngineChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return service_->GetTemplateURLForKeyword(keyword_) != nullptr;
+}
+
+void HasSearchEngineChecker::OnTemplateURLServiceChanged() {
+  CheckExitCondition();
+}
+
+}  // namespace search_engines_helper

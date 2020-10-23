@@ -81,6 +81,10 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
 
   void AddNewKeystoreKeyForTesting();
 
+  void SetThrottledTypesForTesting(ModelTypeSet model_types) {
+    throttled_types_ = model_types;
+  }
+
  private:
   // Allow the FakeServer decorator to inspect the internals of this class.
   friend class fake_server::FakeServer;
@@ -108,7 +112,8 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   // Processes a Commit call.
   bool HandleCommitRequest(const sync_pb::CommitMessage& message,
                            const std::string& invalidator_client_id,
-                           sync_pb::CommitResponse* response);
+                           sync_pb::CommitResponse* response,
+                           ModelTypeSet* throttled_datatypes_in_request);
 
   void ClearServerData();
 
@@ -228,6 +233,8 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   int64_t version_;
 
   int64_t store_birthday_;
+
+  ModelTypeSet throttled_types_;
 
   base::Optional<sync_pb::ChipBag> bag_of_chips_;
 

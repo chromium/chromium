@@ -9,8 +9,11 @@
 #include <memory>
 #include <string>
 
+#include "base/scoped_observer.h"
 #include "base/strings/string16.h"
-#include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/status_change_checker.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 
 class Profile;
 class TemplateURL;
@@ -32,6 +35,7 @@ bool ServiceMatchesVerifier(int profile_index);
 
 // Returns true iff all TemplateURLServices match with the verifier.
 bool AllServicesMatch();
+bool AllServicesMatch(std::ostream* os);
 
 // Create a TemplateURL with some test values based on |seed|.
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(
@@ -72,12 +76,54 @@ void ChangeDefaultSearchProvider(int profile_index, int seed);
 // the search engine generated with |seed|.
 bool HasSearchEngine(int profile_index, int seed);
 
-}  // namespace search_engines_helper
+// Returns true if the profile at |profile_index| has a search engine matching
+// |keyword|.
+bool HasSearchEngineWithKeyword(int profile_index,
+                                const base::string16& keyword);
+
+// Returns the keyword for the default search engine at |profile_index|.
+base::string16 GetDefaultSearchEngineKeyword(int profile_index);
 
 // Checker that blocks until all services have the same search engine data.
-class SearchEnginesMatchChecker : public AwaitMatchStatusChangeChecker {
+class SearchEnginesMatchChecker : public StatusChangeChecker,
+                                  public TemplateURLServiceObserver {
  public:
   SearchEnginesMatchChecker();
+  ~SearchEnginesMatchChecker() override;
+
+  // StatusChangeChecker overrides.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // TemplateURLServiceObserver overrides.
+  void OnTemplateURLServiceChanged() override;
+
+ private:
+  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
+      this};
 };
+
+// Checker that blocks until |profile_index| has a search engine matching the
+// search engine generated with |seed| or |keyword|.
+class HasSearchEngineChecker : public StatusChangeChecker,
+                               public TemplateURLServiceObserver {
+ public:
+  HasSearchEngineChecker(int profile_index, int seed);
+  HasSearchEngineChecker(int profile_index, const base::string16& keyword);
+  ~HasSearchEngineChecker() override;
+
+  // StatusChangeChecker overrides.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // TemplateURLServiceObserver overrides.
+  void OnTemplateURLServiceChanged() override;
+
+ private:
+  TemplateURLService* const service_;
+  const base::string16 keyword_;
+  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
+      this};
+};
+
+}  // namespace search_engines_helper
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SEARCH_ENGINES_HELPER_H_

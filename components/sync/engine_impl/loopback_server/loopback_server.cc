@@ -326,6 +326,7 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
   } else {
     bool success = false;
     std::vector<ModelType> datatypes_to_migrate;
+    ModelTypeSet throttled_datatypes_in_request;
     switch (message.message_contents()) {
       case sync_pb::ClientToServerMessage::GET_UPDATES:
         success = HandleGetUpdatesRequest(
@@ -334,9 +335,9 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
             &datatypes_to_migrate);
         break;
       case sync_pb::ClientToServerMessage::COMMIT:
-        success = HandleCommitRequest(message.commit(),
-                                      message.invalidator_client_id(),
-                                      response->mutable_commit());
+        success = HandleCommitRequest(
+            message.commit(), message.invalidator_client_id(),
+            response->mutable_commit(), &throttled_datatypes_in_request);
         break;
       case sync_pb::ClientToServerMessage::CLEAR_SERVER_DATA:
         ClearServerData();
@@ -350,19 +351,29 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
 
     if (success) {
       response->set_error_code(sync_pb::SyncEnums::SUCCESS);
-    } else if (datatypes_to_migrate.empty()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Sync.Local.RequestTypeOnError", message.message_contents(),
-          sync_pb::ClientToServerMessage_Contents_Contents_MAX);
-      return net::HTTP_INTERNAL_SERVER_ERROR;
-    } else {
+    } else if (!datatypes_to_migrate.empty()) {
       DLOG(WARNING) << "Migration required for " << datatypes_to_migrate.size()
                     << " datatypes";
+      response->set_error_code(sync_pb::SyncEnums::MIGRATION_DONE);
       for (ModelType type : datatypes_to_migrate) {
         response->add_migrated_data_type_id(
             GetSpecificsFieldNumberFromModelType(type));
       }
-      response->set_error_code(sync_pb::SyncEnums::MIGRATION_DONE);
+    } else if (!throttled_datatypes_in_request.Empty()) {
+      DLOG(WARNING) << "Throttled datatypes: "
+                    << ModelTypeSetToString(throttled_datatypes_in_request);
+      response->set_error_code(sync_pb::SyncEnums::PARTIAL_FAILURE);
+      response->mutable_error()->set_error_type(
+          sync_pb::SyncEnums::PARTIAL_FAILURE);
+      for (ModelType type : throttled_datatypes_in_request) {
+        response->mutable_error()->add_error_data_type_ids(
+            syncer::GetSpecificsFieldNumberFromModelType(type));
+      }
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Sync.Local.RequestTypeOnError", message.message_contents(),
+          sync_pb::ClientToServerMessage_Contents_Contents_MAX);
+      return net::HTTP_INTERNAL_SERVER_ERROR;
     }
   }
 
@@ -610,7 +621,8 @@ void LoopbackServer::DeleteChildren(const string& parent_id) {
 bool LoopbackServer::HandleCommitRequest(
     const sync_pb::CommitMessage& commit,
     const std::string& invalidator_client_id,
-    sync_pb::CommitResponse* response) {
+    sync_pb::CommitResponse* response,
+    ModelTypeSet* throttled_datatypes_in_request) {
   std::map<string, string> client_to_server_ids;
   string guid = commit.cache_guid();
   ModelTypeSet committed_model_types;
@@ -628,6 +640,13 @@ bool LoopbackServer::HandleCommitRequest(
     string parent_id = client_entity.parent_id_string();
     if (client_to_server_ids.find(parent_id) != client_to_server_ids.end()) {
       parent_id = client_to_server_ids[parent_id];
+    }
+
+    const ModelType entity_model_type = GetModelType(client_entity);
+    if (throttled_types_.Has(entity_model_type)) {
+      entry_response->set_response_type(sync_pb::CommitResponse::OVER_QUOTA);
+      throttled_datatypes_in_request->Put(entity_model_type);
+      continue;
     }
 
     const string entity_id =
@@ -663,7 +682,7 @@ bool LoopbackServer::HandleCommitRequest(
   if (observer_for_tests_)
     observer_for_tests_->OnCommit(invalidator_client_id, committed_model_types);
 
-  return true;
+  return throttled_datatypes_in_request->Empty();
 }
 
 void LoopbackServer::ClearServerData() {

@@ -194,6 +194,9 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // encryption_keys.
   void DisallowSendingEncryptionKeys();
 
+  // Mimics throttling of datatypes.
+  void SetThrottledTypes(syncer::ModelTypeSet types);
+
   // Adds |observer| to FakeServer's observer list. This should be called
   // before the Profile associated with |observer| is connected to the server.
   void AddObserver(Observer* observer);

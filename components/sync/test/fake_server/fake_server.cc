@@ -577,6 +577,10 @@ void FakeServer::DisallowSendingEncryptionKeys() {
   disallow_sending_encryption_keys_ = true;
 }
 
+void FakeServer::SetThrottledTypes(syncer::ModelTypeSet types) {
+  loopback_server_->SetThrottledTypesForTesting(types);
+}
+
 bool FakeServer::ShouldSendTriggeredError() const {
   if (!alternate_triggered_errors_)
     return true;
