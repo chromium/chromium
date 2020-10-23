@@ -168,6 +168,7 @@ static_library("test_support") {
 
   if (is_win) {
     sources += [
+      "async_results_test_values_win.h",
       "fake_iasync_operation_win.h",
       "scoped_os_info_override_win.cc",
       "scoped_os_info_override_win.h",
