@@ -12,12 +12,12 @@
 #include "base/optional.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
 namespace views {
+class Button;
 class ToggleImageButton;
 }  // namespace views
 
@@ -32,8 +32,7 @@ class MediaNotificationContainer;
 class MediaNotificationItem;
 
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
-    : public MediaNotificationView,
-      public views::ButtonListener {
+    : public MediaNotificationView {
  public:
   // The name of the histogram used when recording whether the artwork was
   // present.
@@ -68,9 +67,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // MediaNotificationView
   void SetForcedExpandedState(bool* forced_expanded_state) override {}
@@ -119,6 +115,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   MediaNotificationBackground* GetMediaNotificationBackground();
 
   void UpdateForegroundColor();
+
+  void ButtonPressed(views::Button* button);
 
   // Container that receives events.
   MediaNotificationContainer* const container_;

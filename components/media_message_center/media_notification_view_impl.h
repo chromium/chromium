@@ -10,7 +10,6 @@
 #include "base/optional.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 
@@ -20,6 +19,7 @@ class NotificationHeaderView;
 
 namespace views {
 class BoxLayout;
+class Button;
 class ToggleImageButton;
 }  // namespace views
 
@@ -38,8 +38,7 @@ struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) NotificationTheme {
 };
 
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
-    : public MediaNotificationView,
-      public views::ButtonListener {
+    : public MediaNotificationView {
  public:
   // The name of the histogram used when recorded whether the artwork was
   // present.
@@ -72,9 +71,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // MediaNotificationView:
   void SetExpanded(bool expanded) override;
@@ -130,6 +126,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   bool IsActuallyExpanded() const;
 
   void UpdateForegroundColor();
+
+  void ButtonPressed(views::Button* button);
 
   // Returns the buttons contained in the button row and playback button
   // container.

@@ -35,6 +35,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace media_message_center {
@@ -254,9 +255,9 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     views::Button* button = GetButtonForAction(action);
     EXPECT_TRUE(button->GetVisible());
 
-    view()->ButtonPressed(
-        button, ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               ui::EventTimeForNow(), 0, 0));
+    views::test::ButtonTestApi(button).NotifyClick(
+        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), 0, 0));
   }
 
   void SimulateTab() {
