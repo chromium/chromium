@@ -462,21 +462,6 @@ message DeviceState {
   // State that is relevant only when the |device_mode| is
   // |DEVICE_MODE_DISABLED|.
   optional DisabledState disabled_state = 2;
-
-  // License Packaging SKU type.
-  // LINT.IfChange
-  enum LicensePackagingSKU {
-    // Not a License Packaged Device.
-    NOT_EXIST = 0;
-    // Enterprise SKU.
-    CHROME_ENTERPRISE = 1;
-    // Education SKU.
-    CHROME_EDUCATION = 2;
-  }
-  // LINT.ThenChange(//depot/google3/google/chrome/licensepackaging/v1/service.proto)
-
-  // SKU Type for License Packaged Device.
-  optional LicensePackagingSKU license_packaging_sku = 5;
 }
 
 message CustomerLogo {
@@ -2378,6 +2363,21 @@ message DeviceInitialEnrollmentStateResponse {
   // State that is relevant only when the |initial_enrollment_mode| is
   // |INITIAL_ENROLLMENT_MODE_DISABLED|.
   optional DisabledState disabled_state = 4;
+
+  // License Packaging SKU type.
+  // LINT.IfChange
+  enum LicensePackagingSKU {
+    // Not a License Packaged Device.
+    NOT_EXIST = 0;
+    // Enterprise SKU.
+    CHROME_ENTERPRISE = 1;
+    // Education SKU.
+    CHROME_EDUCATION = 2;
+  }
+  // LINT.ThenChange(//depot/google3/google/chrome/licensepackaging/v1/service.proto)
+
+  // SKU Type for License Packaged Device.
+  optional LicensePackagingSKU license_packaging_sku = 5;
 }
 
 // Sent by the client to the server to pair the Host device with the Controller
