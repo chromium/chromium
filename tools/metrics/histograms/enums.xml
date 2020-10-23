@@ -72574,6 +72574,19 @@ Full version information for the fingerprint enum values:
   <int value="30" label="kModuleBlacklistCacheMD5Digest"/>
 </enum>
 
+<enum name="TranslateAssistContentResult">
+  <int value="0" label="The feature was disabled"/>
+  <int value="1" label="The tab was null"/>
+  <int value="2" label="The tab was an incognito tab"/>
+  <int value="3" label="The activity was in overview mode"/>
+  <int value="4" label="canTranslateTab() was false"/>
+  <int value="5" label="The original page language was missing"/>
+  <int value="6" label="The current page language was missing"/>
+  <int value="7" label="There was a JSONException"/>
+  <int value="8" label="The page was translatable"/>
+  <int value="9" label="The page has already been translated"/>
+</enum>
+
 <enum name="TranslateBubbleUiEvent">
   <int value="1" label="Switch to Options page"/>
   <int value="2" label="Leave Options page"/>

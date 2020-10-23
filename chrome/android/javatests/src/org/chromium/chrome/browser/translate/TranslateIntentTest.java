@@ -12,7 +12,6 @@ import android.content.pm.PackageManager;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,13 +27,10 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.TranslateUtil;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
@@ -55,18 +51,6 @@ public class TranslateIntentTest {
             "/chrome/test/data/translate/english_page.html";
 
     private InfoBarContainer mInfoBarContainer;
-
-    /**
-     * Wait until the activity tab is translatable. This is useful in cases where we can't wait on
-     * the infobar.
-     */
-    private void waitUntilTranslatable() {
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(TranslateBridge.canManuallyTranslate(tab, false), Matchers.is(true));
-        });
-    }
 
     /**
      * Returns true if a test that requires internet access should be skipped due to an
@@ -151,7 +135,7 @@ public class TranslateIntentTest {
         // Load a page that doesn't trigger the translate recommendation.
         mActivityTestRule.loadUrl(url);
 
-        waitUntilTranslatable();
+        TranslateUtil.waitUntilTranslatable(mActivityTestRule.getActivity().getActivityTab());
         Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
 
         sendTranslateIntent(url, null);
@@ -171,7 +155,7 @@ public class TranslateIntentTest {
         // Load a page that doesn't trigger the translate recommendation.
         mActivityTestRule.loadUrl(url);
 
-        waitUntilTranslatable();
+        TranslateUtil.waitUntilTranslatable(mActivityTestRule.getActivity().getActivityTab());
         Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
 
         List<String> acceptCodes =
@@ -199,7 +183,7 @@ public class TranslateIntentTest {
         // Load a page that doesn't trigger the translate recommendation.
         mActivityTestRule.loadUrl(url);
 
-        waitUntilTranslatable();
+        TranslateUtil.waitUntilTranslatable(mActivityTestRule.getActivity().getActivityTab());
         Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
 
         sendTranslateIntent(url, "unsupported");
@@ -322,6 +306,6 @@ public class TranslateIntentTest {
         intent.setPackage(context.getPackageName());
         final ComponentName component = intent.resolveActivity(pm);
         Assert.assertEquals(
-                component.getClassName(), TranslateIntentHandler.COMPONENT_TRANSLATE_DISPATCHER);
+                TranslateIntentHandler.COMPONENT_TRANSLATE_DISPATCHER, component.getClassName());
     }
 }

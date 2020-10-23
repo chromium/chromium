@@ -133,6 +133,40 @@ static void JNI_TranslateBridge_SetPredefinedTargetLanguage(
   client->SetPredefinedTargetLanguage(translate_language);
 }
 
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_TranslateBridge_GetOriginalLanguage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  ChromeTranslateClient* client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  DCHECK(client);
+  const std::string& original_language_code =
+      client->GetLanguageState().original_language();
+  DCHECK(!original_language_code.empty());
+  base::android::ScopedJavaLocalRef<jstring> j_original_language =
+      base::android::ConvertUTF8ToJavaString(env, original_language_code);
+  return j_original_language;
+}
+
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_TranslateBridge_GetCurrentLanguage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  ChromeTranslateClient* client =
+      ChromeTranslateClient::FromWebContents(web_contents);
+  DCHECK(client);
+  const std::string& current_language_code =
+      client->GetLanguageState().current_language();
+  DCHECK(!current_language_code.empty());
+  base::android::ScopedJavaLocalRef<jstring> j_current_language =
+      base::android::ConvertUTF8ToJavaString(env, current_language_code);
+  return j_current_language;
+}
+
 // Returns the preferred target language to translate into for this user.
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_TranslateBridge_GetTargetLanguage(JNIEnv* env) {
