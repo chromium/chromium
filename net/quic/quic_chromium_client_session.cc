@@ -1869,8 +1869,10 @@ void QuicChromiumClientSession::OnConnectionClosed(
         "Net.QuicSession.ConnectionDuration",
         tick_clock_->NowTicks() - connect_timing_.connect_end);
     UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumMigrations", num_migrations_);
-    base::UmaHistogramCounts100("Net.QuicSession.KeyUpdate.PerConnection",
-                                connection()->GetStats().key_update_count);
+    if (config()->KeyUpdateSupportedForConnection()) {
+      base::UmaHistogramCounts100("Net.QuicSession.KeyUpdate.PerConnection2",
+                                  connection()->GetStats().key_update_count);
+    }
   } else {
     if (error == quic::QUIC_PUBLIC_RESET) {
       RecordHandshakeFailureReason(HANDSHAKE_FAILURE_PUBLIC_RESET);

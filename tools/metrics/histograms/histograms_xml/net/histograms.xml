@@ -2929,11 +2929,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.KeyUpdate.PerConnection" units="count"
     expires_after="2021-05-11">
+  <obsolete>
+    Replaced 2020-10-22 with Net.QuicSession.KeyUpdate.PerConnection2 that is
+    only logged for connections which supported key update.
+  </obsolete>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of key updates processed per connection, recorded on connection
     close. Only logged for connections which reached the 1-RTT level.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.KeyUpdate.PerConnection2" units="count"
+    expires_after="2021-05-11">
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of key updates processed per connection, recorded on connection
+    close. Only logged for connections which reached the 1-RTT level and
+    supported key update.
   </summary>
 </histogram>
 
