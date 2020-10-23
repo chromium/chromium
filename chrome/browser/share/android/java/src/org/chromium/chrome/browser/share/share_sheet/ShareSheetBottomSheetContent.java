@@ -264,6 +264,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         if (icon == null) {
             setDefaultIconForPreview(
                     AppCompatResources.getDrawable(mContext, R.drawable.generic_favicon));
+            RecordUserAction.record("SharingHubAndroid.GenericFaviconShown");
         } else {
             int size = mContext.getResources().getDimensionPixelSize(
                     R.dimen.sharing_hub_preview_inner_icon_size);
@@ -271,6 +272,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             ImageView imageView = this.getContentView().findViewById(R.id.image_preview);
             imageView.setImageBitmap(scaledIcon);
             centerIcon(imageView);
+            RecordUserAction.record("SharingHubAndroid.LinkFaviconShown");
         }
     }
 
