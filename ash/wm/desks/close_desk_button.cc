@@ -64,9 +64,7 @@ SkColor CloseDeskButton::GetInkDropBaseColor() const {
 void CloseDeskButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
   AshColorProvider* color_provider = AshColorProvider::Get();
-  color_provider->DecorateCloseButton(
-      this, AshColorProvider::ButtonType::kCloseButtonWithSmallBase,
-      kCloseButtonSize, kCloseButtonIcon);
+  color_provider->DecorateCloseButton(this, kCloseButtonSize, kCloseButtonIcon);
 
   auto ripple_attributes =
       color_provider->GetRippleAttributes(background()->get_color());

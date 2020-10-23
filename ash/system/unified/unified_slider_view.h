@@ -37,20 +37,16 @@ class UnifiedSliderButton : public views::ImageButton {
   // Change the toggle state.
   void SetToggled(bool toggled);
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
-  // views::Button:
-  const char* GetClassName() const override;
-
   // views::ImageButton:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
-
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  const char* GetClassName() const override;
+  gfx::Size CalculatePreferredSize() const override;
+  void OnThemeChanged() override;
 
  private:
   void UpdateVectorIcon();

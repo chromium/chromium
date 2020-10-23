@@ -26,6 +26,7 @@ class CollapseButton : public CustomShapeButton {
   SkPath CreateCustomShapePath(const gfx::Rect& bounds) const override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   double expanded_amount_ = 1.0;

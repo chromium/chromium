@@ -30,8 +30,11 @@ class TopShortcutButton : public views::ImageButton {
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
+  const gfx::VectorIcon& icon_;
+
   DISALLOW_COPY_AND_ASSIGN(TopShortcutButton);
 };
 

@@ -114,9 +114,8 @@ ClipboardHistoryItemView::DeleteButton::DeleteButton(
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetPreferredSize(gfx::Size(kDeleteButtonSizeDip, kDeleteButtonSizeDip));
 
-  AshColorProvider::Get()->DecorateCloseButton(
-      this, AshColorProvider::ButtonType::kCloseButtonWithSmallBase,
-      kDeleteButtonSizeDip, kCloseButtonIcon);
+  AshColorProvider::Get()->DecorateCloseButton(this, kDeleteButtonSizeDip,
+                                               kCloseButtonIcon);
 }
 
 ClipboardHistoryItemView::DeleteButton::~DeleteButton() = default;

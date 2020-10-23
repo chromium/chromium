@@ -67,6 +67,7 @@ class DateView : public views::Button,
 
   // views::Button:
   const char* GetClassName() const override { return "DateView"; }
+  void OnThemeChanged() override;
 
  private:
   void Update();
@@ -90,31 +91,31 @@ class DateView : public views::Button,
 };
 
 DateView::DateView(UnifiedSystemTrayController* controller)
-    : Button(this), controller_(controller), label_(new views::Label) {
+    : Button(this), controller_(controller) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(label_);
-
-  auto* color_provider = AshColorProvider::Get();
+  label_ = AddChildView(std::make_unique<views::Label>());
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
-  label_->SetEnabledColor(color_provider->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary));
   Update();
 
   Shell::Get()->system_tray_model()->clock()->AddObserver(this);
-
   SetEnabled(Shell::Get()->system_tray_model()->clock()->IsSettingsAvailable());
-
   SetInstallFocusRingOnFocus(true);
   SetFocusForPlatform();
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
-
   SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
 }
 
 DateView::~DateView() {
   Shell::Get()->system_tray_model()->clock()->RemoveObserver(this);
+}
+
+void DateView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  auto* color_provider = AshColorProvider::Get();
+  label_->SetEnabledColor(color_provider->GetContentLayerColor(
+      ContentLayerType::kTextColorPrimary));
+  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void DateView::ButtonPressed(views::Button* sender, const ui::Event& event) {
@@ -158,6 +159,7 @@ class BatteryView : public views::View, public PowerStatus::Observer {
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
   const char* GetClassName() const override { return "BatteryView"; }
+  void OnThemeChanged() override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
@@ -174,26 +176,16 @@ class BatteryView : public views::View, public PowerStatus::Observer {
   DISALLOW_COPY_AND_ASSIGN(BatteryView);
 };
 
-BatteryView::BatteryView()
-    : percentage_(new views::Label),
-      separator_(new views::Label),
-      status_(new views::Label) {
+BatteryView::BatteryView() {
   PowerStatus::Get()->AddObserver(this);
-
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 
+  percentage_ = AddChildView(std::make_unique<views::Label>());
+  separator_ = AddChildView(std::make_unique<views::Label>());
+  status_ = AddChildView(std::make_unique<views::Label>());
   separator_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR));
-
-  ConfigureLabel(percentage_);
-  ConfigureLabel(separator_);
-  ConfigureLabel(status_);
-
-  AddChildView(percentage_);
-  AddChildView(separator_);
-  AddChildView(status_);
-
   Update();
 }
 
@@ -212,6 +204,13 @@ void BatteryView::ChildPreferredSizeChanged(views::View* child) {
 
 void BatteryView::ChildVisibilityChanged(views::View* child) {
   PreferredSizeChanged();
+}
+
+void BatteryView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  ConfigureLabel(percentage_);
+  ConfigureLabel(separator_);
+  ConfigureLabel(status_);
 }
 
 void BatteryView::OnPowerStatusChanged() {
@@ -250,6 +249,7 @@ class ManagedStateView : public views::Button {
 
   // views::Button:
   const char* GetClassName() const override { return "ManagedStateView"; }
+  void OnThemeChanged() override;
 
  protected:
   ManagedStateView(views::ButtonListener* listener,
@@ -257,39 +257,44 @@ class ManagedStateView : public views::Button {
                    const gfx::VectorIcon& icon);
 
  private:
+  views::Label* label_ = nullptr;
+  views::ImageView* image_ = nullptr;
+  const gfx::VectorIcon& icon_;
+
   DISALLOW_COPY_AND_ASSIGN(ManagedStateView);
 };
+
+void ManagedStateView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  auto* color_provider = AshColorProvider::Get();
+  label_->SetEnabledColor(color_provider->GetContentLayerColor(
+      ContentLayerType::kTextColorSecondary));
+  image_->SetImage(
+      gfx::CreateVectorIcon(icon_, color_provider->GetContentLayerColor(
+                                       ContentLayerType::kIconColorSecondary)));
+  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+}
 
 ManagedStateView::ManagedStateView(views::ButtonListener* listener,
                                    int label_id,
                                    const gfx::VectorIcon& icon)
-    : Button(listener) {
+    : Button(listener), icon_(icon) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kUnifiedSystemInfoSpacing));
 
-  auto* color_provider = AshColorProvider::Get();
-  auto* label = new views::Label;
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetSubpixelRenderingEnabled(false);
-  label->SetEnabledColor(color_provider->GetContentLayerColor(
-      ContentLayerType::kTextColorSecondary));
-  label->SetText(l10n_util::GetStringUTF16(label_id));
-  AddChildView(label);
+  label_ = AddChildView(std::make_unique<views::Label>());
+  label_->SetAutoColorReadabilityEnabled(false);
+  label_->SetSubpixelRenderingEnabled(false);
+  label_->SetText(l10n_util::GetStringUTF16(label_id));
 
-  auto* image = new views::ImageView;
-  image->SetImage(
-      gfx::CreateVectorIcon(icon, color_provider->GetContentLayerColor(
-                                      ContentLayerType::kIconColorSecondary)));
-  image->SetPreferredSize(
+  image_ = AddChildView(std::make_unique<views::ImageView>());
+  image_->SetPreferredSize(
       gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
-  AddChildView(image);
 
   SetInstallFocusRingOnFocus(true);
   SetFocusForPlatform();
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
-
   SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
 }
 
@@ -410,28 +415,22 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddChildView(new DateView(controller));
+  AddChildView(std::make_unique<DateView>(controller));
 
   if (PowerStatus::Get()->IsBatteryPresent()) {
-    auto* separator = new views::Separator();
-    separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kSeparatorColor));
-    separator->SetPreferredHeight(kUnifiedSystemInfoHeight);
-    AddChildView(separator);
-
-    AddChildView(new BatteryView());
+    separator_ = AddChildView(std::make_unique<views::Separator>());
+    separator_->SetPreferredHeight(kUnifiedSystemInfoHeight);
+    AddChildView(std::make_unique<BatteryView>());
   }
 
-  auto* spacing = new views::View;
-  AddChildView(spacing);
+  auto* spacing = AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(spacing, 1);
 
   if (!features::IsManagedDeviceUIRedesignEnabled()) {
     // UnifiedManagedDeviceView is shown instead.
-    enterprise_managed_ = new EnterpriseManagedView(controller);
-    supervised_ = new SupervisedUserView();
-    AddChildView(enterprise_managed_);
-    AddChildView(supervised_);
+    enterprise_managed_ =
+        AddChildView(std::make_unique<EnterpriseManagedView>(controller));
+    supervised_ = AddChildView(std::make_unique<SupervisedUserView>());
   }
 }
 
@@ -447,6 +446,14 @@ void UnifiedSystemInfoView::ChildPreferredSizeChanged(views::View* child) {
 
 const char* UnifiedSystemInfoView::GetClassName() const {
   return "UnifiedSystemInfoView";
+}
+
+void UnifiedSystemInfoView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (separator_) {
+    separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+        ContentLayerType::kSeparatorColor));
+  }
 }
 
 }  // namespace ash

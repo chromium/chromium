@@ -21,26 +21,13 @@ namespace ash {
 TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
                                      const gfx::VectorIcon& icon,
                                      int accessible_name_id)
-    : views::ImageButton(listener) {
+    : views::ImageButton(listener), icon_(icon) {
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   if (accessible_name_id)
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);
-
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(icon, kTrayTopShortcutButtonIconSize, icon_color));
-  SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(icon, kTrayTopShortcutButtonIconSize,
-                            AshColorProvider::GetDisabledColor(icon_color)));
-  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 TopShortcutButton::~TopShortcutButton() = default;
@@ -78,6 +65,17 @@ TopShortcutButton::CreateInkDropHighlight() const {
 
 const char* TopShortcutButton::GetClassName() const {
   return "TopShortcutButton";
+}
+
+void TopShortcutButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  auto* color_provider = AshColorProvider::Get();
+  color_provider->DecorateIconButton(this, icon_,
+                                     /*toggled_=*/false,
+                                     kTrayTopShortcutButtonIconSize);
+  focus_ring()->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  SchedulePaint();
 }
 
 }  // namespace ash

@@ -28,6 +28,7 @@
 namespace ash {
 
 using ContentLayerType = AshColorProvider::ContentLayerType;
+using ControlsLayerType = AshColorProvider::ControlsLayerType;
 
 namespace {
 
@@ -61,8 +62,6 @@ FeaturePodIconButton::FeaturePodIconButton(views::ButtonListener* listener,
   // Focus ring is around the whole view's bounds, but the ink drop should be
   // the same size as the content.
   TrayPopupUtils::ConfigureTrayPopupButton(this);
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
   focus_ring()->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
   views::InstallCircleHighlightPathGenerator(this,
@@ -91,11 +90,11 @@ void FeaturePodIconButton::PaintButtonContents(gfx::Canvas* canvas) {
 
   const AshColorProvider* color_provider = AshColorProvider::Get();
   SkColor color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+      ControlsLayerType::kControlBackgroundColorInactive);
   if (GetEnabled()) {
     if (toggled_) {
       color = color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
+          ControlsLayerType::kControlBackgroundColorActive);
     }
   } else {
     color = AshColorProvider::GetDisabledColor(color);
@@ -140,13 +139,20 @@ const char* FeaturePodIconButton::GetClassName() const {
   return "FeaturePodIconButton";
 }
 
+void FeaturePodIconButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      ControlsLayerType::kFocusRingColor));
+  UpdateVectorIcon();
+  SchedulePaint();
+}
+
 void FeaturePodIconButton::UpdateVectorIcon() {
   if (!icon_)
     return;
 
-  AshColorProvider::Get()->DecorateIconButton(
-      this, AshColorProvider::ButtonType::kIconButtonSmallOrMedium, *icon_,
-      toggled_, kUnifiedFeaturePodVectorIconSize);
+  AshColorProvider::Get()->DecorateIconButton(this, *icon_, toggled_,
+                                              kUnifiedFeaturePodVectorIconSize);
 }
 
 FeaturePodLabelButton::FeaturePodLabelButton(views::ButtonListener* listener)
@@ -167,8 +173,6 @@ FeaturePodLabelButton::FeaturePodLabelButton(views::ButtonListener* listener)
   detailed_view_arrow_->SetCanProcessEventsWithinSubtree(false);
   detailed_view_arrow_->SetVisible(false);
 
-  OnEnabledChanged();
-
   AddChildView(label_);
   AddChildView(detailed_view_arrow_);
   AddChildView(sub_label_);
@@ -179,7 +183,7 @@ FeaturePodLabelButton::FeaturePodLabelButton(views::ButtonListener* listener)
   layer()->SetFillsBoundsOpaquely(false);
 
   focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+      ControlsLayerType::kFocusRingColor));
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kUnifiedFeaturePodHoverCornerRadius);
 }
@@ -254,6 +258,11 @@ FeaturePodLabelButton::CreateInkDropHighlight() const {
 
 const char* FeaturePodLabelButton::GetClassName() const {
   return "FeaturePodLabelButton";
+}
+
+void FeaturePodLabelButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  OnEnabledChanged();
 }
 
 void FeaturePodLabelButton::SetLabel(const base::string16& label) {

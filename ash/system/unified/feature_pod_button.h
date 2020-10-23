@@ -40,6 +40,7 @@ class FeaturePodIconButton : public views::ImageButton {
       const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   bool toggled() const { return toggled_; }
 
@@ -86,6 +87,7 @@ class FeaturePodLabelButton : public views::Button {
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   // Layout |child| in horizontal center with its vertical origin set to |y|.

@@ -21,7 +21,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -47,19 +46,11 @@ constexpr int kInkDropRadius = 3 * kUnifiedPageIndicatorButtonRadius;
 class PageIndicatorView::PageIndicatorButton : public views::Button,
                                                public views::ButtonListener {
  public:
-  explicit PageIndicatorButton(UnifiedSystemTrayController* controller,
-                               int page)
+  PageIndicatorButton(UnifiedSystemTrayController* controller, int page)
       : views::Button(this), controller_(controller), page_number_(page) {
     DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetInkDropMode(InkDropMode::ON);
-
-    const AshColorProvider::RippleAttributes ripple_attributes =
-        AshColorProvider::Get()->GetRippleAttributes();
-    ripple_base_color_ = ripple_attributes.base_color;
-    highlight_opacity_ = ripple_attributes.highlight_opacity;
-    inkdrop_opacity_ = ripple_attributes.inkdrop_opacity;
-
     views::InstallFixedSizeCircleHighlightPathGenerator(this, kInkDropRadius);
   }
 
@@ -98,6 +89,16 @@ class PageIndicatorView::PageIndicatorButton : public views::Button,
                        : AshColorProvider::GetDisabledColor(selected_color));
     canvas->DrawCircle(rect.CenterPoint(), kUnifiedPageIndicatorButtonRadius,
                        flags);
+  }
+
+  // views::Button:
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+    auto ripple_attributes = AshColorProvider::Get()->GetRippleAttributes();
+    ripple_base_color_ = ripple_attributes.base_color;
+    highlight_opacity_ = ripple_attributes.highlight_opacity;
+    inkdrop_opacity_ = ripple_attributes.inkdrop_opacity;
+    SchedulePaint();
   }
 
   // views::ButtonListener:

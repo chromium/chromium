@@ -167,9 +167,7 @@ std::unique_ptr<views::LabelButtonBorder> NewDeskButton::CreateDefaultBorder()
 
 void NewDeskButton::OnThemeChanged() {
   LabelButton::OnThemeChanged();
-  AshColorProvider::Get()->DecoratePillButton(
-      this, AshColorProvider::ButtonType::kPillButtonWithIcon,
-      kDesksNewDeskButtonIcon);
+  AshColorProvider::Get()->DecoratePillButton(this, &kDesksNewDeskButtonIcon);
   UpdateButtonState();
 }
 

@@ -256,24 +256,23 @@ SkColor AshColorProvider::GetBackgroundColor() const {
 }
 
 void AshColorProvider::DecoratePillButton(views::LabelButton* button,
-                                          ButtonType type,
-                                          const gfx::VectorIcon& icon) {
-  DCHECK_EQ(ButtonType::kPillButtonWithIcon, type);
-  DCHECK(!icon.is_empty());
-  SkColor enabled_icon_color =
-      GetContentLayerColor(ContentLayerType::kButtonIconColor);
-  button->SetImage(views::Button::STATE_NORMAL,
-                   gfx::CreateVectorIcon(icon, enabled_icon_color));
-  button->SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(icon, GetDisabledColor(enabled_icon_color)));
+                                          const gfx::VectorIcon* icon) {
+  if (icon) {
+    SkColor enabled_icon_color =
+        GetContentLayerColor(ContentLayerType::kButtonIconColor);
+    button->SetImage(views::Button::STATE_NORMAL,
+                     gfx::CreateVectorIcon(*icon, enabled_icon_color));
+    button->SetImage(
+        views::Button::STATE_DISABLED,
+        gfx::CreateVectorIcon(*icon, GetDisabledColor(enabled_icon_color)));
+    button->SetImageLabelSpacing(kPillButtonImageLabelSpacingDp);
+  }
 
   SkColor enabled_text_color =
       GetContentLayerColor(ContentLayerType::kButtonLabelColor);
   button->SetEnabledTextColors(enabled_text_color);
   button->SetTextColor(views::Button::STATE_DISABLED,
                        GetDisabledColor(enabled_text_color));
-  button->SetImageLabelSpacing(kPillButtonImageLabelSpacingDp);
 
   // TODO(sammiequon): Add a default rounded rect background. It should probably
   // be optional as some buttons still require customization. At that point we
@@ -281,10 +280,8 @@ void AshColorProvider::DecoratePillButton(views::LabelButton* button,
 }
 
 void AshColorProvider::DecorateCloseButton(views::ImageButton* button,
-                                           ButtonType type,
                                            int button_size,
                                            const gfx::VectorIcon& icon) {
-  DCHECK_EQ(ButtonType::kCloseButtonWithSmallBase, type);
   DCHECK(!icon.is_empty());
   SkColor enabled_icon_color =
       GetContentLayerColor(ContentLayerType::kButtonIconColor);
@@ -295,17 +292,21 @@ void AshColorProvider::DecorateCloseButton(views::ImageButton* button,
   // it is a circle.
   SkColor icon_background_color = AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80);
-  button->SetBackground(
-      CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
-          icon_background_color, button_size / 2)));
+  button->SetBackground(views::CreateRoundedRectBackground(
+      icon_background_color, button_size / 2));
 
   // TODO(sammiequon): Add background blur as per spec. Background blur is quite
   // heavy, and we may have many close buttons showing at a time. They'll be
   // added separately so its easier to monitor performance.
 }
 
+void AshColorProvider::DecorateFloatingIconButton(views::ImageButton* button,
+                                                  const gfx::VectorIcon& icon) {
+  DecorateIconButton(button, icon, /*toggled=*/false,
+                     GetDefaultSizeOfVectorIcon(icon));
+}
+
 void AshColorProvider::DecorateIconButton(views::ImageButton* button,
-                                          ButtonType type,
                                           const gfx::VectorIcon& icon,
                                           bool toggled,
                                           int icon_size) {
@@ -333,7 +334,7 @@ void AshColorProvider::DecorateIconButton(views::ImageButton* button,
   button->SetImage(views::Button::STATE_NORMAL, new_normal_image);
   button->SetImage(
       views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(icon, icon_size, GetDisabledColor(normal_color)));
+      gfx::CreateVectorIcon(icon, icon_size, GetDisabledColor(icon_color)));
 }
 
 void AshColorProvider::AddObserver(ColorModeObserver* observer) {

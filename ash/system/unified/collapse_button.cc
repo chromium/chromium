@@ -15,13 +15,7 @@
 namespace ash {
 
 CollapseButton::CollapseButton(views::ButtonListener* listener)
-    : CustomShapeButton(listener) {
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(
-               kUnifiedMenuExpandIcon,
-               AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kIconColorPrimary)));
-}
+    : CustomShapeButton(listener) {}
 
 CollapseButton::~CollapseButton() = default;
 
@@ -60,6 +54,12 @@ void CollapseButton::PaintButtonContents(gfx::Canvas* canvas) {
 
 const char* CollapseButton::GetClassName() const {
   return "CollapseButton";
+}
+
+void CollapseButton::OnThemeChanged() {
+  CustomShapeButton::OnThemeChanged();
+  AshColorProvider::Get()->DecorateFloatingIconButton(this,
+                                                      kUnifiedMenuExpandIcon);
 }
 
 }  // namespace ash

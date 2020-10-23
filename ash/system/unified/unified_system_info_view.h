@@ -9,6 +9,10 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/views/view.h"
 
+namespace views {
+class Separator;
+}  // namespace views
+
 namespace ash {
 
 // A view at the bottom of UnifiedSystemTray bubble that shows system
@@ -23,6 +27,7 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest, EnterpriseManagedVisible);
@@ -37,6 +42,8 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   // SupervisedUserView for unit testing. Owned by this view . Null if
   // kManagedDeviceUIRedesign is enabled.
   views::View* supervised_ = nullptr;
+
+  views::Separator* separator_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSystemInfoView);
 };

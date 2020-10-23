@@ -98,8 +98,6 @@ UnifiedSliderButton::UnifiedSliderButton(views::ButtonListener* listener,
   // Focus ring is around the whole view's bounds, but the ink drop should be
   // the same size as the content.
   TrayPopupUtils::ConfigureTrayPopupButton(this);
-  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
   focus_ring()->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
   views::InstallCircleHighlightPathGenerator(
@@ -107,15 +105,6 @@ UnifiedSliderButton::UnifiedSliderButton(views::ButtonListener* listener,
 }
 
 UnifiedSliderButton::~UnifiedSliderButton() = default;
-
-gfx::Size UnifiedSliderButton::CalculatePreferredSize() const {
-  return gfx::Size(kTrayItemSize + kUnifiedCircularButtonFocusPadding.width(),
-                   kTrayItemSize + kUnifiedCircularButtonFocusPadding.height());
-}
-
-const char* UnifiedSliderButton::GetClassName() const {
-  return "UnifiedSliderButton";
-}
 
 void UnifiedSliderButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   icon_ = &icon;
@@ -168,13 +157,29 @@ void UnifiedSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                       : ax::mojom::CheckedState::kFalse);
 }
 
+const char* UnifiedSliderButton::GetClassName() const {
+  return "UnifiedSliderButton";
+}
+
+gfx::Size UnifiedSliderButton::CalculatePreferredSize() const {
+  return gfx::Size(kTrayItemSize + kUnifiedCircularButtonFocusPadding.width(),
+                   kTrayItemSize + kUnifiedCircularButtonFocusPadding.height());
+}
+
+void UnifiedSliderButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  UpdateVectorIcon();
+  focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  SchedulePaint();
+}
+
 void UnifiedSliderButton::UpdateVectorIcon() {
   if (!icon_)
     return;
 
   AshColorProvider::Get()->DecorateIconButton(
-      this, AshColorProvider::ButtonType::kIconButtonSmallOrMedium, *icon_,
-      toggled_, GetDefaultSizeOfVectorIcon(*icon_));
+      this, *icon_, toggled_, GetDefaultSizeOfVectorIcon(*icon_));
 }
 
 UnifiedSliderView::UnifiedSliderView(UnifiedSliderListener* listener,
