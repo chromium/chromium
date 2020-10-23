@@ -24,12 +24,14 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "services/cert_verifier/test_cert_verifier_service_factory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -59,6 +61,16 @@ bool GetInsecureStubResolverEnabled() {
       ->GetInsecureStubResolverEnabled();
 }
 
+// A custom matcher to validate a DnsOverHttpsServerConfig instance.
+MATCHER_P2(DnsOverHttpsServerConfigMatcher, server_template, use_post, "") {
+  return testing::ExplainMatchResult(
+      testing::AllOf(
+          testing::Field(&net::DnsOverHttpsServerConfig::server_template,
+                         server_template),
+          testing::Field(&net::DnsOverHttpsServerConfig::use_post, use_post)),
+      arg, result_listener);
+}
+
 // Checks that the values returned by GetStubResolverConfigForTesting() match
 // |async_dns_feature_enabled| (With empty DNS over HTTPS prefs). Then sets
 // various DoH modes and DoH template strings and makes sure the settings are
@@ -77,7 +89,7 @@ void RunStubResolverConfigTests(bool async_dns_feature_enabled) {
   } else {
     EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
   }
-  EXPECT_TRUE(secure_dns_config.servers().empty());
+  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
 
   std::string good_post_template = "https://foo.test/";
   std::string good_get_template = "https://bar.test/dns-query{?dns}";
@@ -95,17 +107,17 @@ void RunStubResolverConfigTests(bool async_dns_feature_enabled) {
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
-  EXPECT_TRUE(secure_dns_config.servers().empty());
+  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates, good_post_template);
   secure_dns_config = GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
-  ASSERT_EQ(1u, secure_dns_config.servers().size());
-  EXPECT_EQ(good_post_template,
-            secure_dns_config.servers().at(0).server_template);
-  EXPECT_EQ(true, secure_dns_config.servers().at(0).use_post);
+  EXPECT_THAT(secure_dns_config.servers(),
+              testing::ElementsAreArray({
+                  DnsOverHttpsServerConfigMatcher(good_post_template, true),
+              }));
 
   local_state->SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeAutomatic);
@@ -114,27 +126,27 @@ void RunStubResolverConfigTests(bool async_dns_feature_enabled) {
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_TRUE(secure_dns_config.servers().empty());
+  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates, good_then_bad_template);
   secure_dns_config = GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  ASSERT_EQ(1u, secure_dns_config.servers().size());
-  EXPECT_EQ(good_get_template,
-            secure_dns_config.servers().at(0).server_template);
-  EXPECT_FALSE(secure_dns_config.servers().at(0).use_post);
+  EXPECT_THAT(secure_dns_config.servers(),
+              testing::ElementsAreArray({
+                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
+              }));
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates, bad_then_good_template);
   secure_dns_config = GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  ASSERT_EQ(1u, secure_dns_config.servers().size());
-  EXPECT_EQ(good_get_template,
-            secure_dns_config.servers().at(0).server_template);
-  EXPECT_FALSE(secure_dns_config.servers().at(0).use_post);
+  EXPECT_THAT(secure_dns_config.servers(),
+              testing::ElementsAreArray({
+                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
+              }));
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates,
                          multiple_good_templates);
@@ -142,13 +154,11 @@ void RunStubResolverConfigTests(bool async_dns_feature_enabled) {
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  ASSERT_EQ(2u, secure_dns_config.servers().size());
-  EXPECT_EQ(good_get_template,
-            secure_dns_config.servers().at(0).server_template);
-  EXPECT_FALSE(secure_dns_config.servers().at(0).use_post);
-  EXPECT_EQ(good_post_template,
-            secure_dns_config.servers().at(1).server_template);
-  EXPECT_TRUE(secure_dns_config.servers().at(1).use_post);
+  EXPECT_THAT(secure_dns_config.servers(),
+              testing::ElementsAreArray({
+                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
+                  DnsOverHttpsServerConfigMatcher(good_post_template, true),
+              }));
 
   local_state->SetString(prefs::kDnsOverHttpsMode, SecureDnsConfig::kModeOff);
   local_state->SetString(prefs::kDnsOverHttpsTemplates, good_get_template);
@@ -156,14 +166,14 @@ void RunStubResolverConfigTests(bool async_dns_feature_enabled) {
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
-  EXPECT_TRUE(secure_dns_config.servers().empty());
+  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
 
   local_state->SetString(prefs::kDnsOverHttpsMode, "no_match");
   secure_dns_config = GetSecureDnsConfiguration(
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
-  EXPECT_TRUE(secure_dns_config.servers().empty());
+  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
 
   // Test case with policy BuiltInDnsClientEnabled enabled. The DoH fields
   // should be unaffected.
@@ -173,7 +183,7 @@ void RunStubResolverConfigTests(bool async_dns_feature_enabled) {
       false /* force_check_parental_controls_for_automatic_mode */);
   EXPECT_EQ(!async_dns_feature_enabled, GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
-  EXPECT_TRUE(secure_dns_config.servers().empty());
+  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
 }
 
 }  // namespace
@@ -216,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   // Test defaults.
   network::mojom::HttpAuthDynamicParamsPtr dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
-  EXPECT_EQ(false, dynamic_params->negotiate_disable_cname_lookup);
-  EXPECT_EQ(false, dynamic_params->enable_negotiate_port);
+  EXPECT_FALSE(dynamic_params->negotiate_disable_cname_lookup);
+  EXPECT_FALSE(dynamic_params->enable_negotiate_port);
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
@@ -227,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   local_state->SetBoolean(prefs::kDisableAuthNegotiateCnameLookup, true);
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
-  EXPECT_EQ(true, dynamic_params->negotiate_disable_cname_lookup);
-  EXPECT_EQ(false, dynamic_params->enable_negotiate_port);
+  EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
+  EXPECT_FALSE(dynamic_params->enable_negotiate_port);
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
@@ -236,8 +246,8 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   local_state->SetBoolean(prefs::kEnableAuthNegotiatePort, true);
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
-  EXPECT_EQ(true, dynamic_params->negotiate_disable_cname_lookup);
-  EXPECT_EQ(true, dynamic_params->enable_negotiate_port);
+  EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
+  EXPECT_TRUE(dynamic_params->enable_negotiate_port);
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
@@ -246,8 +256,8 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   local_state->SetString(prefs::kAuthServerAllowlist, kServerAllowList);
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
-  EXPECT_EQ(true, dynamic_params->negotiate_disable_cname_lookup);
-  EXPECT_EQ(true, dynamic_params->enable_negotiate_port);
+  EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
+  EXPECT_TRUE(dynamic_params->enable_negotiate_port);
   EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
 
@@ -256,8 +266,8 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
                          kDelegateAllowList);
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
-  EXPECT_EQ(true, dynamic_params->negotiate_disable_cname_lookup);
-  EXPECT_EQ(true, dynamic_params->enable_negotiate_port);
+  EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
+  EXPECT_TRUE(dynamic_params->enable_negotiate_port);
   EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
   EXPECT_EQ(kDelegateAllowList, dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
@@ -266,8 +276,8 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   local_state->SetBoolean(prefs::kAuthNegotiateDelegateByKdcPolicy, true);
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
-  EXPECT_EQ(true, dynamic_params->negotiate_disable_cname_lookup);
-  EXPECT_EQ(true, dynamic_params->enable_negotiate_port);
+  EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
+  EXPECT_TRUE(dynamic_params->enable_negotiate_port);
   EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
   EXPECT_EQ(kDelegateAllowList, dynamic_params->delegate_allowlist);
   EXPECT_TRUE(dynamic_params->delegate_by_kdc_policy);
@@ -276,11 +286,11 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
 #if defined(OS_CHROMEOS)
   // The kerberos.enabled pref is false and the device is not Active Directory
   // managed by default.
-  EXPECT_EQ(false, dynamic_params->allow_gssapi_library_load);
+  EXPECT_FALSE(dynamic_params->allow_gssapi_library_load);
   local_state->SetBoolean(prefs::kKerberosEnabled, true);
   dynamic_params =
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
-  EXPECT_EQ(true, dynamic_params->allow_gssapi_library_load);
+  EXPECT_TRUE(dynamic_params->allow_gssapi_library_load);
 #endif  // defined(OS_CHROMEOS)
 }
 
@@ -354,10 +364,6 @@ class SystemNetworkContextManagerFreezeQUICUaBrowsertest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-bool ContainsSubstring(std::string super, std::string sub) {
-  return super.find(sub) != std::string::npos;
-}
-
 IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerFreezeQUICUaBrowsertest,
                        QUICUaConfig) {
   network::mojom::NetworkContextParamsPtr network_context_params =
@@ -369,13 +375,13 @@ IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerFreezeQUICUaBrowsertest,
   if (GetParam()) {  // if the UA Freeze feature is turned on
     EXPECT_EQ("", quic_ua);
   } else {
-    EXPECT_TRUE(ContainsSubstring(quic_ua, chrome::GetChannelName()));
-    EXPECT_TRUE(ContainsSubstring(
-        quic_ua, version_info::GetProductNameAndVersionForUserAgent()));
-    EXPECT_TRUE(ContainsSubstring(
-        quic_ua,
-        content::BuildOSCpuInfo(content::IncludeAndroidBuildNumber::Exclude,
-                                content::IncludeAndroidModel::Include)));
+    EXPECT_THAT(quic_ua, testing::HasSubstr(chrome::GetChannelName()));
+    EXPECT_THAT(quic_ua,
+                testing::HasSubstr(
+                    version_info::GetProductNameAndVersionForUserAgent()));
+    EXPECT_THAT(quic_ua, testing::HasSubstr(content::BuildOSCpuInfo(
+                             content::IncludeAndroidBuildNumber::Exclude,
+                             content::IncludeAndroidModel::Include)));
   }
 }
 
