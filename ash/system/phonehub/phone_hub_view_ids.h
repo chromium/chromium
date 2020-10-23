@@ -20,8 +20,11 @@ enum PhoneHubViewID {
 
   // Onboarding view and its components.
   kOnboardingView,
+  kOnboardingMainView,
   kOnboardingGetStartedButton,
   kOnboardingDismissButton,
+  kOnboardingDismissPromptView,
+  kOnboardingDismissAckButton,
 
   // Connection error view and its components.
   kDisconnectedView,

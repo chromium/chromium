@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_UI_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/phone_hub_content_view.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"
@@ -62,7 +63,8 @@ class ASH_EXPORT PhoneHubUiController
 
   // Creates the corresponding content view for the current UI state.
   // |bubble_view| will be the parent the created content view.
-  std::unique_ptr<views::View> CreateContentView(TrayBubbleView* bubble_view);
+  std::unique_ptr<PhoneHubContentView> CreateContentView(
+      TrayBubbleView* bubble_view);
 
   // Creates the header view displaying the phone status.
   std::unique_ptr<views::View> CreateStatusHeaderView();
@@ -81,7 +83,7 @@ class ASH_EXPORT PhoneHubUiController
   void OnShouldShowOnboardingUiChanged() override;
 
   // Updates the current UI state and notifies observers.
-  void UpdateUiState();
+  void UpdateUiState(PhoneHubUiController::UiState new_state);
 
   // Returns the UiState from the PhoneHubManager.
   UiState GetUiStateFromPhoneHubManager();

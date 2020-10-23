@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -25,7 +26,7 @@ namespace ash {
 // A generic view to display interstitial pages for the Phone Hub feature with
 // image, text and buttons in a customized layout. It is reused by the
 // onboarding, loading, disconnected/reconnecting and error state UI.
-class ASH_EXPORT PhoneHubInterstitialView : public views::View {
+class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
  public:
   METADATA_HEADER(PhoneHubInterstitialView);
 

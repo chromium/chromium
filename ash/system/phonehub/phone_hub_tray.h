@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_TRAY_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/scoped_observer.h"
@@ -22,6 +23,7 @@ class ImageView;
 
 namespace ash {
 
+class PhoneHubContentView;
 class TrayBubbleWrapper;
 
 // This class represents the Phone Hub tray button in the status area and
@@ -53,6 +55,10 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   views::View* content_view_for_testing() { return content_view_; }
 
+  PhoneHubUiController* ui_controller_for_testing() {
+    return ui_controller_.get();
+  }
+
  private:
   // TrayBubbleView::Delegate:
   base::string16 GetAccessibleNameForBubble() override;
@@ -78,7 +84,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // The main content view of the bubble, which changes depending on the state.
   // Unowned.
-  views::View* content_view_ = nullptr;
+  PhoneHubContentView* content_view_ = nullptr;
 
   ScopedObserver<PhoneHubUiController, PhoneHubUiController::Observer>
       observed_phone_hub_ui_controller_{this};

@@ -68,6 +68,7 @@ void PhoneHubInterstitialView::SetImage(const gfx::ImageSkia& image) {
   // Expect a non-empty string for the title.
   DCHECK(!image.isNull());
   image_->SetImage(image);
+  image_->SetImageSize(gfx::Size(kImageWidthDip, kImageHeightDip));
 }
 
 void PhoneHubInterstitialView::SetTitle(const base::string16& title) {
@@ -119,7 +120,6 @@ void PhoneHubInterstitialView::InitLayout(bool show_progress) {
   // Set up layout row for the image view.
   layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
   image_ = layout->AddView(std::make_unique<views::ImageView>());
-  image_->SetImageSize(gfx::Size(kImageWidthDip, kImageHeightDip));
 
   // Set up layout row for the title view, which should be left-aligned.
   layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);

@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/phonehub/task_continuation_view.h"
@@ -109,7 +110,7 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
   TrayBubbleView* bubble_view = bubble_->bubble_view();
 
   DCHECK(ui_controller_.get());
-  std::unique_ptr<views::View> content_view =
+  std::unique_ptr<PhoneHubContentView> content_view =
       ui_controller_->CreateContentView(bubble_view);
   if (!content_view.get()) {
     CloseBubble();
@@ -207,6 +208,8 @@ const char* PhoneHubTray::GetClassName() const {
 }
 
 void PhoneHubTray::CloseBubble() {
+  if (content_view_)
+    content_view_->OnBubbleClose();
   content_view_ = nullptr;
   bubble_.reset();
   SetIsActive(false);

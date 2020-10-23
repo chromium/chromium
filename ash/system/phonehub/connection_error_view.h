@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_CONNECTION_ERROR_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ui/views/controls/button/button.h"
 
 namespace chromeos {
@@ -20,7 +21,7 @@ class PhoneHubInterstitialView;
 
 // An interstitial view represeting that the Phone Hub feature is not available
 // due to connection issues.
-class ASH_EXPORT ConnectionErrorView : public views::View,
+class ASH_EXPORT ConnectionErrorView : public PhoneHubContentView,
                                        public views::ButtonListener {
  public:
   METADATA_HEADER(ConnectionErrorView);

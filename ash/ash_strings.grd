@@ -1064,6 +1064,18 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON" desc="Get started button on the onboarding dialog for user to opt in this feature and start the consent flow.">
         Get started
       </message>
+      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_TITLE" desc="The title of the dialog that pops up after user clicks the dismiss button on the onboarding dialog.">
+        Set up Phone Hub later
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2." translateable="false">
+        View quick actions to extend the phone internet connection, control DND and locate your phone. Also view active Chrome tabs from your phone on your Chromebook.
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2" desc="The description of the dialog that pops up after user clicks the dismiss button on the onboarding dialog. Also see IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1." translateable="false">
+        You can always set up later from Settings.
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_OK_BUTTON" desc="Confirm button on the onboarding dismiss dialog to acknowledge.">
+        Ok, got it
+      </message>
       <message name="IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_TITLE" desc="The title of the initial connecting dialog that indicates the device is trying to connect to your phone after the user has opted in the Phone Hub feature.">
         Connecting to your phone...
       </message>

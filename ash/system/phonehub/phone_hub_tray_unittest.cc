@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/system/phonehub/notification_opt_in_view.h"
+#include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -65,6 +66,10 @@ class PhoneHubTrayTest : public AshTestBase {
     return phone_hub_manager_.fake_connection_scheduler();
   }
 
+  chromeos::phonehub::FakeOnboardingUiTracker* GetOnboardingUiTracker() {
+    return phone_hub_manager_.fake_onboarding_ui_tracker();
+  }
+
   // Simulate a mouse click on the given view.
   // Waits for the event to be processed.
   void ClickOnAndWait(const views::View* view) {
@@ -105,6 +110,36 @@ class PhoneHubTrayTest : public AshTestBase {
     return static_cast<views::Button*>(
         phone_hub_tray_->GetBubbleView()->GetViewByID(
             PhoneHubViewID::kDisconnectedLearnMoreButton));
+  }
+
+  views::View* onboarding_main_view() {
+    return static_cast<views::View*>(
+        phone_hub_tray_->GetBubbleView()->GetViewByID(
+            PhoneHubViewID::kOnboardingMainView));
+  }
+
+  views::View* onboarding_dismiss_prompt_view() {
+    return static_cast<views::View*>(
+        phone_hub_tray_->GetBubbleView()->GetViewByID(
+            PhoneHubViewID::kOnboardingDismissPromptView));
+  }
+
+  views::Button* onboarding_get_started_button() {
+    return static_cast<views::Button*>(
+        phone_hub_tray_->GetBubbleView()->GetViewByID(
+            PhoneHubViewID::kOnboardingGetStartedButton));
+  }
+
+  views::Button* onboarding_dismiss_button() {
+    return static_cast<views::Button*>(
+        phone_hub_tray_->GetBubbleView()->GetViewByID(
+            PhoneHubViewID::kOnboardingDismissButton));
+  }
+
+  views::Button* onboarding_dismiss_ack_button() {
+    return static_cast<views::Button*>(
+        phone_hub_tray_->GetBubbleView()->GetViewByID(
+            PhoneHubViewID::kOnboardingDismissAckButton));
   }
 
  protected:
@@ -226,6 +261,84 @@ TEST_F(PhoneHubTrayTest, TransitionContentView) {
 
   EXPECT_TRUE(content_view());
   EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
+}
+
+TEST_F(PhoneHubTrayTest, StartOnboardingFlow) {
+  // Simulate a pending setup state to show the onboarding screen.
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
+  GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);
+
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view()->GetID());
+  // It should display the onboarding main view.
+  EXPECT_TRUE(onboarding_main_view());
+  EXPECT_TRUE(onboarding_main_view()->GetVisible());
+  EXPECT_EQ(0u, GetOnboardingUiTracker()->handle_get_started_call_count());
+
+  // Simulate a click on the "Get started" button.
+  ClickOnAndWait(onboarding_get_started_button());
+  // It should invoke the |HandleGetStarted| call.
+  EXPECT_EQ(1u, GetOnboardingUiTracker()->handle_get_started_call_count());
+}
+
+TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingAckButton) {
+  // Simulate a pending setup state to show the onboarding screen.
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
+  GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);
+
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view()->GetID());
+  // It should display the onboarding main view at first.
+  EXPECT_TRUE(onboarding_main_view());
+
+  // Simulate a click on the "Dismiss" button.
+  ClickOnAndWait(onboarding_dismiss_button());
+
+  // It should transit to show the dismiss prompt.
+  EXPECT_TRUE(onboarding_dismiss_prompt_view());
+  EXPECT_TRUE(onboarding_dismiss_prompt_view()->GetVisible());
+
+  // Simulate a click on the "OK, got it" button to ack.
+  ClickOnAndWait(onboarding_dismiss_ack_button());
+
+  // Clicking "Ok, got it" button should dismiss the bubble, hide the tray icon,
+  // and disable the ability to show onboarding UI again.
+  EXPECT_FALSE(phone_hub_tray_->GetBubbleView());
+  EXPECT_FALSE(phone_hub_tray_->GetVisible());
+  EXPECT_FALSE(GetOnboardingUiTracker()->ShouldShowOnboardingUi());
+}
+
+TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingOutside) {
+  // Simulate a pending setup state to show the onboarding screen.
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
+  GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);
+
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view()->GetID());
+  // It should display the onboarding main view at first.
+  EXPECT_TRUE(onboarding_main_view());
+
+  // Simulate a click on the "Dismiss" button.
+  ClickOnAndWait(onboarding_dismiss_button());
+
+  // It should transit to show the dismiss prompt.
+  EXPECT_TRUE(onboarding_dismiss_prompt_view());
+  EXPECT_TRUE(onboarding_dismiss_prompt_view()->GetVisible());
+
+  // Simulate a click outside the bubble.
+  phone_hub_tray_->ClickedOutsideBubble();
+
+  // Clicking outside should dismiss the bubble, hide the tray icon, and disable
+  // the ability to show onboarding UI again.
+  EXPECT_FALSE(phone_hub_tray_->GetBubbleView());
+  EXPECT_FALSE(phone_hub_tray_->GetVisible());
+  EXPECT_FALSE(GetOnboardingUiTracker()->ShouldShowOnboardingUi());
 }
 
 TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {

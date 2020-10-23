@@ -11,6 +11,7 @@
 #include "ash/system/phonehub/initial_connecting_view.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_connected_view.h"
+#include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "base/logging.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
@@ -38,7 +39,7 @@ void PhoneHubUiController::SetPhoneHubManager(
     phone_hub_manager_->GetOnboardingUiTracker()->AddObserver(this);
   }
 
-  UpdateUiState();
+  UpdateUiState(GetUiStateFromPhoneHubManager());
 }
 
 std::unique_ptr<views::View> PhoneHubUiController::CreateStatusHeaderView() {
@@ -47,7 +48,7 @@ std::unique_ptr<views::View> PhoneHubUiController::CreateStatusHeaderView() {
   return std::make_unique<PhoneStatusView>(phone_hub_manager_->GetPhoneModel());
 }
 
-std::unique_ptr<views::View> PhoneHubUiController::CreateContentView(
+std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
     TrayBubbleView* bubble_view) {
   switch (ui_state_) {
     case UiState::kHidden:
@@ -55,7 +56,7 @@ std::unique_ptr<views::View> PhoneHubUiController::CreateContentView(
     case UiState::kOnboardingWithoutPhone:
     case UiState::kOnboardingWithPhone:
       return std::make_unique<OnboardingView>(
-          phone_hub_manager_->GetOnboardingUiTracker());
+          phone_hub_manager_->GetOnboardingUiTracker(), bubble_view);
     case UiState::kBluetoothDisabled:
       return std::make_unique<BluetoothDisabledView>();
     case UiState::kInitialConnecting:
@@ -83,15 +84,15 @@ void PhoneHubUiController::RemoveObserver(Observer* observer) {
 }
 
 void PhoneHubUiController::OnFeatureStatusChanged() {
-  UpdateUiState();
+  UpdateUiState(GetUiStateFromPhoneHubManager());
 }
 
 void PhoneHubUiController::OnShouldShowOnboardingUiChanged() {
-  UpdateUiState();
+  UpdateUiState(GetUiStateFromPhoneHubManager());
 }
 
-void PhoneHubUiController::UpdateUiState() {
-  auto new_state = GetUiStateFromPhoneHubManager();
+void PhoneHubUiController::UpdateUiState(
+    PhoneHubUiController::UiState new_state) {
   if (new_state == ui_state_)
     return;
 
