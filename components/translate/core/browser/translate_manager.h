@@ -134,7 +134,9 @@ class TranslateManager {
                                  bool triggered_from_menu = false);
 
   // Returns true iff the current page could be manually translated.
-  bool CanManuallyTranslate();
+  // Logging should only be performed when this method is called to show the
+  // translate menu item.
+  bool CanManuallyTranslate(bool menuLogging = false);
 
   // Shows the after translate or error infobar depending on the details.
   void PageTranslated(const std::string& source_lang,

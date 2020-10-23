@@ -629,12 +629,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     /**
+     * This method should only be called once per context menu shown.
      * @param currentTab The currentTab for which the app menu is showing.
+     * @param logging Whether logging should be performed in this check.
      * @return Whether the translate menu item should be displayed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public boolean shouldShowTranslateMenuItem(@NonNull Tab currentTab) {
-        return TranslateUtils.canTranslateCurrentTab(currentTab);
+        return TranslateUtils.canTranslateCurrentTab(currentTab, true);
     }
 
     /**
@@ -753,8 +755,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected void prepareTranslateMenuItem(Menu menu, Tab currentTab) {
         boolean isTranslateVisible = shouldShowTranslateMenuItem(currentTab);
-        RecordHistogram.recordBooleanHistogram(
-                "Translate.MobileMenuTranslate.Shown", isTranslateVisible);
         menu.findItem(R.id.translate_id).setVisible(isTranslateVisible);
     }
 

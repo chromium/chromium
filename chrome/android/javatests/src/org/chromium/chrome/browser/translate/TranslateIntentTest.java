@@ -64,7 +64,7 @@ public class TranslateIntentTest {
         CriteriaHelper.pollUiThread(() -> {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(TranslateBridge.canManuallyTranslate(tab), Matchers.is(true));
+            Criteria.checkThat(TranslateBridge.canManuallyTranslate(tab, false), Matchers.is(true));
         });
     }
 

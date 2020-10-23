@@ -1532,8 +1532,11 @@ void RenderViewContextMenu::AppendPageItems() {
 
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(embedder_web_contents_);
-  if (chrome_translate_client &&
-      chrome_translate_client->GetTranslateManager()->CanManuallyTranslate()) {
+  const bool canTranslate =
+      chrome_translate_client &&
+      chrome_translate_client->GetTranslateManager()->CanManuallyTranslate(
+          true);
+  if (canTranslate) {
     language::LanguageModel* language_model =
         LanguageModelManagerFactory::GetForBrowserContext(browser_context_)
             ->GetPrimaryModel();

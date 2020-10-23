@@ -91,11 +91,12 @@ static void JNI_TranslateBridge_TranslateToLanguage(
 
 static jboolean JNI_TranslateBridge_CanManuallyTranslate(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaParamRef<jobject>& j_web_contents,
+    jboolean menuLogging) {
   ChromeTranslateClient* client = GetTranslateClient(j_web_contents);
   translate::TranslateManager* manager = client->GetTranslateManager();
   DCHECK(manager);
-  return manager->CanManuallyTranslate();
+  return manager->CanManuallyTranslate(menuLogging);
 }
 
 static jboolean JNI_TranslateBridge_ShouldShowManualTranslateIPH(

@@ -951,9 +951,11 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_PageNeedsTranslation) {
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", false);
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
 }
 
 TEST_F(TranslateManagerTest, CanManuallyTranslate_Offline) {
@@ -968,9 +970,11 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_Offline) {
 
   network_notifier_.SimulateOffline();
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
 
   network_notifier_.SimulateOnline();
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
 }
 
 TEST_F(TranslateManagerTest, CanManuallyTranslate_TranslatableURL) {
@@ -985,10 +989,12 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_TranslatableURL) {
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(false));
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
 
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
 }
 
 TEST_F(TranslateManagerTest, CanManuallyTranslate_EmptySourceLanguage) {
@@ -1004,6 +1010,7 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_EmptySourceLanguage) {
   translate_manager_->GetLanguageState()->LanguageDetermined("", true);
 
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
 }
 
 TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {

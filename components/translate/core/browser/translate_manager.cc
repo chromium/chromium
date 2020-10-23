@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -198,41 +199,105 @@ std::string TranslateManager::GetManualTargetLanguage(
   }
 }
 
-bool TranslateManager::CanManuallyTranslate() {
-  if (!base::FeatureList::IsEnabled(translate::kTranslate) ||
-      net::NetworkChangeNotifier::IsOffline() ||
-      (!ignore_missing_key_for_testing_ &&
-       !::google_apis::HasAPIKeyConfigured()))
-    return false;
+bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
+  bool can_translate = true;
+
+  if (!base::FeatureList::IsEnabled(translate::kTranslate)) {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kTranslateDisabled);
+    can_translate = false;
+  }
+
+  if (net::NetworkChangeNotifier::IsOffline()) {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kNetworkOffline);
+    can_translate = false;
+  }
+
+  if (!ignore_missing_key_for_testing_ &&
+      !::google_apis::HasAPIKeyConfigured()) {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kApiKeysMissing);
+    can_translate = false;
+  }
 
   // MHTML pages currently cannot be translated (crbug.com/217945).
-  if (translate_driver_->GetContentsMimeType() == "multipart/related" ||
-      !translate_client_->IsTranslatableURL(
+  if (translate_driver_->GetContentsMimeType() == "multipart/related") {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::kMHTMLPage);
+    can_translate = false;
+  }
+
+  if (!translate_client_->IsTranslatableURL(
           translate_driver_->GetVisibleURL()) ||
-      !language_state_.page_needs_translation())
-    return false;
+      !language_state_.page_needs_translation()) {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kURLNotTranslatable);
+    can_translate = false;
+  }
 
   const std::string source_language = language_state_.original_language();
-  if (source_language.empty())
-    return false;
+  if (source_language.empty()) {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kSourceLangUnknown);
+    can_translate = false;
+  }
   // Translation of unknown source language pages is supported on desktop
   // platforms, but not mobile.
 #if defined(OS_ANDROID) || defined(OS_IOS)
-  if (source_language == translate::kUnknownLanguageCode)
-    return false;
+  if (source_language == translate::kUnknownLanguageCode) {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kSourceLangUnknown);
+    can_translate = false;
+  }
 #endif
 
   std::unique_ptr<TranslatePrefs> translate_prefs(
       translate_client_->GetTranslatePrefs());
-  if (!translate_prefs->IsTranslateAllowedByPolicy())
-    return false;
+  if (!translate_prefs->IsTranslateAllowedByPolicy()) {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kNotAllowedByPolicy);
+    can_translate = false;
+  }
+
   const std::string target_lang = GetManualTargetLanguage(
       TranslateDownloadManager::GetLanguageCode(source_language),
       language_state_, translate_prefs.get(), language_model_);
-  if (target_lang.empty())
-    return false;
+  if (target_lang.empty()) {
+    if (!menuLogging)
+      return false;
+    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
+        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
+            kTargetLangUnknown);
+    can_translate = false;
+  }
 
-  return true;
+  UMA_HISTOGRAM_BOOLEAN("Translate.MenuTranslation.IsAvailable", can_translate);
+
+  return can_translate;
 }
 
 void TranslateManager::InitiateManualTranslation(bool auto_translate,

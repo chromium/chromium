@@ -381,8 +381,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.MenuTranslation.IsAvailable" enum="BooleanAvailable"
+    expires_after="2021-04-04">
+  <owner>cuianthony@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the availability of manual translate from the context (Desktop) menu
+    and app (Mobile) menu. Emitted when the menu is shown.
+  </summary>
+</histogram>
+
+<histogram name="Translate.MenuTranslation.UnavailableReasons"
+    enum="MenuTranslationUnavailableReason" expires_after="2021-01-31">
+  <owner>cuianthony@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    If manual translate is not available on the context (Desktop) or app
+    (Mobile) menu for the current page, logs ALL the reasons why. Emitted when
+    the menu is shown. More than one bucket may be logged per menu open. This
+    allows us to investigate the primary reasons the user isn't seeing the menu
+    item and make the manual translate UI more visible to users.
+  </summary>
+</histogram>
+
 <histogram name="Translate.MobileMenuTranslate.Shown" enum="Boolean"
     expires_after="2021-04-04">
+  <obsolete>
+    Removed 10/09/2020. Replaced with Translate.MenuTranslation.IsAvailable.
+  </obsolete>
   <owner>yyushkina@google.com</owner>
   <owner>frechette@chromium.org</owner>
   <owner>chrome-language@google.com</owner>

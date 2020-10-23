@@ -698,6 +698,23 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   return translate_manager->CanManuallyTranslate();
 }
 
+// Determines whether or not translate is available on the page and logs the
+// result. This method should only be called once per popup menu shown.
+- (void)logTranslateAvailability {
+  if (!self.webState)
+    return;
+
+  auto* translate_client =
+      ChromeIOSTranslateClient::FromWebState(self.webState);
+  if (!translate_client)
+    return;
+
+  translate::TranslateManager* translate_manager =
+      translate_client->GetTranslateManager();
+  DCHECK(translate_manager);
+  translate_manager->CanManuallyTranslate(true);
+}
+
 // Whether find in page is enabled.
 - (BOOL)isFindInPageEnabled {
   if (!self.webState)
@@ -914,8 +931,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   [actionsArray addObject:self.bookmarkItem];
 
   // Translate.
-  UMA_HISTOGRAM_BOOLEAN("Translate.MobileMenuTranslate.Shown",
-                        [self isTranslateEnabled]);
+  [self logTranslateAvailability];
   self.translateItem = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_TRANSLATE, PopupMenuActionTranslate,
       @"popup_menu_translate", kToolsMenuTranslateId);

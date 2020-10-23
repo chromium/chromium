@@ -16,6 +16,18 @@ public class TranslateUtils {
      * @param tab The tab in question.
      */
     public static boolean canTranslateCurrentTab(Tab tab) {
-        return tab.getWebContents() != null && TranslateBridge.canManuallyTranslate(tab);
+        return canTranslateCurrentTab(tab, false);
+    }
+
+    /**
+     * Overloaded canTranslateCurrentTab.
+     * Logging should only be performed when this method is called to show the translate menu item.
+     *
+     * @param tab The tab in question.
+     * @param menuLogging Whether logging should be performed in this check.
+     */
+    public static boolean canTranslateCurrentTab(Tab tab, boolean menuLogging) {
+        return tab.getWebContents() != null
+                && TranslateBridge.canManuallyTranslate(tab, menuLogging);
     }
 }

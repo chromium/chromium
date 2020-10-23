@@ -32,6 +32,8 @@ const char kTranslateHrefHintStatus[] = "Translate.HrefHint.Status";
 const char kTranslateHrefHintPrefsFilterStatus[] =
     "Translate.HrefHint.PrefsFilterStatus";
 const char kTranslateTargetLanguageOrigin[] = "Translate.TargetLanguage.Origin";
+const char kTranslateMenuTranslationUnavailableReasons[] =
+    "Translate.MenuTranslation.UnavailableReasons";
 
 }  // namespace
 
@@ -44,6 +46,12 @@ void ReportInitiationStatus(InitiationStatusType type) {
 
 void ReportLanguageDetectionError() {
   UMA_HISTOGRAM_BOOLEAN(kTranslateReportLanguageDetectionError, true);
+}
+
+void ReportMenuTranslationUnavailableReason(
+    MenuTranslationUnavailableReason reason) {
+  UMA_HISTOGRAM_ENUMERATION(kTranslateMenuTranslationUnavailableReasons,
+                            reason);
 }
 
 void ReportLanguageDetectionContentLength(size_t length) {
