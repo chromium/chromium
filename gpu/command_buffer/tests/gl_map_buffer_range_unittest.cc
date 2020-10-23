@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
+#include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -289,6 +290,10 @@ TEST_F(ES3MapBufferRangeTest, DrawElementsAndInstanced) {
 
 TEST_F(ES3MapBufferRangeTest, ReadPixels) {
   if (ShouldSkipTest())
+    return;
+
+  // TODO(crbug.com/angleproject/5213) consistent driver errors on this config.
+  if (GPUTestBotConfig::CurrentConfigMatches("Linux AMD"))
     return;
 
   GLuint buffer = 0;
