@@ -279,6 +279,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
         [[TableViewTextItem alloc] initWithType:CheckStartItemType];
     _checkStartItem.text = GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
     _checkStartItem.textColor = [UIColor colorNamed:kBlueColor];
+    _checkStartItem.accessibilityTraits |= UIAccessibilityTraitButton;
   }
   return self;
 }
