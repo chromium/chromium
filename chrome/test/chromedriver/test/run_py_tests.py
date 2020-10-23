@@ -1201,6 +1201,108 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
 
     self._driver.ReleaseActions()
 
+  def testActionsPenPointerEventProperties(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript(
+        '''
+        document.body.innerHTML = "<div>test</div>";
+        var div = document.getElementsByTagName("div")[0];
+        div.style["width"] = "100px";
+        div.style["height"] = "100px";
+        window.events = [];
+        div.addEventListener("pointerdown", event => {
+          window.events.push(
+              {type: event.type,
+               x: event.clientX,
+               y: event.clientY,
+               width: event.width,
+               height: event.height,
+               pressure: event.pressure,
+               tiltX: event.tiltX,
+               tiltY: event.tiltY,
+               twist: event.twist});
+        });
+        ''')
+    time.sleep(1)
+    actions = ({"actions": [{
+      "type":"pointer",
+      "actions":[{"type": "pointerMove", "x": 30, "y": 30},
+                 {"type": "pointerDown", "button": 0, "pressure":0.55,
+                  "tiltX":-36, "tiltY":83, "twist":266},
+                 {"type": "pointerMove", "x": 50, "y": 50},
+                 {"type": "pointerUp", "button": 0}],
+      "parameters": {"pointerType": "mouse"},
+      "id": "pointer1"}]})
+    self._driver.PerformActions(actions)
+    time.sleep(1)
+    events = self._driver.ExecuteScript('return window.events')
+    self.assertEquals(1, len(events))
+    self.assertEquals("pointerdown", events[0]['type'])
+    self.assertAlmostEqual(30, events[0]['x'], delta=1)
+    self.assertAlmostEqual(30, events[0]['y'], delta=1)
+    self.assertEquals(1.0, round(events[0]['width'], 2))
+    self.assertEquals(1.0, round(events[0]['height'], 2))
+    self.assertEquals(0.55, round(events[0]['pressure'], 2))
+    self.assertEquals(-36, events[0]['tiltX'])
+    self.assertEquals(83, events[0]['tiltY'])
+    self.assertEquals(266, events[0]['twist'])
+
+  def testActionsPenPointerEventPressure(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript(
+        '''
+        document.body.innerHTML = "<div>test</div>";
+        var div = document.getElementsByTagName("div")[0];
+        div.style["width"] = "100px";
+        div.style["height"] = "100px";
+        window.events = [];
+        var event_list = ["pointerdown", "pointermove", "pointerup"];
+        for (var i = 0; i < event_list.length; i++) {
+          div.addEventListener(event_list[i], event => {
+            window.events.push(
+                {type: event.type,
+                 x: event.clientX,
+                 y: event.clientY,
+                 pressure: event.pressure,
+                 twist: event.twist});
+          });
+        }
+        ''')
+    time.sleep(1)
+    actions = ({"actions": [{
+      "type":"pointer",
+      "actions":[{"type": "pointerMove", "x": 30, "y": 30},
+                 {"type": "pointerDown", "button": 0,
+                  "twist":30},
+                 {"type": "pointerMove", "x": 50, "y": 50},
+                 {"type": "pointerUp", "button": 0}],
+      "parameters": {"pointerType": "pen"},
+      "id": "pointer1"}]})
+    self._driver.PerformActions(actions)
+    time.sleep(1)
+    events = self._driver.ExecuteScript('return window.events')
+    self.assertEquals(4, len(events))
+    self.assertEquals("pointermove", events[0]['type'])
+    self.assertAlmostEqual(30, events[0]['x'], delta=1)
+    self.assertAlmostEqual(30, events[0]['y'], delta=1)
+    self.assertEquals(0.0, round(events[0]['pressure'], 2))
+    self.assertEquals(0, events[0]['twist'])
+    self.assertEquals("pointerdown", events[1]['type'])
+    self.assertAlmostEqual(30, events[1]['x'], delta=1)
+    self.assertAlmostEqual(30, events[1]['y'], delta=1)
+    self.assertEquals(0.5, round(events[1]['pressure'], 2))
+    self.assertEquals(30, events[1]['twist'])
+    self.assertEquals("pointermove", events[2]['type'])
+    self.assertAlmostEqual(50, events[2]['x'], delta=1)
+    self.assertAlmostEqual(50, events[2]['y'], delta=1)
+    self.assertEquals(0.5, round(events[2]['pressure'], 2))
+    self.assertEquals(0, events[2]['twist'])
+    self.assertEquals("pointerup", events[3]['type'])
+    self.assertAlmostEqual(50, events[3]['x'], delta=1)
+    self.assertAlmostEqual(50, events[3]['y'], delta=1)
+    self.assertEquals(0.0, round(events[3]['pressure'], 2))
+    self.assertEquals(0, events[3]['twist'])
+
   def testActionsPause(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     self._driver.ExecuteScript(

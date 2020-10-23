@@ -1452,6 +1452,64 @@ Status ProcessInputActionSequence(
         if (status.IsError())
           return status;
       }
+
+      // Process Pointer Event's properties.
+      double width = 1;
+      if (action_item->HasKey("width") &&
+          (!action_item->GetDouble("width", &width) || width < 0)) {
+        return Status(kInvalidArgument,
+                      "'width' must be a non-negative number");
+      }
+      action->SetDouble("width", width);
+      double height = 1;
+      if (action_item->HasKey("height") &&
+          (!action_item->GetDouble("height", &height) || height < 0)) {
+        return Status(kInvalidArgument,
+                      "'height' must be a non-negative number");
+      }
+      action->SetDouble("height", height);
+      double pressure = 0.5;
+      if (action_item->HasKey("pressure") &&
+          (!action_item->GetDouble("pressure", &pressure) || pressure < 0 ||
+           pressure > 1)) {
+        return Status(
+            kInvalidArgument,
+            "'pressure' must be a non-negative number in the range of [0,1]");
+      }
+      action->SetDouble("pressure", pressure);
+      double tangentialPressure = 0;
+      if (action_item->HasKey("tangentialPressure") &&
+          (!action_item->GetDouble("tangentialPressure", &tangentialPressure) ||
+           tangentialPressure < -1 || tangentialPressure > 1)) {
+        return Status(
+            kInvalidArgument,
+            "'tangentialPressure' must be a number in the range of [-1,1]");
+      }
+      action->SetDouble("tangentialPressure", tangentialPressure);
+      int tiltX = 0;
+      if (action_item->HasKey("tiltX") &&
+          (!action_item->GetInteger("tiltX", &tiltX) || tiltX < -90 ||
+           tiltX > 90)) {
+        return Status(kInvalidArgument,
+                      "'tiltX' must be an integer in the range of [-90,90]");
+      }
+      action->SetInteger("tiltX", tiltX);
+      int tiltY = 0;
+      if (action_item->HasKey("tiltY") &&
+          (!action_item->GetInteger("tiltY", &tiltY) || tiltY < -90 ||
+           tiltY > 90)) {
+        return Status(kInvalidArgument,
+                      "'tiltY' must be an integer in the range of [-90,90]");
+      }
+      action->SetInteger("tiltY", tiltY);
+      int twist = 0;
+      if (action_item->HasKey("twist") &&
+          (!action_item->GetInteger("twist", &twist) || twist < 0 ||
+           twist > 359)) {
+        return Status(kInvalidArgument,
+                      "'twist' must be an integer in the range of [0,359]");
+      }
+      action->SetInteger("twist", twist);
     }
     action_list->push_back(std::move(action));
   }
@@ -1671,6 +1729,17 @@ Status ExecutePerformActions(Session* session,
               }
             }
 
+            double width = 1, height = 1;
+            action->GetDouble("width", &width);
+            action->GetDouble("height", &height);
+            double pressure = 0.5, tangential_pressure = 0;
+            action->GetDouble("pressure", &pressure);
+            action->GetDouble("tangentialPressure", &tangential_pressure);
+            int tilt_x = 0, tilt_y = 0, twist = 0;
+            action->GetInteger("tiltX", &tilt_x);
+            action->GetInteger("tiltY", &tilt_y);
+            action->GetInteger("twist", &twist);
+
             std::string pointer_type;
             action->GetString("pointerType", &pointer_type);
             if (pointer_type == "mouse" || pointer_type == "pen") {
@@ -1694,6 +1763,11 @@ Status ExecutePerformActions(Session* session,
                                  click_count);
                 event.pointer_type = StringToPointerType(pointer_type);
                 event.modifiers = session->sticky_modifiers;
+                event.tangentialPressure = tangential_pressure;
+                event.tiltX = tilt_x;
+                event.tiltY = tilt_y;
+                event.twist = twist;
+
                 if (event.type == kPressedMouseEventType) {
                   base::TimeTicks timestamp = base::TimeTicks::Now();
                   event.click_count = GetMouseClickCount(
@@ -1711,13 +1785,20 @@ Status ExecutePerformActions(Session* session,
                       action_input_states[j]->FindKey("pressed")->GetInt() |
                           (1 << event.button));
                 } else if (event.type == kReleasedMouseEventType) {
+                  pressure = 0;
                   event.click_count = session->click_count;
                   buttons[id] &= ~StringToModifierMouseButton(button_type[id]);
                   action_input_states[j]->SetInteger(
                       "pressed",
                       action_input_states[j]->FindKey("pressed")->GetInt() &
                           ~(1 << event.button));
+                } else if (event.type == kMovedMouseEventType) {
+                  if (!(action_input_states[j]->FindKey("pressed")->GetInt() |
+                        (1 << event.button))) {
+                    pressure = 0;
+                  }
                 }
+                event.force = pressure;
                 dispatch_mouse_events.push_back(event);
                 Status status = web_view->DispatchMouseEvents(
                     dispatch_mouse_events, session->GetCurrentFrameId(),
@@ -1731,6 +1812,13 @@ Status ExecutePerformActions(Session* session,
               TouchEvent event(StringToTouchEventType(action_type),
                                action_locations[id].x(),
                                action_locations[id].y());
+              event.radiusX = width / 2.f;
+              event.radiusY = height / 2.f;
+              event.force = pressure;
+              event.tangentialPressure = tangential_pressure;
+              event.tiltX = tilt_x;
+              event.tiltY = tilt_y;
+              event.twist = twist;
               if (event.type == kTouchStart) {
                 session->input_cancel_list.emplace_back(
                     action_input_states[j], nullptr, &event, nullptr);
