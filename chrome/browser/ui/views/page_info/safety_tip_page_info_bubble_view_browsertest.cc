@@ -854,14 +854,9 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 }
 
 // Tests that the SafetyTipShown histogram triggers correctly.
-// Flaky on Mac: https://crbug.com/1139955
-#if defined(OS_MAC)
-#define MAYBE_SafetyTipShownHistogram DISABLED_SafetyTipShownHistogram
-#else
-#define MAYBE_SafetyTipShownHistogram SafetyTipShownHistogram
-#endif
+// Flaky on all platforms: https://crbug.com/1139955
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       MAYBE_SafetyTipShownHistogram) {
+                       DISABLE_SafetyTipShownHistogram) {
   const char kHistogramName[] = "Security.SafetyTips.SafetyTipShown";
   base::HistogramTester histograms;
 
@@ -1275,16 +1270,10 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 
 // Tests that UKM data is only recorded after the safety tip warning is
 // dismissed or accepted, for the blocklist heuristic.
-// Flaky on Mac: https://crbug.com/1139955
-#if defined(OS_MAC)
-#define MAYBE_WarningDismissalCausesUkmRecordingForBlocklist \
-  DISABLED_WarningDismissalCausesUkmRecordingForBlocklist
-#else
-#define MAYBE_WarningDismissalCausesUkmRecordingForBlocklist \
-  WarningDismissalCausesUkmRecordingForBlocklist
-#endif
-IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       MAYBE_WarningDismissalCausesUkmRecordingForBlocklist) {
+// Flaky on all platforms: https://crbug.com/1139955
+IN_PROC_BROWSER_TEST_P(
+    SafetyTipPageInfoBubbleViewBrowserTest,
+    DISABLED_WarningDismissalCausesUkmRecordingForBlocklist) {
   // Only test when any UI is actually enabled.
   if (!IsSuspiciousSiteWarningEnabled()) {
     return;
