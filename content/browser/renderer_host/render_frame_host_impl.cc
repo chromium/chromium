@@ -8496,7 +8496,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (navigation_request &&
       navigation_request->common_params().url != params->url &&
       is_same_document_navigation) {
-    same_document_navigation_request_ = std::move(navigation_request);
+    // It's possible for the committed URL to differ from the one saved in
+    // NavigationRequest when the navigation is blocked or we passed an empty
+    // URL before (see crbug.com/963396). In this case, we should recreate the
+    // NavigationRequest with CreateNavigationRequestForCommit() further down.
+    navigation_request.reset();
   }
 
   // Set is loading to true now if it has not been set yet. This happens for
