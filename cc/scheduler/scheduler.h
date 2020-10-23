@@ -322,6 +322,8 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   bool stopped_ = false;
 
+  bool needs_finish_frame_for_synchronous_compositor_ = false;
+
   // Keeps track of the begin frame interval from the last BeginFrameArgs to
   // arrive so that |client_| can be informed about changes.
   base::TimeDelta last_frame_interval_;
@@ -369,6 +371,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   void BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args);
   void BeginImplFrameSynchronous(const viz::BeginFrameArgs& args);
+  void FinishImplFrameSynchronous();
   void BeginImplFrame(const viz::BeginFrameArgs& args, base::TimeTicks now);
   void FinishImplFrame();
   void SendDidNotProduceFrame(const viz::BeginFrameArgs& args,

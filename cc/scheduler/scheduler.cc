@@ -277,7 +277,10 @@ void Scheduler::StartOrStopBeginFrames() {
     if (begin_frame_source_)
       begin_frame_source_->RemoveObserver(this);
     // We're going idle so drop pending begin frame.
+    if (settings_.using_synchronous_renderer_compositor)
+      FinishImplFrameSynchronous();
     CancelPendingBeginFrameTask();
+
     compositor_timing_history_->BeginImplFrameNotExpectedSoon();
     devtools_instrumentation::NeedsBeginFrameChanged(layer_tree_host_id_,
                                                      false);
@@ -404,14 +407,19 @@ void Scheduler::SetVideoNeedsBeginFrames(bool video_needs_begin_frames) {
 void Scheduler::OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                             bool skip_draw) {
   DCHECK(settings_.using_synchronous_renderer_compositor);
-  DCHECK_EQ(state_machine_.begin_impl_frame_state(),
-            SchedulerStateMachine::BeginImplFrameState::IDLE);
+  if (state_machine_.begin_impl_frame_state() ==
+      SchedulerStateMachine::BeginImplFrameState::INSIDE_BEGIN_FRAME) {
+    DCHECK(needs_finish_frame_for_synchronous_compositor_);
+  } else {
+    DCHECK_EQ(state_machine_.begin_impl_frame_state(),
+              SchedulerStateMachine::BeginImplFrameState::IDLE);
+    DCHECK(!needs_finish_frame_for_synchronous_compositor_);
+  }
   DCHECK(begin_impl_frame_deadline_task_.IsCancelled());
 
   state_machine_.SetResourcelessSoftwareDraw(resourceless_software_draw);
   state_machine_.SetSkipDraw(skip_draw);
-  state_machine_.OnBeginImplFrameDeadline();
-  ProcessScheduledActions();
+  OnBeginImplFrameDeadline();
 
   state_machine_.OnBeginImplFrameIdle();
   ProcessScheduledActions();
@@ -561,6 +569,9 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
 }
 
 void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
+  // Finish the previous frame (if needed) before starting a new one.
+  FinishImplFrameSynchronous();
+
   TRACE_EVENT1("cc,benchmark", "Scheduler::BeginImplFrame", "args",
                args.AsValue());
   // The main thread currently can't commit before we draw with the
@@ -572,10 +583,17 @@ void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
   BeginImplFrame(args, Now());
   compositor_timing_history_->WillFinishImplFrame(state_machine_.needs_redraw(),
                                                   args.frame_id);
-  FinishImplFrame();
+  // Delay the call to |FinishFrame()| if a draw is anticipated, so that it is
+  // called after the draw happens (in |OnDrawForLayerTreeFrameSink()|).
+  needs_finish_frame_for_synchronous_compositor_ = true;
+  if (!state_machine_.did_invalidate_layer_tree_frame_sink()) {
+    // If there was no invalidation, then finish the frame immediately.
+    FinishImplFrameSynchronous();
+  }
 }
 
 void Scheduler::FinishImplFrame() {
+  DCHECK(!needs_finish_frame_for_synchronous_compositor_);
   state_machine_.OnBeginImplFrameIdle();
 
   // Send ack before calling ProcessScheduledActions() because it might send an
@@ -727,11 +745,26 @@ void Scheduler::OnBeginImplFrameDeadline() {
   //     order to wait for more user-input before starting the next commit.
   // * Creating a new OuputSurface will not occur during the deadline in
   //     order to allow the state machine to "settle" first.
-  compositor_timing_history_->WillFinishImplFrame(
-      state_machine_.needs_redraw(), begin_main_frame_args_.frame_id);
+  if (!settings_.using_synchronous_renderer_compositor) {
+    compositor_timing_history_->WillFinishImplFrame(
+        state_machine_.needs_redraw(), begin_main_frame_args_.frame_id);
+  }
+
   state_machine_.OnBeginImplFrameDeadline();
   ProcessScheduledActions();
-  FinishImplFrame();
+
+  if (settings_.using_synchronous_renderer_compositor)
+    FinishImplFrameSynchronous();
+  else
+    FinishImplFrame();
+}
+
+void Scheduler::FinishImplFrameSynchronous() {
+  DCHECK(settings_.using_synchronous_renderer_compositor);
+  if (needs_finish_frame_for_synchronous_compositor_) {
+    needs_finish_frame_for_synchronous_compositor_ = false;
+    FinishImplFrame();
+  }
 }
 
 void Scheduler::DrawIfPossible() {

@@ -3068,7 +3068,8 @@ TEST_F(SchedulerTest, SynchronousCompositorAnimation) {
   AdvanceFrame();
   EXPECT_ACTIONS("WillBeginImplFrame",
                  "ScheduledActionInvalidateLayerTreeFrameSink");
-  EXPECT_FALSE(client_->IsInsideBeginImplFrame());
+  // Finish frame is deferred until next draw since there was invalidation.
+  EXPECT_TRUE(client_->IsInsideBeginImplFrame());
   client_->Reset();
 
   // Android onDraw. This doesn't consume the single begin frame request.
@@ -3089,7 +3090,8 @@ TEST_F(SchedulerTest, SynchronousCompositorAnimation) {
   AdvanceFrame();
   EXPECT_ACTIONS("WillBeginImplFrame",
                  "ScheduledActionInvalidateLayerTreeFrameSink");
-  EXPECT_FALSE(client_->IsInsideBeginImplFrame());
+  // Finish frame is deferred until next draw since there was invalidation.
+  EXPECT_TRUE(client_->IsInsideBeginImplFrame());
   client_->Reset();
 
   // Android onDraw.
@@ -3140,12 +3142,12 @@ TEST_F(SchedulerTest, InvalidateLayerTreeFrameSinkWhenCannotDraw) {
   // Do not invalidate in next BeginFrame.
   EXPECT_SCOPED(AdvanceFrame());
   EXPECT_ACTIONS("WillBeginImplFrame");
-  client_->Reset();
 
   // Redraw is not cleared.
   EXPECT_TRUE(scheduler_->RedrawPending());
 
   scheduler_->SetCanDraw(true);
+  client_->Reset();
 
   // Do invalidate in next BeginFrame.
   EXPECT_SCOPED(AdvanceFrame());
@@ -3332,15 +3334,8 @@ TEST_F(SchedulerTest, SynchronousCompositorCommitAndVerifyBeginFrameAcks) {
   args = SendNextBeginFrame();
   EXPECT_ACTIONS("WillBeginImplFrame",
                  "ScheduledActionInvalidateLayerTreeFrameSink");
-  EXPECT_FALSE(client_->IsInsideBeginImplFrame());
-
-  // No damage, since not drawn yet.
-  // TODO(eseckler): In the future, |has_damage = false| will prevent us from
-  // filtering this ack (in CompositorExternalBeginFrameSource) and instead
-  // forwarding the one attached to the later submitted CompositorFrame.
-  has_damage = false;
-  EXPECT_EQ(viz::BeginFrameAck(args, has_damage),
-            client_->last_begin_frame_ack());
+  // Finish frame is deferred until next draw since there was invalidation.
+  EXPECT_TRUE(client_->IsInsideBeginImplFrame());
   client_->Reset();
 
   // Android onDraw.
