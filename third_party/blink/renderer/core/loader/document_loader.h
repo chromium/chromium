@@ -325,13 +325,31 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
  protected:
   Vector<KURL> redirect_chain_;
 
-  // Archive used to load document and/or subresources. If one of the ancestor
-  // frames was loaded as an archive, we'll load the document resource from it.
-  // Otherwise, if the document resource is an archive itself (based on mime
-  // type), we'll create one and use it for subresources.
+  // Based on its MIME type, if the main document's response corresponds to an
+  // MHTML archive, then every resources will be loaded from this archive.
+  //
+  // This includes:
+  // - The main document.
+  // - Every nested document.
+  // - Every subresource.
+  //
+  // This excludes:
+  // - data-URLs documents and subresources.
+  // - about:srcdoc documents.
+  // - Error pages.
+  //
+  // Whether about:blank and derivative should be loaded from the archive is
+  // weird edge case: Please refer to the tests:
+  // - NavigationMhtmlBrowserTest.IframeAboutBlankNotFound
+  // - NavigationMhtmlBrowserTest.IframeAboutBlankFound
+  //
+  // Nested documents are loaded in the same process and grab a reference to the
+  // same `archive_` as their parent.
+  //
+  // Resources:
+  // - https://tools.ietf.org/html/rfc822
+  // - https://tools.ietf.org/html/rfc2387
   Member<MHTMLArchive> archive_;
-  mojom::MHTMLLoadResult archive_load_result_ =
-      mojom::MHTMLLoadResult::kSuccess;
 
  private:
   network::mojom::blink::WebSandboxFlags CalculateSandboxFlags();
@@ -374,7 +392,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void FinishedLoading(base::TimeTicks finish_time);
   void CancelLoadAfterCSPDenied(const ResourceResponse&);
 
-  void FinalizeMHTMLArchiveLoad();
   void HandleRedirect(const KURL& current_request_url);
   void HandleResponse();
 
@@ -526,7 +543,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   const bool was_discarded_ = false;
 
   bool listing_ftp_directory_ = false;
-  bool loading_mhtml_archive_ = false;
+
+  // True when loading the main document from the MHTML archive. It implies an
+  // |archive_| to be created. Nested documents will also inherit from the same
+  // |archive_|, but won't have |loading_main_document_from_mhtml_archive_| set.
+  bool loading_main_document_from_mhtml_archive_ = false;
   const bool loading_srcdoc_ = false;
   const bool loading_url_as_empty_document_ = false;
   CommitReason commit_reason_ = CommitReason::kRegular;
