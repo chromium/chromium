@@ -149,6 +149,10 @@ std::unique_ptr<base::DictionaryValue> GenerateTouchPoint(
   point->SetDouble("radiusY", event.radiusY);
   point->SetDouble("rotationAngle", event.rotationAngle);
   point->SetDouble("force", event.force);
+  point->SetDouble("tangentialPressure", event.tangentialPressure);
+  point->SetInteger("tiltX", event.tiltX);
+  point->SetInteger("tiltY", event.tiltY);
+  point->SetInteger("twist", event.twist);
   point->SetInteger("id", event.id);
   return point;
 }
@@ -571,6 +575,11 @@ Status WebViewImpl::DispatchMouseEvents(const std::vector<MouseEvent>& events,
     params.SetString("button", GetAsString(it->button));
     params.SetInteger("buttons", it->buttons);
     params.SetInteger("clickCount", it->click_count);
+    params.SetDouble("force", it->force);
+    params.SetDouble("tangentialPressure", it->tangentialPressure);
+    params.SetInteger("tiltX", it->tiltX);
+    params.SetInteger("tiltY", it->tiltY);
+    params.SetInteger("twist", it->twist);
     params.SetString("pointerType", GetAsString(it->pointer_type));
     if (type == "mouseWheel") {
       params.SetInteger("deltaX", it->delta_x);

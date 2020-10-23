@@ -68,7 +68,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
                   std::unique_ptr<InsertTextCallback> callback) override;
 
   void DispatchMouseEvent(
-      const std::string& type,
+      const std::string& event_type,
       double x,
       double y,
       Maybe<int> modifiers,
@@ -76,6 +76,11 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       Maybe<std::string> button,
       Maybe<int> buttons,
       Maybe<int> click_count,
+      Maybe<double> force,
+      Maybe<double> tangential_pressure,
+      Maybe<int> tilt_x,
+      Maybe<int> tilt_y,
+      Maybe<int> twist,
       Maybe<double> delta_x,
       Maybe<double> delta_y,
       Maybe<std::string> pointer_type,

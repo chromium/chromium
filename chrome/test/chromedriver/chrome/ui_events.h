@@ -57,6 +57,11 @@ struct MouseEvent {
   int click_count;
   int delta_x;
   int delta_y;
+  double force;
+  double tangentialPressure;
+  int tiltX;
+  int tiltY;
+  int twist;
   PointerType pointer_type;
 };
 
@@ -84,6 +89,10 @@ struct TouchEvent {
   double radiusY;
   double rotationAngle;
   double force;
+  double tangentialPressure;
+  int tiltX;
+  int tiltY;
+  int twist;
   int id;
   bool dispatch;
 };
