@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
@@ -56,7 +57,11 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
   return reporter;
 }
 
-enum class AllocatorType { kSystem, kPartitionAlloc };
+enum class AllocatorType {
+  kSystem,
+  kPartitionAlloc,
+  kPartitionAllocWithThreadCache
+};
 
 class Allocator {
  public:
@@ -87,6 +92,26 @@ class PartitionAllocator : public Allocator {
  private:
   ThreadSafePartitionRoot alloc_{{PartitionOptions::Alignment::kRegular,
                                   PartitionOptions::ThreadCache::kDisabled}};
+};
+
+// Only one partition with a thread cache.
+ThreadSafePartitionRoot* g_partition_root = nullptr;
+class PartitionAllocatorWithThreadCache : public Allocator {
+ public:
+  PartitionAllocatorWithThreadCache() {
+    if (!g_partition_root) {
+      g_partition_root = new ThreadSafePartitionRoot(
+          {PartitionOptions::Alignment::kRegular,
+           PartitionOptions::ThreadCache::kEnabled});
+    }
+    internal::ThreadCacheRegistry::Instance().PurgeAll();
+  }
+  ~PartitionAllocatorWithThreadCache() override = default;
+
+  void* Alloc(size_t size) override {
+    return g_partition_root->AllocFlagsNoHooks(0, size);
+  }
+  void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 };
 
 class TestLoopThread : public PlatformThread::Delegate {
@@ -252,9 +277,14 @@ float MultiBucketWithFree(Allocator* allocator) {
 }
 
 std::unique_ptr<Allocator> CreateAllocator(AllocatorType type) {
-  if (type == AllocatorType::kSystem)
-    return std::make_unique<SystemAllocator>();
-  return std::make_unique<PartitionAllocator>();
+  switch (type) {
+    case AllocatorType::kSystem:
+      return std::make_unique<SystemAllocator>();
+    case AllocatorType::kPartitionAlloc:
+      return std::make_unique<PartitionAllocator>();
+    case AllocatorType::kPartitionAllocWithThreadCache:
+      return std::make_unique<PartitionAllocatorWithThreadCache>();
+  }
 }
 
 void LogResults(int thread_count,
@@ -286,10 +316,22 @@ void RunTest(int thread_count,
     total_laps_per_second += laps_per_second;
   }
 
-  std::string name = base::StringPrintf(
-      "%s.%s_%s_%d", kMetricPrefixMemoryAllocation, story_base_name,
-      alloc_type == AllocatorType::kSystem ? "System" : "PartitionAlloc",
-      thread_count);
+  char const* alloc_type_str;
+  switch (alloc_type) {
+    case AllocatorType::kSystem:
+      alloc_type_str = "System";
+      break;
+    case AllocatorType::kPartitionAlloc:
+      alloc_type_str = "PartitionAlloc";
+      break;
+    case AllocatorType::kPartitionAllocWithThreadCache:
+      alloc_type_str = "PartitionAllocWithThreadCache";
+      break;
+  }
+
+  std::string name =
+      base::StringPrintf("%s.%s_%s_%d", kMetricPrefixMemoryAllocation,
+                         story_base_name, alloc_type_str, thread_count);
 
   DisplayResults(name + "_total", total_laps_per_second);
   DisplayResults(name + "_worst", min_laps_per_second);
@@ -300,12 +342,20 @@ void RunTest(int thread_count,
 class MemoryAllocationPerfTest
     : public testing::TestWithParam<std::tuple<int, AllocatorType>> {};
 
+// Only one partition with a thread cache: cannot use the thread cache when
+// PartitionAlloc is malloc().
 INSTANTIATE_TEST_SUITE_P(
     ,
     MemoryAllocationPerfTest,
-    ::testing::Combine(::testing::Values(1, 2, 3, 4),
-                       ::testing::Values(AllocatorType::kSystem,
-                                         AllocatorType::kPartitionAlloc)));
+    ::testing::Combine(
+        ::testing::Values(1, 2, 3, 4),
+        ::testing::Values(AllocatorType::kSystem,
+                          AllocatorType::kPartitionAlloc
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+                          ,
+                          AllocatorType::kPartitionAllocWithThreadCache
+#endif
+                          )));
 
 // This test (and the other one below) allocates a large amount of memory, which
 // can cause issues on Android.
