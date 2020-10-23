@@ -53,17 +53,13 @@ public class OfflinePageArchivePublisherBridgeTest {
     private OfflinePageBridge mOfflinePageBridge;
     private EmbeddedTestServer mTestServer;
     private String mTestPage;
+    private Profile mProfile;
 
-    private void initializeBridgeForProfile(final boolean incognitoProfile)
-            throws InterruptedException {
+    private void initializeBridgeForProfile() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            if (incognitoProfile) {
-                profile = profile.getOffTheRecordProfile();
-            }
             // Ensure we start in an offline state.
-            mOfflinePageBridge = OfflinePageBridge.getForProfile(profile);
+            mOfflinePageBridge = OfflinePageBridge.getForProfile(mProfile);
             if (mOfflinePageBridge == null || mOfflinePageBridge.isOfflinePageModelLoaded()) {
                 semaphore.release();
                 return;
@@ -77,7 +73,6 @@ public class OfflinePageArchivePublisherBridgeTest {
             });
         });
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        if (!incognitoProfile) Assert.assertNotNull(mOfflinePageBridge);
     }
 
     @Before
@@ -92,7 +87,10 @@ public class OfflinePageArchivePublisherBridgeTest {
             }
         });
 
-        initializeBridgeForProfile(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mProfile = Profile.getLastUsedRegularProfile(); });
+        initializeBridgeForProfile();
+        Assert.assertNotNull(mOfflinePageBridge);
 
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mTestPage = mTestServer.getURL(TEST_PAGE);
