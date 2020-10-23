@@ -19,11 +19,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
-#if defined(OS_FUCHSIA)
-#include "ui/ozone/public/ozone_platform.h"  // nogncheck
-#include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
-#endif
-
 namespace aura {
 
 namespace {
@@ -51,13 +46,6 @@ WindowTreeHost* TestScreen::CreateHostForPrimaryDisplay() {
   DCHECK(!host_);
   ui::PlatformWindowInitProperties properties(
       gfx::Rect(GetPrimaryDisplay().GetSizeInPixel()));
-#if defined(OS_FUCHSIA)
-  if (ui::OzonePlatform::GetInstance()
-          ->GetPlatformProperties()
-          .needs_view_token) {
-    ui::fuchsia::InitializeViewTokenAndPresentView(&properties);
-  }
-#endif
   host_ = WindowTreeHost::Create(std::move(properties)).release();
   // Some tests don't correctly manage window focus/activation states.
   // Makes sure InputMethod is default focused so that IME basics can work.

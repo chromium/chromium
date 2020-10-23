@@ -1391,10 +1391,6 @@
       },
       'aura_unittests': {
         'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          # http://crbug.com/865172
-          '--child-arg=--ozone-platform=headless',
-        ],
       },
       'base_unittests': {
         'mixins': ['fuchsia_runner_logs'],
@@ -1449,10 +1445,6 @@
       },
       'compositor_unittests': {
         'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          # http://crbug.com/865172
-          '--child-arg=--ozone-platform=headless',
-        ],
       },
       'content_unittests': {
         'mixins': ['fuchsia_runner_logs'],
@@ -1547,10 +1539,6 @@
       },
       'snapshot_unittests': {
         'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          # http://crbug.com/865172
-          '--child-arg=--ozone-platform=headless',
-        ],
       },
       'sql_unittests': {
         'mixins': ['fuchsia_runner_logs'],

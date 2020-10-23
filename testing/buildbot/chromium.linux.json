@@ -1841,7 +1841,6 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -2108,7 +2107,6 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -2705,7 +2703,6 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -2995,7 +2992,6 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -3292,7 +3288,6 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -3862,7 +3857,6 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {

@@ -37,7 +37,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       node_(&scenic_session_),
       input_node_(&scenic_session_),
       render_node_(&scenic_session_),
-      size_pixels_(properties.bounds.size()) {
+      bounds_(properties.bounds) {
   scenic_session_.set_error_handler(
       fit::bind_member(this, &ScenicWindow::OnScenicError));
   scenic_session_.set_event_handler(
@@ -84,12 +84,12 @@ void ScenicWindow::AttachSurfaceView(
 }
 
 gfx::Rect ScenicWindow::GetBounds() {
-  return gfx::Rect(size_pixels_);
+  return bounds_;
 }
 
 void ScenicWindow::SetBounds(const gfx::Rect& bounds) {
-  // View dimensions are controlled by the containing view, it's not possible to
-  // set them here.
+  // This path should only be reached in tests.
+  bounds_ = bounds;
 }
 
 void ScenicWindow::SetTitle(const base::string16& title) {
@@ -215,13 +215,12 @@ void ScenicWindow::SizeConstraintsChanged() {
 
 void ScenicWindow::UpdateSize() {
   gfx::SizeF scaled = ScaleSize(size_dips_, device_pixel_ratio_);
-  size_pixels_ = gfx::Size(ceilf(scaled.width()), ceilf(scaled.height()));
-  gfx::Rect size_rect(size_pixels_);
+  bounds_ = gfx::Rect(gfx::Size(ceilf(scaled.width()), ceilf(scaled.height())));
 
   // Update this window's Screen's dimensions to match the new size.
   ScenicScreen* screen = manager_->screen();
   if (screen)
-    screen->OnWindowBoundsChanged(window_id_, size_rect);
+    screen->OnWindowBoundsChanged(window_id_, bounds_);
 
   // Translate the node by half of the view dimensions to put it in the center
   // of the view.
@@ -243,7 +242,7 @@ void ScenicWindow::UpdateSize() {
       /*requested_prediction_span=*/0,
       [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
 
-  delegate_->OnBoundsChanged(size_rect);
+  delegate_->OnBoundsChanged(bounds_);
 }
 
 void ScenicWindow::OnScenicError(zx_status_t status) {

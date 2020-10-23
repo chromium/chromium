@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/current_thread.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
@@ -40,6 +41,10 @@
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+
+#if defined(OS_FUCHSIA)
+#include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
+#endif
 
 namespace ui {
 
@@ -89,9 +94,11 @@ class OzonePlatformScenic : public OzonePlatform,
       PlatformWindowDelegate* delegate,
       PlatformWindowInitProperties properties) override {
     BindInMainProcessIfNecessary();
+
+    // Allow tests to create a view themselves.
     if (!properties.view_token.value) {
-      NOTREACHED();
-      return nullptr;
+      CHECK(properties.allow_null_view_token_for_test);
+      ui::fuchsia::InitializeViewTokenAndPresentView(&properties);
     }
     return std::make_unique<ScenicWindow>(window_manager_.get(), delegate,
                                           std::move(properties));

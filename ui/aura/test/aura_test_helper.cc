@@ -46,6 +46,10 @@
 #include "ui/events/ozone/events_ozone.h"
 #endif
 
+#if defined(OS_FUCHSIA)
+#include "ui/platform_window/platform_window_init_properties.h"
+#endif
+
 namespace aura {
 namespace test {
 namespace {
@@ -65,6 +69,10 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory,
 
 #if defined(USE_OZONE) && defined(OS_CHROMEOS)
   ui::DisableNativeUiEventDispatchForTest();
+#endif
+
+#if defined(OS_FUCHSIA)
+  ui::PlatformWindowInitProperties::allow_null_view_token_for_test = true;
 #endif
 
   ui::InitializeInputMethodForTesting();

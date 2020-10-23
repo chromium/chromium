@@ -132,7 +132,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
   // |PlatformWindowInitProperties.bounds.size()| value until Show() is called
   // for the first time. After that the size is set to the size of the
   // corresponding Scenic view.
-  gfx::Size size_pixels_;
+  gfx::Rect bounds_;
 
   bool visible_ = false;
 

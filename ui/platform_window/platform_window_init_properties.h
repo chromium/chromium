@@ -71,6 +71,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 #if defined(OS_FUCHSIA)
   fuchsia::ui::views::ViewToken view_token;
   scenic::ViewRefPair view_ref_pair;
+  static bool allow_null_view_token_for_test;
 #endif
 
   bool activatable = true;
