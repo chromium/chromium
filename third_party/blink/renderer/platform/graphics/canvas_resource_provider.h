@@ -142,7 +142,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void OnContextDestroyed() override;
 
   cc::PaintCanvas* Canvas();
-  void ReleaseLockedImages();
   sk_sp<cc::PaintRecord> FlushCanvas();
   const CanvasColorParams& ColorParams() const { return color_params_; }
   void SetFilterQuality(SkFilterQuality quality) { filter_quality_ = quality; }

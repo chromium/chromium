@@ -4,6 +4,11 @@
 
 #include "cc/paint/paint_op_buffer.h"
 
+#include <algorithm>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
@@ -2804,8 +2809,8 @@ class MockImageProvider : public ImageProvider {
                             SkBitmap::kZeroPixels_AllocFlag);
     sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
     size_t i = index_++;
-    return ScopedResult(DecodedDrawImage(image, src_rect_offset_[i], scale_[i],
-                                         quality_[i], true));
+    return ScopedResult(
+        DecodedDrawImage(image, src_rect_offset_[i], scale_[i], quality_[i]));
   }
 
   void SetRecord(sk_sp<PaintRecord> record) { record_ = std::move(record); }

@@ -69,9 +69,9 @@ class FrameSettingImageProvider : public cc::ImageProvider {
     DCHECK(!draw_image.paint_image().IsPaintWorklet());
     auto sk_image =
         draw_image.paint_image().GetSkImageForFrame(frame_index_, client_id_);
-    return ScopedResult(
-        cc::DecodedDrawImage(sk_image, SkSize::MakeEmpty(), SkSize::Make(1, 1),
-                             draw_image.filter_quality(), true));
+    return ScopedResult(cc::DecodedDrawImage(sk_image, SkSize::MakeEmpty(),
+                                             SkSize::Make(1, 1),
+                                             draw_image.filter_quality()));
   }
 
  private:

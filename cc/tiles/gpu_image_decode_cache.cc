@@ -1206,7 +1206,7 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
         draw_image, image_data->upload_scale_mip_level);
     DecodedDrawImage decoded_draw_image(
         id, SkSize(), scale_factor, CalculateDesiredFilterQuality(draw_image),
-        image_data->needs_mips, image_data->is_budgeted);
+        image_data->needs_mips);
     return decoded_draw_image;
   } else {
     DCHECK(!use_transfer_cache_);
@@ -1219,7 +1219,7 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
         draw_image, image_data->upload_scale_mip_level);
     DecodedDrawImage decoded_draw_image(
         std::move(image), SkSize(), scale_factor,
-        CalculateDesiredFilterQuality(draw_image), image_data->is_budgeted);
+        CalculateDesiredFilterQuality(draw_image));
     return decoded_draw_image;
   }
 }

@@ -23,7 +23,7 @@ class MockImageProvider : public ImageProvider {
     return ScopedResult(
         DecodedDrawImage(CreateBitmapImage(gfx::Size(10, 10)).GetSwSkImage(),
                          SkSize::MakeEmpty(), SkSize::Make(1.0f, 1.0f),
-                         draw_image.filter_quality(), true));
+                         draw_image.filter_quality()));
   }
   int image_count_ = 0;
 };

@@ -123,7 +123,6 @@ void OffscreenCanvasRenderingContext2D::FlushRecording() {
     return;
 
   GetCanvasResourceProvider()->FlushCanvas();
-  GetCanvasResourceProvider()->ReleaseLockedImages();
 }
 
 void OffscreenCanvasRenderingContext2D::FinalizeFrame() {

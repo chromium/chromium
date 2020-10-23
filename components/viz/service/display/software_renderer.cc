@@ -66,8 +66,8 @@ class AnimatedImagesProvider : public cc::ImageProvider {
     return ScopedResult(cc::DecodedDrawImage(
         paint_image.GetSkImageForFrame(
             frame_index, cc::PaintImage::kDefaultGeneratorClientId),
-        SkSize::Make(0, 0), SkSize::Make(1.f, 1.f), draw_image.filter_quality(),
-        true /* is_budgeted */));
+        SkSize::Make(0, 0), SkSize::Make(1.f, 1.f),
+        draw_image.filter_quality()));
   }
 
  private:

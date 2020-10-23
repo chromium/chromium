@@ -4,6 +4,9 @@
 
 #include "cc/test/test_options_provider.h"
 
+#include <limits>
+#include <vector>
+
 namespace cc {
 class TestOptionsProvider::DiscardableManager
     : public SkStrikeServer::DiscardableHandleManager,
@@ -69,9 +72,9 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
   // Lock and reuse the entry if possible.
   const EntryKey entry_key(TransferCacheEntryType::kImage, image_id);
   if (LockEntryDirect(entry_key)) {
-    return ScopedResult(
-        DecodedDrawImage(image_id, SkSize::MakeEmpty(), draw_image.scale(),
-                         draw_image.filter_quality(), false, true));
+    return ScopedResult(DecodedDrawImage(image_id, SkSize::MakeEmpty(),
+                                         draw_image.scale(),
+                                         draw_image.filter_quality(), false));
   }
 
   decoded_images_.push_back(draw_image);
@@ -93,9 +96,9 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
 
   CreateEntryDirect(entry_key, base::span<uint8_t>(data.data(), data.size()));
 
-  return ScopedResult(
-      DecodedDrawImage(image_id, SkSize::MakeEmpty(), draw_image.scale(),
-                       draw_image.filter_quality(), false, true));
+  return ScopedResult(DecodedDrawImage(image_id, SkSize::MakeEmpty(),
+                                       draw_image.scale(),
+                                       draw_image.filter_quality(), false));
 }
 
 void TestOptionsProvider::ClearPaintCache() {

@@ -94,16 +94,8 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
   cc::ImageProvider::ScopedResult GetRasterContent(
       const cc::DrawImage&) override;
 
-  void ReleaseLockedImages() { locked_images_.clear(); }
-
  private:
-  void CanUnlockImage(ScopedResult);
-  void CleanupLockedImages();
-  bool IsHardwareDecodeCache() const;
-
   cc::PlaybackImageProvider::RasterMode raster_mode_;
-  bool cleanup_task_pending_ = false;
-  Vector<ScopedResult> locked_images_;
   base::Optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
   base::Optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
 
@@ -1067,66 +1059,9 @@ CanvasResourceProvider::CanvasImageProvider::GetRasterContent(
   if (playback_image_provider_f16_ &&
       draw_image.paint_image().is_high_bit_depth()) {
     DCHECK(playback_image_provider_f16_);
-    scoped_decoded_image =
-        playback_image_provider_f16_->GetRasterContent(draw_image);
-  } else {
-    scoped_decoded_image =
-        playback_image_provider_n32_->GetRasterContent(draw_image);
+    return playback_image_provider_f16_->GetRasterContent(draw_image);
   }
-
-  // Holding onto locked images here is a performance optimization for the
-  // gpu image decode cache.  For that cache, it is expensive to lock and
-  // unlock gpu discardable, and so it is worth it to hold the lock on
-  // these images across multiple potential decodes.  In the software case,
-  // locking in this manner makes it easy to run out of discardable memory
-  // (backed by shared memory sometimes) because each per-colorspace image
-  // decode cache has its own limit.  In the software case, just unlock
-  // immediately and let the discardable system manage the cache logic
-  // behind the scenes.
-  if (!scoped_decoded_image.needs_unlock() || !IsHardwareDecodeCache()) {
-    return scoped_decoded_image;
-  }
-
-  constexpr int kMaxLockedImagesCount = 500;
-  if (!scoped_decoded_image.decoded_image().is_budgeted() ||
-      locked_images_.size() > kMaxLockedImagesCount) {
-    // If we have exceeded the budget, ReleaseLockedImages any locked decodes.
-    ReleaseLockedImages();
-  }
-
-  auto decoded_draw_image = scoped_decoded_image.decoded_image();
-  return ScopedResult(decoded_draw_image,
-                      base::BindOnce(&CanvasImageProvider::CanUnlockImage,
-                                     weak_factory_.GetWeakPtr(),
-                                     std::move(scoped_decoded_image)));
-}
-
-void CanvasResourceProvider::CanvasImageProvider::CanUnlockImage(
-    ScopedResult image) {
-  // We should early out and avoid calling this function for software decodes.
-  DCHECK(IsHardwareDecodeCache());
-
-  // Because these image decodes are being done in javascript calling into
-  // canvas code, there's no obvious time to do the cleanup.  To handle this,
-  // post a cleanup task to run after javascript is done running.
-  if (!cleanup_task_pending_) {
-    cleanup_task_pending_ = true;
-    Thread::Current()->GetTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&CanvasImageProvider::CleanupLockedImages,
-                                  weak_factory_.GetWeakPtr()));
-  }
-
-  locked_images_.push_back(std::move(image));
-}
-
-void CanvasResourceProvider::CanvasImageProvider::CleanupLockedImages() {
-  cleanup_task_pending_ = false;
-  ReleaseLockedImages();
-}
-
-bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
-    const {
-  return raster_mode_ != cc::PlaybackImageProvider::RasterMode::kSoftware;
+  return playback_image_provider_n32_->GetRasterContent(draw_image);
 }
 
 CanvasResourceProvider::CanvasResourceProvider(
@@ -1237,11 +1172,6 @@ void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {
     if (canvas->IsCachingImage(content_id))
       this->FlushCanvas();
   }
-}
-
-void CanvasResourceProvider::ReleaseLockedImages() {
-  if (canvas_image_provider_)
-    canvas_image_provider_->ReleaseLockedImages();
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceProvider::SnapshotInternal(
