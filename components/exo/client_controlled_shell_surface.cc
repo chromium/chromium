@@ -845,7 +845,6 @@ void ClientControlledShellSurface::OnDeviceScaleFactorChanged(float old_dsf,
 
   views::View::OnDeviceScaleFactorChanged(old_dsf, new_dsf);
 
-  UpdateWidgetBounds();
   UpdateFrameWidth();
 }
 
