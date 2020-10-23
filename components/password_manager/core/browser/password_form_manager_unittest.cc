@@ -1712,7 +1712,7 @@ TEST_P(PasswordFormManagerTest, FillForm) {
 
     PasswordFormFillData fill_data;
     EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
-    form_manager_->FillForm(form);
+    form_manager_->FillForm(form, {});
 
     EXPECT_EQ(form.fields[kUsernameFieldIndex].name,
               fill_data.username_field.name);
@@ -1746,8 +1746,7 @@ TEST_P(PasswordFormManagerTest, FillFormWaitForServerPredictions) {
   // Check that no filling until server predicions or filling timeout
   // expiration.
   EXPECT_CALL(driver_, FillPasswordForm(_)).Times(0);
-  form_manager_->FillForm(changed_form);
-  Mock::VerifyAndClearExpectations(&driver_);
+  form_manager_->FillForm(changed_form, {});
 
   // Check that the changed form is filled after the filling timeout expires.
 

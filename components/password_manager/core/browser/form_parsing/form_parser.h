@@ -123,6 +123,8 @@ class FormDataParser {
     predictions_ = std::move(predictions);
   }
 
+  void reset_predictions() { predictions_.reset(); }
+
   const base::Optional<FormPredictions>& predictions() { return predictions_; }
 
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }

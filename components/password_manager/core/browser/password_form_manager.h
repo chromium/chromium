@@ -126,8 +126,11 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Sends fill data to the renderer.
   void Fill();
 
-  // Sends fill data to the renderer to fill |observed_form_data|.
-  void FillForm(const autofill::FormData& observed_form_data);
+  // Sends fill data to the renderer to fill |observed_form_data| using
+  // new relevant data from |predictions|.
+  void FillForm(
+      const autofill::FormData& observed_form_data,
+      const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
   void UpdateSubmissionIndicatorEvent(
       autofill::mojom::SubmissionIndicatorEvent event);
@@ -316,6 +319,17 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // predictions, data from FieldInfoManager and whether |possible_username|
   // looks valid.
   bool UsePossibleUsername(const PossibleUsernameData* possible_username);
+
+  // Updates the predictions stored in |parser_| with predictions relevant for
+  // |observed_form_or_digest_|.
+  void UpdatePredictionsForObservedForm(
+      const std::map<autofill::FormSignature, FormPredictions>& predictions);
+
+  // Updates |observed_form_or_digest_| and form predictions stored in
+  // |parser_| and resets the amount of autofills left.
+  void UpdateFormManagerWithFormChanges(
+      const autofill::FormData& observed_form_data,
+      const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
   // The client which implements embedder-specific PasswordManager operations.
   PasswordManagerClient* client_;

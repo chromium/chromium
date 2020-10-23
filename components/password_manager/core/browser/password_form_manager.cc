@@ -766,15 +766,9 @@ void PasswordFormManager::ProcessServerPredictions(
     // predictions again.
     return;
   }
-  FormSignature observed_form_signature =
-      CalculateFormSignature(*observed_form());
-  auto it = predictions.find(observed_form_signature);
-  if (it == predictions.end())
-    return;
-
-  ReportTimeBetweenStoreAndServerUMA();
-  parser_.set_predictions(it->second);
-  Fill();
+  UpdatePredictionsForObservedForm(predictions);
+  if (parser_.predictions())
+    Fill();
 }
 
 void PasswordFormManager::Fill() {
@@ -830,15 +824,21 @@ void PasswordFormManager::Fill() {
       form_fetcher_->GetPreferredMatch(), metrics_recorder_.get());
 }
 
-void PasswordFormManager::FillForm(const FormData& observed_form_data) {
+void PasswordFormManager::FillForm(
+    const FormData& observed_form_data,
+    const std::map<FormSignature, FormPredictions>& predictions) {
   uint32_t differences_bitmask =
       FindFormsDifferences(*observed_form(), observed_form_data);
   metrics_recorder_->RecordFormChangeBitmask(differences_bitmask);
 
-  if (differences_bitmask)
-    *mutable_observed_form() = observed_form_data;
-
-  if (!waiting_for_server_predictions_)
+  bool new_predictions_available = false;
+  if (differences_bitmask) {
+    UpdateFormManagerWithFormChanges(observed_form_data, predictions);
+    new_predictions_available = parser_.predictions().has_value();
+  }
+  // Fill the form if relevant form predictions were found or if the
+  // manager is not waiting for new server predictions.
+  if (new_predictions_available || !waiting_for_server_predictions_)
     Fill();
 }
 
@@ -1061,6 +1061,28 @@ bool PasswordFormManager::UsePossibleUsername(
                            "Local heuristics");
   return is_possible_username_valid;
 #endif  // defined(OS_ANDROID)
+}
+
+void PasswordFormManager::UpdatePredictionsForObservedForm(
+    const std::map<FormSignature, FormPredictions>& predictions) {
+  FormSignature observed_form_signature =
+      CalculateFormSignature(*observed_form());
+  auto it = predictions.find(observed_form_signature);
+  if (it == predictions.end())
+    return;
+
+  ReportTimeBetweenStoreAndServerUMA();
+  parser_.set_predictions(it->second);
+}
+
+void PasswordFormManager::UpdateFormManagerWithFormChanges(
+    const FormData& observed_form_data,
+    const std::map<FormSignature, FormPredictions>& predictions) {
+  *mutable_observed_form() = observed_form_data;
+  // If the observed form has changed, it might be autofilled again.
+  autofills_left_ = kMaxTimesAutofill;
+  parser_.reset_predictions();
+  UpdatePredictionsForObservedForm(predictions);
 }
 
 }  // namespace password_manager

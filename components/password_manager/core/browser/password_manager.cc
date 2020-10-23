@@ -575,7 +575,7 @@ void PasswordManager::CreateFormManagers(
       // filled values.
       // TODO(https://crbug.com/831123): Implement more robust filling and
       // remove the next line.
-      manager->FillForm(form_data);
+      manager->FillForm(form_data, predictions_);
     } else {
       new_forms_data.push_back(&form_data);
     }
