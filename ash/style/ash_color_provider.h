@@ -120,6 +120,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
     // Color for radio button.
     kRadioColorActive,
     kRadioColorInactive,
+
+    // Color for current active desk's border.
+    kCurrentDeskColor,
   };
 
   // Attributes of ripple, includes the base color, opacity of inkdrop and

@@ -234,6 +234,8 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kAppStateIndicatorColorInactive:
       return GetDisabledColor(
           GetContentLayerColor(ContentLayerType::kAppStateIndicatorColor));
+    case ContentLayerType::kCurrentDeskColor:
+      return is_dark_mode ? SK_ColorWHITE : SK_ColorBLACK;
     default:
       return ResolveColor(type, is_dark_mode);
   }
