@@ -327,10 +327,11 @@ gfx::Size LargeImageView::GetResizedImageSize() {
 // NotificationMDTextButton ////////////////////////////////////////////////
 
 NotificationMdTextButton::NotificationMdTextButton(
-    views::ButtonListener* listener,
+    PressedCallback callback,
     const base::string16& label,
     const base::Optional<base::string16>& placeholder)
-    : views::MdTextButton(listener, label), placeholder_(placeholder) {
+    : views::MdTextButton(std::move(callback), label),
+      placeholder_(placeholder) {
   SetMinSize(kActionButtonMinSize);
   views::InstallRectHighlightPathGenerator(this);
   SetTextSubpixelRenderingEnabled(false);
@@ -367,7 +368,13 @@ NotificationInputContainerMD::NotificationInputContainerMD(
     : delegate_(delegate),
       ink_drop_container_(new views::InkDropContainerView()),
       textfield_(new views::Textfield()),
-      button_(new views::ImageButton(this)) {
+      button_(new views::ImageButton(base::BindRepeating(
+          [](NotificationInputContainerMD* container) {
+            container->delegate_->OnNotificationInputSubmit(
+                container->textfield_->GetProperty(kTextfieldIndexKey),
+                container->textfield_->GetText());
+          },
+          base::Unretained(this)))) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
@@ -462,14 +469,6 @@ bool NotificationInputContainerMD::HandleKeyEvent(views::Textfield* sender,
 void NotificationInputContainerMD::OnAfterUserAction(views::Textfield* sender) {
   DCHECK_EQ(sender, textfield_);
   SetButtonImage();
-}
-
-void NotificationInputContainerMD::ButtonPressed(views::Button* sender,
-                                                 const ui::Event& event) {
-  if (sender == button_) {
-    delegate_->OnNotificationInputSubmit(
-        textfield_->GetProperty(kTextfieldIndexKey), textfield_->GetText());
-  }
 }
 
 void NotificationInputContainerMD::SetButtonImage() {
@@ -598,7 +597,8 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   AddChildView(ink_drop_container_);
 
   // |header_row_| contains app_icon, app_name, control buttons, etc...
-  header_row_ = new NotificationHeaderView(this);
+  header_row_ = new NotificationHeaderView(base::BindRepeating(
+      &NotificationViewMD::HeaderRowPressed, base::Unretained(this)));
   header_row_->SetPreferredSize(header_row_->GetPreferredSize() -
                                 gfx::Size(GetInsets().width(), 0));
   header_row_->SetID(kHeaderRow);
@@ -812,59 +812,6 @@ void NotificationViewMD::UpdateControlButtonsVisibilityWithNotification(
       notification.should_show_snooze_button());
   control_buttons_view_->ShowCloseButton(GetMode() != Mode::PINNED);
   UpdateControlButtonsVisibility();
-}
-
-void NotificationViewMD::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  // Tapping anywhere on |header_row_| can expand the notification, though only
-  // |expand_button| can be focused by TAB.
-  if (sender == header_row_) {
-    if (IsExpandable() && content_row_->GetVisible()) {
-      SetManuallyExpandedOrCollapsed(true);
-      auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-      ToggleExpanded();
-      // Check |this| is valid before continuing, because ToggleExpanded() might
-      // cause |this| to be deleted.
-      if (!weak_ptr)
-        return;
-      Layout();
-      SchedulePaint();
-    }
-    return;
-  }
-
-  // See if the button pressed was an action button.
-  for (size_t i = 0; i < action_buttons_.size(); ++i) {
-    if (sender != action_buttons_[i])
-      continue;
-
-    const base::Optional<base::string16>& placeholder =
-        action_buttons_[i]->placeholder();
-    if (placeholder) {
-      inline_reply_->textfield()->SetProperty(kTextfieldIndexKey,
-                                              static_cast<int>(i));
-      inline_reply_->textfield()->SetPlaceholderText(
-          placeholder->empty()
-              ? l10n_util::GetStringUTF16(
-                    IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER)
-              : *placeholder);
-      inline_reply_->AnimateBackground(event);
-      inline_reply_->SetVisible(true);
-      action_buttons_row_->SetVisible(false);
-      // RequestFocus() should be called after SetVisible().
-      inline_reply_->textfield()->RequestFocus();
-      Layout();
-      SchedulePaint();
-    } else {
-      MessageCenter::Get()->ClickOnNotificationButton(notification_id(), i);
-    }
-    return;
-  }
-
-  if (sender == settings_done_button_) {
-    ToggleInlineSettings(event);
-    return;
-  }
 }
 
 void NotificationViewMD::OnNotificationInputSubmit(size_t index,
@@ -1174,8 +1121,10 @@ void NotificationViewMD::CreateOrUpdateActionButtonViews(
     base::string16 label = base::i18n::ToUpper(button_info.title);
     if (new_buttons) {
       action_buttons_.push_back(action_buttons_row_->AddChildView(
-          std::make_unique<NotificationMdTextButton>(this, label,
-                                                     button_info.placeholder)));
+          std::make_unique<NotificationMdTextButton>(
+              base::BindRepeating(&NotificationViewMD::ActionButtonPressed,
+                                  base::Unretained(this), i),
+              label, button_info.placeholder)));
       // TODO(pkasting): BoxLayout should invalidate automatically when a child
       // is added, at which point we can remove this call.
       action_buttons_row_->InvalidateLayout();
@@ -1255,7 +1204,9 @@ void NotificationViewMD::CreateOrUpdateInlineSettingsViews(
   settings_row_->SetVisible(false);
 
   settings_done_button_ = new NotificationMdTextButton(
-      this, l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_SETTINGS_DONE),
+      base::BindRepeating(&NotificationViewMD::ToggleInlineSettings,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_SETTINGS_DONE),
       base::nullopt);
 
   auto* settings_button_row = new views::View;
@@ -1268,6 +1219,47 @@ void NotificationViewMD::CreateOrUpdateInlineSettingsViews(
   settings_row_->AddChildView(settings_button_row);
 
   AddChildViewAt(settings_row_, GetIndexOf(actions_row_));
+}
+
+void NotificationViewMD::HeaderRowPressed() {
+  if (!IsExpandable() || !content_row_->GetVisible())
+    return;
+
+  // Tapping anywhere on |header_row_| can expand the notification, though only
+  // |expand_button| can be focused by TAB.
+  SetManuallyExpandedOrCollapsed(true);
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  ToggleExpanded();
+  // Check |this| is valid before continuing, because ToggleExpanded() might
+  // cause |this| to be deleted.
+  if (!weak_ptr)
+    return;
+  Layout();
+  SchedulePaint();
+}
+
+void NotificationViewMD::ActionButtonPressed(size_t index,
+                                             const ui::Event& event) {
+  const base::Optional<base::string16>& placeholder =
+      action_buttons_[index]->placeholder();
+  if (placeholder) {
+    inline_reply_->textfield()->SetProperty(kTextfieldIndexKey, int{index});
+    inline_reply_->textfield()->SetPlaceholderText(
+        placeholder->empty()
+            ? l10n_util::GetStringUTF16(
+                  IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER)
+            : *placeholder);
+    inline_reply_->AnimateBackground(event);
+    inline_reply_->SetVisible(true);
+    action_buttons_row_->SetVisible(false);
+    // RequestFocus() should be called after SetVisible().
+    inline_reply_->textfield()->RequestFocus();
+    Layout();
+    SchedulePaint();
+  } else {
+    MessageCenter::Get()->ClickOnNotificationButton(notification_id(),
+                                                    int{index});
+  }
 }
 
 bool NotificationViewMD::IsExpandable() {

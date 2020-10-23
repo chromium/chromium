@@ -10,24 +10,14 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/padded_button.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
-
-namespace ui {
-class Event;
-}
-
-namespace views {
-class Button;
-}
 
 namespace message_center {
 
 class MessageView;
 
 class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
-    : public views::View,
-      public views::ButtonListener {
+    : public views::View {
  public:
   // String to be returned by GetClassName() method.
   static const char kViewClassName[];
@@ -65,9 +55,6 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
 #if defined(OS_CHROMEOS)
   void OnThemeChanged() override;
 #endif
-
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
   // Updates the button icon colors to the value of DetermineButtonIconColor().

@@ -44,7 +44,9 @@ NotificationControlButtonsView::~NotificationControlButtonsView() = default;
 
 void NotificationControlButtonsView::ShowCloseButton(bool show) {
   if (show && !close_button_) {
-    close_button_ = AddChildView(std::make_unique<PaddedButton>(this));
+    close_button_ = AddChildView(std::make_unique<PaddedButton>(
+        base::BindRepeating(&MessageView::OnCloseButtonPressed,
+                            base::Unretained(message_view_))));
     close_button_->SetImage(views::Button::STATE_NORMAL,
                             gfx::CreateVectorIcon(kNotificationCloseButtonIcon,
                                                   DetermineButtonIconColor()));
@@ -67,7 +69,10 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
     // Add the button next right to the snooze button.
     const int position = snooze_button_ ? 1 : 0;
     settings_button_ =
-        AddChildViewAt(std::make_unique<PaddedButton>(this), position);
+        AddChildViewAt(std::make_unique<PaddedButton>(base::BindRepeating(
+                           &MessageView::OnSettingsButtonPressed,
+                           base::Unretained(message_view_))),
+                       position);
     settings_button_->SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(kNotificationSettingsButtonIcon,
@@ -89,7 +94,11 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
 void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
   if (show && !snooze_button_) {
     // Snooze button should appear as the first child.
-    snooze_button_ = AddChildViewAt(std::make_unique<PaddedButton>(this), 0);
+    snooze_button_ =
+        AddChildViewAt(std::make_unique<PaddedButton>(base::BindRepeating(
+                           &MessageView::OnSnoozeButtonPressed,
+                           base::Unretained(message_view_))),
+                       0);
     snooze_button_->SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(kNotificationSnoozeButtonIcon,
@@ -147,17 +156,6 @@ void NotificationControlButtonsView::OnThemeChanged() {
       ui::NativeTheme::kColorId_NotificationButtonBackground)));
 }
 #endif
-
-void NotificationControlButtonsView::ButtonPressed(views::Button* sender,
-                                                   const ui::Event& event) {
-  if (close_button_ && sender == close_button_) {
-    message_view_->OnCloseButtonPressed();
-  } else if (settings_button_ && sender == settings_button_) {
-    message_view_->OnSettingsButtonPressed(event);
-  } else if (snooze_button_ && sender == snooze_button_) {
-    message_view_->OnSnoozeButtonPressed(event);
-  }
-}
 
 void NotificationControlButtonsView::UpdateButtonIconColors() {
   SkColor icon_color = DetermineButtonIconColor();

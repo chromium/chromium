@@ -123,8 +123,13 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  auto header_row =
-      std::make_unique<message_center::NotificationHeaderView>(this);
+  auto header_row = std::make_unique<message_center::NotificationHeaderView>(
+      base::BindRepeating(
+          [](MediaNotificationViewImpl* view) {
+            view->SetExpanded(!view->expanded_);
+            view->container_->OnHeaderClicked();
+          },
+          base::Unretained(this)));
 
   if (header_row_controls_view) {
     header_row_controls_view_ =
@@ -341,21 +346,8 @@ void MediaNotificationViewImpl::GetAccessibleNodeData(
 
 void MediaNotificationViewImpl::ButtonPressed(views::Button* sender,
                                               const ui::Event& event) {
-  if (sender == header_row_) {
-    SetExpanded(!expanded_);
-    container_->OnHeaderClicked();
-    return;
-  }
-
-  if (sender->parent() == button_row_ ||
-      sender->parent() == playback_button_container_) {
-    if (item_) {
-      item_->OnMediaSessionActionButtonPressed(GetActionFromButtonTag(*sender));
-    }
-    return;
-  }
-
-  NOTREACHED();
+  if (item_)
+    item_->OnMediaSessionActionButtonPressed(GetActionFromButtonTag(*sender));
 }
 
 void MediaNotificationViewImpl::UpdateWithMediaSessionInfo(

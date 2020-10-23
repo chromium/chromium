@@ -22,7 +22,7 @@ namespace message_center {
 
 class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
  public:
-  explicit NotificationHeaderView(views::ButtonListener* listener);
+  explicit NotificationHeaderView(PressedCallback callback);
   ~NotificationHeaderView() override;
   void SetAppIcon(const gfx::ImageSkia& img);
   void SetAppName(const base::string16& name);

@@ -42,7 +42,8 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
     views::View* container =
         widget_.SetContentsView(std::make_unique<views::View>());
 
-    notification_header_view_ = new NotificationHeaderView(nullptr);
+    notification_header_view_ =
+        new NotificationHeaderView(views::Button::PressedCallback());
     container->AddChildView(notification_header_view_);
 
     widget_.Show();

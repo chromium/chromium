@@ -16,7 +16,6 @@
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/animation/ink_drop_observer.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -41,7 +40,7 @@ class MESSAGE_CENTER_EXPORT NotificationMdTextButton
  public:
   METADATA_HEADER(NotificationMdTextButton);
 
-  NotificationMdTextButton(views::ButtonListener* listener,
+  NotificationMdTextButton(PressedCallback callback,
                            const base::string16& label,
                            const base::Optional<base::string16>& placeholder);
   ~NotificationMdTextButton() override;
@@ -118,7 +117,6 @@ class NotificationInputDelegate {
 };
 
 class NotificationInputContainerMD : public views::InkDropHostView,
-                                     public views::ButtonListener,
                                      public views::TextfieldController {
  public:
   explicit NotificationInputContainerMD(NotificationInputDelegate* delegate);
@@ -138,9 +136,6 @@ class NotificationInputContainerMD : public views::InkDropHostView,
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   void OnAfterUserAction(views::Textfield* sender) override;
-
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   views::Textfield* textfield() const { return textfield_; }
   views::ImageButton* button() const { return button_; }
@@ -165,8 +160,7 @@ class NotificationInputContainerMD : public views::InkDropHostView,
 class MESSAGE_CENTER_EXPORT NotificationViewMD
     : public MessageView,
       public views::InkDropObserver,
-      public NotificationInputDelegate,
-      public views::ButtonListener {
+      public NotificationInputDelegate {
  public:
   // This defines an enumeration of IDs that can uniquely identify a view within
   // the scope of NotificationViewMD.
@@ -198,7 +192,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   SkColor GetInkDropBaseColor() const override;
   void UpdateWithNotification(const Notification& notification) override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   NotificationControlButtonsView* GetControlButtonsView() const override;
   bool IsExpanded() const override;
@@ -272,6 +265,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   void CreateOrUpdateImageView(const Notification& notification);
   void CreateOrUpdateActionButtonViews(const Notification& notification);
   void CreateOrUpdateInlineSettingsViews(const Notification& notification);
+
+  void HeaderRowPressed();
+  void ActionButtonPressed(size_t index, const ui::Event& event);
 
   bool IsExpandable();
   void ToggleExpanded();

@@ -23,7 +23,7 @@ namespace message_center {
 // area (<http://crbug.com/168856>).
 class MESSAGE_CENTER_EXPORT PaddedButton : public views::ImageButton {
  public:
-  PaddedButton(views::ButtonListener* listener);
+  explicit PaddedButton(PressedCallback callback);
   ~PaddedButton() override = default;
 
   // views::ImageButton:

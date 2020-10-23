@@ -32,6 +32,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_utils.h"
@@ -1366,8 +1367,8 @@ TEST_F(NotificationViewMDTest, TestDeleteOnToggleExpanded) {
 
   // The view can be deleted by PreferredSizeChanged(). https://crbug.com/918933
   set_delete_on_preferred_size_changed(true);
-  notification_view()->ButtonPressed(notification_view()->header_row_,
-                                     DummyEvent());
+  views::test::ButtonTestApi(notification_view()->header_row_)
+      .NotifyClick(DummyEvent());
 }
 
 TEST_F(NotificationViewMDTest, TestDeleteOnDisableNotification) {
@@ -1381,8 +1382,8 @@ TEST_F(NotificationViewMDTest, TestDeleteOnDisableNotification) {
   // After DisableNotification() is called, |notification_view| can be deleted.
   // https://crbug.com/924922
   set_delete_on_notification_removed(true);
-  notification_view()->ButtonPressed(notification_view()->settings_done_button_,
-                                     DummyEvent());
+  views::test::ButtonTestApi(notification_view()->settings_done_button_)
+      .NotifyClick(DummyEvent());
 }
 
 TEST_F(NotificationViewMDTest, TestLongTitleAndMessage) {
