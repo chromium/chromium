@@ -23,6 +23,7 @@
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/win/power_setting_change_listener.h"
 #include "ui/base/win/session_change_observer.h"
 
 namespace base {
@@ -38,7 +39,9 @@ namespace aura {
 // This class keeps track of whether any HWNDs are occluding any app windows.
 // It notifies the host of any app window whose occlusion state changes. Most
 // code should not need to use this; it's an implementation detail.
-class AURA_EXPORT NativeWindowOcclusionTrackerWin : public WindowObserver {
+class AURA_EXPORT NativeWindowOcclusionTrackerWin
+    : public WindowObserver,
+      public ui::PowerSettingChangeListener {
  public:
   static NativeWindowOcclusionTrackerWin* GetOrCreateInstance();
 
@@ -258,6 +261,13 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin : public WindowObserver {
   // by the current session, it marks app windows as occluded.
   void OnSessionChange(WPARAM status_code, const bool* is_current_session);
 
+  // This is called when the display is put to sleep. If the display is sleeping
+  // it marks app windows as occluded.
+  void OnDisplayStateChanged(bool display_on) override;
+
+  // Marks all root windows as either occluded, or if hwnd IsIconic, hidden.
+  void MarkNonIconicWindowsOccluded();
+
   // Task runner to call ComputeNativeWindowOcclusionStatus, and to handle
   // Windows event notifications, off of the UI thread.
   const scoped_refptr<base::SequencedTaskRunner> update_occlusion_task_runner_;
@@ -273,8 +283,14 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin : public WindowObserver {
   // Manages observation of Windows Session Change messages.
   ui::SessionChangeObserver session_change_observer_;
 
+  // Listens for Power Setting Change messages.
+  ui::ScopedPowerSettingChangeListener power_setting_change_listener_;
+
   // If the screen is locked, windows are considered occluded.
   bool screen_locked_ = false;
+
+  // If the display is off, windows are considered occluded.
+  bool display_on_ = true;
 
   base::WeakPtrFactory<NativeWindowOcclusionTrackerWin> weak_factory_{this};
 

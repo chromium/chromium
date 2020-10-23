@@ -221,6 +221,8 @@ component("base") {
       "win/message_box_win.h",
       "win/mouse_wheel_util.cc",
       "win/mouse_wheel_util.h",
+      "win/power_setting_change_listener.cc",
+      "win/power_setting_change_listener.h",
       "win/scoped_ole_initializer.cc",
       "win/scoped_ole_initializer.h",
       "win/session_change_observer.cc",
