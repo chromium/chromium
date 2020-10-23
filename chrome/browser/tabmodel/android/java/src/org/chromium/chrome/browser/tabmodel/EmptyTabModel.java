@@ -150,6 +150,9 @@ public class EmptyTabModel implements TabModel {
     public void removeObserver(TabModelObserver observer) {}
 
     @Override
+    public void setActive(boolean active) {}
+
+    @Override
     public void removeTab(Tab tab) {}
 
     @Override

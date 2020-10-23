@@ -88,6 +88,8 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
 
         mIncognitoTabModel.addIncognitoObserver(this);
 
+        if (mStartIncognito) incognitoModel.setActive(true);
+
         notifyChanged();
     }
 
@@ -107,6 +109,8 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
 
         TabModel newModel = mTabModels.get(newIndex);
         TabModel previousModel = mTabModels.get(mActiveModelIndex);
+        previousModel.setActive(false);
+        newModel.setActive(true);
         mActiveModelIndex = newIndex;
         for (TabModelSelectorObserver listener : mObservers) {
             listener.onTabModelSelected(newModel, previousModel);
@@ -312,6 +316,11 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
     @Override
     public void addIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver) {
         mIncognitoObservers.addObserver(incognitoObserver);
+    }
+
+    @Override
+    public void removeIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver) {
+        mIncognitoObservers.removeObserver(incognitoObserver);
     }
 
     @Override

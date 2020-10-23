@@ -6,15 +6,14 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.view.View;
 import android.view.ViewStub;
+
 import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
@@ -42,7 +41,7 @@ class TabSwitcherModeTTCoordinatorPhone {
     private TabSwitcherModeTTPhone mTabSwitcherModeToolbar;
 
     @Nullable
-    private TabModelObserver mTabModelObserver;
+    private IncognitoTabModelObserver mIncognitoTabModelObserver;
 
     TabSwitcherModeTTCoordinatorPhone(
             ViewStub tabSwitcherToolbarStub, MenuButtonCoordinator menuButtonCoordinator) {
@@ -58,8 +57,8 @@ class TabSwitcherModeTTCoordinatorPhone {
             mTabSwitcherModeToolbar.destroy();
             mTabSwitcherModeToolbar = null;
         }
-        if (mTabModelSelector != null && mTabModelObserver != null) {
-            mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
+        if (mTabModelSelector != null && mIncognitoTabModelObserver != null) {
+            mTabModelSelector.removeIncognitoTabModelObserver(mIncognitoTabModelObserver);
         }
         if (mMenuButtonCoordinator != null) {
             mMenuButtonCoordinator.destroy();
@@ -127,36 +126,21 @@ class TabSwitcherModeTTCoordinatorPhone {
         }
 
         if (isNewTabVariationEnabled()) {
-            mTabModelObserver = new TabModelObserver() {
+            mIncognitoTabModelObserver = new IncognitoTabModelObserver() {
                 @Override
-                public void didAddTab(Tab tab, int type, @TabCreationState int creationState) {
-                    assert tab.isIncognito();
-                    updateIncognitoTabsCount();
+                public void wasFirstTabCreated() {
+                    mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(true);
                 }
 
                 @Override
-                public void didCloseTab(int tabId, boolean incognito) {
-                    assert incognito;
-                    updateIncognitoTabsCount();
-                }
-
-                @Override
-                public void tabRemoved(Tab tab) {
-                    assert tab.isIncognito();
-                    updateIncognitoTabsCount();
-                }
-
-                private void updateIncognitoTabsCount() {
-                    int incognitoTabsCount = mTabModelSelector.getModel(true).getCount();
-                    if (mTabSwitcherModeToolbar != null) {
-                        mTabSwitcherModeToolbar.onIncognitoTabsCountChanged(incognitoTabsCount);
-                    }
+                public void didBecomeEmpty() {
+                    mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(false);
                 }
             };
-            TabModel incognitoTabModel = mTabModelSelector.getModel(true);
-            incognitoTabModel.addObserver(mTabModelObserver);
+            mTabModelSelector.addIncognitoTabModelObserver(mIncognitoTabModelObserver);
             if (mTabSwitcherModeToolbar != null) {
-                mTabSwitcherModeToolbar.onIncognitoTabsCountChanged(incognitoTabModel.getCount());
+                boolean doesExist = mTabModelSelector.getModel(true).getCount() != 0;
+                mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(doesExist);
             }
         }
     }
@@ -201,9 +185,8 @@ class TabSwitcherModeTTCoordinatorPhone {
         mTabSwitcherModeToolbar.setIncognitoStateProvider(mIncognitoStateProvider);
 
         if (isNewTabVariationEnabled()) {
-            int incognitoTabsCount =
-                    mTabModelSelector == null ? 0 : mTabModelSelector.getModel(true).getCount();
-            mTabSwitcherModeToolbar.onIncognitoTabsCountChanged(incognitoTabsCount);
+            boolean doesExist = mTabModelSelector.getModel(true).getCount() != 0;
+            mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(doesExist);
         }
 
         if (mAccessibilityEnabled) {

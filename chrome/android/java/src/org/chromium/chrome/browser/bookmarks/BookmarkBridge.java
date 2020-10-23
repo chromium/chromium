@@ -301,7 +301,7 @@ public class BookmarkBridge {
      */
     public boolean hasBookmarkIdForTab(Tab tab) {
         ThreadUtils.assertOnUiThread();
-        if (tab.isFrozen()) return false;
+        if (tab.isFrozen() || mNativeBookmarkBridge == 0) return false;
         return BookmarkBridgeJni.get().getBookmarkIdForWebContents(
                        mNativeBookmarkBridge, this, tab.getWebContents(), false)
                 != BookmarkId.INVALID_ID;
@@ -796,6 +796,7 @@ public class BookmarkBridge {
 
     public boolean isEditBookmarksEnabled() {
         ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0) return false;
         return BookmarkBridgeJni.get().isEditBookmarksEnabled(mNativeBookmarkBridge);
     }
 
@@ -853,7 +854,7 @@ public class BookmarkBridge {
     }
 
     @CalledByNative
-    private void bookmarkModelDeleted() {
+    private void destroyFromNative() {
         destroy();
     }
 

@@ -192,4 +192,15 @@ public interface TabModel extends TabList {
      * @param observer The observer to be unsubscribed.
      */
     void removeObserver(TabModelObserver observer);
+
+    /**
+     * Set when tab model become active and inactive.
+     * @param active Whether the tab model is active.
+     *
+     * TODO(crbug.com/1140125): This function is only called by TabModelSelectorBase class, so we
+     * should create a package private TabModelInternal interface which inherits from TabModel.
+     * TabModelInternal interface should have this method and change TabModelSelectorBase#mTabModels
+     * to hold the impls.
+     */
+    void setActive(boolean active);
 }

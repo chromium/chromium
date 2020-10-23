@@ -13,9 +13,12 @@
 #include "base/compiler_specific.h"
 #include "base/guid.h"
 #include "base/macros.h"
+#include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
@@ -34,7 +37,8 @@ class Profile;
 // hierarchy.
 class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
                        public PartnerBookmarksShim::Observer,
-                       public ReadingListManager::Observer {
+                       public ReadingListManager::Observer,
+                       public ProfileObserver {
  public:
   BookmarkBridge(JNIEnv* env,
                  const base::android::JavaRef<jobject>& obj,
@@ -219,6 +223,9 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   base::string16 GetTitle(const bookmarks::BookmarkNode* node) const;
 
+  // ProfileObserver override
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
  private:
   ~BookmarkBridge() override;
 
@@ -284,6 +291,8 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   // Override ReadingListManager::Observer
   void ReadingListLoaded() override;
 
+  void DestroyJavaObject();
+
   Profile* profile_;
   JavaObjectWeakGlobalRef weak_java_ref_;
   bookmarks::BookmarkModel* bookmark_model_;  // weak
@@ -298,6 +307,9 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   // Holds reading list data. A keyed service owned by the profile.
   ReadingListManager* reading_list_manager_;
+
+  // Observes the profile destruction and creation.
+  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkBridge);
 };

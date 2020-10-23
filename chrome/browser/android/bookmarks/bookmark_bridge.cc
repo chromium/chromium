@@ -111,6 +111,7 @@ BookmarkBridge::BookmarkBridge(JNIEnv* env,
       partner_bookmarks_shim_(nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   profile_ = ProfileAndroid::FromProfileAndroid(j_profile);
+  profile_observer_.Add(profile_);
   bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile_);
   managed_bookmark_service_ =
       ManagedBookmarkServiceFactory::GetForProfile(profile_);
@@ -143,6 +144,8 @@ BookmarkBridge::BookmarkBridge(JNIEnv* env,
 }
 
 BookmarkBridge::~BookmarkBridge() {
+  if (profile_)
+    profile_observer_.Remove(profile_);
   bookmark_model_->RemoveObserver(this);
   if (partner_bookmarks_shim_)
     partner_bookmarks_shim_->RemoveObserver(this);
@@ -1018,11 +1021,7 @@ void BookmarkBridge::BookmarkModelBeingDeleted(BookmarkModel* model) {
   if (!IsLoaded())
     return;
 
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = weak_java_ref_.get(env);
-  if (obj.is_null())
-    return;
-  Java_BookmarkBridge_bookmarkModelDeleted(env, obj);
+  DestroyJavaObject();
 }
 
 void BookmarkBridge::BookmarkNodeMoved(BookmarkModel* model,
@@ -1175,4 +1174,18 @@ void BookmarkBridge::ReorderChildren(
   }
 
   bookmark_model_->ReorderChildren(bookmark_node, ordered_nodes);
+}
+
+// Should destroy the bookmark bridge, if OTR profile is destroyed not to delete
+// related resources twice.
+void BookmarkBridge::OnProfileWillBeDestroyed(Profile* profile) {
+  DestroyJavaObject();
+}
+
+void BookmarkBridge::DestroyJavaObject() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = weak_java_ref_.get(env);
+  if (obj.is_null())
+    return;
+  Java_BookmarkBridge_destroyFromNative(env, obj);
 }

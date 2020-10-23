@@ -46,6 +46,7 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
             new ObserverList<>();
     private TabModel mDelegateModel;
     private boolean mIsAddingTab;
+    private boolean mIsClosingTab;
 
     /**
      * Constructor for IncognitoTabModel.
@@ -66,9 +67,6 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
         for (TabModelObserver observer : mObservers) {
             mDelegateModel.addObserver(observer);
         }
-        for (IncognitoTabModelObserver observer : mIncognitoObservers) {
-            observer.wasFirstTabCreated();
-        }
     }
 
     /**
@@ -77,7 +75,8 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
      */
     protected void destroyIncognitoIfNecessary() {
         ThreadUtils.assertOnUiThread();
-        if (!isEmpty() || mDelegateModel instanceof EmptyTabModel || mIsAddingTab) {
+        if (!isEmpty() || mDelegateModel instanceof EmptyTabModel || mIsAddingTab
+                || mIsClosingTab) {
             return;
         }
 
@@ -94,11 +93,23 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
         return getComprehensiveModel().getCount() == 0;
     }
 
+    // Triggers IncognitoTabModelObserver.wasFirstTabCreated function. This function should only be
+    // called just after the first tab is created.
+    private void notifyIncognitoObserverFirstTabCreated(boolean shouldTrigger) {
+        if (!shouldTrigger) return;
+        assert getCount() == 1;
+
+        for (IncognitoTabModelObserver observer : mIncognitoObservers) {
+            observer.wasFirstTabCreated();
+        }
+    }
+
     @Override
     public Profile getProfile() {
         if (mDelegateModel instanceof TabModelJniBridge) {
             TabModelJniBridge tabModel = (TabModelJniBridge) mDelegateModel;
-            return tabModel.isNativeInitialized() ? tabModel.getProfile() : null;
+            assert tabModel.isNativeInitialized() && tabModel.getProfile() != null;
+            return tabModel.getProfile();
         }
         return mDelegateModel.getProfile();
     }
@@ -110,14 +121,18 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
 
     @Override
     public boolean closeTab(Tab tab) {
+        mIsClosingTab = true;
         boolean retVal = mDelegateModel.closeTab(tab);
+        mIsClosingTab = false;
         destroyIncognitoIfNecessary();
         return retVal;
     }
 
     @Override
     public boolean closeTab(Tab tab, boolean animate, boolean uponExit, boolean canUndo) {
+        mIsClosingTab = true;
         boolean retVal = mDelegateModel.closeTab(tab, animate, uponExit, canUndo);
+        mIsClosingTab = false;
         destroyIncognitoIfNecessary();
         return retVal;
     }
@@ -125,8 +140,10 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public boolean closeTab(
             Tab tab, Tab recommendedNextTab, boolean animate, boolean uponExit, boolean canUndo) {
+        mIsClosingTab = true;
         boolean retVal =
                 mDelegateModel.closeTab(tab, recommendedNextTab, animate, uponExit, canUndo);
+        mIsClosingTab = false;
         destroyIncognitoIfNecessary();
         return retVal;
     }
@@ -234,7 +251,9 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         mIsAddingTab = true;
         ensureTabModelImpl();
+        boolean shouldTriggerFirstTabCreated = getCount() == 0;
         mDelegateModel.addTab(tab, index, type, creationState);
+        notifyIncognitoObserverFirstTabCreated(shouldTriggerFirstTabCreated);
         mIsAddingTab = false;
     }
 
@@ -248,6 +267,13 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
     public void removeObserver(TabModelObserver observer) {
         mObservers.removeObserver(observer);
         mDelegateModel.removeObserver(observer);
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        if (active) ensureTabModelImpl();
+        mDelegateModel.setActive(active);
+        if (!active) destroyIncognitoIfNecessary();
     }
 
     @Override

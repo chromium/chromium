@@ -241,11 +241,10 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         updatePrimaryColorAndTint();
     }
 
-    /** Called when incognito tab count changes. */
-    void onIncognitoTabsCountChanged(int incognitoTabsCount) {
-        boolean shouldShowNewTabVariation = incognitoTabsCount == 0;
-        if (shouldShowNewTabVariation == mShouldShowNewTabVariation) return;
-        mShouldShowNewTabVariation = shouldShowNewTabVariation;
+    /** Called when incognito tab existence changes. */
+    void onIncognitoTabsExistenceChanged(boolean doesExist) {
+        if (!doesExist == mShouldShowNewTabVariation) return;
+        mShouldShowNewTabVariation = !doesExist;
 
         // TODO(crbug.com/1012014): Address the empty top toolbar issue when adaptive toolbar and
         // new tab variation are both on.

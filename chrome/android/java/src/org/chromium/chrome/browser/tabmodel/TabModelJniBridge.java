@@ -156,6 +156,9 @@ public abstract class TabModelJniBridge implements TabModel {
     @Override
     public abstract boolean isCurrentModel();
 
+    @Override
+    public void setActive(boolean active) {}
+
     @NativeMethods
     interface Natives {
         long init(TabModelJniBridge caller, Profile profile, boolean isTabbedActivity);

@@ -188,6 +188,11 @@ public interface TabModelSelector {
     void addIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver);
 
     /**
+     * Unsubscribe from {@link IncognitoTabModelObserver}.
+     */
+    void removeIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver);
+
+    /**
      * Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector.
      */
     void destroy();
