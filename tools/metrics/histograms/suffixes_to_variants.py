@@ -18,9 +18,15 @@ HISTOGRAM_SUFFIXES_LIST_PATH = path_util.GetInputFile(
     'tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml')
 
 
-def _ExtractObsoleteNode(node):
+def _ExtractObsoleteNode(node, recursive=True):
   """Extracts obsolete child from |node|. Returns None if not exists."""
-  obsolete = node.getElementsByTagName('obsolete')
+  if not recursive:
+    obsolete = [
+        element for element in node.getElementsByTagName('obsolete')
+        if element.parentNode == node
+    ]
+  else:
+    obsolete = node.getElementsByTagName('obsolete')
   if not obsolete:
     return None
   assert len(obsolete) == 1, (
@@ -154,8 +160,11 @@ def _PopulateVariantsWithSuffixes(doc, node, histogram_suffixes):
   separator = histogram_suffixes.getAttribute('separator')
   suffixes_owners = _ExtractOwnerNodes(histogram_suffixes)
   suffixes_name = histogram_suffixes.getAttribute('name')
+  # Check if <histogram_suffixes> node has its own <obsolete> node.
+  obsolete_histogram_suffix_node = _ExtractObsoleteNode(histogram_suffixes,
+                                                        False)
   for suffix in histogram_suffixes.getElementsByTagName('suffix'):
-    # The base suffix is a much more complicated case. It might require manually
+    # The base suffix is a much more complicated case. It might require manual
     # effort to migrate them so skip this case for now.
     suffix_name = suffix.getAttribute('name')
     if suffix.hasAttribute('base'):
@@ -180,10 +189,12 @@ def _PopulateVariantsWithSuffixes(doc, node, histogram_suffixes):
       variant.setAttribute('name', separator + suffix_name)
     if suffix.hasAttribute('label'):
       variant.setAttribute('summary', suffix.getAttribute('label'))
-    # Obsolete the obsolete node from suffix to the new variant.
-    obsolete = _ExtractObsoleteNode(suffix)
+    # Obsolete the obsolete node from suffix to the new variant. The obsolete
+    # node for each suffix should override the obsolete node, if exists,
+    # in the histogram_suffixes node.
+    obsolete = _ExtractObsoleteNode(suffix) or obsolete_histogram_suffix_node
     if obsolete:
-      variant.appendChild(obsolete)
+      variant.appendChild(obsolete.cloneNode(deep=True))
     # Populate owner's node from histogram suffixes to each new variant.
     for owner in suffixes_owners:
       variant.appendChild(owner.cloneNode(deep=True))
@@ -227,7 +238,7 @@ def MigrateToInlinePatterenedHistogram(doc, histogram, histogram_suffixes):
   token.setAttribute('key', histogram_suffixes_name)
   token.appendChild(_GetBaseVariant(doc, histogram))
 
-  # Popluate <variant>s to the inline <token> node.
+  # Populate <variant>s to the inline <token> node.
   if not _PopulateVariantsWithSuffixes(doc, token, histogram_suffixes):
     logging.warning('histogram_suffixes: %s needs manually effort',
                     histogram_suffixes_name)
