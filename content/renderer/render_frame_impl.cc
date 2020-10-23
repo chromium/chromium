@@ -3100,18 +3100,6 @@ void RenderFrameImpl::CommitNavigation(
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
 
-  if (ShouldIgnoreCommitNavigation(*commit_params)) {
-    browser_side_navigation_pending_url_ = GURL();
-    AbortCommitNavigation();
-
-    // Disarm AssertNavigationCommits and pretend that the commit actually
-    // happened. Signalling that the load stopped /should/ signal the browser to
-    // tear down the speculative RFH associated with |this|...
-    navigation_commit_state_ = NavigationCommitState::kDidCommit;
-
-    return;
-  }
-
   SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
       commit_params->old_page_info.get());
 
@@ -3239,28 +3227,6 @@ void RenderFrameImpl::CommitNavigation(
   std::move(commit_with_params).Run(std::move(navigation_params));
 }
 
-bool RenderFrameImpl::ShouldIgnoreCommitNavigation(
-    const mojom::CommitNavigationParams& commit_params) {
-  // We can ignore renderer-initiated navigations (nav_entry_id == 0) which
-  // have been canceled in the renderer, but browser was not aware yet at the
-  // moment of issuing a CommitNavigation call.
-  if (!browser_side_navigation_pending_ &&
-      !browser_side_navigation_pending_url_.is_empty() &&
-      browser_side_navigation_pending_url_ == commit_params.original_url &&
-      commit_params.nav_entry_id == 0) {
-    // If a navigation has been cancelled in the renderer, the renderer must
-    // have already committed and swapped this frame into the frame tree:
-    // - a provisional frame cannot run JS, so it cannot self-cancel its own
-    //   navigation.
-    // - a provisional frame is only partially linked into the frame tree, so
-    //   other frames should not be able to reach into it to cancel the
-    //   navigation either.
-    CHECK(in_frame_tree_);
-    return true;
-  }
-  return false;
-}
-
 void RenderFrameImpl::CommitNavigationWithParams(
     mojom::CommonNavigationParamsPtr common_params,
     mojom::CommitNavigationParamsPtr commit_params,
@@ -3274,10 +3240,6 @@ void RenderFrameImpl::CommitNavigationWithParams(
         prefetch_loader_factory,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
-  if (ShouldIgnoreCommitNavigation(*commit_params)) {
-    browser_side_navigation_pending_url_ = GURL();
-    return;
-  }
 
   // TODO(738611): This is temporary switch to have chrome WebUI use the old web
   // APIs. After completion of the migration, we should remove this.
@@ -3487,7 +3449,6 @@ void RenderFrameImpl::CommitFailedNavigation(
       GetFrameHost()->DidStopLoading();
     }
     browser_side_navigation_pending_ = false;
-    browser_side_navigation_pending_url_ = GURL();
 
     // Disarm AssertNavigationCommits and pretend that the commit actually
     // happened. Hopefully, either:
@@ -3563,7 +3524,6 @@ void RenderFrameImpl::CommitFailedNavigation(
 
   pending_loader_factories_ = nullptr;
   browser_side_navigation_pending_ = false;
-  browser_side_navigation_pending_url_ = GURL();
 }
 
 // mojom::FrameNavigationControl implementation --------------------------------
@@ -5051,7 +5011,6 @@ void RenderFrameImpl::RemoveObserver(RenderFrameObserver* observer) {
 
 void RenderFrameImpl::OnDroppedNavigation() {
   browser_side_navigation_pending_ = false;
-  browser_side_navigation_pending_url_ = GURL();
   frame_->DidDropNavigation();
 }
 
@@ -5415,7 +5374,6 @@ void RenderFrameImpl::PrepareFrameForCommit(
     const GURL& url,
     const mojom::CommitNavigationParams& commit_params) {
   browser_side_navigation_pending_ = false;
-  browser_side_navigation_pending_url_ = GURL();
   GetContentClient()->SetActiveURL(
       url, frame_->Top()->GetSecurityOrigin().ToString().Utf8());
 
@@ -6158,7 +6116,6 @@ void RenderFrameImpl::BeginNavigationInternal(
   for (auto& observer : observers_)
     observer.DidStartNavigation(info->url_request.Url(), info->navigation_type);
   browser_side_navigation_pending_ = true;
-  browser_side_navigation_pending_url_ = info->url_request.Url();
 
   blink::WebURLRequest& request = info->url_request;
 
@@ -6621,6 +6578,9 @@ RenderFrameImpl::CreateWebSocketHandshakeThrottle() {
 
 void RenderFrameImpl::AbortCommitNavigation() {
   DCHECK(navigation_client_impl_);
+  // This is only called by CommitFailedNavigation(), which should have already
+  // reset any extant MHTMLBodyLoaderClient.
+  DCHECK(!mhtml_body_loader_client_);
   // Interface disconnection will trigger
   // RenderFrameHostImpl::OnCrossDocumentCommitProcessed().
   navigation_client_impl_.reset();

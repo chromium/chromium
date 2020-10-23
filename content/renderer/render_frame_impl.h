@@ -1041,12 +1041,6 @@ class CONTENT_EXPORT RenderFrameImpl
       std::unique_ptr<DocumentState> document_state,
       std::unique_ptr<blink::WebNavigationParams> navigation_params);
 
-  // We can ignore renderer-initiated navigations which have been canceled
-  // in the renderer, but browser was not aware yet at the moment of issuing
-  // a CommitNavigation call.
-  bool ShouldIgnoreCommitNavigation(
-      const mojom::CommitNavigationParams& commit_params);
-
   // Decodes a data url for navigation commit.
   void DecodeDataURL(const mojom::CommonNavigationParams& common_params,
                      const mojom::CommitNavigationParams& commit_params,
@@ -1373,7 +1367,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // as a result of mojom::FrameHost::BeginNavigation call. It is reset when the
   // navigation is either committed or cancelled.
   bool browser_side_navigation_pending_ = false;
-  GURL browser_side_navigation_pending_url_;
 
   // A bitwise OR of bindings types that have been enabled for this RenderFrame.
   // See BindingsPolicy for details.
