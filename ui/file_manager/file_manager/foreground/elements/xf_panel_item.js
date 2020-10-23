@@ -218,8 +218,8 @@ class PanelItem extends HTMLElement {
             <div class='xf-panel-item'>
                 <xf-circular-progress id='indicator'>
                 </xf-circular-progress>
-                <div class='xf-panel-text' role='alert'>
-                    <span class='xf-panel-label-text' tabindex='0'>
+                <div class='xf-panel-text' role='alert' tabindex='0'>
+                    <span class='xf-panel-label-text'>
                     </span>
                     <br class='xf-linebreaker'/>
                 </div>
