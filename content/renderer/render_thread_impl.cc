@@ -1349,6 +1349,12 @@ bool RenderThreadImpl::IsScrollAnimatorEnabled() {
   return is_scroll_animator_enabled_;
 }
 
+void RenderThreadImpl::SetScrollAnimatorEnabled(
+    bool enable_scroll_animator,
+    util::PassKey<AgentSchedulingGroup>) {
+  is_scroll_animator_enabled_ = enable_scroll_animator;
+}
+
 std::unique_ptr<cc::UkmRecorderFactory>
 RenderThreadImpl::CreateUkmRecorderFactory() {
   return std::make_unique<UkmRecorderFactoryImpl>(child_process_host());

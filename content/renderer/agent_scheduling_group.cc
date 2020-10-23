@@ -132,6 +132,8 @@ mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
 
 void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
   RenderThreadImpl& renderer = ToImpl(render_thread_);
+  renderer.SetScrollAnimatorEnabled(
+      params->web_preferences.enable_scroll_animator, PassKey());
 
   RenderViewImpl::Create(
       *this, &renderer, std::move(params), RenderWidget::ShowCallback(),

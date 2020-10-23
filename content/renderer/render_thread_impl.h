@@ -200,6 +200,13 @@ class CONTENT_EXPORT RenderThreadImpl
   bool IsScrollAnimatorEnabled() override;
   std::unique_ptr<cc::UkmRecorderFactory> CreateUkmRecorderFactory() override;
 
+  // TODO(crbug.com/1111231): The `enable_scroll_animator` flag is currently
+  // being passed as part of `CreateViewParams`, despite it looking like a
+  // global setting. It should probably be moved to some `mojom::Renderer` API
+  // and this method should be removed.
+  void SetScrollAnimatorEnabled(bool enable_scroll_animator,
+                                util::PassKey<AgentSchedulingGroup>);
+
   bool IsThreadedAnimationEnabled();
   scoped_refptr<base::SingleThreadTaskRunner>
   GetCompositorMainThreadTaskRunner();
