@@ -520,6 +520,11 @@ void DragDropController::Drop(aura::Window* target,
       gfx::Point location_in_screen = event.root_location();
       ::wm::ConvertPointToScreen(target->GetRootWindow(), &location_in_screen);
       tab_drag_drop_delegate_->Drop(location_in_screen, copied_data);
+      // Override the drag event's drop effect as a move to inform the front-end
+      // that the tab or group was moved. Otherwise, the WebUI tab strip does
+      // not know that a drop resulted in a tab being moved and will temporarily
+      // visually return the tab to its original position. (crbug.com/1081905)
+      drag_operation_ = ui::DragDropTypes::DragOperation::DRAG_MOVE;
       StartCanceledAnimation(kCancelAnimationDuration);
     } else if (drag_operation_ == 0) {
       StartCanceledAnimation(kCancelAnimationDuration);

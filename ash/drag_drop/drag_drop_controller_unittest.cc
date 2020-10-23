@@ -8,14 +8,18 @@
 
 #include "ash/drag_drop/drag_drop_tracker.h"
 #include "ash/drag_drop/drag_image_view.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test_shell_delegate.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -38,6 +42,10 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace ash {
 
@@ -293,13 +301,29 @@ void DispatchGesture(ui::EventType gesture_type, gfx::Point location) {
 
 }  // namespace
 
+class MockShellDelegate : public TestShellDelegate {
+ public:
+  MockShellDelegate() = default;
+  ~MockShellDelegate() override = default;
+
+  MOCK_METHOD(bool, IsTabDrag, (const ui::OSExchangeData&), (override));
+  MOCK_METHOD(aura::Window*,
+              CreateBrowserForTabDrop,
+              (aura::Window * source_window,
+               const ui::OSExchangeData& drop_data),
+              (override));
+};
+
 class DragDropControllerTest : public AshTestBase {
  public:
   DragDropControllerTest() = default;
   ~DragDropControllerTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
+    mock_shell_delegate_ = mock_shell_delegate.get();
+    AshTestBase::SetUp(std::move(mock_shell_delegate));
+
     drag_drop_controller_ = std::make_unique<TestDragDropController>();
     drag_drop_controller_->set_should_block_during_drag_drop(false);
     drag_drop_controller_->set_enabled(true);
@@ -346,6 +370,8 @@ class DragDropControllerTest : public AshTestBase {
     return drag_drop_controller_->drag_drop_tracker_.get();
   }
 
+  MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
+
   void CompleteCancelAnimation() {
     CompletableLinearAnimation* animation =
         static_cast<CompletableLinearAnimation*>(
@@ -366,6 +392,7 @@ class DragDropControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<TestDragDropController> drag_drop_controller_;
+  NiceMock<MockShellDelegate>* mock_shell_delegate_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DragDropControllerTest);
@@ -1265,6 +1292,43 @@ TEST_F(DragDropControllerTest, EventTarget) {
   EXPECT_EQ(EventTargetTestDelegate::State::kPerformDropInvoked,
             delegate.state());
   base::RunLoop().RunUntilIdle();
+}
+
+// Verifies that a tab drag changes the drag operation to a move.
+TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebUITabStripTabDragIntegration);
+
+  EXPECT_CALL(*mock_shell_delegate(), IsTabDrag(_))
+      .Times(1)
+      .WillOnce(Return(true));
+  std::unique_ptr<aura::Window> new_window = CreateToplevelTestWindow();
+  EXPECT_CALL(*mock_shell_delegate(), CreateBrowserForTabDrop(_, _))
+      .Times(1)
+      .WillOnce(Return(new_window.get()));
+
+  std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
+  aura::Window* window = widget->GetNativeWindow();
+
+  // Posted task will be run when the inner loop runs in StartDragAndDrop.
+  ui::test::EventGenerator generator(window->GetRootWindow(), window);
+  generator.PressLeftButton();
+  // For drag enter.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::MoveMouseBy,
+                                base::Unretained(&generator), 0, 1));
+  // For perform drop.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ui::test::EventGenerator::ReleaseLeftButton,
+                                base::Unretained(&generator)));
+
+  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  int operation = drag_drop_controller_->StartDragAndDrop(
+      std::make_unique<ui::OSExchangeData>(), window->GetRootWindow(), window,
+      gfx::Point(5, 5), ui::DragDropTypes::DRAG_NONE,
+      ui::mojom::DragEventSource::kMouse);
+
+  EXPECT_EQ(operation, ui::DragDropTypes::DRAG_MOVE);
 }
 
 }  // namespace ash
