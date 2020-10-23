@@ -181,18 +181,16 @@ void ScreenManager::RemoveDisplayController(const scoped_refptr<DrmDevice>& drm,
 }
 
 base::flat_map<int64_t, bool> ScreenManager::ConfigureDisplayControllers(
-    const std::vector<ScreenManager::ControllerConfigParams>&
-        controllers_params) {
+    const ControllerConfigsList& controllers_params) {
   // Split them to different lists unique to each DRM Device.
-  base::flat_map<scoped_refptr<DrmDevice>,
-                 std::vector<ScreenManager::ControllerConfigParams>>
+  base::flat_map<scoped_refptr<DrmDevice>, ControllerConfigsList>
       displays_for_drms;
 
   for (auto& params : controllers_params) {
     auto it = displays_for_drms.find(params.drm);
     if (it == displays_for_drms.end()) {
-      displays_for_drms.insert(std::make_pair(
-          params.drm, std::vector<ScreenManager::ControllerConfigParams>()));
+      displays_for_drms.insert(
+          std::make_pair(params.drm, ControllerConfigsList()));
     }
     displays_for_drms[params.drm].emplace_back(params);
   }

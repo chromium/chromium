@@ -169,7 +169,7 @@ void DrmGpuDisplayManager::RelinquishDisplayControl() {
 base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests) {
   base::flat_map<int64_t, bool> statuses;
-  std::vector<ScreenManager::ControllerConfigParams> controllers_to_configure;
+  ScreenManager::ControllerConfigsList controllers_to_configure;
 
   for (const auto& config : config_requests) {
     int64_t display_id = config.id;
