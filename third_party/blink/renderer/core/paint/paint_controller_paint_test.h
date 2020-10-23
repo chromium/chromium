@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -27,8 +26,13 @@ class PaintControllerPaintTestBase : public RenderingTest {
 
  protected:
   LayoutView& GetLayoutView() const { return *GetDocument().GetLayoutView(); }
-  PaintController& GetPaintController() const {
-    return GetDocument().View()->GetPaintControllerForTesting();
+  PaintController& RootPaintController() const {
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+      return GetDocument().View()->GetPaintControllerForTesting();
+    return GetLayoutView()
+        .Layer()
+        ->GraphicsLayerBacking()
+        ->GetPaintController();
   }
 
   void SetUp() override {
@@ -52,35 +56,34 @@ class PaintControllerPaintTestBase : public RenderingTest {
   // layer only.
   void PaintContents(const IntRect& interest_rect) {
     GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
-    if (GetLayoutView().Layer()->SelfOrDescendantNeedsRepaint()) {
-      GraphicsContext context(GetPaintController());
-      PaintLayerPaintingInfo painting_info(
-          GetLayoutView().Layer(), CullRect(interest_rect),
-          kGlobalPaintNormalPhase, PhysicalOffset());
-      PaintLayerFlags paint_flags =
-          kPaintLayerPaintingOverflowContents |
-          kPaintLayerPaintingCompositingScrollingPhase |
-          kPaintLayerPaintingCompositingForegroundPhase;
-      PaintLayerPainter(*GetLayoutView().Layer())
-          .PaintLayerContents(context, painting_info, paint_flags);
-      GetPaintController().CommitNewDisplayItems();
-      GetPaintController().FinishCycle();
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      if (GetLayoutView().Layer()->SelfOrDescendantNeedsRepaint()) {
+        GraphicsContext graphics_context(RootPaintController());
+        GetDocument().View()->Paint(graphics_context, kGlobalPaintNormalPhase,
+                                    CullRect(interest_rect));
+        RootPaintController().CommitNewDisplayItems();
+      }
+    } else {
+      GetLayoutView().Layer()->GraphicsLayerBacking()->PaintForTesting(
+          interest_rect);
     }
+    RootPaintController().FinishCycle();
     GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
   }
 
   void InvalidateAll() {
-    GetPaintController().InvalidateAllForTesting();
-    GetLayoutView().Layer()->SetNeedsRepaint();
+    RootPaintController().InvalidateAllForTesting();
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+      GetLayoutView().Layer()->SetNeedsRepaint();
   }
 
   bool ClientCacheIsValid(const DisplayItemClient& client) {
-    return GetPaintController().ClientCacheIsValid(client);
+    return RootPaintController().ClientCacheIsValid(client);
   }
 
   using SubsequenceMarkers = PaintController::SubsequenceMarkers;
   SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient& client) {
-    return GetPaintController().GetSubsequenceMarkers(client);
+    return RootPaintController().GetSubsequenceMarkers(client);
   }
 
   static bool IsNotContentType(DisplayItem::Type type) {
@@ -93,7 +96,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
   // Excludes display items for LayoutView non-scrolling background, visual
   // viewport, overlays, etc. Includes LayoutView scrolling background.
   DisplayItemRange ContentDisplayItems() {
-    const auto& display_item_list = GetPaintController().GetDisplayItemList();
+    const auto& display_item_list = RootPaintController().GetDisplayItemList();
     wtf_size_t begin_index = 0;
     wtf_size_t end_index = display_item_list.size();
     while (begin_index < end_index &&
@@ -109,7 +112,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
   // hit test, visual viewport, overlays, etc. Includes LayoutView scrolling
   // background.
   PaintChunkSubset ContentPaintChunks() {
-    const auto& chunks = GetPaintController().PaintChunks();
+    const auto& chunks = RootPaintController().PaintChunks();
     wtf_size_t begin_index = 0;
     wtf_size_t end_index = chunks.size();
     while (begin_index < end_index) {
@@ -121,7 +124,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
     while (end_index > begin_index &&
            IsNotContentType(chunks[end_index - 1].id.type))
       end_index--;
-    return PaintChunkSubset(GetPaintController().GetPaintArtifactShared(),
+    return PaintChunkSubset(RootPaintController().GetPaintArtifactShared(),
                             begin_index, end_index);
   }
 

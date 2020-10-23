@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/squashing_disallowed_reasons.h"
@@ -63,6 +64,7 @@ class PictureLayer;
 
 namespace blink {
 
+class PaintController;
 class RasterInvalidationTracking;
 class RasterInvalidator;
 struct PreCompositedLayerInfo;
@@ -181,7 +183,11 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   IntRect InterestRect();
 
   // Returns true if any layer is repainted.
-  bool PaintRecursively(GraphicsContext&, Vector<PreCompositedLayerInfo>&);
+  bool PaintRecursively(GraphicsContext&,
+                        Vector<PreCompositedLayerInfo>&,
+                        PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
+
+  PaintController& GetPaintController() const;
 
   void SetElementId(const CompositorElementId&);
 
@@ -217,6 +223,8 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
     needs_check_raster_invalidation_ = true;
   }
 
+  void PaintForTesting(const IntRect& interest_rect);
+
   void SetShouldCreateLayersAfterPaint(bool);
   bool ShouldCreateLayersAfterPaint() const {
     return should_create_layers_after_paint_;
@@ -232,6 +240,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
  private:
   friend class CompositedLayerMappingTest;
+  friend class GraphicsLayerTest;
 
   // cc::ContentLayerClient implementation.
   gfx::Rect PaintableRegion() final { return InterestRect(); }
@@ -239,8 +248,9 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   bool FillsBoundsCompletely() const override { return false; }
 
   void ClearPaintStateRecursively();
-  void Paint(GraphicsContext&,
-             Vector<PreCompositedLayerInfo>& pre_composited_layers);
+  void Paint(Vector<PreCompositedLayerInfo>&,
+             PaintBenchmarkMode,
+             const IntRect* interest_rect = nullptr);
 
   // Adds a child without calling NotifyChildListChange(), so that adding
   // children can be batched before updating.
@@ -294,6 +304,8 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
   SquashingDisallowedReasons squashing_disallowed_reasons_ =
       SquashingDisallowedReason::kNone;
+
+  mutable std::unique_ptr<PaintController> paint_controller_;
 
   IntRect previous_interest_rect_;
 

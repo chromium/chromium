@@ -1262,36 +1262,29 @@ void PaintArtifactCompositor::UpdateLayerProperties(
   if (pending_layer.compositing_type == PendingLayer::kForeignLayer)
     return;
 
+  PaintChunkSubset chunks = pending_layer.chunks;
+  if (pending_layer.graphics_layer &&
+      pending_layer.graphics_layer->PaintsContentOrHitTest()) {
+    chunks = PaintChunkSubset(pending_layer.graphics_layer->GetPaintController()
+                                  .GetPaintArtifactShared());
+  }
   PaintChunksToCcLayer::UpdateLayerProperties(
-      layer, pending_layer.property_tree_state, pending_layer.chunks,
-      property_tree_manager);
+      layer, pending_layer.property_tree_state, chunks, property_tree_manager);
 }
 
-void PaintArtifactCompositor::UpdateRepaintedLayerProperties(
-    const Vector<PreCompositedLayerInfo>& pre_composited_layers) {
+void PaintArtifactCompositor::UpdateRepaintedLayerProperties() const {
   // TODO(paint-dev): Implement repaint-only update for CompositeAfterPaint.
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return;
 
-  auto* pre_composited_layer = pre_composited_layers.begin();
-  for (auto& pending_layer : pending_layers_) {
+  for (const auto& pending_layer : pending_layers_) {
     if (pending_layer.compositing_type != PendingLayer::kPreCompositedLayer)
       continue;
-
-    while (!pre_composited_layer->graphics_layer) {
-      DCHECK_NE(pre_composited_layer, pre_composited_layers.end());
-      pre_composited_layer++;
-    }
-    DCHECK_NE(pre_composited_layer, pre_composited_layers.end());
     DCHECK(pending_layer.graphics_layer);
-    DCHECK_EQ(pre_composited_layer->graphics_layer,
-              pending_layer.graphics_layer);
     if (pending_layer.graphics_layer->Repainted()) {
-      pending_layer.chunks = pre_composited_layer->chunks;
       UpdateLayerProperties(pending_layer.graphics_layer->CcLayer(),
                             pending_layer);
     }
-    pre_composited_layer++;
   }
 
   UpdateDebugInfo();
@@ -1612,7 +1605,12 @@ Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
 void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
   for (auto& layer : pending_layers_) {
     layer.property_tree_state.ClearChangedTo(PropertyTreeState::Root());
-    for (auto& chunk : layer.chunks) {
+    PaintChunkSubset chunks =
+        layer.graphics_layer && layer.graphics_layer->PaintsContentOrHitTest()
+            ? PaintChunkSubset(layer.graphics_layer->GetPaintController()
+                                   .GetPaintArtifactShared())
+            : layer.chunks;
+    for (auto& chunk : chunks) {
       // Calling |ClearChangedTo| for every chunk could be O(|property nodes|^2)
       // in the worst case and could be optimized by caching which nodes that
       // have already been cleared.

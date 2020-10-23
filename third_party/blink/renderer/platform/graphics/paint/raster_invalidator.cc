@@ -21,7 +21,7 @@ void RasterInvalidator::UpdateClientDebugNames() {
   debug_names.clear();
   // This is called just after a full document cycle update, so all clients in
   // old_paint_artifact_ should be still alive.
-  for (const auto& chunk_info : old_chunks_info_) {
+  for (const auto& chunk_info : old_paint_chunks_info_) {
     wtf_size_t chunk_index = chunk_info.index_in_paint_artifact;
     const auto& chunk = old_paint_artifact_->PaintChunks()[chunk_index];
     debug_names.insert(&chunk.id.client, chunk.id.client.DebugName());
@@ -46,7 +46,7 @@ void RasterInvalidator::SetTracksRasterInvalidations(bool should_track) {
 
 const PaintChunk& RasterInvalidator::GetOldChunk(wtf_size_t index) const {
   DCHECK(old_paint_artifact_);
-  const auto& old_chunk_info = old_chunks_info_[index];
+  const auto& old_chunk_info = old_paint_chunks_info_[index];
   const auto& old_chunk =
       old_paint_artifact_
           ->PaintChunks()[old_chunk_info.index_in_paint_artifact];
@@ -59,7 +59,7 @@ const PaintChunk& RasterInvalidator::GetOldChunk(wtf_size_t index) const {
 wtf_size_t RasterInvalidator::MatchNewChunkToOldChunk(
     const PaintChunk& new_chunk,
     wtf_size_t old_index) const {
-  for (wtf_size_t i = old_index; i < old_chunks_info_.size(); i++) {
+  for (wtf_size_t i = old_index; i < old_paint_chunks_info_.size(); i++) {
     if (new_chunk.Matches(GetOldChunk(i)))
       return i;
   }
@@ -172,7 +172,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
     Vector<PaintChunkInfo>& new_chunks_info) {
   ChunkToLayerMapper mapper(layer_state, layer_bounds_.OffsetFromOrigin());
   Vector<bool> old_chunks_matched;
-  old_chunks_matched.resize(old_chunks_info_.size());
+  old_chunks_matched.resize(old_paint_chunks_info_.size());
   wtf_size_t old_index = 0;
   wtf_size_t max_matched_old_index = 0;
   for (auto it = new_chunks.begin(); it != new_chunks.end(); ++it) {
@@ -206,7 +206,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
     DCHECK(!old_chunks_matched[matched_old_index]);
     old_chunks_matched[matched_old_index] = true;
 
-    auto& old_chunk_info = old_chunks_info_[matched_old_index];
+    auto& old_chunk_info = old_paint_chunks_info_[matched_old_index];
     const auto& old_chunk = GetOldChunk(matched_old_index);
     // Clip the old chunk bounds by the new layer bounds.
     old_chunk_info.bounds_in_layer =
@@ -256,13 +256,13 @@ void RasterInvalidator::GenerateRasterInvalidations(
     }
 
     old_index = matched_old_index + 1;
-    if (old_index == old_chunks_info_.size())
+    if (old_index == old_paint_chunks_info_.size())
       old_index = 0;
     max_matched_old_index = std::max(max_matched_old_index, matched_old_index);
   }
 
   // Invalidate remaining unmatched (disappeared or uncacheable) old chunks.
-  for (wtf_size_t i = 0; i < old_chunks_info_.size(); ++i) {
+  for (wtf_size_t i = 0; i < old_paint_chunks_info_.size(); ++i) {
     if (old_chunks_matched[i])
       continue;
 
@@ -270,7 +270,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
     auto reason = old_chunk.is_cacheable
                       ? PaintInvalidationReason::kChunkDisappeared
                       : PaintInvalidationReason::kChunkUncacheable;
-    AddRasterInvalidation(function, old_chunks_info_[i].bounds_in_layer,
+    AddRasterInvalidation(function, old_paint_chunks_info_[i].bounds_in_layer,
                           old_chunk.id.client, reason, kClientIsOld);
   }
 }
@@ -323,8 +323,14 @@ void RasterInvalidator::Generate(
   if (layer_bounds_was_empty || layer_bounds_.IsEmpty()) {
     // Fast path if either the old bounds or the new bounds is empty. We still
     // need to update new_chunks_info for the next cycle.
-    UpdateChunksInfoWithoutInvalidation(new_chunks, layer_state,
-                                        new_chunks_info);
+    ChunkToLayerMapper mapper(layer_state, layer_bounds.OffsetFromOrigin());
+    for (auto it = new_chunks.begin(); it != new_chunks.end(); ++it) {
+      if (ShouldSkipForRasterInvalidation(it))
+        continue;
+      mapper.SwitchToChunk(*it);
+      new_chunks_info.emplace_back(*this, mapper, it);
+    }
+
     if (!layer_bounds.IsEmpty() && !new_chunks.IsEmpty()) {
       AddRasterInvalidation(
           raster_invalidation_function,
@@ -337,7 +343,7 @@ void RasterInvalidator::Generate(
                                 layer_state, new_chunks_info);
   }
 
-  old_chunks_info_ = std::move(new_chunks_info);
+  old_paint_chunks_info_ = std::move(new_chunks_info);
   old_paint_artifact_ = &new_chunks.GetPaintArtifact();
 
   if (tracking_info_)
@@ -345,46 +351,13 @@ void RasterInvalidator::Generate(
 }
 
 size_t RasterInvalidator::ApproximateUnsharedMemoryUsage() const {
-  return sizeof(*this) + old_chunks_info_.CapacityInBytes();
-}
-
-void RasterInvalidator::UpdateChunksInfoWithoutInvalidation(
-    const PaintChunkSubset& new_chunks,
-    const PropertyTreeState& layer_state,
-    Vector<PaintChunkInfo>& new_chunks_info) {
-  ChunkToLayerMapper mapper(layer_state, layer_bounds_.OffsetFromOrigin());
-  for (auto it = new_chunks.begin(); it != new_chunks.end(); ++it) {
-    if (ShouldSkipForRasterInvalidation(it))
-      continue;
-    mapper.SwitchToChunk(*it);
-    new_chunks_info.emplace_back(*this, mapper, it);
-  }
-}
-
-void RasterInvalidator::SetChunksWithoutInvalidation(
-    const PaintChunkSubset& chunks,
-    const PropertyTreeState& layer_state) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  Vector<PaintChunkInfo> new_chunks_info;
-  UpdateChunksInfoWithoutInvalidation(chunks, layer_state, new_chunks_info);
-#if DCHECK_IS_ON()
-  DCHECK_EQ(new_chunks_info.size(), old_chunks_info_.size());
-  for (wtf_size_t i = 0; i < new_chunks_info.size(); ++i) {
-    const auto& new_info = new_chunks_info[i];
-    const auto& old_info = old_chunks_info_[i];
-    DCHECK_EQ(new_info.bounds_in_layer, old_info.bounds_in_layer);
-    DCHECK_EQ(new_info.id, old_info.id);
-    DCHECK_EQ(new_info.bounds_in_layer, old_info.bounds_in_layer);
-    // index_in_paint_artifact may change.
-  }
-#endif
-  old_chunks_info_ = std::move(new_chunks_info);
-  old_paint_artifact_ = &chunks.GetPaintArtifact();
+  return sizeof(*this) +
+         old_paint_chunks_info_.capacity() * sizeof(PaintChunkInfo);
 }
 
 void RasterInvalidator::ClearOldStates() {
   old_paint_artifact_ = nullptr;
-  old_chunks_info_.clear();
+  old_paint_chunks_info_.clear();
   layer_bounds_ = gfx::Rect();
 }
 

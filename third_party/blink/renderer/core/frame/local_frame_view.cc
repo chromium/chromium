@@ -2745,26 +2745,22 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
   return target_state > DocumentLifecycle::kPrePaintClean;
 }
 
-void LocalFrameView::RunPaintLifecyclePhase() {
+void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunPaintLifecyclePhase");
-
-  if (!paint_controller_)
-    paint_controller_ = std::make_unique<PaintController>();
-
   // While printing or capturing a paint preview of a document, the paint walk
   // is done into a special canvas. There is no point doing a normal paint step
   // (or animations update) when in this mode.
   bool is_capturing_layout = frame_->GetDocument()->IsCapturingLayout();
   bool repainted = false;
   if (!is_capturing_layout)
-    repainted = PaintTree();
+    repainted = PaintTree(benchmark_mode);
 
-  if (paint_controller_->GetBenchmarkMode() ==
+  if (benchmark_mode ==
           PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate ||
       // TODO(paint-dev): Separate requirement for update for repaint and full
       // PaintArtifactCompositor update.
       (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-       paint_controller_->GetBenchmarkMode() != PaintBenchmarkMode::kNormal)) {
+       benchmark_mode != PaintBenchmarkMode::kNormal)) {
     paint_artifact_compositor_->SetNeedsUpdate();
   }
 
@@ -2802,7 +2798,20 @@ void LocalFrameView::RunPaintLifecyclePhase() {
 
     // Notify the controller that the artifact has been pushed and some
     // lifecycle state can be freed (such as raster invalidations).
-    paint_controller_->FinishCycle();
+    if (paint_controller_)
+      paint_controller_->FinishCycle();
+
+    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer();
+      if (root) {
+        ForAllPaintingGraphicsLayers(*root, [](GraphicsLayer& layer) {
+          // Notify the paint controller that the artifact has been pushed and
+          // some lifecycle state can be freed (such as raster invalidations).
+          layer.GetPaintController().FinishCycle();
+        });
+      }
+    }
+
     if (paint_artifact_compositor_)
       paint_artifact_compositor_->ClearPropertyTreeChangedState();
   }
@@ -2869,7 +2878,7 @@ void LocalFrameView::EnqueueScrollEvents() {
   });
 }
 
-bool LocalFrameView::PaintTree() {
+bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kPaint);
 
@@ -2888,10 +2897,13 @@ bool LocalFrameView::PaintTree() {
   bool repainted = false;
   bool needs_clear_repaint_flags = false;
 
-  DCHECK(paint_controller_);
-  GraphicsContext graphics_context(*paint_controller_);
-
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    if (!paint_controller_)
+      paint_controller_ = std::make_unique<PaintController>();
+
+    PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
+                                                          benchmark_mode);
+
     // TODO(crbug.com/917911): Painting of overlays should not force repainting
     // of the frame contents.
     auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_);
@@ -2902,6 +2914,7 @@ bool LocalFrameView::PaintTree() {
         !visual_viewport_needs_repaint_ && !has_dev_tools_overlays) {
       paint_controller_->UpdateUMACountsOnFullyCached();
     } else {
+      GraphicsContext graphics_context(*paint_controller_);
       if (Settings* settings = frame_->GetSettings()) {
         graphics_context.SetDarkModeEnabled(
             settings->GetForceDarkModeEnabled() &&
@@ -2956,11 +2969,15 @@ bool LocalFrameView::PaintTree() {
     // parented into the main frame tree, or when the LocalFrameView is the main
     // frame view of a page overlay. The page overlay is in the layer tree of
     // the host page and will be painted during painting of the host page.
+    paint_controller_ =
+        std::make_unique<PaintController>(PaintController::kTransient);
     pre_composited_layers_.clear();
+    GraphicsContext graphics_context(*paint_controller_);
+
     if (GraphicsLayer* root =
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
-      repainted =
-          root->PaintRecursively(graphics_context, pre_composited_layers_);
+      repainted = root->PaintRecursively(
+          graphics_context, pre_composited_layers_, benchmark_mode);
       if (visual_viewport_needs_repaint_ && paint_artifact_compositor_)
         paint_artifact_compositor_->SetNeedsUpdate();
 
@@ -2975,7 +2992,9 @@ bool LocalFrameView::PaintTree() {
         pre_composited_layers_.push_back(
             PreCompositedLayerInfo{subset_recorder.Get()});
       }
+
       paint_controller_->CommitNewDisplayItems();
+      paint_controller_ = nullptr;
     } else {
       needs_clear_repaint_flags = true;
     }
@@ -3035,10 +3054,8 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   // layerization algorithm, but it does need to update properties on layers
   // that depend on painted output.
   if (!paint_artifact_compositor_->NeedsUpdate()) {
-    if (repainted) {
-      paint_artifact_compositor_->UpdateRepaintedLayerProperties(
-          pre_composited_layers_);
-    }
+    if (repainted)
+      paint_artifact_compositor_->UpdateRepaintedLayerProperties();
     return;
   }
 
@@ -4756,7 +4773,6 @@ PaintLayer* LocalFrameView::GetFullScreenOverlayLayer() const {
 void LocalFrameView::RunPaintBenchmark(int repeat_count,
                                        cc::PaintBenchmarkResult& result) {
   DCHECK_EQ(Lifecycle().GetState(), DocumentLifecycle::kPaintClean);
-  DCHECK(paint_controller_);
 
   auto run_benchmark = [&](PaintBenchmarkMode mode) -> double {
     constexpr int kTimeCheckInterval = 1;
@@ -4769,9 +4785,7 @@ void LocalFrameView::RunPaintBenchmark(int repeat_count,
       // quantization when the time is very small.
       base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
       do {
-        PaintController::ScopedBenchmarkMode scoped_benchmark(
-            *paint_controller_, mode);
-        RunPaintLifecyclePhase();
+        RunPaintLifecyclePhase(mode);
         timer.NextLap();
       } while (!timer.HasTimeLimitExpired());
 

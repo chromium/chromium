@@ -143,7 +143,7 @@ TEST_P(PaintControllerPaintTestForCAP, FrameScrollingContents) {
       GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
   view_scroll_hit_test.scroll_hit_test_rect = IntRect(0, 0, 800, 600);
   EXPECT_THAT(
-      GetPaintController().PaintChunks()[0],
+      RootPaintController().PaintChunks()[0],
       IsPaintChunk(0, 0,
                    PaintChunk::Id(GetLayoutView(), DisplayItem::kScrollHitTest),
                    GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
@@ -161,7 +161,7 @@ TEST_P(PaintControllerPaintTestForCAP, FrameScrollingContents) {
                           IsSameId(&div3, kBackgroundType),
                           IsSameId(&div4, kBackgroundType)));
   EXPECT_THAT(
-      GetPaintController().PaintChunks()[0],
+      RootPaintController().PaintChunks()[0],
       IsPaintChunk(0, 0,
                    PaintChunk::Id(GetLayoutView(), DisplayItem::kScrollHitTest),
                    GetLayoutView().FirstFragment().LocalBorderBoxProperties(),

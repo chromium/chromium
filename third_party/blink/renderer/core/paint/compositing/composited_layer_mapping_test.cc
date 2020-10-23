@@ -129,6 +129,13 @@ TEST_F(CompositedLayerMappingTest,
   UpdateAllLifecyclePhasesForTest();
   // Invalidate directly composited layers on subpixel accumulation change
   // when PaintUnderInvalidationChecking is enabled.
+  EXPECT_FALSE(target->GetLayoutBox()
+                   ->Layer()
+                   ->GraphicsLayerBacking()
+                   ->GetRasterInvalidationTracking()
+                   ->Invalidations()
+                   .IsEmpty());
+  GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
 TEST_F(CompositedLayerMappingTest,

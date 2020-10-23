@@ -259,16 +259,15 @@ TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
 
   SetWheelEventListener(GetDocument(), "scroller");
 
-  EXPECT_THAT(
-      ContentDisplayItems(),
-      ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(scroller, kBackgroundType),
-                  IsSameId(&scroller_scrolling_client, kBackgroundType)));
-
   HitTestData hit_test_data;
   hit_test_data.wheel_event_rects = {{IntRect(0, 0, 100, 400)},
                                      {IntRect(0, 0, 10, 400)}};
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_THAT(
+        ContentDisplayItems(),
+        ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                    IsSameId(scroller, kBackgroundType),
+                    IsSameId(&scroller_scrolling_client, kBackgroundType)));
     EXPECT_THAT(
         ContentPaintChunks(),
         ElementsAre(
@@ -281,15 +280,23 @@ TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
                 &hit_test_data)));
 
   } else {
+    EXPECT_THAT(ContentDisplayItems(),
+                ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+    EXPECT_THAT(ContentPaintChunks(),
+                ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
+
+    auto& scroller_paint_controller = scroller->GetScrollableArea()
+                                          ->Layer()
+                                          ->GraphicsLayerBacking()
+                                          ->GetPaintController();
     EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(1, 2),  // scroller background.
-            IsPaintChunk(
-                2, 3, PaintChunk::Id(*scroller, kScrollingBackgroundChunkType),
-                scroller->FirstFragment().ContentsProperties(),
-                &hit_test_data)));
+        scroller_paint_controller.GetDisplayItemList(),
+        ElementsAre(IsSameId(&scroller_scrolling_client, kBackgroundType)));
+    EXPECT_THAT(
+        scroller_paint_controller.PaintChunks(),
+        ElementsAre(IsPaintChunk(
+            0, 1, PaintChunk::Id(*scroller, kScrollingBackgroundChunkType),
+            scroller->FirstFragment().ContentsProperties(), &hit_test_data)));
   }
 }
 
@@ -515,12 +522,12 @@ TEST_P(BlockPainterTest, TouchActionRectScrollingContents) {
   hit_test_data.touch_action_rects = {{IntRect(0, 0, 100, 400)},
                                       {IntRect(0, 0, 10, 400)}};
 
-  EXPECT_THAT(
-      ContentDisplayItems(),
-      ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(scroller, kBackgroundType),
-                  IsSameId(&scroller_scrolling_client, kBackgroundType)));
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_THAT(
+        ContentDisplayItems(),
+        ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                    IsSameId(scroller, kBackgroundType),
+                    IsSameId(&scroller_scrolling_client, kBackgroundType)));
     EXPECT_THAT(
         ContentPaintChunks(),
         ElementsAre(
@@ -531,16 +538,25 @@ TEST_P(BlockPainterTest, TouchActionRectScrollingContents) {
                 2, 3, PaintChunk::Id(*scroller, kScrollingBackgroundChunkType),
                 scroller->FirstFragment().ContentsProperties(),
                 &hit_test_data)));
+
   } else {
+    EXPECT_THAT(ContentDisplayItems(),
+                ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
+    EXPECT_THAT(ContentPaintChunks(),
+                ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
+
+    auto& scroller_paint_controller = scroller->GetScrollableArea()
+                                          ->Layer()
+                                          ->GraphicsLayerBacking()
+                                          ->GetPaintController();
     EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(1, 2),  // scroller background.
-            IsPaintChunk(
-                2, 3, PaintChunk::Id(*scroller, kScrollingBackgroundChunkType),
-                scroller->FirstFragment().ContentsProperties(),
-                &hit_test_data)));
+        scroller_paint_controller.GetDisplayItemList(),
+        ElementsAre(IsSameId(&scroller_scrolling_client, kBackgroundType)));
+    EXPECT_THAT(
+        scroller_paint_controller.PaintChunks(),
+        ElementsAre(IsPaintChunk(
+            0, 1, PaintChunk::Id(*scroller, kScrollingBackgroundChunkType),
+            scroller->FirstFragment().ContentsProperties(), &hit_test_data)));
   }
 }
 

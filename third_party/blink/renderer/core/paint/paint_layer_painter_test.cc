@@ -39,6 +39,13 @@ class PaintLayerPainterTest : public PaintControllerPaintTest {
     EXPECT_EQ(expected_paints_with_transparency,
               target_layer->PaintsWithTransparency(kGlobalPaintNormalPhase));
   }
+
+  PaintController& MainGraphicsLayerPaintController() {
+    return GetLayoutView()
+        .Layer()
+        ->GraphicsLayerBacking(&GetLayoutView())
+        ->GetPaintController();
+  }
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(PaintLayerPainterTest);

@@ -806,11 +806,11 @@ class CORE_EXPORT LocalFrameView final
       DocumentLifecycle::LifecycleState target_state);
   bool RunPrePaintLifecyclePhase(
       DocumentLifecycle::LifecycleState target_state);
-  void RunPaintLifecyclePhase();
+  void RunPaintLifecyclePhase(PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
 
   void UpdateStyleAndLayoutIfNeededRecursive();
 
-  bool PaintTree();
+  bool PaintTree(PaintBenchmarkMode);
   void PushPaintArtifactToCompositor(bool repainted);
 
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();
@@ -1039,9 +1039,12 @@ class CORE_EXPORT LocalFrameView final
   // For testing.
   bool is_tracking_raster_invalidations_ = false;
 
-  // These are created for the local root frame, controlling painting and
-  // compositing of the whole local frame tree. |paint_controller_| caches
-  // display items and subsequences across frame updates and repaints.
+  // Currently used in PushPaintArtifactToCompositor() to collect composited
+  // layers as foreign layers. It's transient, but may live across frame updates
+  // until SetForeignLayerListNeedsUpdate() is called.
+  // For CompositeAfterPaint, we use it in PaintTree() for all paintings of the
+  // frame tree in PaintTree(). It caches display items and subsequences across
+  // frame updates and repaints.
   std::unique_ptr<PaintController> paint_controller_;
   std::unique_ptr<PaintArtifactCompositor> paint_artifact_compositor_;
   Vector<PreCompositedLayerInfo> pre_composited_layers_;
