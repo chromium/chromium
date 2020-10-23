@@ -374,7 +374,6 @@ const LogSeverity LOG_INFO = LOGGING_INFO;
 const LogSeverity LOG_WARNING = LOGGING_WARNING;
 const LogSeverity LOG_ERROR = LOGGING_ERROR;
 const LogSeverity LOG_FATAL = LOGGING_FATAL;
-const LogSeverity LOG_NUM_SEVERITIES = LOGGING_NUM_SEVERITIES;
 const LogSeverity LOG_DFATAL = LOGGING_DFATAL;
 
 // A few definitions of macros that don't generate much code. These are used

@@ -357,7 +357,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
         command_line.GetSwitchValueASCII(switches::kLoggingLevel);
     int level = 0;
     if (base::StringToInt(log_level, &level) && level >= 0 &&
-        level < LOG_NUM_SEVERITIES) {
+        level < LOGGING_NUM_SEVERITIES) {
       SetMinLogLevel(level);
     } else {
       DLOG(WARNING) << "Bad log level: " << log_level;

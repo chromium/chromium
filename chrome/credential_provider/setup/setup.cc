@@ -110,7 +110,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
         cmdline->GetSwitchValueASCII(switches::kLoggingLevel);
     int level = 0;
     if (base::StringToInt(log_level, &level) && level >= 0 &&
-        level < logging::LOG_NUM_SEVERITIES) {
+        level < logging::LOGGING_NUM_SEVERITIES) {
       logging::SetMinLogLevel(level);
     } else {
       LOGFN(WARNING) << "Bad log level: " << log_level;
