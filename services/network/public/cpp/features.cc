@@ -70,6 +70,7 @@ const base::Feature kProactivelyThrottleLowPriorityRequests{
 
 // Enables Cross-Origin Opener Policy (COOP).
 // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
+// https://html.spec.whatwg.org/#cross-origin-opener-policy
 // Currently this feature is enabled for all platforms except WebView.
 const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -96,8 +97,10 @@ const base::Feature kCrossOriginOpenerPolicyByDefault{
     "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables Cross-Origin Embedder Policy (COEP).
-// https://github.com/mikewest/corpp
-// Currently this feature is enabled for all platforms except WebView.
+// https://html.spec.whatwg.org/#coep
+// Currently this feature is enabled for all platforms (including webview).
+// TODO(https://crbug.com/1140432): Remove this flag after M88 Stable + 1 week =
+// 2021-02-01.
 const base::Feature kCrossOriginEmbedderPolicy{
     "CrossOriginEmbedderPolicy", base::FEATURE_ENABLED_BY_DEFAULT};
 
