@@ -7,9 +7,9 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/virtual_keyboard_overlay_changed_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace gfx {
 class Rect;
@@ -19,17 +19,21 @@ namespace blink {
 
 class DOMRect;
 class ExecutionContext;
+class Navigator;
 
 // The VirtualKeyboard API provides control of the on-screen keyboard
 // to JS authors. The VirtualKeyboard object lives in the Navigator.
 // It is exposed to JS via a new attribute virtualKeyboard in the Navigator.
 class VirtualKeyboard final : public EventTargetWithInlineData,
-                              public ExecutionContextClient,
+                              public Supplement<Navigator>,
                               public VirtualKeyboardOverlayChangedObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit VirtualKeyboard(LocalFrame*);
+  static const char kSupplementName[];
+  static VirtualKeyboard* virtualKeyboard(Navigator&);
+
+  explicit VirtualKeyboard(Navigator& navigator);
   VirtualKeyboard(const VirtualKeyboard&) = delete;
   ~VirtualKeyboard() override;
 

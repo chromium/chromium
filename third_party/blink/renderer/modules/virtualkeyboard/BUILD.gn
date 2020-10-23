@@ -6,8 +6,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("virtualkeyboard") {
   sources = [
-    "navigator_virtual_keyboard.cc",
-    "navigator_virtual_keyboard.h",
     "virtual_keyboard.cc",
     "virtual_keyboard.h",
     "virtual_keyboard_geometry_change_event.cc",
