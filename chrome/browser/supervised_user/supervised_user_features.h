@@ -15,8 +15,6 @@ extern const base::Feature kSupervisedUserInitiatedExtensionInstall;
 
 extern const base::Feature kEduCoexistenceFlowV2;
 
-bool IsEduCoexistenceFlowV2Enabled();
-
 }  // namespace supervised_users
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_FEATURES_H_
