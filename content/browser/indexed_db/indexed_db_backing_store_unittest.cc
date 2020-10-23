@@ -1184,9 +1184,10 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   EXPECT_EQ(value3_.bits, read_result_value.bits);
   EXPECT_TRUE(CheckBlobInfoMatches(read_result_value.external_objects));
   EXPECT_TRUE(CheckBlobReadsMatchWrites(read_result_value.external_objects));
-  for (size_t i = 0; i < read_result_value.external_objects.size(); ++i) {
-    if (read_result_value.external_objects[i].mark_used_callback())
-      read_result_value.external_objects[i].mark_used_callback().Run();
+  for (const IndexedDBExternalObject& external_object :
+       read_result_value.external_objects) {
+    if (external_object.mark_used_callback())
+      external_object.mark_used_callback().Run();
   }
 
   std::unique_ptr<IndexedDBBackingStore::Transaction> transaction3 =
@@ -1207,9 +1208,10 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   EXPECT_TRUE(succeeded);
   EXPECT_TRUE(transaction3->CommitPhaseTwo().ok());
   EXPECT_EQ(0U, backing_store()->removals().size());
-  for (size_t i = 0; i < read_result_value.external_objects.size(); ++i) {
-    if (read_result_value.external_objects[i].release_callback())
-      read_result_value.external_objects[i].release_callback().Run();
+  for (const IndexedDBExternalObject& external_object :
+       read_result_value.external_objects) {
+    if (external_object.release_callback())
+      external_object.release_callback().Run();
   }
   task_environment_.RunUntilIdle();
 
