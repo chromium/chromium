@@ -155,7 +155,6 @@ crbug.com/1050754 external/wpt/battery-status/battery-disabled-by-feature-policy
 crbug.com/1050754 external/wpt/battery-status/battery-disallowed-in-cross-origin-iframe.https.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/battery-status/battery-insecure-context.html [ Failure ]
 crbug.com/1050754 external/wpt/beacon/beacon-redirect.sub.window.html [ Failure ]
-crbug.com/1050754 external/wpt/beacon/headers/header-content-type.html [ Failure ]
 crbug.com/1050754 external/wpt/bluetooth/adapter/adapter-absent-getAvailability.https.window.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/bluetooth/adapter/adapter-added-getAvailability.https.window.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/bluetooth/adapter/adapter-powered-off-getAvailability.https.window.html [ Failure Timeout ]

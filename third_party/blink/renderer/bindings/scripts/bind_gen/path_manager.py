@@ -221,4 +221,7 @@ _BACKWARD_COMPATIBLE_UNION_FILEPATHS = {
     # core/xmlhttprequest/xml_http_request.idl
     "DocumentOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString":
     "DocumentOrXMLHttpRequestBodyInit",
+    # modules/beacon/navigator_beacon.idl
+    'ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString':
+    'ReadableStreamOrXMLHttpRequestBodyInit',
 }

@@ -502,6 +502,9 @@ def shorten_union_name(union_type):
         # core/xmlhttprequest/xml_http_request.idl
         'DocumentOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString':
         'DocumentOrXMLHttpRequestBodyInit',
+        # modules/beacon/navigator_beacon.idl
+        'ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString':
+        'ReadableStreamOrXMLHttpRequestBodyInit',
     }
 
     idl_type = union_type

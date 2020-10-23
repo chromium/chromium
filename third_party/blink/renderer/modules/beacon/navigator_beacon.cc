@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/beacon/navigator_beacon.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/array_buffer_view_or_blob_or_string_or_form_data_or_readable_stream.h"
+#include "third_party/blink/renderer/bindings/modules/v8/readable_stream_or_xml_http_request_body_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -67,7 +67,8 @@ bool NavigatorBeacon::sendBeacon(
     ScriptState* script_state,
     Navigator& navigator,
     const String& urlstring,
-    const ArrayBufferViewOrBlobOrStringOrFormDataOrReadableStream& data,
+    const ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&
+        data,
     ExceptionState& exception_state) {
   return NavigatorBeacon::From(navigator).SendBeaconImpl(
       script_state, urlstring, data, exception_state);
@@ -76,7 +77,8 @@ bool NavigatorBeacon::sendBeacon(
 bool NavigatorBeacon::SendBeaconImpl(
     ScriptState* script_state,
     const String& urlstring,
-    const ArrayBufferViewOrBlobOrStringOrFormDataOrReadableStream& data,
+    const ReadableStreamOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString&
+        data,
     ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   KURL url = context->CompleteURL(urlstring);
@@ -85,7 +87,20 @@ bool NavigatorBeacon::SendBeaconImpl(
 
   bool allowed;
 
-  if (data.IsArrayBufferView()) {
+  if (data.IsArrayBuffer()) {
+    auto* data_buffer = data.GetAsArrayBuffer();
+    if (!base::CheckedNumeric<wtf_size_t>(data_buffer->ByteLengthAsSizeT())
+             .IsValid()) {
+      // At the moment the PingLoader::SendBeacon implementation cannot deal
+      // with huge ArrayBuffers.
+      exception_state.ThrowRangeError(
+          "The data provided to sendBeacon() exceeds the maximally possible "
+          "length, which is 4294967295.");
+      return false;
+    }
+    allowed = PingLoader::SendBeacon(
+        *script_state, GetSupplementable()->GetFrame(), url, data_buffer);
+  } else if (data.IsArrayBufferView()) {
     auto* data_view = data.GetAsArrayBufferView().View();
     if (!base::CheckedNumeric<wtf_size_t>(data_view->byteLengthAsSizeT())
              .IsValid()) {
@@ -102,14 +117,18 @@ bool NavigatorBeacon::SendBeaconImpl(
     Blob* blob = data.GetAsBlob();
     allowed = PingLoader::SendBeacon(
         *script_state, GetSupplementable()->GetFrame(), url, blob);
-  } else if (data.IsString()) {
+  } else if (data.IsUSVString()) {
     allowed =
         PingLoader::SendBeacon(*script_state, GetSupplementable()->GetFrame(),
-                               url, data.GetAsString());
+                               url, data.GetAsUSVString());
   } else if (data.IsFormData()) {
     allowed =
         PingLoader::SendBeacon(*script_state, GetSupplementable()->GetFrame(),
                                url, data.GetAsFormData());
+  } else if (data.IsURLSearchParams()) {
+    allowed =
+        PingLoader::SendBeacon(*script_state, GetSupplementable()->GetFrame(),
+                               url, data.GetAsURLSearchParams());
   } else if (data.IsReadableStream()) {
     exception_state.ThrowTypeError(
         "sendBeacon cannot have a ReadableStream body.");

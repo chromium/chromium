@@ -45,11 +45,13 @@ namespace blink {
 
 class Blob;
 class DOMArrayBufferView;
+class DOMArrayBuffer;
 class EncodedFormData;
 class FormData;
 class LocalFrame;
 class KURL;
 class ScriptState;
+class URLSearchParams;
 
 // Issue an asynchronous, one-directional request at some resources, ignoring
 // any response. The request is made independent of any LocalFrame staying
@@ -84,6 +86,14 @@ class CORE_EXPORT PingLoader {
                          LocalFrame*,
                          const KURL&,
                          DOMArrayBufferView*);
+  static bool SendBeacon(const ScriptState&,
+                         LocalFrame*,
+                         const KURL&,
+                         DOMArrayBuffer*);
+  static bool SendBeacon(const ScriptState&,
+                         LocalFrame*,
+                         const KURL&,
+                         URLSearchParams*);
   static bool SendBeacon(const ScriptState&, LocalFrame*, const KURL&, Blob*);
   static bool SendBeacon(const ScriptState&,
                          LocalFrame*,
