@@ -375,63 +375,13 @@ static_library("libvp9rc") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  if (is_nacl) {
-    sources = libvpx_srcs_generic
-  } else if (current_cpu == "x86") {
-    sources = libvpx_srcs_x86
-  } else if (current_cpu == "x64") {
-    if (is_msan) {
-      sources = libvpx_srcs_generic
-    } else {
-      sources = libvpx_srcs_x86_64
-    }
-  } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
-    sources = libvpx_srcs_mips
-  } else if (current_cpu == "arm") {
-    if (is_chromeos) {
-      sources = libvpx_srcs_arm_neon_highbd
-    } else if (arm_use_neon) {
-      sources = libvpx_srcs_arm_neon
-    } else if (is_android) {
-      sources = libvpx_srcs_arm_neon_cpu_detect
-    } else {
-      sources = libvpx_srcs_arm
-    }
-  } else if (current_cpu == "arm64") {
-    if (is_chromeos || is_win) {
-      sources = libvpx_srcs_arm64_highbd
-    } else {
-      sources = libvpx_srcs_arm64
-    }
-  }
-  sources += [ "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.cc" ]
-  sources += [ "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h" ]
+  sources = [ "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.cc",
+              "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ ":libvpx_config" ]
-  deps = []
-  if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
-    deps += [
-      ":libvpx_asm",
-      ":libvpx_intrinsics_avx",
-      ":libvpx_intrinsics_avx2",
-      ":libvpx_intrinsics_avx512",
-      ":libvpx_intrinsics_mmx",
-      ":libvpx_intrinsics_sse2",
-      ":libvpx_intrinsics_sse4_1",
-      ":libvpx_intrinsics_ssse3",
-    ]
-  }
-  if (cpu_arch_full == "arm-neon-cpu-detect") {
-    deps += [ ":libvpx_intrinsics_neon" ]
-  }
-  if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
-  }
-  if (current_cpu == "arm" && arm_assembly_sources != []) {
-    deps += [ ":libvpx_assembly_arm" ]
-  }
+  public_deps = [ ":libvpx" ]
 
   public_configs = [ ":libvpx_external_config" ]
 }
