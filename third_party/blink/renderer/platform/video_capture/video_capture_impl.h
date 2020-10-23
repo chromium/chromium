@@ -40,9 +40,7 @@ extern const PLATFORM_EXPORT base::Feature kTimeoutHangingVideoCaptureStarts;
 class PLATFORM_EXPORT VideoCaptureImpl
     : public media::mojom::blink::VideoCaptureObserver {
  public:
-  VideoCaptureImpl(
-      media::VideoCaptureSessionId session_id,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+  explicit VideoCaptureImpl(media::VideoCaptureSessionId session_id);
   ~VideoCaptureImpl() override;
 
   // Stop/resume delivering video frames to clients, based on flag |suspend|.
@@ -152,15 +150,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   void OnStartTimedout();
 
-  // Callback for when GPU context lost is detected. The method fetches the new
-  // GPU factories handle on |main_task_runner_| and sets |gpu_factories_| to
-  // the new handle.
-  static void OnGpuContextLost(
-      base::WeakPtr<VideoCaptureImpl> video_capture_impl);
-
-  void SetGpuFactoriesHandleOnIOTaskRunner(
-      media::GpuVideoAcceleratorFactories* gpu_factories);
-
   // |device_id_| and |session_id_| are different concepts, but we reuse the
   // same numerical value, passed on construction.
   const base::UnguessableToken device_id_;
@@ -195,9 +184,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   int num_first_frame_logs_ = 0;
 
   // Methods of |gpu_factories_| need to run on |media_task_runner_|.
-  media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
+  media::GpuVideoAcceleratorFactories* gpu_factories_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 
