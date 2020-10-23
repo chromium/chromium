@@ -76,6 +76,7 @@ class SVGPatternElement final : public SVGElement,
   }
 
   void InvalidatePattern(LayoutInvalidationReasonForTracing);
+  void InvalidateDependentPatterns();
 
   const SVGPatternElement* ReferencedElement() const;
 

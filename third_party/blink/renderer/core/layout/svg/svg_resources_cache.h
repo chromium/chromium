@@ -56,8 +56,9 @@ class SVGResourcesCache {
   static void ClientStyleChanged(LayoutObject&, StyleDifference);
 
   // Called when the target element of a resource referenced by the
-  // LayoutObject may have changed.
-  static void ResourceReferenceChanged(LayoutObject&);
+  // LayoutObject may have changed and we need to recreate the
+  // associated SVGResources object.
+  static bool UpdateResources(LayoutObject&);
 
   class TemporaryStyleScope {
     STACK_ALLOCATED();

@@ -115,8 +115,12 @@ void SVGPatternElement::BuildPendingResource() {
     resource_->AddClient(EnsureSVGResourceClient());
 
   InvalidatePattern(layout_invalidation_reason::kSvgResourceInvalidated);
-  if (auto* layout_object = GetLayoutObject())
-    SVGResourcesCache::ResourceReferenceChanged(*layout_object);
+  if (auto* layout_object = GetLayoutObject()) {
+    if (!layout_object->Parent())
+      return;
+    SVGResourcesCache::UpdateResources(*layout_object);
+    InvalidateDependentPatterns();
+  }
 }
 
 void SVGPatternElement::ClearResourceReferences() {
@@ -198,6 +202,15 @@ void SVGPatternElement::InvalidatePattern(
     LayoutInvalidationReasonForTracing reason) {
   if (auto* layout_object = ToLayoutSVGResourceContainer(GetLayoutObject()))
     layout_object->InvalidateCacheAndMarkForLayout(reason);
+}
+
+void SVGPatternElement::InvalidateDependentPatterns() {
+  NotifyIncomingReferences([](SVGElement& element) {
+    if (auto* pattern = DynamicTo<SVGPatternElement>(element)) {
+      pattern->InvalidatePattern(
+          layout_invalidation_reason::kSvgResourceInvalidated);
+    }
+  });
 }
 
 LayoutObject* SVGPatternElement::CreateLayoutObject(const ComputedStyle&,

@@ -109,19 +109,11 @@ void SVGResourcesCache::ClientStyleChanged(LayoutObject& layout_object,
 
   // LayoutObjects for SVGFE*Element should not be calling this function.
   DCHECK(!layout_object.IsSVGFilterPrimitive());
-  // We only call this function on LayoutObjects that fulfil this condition.
-  DCHECK(LayoutObjectCanHaveResources(layout_object));
 
   // Dynamic changes of CSS properties like 'clip-path' may require us to
   // recompute the associated resources for a LayoutObject.
-  // TODO(fs): Avoid passing in a useless StyleDifference, but instead compare
-  // oldStyle/newStyle to see which resources changed to be able to selectively
-  // rebuild individual resources, instead of all of them.
-  SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
-  if (cache.UpdateResourcesFromLayoutObject(layout_object,
-                                            layout_object.StyleRef())) {
+  if (UpdateResources(layout_object))
     layout_object.SetNeedsPaintPropertyUpdate();
-  }
 
   // If this layoutObject is the child of ResourceContainer and it require
   // repainting that changes of CSS properties such as 'visibility',
@@ -131,28 +123,6 @@ void SVGResourcesCache::ClientStyleChanged(LayoutObject& layout_object,
 
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
       layout_object, needs_layout);
-}
-
-void SVGResourcesCache::ResourceReferenceChanged(LayoutObject& layout_object) {
-  DCHECK(layout_object.IsSVG());
-  DCHECK(layout_object.GetNode());
-  DCHECK(layout_object.GetNode()->IsSVGElement());
-
-  if (!layout_object.Parent())
-    return;
-
-  // Only LayoutObjects that can actually have resources should be pending and
-  // hence be able to call this method.
-  DCHECK(LayoutObjectCanHaveResources(layout_object));
-
-  SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
-  if (cache.UpdateResourcesFromLayoutObject(layout_object,
-                                            layout_object.StyleRef())) {
-    layout_object.SetNeedsPaintPropertyUpdate();
-  }
-
-  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
-      layout_object, true);
 }
 
 void SVGResourcesCache::ClientWasAddedToTree(LayoutObject& layout_object) {
@@ -175,6 +145,13 @@ void SVGResourcesCache::ClientWillBeRemovedFromTree(
   SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
   if (cache.RemoveResourcesFromLayoutObject(layout_object))
     layout_object.SetNeedsPaintPropertyUpdate();
+}
+
+bool SVGResourcesCache::UpdateResources(LayoutObject& layout_object) {
+  DCHECK(LayoutObjectCanHaveResources(layout_object));
+  SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
+  return cache.UpdateResourcesFromLayoutObject(layout_object,
+                                               layout_object.StyleRef());
 }
 
 void SVGResourcesCache::ClientDestroyed(LayoutObject& layout_object) {

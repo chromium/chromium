@@ -725,14 +725,19 @@ void SVGElementResourceClient::ResourceContentChanged(
 }
 
 void SVGElementResourceClient::ResourceElementChanged() {
-  if (LayoutObject* layout_object = element_->GetLayoutObject()) {
-    ClearFilterData();
-    SVGResourcesCache::ResourceReferenceChanged(*layout_object);
-    // TODO(fs): If the resource element (for a filter) doesn't actually change
-    // we don't need to perform the associated invalidations.
-    layout_object->SetNeedsPaintPropertyUpdate();
-    MarkFilterDataDirty();
+  LayoutObject* layout_object = element_->GetLayoutObject();
+  if (!layout_object)
+    return;
+  ClearFilterData();
+  if (layout_object->Parent()) {
+    SVGResourcesCache::UpdateResources(*layout_object);
+    LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
+        *layout_object, true);
   }
+  // TODO(fs): If the resource element (for a filter) doesn't actually change
+  // we don't need to perform the associated invalidations.
+  layout_object->SetNeedsPaintPropertyUpdate();
+  MarkFilterDataDirty();
 }
 
 void SVGElementResourceClient::ResourceDestroyed(
