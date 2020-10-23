@@ -102,6 +102,9 @@
         @color/circular_progress_icon_color_small_large_light
     </color>
 
+    <!-- Incognito icon colors -->
+    <color name="incognito_icon_filled_bg_color">@color/incognito_icon_filled_bg_color_dark</color>
+
     <!-- Other colors -->
     <color name="default_red" tools:ignore="UnusedResources">@color/default_red_dark</color>
     <color name="default_green" tools:ignore="UnusedResources">@color/default_green_dark</color>
