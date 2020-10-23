@@ -10,18 +10,29 @@ template("generate_grd") {
       deps = invoker.deps
     }
 
-    inputs = invoker.manifest_files
+    inputs = []
     outputs = [ invoker.out_grd ]
 
     args = [
-             "--out-grd",
-             rebase_path(invoker.out_grd, root_build_dir),
-             "--grd-prefix",
-             invoker.grd_prefix,
-             "--root-gen-dir",
-             rebase_path(root_gen_dir, root_build_dir),
-             "--manifest-files",
-           ] + rebase_path(invoker.manifest_files, root_build_dir)
+      "--out-grd",
+      rebase_path(invoker.out_grd, root_build_dir),
+      "--grd-prefix",
+      invoker.grd_prefix,
+      "--root-gen-dir",
+      rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    if (defined(invoker.manifest_files)) {
+      inputs += invoker.manifest_files
+      args += [ "--manifest-files" ] +
+              rebase_path(invoker.manifest_files, root_build_dir)
+    }
+
+    if (defined(invoker.grdp_files)) {
+      inputs += invoker.grdp_files
+      args +=
+          [ "--grdp-files" ] + rebase_path(invoker.grdp_files, root_build_dir)
+    }
 
     if (defined(invoker.input_files)) {
       args += [

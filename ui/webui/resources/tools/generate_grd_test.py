@@ -14,10 +14,33 @@ _CWD = os.getcwd()
 _HERE_DIR = os.path.dirname(__file__)
 pathToHere = os.path.relpath(_HERE_DIR, _CWD)
 
+# This needs to be a constant, because if this expected file is checked into
+# the repo, translation.py will try to find the dummy grdp files, which don't
+# exist. We can't alter the translation script, so work around it by
+# hardcoding this string, instead of checking in even more dummy files.
+EXPECTED_GRD_WITH_GRDP_FILES = '''<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/test_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/test_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/test_resources_map.h"
+            type="resource_map_header" />
+    <output filename="test_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <part file="foo_resources.grdp" />
+      <part file="foo/bar_resources.grdp" />
+    </includes>
+  </release>
+</grit>\n'''
 
 class GenerateGrdTest(unittest.TestCase):
   def setUp(self):
-    self._out_folder = None
+    self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
 
   def tearDown(self):
     shutil.rmtree(self._out_folder)
@@ -26,39 +49,51 @@ class GenerateGrdTest(unittest.TestCase):
     assert self._out_folder
     return open(os.path.join(self._out_folder, file_name), 'rb').read()
 
-  def _run_test_(self, grd_expected, manifest_files, input_files=None,
-                 input_files_base_dir=None, resource_path_rewrites=None):
-    assert not self._out_folder
-    self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+  def _run_test_(self, grd_expected,
+                 out_grd='test_resources.grd',
+                 manifest_files=None, input_files=None,
+                 input_files_base_dir=None, grdp_files=None,
+                 resource_path_rewrites=None):
     args = [
-      '--out-grd', os.path.join(self._out_folder, 'test_resources.grd'),
+      '--out-grd', os.path.join(self._out_folder, out_grd),
       '--grd-prefix', 'test',
       '--root-gen-dir', os.path.join(_CWD, pathToHere, 'tests'),
-      '--manifest-files',
-    ] + manifest_files
+    ]
+
+    if manifest_files != None:
+      args += [
+        '--manifest-files',
+      ] + manifest_files
+
+    if grdp_files != None:
+      args += [
+        '--grdp-files',
+      ] + grdp_files
 
     if (input_files_base_dir):
       args += [
         '--input-files-base-dir',
         input_files_base_dir,
         '--input-files',
-      ]
-      args += input_files
+      ] + input_files
 
     if (resource_path_rewrites):
       args += [ '--resource-path-rewrites' ] + resource_path_rewrites
 
     generate_grd.main(args)
 
-    actual_grd = self._read_out_file('test_resources.grd')
-    expected_grd = open(
-        os.path.join(_HERE_DIR, 'tests', grd_expected), 'rb').read()
-    self.assertEquals(expected_grd, actual_grd)
+    actual_grd = self._read_out_file(out_grd)
+    if (grd_expected.endswith('.grd') or grd_expected.endswith('.grdp')):
+      expected_grd_content = open(
+          os.path.join(_HERE_DIR, 'tests', grd_expected), 'rb').read()
+      self.assertEquals(expected_grd_content, actual_grd)
+    else:
+      self.assertEquals(grd_expected, actual_grd)
 
   def testSuccess(self):
     self._run_test_(
       'expected_grd.grd',
-      [
+      manifest_files = [
         os.path.join(pathToHere, 'tests', 'test_manifest_1.json'),
         os.path.join(pathToHere, 'tests', 'test_manifest_2.json'),
       ])
@@ -66,21 +101,35 @@ class GenerateGrdTest(unittest.TestCase):
   def testSuccessWithInputFiles(self):
     self._run_test_(
       'expected_grd_with_input_files.grd',
-      [
+      manifest_files = [
         os.path.join(pathToHere, 'tests', 'test_manifest_1.json'),
         os.path.join(pathToHere, 'tests', 'test_manifest_2.json'),
       ],
-      [ 'images/test_svg.svg', 'test_html_in_src.html' ],
-      'test_src_dir')
+      input_files = [ 'images/test_svg.svg', 'test_html_in_src.html' ],
+      input_files_base_dir = 'test_src_dir')
+
+  def testSuccessWithGrdpFiles(self):
+    self._run_test_(
+      EXPECTED_GRD_WITH_GRDP_FILES,
+      grdp_files = [
+        os.path.join(self._out_folder, 'foo_resources.grdp'),
+        os.path.join(self._out_folder, 'foo', 'bar_resources.grdp'),
+      ])
+
+  def testSuccessGrdpWithInputFiles(self):
+    self._run_test_(
+      'expected_grdp_with_input_files.grdp',
+      out_grd = 'test_resources.grdp',
+      input_files = [ 'images/test_svg.svg', 'test_html_in_src.html' ],
+      input_files_base_dir = 'test_src_dir')
 
   def testSuccessWithRewrites(self):
     self._run_test_(
       'expected_grd_with_rewrites.grd',
-      [
+      manifest_files = [
         os.path.join(pathToHere, 'tests', 'test_manifest_1.json'),
         os.path.join(pathToHere, 'tests', 'test_manifest_2.json'),
       ],
-      input_files=None, input_files_base_dir=None,
       resource_path_rewrites=[
         'test.rollup.js|test.js',
         'dir/another_element_in_dir.js|dir2/another_element_in_dir_renamed.js',

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit-part>
+      <include name="IDR_TEST_IMAGES_TEST_SVG_SVG" file="${root_src_dir}/test_src_dir/images/test_svg.svg" resource_path="images/test_svg.svg" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_TEST_TEST_HTML_IN_SRC_HTML" file="${root_src_dir}/test_src_dir/test_html_in_src.html" resource_path="test_html_in_src.html" use_base_dir="false" type="chrome_html" />
+</grit-part>

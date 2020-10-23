@@ -71,6 +71,9 @@ GRD_END_TEMPLATE = '    </includes>\n'\
                    '  </release>\n'\
                    '</grit>\n'
 
+GRDP_BEGIN_TEMPLATE = '<?xml version="1.0" encoding="UTF-8"?>\n'\
+                     '<grit-part>\n'
+GRDP_END_TEMPLATE = '</grit-part>\n'
 
 # Generates an <include .... /> row for the given file.
 def _generate_include_row(grd_prefix, filename, pathname, \
@@ -90,19 +93,31 @@ def _generate_include_row(grd_prefix, filename, pathname, \
       type=type)
 
 
+def _generate_part_row(filename):
+  return '      <part file="%s" />\n' % filename
+
+
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument('--manifest-files', required=True, nargs="*")
+  parser.add_argument('--manifest-files', nargs="*")
   parser.add_argument('--out-grd', required=True)
   parser.add_argument('--grd-prefix', required=True)
   parser.add_argument('--root-gen-dir', required=True)
   parser.add_argument('--input-files', nargs="*")
   parser.add_argument('--input-files-base-dir')
+  parser.add_argument('--grdp-files', nargs="*")
   parser.add_argument('--resource-path-rewrites', nargs="*")
   args = parser.parse_args(argv)
 
   grd_file = open(os.path.normpath(os.path.join(_CWD, args.out_grd)), 'w')
-  grd_file.write(GRD_BEGIN_TEMPLATE.format(prefix=args.grd_prefix))
+  begin_template = GRDP_BEGIN_TEMPLATE if args.out_grd.endswith('.grdp') else \
+      GRD_BEGIN_TEMPLATE
+  grd_file.write(begin_template.format(prefix=args.grd_prefix))
+
+  if args.grdp_files != None:
+    for grdp_file in args.grdp_files:
+      grdp_path = os.path.relpath(grdp_file, os.path.dirname(args.out_grd))
+      grd_file.write(_generate_part_row(grdp_path))
 
   resource_path_rewrites = {}
   if args.resource_path_rewrites != None:
@@ -119,19 +134,22 @@ def main(argv):
           args.grd_prefix, filename, '${root_src_dir}/' + filepath,
           resource_path_rewrites))
 
-  for manifest_file in args.manifest_files:
-    manifest_path = os.path.normpath(os.path.join(_CWD, manifest_file))
-    with open(manifest_path, 'r') as f:
-      data = json.load(f)
-      base_dir= os.path.normpath(os.path.join(_CWD, data['base_dir']))
-      for filename in data['files']:
-        filepath = os.path.join(base_dir, filename).replace('\\', '/')
-        rebased_path = os.path.relpath(filepath, args.root_gen_dir)
-        grd_file.write(_generate_include_row(
-            args.grd_prefix, filename, '${root_gen_dir}/' + rebased_path,
-            resource_path_rewrites))
+  if args.manifest_files != None:
+    for manifest_file in args.manifest_files:
+      manifest_path = os.path.normpath(os.path.join(_CWD, manifest_file))
+      with open(manifest_path, 'r') as f:
+        data = json.load(f)
+        base_dir= os.path.normpath(os.path.join(_CWD, data['base_dir']))
+        for filename in data['files']:
+          filepath = os.path.join(base_dir, filename).replace('\\', '/')
+          rebased_path = os.path.relpath(filepath, args.root_gen_dir)
+          grd_file.write(_generate_include_row(
+              args.grd_prefix, filename, '${root_gen_dir}/' + rebased_path,
+              resource_path_rewrites))
 
-  grd_file.write(GRD_END_TEMPLATE)
+  end_template = GRDP_END_TEMPLATE if args.out_grd.endswith('.grdp') else \
+      GRD_END_TEMPLATE
+  grd_file.write(end_template)
   return
 
 
