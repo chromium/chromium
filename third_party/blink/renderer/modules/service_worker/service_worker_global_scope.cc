@@ -45,6 +45,7 @@
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
@@ -280,7 +281,7 @@ void ServiceWorkerGlobalScope::FetchAndRunClassicScript(
   // "classic: Fetch a classic worker script given job's serialized script url,
   // job's client, "serviceworker", and the to-be-created environment settings
   // object for this service worker."
-  auto context_type = mojom::RequestContextType::SERVICE_WORKER;
+  auto context_type = mojom::blink::RequestContextType::SERVICE_WORKER;
   auto destination = network::mojom::RequestDestination::kServiceWorker;
 
   // "To perform the fetch given request, run the following steps:"
@@ -333,7 +334,7 @@ void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
           : ModuleScriptCustomFetchType::kWorkerConstructor;
   FetchModuleScript(module_url_record, outside_settings_object,
                     outside_resource_timing_notifier,
-                    mojom::RequestContextType::SERVICE_WORKER,
+                    mojom::blink::RequestContextType::SERVICE_WORKER,
                     network::mojom::RequestDestination::kServiceWorker,
                     credentials_mode, fetch_type,
                     MakeGarbageCollected<ServiceWorkerModuleTreeClient>(

@@ -87,7 +87,8 @@ void InspectorResourceContentLoader::Start() {
       resource_request = ResourceRequest(document->Url());
       resource_request.SetCacheMode(mojom::FetchCacheMode::kOnlyIfCached);
     }
-    resource_request.SetRequestContext(mojom::RequestContextType::INTERNAL);
+    resource_request.SetRequestContext(
+        mojom::blink::RequestContextType::INTERNAL);
     if (document->Loader() &&
         document->Loader()->GetResponse().WasFetchedViaServiceWorker()) {
       resource_request.SetCacheMode(mojom::FetchCacheMode::kDefault);
@@ -128,7 +129,7 @@ void InspectorResourceContentLoader::Start() {
       urls_to_fetch.insert(url);
       ResourceRequest style_sheet_resource_request(url);
       style_sheet_resource_request.SetRequestContext(
-          mojom::RequestContextType::INTERNAL);
+          mojom::blink::RequestContextType::INTERNAL);
       ResourceLoaderOptions options(world);
       options.initiator_info.name = fetch_initiator_type_names::kInternal;
       FetchParameters params(std::move(style_sheet_resource_request), options);

@@ -1011,11 +1011,11 @@ String Request::ContentType() const {
   return result;
 }
 
-mojom::RequestContextType Request::GetRequestContextType() const {
+mojom::blink::RequestContextType Request::GetRequestContextType() const {
   if (!request_) {
-    return mojom::RequestContextType::UNSPECIFIED;
+    return mojom::blink::RequestContextType::UNSPECIFIED;
   }
-  return request_->Context();
+  return mojom::blink::RequestContextType::FETCH;
 }
 
 network::mojom::RequestDestination Request::GetRequestDestination() const {

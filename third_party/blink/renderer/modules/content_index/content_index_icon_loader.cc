@@ -28,7 +28,7 @@ void FetchIcon(ExecutionContext* execution_context,
                const gfx::Size& icon_size,
                ThreadedIconLoader::IconCallback callback) {
   ResourceRequest resource_request(icon_url);
-  resource_request.SetRequestContext(mojom::RequestContextType::IMAGE);
+  resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   resource_request.SetRequestDestination(
       network::mojom::RequestDestination::kImage);
   resource_request.SetPriority(ResourceLoadPriority::kMedium);

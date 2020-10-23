@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -207,7 +208,7 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeNoDeps) {
   KURL url("http://example.com/root.js");
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   ModuleTreeLinker::Fetch(
-      url, GetDocument().Fetcher(), mojom::RequestContextType::SCRIPT,
+      url, GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       GetModulator(), ModuleScriptCustomFetchType::kNone, registry, client);
 
@@ -230,7 +231,7 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeInstantiationFailure) {
   KURL url("http://example.com/root.js");
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   ModuleTreeLinker::Fetch(
-      url, GetDocument().Fetcher(), mojom::RequestContextType::SCRIPT,
+      url, GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       GetModulator(), ModuleScriptCustomFetchType::kNone, registry, client);
 
@@ -257,7 +258,7 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWithSingleDependency) {
   KURL url("http://example.com/root.js");
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   ModuleTreeLinker::Fetch(
-      url, GetDocument().Fetcher(), mojom::RequestContextType::SCRIPT,
+      url, GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       GetModulator(), ModuleScriptCustomFetchType::kNone, registry, client);
 
@@ -285,7 +286,7 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWith3Deps) {
   KURL url("http://example.com/root.js");
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   ModuleTreeLinker::Fetch(
-      url, GetDocument().Fetcher(), mojom::RequestContextType::SCRIPT,
+      url, GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       GetModulator(), ModuleScriptCustomFetchType::kNone, registry, client);
 
@@ -326,7 +327,7 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWith3Deps1Fail) {
   KURL url("http://example.com/root.js");
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   ModuleTreeLinker::Fetch(
-      url, GetDocument().Fetcher(), mojom::RequestContextType::SCRIPT,
+      url, GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       GetModulator(), ModuleScriptCustomFetchType::kNone, registry, client);
 
@@ -386,7 +387,7 @@ TEST_F(ModuleTreeLinkerTest, FetchDependencyTree) {
   KURL url("http://example.com/depth1.js");
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   ModuleTreeLinker::Fetch(
-      url, GetDocument().Fetcher(), mojom::RequestContextType::SCRIPT,
+      url, GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       GetModulator(), ModuleScriptCustomFetchType::kNone, registry, client);
 
@@ -413,7 +414,7 @@ TEST_F(ModuleTreeLinkerTest, FetchDependencyOfCyclicGraph) {
   KURL url("http://example.com/a.js");
   TestModuleTreeClient* client = MakeGarbageCollected<TestModuleTreeClient>();
   ModuleTreeLinker::Fetch(
-      url, GetDocument().Fetcher(), mojom::RequestContextType::SCRIPT,
+      url, GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
       GetModulator(), ModuleScriptCustomFetchType::kNone, registry, client);
 

@@ -156,12 +156,12 @@ AlternateSignedExchangeResourceInfo::FindMatchingEntry(
 AlternateSignedExchangeResourceInfo::Entry*
 AlternateSignedExchangeResourceInfo::FindMatchingEntry(
     const KURL& url,
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     const Vector<String>& languages) const {
   const char* accept_header = kDefaultAcceptHeader;
-  if (request_context == mojom::RequestContextType::STYLE) {
+  if (request_context == mojom::blink::RequestContextType::STYLE) {
     accept_header = kStylesheetAcceptHeader;
-  } else if (request_context == mojom::RequestContextType::IMAGE) {
+  } else if (request_context == mojom::blink::RequestContextType::IMAGE) {
     accept_header = ImageAcceptHeader();
   }
   return FindMatchingEntry(url, accept_header, languages);

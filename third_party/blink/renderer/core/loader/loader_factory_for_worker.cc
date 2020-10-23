@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -63,8 +64,9 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
   // a loader specific to script loading.
   if (global_scope_->IsServiceWorkerGlobalScope()) {
     if (request.GetRequestContext() ==
-            mojom::RequestContextType::SERVICE_WORKER ||
-        request.GetRequestContext() == mojom::RequestContextType::SCRIPT) {
+            mojom::blink::RequestContextType::SERVICE_WORKER ||
+        request.GetRequestContext() ==
+            mojom::blink::RequestContextType::SCRIPT) {
       // GetScriptLoaderFactory() may return nullptr in tests even for service
       // workers.
       if (web_context_->GetScriptLoaderFactory()) {

@@ -46,7 +46,7 @@ namespace blink {
 CSSStyleSheetResource* CSSStyleSheetResource::Fetch(FetchParameters& params,
                                                     ResourceFetcher* fetcher,
                                                     ResourceClient* client) {
-  params.SetRequestContext(mojom::RequestContextType::STYLE);
+  params.SetRequestContext(mojom::blink::RequestContextType::STYLE);
   params.SetRequestDestination(network::mojom::RequestDestination::kStyle);
   CSSStyleSheetResource* resource = ToCSSStyleSheetResource(
       fetcher->RequestResource(params, CSSStyleSheetResourceFactory(), client));

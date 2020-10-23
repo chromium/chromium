@@ -24,7 +24,7 @@ void ManifestFetcher::Start(LocalDOMWindow& window,
   callback_ = std::move(callback);
 
   ResourceRequest request(url_);
-  request.SetRequestContext(mojom::RequestContextType::MANIFEST);
+  request.SetRequestContext(mojom::blink::RequestContextType::MANIFEST);
   request.SetMode(network::mojom::RequestMode::kCors);
   // See https://w3c.github.io/manifest/. Use "include" when use_credentials is
   // true, and "omit" otherwise.

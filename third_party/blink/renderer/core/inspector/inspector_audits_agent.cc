@@ -4,15 +4,15 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_image.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
-
-#include "third_party/blink/renderer/core/inspector/inspector_issue.h"
-#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 
 namespace blink {
 

@@ -596,25 +596,26 @@ static WebNavigationType DetermineNavigationType(
   return kWebNavigationTypeOther;
 }
 
-static mojom::RequestContextType DetermineRequestContextFromNavigationType(
+static mojom::blink::RequestContextType
+DetermineRequestContextFromNavigationType(
     const WebNavigationType navigation_type) {
   switch (navigation_type) {
     case kWebNavigationTypeLinkClicked:
-      return mojom::RequestContextType::HYPERLINK;
+      return mojom::blink::RequestContextType::HYPERLINK;
 
     case kWebNavigationTypeOther:
-      return mojom::RequestContextType::LOCATION;
+      return mojom::blink::RequestContextType::LOCATION;
 
     case kWebNavigationTypeFormResubmitted:
     case kWebNavigationTypeFormSubmitted:
-      return mojom::RequestContextType::FORM;
+      return mojom::blink::RequestContextType::FORM;
 
     case kWebNavigationTypeBackForward:
     case kWebNavigationTypeReload:
-      return mojom::RequestContextType::INTERNAL;
+      return mojom::blink::RequestContextType::INTERNAL;
   }
   NOTREACHED();
-  return mojom::RequestContextType::HYPERLINK;
+  return mojom::blink::RequestContextType::HYPERLINK;
 }
 
 static network::mojom::RequestDestination
@@ -715,13 +716,13 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   WebNavigationType navigation_type = DetermineNavigationType(
       frame_load_type, resource_request.HttpBody() || request.Form(),
       request.GetTriggeringEventInfo() != TriggeringEventInfo::kNotFromEvent);
-  mojom::RequestContextType request_context_type =
+  mojom::blink::RequestContextType request_context_type =
       DetermineRequestContextFromNavigationType(navigation_type);
 
   // TODO(lyf): handle `frame` context type. https://crbug.com/1019716
-  if (mojom::RequestContextType::LOCATION == request_context_type &&
+  if (mojom::blink::RequestContextType::LOCATION == request_context_type &&
       !frame_->IsMainFrame()) {
-    request_context_type = mojom::RequestContextType::IFRAME;
+    request_context_type = mojom::blink::RequestContextType::IFRAME;
   }
   resource_request.SetRequestContext(request_context_type);
   resource_request.SetRequestDestination(

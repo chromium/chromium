@@ -106,7 +106,7 @@ class CORE_EXPORT AlternateSignedExchangeResourceInfo {
                            base::Optional<ResourceType> resource_type,
                            const Vector<String>& languages) const;
   Entry* FindMatchingEntry(const KURL& url,
-                           mojom::RequestContextType request_context,
+                           mojom::blink::RequestContextType request_context,
                            const Vector<String>& languages) const;
 
  private:

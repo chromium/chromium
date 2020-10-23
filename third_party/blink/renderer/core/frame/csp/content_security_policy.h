@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -311,10 +312,10 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   static bool IsScriptInlineType(InlineType);
 
-  // TODO(crbug.com/889751): Remove "mojom::RequestContextType" once
+  // TODO(crbug.com/889751): Remove "mojom::blink::RequestContextType" once
   // all the code migrates.
   bool AllowRequestWithoutIntegrity(
-      mojom::RequestContextType,
+      mojom::blink::RequestContextType,
       network::mojom::RequestDestination,
       const KURL&,
       const KURL& url_before_redirects,
@@ -322,9 +323,9 @@ class CORE_EXPORT ContentSecurityPolicy final
       ReportingDisposition = ReportingDisposition::kReport,
       CheckHeaderType = CheckHeaderType::kCheckAll) const;
 
-  // TODO(crbug.com/889751): Remove "mojom::RequestContextType" once
+  // TODO(crbug.com/889751): Remove "mojom::blink::RequestContextType" once
   // all the code migrates.
-  bool AllowRequest(mojom::RequestContextType,
+  bool AllowRequest(mojom::blink::RequestContextType,
                     network::mojom::RequestDestination,
                     const KURL&,
                     const String& nonce,

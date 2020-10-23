@@ -52,8 +52,6 @@ class CORE_EXPORT FetchRequestData final
   const AtomicString& Method() const { return method_; }
   void SetURL(const KURL& url) { url_ = url; }
   const KURL& Url() const { return url_; }
-  mojom::RequestContextType Context() const { return context_; }
-  void SetContext(mojom::RequestContextType context) { context_ = context; }
   network::mojom::RequestDestination Destination() const {
     return destination_;
   }
@@ -154,7 +152,6 @@ class CORE_EXPORT FetchRequestData final
   KURL url_;
   Member<FetchHeaderList> header_list_;
   // FIXME: Support m_skipServiceWorkerFlag;
-  mojom::RequestContextType context_;
   network::mojom::RequestDestination destination_;
   scoped_refptr<const SecurityOrigin> origin_;
   scoped_refptr<const SecurityOrigin> isolated_world_origin_;

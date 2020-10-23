@@ -36,6 +36,7 @@
 
 #include "base/macros.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
@@ -226,7 +227,7 @@ class CORE_EXPORT ThreadableLoader final
   const bool async_;
 
   // Holds the original request context (used for sanity checks).
-  mojom::RequestContextType request_context_;
+  mojom::blink::RequestContextType request_context_;
 
   // Saved so that we can use the original value for the modes in
   // ResponseReceived() where |resource| might be a reused one (e.g. preloaded

@@ -174,7 +174,7 @@ TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchCheckDefers) {
 
   ResourceRequest request;
   request.SetUrl(test_url_);
-  request.SetRequestContext(mojom::RequestContextType::FETCH);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
 
@@ -198,7 +198,7 @@ TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchSyncReturn) {
 
   ResourceRequest request;
   request.SetUrl(test_url_);
-  request.SetRequestContext(mojom::RequestContextType::FETCH);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
 
@@ -213,7 +213,7 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToFalse) {
 
   ResourceRequest request;
   request.SetUrl(test_url_);
-  request.SetRequestContext(mojom::RequestContextType::FETCH);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
 
@@ -232,7 +232,7 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToTrue) {
 
   ResourceRequest request;
   request.SetUrl(test_url_);
-  request.SetRequestContext(mojom::RequestContextType::FETCH);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));
 
@@ -254,7 +254,7 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersMultipleTimes) {
 
   ResourceRequest request;
   request.SetUrl(test_url_);
-  request.SetRequestContext(mojom::RequestContextType::FETCH);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
 
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(std::move(request));

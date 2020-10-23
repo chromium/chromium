@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -51,7 +52,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
   static scoped_refptr<ResourceTimingInfo> Create(
       const AtomicString& type,
       const base::TimeTicks time,
-      mojom::RequestContextType context,
+      mojom::blink::RequestContextType context,
       network::mojom::RequestDestination destination) {
     return base::AdoptRef(
         new ResourceTimingInfo(type, time, context, destination));
@@ -92,7 +93,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
     negative_allowed_ = negative_allowed;
   }
   bool NegativeAllowed() const { return negative_allowed_; }
-  mojom::RequestContextType ContextType() const { return context_type_; }
+  mojom::blink::RequestContextType ContextType() const { return context_type_; }
   network::mojom::RequestDestination RequestDestination() const {
     return request_destination_;
   }
@@ -111,7 +112,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
  private:
   ResourceTimingInfo(const AtomicString& type,
                      const base::TimeTicks time,
-                     mojom::RequestContextType context_type,
+                     mojom::blink::RequestContextType context_type,
                      network::mojom::RequestDestination request_destination)
       : type_(type),
         initial_time_(time),
@@ -120,7 +121,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
 
   AtomicString type_;
   base::TimeTicks initial_time_;
-  mojom::RequestContextType context_type_;
+  mojom::blink::RequestContextType context_type_;
   network::mojom::RequestDestination request_destination_;
   base::TimeTicks load_response_end_;
   KURL initial_url_;

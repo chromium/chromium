@@ -41,8 +41,9 @@ class PLATFORM_EXPORT CachedMetadataSender {
 };
 
 // Returns whether we should use isolated code cache for a particular response.
-PLATFORM_EXPORT bool ShouldUseIsolatedCodeCache(mojom::RequestContextType,
-                                                const ResourceResponse&);
+PLATFORM_EXPORT bool ShouldUseIsolatedCodeCache(
+    mojom::blink::RequestContextType,
+    const ResourceResponse&);
 
 // Handler class for caching operations.
 class CachedMetadataHandler : public GarbageCollected<CachedMetadataHandler> {

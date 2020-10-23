@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_MODULATOR_H_
 
 #include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -40,7 +41,7 @@ class DummyModulator : public Modulator {
 
   void FetchTree(const KURL&,
                  ResourceFetcher*,
-                 mojom::RequestContextType context_type,
+                 mojom::blink::RequestContextType context_type,
                  network::mojom::RequestDestination destination,
                  const ScriptFetchOptions&,
                  ModuleScriptCustomFetchType,
@@ -53,7 +54,7 @@ class DummyModulator : public Modulator {
   void FetchDescendantsForInlineScript(
       ModuleScript*,
       ResourceFetcher*,
-      mojom::RequestContextType context_type,
+      mojom::blink::RequestContextType context_type,
       network::mojom::RequestDestination destination,
       ModuleTreeClient*) override;
   ModuleScript* GetFetchedModuleScript(const KURL&) override;

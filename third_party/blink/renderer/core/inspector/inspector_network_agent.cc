@@ -44,6 +44,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/websocket.mojom-blink.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -1064,7 +1065,8 @@ void InspectorNetworkAgent::PrepareRequest(
 
   if (cache_disabled_.Get()) {
     if (LoadsFromCacheOnly(request) &&
-        request.GetRequestContext() != mojom::RequestContextType::INTERNAL) {
+        request.GetRequestContext() !=
+            mojom::blink::RequestContextType::INTERNAL) {
       request.SetCacheMode(mojom::FetchCacheMode::kUnspecifiedForceCacheMiss);
     } else {
       request.SetCacheMode(mojom::FetchCacheMode::kBypassCache);

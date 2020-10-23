@@ -7387,7 +7387,8 @@ class TestSameDocumentWithImageWebFrameClient
   // frame_test_helpers::TestWebFrameClient:
   void WillSendRequest(WebURLRequest& request,
                        ForRedirect for_redirect) override {
-    if (request.GetRequestContext() == mojom::RequestContextType::IMAGE) {
+    if (request.GetRequestContext() ==
+        mojom::blink::RequestContextType::IMAGE) {
       num_of_image_requests_++;
       EXPECT_EQ(mojom::FetchCacheMode::kDefault, request.GetCacheMode());
     }
@@ -8594,7 +8595,8 @@ TEST_F(WebFrameTest, HasVisibleContentOnHiddenFrames) {
 static Resource* FetchManifest(Document* document, const KURL& url) {
   FetchParameters fetch_parameters =
       FetchParameters::CreateForTest(ResourceRequest(url));
-  fetch_parameters.SetRequestContext(mojom::RequestContextType::MANIFEST);
+  fetch_parameters.SetRequestContext(
+      mojom::blink::RequestContextType::MANIFEST);
 
   return RawResource::FetchSynchronously(fetch_parameters, document->Fetcher());
 }

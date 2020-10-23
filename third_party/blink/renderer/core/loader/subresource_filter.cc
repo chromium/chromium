@@ -8,6 +8,7 @@
 
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -55,9 +56,10 @@ SubresourceFilter::SubresourceFilter(
 
 SubresourceFilter::~SubresourceFilter() = default;
 
-bool SubresourceFilter::AllowLoad(const KURL& resource_url,
-                                  mojom::RequestContextType request_context,
-                                  ReportingDisposition reporting_disposition) {
+bool SubresourceFilter::AllowLoad(
+    const KURL& resource_url,
+    mojom::blink::RequestContextType request_context,
+    ReportingDisposition reporting_disposition) {
   // TODO(csharrison): Implement a caching layer here which is a HashMap of
   // Pair<url string, context> -> LoadPolicy.
   WebDocumentSubresourceFilter::LoadPolicy load_policy =
@@ -91,7 +93,7 @@ bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
 
 bool SubresourceFilter::IsAdResource(
     const KURL& resource_url,
-    mojom::RequestContextType request_context) {
+    mojom::blink::RequestContextType request_context) {
   WebDocumentSubresourceFilter::LoadPolicy load_policy;
   if (last_resource_check_result_.first ==
       std::make_pair(resource_url, request_context)) {

@@ -36,6 +36,7 @@
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -311,7 +312,7 @@ TEST_F(WebAssociatedURLLoaderTest, CrossOriginSuccess) {
   WebURLRequest request(url);
   // No-CORS requests (CrossOriginRequestPolicyAllow) aren't allowed for the
   // default context. So we set the context as Script here.
-  request.SetRequestContext(mojom::RequestContextType::SCRIPT);
+  request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
 
   expected_response_ = WebURLResponse();
@@ -566,7 +567,7 @@ TEST_F(WebAssociatedURLLoaderTest, AccessCheckForLocalURL) {
   KURL url = ToKURL("file://test.pdf");
 
   WebURLRequest request(url);
-  request.SetRequestContext(mojom::RequestContextType::PLUGIN);
+  request.SetRequestContext(mojom::blink::RequestContextType::PLUGIN);
   request.SetMode(network::mojom::RequestMode::kNoCors);
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
 
@@ -593,7 +594,7 @@ TEST_F(WebAssociatedURLLoaderTest, BypassAccessCheckForLocalURL) {
   KURL url = ToKURL("file://test.pdf");
 
   WebURLRequest request(url);
-  request.SetRequestContext(mojom::RequestContextType::PLUGIN);
+  request.SetRequestContext(mojom::blink::RequestContextType::PLUGIN);
   request.SetMode(network::mojom::RequestMode::kNoCors);
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
 

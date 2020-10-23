@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
 
 #include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_mixed_content.h"
 #include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
@@ -144,7 +145,7 @@ WorkerFetchContext::CreateWebSocketHandshakeThrottle() {
 }
 
 bool WorkerFetchContext::ShouldBlockFetchByMixedContentCheck(
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
@@ -165,7 +166,7 @@ bool WorkerFetchContext::ShouldBlockFetchAsCredentialedSubresource(
     const KURL& url) const {
   if ((!url.User().IsEmpty() || !url.Pass().IsEmpty()) &&
       resource_request.GetRequestContext() !=
-          mojom::RequestContextType::XML_HTTP_REQUEST) {
+          mojom::blink::RequestContextType::XML_HTTP_REQUEST) {
     if (Url().User() != url.User() || Url().Pass() != url.Pass()) {
       CountDeprecation(
           WebFeature::kRequestedSubresourceWithEmbeddedCredentials);

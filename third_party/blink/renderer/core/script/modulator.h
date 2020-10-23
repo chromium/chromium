@@ -8,6 +8,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/util/type_safety/pass_key.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
@@ -129,7 +130,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // used in the "fetch a module worker script graph" algorithm.
   virtual void FetchTree(const KURL&,
                          ResourceFetcher* fetch_client_settings_object_fetcher,
-                         mojom::RequestContextType context_type,
+                         mojom::blink::RequestContextType context_type,
                          network::mojom::RequestDestination destination,
                          const ScriptFetchOptions&,
                          ModuleScriptCustomFetchType,
@@ -152,7 +153,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   virtual void FetchDescendantsForInlineScript(
       ModuleScript*,
       ResourceFetcher* fetch_client_settings_object_fetcher,
-      mojom::RequestContextType context_type,
+      mojom::blink::RequestContextType context_type,
       network::mojom::RequestDestination destination,
       ModuleTreeClient*) = 0;
 

@@ -36,17 +36,17 @@ namespace blink {
 
 // static
 WebMixedContentContextType WebMixedContent::ContextTypeFromRequestContext(
-    mojom::RequestContextType context,
+    mojom::blink::RequestContextType context,
     WebMixedContent::CheckModeForPlugin check_mode_for_plugin) {
   switch (context) {
     // "Optionally-blockable" mixed content
-    case mojom::RequestContextType::AUDIO:
-    case mojom::RequestContextType::IMAGE:
-    case mojom::RequestContextType::VIDEO:
+    case mojom::blink::RequestContextType::AUDIO:
+    case mojom::blink::RequestContextType::IMAGE:
+    case mojom::blink::RequestContextType::VIDEO:
       return WebMixedContentContextType::kOptionallyBlockable;
 
     // Plugins! Oh how dearly we love plugin-loaded content!
-    case mojom::RequestContextType::PLUGIN: {
+    case mojom::blink::RequestContextType::PLUGIN: {
       return check_mode_for_plugin ==
                      WebMixedContent::CheckModeForPlugin::kStrict
                  ? WebMixedContentContextType::kBlockable
@@ -54,42 +54,42 @@ WebMixedContentContextType WebMixedContent::ContextTypeFromRequestContext(
     }
 
     // "Blockable" mixed content
-    case mojom::RequestContextType::BEACON:
-    case mojom::RequestContextType::CSP_REPORT:
-    case mojom::RequestContextType::EMBED:
-    case mojom::RequestContextType::EVENT_SOURCE:
-    case mojom::RequestContextType::FAVICON:
-    case mojom::RequestContextType::FETCH:
-    case mojom::RequestContextType::FONT:
-    case mojom::RequestContextType::FORM:
-    case mojom::RequestContextType::FRAME:
-    case mojom::RequestContextType::HYPERLINK:
-    case mojom::RequestContextType::IFRAME:
-    case mojom::RequestContextType::IMAGE_SET:
-    case mojom::RequestContextType::IMPORT:
-    case mojom::RequestContextType::INTERNAL:
-    case mojom::RequestContextType::LOCATION:
-    case mojom::RequestContextType::MANIFEST:
-    case mojom::RequestContextType::OBJECT:
-    case mojom::RequestContextType::PING:
-    case mojom::RequestContextType::PREFETCH:
-    case mojom::RequestContextType::SCRIPT:
-    case mojom::RequestContextType::SERVICE_WORKER:
-    case mojom::RequestContextType::SHARED_WORKER:
-    case mojom::RequestContextType::STYLE:
-    case mojom::RequestContextType::SUBRESOURCE:
-    case mojom::RequestContextType::TRACK:
-    case mojom::RequestContextType::WORKER:
-    case mojom::RequestContextType::XML_HTTP_REQUEST:
-    case mojom::RequestContextType::XSLT:
+    case mojom::blink::RequestContextType::BEACON:
+    case mojom::blink::RequestContextType::CSP_REPORT:
+    case mojom::blink::RequestContextType::EMBED:
+    case mojom::blink::RequestContextType::EVENT_SOURCE:
+    case mojom::blink::RequestContextType::FAVICON:
+    case mojom::blink::RequestContextType::FETCH:
+    case mojom::blink::RequestContextType::FONT:
+    case mojom::blink::RequestContextType::FORM:
+    case mojom::blink::RequestContextType::FRAME:
+    case mojom::blink::RequestContextType::HYPERLINK:
+    case mojom::blink::RequestContextType::IFRAME:
+    case mojom::blink::RequestContextType::IMAGE_SET:
+    case mojom::blink::RequestContextType::IMPORT:
+    case mojom::blink::RequestContextType::INTERNAL:
+    case mojom::blink::RequestContextType::LOCATION:
+    case mojom::blink::RequestContextType::MANIFEST:
+    case mojom::blink::RequestContextType::OBJECT:
+    case mojom::blink::RequestContextType::PING:
+    case mojom::blink::RequestContextType::PREFETCH:
+    case mojom::blink::RequestContextType::SCRIPT:
+    case mojom::blink::RequestContextType::SERVICE_WORKER:
+    case mojom::blink::RequestContextType::SHARED_WORKER:
+    case mojom::blink::RequestContextType::STYLE:
+    case mojom::blink::RequestContextType::SUBRESOURCE:
+    case mojom::blink::RequestContextType::TRACK:
+    case mojom::blink::RequestContextType::WORKER:
+    case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::blink::RequestContextType::XSLT:
       return WebMixedContentContextType::kBlockable;
 
     // FIXME: Contexts that we should block, but don't currently.
     // https://crbug.com/388650
-    case mojom::RequestContextType::DOWNLOAD:
+    case mojom::blink::RequestContextType::DOWNLOAD:
       return WebMixedContentContextType::kShouldBeBlockable;
 
-    case mojom::RequestContextType::UNSPECIFIED:
+    case mojom::blink::RequestContextType::UNSPECIFIED:
       NOTREACHED();
   }
   NOTREACHED();

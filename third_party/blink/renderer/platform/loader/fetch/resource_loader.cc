@@ -107,16 +107,16 @@ std::unique_ptr<TracedValue> EndResourceLoadData(RequestOutcome outcome) {
   return value;
 }
 
-bool IsThrottlableRequestContext(mojom::RequestContextType context) {
+bool IsThrottlableRequestContext(mojom::blink::RequestContextType context) {
   // Requests that could run long should not be throttled as they
   // may stay there forever and avoid other requests from making
   // progress.
   // See https://crbug.com/837771 for the sample breakages.
-  return context != mojom::RequestContextType::EVENT_SOURCE &&
-         context != mojom::RequestContextType::FETCH &&
-         context != mojom::RequestContextType::XML_HTTP_REQUEST &&
-         context != mojom::RequestContextType::VIDEO &&
-         context != mojom::RequestContextType::AUDIO;
+  return context != mojom::blink::RequestContextType::EVENT_SOURCE &&
+         context != mojom::blink::RequestContextType::FETCH &&
+         context != mojom::blink::RequestContextType::XML_HTTP_REQUEST &&
+         context != mojom::blink::RequestContextType::VIDEO &&
+         context != mojom::blink::RequestContextType::AUDIO;
 }
 
 void LogMixedAutoupgradeMetrics(blink::MixedContentAutoupgradeStatus status,
@@ -166,11 +166,11 @@ bool CanHandleDataURLRequestLocally(const ResourceRequestHead& request) {
   return true;
 }
 
-bool RequestContextObserveResponse(mojom::RequestContextType type) {
+bool RequestContextObserveResponse(mojom::blink::RequestContextType type) {
   switch (type) {
-    case mojom::RequestContextType::PING:
-    case mojom::RequestContextType::BEACON:
-    case mojom::RequestContextType::CSP_REPORT:
+    case mojom::blink::RequestContextType::PING:
+    case mojom::blink::RequestContextType::BEACON:
+    case mojom::blink::RequestContextType::CSP_REPORT:
       return true;
 
     default:
@@ -179,11 +179,11 @@ bool RequestContextObserveResponse(mojom::RequestContextType type) {
 }
 
 SchedulingPolicy::Feature GetFeatureFromRequestContextType(
-    mojom::RequestContextType type) {
+    mojom::blink::RequestContextType type) {
   switch (type) {
-    case mojom::RequestContextType::FETCH:
+    case mojom::blink::RequestContextType::FETCH:
       return SchedulingPolicy::Feature::kOutstandingNetworkRequestFetch;
-    case mojom::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
       return SchedulingPolicy::Feature::kOutstandingNetworkRequestXHR;
     default:
       return SchedulingPolicy::Feature::kOutstandingNetworkRequestOthers;
@@ -446,7 +446,8 @@ bool ResourceLoader::ShouldFetchCodeCache() {
   // GeneratedCodeCache. The code cache corresponding to these scripts is in
   // the service worker's "installed script storage" and would be fetched along
   // with the resource from the cache storage.
-  if (request.GetRequestContext() == mojom::RequestContextType::SERVICE_WORKER)
+  if (request.GetRequestContext() ==
+      mojom::blink::RequestContextType::SERVICE_WORKER)
     return false;
   if (request.DownloadToBlob())
     return false;
@@ -692,7 +693,7 @@ void ResourceLoader::CancelForRedirectAccessCheckError(
 
 static bool IsManualRedirectFetchRequest(const ResourceRequestHead& request) {
   return request.GetRedirectMode() == network::mojom::RedirectMode::kManual &&
-         request.GetRequestContext() == mojom::RequestContextType::FETCH;
+         request.GetRequestContext() == mojom::blink::RequestContextType::FETCH;
 }
 
 bool ResourceLoader::WillFollowRedirect(
@@ -737,7 +738,7 @@ bool ResourceLoader::WillFollowRedirect(
   ResourceType resource_type = resource_->GetType();
 
   // The following parameters never change during the lifetime of a request.
-  mojom::RequestContextType request_context =
+  mojom::blink::RequestContextType request_context =
       initial_request.GetRequestContext();
   network::mojom::RequestDestination request_destination =
       initial_request.GetRequestDestination();
@@ -896,7 +897,7 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   const ResourceRequestHead& initial_request = resource_->GetResourceRequest();
   // The following parameters never change during the lifetime of a request.
-  mojom::RequestContextType request_context =
+  mojom::blink::RequestContextType request_context =
       initial_request.GetRequestContext();
   network::mojom::RequestDestination request_destination =
       initial_request.GetRequestDestination();
@@ -1231,8 +1232,8 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
     }
   } else {
     // Don't do mime sniffing for fetch (crbug.com/2016)
-    bool no_mime_sniffing =
-        request.GetRequestContext() == blink::mojom::RequestContextType::FETCH;
+    bool no_mime_sniffing = request.GetRequestContext() ==
+                            blink::mojom::blink::RequestContextType::FETCH;
     loader_->LoadSynchronously(
         std::move(network_resource_request), request.GetExtraData(),
         request.RequestorID(), request.DownloadToBlob(), no_mime_sniffing,
@@ -1290,8 +1291,8 @@ void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
 
   auto network_resource_request = std::make_unique<network::ResourceRequest>();
   // Don't do mime sniffing for fetch (crbug.com/2016)
-  bool no_mime_sniffing =
-      request.GetRequestContext() == blink::mojom::RequestContextType::FETCH;
+  bool no_mime_sniffing = request.GetRequestContext() ==
+                          blink::mojom::blink::RequestContextType::FETCH;
   scoped_refptr<EncodedFormData> form_body = request_body_.FormBody();
   PopulateResourceRequest(request, std::move(request_body_),
                           network_resource_request.get());
@@ -1407,8 +1408,9 @@ void ResourceLoader::FinishedCreatingBlob(
 }
 
 base::Optional<ResourceRequestBlockedReason>
-ResourceLoader::CheckResponseNosniff(mojom::RequestContextType request_context,
-                                     const ResourceResponse& response) {
+ResourceLoader::CheckResponseNosniff(
+    mojom::blink::RequestContextType request_context,
+    const ResourceResponse& response) {
   bool sniffing_allowed =
       ParseContentTypeOptionsHeader(response.HttpHeaderField(
           http_names::kXContentTypeOptions)) != kContentTypeOptionsNosniff;
@@ -1416,7 +1418,7 @@ ResourceLoader::CheckResponseNosniff(mojom::RequestContextType request_context,
     return base::nullopt;
 
   String mime_type = response.HttpContentType();
-  if (request_context == mojom::RequestContextType::STYLE &&
+  if (request_context == mojom::blink::RequestContextType::STYLE &&
       !MIMETypeRegistry::IsSupportedStyleSheetMIMEType(mime_type)) {
     fetcher_->GetConsoleLogger().AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,

@@ -67,7 +67,7 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       intra_priority_value_(0),
       requestor_id_(0),
       previews_state_(PreviewsTypes::kPreviewsUnspecified),
-      request_context_(mojom::RequestContextType::UNSPECIFIED),
+      request_context_(mojom::blink::RequestContextType::UNSPECIFIED),
       destination_(network::mojom::RequestDestination::kEmpty),
       mode_(network::mojom::RequestMode::kNoCors),
       fetch_importance_mode_(mojom::FetchImportanceMode::kImportanceAuto),

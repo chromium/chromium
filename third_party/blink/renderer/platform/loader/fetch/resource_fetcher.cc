@@ -229,7 +229,7 @@ ResourceLoadPriority AdjustPriorityWithPriorityHint(
       //     of `as` value/type.
       if (type == ResourceType::kImage ||
           resource_request.GetRequestContext() ==
-              mojom::RequestContextType::FETCH ||
+              mojom::blink::RequestContextType::FETCH ||
           is_link_preload) {
         new_priority = ResourceLoadPriority::kLow;
       }
@@ -381,7 +381,7 @@ ResourceFetcherInit::ResourceFetcherInit(
   DCHECK(context_lifecycle_notifier || properties.IsDetached());
 }
 
-mojom::RequestContextType ResourceFetcher::DetermineRequestContext(
+mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
     ResourceType type,
     IsImageSet is_image_set) {
   DCHECK((is_image_set == kImageNotImageSet) ||
@@ -391,36 +391,36 @@ mojom::RequestContextType ResourceFetcher::DetermineRequestContext(
       DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
       FALLTHROUGH;
     case ResourceType::kCSSStyleSheet:
-      return mojom::RequestContextType::STYLE;
+      return mojom::blink::RequestContextType::STYLE;
     case ResourceType::kScript:
-      return mojom::RequestContextType::SCRIPT;
+      return mojom::blink::RequestContextType::SCRIPT;
     case ResourceType::kFont:
-      return mojom::RequestContextType::FONT;
+      return mojom::blink::RequestContextType::FONT;
     case ResourceType::kImage:
       if (is_image_set == kImageIsImageSet)
-        return mojom::RequestContextType::IMAGE_SET;
-      return mojom::RequestContextType::IMAGE;
+        return mojom::blink::RequestContextType::IMAGE_SET;
+      return mojom::blink::RequestContextType::IMAGE;
     case ResourceType::kRaw:
-      return mojom::RequestContextType::SUBRESOURCE;
+      return mojom::blink::RequestContextType::SUBRESOURCE;
     case ResourceType::kImportResource:
-      return mojom::RequestContextType::IMPORT;
+      return mojom::blink::RequestContextType::IMPORT;
     case ResourceType::kLinkPrefetch:
-      return mojom::RequestContextType::PREFETCH;
+      return mojom::blink::RequestContextType::PREFETCH;
     case ResourceType::kTextTrack:
-      return mojom::RequestContextType::TRACK;
+      return mojom::blink::RequestContextType::TRACK;
     case ResourceType::kSVGDocument:
-      return mojom::RequestContextType::IMAGE;
+      return mojom::blink::RequestContextType::IMAGE;
     case ResourceType::kAudio:
-      return mojom::RequestContextType::AUDIO;
+      return mojom::blink::RequestContextType::AUDIO;
     case ResourceType::kVideo:
-      return mojom::RequestContextType::VIDEO;
+      return mojom::blink::RequestContextType::VIDEO;
     case ResourceType::kManifest:
-      return mojom::RequestContextType::MANIFEST;
+      return mojom::blink::RequestContextType::MANIFEST;
     case ResourceType::kMock:
-      return mojom::RequestContextType::SUBRESOURCE;
+      return mojom::blink::RequestContextType::SUBRESOURCE;
   }
   NOTREACHED();
-  return mojom::RequestContextType::SUBRESOURCE;
+  return mojom::blink::RequestContextType::SUBRESOURCE;
 }
 
 network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
@@ -534,11 +534,11 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   } else if (FetchParameters::kLazyLoad == defer_option) {
     priority = ResourceLoadPriority::kVeryLow;
   } else if (resource_request.GetRequestContext() ==
-                 mojom::RequestContextType::BEACON ||
+                 mojom::blink::RequestContextType::BEACON ||
              resource_request.GetRequestContext() ==
-                 mojom::RequestContextType::PING ||
+                 mojom::blink::RequestContextType::PING ||
              resource_request.GetRequestContext() ==
-                 mojom::RequestContextType::CSP_REPORT) {
+                 mojom::blink::RequestContextType::CSP_REPORT) {
     if (base::FeatureList::IsEnabled(features::kSetLowPriorityForBeacon)) {
       priority = ResourceLoadPriority::kLow;
     } else {
@@ -925,7 +925,7 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
         resource_request, resource_type, params.Defer()));
   }
   if (resource_request.GetRequestContext() ==
-      mojom::RequestContextType::UNSPECIFIED) {
+      mojom::blink::RequestContextType::UNSPECIFIED) {
     resource_request.SetRequestContext(
         DetermineRequestContext(resource_type, kImageNotImageSet));
     resource_request.SetRequestDestination(
@@ -2129,7 +2129,7 @@ String ResourceFetcher::GetCacheIdentifier(const KURL& url) const {
 void ResourceFetcher::EmulateLoadStartedForInspector(
     Resource* resource,
     const KURL& url,
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
     const AtomicString& initiator_name) {
   base::AutoReset<bool> r(&is_in_request_resource_, true);

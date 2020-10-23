@@ -100,7 +100,7 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
       : policy_(policy), filtered_load_counter_(filtered_load_counter) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           mojom::RequestContextType) override {
+                           mojom::blink::RequestContextType) override {
     return policy_;
   }
 
@@ -281,12 +281,12 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
   }
 
   void ExpectUpgrade(const char* input, const char* expected) {
-    ExpectUpgrade(input, mojom::RequestContextType::SCRIPT,
+    ExpectUpgrade(input, mojom::blink::RequestContextType::SCRIPT,
                   mojom::RequestContextFrameType::kNone, expected);
   }
 
   void ExpectUpgrade(const char* input,
-                     mojom::RequestContextType request_context,
+                     mojom::blink::RequestContextType request_context,
                      mojom::RequestContextFrameType frame_type,
                      const char* expected) {
     const KURL input_url(input);
@@ -312,7 +312,8 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
     const KURL input_url(input);
 
     ResourceRequest resource_request(input_url);
-    resource_request.SetRequestContext(mojom::RequestContextType::SCRIPT);
+    resource_request.SetRequestContext(
+        mojom::blink::RequestContextType::SCRIPT);
 
     ModifyRequestForCSP(resource_request, frame_type);
 
@@ -340,7 +341,7 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
     // autoupgrade images, setting the context to AUDIO to ensure the upgrade
     // flow runs, this can be switched back to IMAGE once autoupgrades launch
     // for them.
-    resource_request.SetRequestContext(mojom::RequestContextType::AUDIO);
+    resource_request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
 
     RecreateFetchContext(main_frame_url);
     document->domWindow()->GetSecurityContext().SetInsecureRequestPolicy(
@@ -358,7 +359,8 @@ class FrameFetchContextModifyRequestTest : public FrameFetchContextTest {
       const AtomicString& expected_required_csp) {
     const KURL input_url(input);
     ResourceRequest resource_request(input_url);
-    resource_request.SetRequestContext(mojom::RequestContextType::SCRIPT);
+    resource_request.SetRequestContext(
+        mojom::blink::RequestContextType::SCRIPT);
 
     ModifyRequestForCSP(resource_request, frame_type);
 
@@ -413,33 +415,33 @@ TEST_F(FrameFetchContextModifyRequestTest, UpgradeInsecureResourceRequests) {
         .ClearInsecureNavigationsToUpgradeForTest();
 
     // We always upgrade for FrameTypeNone.
-    ExpectUpgrade(test.original, mojom::RequestContextType::SCRIPT,
+    ExpectUpgrade(test.original, mojom::blink::RequestContextType::SCRIPT,
                   mojom::RequestContextFrameType::kNone, test.upgraded);
 
     // We never upgrade for FrameTypeNested. This is done on the browser
     // process.
-    ExpectUpgrade(test.original, mojom::RequestContextType::SCRIPT,
+    ExpectUpgrade(test.original, mojom::blink::RequestContextType::SCRIPT,
                   mojom::RequestContextFrameType::kNested, test.original);
 
     // We do not upgrade for FrameTypeTopLevel or FrameTypeAuxiliary...
-    ExpectUpgrade(test.original, mojom::RequestContextType::SCRIPT,
+    ExpectUpgrade(test.original, mojom::blink::RequestContextType::SCRIPT,
                   mojom::RequestContextFrameType::kTopLevel, test.original);
-    ExpectUpgrade(test.original, mojom::RequestContextType::SCRIPT,
+    ExpectUpgrade(test.original, mojom::blink::RequestContextType::SCRIPT,
                   mojom::RequestContextFrameType::kAuxiliary, test.original);
 
     // unless the request context is RequestContextForm.
-    ExpectUpgrade(test.original, mojom::RequestContextType::FORM,
+    ExpectUpgrade(test.original, mojom::blink::RequestContextType::FORM,
                   mojom::RequestContextFrameType::kTopLevel, test.upgraded);
-    ExpectUpgrade(test.original, mojom::RequestContextType::FORM,
+    ExpectUpgrade(test.original, mojom::blink::RequestContextType::FORM,
                   mojom::RequestContextFrameType::kAuxiliary, test.upgraded);
 
     // Or unless the host of the resource is in the document's
     // InsecureNavigationsSet:
     document->domWindow()->GetSecurityContext().AddInsecureNavigationUpgrade(
         example_origin->Host().Impl()->GetHash());
-    ExpectUpgrade(test.original, mojom::RequestContextType::SCRIPT,
+    ExpectUpgrade(test.original, mojom::blink::RequestContextType::SCRIPT,
                   mojom::RequestContextFrameType::kTopLevel, test.upgraded);
-    ExpectUpgrade(test.original, mojom::RequestContextType::SCRIPT,
+    ExpectUpgrade(test.original, mojom::blink::RequestContextType::SCRIPT,
                   mojom::RequestContextFrameType::kAuxiliary, test.upgraded);
   }
 }
@@ -1285,7 +1287,7 @@ TEST_F(FrameFetchContextMockedLocalFrameClientTest,
 TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {
   scoped_refptr<ResourceTimingInfo> info = ResourceTimingInfo::Create(
       "type", base::TimeTicks() + base::TimeDelta::FromSecondsD(0.3),
-      mojom::RequestContextType::UNSPECIFIED,
+      mojom::blink::RequestContextType::UNSPECIFIED,
       network::mojom::RequestDestination::kEmpty);
 
   dummy_page_holder = nullptr;

@@ -6,6 +6,7 @@
 
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -426,7 +427,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
     }
     return;
   }
-  mojom::RequestContextType context_type = mojom::RequestContextType::SCRIPT;
+  mojom::blink::RequestContextType context_type =
+      mojom::blink::RequestContextType::SCRIPT;
   network::mojom::RequestDestination destination =
       network::mojom::RequestDestination::kScript;
 
@@ -681,7 +683,7 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       resource = ImageResource::Fetch(params, resource_fetcher);
       break;
     case ResourceType::kScript:
-      params.SetRequestContext(mojom::RequestContextType::SCRIPT);
+      params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
       params.SetRequestDestination(network::mojom::RequestDestination::kScript);
       resource = ScriptResource::Fetch(params, resource_fetcher, nullptr,
                                        ScriptResource::kAllowStreaming);

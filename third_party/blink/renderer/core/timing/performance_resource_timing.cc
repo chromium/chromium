@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -104,7 +105,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     ExecutionContext* context)
     : PerformanceEntry(name, 0.0, 0.0),
       time_origin_(time_origin),
-      context_type_(mojom::RequestContextType::HYPERLINK),
+      context_type_(mojom::blink::RequestContextType::HYPERLINK),
       request_destination_(network::mojom::RequestDestination::kDocument),
       is_secure_context_(is_secure_context),
       server_timing_(std::move(server_timing)),

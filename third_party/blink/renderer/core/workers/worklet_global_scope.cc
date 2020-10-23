@@ -8,6 +8,7 @@
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -255,7 +256,7 @@ void WorkletGlobalScope::FetchAndInvokeScript(
   // TODO(nhiroki): Pass an appropriate destination defined in each worklet
   // spec (e.g., "paint worklet", "audio worklet") (https://crbug.com/843980,
   // https://crbug.com/843982)
-  auto destination = mojom::RequestContextType::SCRIPT;
+  auto destination = mojom::blink::RequestContextType::SCRIPT;
   FetchModuleScript(module_url_record, outside_settings_object,
                     outside_resource_timing_notifier, destination,
                     network::mojom::RequestDestination::kScript,

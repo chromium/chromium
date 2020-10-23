@@ -196,7 +196,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void FinishedCreatingBlob(const scoped_refptr<BlobDataHandle>&);
 
   base::Optional<ResourceRequestBlockedReason> CheckResponseNosniff(
-      mojom::RequestContextType,
+      mojom::blink::RequestContextType,
       const ResourceResponse&);
 
   // Processes Data URL in ResourceLoader instead of using |loader_|.

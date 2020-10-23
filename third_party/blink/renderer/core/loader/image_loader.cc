@@ -522,15 +522,18 @@ void ImageLoader::DoUpdateFromElement(
     // Correct the RequestContext if necessary.
     if (IsA<HTMLPictureElement>(GetElement()->parentNode()) ||
         !GetElement()->FastGetAttribute(html_names::kSrcsetAttr).IsNull()) {
-      resource_request.SetRequestContext(mojom::RequestContextType::IMAGE_SET);
+      resource_request.SetRequestContext(
+          mojom::blink::RequestContextType::IMAGE_SET);
       resource_request.SetRequestDestination(
           network::mojom::RequestDestination::kImage);
     } else if (IsA<HTMLObjectElement>(GetElement())) {
-      resource_request.SetRequestContext(mojom::RequestContextType::OBJECT);
+      resource_request.SetRequestContext(
+          mojom::blink::RequestContextType::OBJECT);
       resource_request.SetRequestDestination(
           network::mojom::RequestDestination::kObject);
     } else if (IsA<HTMLEmbedElement>(GetElement())) {
-      resource_request.SetRequestContext(mojom::RequestContextType::EMBED);
+      resource_request.SetRequestContext(
+          mojom::blink::RequestContextType::EMBED);
       resource_request.SetRequestDestination(
           network::mojom::RequestDestination::kEmbed);
     }
@@ -541,7 +544,8 @@ void ImageLoader::DoUpdateFromElement(
       resource_request.SetHttpHeaderField(http_names::kCacheControl,
                                           "max-age=0");
       resource_request.SetKeepalive(true);
-      resource_request.SetRequestContext(mojom::RequestContextType::PING);
+      resource_request.SetRequestContext(
+          mojom::blink::RequestContextType::PING);
     }
 
     // Plug-ins should not load via service workers as plug-ins may have their

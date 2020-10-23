@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
@@ -68,7 +69,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   // TODO(mek): Move the RequestContext check to the worker side's relevant
   // callsite when we make Shared Worker loading off-main-thread.
   if (request.Url().ProtocolIs("blob") && !url_loader_factory &&
-      request.GetRequestContext() != mojom::RequestContextType::SHARED_WORKER) {
+      request.GetRequestContext() !=
+          mojom::blink::RequestContextType::SHARED_WORKER) {
     window_->GetPublicURLManager().Resolve(
         request.Url(), url_loader_factory.InitWithNewPipeAndPassReceiver());
   }

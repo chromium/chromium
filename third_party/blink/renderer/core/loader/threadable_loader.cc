@@ -211,7 +211,7 @@ ThreadableLoader::ThreadableLoader(
       out_of_blink_cors_(true),
       async_(resource_loader_options.synchronous_policy ==
              kRequestAsynchronously),
-      request_context_(mojom::RequestContextType::UNSPECIFIED),
+      request_context_(mojom::blink::RequestContextType::UNSPECIFIED),
       request_mode_(network::mojom::RequestMode::kSameOrigin),
       credentials_mode_(network::mojom::CredentialsMode::kOmit),
       timeout_timer_(execution_context_->GetTaskRunner(TaskType::kNetworking),
@@ -1037,16 +1037,17 @@ void ThreadableLoader::LoadRequest(
     }
   }
 
-  const mojom::RequestContextType request_context = request.GetRequestContext();
+  const mojom::blink::RequestContextType request_context =
+      request.GetRequestContext();
   FetchParameters new_params(std::move(request), resource_loader_options);
   DCHECK(!GetResource());
 
   checker_.WillAddClient();
-  if (request_context == mojom::RequestContextType::VIDEO ||
-      request_context == mojom::RequestContextType::AUDIO) {
+  if (request_context == mojom::blink::RequestContextType::VIDEO ||
+      request_context == mojom::blink::RequestContextType::AUDIO) {
     DCHECK(async_);
     RawResource::FetchMedia(new_params, resource_fetcher_, this);
-  } else if (request_context == mojom::RequestContextType::MANIFEST) {
+  } else if (request_context == mojom::blink::RequestContextType::MANIFEST) {
     DCHECK(async_);
     RawResource::FetchManifest(new_params, resource_fetcher_, this);
   } else if (async_) {

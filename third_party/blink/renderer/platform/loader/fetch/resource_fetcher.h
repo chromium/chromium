@@ -32,6 +32,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -235,9 +236,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   enum IsImageSet { kImageNotImageSet, kImageIsImageSet };
 
-  WARN_UNUSED_RESULT static mojom::RequestContextType DetermineRequestContext(
-      ResourceType,
-      IsImageSet);
+  WARN_UNUSED_RESULT static mojom::blink::RequestContextType
+      DetermineRequestContext(ResourceType, IsImageSet);
 
   static network::mojom::RequestDestination DetermineRequestDestination(
       ResourceType);
@@ -255,7 +255,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // TODO(hiroshige): Remove this hack.
   void EmulateLoadStartedForInspector(Resource*,
                                       const KURL&,
-                                      mojom::RequestContextType,
+                                      mojom::blink::RequestContextType,
                                       network::mojom::RequestDestination,
                                       const AtomicString& initiator_name);
 

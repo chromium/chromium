@@ -9,6 +9,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
@@ -128,7 +129,7 @@ class ScriptStreamingTest : public testing::Test {
         MakeGarbageCollected<MockContextLifecycleNotifier>()));
 
     ResourceRequest request(url_);
-    request.SetRequestContext(mojom::RequestContextType::SCRIPT);
+    request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
 
     resource_client_ = MakeGarbageCollected<TestResourceClient>();
     FetchParameters params = FetchParameters::CreateForTest(std::move(request));

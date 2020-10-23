@@ -81,7 +81,7 @@ class MultiResolutionImageResourceFetcher {
   // |fetch_credentials_mode| is the credentials mode to use. See
   // https://fetch.spec.whatwg.org/#concept-request-credentials-mode
   void Start(LocalFrame* frame,
-             mojom::RequestContextType request_context,
+             mojom::blink::RequestContextType request_context,
              network::mojom::RequestMode request_mode,
              network::mojom::CredentialsMode credentials_mode,
              StartCallback callback);

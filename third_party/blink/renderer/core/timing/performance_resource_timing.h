@@ -129,8 +129,8 @@ class CORE_EXPORT PerformanceResourceTiming
   scoped_refptr<ResourceLoadTiming> timing_;
   base::TimeTicks last_redirect_end_time_;
   base::TimeTicks response_end_;
-  mojom::RequestContextType context_type_ =
-      mojom::RequestContextType::UNSPECIFIED;
+  mojom::blink::RequestContextType context_type_ =
+      mojom::blink::RequestContextType::UNSPECIFIED;
   network::mojom::RequestDestination request_destination_ =
       network::mojom::RequestDestination::kEmpty;
   uint64_t transfer_size_ = 0;

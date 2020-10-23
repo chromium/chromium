@@ -32,7 +32,7 @@ void ThreadedIconLoader::Start(
   DCHECK(!stopped_);
   DCHECK(resource_request.Url().IsValid());
   DCHECK_EQ(resource_request.GetRequestContext(),
-            mojom::RequestContextType::IMAGE);
+            mojom::blink::RequestContextType::IMAGE);
   DCHECK(!icon_callback_);
 
   icon_callback_ = std::move(callback);

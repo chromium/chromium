@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -237,7 +237,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
       ResourceLoadObserver* observer,
       mojom::ResourceLoadInfoNotifier* resource_load_info_notifier) {
     ResourceRequest request(kTopLevelScriptURL);
-    request.SetRequestContext(mojom::RequestContextType::SHARED_WORKER);
+    request.SetRequestContext(mojom::blink::RequestContextType::SHARED_WORKER);
     request.SetRequestDestination(
         network::mojom::RequestDestination::kSharedWorker);
     FetchParameters fetch_params(std::move(request),

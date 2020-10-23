@@ -33,6 +33,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_mixed_content.h"
 #include "third_party/blink/public/platform/web_mixed_content_context_type.h"
@@ -83,7 +84,7 @@ class CORE_EXPORT MixedContentChecker final {
                                mojom::blink::ContentSecurityNotifier& notifier);
 
   static bool ShouldBlockFetchOnWorker(WorkerFetchContext&,
-                                       mojom::RequestContextType,
+                                       mojom::blink::RequestContextType,
                                        const KURL& url_before_redirects,
                                        ResourceRequest::RedirectStatus,
                                        const KURL&,
@@ -104,7 +105,7 @@ class CORE_EXPORT MixedContentChecker final {
       ReportingDisposition = ReportingDisposition::kReport);
 
   static bool ShouldAutoupgrade(HttpsState context_https_state,
-                                mojom::RequestContextType type,
+                                mojom::blink::RequestContextType type,
                                 WebContentSettingsClient* settings_client,
                                 const KURL& url);
 
@@ -117,7 +118,7 @@ class CORE_EXPORT MixedContentChecker final {
 
   static void HandleCertificateError(
       const ResourceResponse&,
-      mojom::RequestContextType,
+      mojom::blink::RequestContextType,
       WebMixedContent::CheckModeForPlugin,
       mojom::blink::ContentSecurityNotifier& notifier);
 
@@ -125,7 +126,7 @@ class CORE_EXPORT MixedContentChecker final {
   static void MixedContentFound(LocalFrame*,
                                 const KURL& main_resource_url,
                                 const KURL& mixed_content_url,
-                                mojom::RequestContextType,
+                                mojom::blink::RequestContextType,
                                 bool was_allowed,
                                 const KURL& url_before_redirects,
                                 bool had_redirect,
@@ -158,13 +159,15 @@ class CORE_EXPORT MixedContentChecker final {
   static ConsoleMessage* CreateConsoleMessageAboutFetch(
       const KURL&,
       const KURL&,
-      mojom::RequestContextType,
+      mojom::blink::RequestContextType,
       bool allowed,
       std::unique_ptr<SourceLocation>);
   static ConsoleMessage* CreateConsoleMessageAboutWebSocket(const KURL&,
                                                             const KURL&,
                                                             bool allowed);
-  static void Count(Frame*, mojom::RequestContextType, const LocalFrame*);
+  static void Count(Frame*,
+                    mojom::blink::RequestContextType,
+                    const LocalFrame*);
 
   DISALLOW_COPY_AND_ASSIGN(MixedContentChecker);
 };

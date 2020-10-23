@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -78,75 +79,75 @@ KURL MainResourceUrlForFrame(Frame* frame) {
   return To<LocalFrame>(frame)->GetDocument()->Url();
 }
 
-const char* RequestContextName(mojom::RequestContextType context) {
+const char* RequestContextName(mojom::blink::RequestContextType context) {
   switch (context) {
-    case mojom::RequestContextType::AUDIO:
+    case mojom::blink::RequestContextType::AUDIO:
       return "audio file";
-    case mojom::RequestContextType::BEACON:
+    case mojom::blink::RequestContextType::BEACON:
       return "Beacon endpoint";
-    case mojom::RequestContextType::CSP_REPORT:
+    case mojom::blink::RequestContextType::CSP_REPORT:
       return "Content Security Policy reporting endpoint";
-    case mojom::RequestContextType::DOWNLOAD:
+    case mojom::blink::RequestContextType::DOWNLOAD:
       return "download";
-    case mojom::RequestContextType::EMBED:
+    case mojom::blink::RequestContextType::EMBED:
       return "plugin resource";
-    case mojom::RequestContextType::EVENT_SOURCE:
+    case mojom::blink::RequestContextType::EVENT_SOURCE:
       return "EventSource endpoint";
-    case mojom::RequestContextType::FAVICON:
+    case mojom::blink::RequestContextType::FAVICON:
       return "favicon";
-    case mojom::RequestContextType::FETCH:
+    case mojom::blink::RequestContextType::FETCH:
       return "resource";
-    case mojom::RequestContextType::FONT:
+    case mojom::blink::RequestContextType::FONT:
       return "font";
-    case mojom::RequestContextType::FORM:
+    case mojom::blink::RequestContextType::FORM:
       return "form action";
-    case mojom::RequestContextType::FRAME:
+    case mojom::blink::RequestContextType::FRAME:
       return "frame";
-    case mojom::RequestContextType::HYPERLINK:
+    case mojom::blink::RequestContextType::HYPERLINK:
       return "resource";
-    case mojom::RequestContextType::IFRAME:
+    case mojom::blink::RequestContextType::IFRAME:
       return "frame";
-    case mojom::RequestContextType::IMAGE:
+    case mojom::blink::RequestContextType::IMAGE:
       return "image";
-    case mojom::RequestContextType::IMAGE_SET:
+    case mojom::blink::RequestContextType::IMAGE_SET:
       return "image";
-    case mojom::RequestContextType::IMPORT:
+    case mojom::blink::RequestContextType::IMPORT:
       return "HTML Import";
-    case mojom::RequestContextType::INTERNAL:
+    case mojom::blink::RequestContextType::INTERNAL:
       return "resource";
-    case mojom::RequestContextType::LOCATION:
+    case mojom::blink::RequestContextType::LOCATION:
       return "resource";
-    case mojom::RequestContextType::MANIFEST:
+    case mojom::blink::RequestContextType::MANIFEST:
       return "manifest";
-    case mojom::RequestContextType::OBJECT:
+    case mojom::blink::RequestContextType::OBJECT:
       return "plugin resource";
-    case mojom::RequestContextType::PING:
+    case mojom::blink::RequestContextType::PING:
       return "hyperlink auditing endpoint";
-    case mojom::RequestContextType::PLUGIN:
+    case mojom::blink::RequestContextType::PLUGIN:
       return "plugin data";
-    case mojom::RequestContextType::PREFETCH:
+    case mojom::blink::RequestContextType::PREFETCH:
       return "prefetch resource";
-    case mojom::RequestContextType::SCRIPT:
+    case mojom::blink::RequestContextType::SCRIPT:
       return "script";
-    case mojom::RequestContextType::SERVICE_WORKER:
+    case mojom::blink::RequestContextType::SERVICE_WORKER:
       return "Service Worker script";
-    case mojom::RequestContextType::SHARED_WORKER:
+    case mojom::blink::RequestContextType::SHARED_WORKER:
       return "Shared Worker script";
-    case mojom::RequestContextType::STYLE:
+    case mojom::blink::RequestContextType::STYLE:
       return "stylesheet";
-    case mojom::RequestContextType::SUBRESOURCE:
+    case mojom::blink::RequestContextType::SUBRESOURCE:
       return "resource";
-    case mojom::RequestContextType::TRACK:
+    case mojom::blink::RequestContextType::TRACK:
       return "Text Track";
-    case mojom::RequestContextType::UNSPECIFIED:
+    case mojom::blink::RequestContextType::UNSPECIFIED:
       return "resource";
-    case mojom::RequestContextType::VIDEO:
+    case mojom::blink::RequestContextType::VIDEO:
       return "video";
-    case mojom::RequestContextType::WORKER:
+    case mojom::blink::RequestContextType::WORKER:
       return "Worker script";
-    case mojom::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
       return "XMLHttpRequest endpoint";
-    case mojom::RequestContextType::XSLT:
+    case mojom::blink::RequestContextType::XSLT:
       return "XSLT";
   }
   NOTREACHED();
@@ -340,7 +341,7 @@ Frame* MixedContentChecker::InWhichFrameIsContentMixed(LocalFrame* frame,
 ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetch(
     const KURL& main_resource_url,
     const KURL& url,
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     bool allowed,
     std::unique_ptr<SourceLocation> source_location) {
   String message = String::Format(
@@ -364,9 +365,10 @@ ConsoleMessage* MixedContentChecker::CreateConsoleMessageAboutFetch(
 }
 
 // static
-void MixedContentChecker::Count(Frame* frame,
-                                mojom::RequestContextType request_context,
-                                const LocalFrame* source) {
+void MixedContentChecker::Count(
+    Frame* frame,
+    mojom::blink::RequestContextType request_context,
+    const LocalFrame* source) {
   UseCounter::Count(source->GetDocument(), WebFeature::kMixedContentPresent);
 
   // Roll blockable content up into a single counter, count unblocked types
@@ -383,28 +385,28 @@ void MixedContentChecker::Count(Frame* frame,
 
   WebFeature feature;
   switch (request_context) {
-    case mojom::RequestContextType::AUDIO:
+    case mojom::blink::RequestContextType::AUDIO:
       feature = WebFeature::kMixedContentAudio;
       break;
-    case mojom::RequestContextType::DOWNLOAD:
+    case mojom::blink::RequestContextType::DOWNLOAD:
       feature = WebFeature::kMixedContentDownload;
       break;
-    case mojom::RequestContextType::FAVICON:
+    case mojom::blink::RequestContextType::FAVICON:
       feature = WebFeature::kMixedContentFavicon;
       break;
-    case mojom::RequestContextType::IMAGE:
+    case mojom::blink::RequestContextType::IMAGE:
       feature = WebFeature::kMixedContentImage;
       break;
-    case mojom::RequestContextType::INTERNAL:
+    case mojom::blink::RequestContextType::INTERNAL:
       feature = WebFeature::kMixedContentInternal;
       break;
-    case mojom::RequestContextType::PLUGIN:
+    case mojom::blink::RequestContextType::PLUGIN:
       feature = WebFeature::kMixedContentPlugin;
       break;
-    case mojom::RequestContextType::PREFETCH:
+    case mojom::blink::RequestContextType::PREFETCH:
       feature = WebFeature::kMixedContentPrefetch;
       break;
-    case mojom::RequestContextType::VIDEO:
+    case mojom::blink::RequestContextType::VIDEO:
       feature = WebFeature::kMixedContentVideo;
       break;
 
@@ -418,7 +420,7 @@ void MixedContentChecker::Count(Frame* frame,
 // static
 bool MixedContentChecker::ShouldBlockFetch(
     LocalFrame* frame,
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
@@ -552,7 +554,7 @@ bool MixedContentChecker::ShouldBlockFetch(
 // static
 bool MixedContentChecker::ShouldBlockFetchOnWorker(
     WorkerFetchContext& worker_fetch_context,
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
@@ -754,7 +756,7 @@ bool MixedContentChecker::IsMixedFormAction(
 
 bool MixedContentChecker::ShouldAutoupgrade(
     HttpsState context_https_state,
-    mojom::RequestContextType type,
+    mojom::blink::RequestContextType type,
     WebContentSettingsClient* settings_client,
     const KURL& url) {
   // We are currently not autoupgrading plugin loaded content, which is why
@@ -796,7 +798,7 @@ void MixedContentChecker::CheckMixedPrivatePublic(
 
 void MixedContentChecker::HandleCertificateError(
     const ResourceResponse& response,
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     WebMixedContent::CheckModeForPlugin check_mode_for_plugin,
     mojom::blink::ContentSecurityNotifier& notifier) {
   WebMixedContentContextType context_type =
@@ -817,7 +819,7 @@ void MixedContentChecker::MixedContentFound(
     LocalFrame* frame,
     const KURL& main_resource_url,
     const KURL& mixed_content_url,
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     bool was_allowed,
     const KURL& url_before_redirects,
     bool had_redirect,
@@ -898,8 +900,9 @@ void MixedContentChecker::UpgradeInsecureRequest(
   if ((fetch_client_settings_object->GetInsecureRequestsPolicy() &
        mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests) ==
       mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone) {
-    mojom::RequestContextType context = resource_request.GetRequestContext();
-    if (context == mojom::RequestContextType::UNSPECIFIED ||
+    mojom::blink::RequestContextType context =
+        resource_request.GetRequestContext();
+    if (context == mojom::blink::RequestContextType::UNSPECIFIED ||
         !MixedContentChecker::ShouldAutoupgrade(
             fetch_client_settings_object->GetHttpsState(), context,
             settings_client, fetch_client_settings_object->GlobalObjectUrl())) {
@@ -946,15 +949,17 @@ void MixedContentChecker::UpgradeInsecureRequest(
   }
 
   if (frame_type == mojom::RequestContextFrameType::kNone ||
-      resource_request.GetRequestContext() == mojom::RequestContextType::FORM ||
+      resource_request.GetRequestContext() ==
+          mojom::blink::RequestContextType::FORM ||
       (!url.Host().IsNull() &&
        fetch_client_settings_object->GetUpgradeInsecureNavigationsSet()
            .Contains(url.Host().Impl()->GetHash()))) {
     if (!resource_request.IsAutomaticUpgrade()) {
       // These UseCounters are specific for UpgradeInsecureRequests, don't log
       // for autoupgrades.
-      mojom::RequestContextType context = resource_request.GetRequestContext();
-      if (context == mojom::RequestContextType::UNSPECIFIED) {
+      mojom::blink::RequestContextType context =
+          resource_request.GetRequestContext();
+      if (context == mojom::blink::RequestContextType::UNSPECIFIED) {
         UseCounter::Count(
             execution_context_for_logging,
             WebFeature::kUpgradeInsecureRequestsUpgradedRequestUnknown);

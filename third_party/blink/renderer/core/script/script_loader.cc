@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -725,7 +726,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
             MakeGarbageCollected<ModulePendingScriptTreeClient>();
         modulator->FetchDescendantsForInlineScript(
             module_script, fetch_client_settings_object_fetcher,
-            mojom::RequestContextType::SCRIPT,
+            mojom::blink::RequestContextType::SCRIPT,
             network::mojom::RequestDestination::kScript, module_tree_client);
         prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
             element_, module_tree_client, is_external_script_);
@@ -945,7 +946,7 @@ void ScriptLoader::FetchModuleScriptTree(
   auto* module_tree_client =
       MakeGarbageCollected<ModulePendingScriptTreeClient>();
   modulator->FetchTree(url, fetch_client_settings_object_fetcher,
-                       mojom::RequestContextType::SCRIPT,
+                       mojom::blink::RequestContextType::SCRIPT,
                        network::mojom::RequestDestination::kScript, options,
                        ModuleScriptCustomFetchType::kNone, module_tree_client);
   prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(

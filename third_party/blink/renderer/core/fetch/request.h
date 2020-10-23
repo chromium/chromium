@@ -99,7 +99,7 @@ class CORE_EXPORT Request final : public ScriptWrappable,
   const BodyStreamBuffer* BodyBuffer() const override {
     return request_->Buffer();
   }
-  mojom::RequestContextType GetRequestContextType() const;
+  mojom::blink::RequestContextType GetRequestContextType() const;
   network::mojom::RequestDestination GetRequestDestination() const;
 
   void Trace(Visitor*) const override;

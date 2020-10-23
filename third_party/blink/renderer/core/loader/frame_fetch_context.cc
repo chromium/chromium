@@ -369,7 +369,7 @@ void FrameFetchContext::PrepareRequest(
 
   SetFirstPartyCookie(request);
   if (request.GetRequestContext() ==
-      mojom::RequestContextType::SERVICE_WORKER) {
+      mojom::blink::RequestContextType::SERVICE_WORKER) {
     // The top frame origin is defined to be null for service worker main
     // resource requests.
     DCHECK(!request.TopFrameOrigin());
@@ -813,7 +813,7 @@ FrameFetchContext::CreateWebSocketHandshakeThrottle() {
 }
 
 bool FrameFetchContext::ShouldBlockFetchByMixedContentCheck(
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
@@ -841,7 +841,7 @@ bool FrameFetchContext::ShouldBlockFetchAsCredentialedSubresource(
     return false;
 
   if (resource_request.GetRequestContext() ==
-      mojom::RequestContextType::XML_HTTP_REQUEST) {
+      mojom::blink::RequestContextType::XML_HTTP_REQUEST) {
     return false;
   }
 

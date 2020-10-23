@@ -35,7 +35,7 @@
 namespace blink {
 
 static void ApplyXSLRequestProperties(FetchParameters& params) {
-  params.SetRequestContext(mojom::RequestContextType::XSLT);
+  params.SetRequestContext(mojom::blink::RequestContextType::XSLT);
   params.SetRequestDestination(network::mojom::RequestDestination::kXslt);
   // TODO(japhet): Accept: headers can be set manually on XHRs from script, in
   // the browser process, and... here. The browser process can't tell the

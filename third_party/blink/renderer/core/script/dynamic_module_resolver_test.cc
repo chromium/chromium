@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -75,7 +76,7 @@ class DynamicModuleResolverTestModulator final : public DummyModulator {
 
   void FetchTree(const KURL& url,
                  ResourceFetcher*,
-                 mojom::RequestContextType,
+                 mojom::blink::RequestContextType,
                  network::mojom::RequestDestination,
                  const ScriptFetchOptions&,
                  ModuleScriptCustomFetchType custom_fetch_type,

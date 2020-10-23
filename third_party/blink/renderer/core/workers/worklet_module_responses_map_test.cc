@@ -6,6 +6,7 @@
 
 #include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader.h"
@@ -71,7 +72,8 @@ class WorkletModuleResponsesMapTest : public testing::Test {
     ResourceRequest resource_request(url);
     // TODO(nhiroki): Specify worklet-specific request context (e.g.,
     // "paintworklet").
-    resource_request.SetRequestContext(mojom::RequestContextType::SCRIPT);
+    resource_request.SetRequestContext(
+        mojom::blink::RequestContextType::SCRIPT);
     FetchParameters fetch_params =
         FetchParameters::CreateForTest(std::move(resource_request));
     WorkletModuleScriptFetcher* module_fetcher =

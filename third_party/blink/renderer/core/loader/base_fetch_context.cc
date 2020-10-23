@@ -6,6 +6,7 @@
 
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -90,7 +91,7 @@ void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {
 
 base::Optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequest(
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
     const KURL& url,
     const ResourceLoaderOptions& options,
@@ -105,7 +106,7 @@ BaseFetchContext::CheckCSPForRequest(
 
 base::Optional<ResourceRequestBlockedReason>
 BaseFetchContext::CheckCSPForRequestInternal(
-    mojom::RequestContextType request_context,
+    mojom::blink::RequestContextType request_context,
     network::mojom::RequestDestination request_destination,
     const KURL& url,
     const ResourceLoaderOptions& options,
@@ -186,7 +187,7 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kOther;
   }
 
-  mojom::RequestContextType request_context =
+  mojom::blink::RequestContextType request_context =
       resource_request.GetRequestContext();
   network::mojom::RequestDestination request_destination =
       resource_request.GetRequestDestination();

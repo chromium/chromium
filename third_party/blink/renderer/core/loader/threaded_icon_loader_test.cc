@@ -6,6 +6,7 @@
 
 #include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -54,7 +55,7 @@ class ThreadedIconLoaderTest : public PageTestBase {
     auto* icon_loader = MakeGarbageCollected<ThreadedIconLoader>();
 
     ResourceRequest resource_request(url);
-    resource_request.SetRequestContext(mojom::RequestContextType::IMAGE);
+    resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
     resource_request.SetPriority(ResourceLoadPriority::kMedium);
 
     SkBitmap icon;

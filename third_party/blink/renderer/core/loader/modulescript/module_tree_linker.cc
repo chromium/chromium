@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
@@ -34,7 +35,7 @@ namespace blink {
 void ModuleTreeLinker::Fetch(
     const KURL& url,
     ResourceFetcher* fetch_client_settings_object_fetcher,
-    mojom::RequestContextType context_type,
+    mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     const ScriptFetchOptions& options,
     Modulator* modulator,
@@ -52,7 +53,7 @@ void ModuleTreeLinker::Fetch(
 void ModuleTreeLinker::FetchDescendantsForInlineScript(
     ModuleScript* module_script,
     ResourceFetcher* fetch_client_settings_object_fetcher,
-    mojom::RequestContextType context_type,
+    mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     Modulator* modulator,
     ModuleScriptCustomFetchType custom_fetch_type,
@@ -69,7 +70,7 @@ void ModuleTreeLinker::FetchDescendantsForInlineScript(
 
 ModuleTreeLinker::ModuleTreeLinker(
     ResourceFetcher* fetch_client_settings_object_fetcher,
-    mojom::RequestContextType context_type,
+    mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     Modulator* modulator,
     ModuleScriptCustomFetchType custom_fetch_type,

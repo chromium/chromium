@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
@@ -362,7 +363,7 @@ bool WorkerGlobalScope::FetchClassicImportedScript(
   EnsureFetcher();
   classic_script_loader->LoadSynchronously(
       *execution_context, Fetcher(), script_url,
-      mojom::RequestContextType::SCRIPT,
+      mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript);
   if (classic_script_loader->Failed())
     return false;

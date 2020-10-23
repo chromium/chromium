@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -29,7 +30,7 @@ class MockResourceFactory final : public NonTextResourceFactory {
 MockResource* MockResource::Fetch(FetchParameters& params,
                                   ResourceFetcher* fetcher,
                                   ResourceClient* client) {
-  params.SetRequestContext(mojom::RequestContextType::SUBRESOURCE);
+  params.SetRequestContext(mojom::blink::RequestContextType::SUBRESOURCE);
   return static_cast<MockResource*>(
       fetcher->RequestResource(params, MockResourceFactory(), client));
 }

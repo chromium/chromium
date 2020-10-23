@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_mixed_content.h"
 #include "third_party/blink/public/platform/web_mixed_content_context_type.h"
@@ -82,7 +83,7 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
   blink::test::RunPendingTasks();
 
   ResourceRequest not_mixed_content("https://example.test/foo.jpg");
-  not_mixed_content.SetRequestContext(mojom::RequestContextType::SCRIPT);
+  not_mixed_content.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
   EXPECT_EQ(WebMixedContentContextType::kNotMixedContent,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), not_mixed_content));
@@ -98,14 +99,16 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
                 &dummy_page_holder->GetFrame(), not_mixed_content));
 
   ResourceRequest blockable_mixed_content("http://example.test/foo.jpg");
-  blockable_mixed_content.SetRequestContext(mojom::RequestContextType::SCRIPT);
+  blockable_mixed_content.SetRequestContext(
+      mojom::blink::RequestContextType::SCRIPT);
   EXPECT_EQ(WebMixedContentContextType::kBlockable,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), blockable_mixed_content));
 
   ResourceRequest optionally_blockable_mixed_content(
       "http://example.test/foo.jpg");
-  blockable_mixed_content.SetRequestContext(mojom::RequestContextType::IMAGE);
+  blockable_mixed_content.SetRequestContext(
+      mojom::blink::RequestContextType::IMAGE);
   EXPECT_EQ(WebMixedContentContextType::kOptionallyBlockable,
             MixedContentChecker::ContextTypeForInspector(
                 &dummy_page_holder->GetFrame(), blockable_mixed_content));
@@ -128,11 +131,12 @@ TEST(MixedContentCheckerTest, HandleCertificateError) {
   ResourceResponse response1(ran_url);
   EXPECT_CALL(mock_notifier, NotifyContentWithCertificateErrorsRan()).Times(1);
   MixedContentChecker::HandleCertificateError(
-      response1, mojom::RequestContextType::SCRIPT,
+      response1, mojom::blink::RequestContextType::SCRIPT,
       WebMixedContent::CheckModeForPlugin::kLax, *notifier_remote);
 
   ResourceResponse response2(displayed_url);
-  mojom::RequestContextType request_context = mojom::RequestContextType::IMAGE;
+  mojom::blink::RequestContextType request_context =
+      mojom::blink::RequestContextType::IMAGE;
   ASSERT_EQ(
       WebMixedContentContextType::kOptionallyBlockable,
       WebMixedContent::ContextTypeFromRequestContext(
@@ -199,14 +203,14 @@ TEST(MixedContentCheckerTest, DetectMixedFavicon) {
 
   // Test that a mixed content favicon is correctly blocked.
   EXPECT_TRUE(MixedContentChecker::ShouldBlockFetch(
-      &dummy_page_holder->GetFrame(), mojom::RequestContextType::FAVICON,
+      &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
       http_favicon_url, ResourceRequest::RedirectStatus::kNoRedirect,
       http_favicon_url, base::Optional<String>(),
       ReportingDisposition::kSuppressReporting, *notifier_remote));
 
   // Test that a secure favicon is not blocked.
   EXPECT_FALSE(MixedContentChecker::ShouldBlockFetch(
-      &dummy_page_holder->GetFrame(), mojom::RequestContextType::FAVICON,
+      &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
       https_favicon_url, ResourceRequest::RedirectStatus::kNoRedirect,
       https_favicon_url, base::Optional<String>(),
       ReportingDisposition::kSuppressReporting, *notifier_remote));
@@ -250,7 +254,7 @@ TEST(MixedContentCheckerTest,
      NotAutoupgradedMixedContentHasUpgradeIfInsecureSet) {
   ResourceRequest request;
   request.SetUrl(KURL("https://example.test"));
-  request.SetRequestContext(mojom::RequestContextType::AUDIO);
+  request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
   TestFetchClientSettingsObject settings;
   // Used to get a non-null document.
   DummyPageHolder holder;
@@ -266,7 +270,7 @@ TEST(MixedContentCheckerTest,
 TEST(MixedContentCheckerTest, AutoupgradedMixedContentHasUpgradeIfInsecureSet) {
   ResourceRequest request;
   request.SetUrl(KURL("http://example.test"));
-  request.SetRequestContext(mojom::RequestContextType::AUDIO);
+  request.SetRequestContext(mojom::blink::RequestContextType::AUDIO);
   TestFetchClientSettingsObject settings;
   // Used to get a non-null document.
   DummyPageHolder holder;

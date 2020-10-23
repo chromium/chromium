@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -40,7 +41,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       ReportingDisposition,
       const base::Optional<ResourceRequest::RedirectInfo>&) const override;
   base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
-      mojom::RequestContextType,
+      mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL&,
       const ResourceLoaderOptions&,
@@ -137,7 +138,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const base::Optional<ResourceRequest::RedirectInfo>& redirect_info) const;
 
   base::Optional<ResourceRequestBlockedReason> CheckCSPForRequestInternal(
-      mojom::RequestContextType,
+      mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL&,
       const ResourceLoaderOptions&,

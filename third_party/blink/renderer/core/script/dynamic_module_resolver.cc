@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -388,7 +389,7 @@ void DynamicModuleResolver::ResolveDynamically(
   if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context))
     scope->EnsureFetcher();
   modulator_->FetchTree(url, execution_context->Fetcher(),
-                        mojom::RequestContextType::SCRIPT,
+                        mojom::blink::RequestContextType::SCRIPT,
                         network::mojom::RequestDestination::kScript, options,
                         ModuleScriptCustomFetchType::kNone, tree_client);
 

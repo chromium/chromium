@@ -310,9 +310,10 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, Variants) {
     EXPECT_EQ("accept;image/jpeg;image/webp", resource->variants());
     EXPECT_EQ("image/webp", resource->variant_key());
 
-    EXPECT_EQ(resource.get(), info->FindMatchingEntry(
-                                  KURL("https://publisher.example/image"),
-                                  mojom::RequestContextType::IMAGE, {"en"}));
+    EXPECT_EQ(resource.get(),
+              info->FindMatchingEntry(KURL("https://publisher.example/image"),
+                                      mojom::blink::RequestContextType::IMAGE,
+                                      {"en"}));
   }
 }
 

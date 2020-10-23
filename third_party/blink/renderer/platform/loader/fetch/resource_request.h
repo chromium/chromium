@@ -270,10 +270,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
     download_to_cache_only_ = download_to_cache_only;
   }
 
-  mojom::RequestContextType GetRequestContext() const {
+  mojom::blink::RequestContextType GetRequestContext() const {
     return request_context_;
   }
-  void SetRequestContext(mojom::RequestContextType context) {
+  void SetRequestContext(mojom::blink::RequestContextType context) {
     request_context_ = context;
   }
 
@@ -506,7 +506,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   int requestor_id_;
   PreviewsState previews_state_;
   scoped_refptr<WebURLRequest::ExtraData> extra_data_;
-  mojom::RequestContextType request_context_;
+  mojom::blink::RequestContextType request_context_;
   network::mojom::RequestDestination destination_;
   network::mojom::RequestMode mode_;
   mojom::FetchImportanceMode fetch_importance_mode_;

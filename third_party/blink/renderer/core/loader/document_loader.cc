@@ -40,6 +40,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1202,7 +1203,7 @@ void DocumentLoader::StartLoadingInternal() {
 
   navigation_timing_info_ = ResourceTimingInfo::Create(
       fetch_initiator_type_names::kDocument, GetTiming().NavigationStart(),
-      mojom::RequestContextType::IFRAME,
+      mojom::blink::RequestContextType::IFRAME,
       network::mojom::RequestDestination::kIframe);
   navigation_timing_info_->SetInitialURL(url_);
   report_timing_info_to_parent_ = ShouldReportTimingInfoToParent();
@@ -1264,7 +1265,7 @@ void DocumentLoader::StartLoadingInternal() {
       nullptr /* recursive_prefetch_token */);
   if (!frame_->IsMainFrame() && response_.HasMajorCertificateErrors()) {
     MixedContentChecker::HandleCertificateError(
-        response_, mojom::RequestContextType::HYPERLINK,
+        response_, mojom::blink::RequestContextType::HYPERLINK,
         MixedContentChecker::DecideCheckModeForPlugin(
             GetFrame()->GetSettings()),
         GetContentSecurityNotifier());
@@ -1361,7 +1362,7 @@ void DocumentLoader::StartLoadingResponse() {
 
   bool use_isolated_code_cache =
       RuntimeEnabledFeatures::CacheInlineScriptCodeEnabled() &&
-      ShouldUseIsolatedCodeCache(mojom::RequestContextType::HYPERLINK,
+      ShouldUseIsolatedCodeCache(mojom::blink::RequestContextType::HYPERLINK,
                                  response_);
 
   // The |cached_metadata_handler_| is created, even when

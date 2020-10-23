@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULATOR_IMPL_BASE_H_
 
 #include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -52,7 +53,7 @@ class ModulatorImplBase : public Modulator {
 
   void FetchTree(const KURL&,
                  ResourceFetcher* fetch_client_settings_object_fetcher,
-                 mojom::RequestContextType context_type,
+                 mojom::blink::RequestContextType context_type,
                  network::mojom::RequestDestination destination,
                  const ScriptFetchOptions&,
                  ModuleScriptCustomFetchType,
@@ -60,7 +61,7 @@ class ModulatorImplBase : public Modulator {
   void FetchDescendantsForInlineScript(
       ModuleScript*,
       ResourceFetcher* fetch_client_settings_object_fetcher,
-      mojom::RequestContextType context_type,
+      mojom::blink::RequestContextType context_type,
       network::mojom::RequestDestination destination,
       ModuleTreeClient*) override;
   void FetchSingle(const ModuleScriptFetchRequest&,

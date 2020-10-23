@@ -126,8 +126,9 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
   return std::make_unique<CachedMetadataSenderImpl>(response, code_cache_type);
 }
 
-bool ShouldUseIsolatedCodeCache(mojom::RequestContextType request_context,
-                                const ResourceResponse& response) {
+bool ShouldUseIsolatedCodeCache(
+    mojom::blink::RequestContextType request_context,
+    const ResourceResponse& response) {
   if (!RuntimeEnabledFeatures::IsolatedCodeCacheEnabled())
     return false;
 
@@ -136,7 +137,7 @@ bool ShouldUseIsolatedCodeCache(mojom::RequestContextType request_context,
     return true;
 
   // Service worker script has its own code cache.
-  if (request_context == mojom::RequestContextType::SERVICE_WORKER)
+  if (request_context == mojom::blink::RequestContextType::SERVICE_WORKER)
     return false;
 
   // Also, we only support code cache for other service worker provided

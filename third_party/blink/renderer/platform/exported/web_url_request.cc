@@ -244,7 +244,7 @@ bool WebURLRequest::ReportRawHeaders() const {
   return resource_request_->ReportRawHeaders();
 }
 
-mojom::RequestContextType WebURLRequest::GetRequestContext() const {
+mojom::blink::RequestContextType WebURLRequest::GetRequestContext() const {
   return resource_request_->GetRequestContext();
 }
 
@@ -287,7 +287,7 @@ void WebURLRequest::SetHasUserGesture(bool has_user_gesture) {
 }
 
 void WebURLRequest::SetRequestContext(
-    mojom::RequestContextType request_context) {
+    mojom::blink::RequestContextType request_context) {
   resource_request_->SetRequestContext(request_context);
 }
 
@@ -500,7 +500,7 @@ int WebURLRequest::GetLoadFlagsForWebUrlRequest() const {
   }
 
   if (resource_request_->GetRequestContext() ==
-      blink::mojom::RequestContextType::PREFETCH)
+      blink::mojom::blink::RequestContextType::PREFETCH)
     load_flags |= net::LOAD_PREFETCH;
 
   if (resource_request_->GetExtraData()) {
@@ -512,7 +512,7 @@ int WebURLRequest::GetLoadFlagsForWebUrlRequest() const {
   }
   if (resource_request_->PrefetchMaybeForTopLeveNavigation()) {
     DCHECK_EQ(resource_request_->GetRequestContext(),
-              blink::mojom::RequestContextType::PREFETCH);
+              blink::mojom::blink::RequestContextType::PREFETCH);
     if (!resource_request_->RequestorOrigin()->IsSameOriginWith(
             SecurityOrigin::Create(resource_request_->Url()).get())) {
       load_flags |= net::LOAD_RESTRICTED_PREFETCH;

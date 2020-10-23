@@ -8,6 +8,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -469,7 +470,7 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
     const KURL& module_url_record,
     const FetchClientSettingsObjectSnapshot& fetch_client_settings_object,
     WorkerResourceTimingNotifier& resource_timing_notifier,
-    mojom::RequestContextType context_type,
+    mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     network::mojom::CredentialsMode credentials_mode,
     ModuleScriptCustomFetchType custom_fetch_type,

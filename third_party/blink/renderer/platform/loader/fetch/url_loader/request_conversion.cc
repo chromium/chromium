@@ -21,7 +21,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -97,93 +97,93 @@ std::string TrimLWSAndCRLF(const base::StringPiece& input) {
 }
 
 mojom::ResourceType RequestContextToResourceType(
-    mojom::RequestContextType request_context) {
+    mojom::blink::RequestContextType request_context) {
   switch (request_context) {
     // CSP report
-    case mojom::RequestContextType::CSP_REPORT:
+    case mojom::blink::RequestContextType::CSP_REPORT:
       return mojom::ResourceType::kCspReport;
 
     // Favicon
-    case mojom::RequestContextType::FAVICON:
+    case mojom::blink::RequestContextType::FAVICON:
       return mojom::ResourceType::kFavicon;
 
     // Font
-    case mojom::RequestContextType::FONT:
+    case mojom::blink::RequestContextType::FONT:
       return mojom::ResourceType::kFontResource;
 
     // Image
-    case mojom::RequestContextType::IMAGE:
-    case mojom::RequestContextType::IMAGE_SET:
+    case mojom::blink::RequestContextType::IMAGE:
+    case mojom::blink::RequestContextType::IMAGE_SET:
       return mojom::ResourceType::kImage;
 
     // Media
-    case mojom::RequestContextType::AUDIO:
-    case mojom::RequestContextType::VIDEO:
+    case mojom::blink::RequestContextType::AUDIO:
+    case mojom::blink::RequestContextType::VIDEO:
       return mojom::ResourceType::kMedia;
 
     // Object
-    case mojom::RequestContextType::EMBED:
-    case mojom::RequestContextType::OBJECT:
+    case mojom::blink::RequestContextType::EMBED:
+    case mojom::blink::RequestContextType::OBJECT:
       return mojom::ResourceType::kObject;
 
     // Ping
-    case mojom::RequestContextType::BEACON:
-    case mojom::RequestContextType::PING:
+    case mojom::blink::RequestContextType::BEACON:
+    case mojom::blink::RequestContextType::PING:
       return mojom::ResourceType::kPing;
 
     // Subresource of plugins
-    case mojom::RequestContextType::PLUGIN:
+    case mojom::blink::RequestContextType::PLUGIN:
       return mojom::ResourceType::kPluginResource;
 
     // Prefetch
-    case mojom::RequestContextType::PREFETCH:
+    case mojom::blink::RequestContextType::PREFETCH:
       return mojom::ResourceType::kPrefetch;
 
     // Script
-    case mojom::RequestContextType::IMPORT:
-    case mojom::RequestContextType::SCRIPT:
+    case mojom::blink::RequestContextType::IMPORT:
+    case mojom::blink::RequestContextType::SCRIPT:
       return mojom::ResourceType::kScript;
 
     // Style
-    case mojom::RequestContextType::XSLT:
-    case mojom::RequestContextType::STYLE:
+    case mojom::blink::RequestContextType::XSLT:
+    case mojom::blink::RequestContextType::STYLE:
       return mojom::ResourceType::kStylesheet;
 
     // Subresource
-    case mojom::RequestContextType::DOWNLOAD:
-    case mojom::RequestContextType::MANIFEST:
-    case mojom::RequestContextType::SUBRESOURCE:
+    case mojom::blink::RequestContextType::DOWNLOAD:
+    case mojom::blink::RequestContextType::MANIFEST:
+    case mojom::blink::RequestContextType::SUBRESOURCE:
       return mojom::ResourceType::kSubResource;
 
     // TextTrack
-    case mojom::RequestContextType::TRACK:
+    case mojom::blink::RequestContextType::TRACK:
       return mojom::ResourceType::kMedia;
 
     // Workers
-    case mojom::RequestContextType::SERVICE_WORKER:
+    case mojom::blink::RequestContextType::SERVICE_WORKER:
       return mojom::ResourceType::kServiceWorker;
-    case mojom::RequestContextType::SHARED_WORKER:
+    case mojom::blink::RequestContextType::SHARED_WORKER:
       return mojom::ResourceType::kSharedWorker;
-    case mojom::RequestContextType::WORKER:
+    case mojom::blink::RequestContextType::WORKER:
       return mojom::ResourceType::kWorker;
 
     // Unspecified
-    case mojom::RequestContextType::INTERNAL:
-    case mojom::RequestContextType::UNSPECIFIED:
+    case mojom::blink::RequestContextType::INTERNAL:
+    case mojom::blink::RequestContextType::UNSPECIFIED:
       return mojom::ResourceType::kSubResource;
 
     // XHR
-    case mojom::RequestContextType::EVENT_SOURCE:
-    case mojom::RequestContextType::FETCH:
-    case mojom::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::blink::RequestContextType::EVENT_SOURCE:
+    case mojom::blink::RequestContextType::FETCH:
+    case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
       return mojom::ResourceType::kXhr;
 
     // Navigation requests should not go through WebURLLoader.
-    case mojom::RequestContextType::FORM:
-    case mojom::RequestContextType::HYPERLINK:
-    case mojom::RequestContextType::LOCATION:
-    case mojom::RequestContextType::FRAME:
-    case mojom::RequestContextType::IFRAME:
+    case mojom::blink::RequestContextType::FORM:
+    case mojom::blink::RequestContextType::HYPERLINK:
+    case mojom::blink::RequestContextType::LOCATION:
+    case mojom::blink::RequestContextType::FRAME:
+    case mojom::blink::RequestContextType::IFRAME:
       NOTREACHED();
       return mojom::ResourceType::kSubResource;
 
@@ -340,7 +340,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   }
 
   if (src.IsSignedExchangePrefetchCacheEnabled()) {
-    DCHECK_EQ(src.GetRequestContext(), mojom::RequestContextType::PREFETCH);
+    DCHECK_EQ(src.GetRequestContext(),
+              mojom::blink::RequestContextType::PREFETCH);
     dest->is_signed_exchange_prefetch_cache_enabled = true;
   }
 

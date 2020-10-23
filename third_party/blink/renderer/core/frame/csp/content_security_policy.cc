@@ -32,6 +32,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -632,72 +633,73 @@ bool ContentSecurityPolicy::AllowPluginType(
 }
 
 static base::Optional<ContentSecurityPolicy::DirectiveType>
-GetDirectiveTypeFromRequestContextType(mojom::RequestContextType context) {
+GetDirectiveTypeFromRequestContextType(
+    mojom::blink::RequestContextType context) {
   switch (context) {
-    case mojom::RequestContextType::AUDIO:
-    case mojom::RequestContextType::TRACK:
-    case mojom::RequestContextType::VIDEO:
+    case mojom::blink::RequestContextType::AUDIO:
+    case mojom::blink::RequestContextType::TRACK:
+    case mojom::blink::RequestContextType::VIDEO:
       return ContentSecurityPolicy::DirectiveType::kMediaSrc;
 
-    case mojom::RequestContextType::BEACON:
-    case mojom::RequestContextType::EVENT_SOURCE:
-    case mojom::RequestContextType::FETCH:
-    case mojom::RequestContextType::PING:
-    case mojom::RequestContextType::XML_HTTP_REQUEST:
-    case mojom::RequestContextType::SUBRESOURCE:
+    case mojom::blink::RequestContextType::BEACON:
+    case mojom::blink::RequestContextType::EVENT_SOURCE:
+    case mojom::blink::RequestContextType::FETCH:
+    case mojom::blink::RequestContextType::PING:
+    case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
+    case mojom::blink::RequestContextType::SUBRESOURCE:
       return ContentSecurityPolicy::DirectiveType::kConnectSrc;
 
-    case mojom::RequestContextType::EMBED:
-    case mojom::RequestContextType::OBJECT:
+    case mojom::blink::RequestContextType::EMBED:
+    case mojom::blink::RequestContextType::OBJECT:
       return ContentSecurityPolicy::DirectiveType::kObjectSrc;
 
-    case mojom::RequestContextType::PREFETCH:
+    case mojom::blink::RequestContextType::PREFETCH:
       return ContentSecurityPolicy::DirectiveType::kPrefetchSrc;
 
-    case mojom::RequestContextType::FAVICON:
-    case mojom::RequestContextType::IMAGE:
-    case mojom::RequestContextType::IMAGE_SET:
+    case mojom::blink::RequestContextType::FAVICON:
+    case mojom::blink::RequestContextType::IMAGE:
+    case mojom::blink::RequestContextType::IMAGE_SET:
       return ContentSecurityPolicy::DirectiveType::kImgSrc;
 
-    case mojom::RequestContextType::FONT:
+    case mojom::blink::RequestContextType::FONT:
       return ContentSecurityPolicy::DirectiveType::kFontSrc;
 
-    case mojom::RequestContextType::FORM:
+    case mojom::blink::RequestContextType::FORM:
       return ContentSecurityPolicy::DirectiveType::kFormAction;
 
-    case mojom::RequestContextType::FRAME:
-    case mojom::RequestContextType::IFRAME:
+    case mojom::blink::RequestContextType::FRAME:
+    case mojom::blink::RequestContextType::IFRAME:
       return ContentSecurityPolicy::DirectiveType::kFrameSrc;
 
-    case mojom::RequestContextType::IMPORT:
-    case mojom::RequestContextType::SCRIPT:
-    case mojom::RequestContextType::XSLT:
+    case mojom::blink::RequestContextType::IMPORT:
+    case mojom::blink::RequestContextType::SCRIPT:
+    case mojom::blink::RequestContextType::XSLT:
       return ContentSecurityPolicy::DirectiveType::kScriptSrcElem;
 
-    case mojom::RequestContextType::MANIFEST:
+    case mojom::blink::RequestContextType::MANIFEST:
       return ContentSecurityPolicy::DirectiveType::kManifestSrc;
 
-    case mojom::RequestContextType::SERVICE_WORKER:
-    case mojom::RequestContextType::SHARED_WORKER:
-    case mojom::RequestContextType::WORKER:
+    case mojom::blink::RequestContextType::SERVICE_WORKER:
+    case mojom::blink::RequestContextType::SHARED_WORKER:
+    case mojom::blink::RequestContextType::WORKER:
       return ContentSecurityPolicy::DirectiveType::kWorkerSrc;
 
-    case mojom::RequestContextType::STYLE:
+    case mojom::blink::RequestContextType::STYLE:
       return ContentSecurityPolicy::DirectiveType::kStyleSrcElem;
 
-    case mojom::RequestContextType::CSP_REPORT:
-    case mojom::RequestContextType::DOWNLOAD:
-    case mojom::RequestContextType::HYPERLINK:
-    case mojom::RequestContextType::INTERNAL:
-    case mojom::RequestContextType::LOCATION:
-    case mojom::RequestContextType::PLUGIN:
-    case mojom::RequestContextType::UNSPECIFIED:
+    case mojom::blink::RequestContextType::CSP_REPORT:
+    case mojom::blink::RequestContextType::DOWNLOAD:
+    case mojom::blink::RequestContextType::HYPERLINK:
+    case mojom::blink::RequestContextType::INTERNAL:
+    case mojom::blink::RequestContextType::LOCATION:
+    case mojom::blink::RequestContextType::PLUGIN:
+    case mojom::blink::RequestContextType::UNSPECIFIED:
       return base::nullopt;
   }
 }
 
 bool ContentSecurityPolicy::AllowRequest(
-    mojom::RequestContextType context,
+    mojom::blink::RequestContextType context,
     network::mojom::RequestDestination request_destination,
     const KURL& url,
     const String& nonce,

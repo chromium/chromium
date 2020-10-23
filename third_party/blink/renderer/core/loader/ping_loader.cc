@@ -33,6 +33,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -197,7 +198,7 @@ bool SendBeaconCommon(const ScriptState& state,
   ResourceRequest request(url);
   request.SetHttpMethod(http_names::kPOST);
   request.SetKeepalive(true);
-  request.SetRequestContext(mojom::RequestContextType::BEACON);
+  request.SetRequestContext(mojom::blink::RequestContextType::BEACON);
   beacon.Serialize(request);
   FetchParameters params(std::move(request), &state.World());
   // The spec says:
@@ -243,7 +244,7 @@ void PingLoader::SendLinkAuditPing(LocalFrame* frame,
   request.SetKeepalive(true);
   request.SetReferrerString(Referrer::NoReferrer());
   request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
-  request.SetRequestContext(mojom::RequestContextType::PING);
+  request.SetRequestContext(mojom::blink::RequestContextType::PING);
   FetchParameters params(std::move(request),
                          frame->DomWindow()->GetCurrentWorld());
   params.MutableOptions().initiator_info.name =
@@ -262,7 +263,7 @@ void PingLoader::SendViolationReport(LocalFrame* frame,
   request.SetKeepalive(true);
   request.SetHttpBody(std::move(report));
   request.SetCredentialsMode(network::mojom::CredentialsMode::kSameOrigin);
-  request.SetRequestContext(mojom::RequestContextType::CSP_REPORT);
+  request.SetRequestContext(mojom::blink::RequestContextType::CSP_REPORT);
   request.SetRequestDestination(network::mojom::RequestDestination::kReport);
   request.SetRequestorOrigin(frame->DomWindow()->GetSecurityOrigin());
   request.SetRedirectMode(network::mojom::RedirectMode::kError);

@@ -7,6 +7,7 @@
 
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
@@ -51,7 +52,7 @@ class MockFetchContext : public FetchContext {
     return base::nullopt;
   }
   base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
-      mojom::RequestContextType,
+      mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL& url,
       const ResourceLoaderOptions& options,

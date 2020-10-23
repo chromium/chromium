@@ -82,7 +82,7 @@ bool ModulatorImplBase::ImportMapsEnabled() const {
 void ModulatorImplBase::FetchTree(
     const KURL& url,
     ResourceFetcher* fetch_client_settings_object_fetcher,
-    mojom::RequestContextType context_type,
+    mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     const ScriptFetchOptions& options,
     ModuleScriptCustomFetchType custom_fetch_type,
@@ -95,7 +95,7 @@ void ModulatorImplBase::FetchTree(
 void ModulatorImplBase::FetchDescendantsForInlineScript(
     ModuleScript* module_script,
     ResourceFetcher* fetch_client_settings_object_fetcher,
-    mojom::RequestContextType context_type,
+    mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     ModuleTreeClient* client) {
   ModuleTreeLinker::FetchDescendantsForInlineScript(

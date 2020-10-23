@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
@@ -508,7 +509,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
       return;
     request.SetSuggestedFilename(
         static_cast<String>(FastGetAttribute(html_names::kDownloadAttr)));
-    request.SetRequestContext(mojom::RequestContextType::DOWNLOAD);
+    request.SetRequestContext(mojom::blink::RequestContextType::DOWNLOAD);
     request.SetRequestorOrigin(window->GetSecurityOrigin());
     network::mojom::ReferrerPolicy referrer_policy =
         request.GetReferrerPolicy();
@@ -522,7 +523,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     return;
   }
 
-  request.SetRequestContext(mojom::RequestContextType::HYPERLINK);
+  request.SetRequestContext(mojom::blink::RequestContextType::HYPERLINK);
   request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
   const AtomicString& target = FastGetAttribute(html_names::kTargetAttr);
   FrameLoadRequest frame_request(window, request);

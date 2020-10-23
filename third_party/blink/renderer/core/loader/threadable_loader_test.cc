@@ -11,6 +11,7 @@
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -186,7 +187,7 @@ class ThreadableLoaderTest : public testing::Test {
                    network::mojom::RequestMode request_mode =
                        network::mojom::RequestMode::kNoCors) {
     ResourceRequest request(url);
-    request.SetRequestContext(mojom::RequestContextType::OBJECT);
+    request.SetRequestContext(mojom::blink::RequestContextType::OBJECT);
     request.SetMode(request_mode);
     request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
     helper_->StartLoader(std::move(request));

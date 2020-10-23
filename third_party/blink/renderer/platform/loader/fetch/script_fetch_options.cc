@@ -28,7 +28,7 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   resource_loader_options.initiator_info.name = "script";
   resource_loader_options.reject_coep_unsafe_none = reject_coep_unsafe_none_;
   FetchParameters params(std::move(resource_request), resource_loader_options);
-  params.SetRequestContext(mojom::RequestContextType::SCRIPT);
+  params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
   params.SetRequestDestination(network::mojom::RequestDestination::kScript);
 
   // Step 1. ... and CORS setting. [spec text]

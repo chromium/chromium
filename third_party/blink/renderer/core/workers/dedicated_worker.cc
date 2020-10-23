@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -244,7 +245,7 @@ void DedicatedWorker::OnHostCreated(
     classic_script_loader_->LoadTopLevelScriptAsynchronously(
         *GetExecutionContext(), GetExecutionContext()->Fetcher(),
         script_request_url_, nullptr /* worker_main_script_load_params */,
-        mojom::RequestContextType::WORKER,
+        mojom::blink::RequestContextType::WORKER,
         network::mojom::RequestDestination::kWorker,
         network::mojom::RequestMode::kSameOrigin,
         network::mojom::CredentialsMode::kSameOrigin,

@@ -128,7 +128,7 @@ ExtractCorsExposedHeaderNamesList(network::mojom::CredentialsMode,
 PLATFORM_EXPORT bool IsCorsSafelistedResponseHeader(const String&);
 
 // Checks whether request mode 'no-cors' is allowed for a certain context.
-PLATFORM_EXPORT bool IsNoCorsAllowedContext(mojom::RequestContextType);
+PLATFORM_EXPORT bool IsNoCorsAllowedContext(mojom::blink::RequestContextType);
 
 }  // namespace cors
 

@@ -838,7 +838,7 @@ void FetchManager::Loader::PerformHTTPFetch() {
   ResourceRequest request(fetch_request_data_->Url());
   request.SetRequestorOrigin(fetch_request_data_->Origin());
   request.SetIsolatedWorldOrigin(fetch_request_data_->IsolatedWorldOrigin());
-  request.SetRequestContext(fetch_request_data_->Context());
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   request.SetRequestDestination(fetch_request_data_->Destination());
   request.SetHttpMethod(fetch_request_data_->Method());
   request.SetFetchWindowId(fetch_request_data_->WindowId());
@@ -947,7 +947,7 @@ void FetchManager::Loader::PerformDataFetch() {
 
   ResourceRequest request(fetch_request_data_->Url());
   request.SetRequestorOrigin(fetch_request_data_->Origin());
-  request.SetRequestContext(fetch_request_data_->Context());
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   request.SetRequestDestination(fetch_request_data_->Destination());
   request.SetUseStreamOnResponse(true);
   request.SetHttpMethod(fetch_request_data_->Method());
@@ -1017,7 +1017,6 @@ ScriptPromise FetchManager::Fetch(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  request->SetContext(mojom::RequestContextType::FETCH);
   request->SetDestination(network::mojom::RequestDestination::kEmpty);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);

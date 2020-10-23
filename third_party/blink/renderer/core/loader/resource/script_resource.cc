@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
@@ -57,13 +58,14 @@ namespace {
 // Returns true if the given request context is a script-like destination
 // defined in the Fetch spec:
 // https://fetch.spec.whatwg.org/#request-destination-script-like
-bool IsRequestContextSupported(mojom::RequestContextType request_context) {
+bool IsRequestContextSupported(
+    mojom::blink::RequestContextType request_context) {
   // TODO(nhiroki): Support "audioworklet" and "paintworklet" destinations.
   switch (request_context) {
-    case mojom::RequestContextType::SCRIPT:
-    case mojom::RequestContextType::WORKER:
-    case mojom::RequestContextType::SERVICE_WORKER:
-    case mojom::RequestContextType::SHARED_WORKER:
+    case mojom::blink::RequestContextType::SCRIPT:
+    case mojom::blink::RequestContextType::WORKER:
+    case mojom::blink::RequestContextType::SERVICE_WORKER:
+    case mojom::blink::RequestContextType::SHARED_WORKER:
       return true;
     default:
       break;

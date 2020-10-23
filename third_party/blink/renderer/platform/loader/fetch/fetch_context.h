@@ -121,7 +121,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return ResourceRequestBlockedReason::kOther;
   }
   virtual base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
-      mojom::RequestContextType,
+      mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL&,
       const ResourceLoaderOptions&,
