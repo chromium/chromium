@@ -93,7 +93,7 @@ ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
 
 void HidGetDevicesFunction::OnEnumerationComplete(
     std::unique_ptr<base::ListValue> devices) {
-  Respond(OneArgument(std::move(devices)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(devices))));
 }
 
 HidGetUserSelectedDevicesFunction::HidGetUserSelectedDevicesFunction() {

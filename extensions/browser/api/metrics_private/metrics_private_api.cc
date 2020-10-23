@@ -82,7 +82,9 @@ MetricsPrivateGetVariationParamsFunction::Run() {
                                      &result.additional_properties)) {
     dict = result.ToValue();
   }
-  return RespondNow(dict ? OneArgument(std::move(dict)) : NoArguments());
+  return RespondNow(
+      dict ? OneArgument(base::Value::FromUniquePtrValue(std::move(dict)))
+           : NoArguments());
 }
 
 ExtensionFunction::ResponseAction

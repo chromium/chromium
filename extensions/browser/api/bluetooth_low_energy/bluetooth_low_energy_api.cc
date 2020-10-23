@@ -630,7 +630,7 @@ void BluetoothLowEnergyGetCharacteristicsFunction::DoWork() {
   for (apibtle::Characteristic& characteristic : characteristic_list)
     result->Append(apibtle::CharacteristicToValue(&characteristic));
 
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 BluetoothLowEnergyGetIncludedServicesFunction::
@@ -740,7 +740,7 @@ void BluetoothLowEnergyGetDescriptorsFunction::DoWork() {
   for (apibtle::Descriptor& descriptor : descriptor_list)
     result->Append(apibtle::DescriptorToValue(&descriptor));
 
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 BluetoothLowEnergyReadCharacteristicValueFunction::

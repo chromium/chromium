@@ -476,7 +476,7 @@ void MediaGalleriesGetMediaFileSystemsFunction::ReturnGalleries(
   }
 
   // The custom JS binding will use this list to create DOMFileSystem objects.
-  Respond(OneArgument(std::move(list)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(list))));
 }
 
 void MediaGalleriesGetMediaFileSystemsFunction::ShowDialog() {
@@ -600,7 +600,7 @@ void MediaGalleriesAddUserSelectedFolderFunction::ReturnGalleriesAndId(
   std::unique_ptr<base::DictionaryValue> results(new base::DictionaryValue);
   results->SetWithoutPathExpansion("mediaFileSystems", std::move(list));
   results->SetKey("selectedFileSystemIndex", base::Value(index));
-  Respond(OneArgument(std::move(results)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(results))));
 }
 
 void MediaGalleriesAddUserSelectedFolderFunction::
@@ -681,7 +681,8 @@ void MediaGalleriesGetMetadataFunction::GetMetadata(
     std::unique_ptr<base::DictionaryValue> result_dictionary(
         new base::DictionaryValue);
     result_dictionary->Set(kMetadataKey, metadata.ToValue());
-    Respond(OneArgument(std::move(result_dictionary)));
+    Respond(OneArgument(
+        base::Value::FromUniquePtrValue(std::move(result_dictionary))));
     return;
   }
 
@@ -724,7 +725,8 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
                          SerializeMediaMetadata(std::move(metadata)));
 
   if (attached_images->empty()) {
-    Respond(OneArgument(std::move(result_dictionary)));
+    Respond(OneArgument(
+        base::Value::FromUniquePtrValue(std::move(result_dictionary))));
     return;
   }
 
@@ -797,7 +799,8 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
 
   // All Blobs have been constructed. The renderer will take ownership.
   SetTransferredBlobUUIDs(*blob_uuids);
-  Respond(OneArgument(std::move(result_dictionary)));
+  Respond(OneArgument(
+      base::Value::FromUniquePtrValue(std::move(result_dictionary))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

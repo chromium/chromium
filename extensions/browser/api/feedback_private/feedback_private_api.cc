@@ -206,7 +206,8 @@ ExtensionFunction::ResponseAction FeedbackPrivateGetStringsFunction::Run() {
   if (test_callback_ && !test_callback_->is_null())
     test_callback_->Run();
 
-  return RespondNow(OneArgument(std::move(dict)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
 ExtensionFunction::ResponseAction FeedbackPrivateGetUserEmailFunction::Run() {

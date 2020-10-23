@@ -210,12 +210,14 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           // initialized. Hence, adding a callback for window first navigation
           // completion.
           if (existing_window->DidFinishFirstNavigation())
-            return RespondNow(OneArgument(std::move(result)));
+            return RespondNow(OneArgument(
+                base::Value::FromUniquePtrValue(std::move(result))));
 
-          existing_window->AddOnDidFinishFirstNavigationCallback(
-            base::BindOnce(&AppWindowCreateFunction::
-                           OnAppWindowFinishedFirstNavigationOrClosed,
-                           this, OneArgument(std::move(result))));
+          existing_window->AddOnDidFinishFirstNavigationCallback(base::BindOnce(
+              &AppWindowCreateFunction::
+                  OnAppWindowFinishedFirstNavigationOrClosed,
+              this,
+              OneArgument(base::Value::FromUniquePtrValue(std::move(result)))));
           return RespondLater();
         }
       }
@@ -418,7 +420,8 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   result->SetInteger("frameId", frame_id);
   result->SetString("id", app_window->window_key());
   app_window->GetSerializedState(result.get());
-  ResponseValue result_arg = OneArgument(std::move(result));
+  ResponseValue result_arg =
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result)));
 
   if (AppWindowRegistry::Get(browser_context())
           ->HadDevToolsAttached(app_window->web_contents())) {

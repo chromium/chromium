@@ -1158,7 +1158,8 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
       result->SetString("userImage", user_image);
     }
   }
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1282,7 +1283,8 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
   std::unique_ptr<base::DictionaryValue> return_value(
       new base::DictionaryValue);
   return_value->Set("extensions", std::move(extensions_values));
-  return RespondNow(OneArgument(std::move(return_value)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(return_value))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1474,7 +1476,8 @@ AutotestPrivateGetVisibleNotificationsFunction::Run() {
   auto values = std::make_unique<base::ListValue>();
   for (auto* notification : notification_set)
     values->Append(MakeDictionaryFromNotification(*notification));
-  return RespondNow(OneArgument(std::move(values)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(values))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1685,7 +1688,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcAppFunction::Run() {
     app_value->SetKey("launchable", base::Value(app_info->launchable));
   }
 
-  return RespondNow(OneArgument(std::move(app_value)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(app_value))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1731,7 +1735,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcPackageFunction::Run() {
     package_value->SetKey("vpnProvider",
                           base::Value(package_info->vpn_provider));
   }
-  return RespondNow(OneArgument(std::move(package_value)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(package_value))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2328,7 +2333,7 @@ void AutotestPrivateGetPrinterListFunction::RespondWithSuccess() {
 
   timeout_timer_.AbandonAndStop();
   DestroyPrintersManager();
-  Respond(OneArgument(std::move(results_)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(results_))));
 }
 
 void AutotestPrivateGetPrinterListFunction::OnEnterprisePrintersInitialized() {
@@ -3395,7 +3400,7 @@ void AutotestPrivateArcAppTracingStopAndAnalyzeFunction::OnTracingResult(
   result->SetDoubleKey("fps", fps);
   result->SetDoubleKey("commitDeviation", commit_deviation);
   result->SetDoubleKey("renderQuality", render_quality);
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -60,7 +60,8 @@ FirstRunPrivateGetLocalizedStringsFunction::Run() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, localized_strings.get());
 
-  return RespondNow(OneArgument(std::move(localized_strings)));
+  return RespondNow(OneArgument(
+      base::Value::FromUniquePtrValue(std::move(localized_strings))));
 }
 
 ExtensionFunction::ResponseAction FirstRunPrivateLaunchTutorialFunction::Run() {

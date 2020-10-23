@@ -37,7 +37,8 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   std::unique_ptr<base::ListValue> infos(new base::ListValue());
 
   if (accounts.empty()) {
-    return RespondNow(OneArgument(std::move(infos)));
+    return RespondNow(
+        OneArgument(base::Value::FromUniquePtrValue(std::move(infos))));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -67,7 +68,8 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
     }
   }
 
-  return RespondNow(OneArgument(std::move(infos)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(infos))));
 }
 
 }  // namespace extensions

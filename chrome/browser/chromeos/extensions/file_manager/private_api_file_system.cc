@@ -442,7 +442,8 @@ void FileWatchFunctionBase::RespondWith(bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto result_value = std::make_unique<base::Value>(success);
   if (success) {
-    Respond(OneArgument(std::move(result_value)));
+    Respond(
+        OneArgument(base::Value::FromUniquePtrValue(std::move(result_value))));
   } else {
     Respond(Error(""));
   }
@@ -639,7 +640,7 @@ void FileManagerPrivateGetSizeStatsFunction::OnGetSizeStats(
   sizes->SetDouble("totalSize", static_cast<double>(*total_size));
   sizes->SetDouble("remainingSize", static_cast<double>(*remaining_size));
 
-  Respond(OneArgument(std::move(sizes)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(sizes))));
 }
 
 ExtensionFunction::ResponseAction
@@ -1248,7 +1249,7 @@ void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByHashes(
     result->GetListWithoutPathExpansion(hashAndPath.hash, &list);
     list->AppendString(hashAndPath.path.value());
   }
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 FileManagerPrivateSearchFilesFunction::FileManagerPrivateSearchFilesFunction()
@@ -1310,7 +1311,7 @@ void FileManagerPrivateSearchFilesFunction::OnSearchByPattern(
 
   auto result = std::make_unique<base::DictionaryValue>();
   result->SetKey("entries", std::move(*entries));
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction

@@ -129,7 +129,8 @@ InputMethodPrivateGetInputMethodConfigFunction::Run() {
                      Profile::FromBrowserContext(browser_context())
                          ->GetPrefs()
                          ->GetBoolean(prefs::kLanguageImeMenuActivated));
-  return RespondNow(OneArgument(std::move(output)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(output))));
 }
 
 ExtensionFunction::ResponseAction
@@ -182,7 +183,8 @@ InputMethodPrivateGetInputMethodsFunction::Run() {
     val->SetString("indicator", util->GetInputMethodShortName(input_method));
     output->Append(std::move(val));
   }
-  return RespondNow(OneArgument(std::move(output)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(output))));
 }
 
 ExtensionFunction::ResponseAction
@@ -204,7 +206,8 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
   for (auto it = words.begin(); it != words.end(); ++it) {
     output->AppendString(*it);
   }
-  return RespondNow(OneArgument(std::move(output)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(output))));
 }
 
 ExtensionFunction::ResponseAction
@@ -247,7 +250,8 @@ InputMethodPrivateGetEncryptSyncEnabledFunction::Run() {
         InformativeError(kErrorSyncServiceNotReady, static_function_name())));
   std::unique_ptr<base::Value> ret(new base::Value(
       sync_service->GetUserSettings()->IsEncryptEverythingEnabled()));
-  return RespondNow(OneArgument(std::move(ret)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
 }
 
 ExtensionFunction::ResponseAction
@@ -364,7 +368,8 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
       "after", info.surrounding_text.substr(text_after_start,
                                             text_after_end - text_after_start));
 
-  return RespondNow(OneArgument(std::move(ret)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
@@ -520,7 +525,8 @@ InputMethodPrivateGetAutocorrectRangeFunction::Run() {
   auto ret = std::make_unique<base::DictionaryValue>();
   ret->SetInteger("start", range.is_empty() ? 0 : range.start());
   ret->SetInteger("end", range.is_empty() ? 0 : range.end());
-  return RespondNow(OneArgument(std::move(ret)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
 }
 
 ExtensionFunction::ResponseAction
@@ -544,7 +550,8 @@ InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
   ret->SetInteger("y", rect.y());
   ret->SetInteger("width", rect.width());
   ret->SetInteger("height", rect.height());
-  return RespondNow(OneArgument(std::move(ret)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
 }
 
 ExtensionFunction::ResponseAction

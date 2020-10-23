@@ -708,7 +708,8 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
   for (size_t i = 0; i < list.size(); ++i)
     result->Append(SerializeTarget(list[i]));
 
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 }  // namespace extensions

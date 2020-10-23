@@ -179,7 +179,8 @@ ContentSettingsContentSettingGetFunction::Run() {
   result->SetString(content_settings_api_constants::kContentSettingKey,
                     setting_string);
 
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction
@@ -368,7 +369,7 @@ void ContentSettingsContentSettingGetResourceIdentifiersFunction::OnGotPlugins(
                     plugin_metadata->name());
     list->Append(std::move(dict));
   }
-  Respond(OneArgument(std::move(list)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(list))));
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 

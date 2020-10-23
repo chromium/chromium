@@ -261,7 +261,8 @@ ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->SetString(kFontIdKey, font_name);
   result->SetString(kLevelOfControlKey, level_of_control);
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
@@ -327,7 +328,7 @@ FontSettingsGetFontListFunction::CopyFontsToResult(base::ListValue* fonts) {
     result->Append(std::move(font_name));
   }
 
-  return OneArgument(std::move(result));
+  return OneArgument(base::Value::FromUniquePtrValue(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction ClearFontPrefExtensionFunction::Run() {
@@ -357,7 +358,8 @@ ExtensionFunction::ResponseAction GetFontPrefExtensionFunction::Run() {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->Set(GetKey(), pref->GetValue()->CreateDeepCopy());
   result->SetString(kLevelOfControlKey, level_of_control);
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction SetFontPrefExtensionFunction::Run() {

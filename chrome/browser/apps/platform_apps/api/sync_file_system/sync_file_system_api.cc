@@ -191,7 +191,7 @@ void SyncFileSystemRequestFileSystemFunction::DidOpenFileSystem(
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetString("name", file_system_name);
   dict->SetString("root", root_url.spec());
-  Respond(OneArgument(std::move(dict)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
 ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusFunction::Run() {
@@ -312,7 +312,8 @@ void SyncFileSystemGetFileStatusesFunction::DidGetFileStatus(
 
     status_array->Append(std::move(dict));
   }
-  Respond(OneArgument(std::move(status_array)));
+  Respond(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(status_array))));
 }
 
 ExtensionFunction::ResponseAction

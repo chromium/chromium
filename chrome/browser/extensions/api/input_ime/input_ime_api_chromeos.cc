@@ -1016,7 +1016,8 @@ InputMethodPrivateGetCompositionBoundsFunction::Run() {
     bounds_list->Append(std::move(bounds_value));
   }
 
-  return RespondNow(OneArgument(std::move(bounds_list)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(bounds_list))));
 }
 
 void InputImeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,

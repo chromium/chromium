@@ -333,7 +333,8 @@ ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
     result_voices->Append(std::move(result_voice));
   }
 
-  return RespondNow(OneArgument(std::move(result_voices)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result_voices))));
 }
 
 TtsAPI::TtsAPI(content::BrowserContext* context) {

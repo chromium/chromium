@@ -1191,7 +1191,8 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
     json_results->Append(std::move(json_item));
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_SEARCH);
-  return RespondNow(OneArgument(std::move(json_results)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(json_results))));
 }
 
 DownloadsPauseFunction::DownloadsPauseFunction() {}
@@ -1283,7 +1284,8 @@ ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
     (*it)->Remove();
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_ERASE);
-  return RespondNow(OneArgument(std::move(json_results)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(json_results))));
 }
 
 DownloadsRemoveFileFunction::DownloadsRemoveFileFunction() {

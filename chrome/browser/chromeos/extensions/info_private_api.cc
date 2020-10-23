@@ -277,7 +277,8 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
     if (value)
       result->Set(property_name, std::move(value));
   }
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(

@@ -80,7 +80,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
 
   dict->SetString("UI_LOCALE", extension_l10n_util::CurrentLocaleOrDefault());
 
-  return RespondNow(OneArgument(std::move(dict)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
 }  // namespace extensions

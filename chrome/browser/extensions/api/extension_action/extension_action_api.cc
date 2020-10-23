@@ -535,7 +535,8 @@ ExtensionActionGetBadgeBackgroundColorFunction::RunExtensionAction() {
   list->AppendInteger(static_cast<int>(SkColorGetG(color)));
   list->AppendInteger(static_cast<int>(SkColorGetB(color)));
   list->AppendInteger(static_cast<int>(SkColorGetA(color)));
-  return RespondNow(OneArgument(std::move(list)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(list))));
 }
 
 BrowserActionOpenPopupFunction::BrowserActionOpenPopupFunction() = default;

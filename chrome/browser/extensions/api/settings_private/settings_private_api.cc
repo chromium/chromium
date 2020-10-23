@@ -89,7 +89,8 @@ ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
   if (value->is_none())
     return RespondNow(Error("Pref * does not exist", parameters->name));
   else
-    return RespondNow(OneArgument(std::move(value)));
+    return RespondNow(
+        OneArgument(base::Value::FromUniquePtrValue(std::move(value))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

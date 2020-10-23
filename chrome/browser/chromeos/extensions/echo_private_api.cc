@@ -171,7 +171,7 @@ EchoPrivateGetOobeTimestampFunction::GetOobeTimestampOnFileSequence() {
 
 void EchoPrivateGetOobeTimestampFunction::RespondWithResult(
     std::unique_ptr<base::Value> result) {
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction()

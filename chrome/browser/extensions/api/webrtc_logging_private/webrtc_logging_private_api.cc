@@ -606,7 +606,7 @@ void WebrtcLoggingPrivateGetLogsDirectoryFunction::FireCallback(
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetString("fileSystemId", filesystem_id);
   dict->SetString("baseName", base_name);
-  Respond(OneArgument(std::move(dict)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
 void WebrtcLoggingPrivateGetLogsDirectoryFunction::FireErrorCallback(

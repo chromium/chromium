@@ -716,7 +716,8 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
                        ep->HasIncognitoPrefValue(browser_pref));
   }
 
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 SetPreferenceFunction::~SetPreferenceFunction() = default;

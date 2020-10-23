@@ -169,7 +169,7 @@ void BluetoothGetDevicesFunction::DoWork(
     device_list->Append(extension_device.ToValue());
   }
 
-  Respond(OneArgument(std::move(device_list)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(device_list))));
 }
 
 BluetoothGetDeviceFunction::BluetoothGetDeviceFunction() = default;

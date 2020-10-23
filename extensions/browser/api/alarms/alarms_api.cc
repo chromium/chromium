@@ -163,7 +163,8 @@ void AlarmsGetAllFunction::Callback(const AlarmList* alarms) {
     for (const std::unique_ptr<Alarm>& alarm : *alarms)
       alarms_value->Append(alarm->js_alarm->ToValue());
   }
-  Respond(OneArgument(std::move(alarms_value)));
+  Respond(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(alarms_value))));
 }
 
 ExtensionFunction::ResponseAction AlarmsClearFunction::Run() {

@@ -70,7 +70,7 @@ void DataReductionProxyGetDataUsageFunction::ReplyWithDataUsage(
 
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->Set("data_usage_buckets", std::move(data_usage_buckets));
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 }  // namespace extensions

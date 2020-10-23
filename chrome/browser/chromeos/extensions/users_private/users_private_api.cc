@@ -304,7 +304,8 @@ ExtensionFunction::ResponseAction UsersPrivateGetLoginStatusFunction::Run() {
   auto result = std::make_unique<base::DictionaryValue>();
   result->SetKey("isLoggedIn", base::Value(is_logged_in));
   result->SetKey("isScreenLocked", base::Value(is_screen_locked));
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 }  // namespace extensions

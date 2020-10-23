@@ -303,7 +303,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetString("mhtmlFilePath", mhtml_path_.value());
   dict->SetInteger("mhtmlFileLength", file_size);
-  Respond(OneArgument(std::move(dict)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 
   // Note that we'll wait for a response ack message received in
   // OnMessageReceived before we call Release() (to prevent the blob file from

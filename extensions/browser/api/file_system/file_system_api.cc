@@ -279,7 +279,7 @@ void FileSystemEntryFunction::RegisterFileSystemsAndSendResponse(
   std::unique_ptr<base::DictionaryValue> result = CreateResult();
   for (const auto& path : paths)
     AddEntryToResult(path, std::string(), result.get());
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 std::unique_ptr<base::DictionaryValue> FileSystemEntryFunction::CreateResult() {
@@ -919,7 +919,8 @@ ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
     is_directory_ = file->is_directory;
     std::unique_ptr<base::DictionaryValue> result = CreateResult();
     AddEntryToResult(file->path, file->id, result.get());
-    return RespondNow(OneArgument(std::move(result)));
+    return RespondNow(
+        OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
   }
   return RespondNow(NoArguments());
 }
@@ -976,7 +977,7 @@ void FileSystemRequestFileSystemFunction::OnGotFileSystem(
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetString("file_system_id", id);
   dict->SetString("file_system_path", path);
-  Respond(OneArgument(std::move(dict)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
 void FileSystemRequestFileSystemFunction::OnError(const std::string& error) {

@@ -67,5 +67,6 @@ ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
     command_list->Append(CreateCommandValue(iter->second, active));
   }
 
-  return RespondNow(OneArgument(std::move(command_list)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(command_list))));
 }

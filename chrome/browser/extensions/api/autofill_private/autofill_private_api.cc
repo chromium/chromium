@@ -389,7 +389,8 @@ AutofillPrivateValidatePhoneNumbersFunction::Run() {
   RemoveDuplicatePhoneNumberAtIndex(params->index_of_new_number,
                                     params->country_code, phone_numbers.get());
 
-  return RespondNow(OneArgument(std::move(phone_numbers)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(phone_numbers))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

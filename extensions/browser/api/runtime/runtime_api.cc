@@ -742,7 +742,8 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetString("fileSystemId", filesystem.id());
   dict->SetString("baseName", relative_path);
-  return RespondNow(OneArgument(std::move(dict)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
 }  // namespace extensions

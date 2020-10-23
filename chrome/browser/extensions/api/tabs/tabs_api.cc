@@ -393,7 +393,8 @@ ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
   std::unique_ptr<base::DictionaryValue> windows =
       ExtensionTabUtil::CreateWindowValueForExtension(
           *browser, extension(), populate_tab_behavior, source_context_type());
-  return RespondNow(OneArgument(std::move(windows)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(windows))));
 }
 
 ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
@@ -416,7 +417,8 @@ ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
   std::unique_ptr<base::DictionaryValue> windows =
       ExtensionTabUtil::CreateWindowValueForExtension(
           *browser, extension(), populate_tab_behavior, source_context_type());
-  return RespondNow(OneArgument(std::move(windows)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(windows))));
 }
 
 ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
@@ -450,7 +452,8 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
   std::unique_ptr<base::DictionaryValue> windows =
       ExtensionTabUtil::CreateWindowValueForExtension(
           *browser, extension(), populate_tab_behavior, source_context_type());
-  return RespondNow(OneArgument(std::move(windows)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(windows))));
 }
 
 ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
@@ -474,7 +477,8 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
         source_context_type()));
   }
 
-  return RespondNow(OneArgument(std::move(window_list)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(window_list))));
 }
 
 bool WindowsCreateFunction::ShouldOpenIncognitoWindow(
@@ -732,7 +736,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
         source_context_type());
   }
 
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
@@ -1137,7 +1142,8 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     }
   }
 
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
@@ -1163,8 +1169,10 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   // Return data about the newly created tab.
-  return RespondNow(has_callback() ? OneArgument(std::move(result))
-                                   : NoArguments());
+  return RespondNow(
+      has_callback()
+          ? OneArgument(base::Value::FromUniquePtrValue(std::move(result)))
+          : NoArguments());
 }
 
 ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
@@ -1524,11 +1532,13 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
   if (num_tabs == 1) {
     std::unique_ptr<base::Value> value;
     CHECK(tab_values->Remove(0, &value));
-    return RespondNow(OneArgument(std::move(value)));
+    return RespondNow(
+        OneArgument(base::Value::FromUniquePtrValue(std::move(value))));
   }
 
   // Return the results as an array if there are multiple tabs.
-  return RespondNow(OneArgument(std::move(tab_values)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(tab_values))));
 }
 
 bool TabsMoveFunction::MoveTab(int tab_id,

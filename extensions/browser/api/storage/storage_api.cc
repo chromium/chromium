@@ -86,7 +86,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
 
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->Swap(&result.settings());
-  return OneArgument(std::move(dict));
+  return OneArgument(base::Value::FromUniquePtrValue(std::move(dict)));
 }
 
 ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(

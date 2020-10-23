@@ -298,14 +298,16 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
   }
 #endif  // defined(OS_WIN)
 
-  return RespondNow(OneArgument(std::move(language_list_)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(language_list_))));
 }
 
 #if defined(OS_WIN)
 void LanguageSettingsPrivateGetLanguageListFunction::
     OnDictionariesInitialized() {
   UpdateSupportedPlatformDictionaries();
-  Respond(OneArgument(std::move(language_list_)));
+  Respond(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(language_list_))));
   // Matches the AddRef in Run().
   Release();
 }

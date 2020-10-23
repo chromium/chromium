@@ -285,7 +285,8 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   // chrome/renderer/resources/extensions/tab_capture_custom_bindings.js
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->MergeDictionary(params->options.ToValue().get());
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 ExtensionFunction::ResponseAction TabCaptureGetCapturedTabsFunction::Run() {
@@ -293,7 +294,8 @@ ExtensionFunction::ResponseAction TabCaptureGetCapturedTabsFunction::Run() {
   std::unique_ptr<base::ListValue> list(new base::ListValue());
   if (registry)
     registry->GetCapturedTabs(extension()->id(), list.get());
-  return RespondNow(OneArgument(std::move(list)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(list))));
 }
 
 ExtensionFunction::ResponseAction TabCaptureCaptureOffscreenTabFunction::Run() {

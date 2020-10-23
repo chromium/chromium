@@ -267,7 +267,8 @@ ExtensionFunction::ResponseAction WallpaperPrivateGetStringsFunction::Run() {
   dict->SetString("currentWallpaperLayout",
                   wallpaper_api_util::GetLayoutString(info.layout));
 
-  return RespondNow(OneArgument(std::move(dict)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
 ExtensionFunction::ResponseAction
@@ -288,7 +289,7 @@ void WallpaperPrivateGetSyncSettingFunction::CheckSyncServiceStatus() {
     // enabled by default so unless the user disables it explicitly it remains
     // enabled).
     dict->SetBoolean(kSyncThemes, true);
-    Respond(OneArgument(std::move(dict)));
+    Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
     return;
   }
 
@@ -298,7 +299,7 @@ void WallpaperPrivateGetSyncSettingFunction::CheckSyncServiceStatus() {
   if (!sync_service) {
     // Sync flag is disabled (perhaps prohibited by policy).
     dict->SetBoolean(kSyncThemes, false);
-    Respond(OneArgument(std::move(dict)));
+    Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
     return;
   }
 
@@ -310,14 +311,14 @@ void WallpaperPrivateGetSyncSettingFunction::CheckSyncServiceStatus() {
         profile->GetPrefs()->GetBoolean(
             chromeos::settings::prefs::kSyncOsWallpaper);
     dict->SetBoolean(kSyncThemes, os_wallpaper_sync_enabled);
-    Respond(OneArgument(std::move(dict)));
+    Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
     return;
   }
 
   if (!sync_service->CanSyncFeatureStart()) {
     // Sync-the-feature is disabled.
     dict->SetBoolean(kSyncThemes, false);
-    Respond(OneArgument(std::move(dict)));
+    Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
     return;
   }
 
@@ -327,7 +328,7 @@ void WallpaperPrivateGetSyncSettingFunction::CheckSyncServiceStatus() {
     dict->SetBoolean(kSyncThemes,
                      sync_service->GetUserSettings()->GetSelectedTypes().Has(
                          syncer::UserSelectableType::kThemes));
-    Respond(OneArgument(std::move(dict)));
+    Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
     return;
   }
 
@@ -671,7 +672,7 @@ void WallpaperPrivateGetOfflineWallpaperListFunction::
     OnOfflineWallpaperListReturned(const std::vector<std::string>& url_list) {
   auto results = std::make_unique<base::ListValue>();
   results->AppendStrings(url_list);
-  Respond(OneArgument(std::move(results)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(results))));
 }
 
 ExtensionFunction::ResponseAction

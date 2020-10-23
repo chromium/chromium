@@ -627,7 +627,7 @@ void FileManagerPrivateSearchDriveFunction::OnSearchDriveFs(
       true, !is_offline_,
       FileManagerPrivateSearchDriveMetadataFunction::SearchType::kText,
       operation_start_);
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 FileManagerPrivateSearchDriveMetadataFunction::
@@ -754,7 +754,8 @@ void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
   }
 
   UmaEmitSearchOutcome(true, !is_offline_, search_type_, operation_start_);
-  Respond(OneArgument(std::move(results_list)));
+  Respond(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(results_list))));
 }
 
 ExtensionFunction::ResponseAction

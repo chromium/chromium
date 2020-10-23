@@ -251,7 +251,8 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
               std::move(selected));
   result->Set(extension_browsing_data_api_constants::kDataRemovalPermittedKey,
               std::move(permitted));
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 void BrowsingDataSettingsFunction::SetDetails(

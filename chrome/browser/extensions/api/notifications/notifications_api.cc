@@ -683,7 +683,8 @@ NotificationsGetAllFunction::RunNotificationsApi() {
                    base::Value(true));
   }
 
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 NotificationsGetPermissionLevelFunction::

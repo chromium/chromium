@@ -131,7 +131,8 @@ ExtensionFunction::ResponseAction SignedInDevicesGetFunction::Run() {
     if (device.get()) {
       result->Append(device->ToValue());
     }
-    return RespondNow(OneArgument(std::move(result)));
+    return RespondNow(
+        OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
   }
 
   std::vector<std::unique_ptr<DeviceInfo>> devices =
@@ -142,7 +143,8 @@ ExtensionFunction::ResponseAction SignedInDevicesGetFunction::Run() {
   for (const std::unique_ptr<DeviceInfo>& device : devices)
     result->Append(device->ToValue());
 
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 }  // namespace extensions
