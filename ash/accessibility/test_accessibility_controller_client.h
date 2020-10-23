@@ -40,6 +40,7 @@ class TestAccessibilityControllerClient : public AccessibilityControllerClient {
   void RequestSelectToSpeakStateChange() override;
   void RequestAutoclickScrollableBoundsForPoint(
       gfx::Point& point_in_screen) override;
+  void MagnifierBoundsChanged(const gfx::Rect& bounds_in_screen) override;
   void OnSwitchAccessDisabled() override;
 
   int32_t GetPlayedEarconAndReset();

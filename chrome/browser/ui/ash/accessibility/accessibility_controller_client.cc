@@ -150,6 +150,12 @@ void AccessibilityControllerClient::RequestAutoclickScrollableBoundsForPoint(
       ->RequestAutoclickScrollableBoundsForPoint(point_in_screen);
 }
 
+void AccessibilityControllerClient::MagnifierBoundsChanged(
+    const gfx::Rect& bounds_in_screen) {
+  chromeos::AccessibilityManager::Get()->MagnifierBoundsChanged(
+      bounds_in_screen);
+}
+
 void AccessibilityControllerClient::OnSwitchAccessDisabled() {
   chromeos::AccessibilityManager::Get()->OnSwitchAccessDisabled();
 }

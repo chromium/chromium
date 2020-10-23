@@ -158,6 +158,10 @@ class AccessibilityManager
   // ancestor to the point in the screen, as given in screen coordinates.
   void RequestAutoclickScrollableBoundsForPoint(gfx::Point& point_in_screen);
 
+  // Dispatches magnifier bounds update to Magnifier (through Accessibility
+  // Common extension).
+  void MagnifierBoundsChanged(const gfx::Rect& bounds_in_screen);
+
   // Enables or disables the virtual keyboard.
   void EnableVirtualKeyboard(bool enabled);
   // Returns true if the virtual keyboard is enabled, otherwise false.

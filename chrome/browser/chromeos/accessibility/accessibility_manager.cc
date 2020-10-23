@@ -531,11 +531,11 @@ bool AccessibilityManager::PlayEarcon(int sound_key, PlaySoundOption option) {
 }
 
 void AccessibilityManager::OnTwoFingerTouchStart() {
-  if (!profile())
+  if (!profile_)
     return;
 
   extensions::EventRouter* event_router =
-      extensions::EventRouter::Get(profile());
+      extensions::EventRouter::Get(profile_);
 
   auto event_args = std::make_unique<base::ListValue>();
   auto event = std::make_unique<extensions::Event>(
@@ -546,11 +546,11 @@ void AccessibilityManager::OnTwoFingerTouchStart() {
 }
 
 void AccessibilityManager::OnTwoFingerTouchStop() {
-  if (!profile())
+  if (!profile_)
     return;
 
   extensions::EventRouter* event_router =
-      extensions::EventRouter::Get(profile());
+      extensions::EventRouter::Get(profile_);
 
   auto event_args = std::make_unique<base::ListValue>();
   auto event = std::make_unique<extensions::Event>(
@@ -599,7 +599,7 @@ void AccessibilityManager::HandleAccessibilityGesture(
     ax::mojom::Gesture gesture,
     gfx::PointF location) {
   extensions::EventRouter* event_router =
-      extensions::EventRouter::Get(profile());
+      extensions::EventRouter::Get(profile_);
 
   std::unique_ptr<base::ListValue> event_args =
       std::make_unique<base::ListValue>();
@@ -684,6 +684,35 @@ void AccessibilityManager::RequestAutoclickScrollableBoundsForPoint(
           extensions::api::accessibility_private::
               OnScrollableBoundsForPointRequested::kEventName,
           std::move(event_args));
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kAccessibilityCommonExtensionId, std::move(event));
+}
+
+void AccessibilityManager::MagnifierBoundsChanged(
+    const gfx::Rect& bounds_in_screen) {
+  if (!profile_)
+    return;
+
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+
+  auto magnifier_bounds =
+      std::make_unique<extensions::api::accessibility_private::ScreenRect>();
+  magnifier_bounds->left = bounds_in_screen.x();
+  magnifier_bounds->top = bounds_in_screen.y();
+  magnifier_bounds->width = bounds_in_screen.width();
+  magnifier_bounds->height = bounds_in_screen.height();
+
+  auto event_args =
+      extensions::api::accessibility_private::OnMagnifierBoundsChanged::Create(
+          *magnifier_bounds.get());
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_MAGNIFIER_BOUNDS_CHANGED,
+      extensions::api::accessibility_private::OnMagnifierBoundsChanged::
+          kEventName,
+      std::move(event_args));
+
   event_router->DispatchEventWithLazyListener(
       extension_misc::kAccessibilityCommonExtensionId, std::move(event));
 }

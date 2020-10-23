@@ -17,6 +17,7 @@ enum class Gesture;
 namespace gfx {
 class Point;
 class PointF;
+class Rect;
 }  // namespace gfx
 
 namespace ash {
@@ -81,6 +82,10 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   // bounds to the given point in screen coordinates.
   virtual void RequestAutoclickScrollableBoundsForPoint(
       gfx::Point& point_in_screen) = 0;
+
+  // Dispatches update to Accessibility Common extension when magnifier bounds
+  // have changed.
+  virtual void MagnifierBoundsChanged(const gfx::Rect& bounds_in_screen) = 0;
 
   // Called when Switch Access is fully disabled by the user accepting the
   // disable dialog. Switch Access must be left running when the pref changes

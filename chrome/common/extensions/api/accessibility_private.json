@@ -566,6 +566,19 @@
         "platforms": ["chromeos"]
       },
       {
+        "name": "onMagnifierBoundsChanged",
+        "type": "function",
+        "description": "Fired when Chrome OS magnifier bounds are updated.",
+        "parameters": [
+          {
+            "name": "magnifierBounds",
+            "$ref": "ScreenRect",
+            "description": "Updated bounds of magnifier viewport."
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
         "name": "onCustomSpokenFeedbackToggled",
         "type": "function",
         "description": "Fired when a custom spoken feedback on the active window gets enabled or disabled. Called from ARC++ accessibility.",

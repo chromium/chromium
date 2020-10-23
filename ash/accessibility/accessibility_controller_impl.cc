@@ -1526,6 +1526,12 @@ void AccessibilityControllerImpl::RequestAutoclickScrollableBoundsForPoint(
     client_->RequestAutoclickScrollableBoundsForPoint(point_in_screen);
 }
 
+void AccessibilityControllerImpl::MagnifierBoundsChanged(
+    const gfx::Rect& bounds_in_screen) {
+  if (client_)
+    client_->MagnifierBoundsChanged(bounds_in_screen);
+}
+
 void AccessibilityControllerImpl::UpdateAutoclickMenuBoundsIfNeeded() {
   Shell::Get()->autoclick_controller()->UpdateAutoclickMenuBoundsIfNeeded();
 }

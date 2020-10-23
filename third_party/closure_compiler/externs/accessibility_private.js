@@ -274,7 +274,7 @@ chrome.accessibilityPrivate.forwardKeyEventsToSwitchAccess = function(shouldForw
 chrome.accessibilityPrivate.updateSwitchAccessBubble = function(bubble, show, anchor, actions) {};
 
 /**
- * Enable point scanning in Switch Access.
+ * Enables or disables point scanning in Switch Access.
  * @param {boolean} enabled True for start point scanning, false for end point
  *     scanning.
  */
@@ -416,6 +416,12 @@ chrome.accessibilityPrivate.onAnnounceForAccessibility;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onScrollableBoundsForPointRequested;
+
+/**
+ * Fired when Chrome OS magnifier bounds are updated.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onMagnifierBoundsChanged;
 
 /**
  * Fired when a custom spoken feedback on the active window gets enabled or
