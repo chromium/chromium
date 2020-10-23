@@ -12,15 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <!-- TODO (crbug.com/1034733) Fix that this button is being 
-    partially covered by the iamgeview -->
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/close_button"
-            style="@style/ToolbarButton"
-            android:src="@drawable/btn_close"
-            android:contentDescription="@string/close"
-            app:tint="@color/default_icon_color_tint_list" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -98,6 +89,13 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/close_button"
+            style="@style/ToolbarButton"
+            android:src="@drawable/btn_close"
+            android:contentDescription="@string/close"
+            app:tint="@color/default_icon_color_tint_list" />
 
     </RelativeLayout>
 
