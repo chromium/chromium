@@ -41,7 +41,7 @@
 namespace blink {
 
 // Recommended maximum size for both explicit and implicit grids. Note that this
-// actually allows a [-9999,9999] range. The limit is low on purpouse because
+// actually allows a [-999,999] range. The limit is low on purpouse because
 // higher values easly trigger OOM situations. That will definitely improve once
 // we switch from a vector of vectors based grid representation to a more
 // efficient one memory-wise.
