@@ -53,6 +53,7 @@ WEBVIEW_SPECIFIC = BuildFileMatchRegex(
     r'lib/.*/libwebviewchromium\.so',
     r'lib/.*/libchromium_android_linker\.so',
     r'assets/webview_licenses.notice',
+    r'res/.*/accent_font.xml',
     r'res/.*/icon_webview(.webp)?',
     r'META-INF/.*',
      # Monochrome doesn't have any res directories
@@ -65,8 +66,7 @@ WEBVIEW_SPECIFIC = BuildFileMatchRegex(
 CHROME_CHANGES = BuildFileMatchRegex(
     r'AndroidManifest\.xml',
     r'resources\.arsc',
-    r'classes\.dex',
-    r'classes2\.dex',
+    r'classes\d?\.dex',
     r'res/.*\.xml', # Resource id isn't same
     r'assets/unwind_cfi_32', # Generated from apk's shared library
      # All pak files except chrome_100_percent.pak are different
@@ -120,7 +120,7 @@ CHROME_CHANGES = BuildFileMatchRegex(
 WEBVIEW_CHANGES = BuildFileMatchRegex(
     r'AndroidManifest\.xml',
     r'resources\.arsc',
-    r'classes\.dex',
+    r'classes\d?\.dex',
     r'res/.*\.xml', # Resource id isn't same
     r'assets/.*\.pak') # All pak files are not same as Monochrome
 
