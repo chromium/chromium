@@ -1,14 +1,12 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Sends notifications after automatic imports (WIP).
+"""Sends notifications after automatic imports from web-platform-tests (WPT).
 
 Automatically file bugs for new failures caused by WPT imports for opted-in
 directories.
 
 Design doc: https://docs.google.com/document/d/1W3V81l94slAC_rPcTKWXgv3YxRxtlSIAxi3yj6NsbBw/edit?usp=sharing
-
-During the implementation phase, we do not open bugs but log everything instead.
 """
 
 from collections import defaultdict
@@ -216,12 +214,20 @@ class ImportNotifier(object):
             for failure in failures:
                 failure_list += str(failure) + '\n'
 
-            epilogue = '\nThis import contains upstream changes from {} to {}:\n'.format(
+            expectations_statement = (
+                '\nExpectations or baseline files [0] have been automatically '
+                'added for the failing results to keep the bots green. Please '
+                'investigate the new failures and triage as appropriate.\n')
+
+            range_statement = '\nThis import contains upstream changes from {} to {}:\n'.format(
                 wpt_revision_start, wpt_revision_end)
             commit_list = self.format_commit_list(imported_commits,
                                                   full_directory)
 
-            description = prologue + failure_list + epilogue + commit_list
+            links_list = '\n[0]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md\n'
+
+            description = (prologue + failure_list + expectations_statement +
+                           range_statement + commit_list + links_list)
 
             bug = MonorailIssue.new_chromium_issue(summary,
                                                    description,
