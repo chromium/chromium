@@ -11,7 +11,6 @@
 #include "base/test/scoped_path_override.h"
 #include "chrome/credential_provider/extension/user_device_context.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
-#include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
@@ -21,7 +20,19 @@ namespace credential_provider {
 
 namespace testing {
 
-class GcpUserPoliciesBaseTest : public GlsRunnerTestBase {};
+class GcpUserPoliciesBaseTest : public GlsRunnerTestBase {
+ protected:
+  void SetUp() override;
+};
+
+void GcpUserPoliciesBaseTest::SetUp() {
+  GlsRunnerTestBase::SetUp();
+
+  FakesForTesting fakes;
+  fakes.fake_win_http_url_fetcher_creator =
+      fake_http_url_fetcher_factory()->GetCreatorCallback();
+  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
+}
 
 TEST_F(GcpUserPoliciesBaseTest, NonExistentUser) {
   ASSERT_TRUE(FAILED(UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(
@@ -83,6 +94,14 @@ void GcpUserPoliciesFetchAndReadTest::SetUp() {
                 kDefaultUsername, L"password", L"Full Name", L"comment",
                 base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com", &sid));
   sid_ = OLE2W(sid);
+
+  // Remove the mdm_url value which exists by default as it's added in
+  // InitializeRegistryOverrideForTesting and set to an empty value disabling
+  // MDM enrollment.
+  base::win::RegKey key;
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_LOCAL_MACHINE, kGcpRootKeyName, KEY_WRITE));
+  EXPECT_EQ(ERROR_SUCCESS, key.DeleteValue(kRegMdmUrl));
 }
 
 void GcpUserPoliciesFetchAndReadTest::SetRegistryValues(bool dm_enrollment,

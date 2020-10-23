@@ -5,12 +5,13 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_DEVICE_POLICIES_MANAGER_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_DEVICE_POLICIES_MANAGER_H_
 
+#include "base/component_export.h"
 #include "chrome/credential_provider/gaiacp/device_policies.h"
 
 namespace credential_provider {
 
 // Manager used to fetch user policies from GCPW backends.
-class DevicePoliciesManager {
+class COMPONENT_EXPORT(GCPW_POLICIES) DevicePoliciesManager {
  public:
   // Get the user policies manager instance.
   static DevicePoliciesManager* Get();

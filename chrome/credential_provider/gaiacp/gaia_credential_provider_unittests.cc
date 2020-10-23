@@ -837,7 +837,20 @@ INSTANTIATE_TEST_SUITE_P(
 //           cloud polcies.
 class GcpGaiaCredentialBaseMultiUserCloudPolicyTest
     : public GcpCredentialProviderTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ protected:
+  void SetUp() override;
+};
+
+void GcpGaiaCredentialBaseMultiUserCloudPolicyTest::SetUp() {
+  GcpCredentialProviderTest::SetUp();
+
+  FakesForTesting fakes;
+  fakes.fake_win_http_url_fetcher_creator =
+      fake_http_url_fetcher_factory()->GetCreatorCallback();
+  fakes.os_user_manager_for_testing = fake_os_user_manager();
+  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
+}
 
 TEST_P(GcpGaiaCredentialBaseMultiUserCloudPolicyTest, CanCreateNewUsers) {
   USES_CONVERSION;

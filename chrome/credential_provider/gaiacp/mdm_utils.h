@@ -15,66 +15,8 @@
 
 namespace credential_provider {
 
-// Mdm registry value key name.
-
-// Enables verbose logging in GCPW.
-extern const wchar_t kRegEnableVerboseLogging[];
-
-// Determines if crash reporting is initialized for credential provider DLL.
-extern const wchar_t kRegInitializeCrashReporting[];
-
-// The url used to register the machine to MDM. If specified and non-empty
-// additional user access restrictions will be applied to users associated
-// to GCPW that have invalid token handles.
-extern const wchar_t kRegMdmUrl[];
-
-// The registry entry is used to control whether to enable enrollment
-// Google device management solution.
-extern const wchar_t kRegEnableDmEnrollment[];
-
-// Disables password escrowing feature in GCPW.
-extern const wchar_t kRegDisablePasswordSync[];
-
-// Determines if multiple users can be added to a system managed by MDM.
-extern const wchar_t kRegMdmSupportsMultiUser[];
-
-// Allow sign in using normal consumer accounts.
-extern const wchar_t kRegMdmAllowConsumerAccounts[];
-
-// Enables force password reset option in forgot password flow.
-extern const wchar_t kRegMdmEnableForcePasswordReset[];
-
 // Password lsa store key prefix.
 extern const wchar_t kUserPasswordLsaStoreKeyPrefix[];
-
-// Error key name that is likely to be present in HTTP responses.
-extern const char kErrorKeyInRequestResult[];
-
-// Upload status for device details.
-extern const wchar_t kRegDeviceDetailsUploadStatus[];
-
-// Number of consecutive failures encountered when uploading device details.
-extern const wchar_t kRegDeviceDetailsUploadFailures[];
-
-// Maximum number of consecutive Upload device details failures for which we do
-// enforce auth.
-extern const int kMaxNumConsecutiveUploadDeviceFailures;
-
-// The URL part that is used when constructing the developer complete URL. When
-// it is empty, developer mode isn't enabled.
-extern const wchar_t kRegDeveloperMode[];
-
-// Enables updating credentials on login UI when the enforcement of any GCPW
-// associated account changes.
-extern const wchar_t kRegUpdateCredentialsOnChange[];
-
-// Maximum allowed time delta after which user policies should be refreshed
-// again.
-extern const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh;
-
-// Registry key that indicates account name for an unassociated Windows account
-// should be in shorter form.
-extern const wchar_t kRegUseShorterAccountName[];
 
 // Class used in tests to force either a successful on unsuccessful enrollment
 // to google MDM.
@@ -129,21 +71,11 @@ bool IsOnlineLoginEnforced(const base::string16& sid);
 // empty url is returned.
 GURL EscrowServiceUrl();
 
-// Gets the gcpw service URL.
-GURL GetGcpwServiceUrl();
-
 // Enrolls the machine to with the Google MDM server if not already.
 HRESULT EnrollToGoogleMdmIfNeeded(const base::Value& properties);
 
 // Constructs the password lsa store key for the given |sid|.
 base::string16 GetUserPasswordLsaStoreKey(const base::string16& sid);
-
-// Converts the |url| in the form of http://xxxxx.googleapis.com/...
-// to a form that points to a development URL as specified with |dev|
-// environment. Final url will be in the form
-// https://{dev}-xxxxx.sandbox.googleapis.com/...
-base::string16 GetDevelopmentUrl(const base::string16& url,
-                                 const base::string16& dev);
 
 }  // namespace credential_provider
 

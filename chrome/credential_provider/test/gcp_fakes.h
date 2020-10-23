@@ -313,6 +313,12 @@ class FakeWinHttpUrlFetcherFactory {
   FakeWinHttpUrlFetcherFactory();
   ~FakeWinHttpUrlFetcherFactory();
 
+  // Returns the fetcher callback function being used. This can be used to
+  // install the same fake explicitly in all the components being used. Those
+  // components would otherwise have different fakes created automatically when
+  // they get initialized.
+  WinHttpUrlFetcher::CreatorCallback GetCreatorCallback();
+
   // Sets the given |response| for any number of HTTP requests made for |url|.
   void SetFakeResponse(
       const GURL& url,
@@ -358,6 +364,7 @@ class FakeWinHttpUrlFetcherFactory {
   std::unique_ptr<WinHttpUrlFetcher> Create(const GURL& url);
 
   WinHttpUrlFetcher::CreatorCallback original_creator_;
+  WinHttpUrlFetcher::CreatorCallback fake_creator_;
 
   struct Response {
     Response();

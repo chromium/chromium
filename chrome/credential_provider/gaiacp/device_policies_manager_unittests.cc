@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/credential_provider/gaiacp/device_policies_manager.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
-#include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +31,12 @@ void GcpDevicePoliciesBaseTest::SetUp() {
   EXPECT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_LOCAL_MACHINE, kGcpRootKeyName, KEY_WRITE));
   EXPECT_EQ(ERROR_SUCCESS, key.DeleteValue(kRegMdmUrl));
+
+  FakesForTesting fakes;
+  fakes.fake_win_http_url_fetcher_creator =
+      fake_http_url_fetcher_factory()->GetCreatorCallback();
+  fakes.os_user_manager_for_testing = fake_os_user_manager();
+  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
 }
 
 TEST_F(GcpDevicePoliciesBaseTest, NewUserAssociationWithNoUserPoliciesPresent) {
@@ -109,8 +114,6 @@ TEST_P(GcpDevicePoliciesRegistryTest, DefaultValues) {
   int dm_enrollment_flag = std::get<0>(GetParam());
   int mdm_url_flag = std::get<1>(GetParam());
   int multi_user_login_flag = std::get<2>(GetParam());
-
-  FakeDevicePoliciesManager fake_device_policies_manager(true);
 
   if (dm_enrollment_flag < 2) {
     ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegEnableDmEnrollment,

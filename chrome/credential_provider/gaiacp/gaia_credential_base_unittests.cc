@@ -3532,7 +3532,19 @@ INSTANTIATE_TEST_SUITE_P(All,
 // 3. bool :       Whether cloud policies feature is enabled.
 class GcpGaiaCredentialBaseFetchCloudPoliciesTest
     : public GcpGaiaCredentialBaseTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ protected:
+  void SetUp() override;
+};
+
+void GcpGaiaCredentialBaseFetchCloudPoliciesTest::SetUp() {
+  GcpGaiaCredentialBaseTest::SetUp();
+
+  FakesForTesting fakes;
+  fakes.fake_win_http_url_fetcher_creator =
+      fake_http_url_fetcher_factory()->GetCreatorCallback();
+  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
+}
 
 TEST_P(GcpGaiaCredentialBaseFetchCloudPoliciesTest, FetchAndStore) {
   bool fail_fetch_policies = std::get<0>(GetParam());

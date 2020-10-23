@@ -7,13 +7,14 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/strings/string16.h"
 #include "chrome/credential_provider/gaiacp/user_policies.h"
 
 namespace credential_provider {
 
 // Structure to hold the policies for the device.
-struct DevicePolicies {
+struct COMPONENT_EXPORT(GCPW_POLICIES) DevicePolicies {
   // Controls whether MDM enrollment is enabled/disabled.
   bool enable_dm_enrollment;
 

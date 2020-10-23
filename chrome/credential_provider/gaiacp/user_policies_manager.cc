@@ -23,7 +23,7 @@
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
-#include "chrome/credential_provider/gaiacp/mdm_utils.h"
+#include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 
@@ -386,6 +386,16 @@ void UserPoliciesManager::SetCloudPoliciesEnabledForTesting(bool value) {
 
 HRESULT UserPoliciesManager::GetLastFetchStatusForTesting() const {
   return fetch_status_;
+}
+
+void UserPoliciesManager::SetFakesForTesting(FakesForTesting* fakes) {
+  DCHECK(fakes);
+
+  WinHttpUrlFetcher::SetCreatorForTesting(
+      fakes->fake_win_http_url_fetcher_creator);
+  if (fakes->os_user_manager_for_testing) {
+    OSUserManager::SetInstanceForTesting(fakes->os_user_manager_for_testing);
+  }
 }
 
 }  // namespace credential_provider

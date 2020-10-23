@@ -32,6 +32,53 @@ extern const wchar_t kRegUserDeviceResourceId[];
 // Specifies custom Chrome path to use for GLS.
 extern const wchar_t kRegGlsPath[];
 
+// Mdm registry value key name.
+
+// Enables verbose logging in GCPW.
+extern const wchar_t kRegEnableVerboseLogging[];
+
+// Determines if crash reporting is initialized for credential provider DLL.
+extern const wchar_t kRegInitializeCrashReporting[];
+
+// The url used to register the machine to MDM. If specified and non-empty
+// additional user access restrictions will be applied to users associated
+// to GCPW that have invalid token handles.
+extern const wchar_t kRegMdmUrl[];
+
+// The registry entry is used to control whether to enable enrollment
+// Google device management solution.
+extern const wchar_t kRegEnableDmEnrollment[];
+
+// Disables password escrowing feature in GCPW.
+extern const wchar_t kRegDisablePasswordSync[];
+
+// Determines if multiple users can be added to a system managed by MDM.
+extern const wchar_t kRegMdmSupportsMultiUser[];
+
+// Allow sign in using normal consumer accounts.
+extern const wchar_t kRegMdmAllowConsumerAccounts[];
+
+// Enables force password reset option in forgot password flow.
+extern const wchar_t kRegMdmEnableForcePasswordReset[];
+
+// Upload status for device details.
+extern const wchar_t kRegDeviceDetailsUploadStatus[];
+
+// Number of consecutive failures encountered when uploading device details.
+extern const wchar_t kRegDeviceDetailsUploadFailures[];
+
+// The URL part that is used when constructing the developer complete URL. When
+// it is empty, developer mode isn't enabled.
+extern const wchar_t kRegDeveloperMode[];
+
+// Enables updating credentials on login UI when the enforcement of any GCPW
+// associated account changes.
+extern const wchar_t kRegUpdateCredentialsOnChange[];
+
+// Registry key that indicates account name for an unassociated Windows account
+// should be in shorter form.
+extern const wchar_t kRegUseShorterAccountName[];
+
 // Gets any HKLM registry key on the system.
 HRESULT GetMachineRegDWORD(const base::string16& key_name,
                            const base::string16& name,
