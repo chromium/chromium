@@ -253,7 +253,7 @@ void ArcIntentPickerAppFetcher::OnAppCandidatesReceivedForNavigation(
       case apps::PreferredPlatform::ARC:
         std::move(callback).Run(apps::AppsNavigationAction::CANCEL, {});
         return;
-      case apps::PreferredPlatform::NATIVE_CHROME:
+      case apps::PreferredPlatform::CHROME_BROWSER:
         std::move(callback).Run(apps::AppsNavigationAction::RESUME, {});
         return;
       case apps::PreferredPlatform::PWA:
@@ -315,7 +315,7 @@ apps::PreferredPlatform ArcIntentPickerAppFetcher::DidLaunchPreferredArcApp(
       close_reason = apps::IntentPickerCloseReason::ERROR_BEFORE_PICKER;
     } else if (ArcIntentHelperBridge::IsIntentHelperPackage(package_name)) {
       IntentPickerTabHelper::SetShouldShowIcon(web_contents(), true);
-      preferred_platform = apps::PreferredPlatform::NATIVE_CHROME;
+      preferred_platform = apps::PreferredPlatform::CHROME_BROWSER;
     } else {
       instance->HandleUrl(url.spec(), package_name);
       preferred_platform = apps::PreferredPlatform::ARC;

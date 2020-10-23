@@ -41,8 +41,8 @@ enum class PreferredPlatform {
   // Either there was an error or there is no preferred app at all.
   NONE,
 
-  // The preferred app is Chrome.
-  NATIVE_CHROME,
+  // The preferred app is Chrome browser.
+  CHROME_BROWSER,
 
   // The preferred app is an ARC app.
   ARC,
