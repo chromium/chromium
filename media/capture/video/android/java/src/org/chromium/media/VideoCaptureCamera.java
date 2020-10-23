@@ -190,21 +190,10 @@ public class VideoCaptureCamera
     }
 
     static boolean isZoomSupported(int id) {
-        android.hardware.Camera camera;
-        try {
-            camera = android.hardware.Camera.open(id);
-        } catch (RuntimeException ex) {
-            Log.e(TAG, "Camera.open: ", ex);
-            return false;
-        }
-        android.hardware.Camera.Parameters parameters = getCameraParameters(camera);
-        if (parameters == null) {
-            return false;
-        }
-
-        final boolean isZoomSupported = parameters.isZoomSupported();
-        camera.release();
-        return isZoomSupported;
+        // Workaround for https://crbug.com/1138608: Detecting zoom support requires opening the
+        // camera which can conflict with calls to allocate() and cause the "real" camera open to
+        // fail.
+        return false;
     }
 
     static int getFacingMode(int id) {
