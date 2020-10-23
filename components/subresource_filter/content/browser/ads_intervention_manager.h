@@ -17,6 +17,23 @@ namespace base {
 class Clock;
 }
 
+namespace content {
+class NavigationHandle;
+}
+
+// The subresource filter activation status associated with an ads
+// intervention during page load.
+enum class AdsInterventionStatus {
+  // The ads intervention occurred longer than
+  // subresource_filter::kAdsInterventionDuration ago.
+  kExpired,
+  // Ads interventions are in dry run mode and the subresource filter would
+  // have activated due to an active intervention.
+  kWouldBlock,
+  // Ads interventions are activate and there is an active intervention.
+  kBlocking,
+};
+
 namespace subresource_filter {
 
 // This class tracks ads interventions that have occurred on origins and is
@@ -68,6 +85,12 @@ class AdsInterventionManager {
   // otherwise base::nullopt is returned.
   base::Optional<LastAdsIntervention> GetLastAdsIntervention(
       const GURL& url) const;
+
+  // Returns whether the subresource filter should activate for
+  // |navigation_handle| based on feature status and current active
+  // intervention. This should only be called once per page to calculate
+  // activation as it records per page intervention information.
+  bool ShouldActivate(content::NavigationHandle* navigation_handle) const;
 
   void set_clock_for_testing(base::Clock* clock) { clock_ = clock; }
 

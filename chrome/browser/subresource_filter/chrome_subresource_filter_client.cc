@@ -125,26 +125,14 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
     *decision = subresource_filter::ActivationDecision::FORCED_ACTIVATION;
   }
 
-  const GURL& url(navigation_handle->GetURL());
-
-  base::Optional<
-      subresource_filter::AdsInterventionManager::LastAdsIntervention>
-      last_intervention =
-          profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
-              url);
-
-  // Only activate the subresource filter if we are intervening on
-  // ads
-  if (profile_context_->settings_manager()->GetSiteActivationFromMetadata(
-          url) &&
-      last_intervention &&
-      last_intervention->duration_since <
-          subresource_filter::kAdsInterventionDuration.Get()) {
+  if (profile_context_->ads_intervention_manager()->ShouldActivate(
+          navigation_handle)) {
     effective_activation_level =
         subresource_filter::mojom::ActivationLevel::kEnabled;
     *decision = subresource_filter::ActivationDecision::ACTIVATED;
   }
 
+  const GURL& url(navigation_handle->GetURL());
   if (url.SchemeIsHTTPOrHTTPS()) {
     profile_context_->settings_manager()->SetSiteMetadataBasedOnActivation(
         url,
@@ -172,6 +160,7 @@ void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
   // If the feature is disabled, simulate ads interventions as if we were
   // enforcing on ads: do not record new interventions if we would be enforcing
   // an intervention on ads already.
+  //
   // TODO(https://crbug/1107998): Verify this behavior when violation signals
   // and histograms are added.
   const GURL& url = rfh->GetLastCommittedURL();

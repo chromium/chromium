@@ -1269,6 +1269,16 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Insecure non-ad request"/>
 </enum>
 
+<enum name="AdsInterventionStatus">
+  <int value="0" label="Expired"/>
+  <int value="1" label="Would Block"/>
+  <int value="2" label="Blocking"/>
+</enum>
+
+<enum name="AdsViolations">
+  <int value="0" label="kMobileAdDensityByHeightAbove30"/>
+</enum>
+
 <enum name="AdUserActivationStatus">
   <int value="0" label="No activation"/>
   <int value="1" label="Received activation"/>

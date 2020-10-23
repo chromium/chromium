@@ -9,6 +9,9 @@
 #include "base/values.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "content/public/browser/navigation_handle.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 namespace subresource_filter {
@@ -18,6 +21,15 @@ namespace {
 // Key into the website settings dict for last active ads violation.
 const char kLastAdsViolationTimeKey[] = "LastAdsViolationTime";
 const char kLastAdsViolationKey[] = "LastAdsViolation";
+
+AdsInterventionStatus GetAdsInterventionStatus(bool activation_status,
+                                               bool intervention_active) {
+  if (!intervention_active)
+    return AdsInterventionStatus::kExpired;
+
+  return activation_status ? AdsInterventionStatus::kBlocking
+                           : AdsInterventionStatus::kWouldBlock;
+}
 
 }  // namespace
 
@@ -67,6 +79,38 @@ AdsInterventionManager::GetLastAdsIntervention(const GURL& url) const {
   }
 
   return base::nullopt;
+}
+
+bool AdsInterventionManager::ShouldActivate(
+    content::NavigationHandle* navigation_handle) const {
+  const GURL& url(navigation_handle->GetURL());
+  // TODO(https://crbug.com/1136987): Add new ads intervention
+  // manager function to return struct with all ads intervention
+  // metadata to reduce metadata accesses.
+  base::Optional<AdsInterventionManager::LastAdsIntervention>
+      last_intervention = GetLastAdsIntervention(url);
+
+  // Only activate the subresource filter if we are intervening on
+  // ads.
+  bool current_activation_status =
+      settings_manager_->GetSiteActivationFromMetadata(url);
+  bool has_active_ads_intervention =
+      last_intervention &&
+      last_intervention->duration_since <
+          subresource_filter::kAdsInterventionDuration.Get();
+  if (last_intervention) {
+    auto* ukm_recorder = ukm::UkmRecorder::Get();
+    ukm::builders::AdsIntervention_LastIntervention builder(
+        ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                               ukm::SourceIdType::NAVIGATION_ID));
+    builder
+        .SetInterventionType(static_cast<int>(last_intervention->ads_violation))
+        .SetInterventionStatus(static_cast<int>(GetAdsInterventionStatus(
+            current_activation_status, has_active_ads_intervention)));
+    builder.Record(ukm_recorder->Get());
+  }
+
+  return current_activation_status && has_active_ads_intervention;
 }
 
 }  // namespace subresource_filter
