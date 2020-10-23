@@ -153,6 +153,27 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
     base::ScopedFD ready_fence;
   };
 
+  using TransactionId = uint64_t;
+  class TransactionAckTimeoutManager {
+   public:
+    TransactionAckTimeoutManager(
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+    ~TransactionAckTimeoutManager();
+
+    void ScheduleHangDetection();
+    void OnTransactionAck();
+
+   private:
+    void OnTransactionTimeout(TransactionId transaction_id);
+
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+    TransactionId current_transaction_id_ = 0;
+    TransactionId last_acked_transaction_id_ = 0;
+    base::CancelableOnceClosure hang_detection_cb_;
+
+    DISALLOW_COPY_AND_ASSIGN(TransactionAckTimeoutManager);
+  };
+
   void CommitPendingTransaction(const gfx::Rect& damage_rect,
                                 SwapCompletionCallback completion_callback,
                                 PresentationCallback callback);
@@ -227,6 +248,8 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
 
   // Set if a swap failed and the surface is no longer usable.
   bool surface_lost_ = false;
+
+  TransactionAckTimeoutManager transaction_ack_timeout_manager_;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   base::WeakPtrFactory<GLSurfaceEGLSurfaceControl> weak_factory_{this};

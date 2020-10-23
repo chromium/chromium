@@ -10,6 +10,7 @@
 #include "base/android/build_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/bind.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -65,6 +66,7 @@ GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
                    ANativeWindow_getHeight(window)),
       root_surface_(
           new gfx::SurfaceControl::Surface(window, root_surface_name_.c_str())),
+      transaction_ack_timeout_manager_(task_runner),
       gpu_task_runner_(std::move(task_runner)) {}
 
 GLSurfaceEGLSurfaceControl::~GLSurfaceEGLSurfaceControl() {
@@ -259,6 +261,7 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   } else {
     transaction_ack_pending_ = true;
     pending_transaction_->Apply();
+    transaction_ack_timeout_manager_.ScheduleHangDetection();
   }
 
   pending_transaction_.reset();
@@ -435,6 +438,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   DCHECK(transaction_ack_pending_);
 
+  transaction_ack_timeout_manager_.OnTransactionAck();
   transaction_ack_pending_ = false;
 
   const bool has_context = context_->MakeCurrent(this);
@@ -485,6 +489,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
     transaction_ack_pending_ = true;
     pending_transaction_queue_.front().Apply();
     pending_transaction_queue_.pop();
+    transaction_ack_timeout_manager_.ScheduleHangDetection();
   }
 }
 
@@ -624,5 +629,62 @@ GLSurfaceEGLSurfaceControl::PrimaryPlaneFences::PrimaryPlaneFences(
 GLSurfaceEGLSurfaceControl::PrimaryPlaneFences&
 GLSurfaceEGLSurfaceControl::PrimaryPlaneFences::operator=(
     PrimaryPlaneFences&& other) = default;
+
+GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
+    TransactionAckTimeoutManager(
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : gpu_task_runner_(std::move(task_runner)) {}
+GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
+    ~TransactionAckTimeoutManager() = default;
+
+void GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
+    ScheduleHangDetection() {
+  DCHECK(gpu_task_runner_->BelongsToCurrentThread());
+
+  ++current_transaction_id_;
+  if (!hang_detection_cb_.IsCancelled())
+    return;
+
+  constexpr int kIdleDelaySeconds = 1;
+  hang_detection_cb_.Reset(
+      base::BindOnce(&GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
+                         OnTransactionTimeout,
+                     base::Unretained(this), current_transaction_id_));
+  gpu_task_runner_->PostDelayedTask(
+      FROM_HERE, hang_detection_cb_.callback(),
+      base::TimeDelta::FromSeconds(kIdleDelaySeconds));
+}
+
+void GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
+    OnTransactionAck() {
+  // Since only one transaction is in flight at a time, an ack is for the latest
+  // transaction.
+  last_acked_transaction_id_ = current_transaction_id_;
+}
+
+void GLSurfaceEGLSurfaceControl::TransactionAckTimeoutManager::
+    OnTransactionTimeout(TransactionId transaction_id) {
+  hang_detection_cb_.Cancel();
+
+  // If the last transaction was already acked, we do not need to schedule
+  // any checks until a new transaction comes.
+  if (current_transaction_id_ == last_acked_transaction_id_)
+    return;
+
+  // If more transactions have happened since the last task, schedule another
+  // hang detection check.
+  if (transaction_id < current_transaction_id_) {
+    // Decrement the |current_transaction_id_| since ScheduleHangDetection()
+    // will increment it again.
+    --current_transaction_id_;
+    ScheduleHangDetection();
+    return;
+  }
+  // Hang detection logic here.
+  LOG(ERROR) << "Transaction id " << transaction_id
+             << " haven't received any ack from past 1 second which indicates "
+                "it hanged";
+  base::debug::DumpWithoutCrashing();
+}
 
 }  // namespace gl
