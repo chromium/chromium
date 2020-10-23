@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/android/journey_logger_android.h"
+#include "components/payments/content/android/journey_logger_android.h"
 
 #include "base/android/jni_string.h"
 #include "components/payments/content/android/jni_headers/JourneyLogger_jni.h"
@@ -12,8 +12,8 @@
 namespace payments {
 namespace {
 
-using ::base::android::JavaParamRef;
 using ::base::android::ConvertJavaStringToUTF8;
+using ::base::android::JavaParamRef;
 
 }  // namespace
 
