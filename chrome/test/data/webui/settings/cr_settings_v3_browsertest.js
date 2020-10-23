@@ -502,8 +502,7 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['SecurityKeysSubpage', 'security_keys_subpage_test.js'],
  ['SecurityPage', 'security_page_test.js'],
  ['SecureDns', 'secure_dns_test.js'],
- // Copied from P2 test: Disabled for flakiness, see https://crbug.com/1061249
- ['SiteData', 'site_data_test.js', 'DISABLED_All'],
+ ['SiteData', 'site_data_test.js'],
  ['SiteDataDetails', 'site_data_details_subpage_tests.js'],
  ['SiteDetailsPermission', 'site_details_permission_tests.js'],
  ['SiteEntry', 'site_entry_tests.js'],
