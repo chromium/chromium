@@ -13,6 +13,7 @@ mojom("mojom") {
     "color_space.mojom",
     "display_color_spaces.mojom",
     "font_render_params.mojom",
+    "gpu_extra_info.mojom",
     "gpu_fence_handle.mojom",
     "mask_filter_info.mojom",
     "overlay_transform.mojom",
@@ -29,6 +30,11 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
   ]
+
+  enabled_features = []
+  if (use_x11 || use_ozone) {
+    enabled_features += [ "enable_x11_params" ]
+  }
 
   shared_cpp_typemaps = [
     {
@@ -74,6 +80,20 @@ mojom("mojom") {
       ]
       traits_headers = [ "color_space_mojom_traits.h" ]
       traits_public_deps = [ ":color_space_mojom_support" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.GpuExtraInfo"
+          cpp = "::gfx::GpuExtraInfo"
+        },
+        {
+          mojom = "gfx.mojom.ANGLEFeature"
+          cpp = "::gfx::ANGLEFeature"
+        },
+      ]
+      traits_headers = [ "gpu_extra_info_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
     },
     {
       types = [
@@ -292,6 +312,8 @@ component("shared_mojom_traits") {
   sources = [
     "buffer_types_mojom_traits.cc",
     "buffer_types_mojom_traits.h",
+    "gpu_extra_info_mojom_traits.cc",
+    "gpu_extra_info_mojom_traits.h",
     "gpu_fence_handle_mojom_traits.cc",
     "gpu_fence_handle_mojom_traits.h",
   ]

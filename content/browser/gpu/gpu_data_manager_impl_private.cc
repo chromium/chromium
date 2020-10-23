@@ -1068,7 +1068,7 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
 }
 
 void GpuDataManagerImplPrivate::UpdateGpuExtraInfo(
-    const gpu::GpuExtraInfo& gpu_extra_info) {
+    const gfx::GpuExtraInfo& gpu_extra_info) {
   gpu_extra_info_ = gpu_extra_info;
   observer_list_->Notify(FROM_HERE,
                          &GpuDataManagerObserver::OnGpuExtraInfoUpdate);
@@ -1083,7 +1083,7 @@ gpu::GpuFeatureInfo GpuDataManagerImplPrivate::GetGpuFeatureInfoForHardwareGpu()
   return gpu_feature_info_for_hardware_gpu_;
 }
 
-gpu::GpuExtraInfo GpuDataManagerImplPrivate::GetGpuExtraInfo() const {
+gfx::GpuExtraInfo GpuDataManagerImplPrivate::GetGpuExtraInfo() const {
   return gpu_extra_info_;
 }
 

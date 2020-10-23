@@ -24,6 +24,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "ui/base/x/x11_cursor.h"
 #include "ui/events/event_constants.h"
@@ -516,6 +517,12 @@ COMPONENT_EXPORT(UI_BASE_X) bool IsX11WindowFullScreen(x11::Window window);
 
 // Suspends or resumes the X screen saver.  Must be called on the UI thread.
 COMPONENT_EXPORT(UI_BASE_X) void SuspendX11ScreenSaver(bool suspend);
+
+// Returns human readable description of the window manager, desktop, and
+// other system properties related to the compositing.
+COMPONENT_EXPORT(UI_BASE_X)
+base::Value GpuExtraInfoAsListValue(unsigned long system_visual,
+                                    unsigned long rgba_visual);
 
 // Returns true if the window manager supports the given hint.
 COMPONENT_EXPORT(UI_BASE_X) bool WmSupportsHint(x11::Atom atom);

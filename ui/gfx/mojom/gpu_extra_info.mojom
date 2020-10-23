@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// gpu/config/gpu_extra_info.h
-module gpu.mojom;
+// ui/gfx/gpu_extra_info.h
+module gfx.mojom;
 
 import "ui/gfx/mojom/buffer_types.mojom";
 
-// gpu::ANGLEFeature
+// gfx::ANGLEFeature
 struct ANGLEFeature {
   string name;
   string category;
@@ -17,15 +17,15 @@ struct ANGLEFeature {
   string condition;
 };
 
-// gpu:GpuExtraInfo
+// gfx:GpuExtraInfo
 struct GpuExtraInfo {
   // List of features queried from ANGLE
   array<ANGLEFeature> angle_features;
 
-  [EnableIf=use_x11]
+  [EnableIf=enable_x11_params]
   uint64 system_visual;
-  [EnableIf=use_x11]
+  [EnableIf=enable_x11_params]
   uint64 rgba_visual;
-  [EnableIf=use_x11]
+  [EnableIf=enable_x11_params]
   array<gfx.mojom.BufferUsageAndFormat> gpu_memory_buffer_support_x11;
 };

@@ -22,6 +22,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/environment.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -154,6 +155,15 @@ bool IsX11ScreenSaverAvailable() {
   return version && (version->server_major_version > 1 ||
                      (version->server_major_version == 1 &&
                       version->server_minor_version >= 1));
+}
+
+// Must be in sync with the copy in //content/browser/gpu/gpu_internals_ui.cc.
+base::Value NewDescriptionValuePair(base::StringPiece desc,
+                                    base::StringPiece value) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey("description", base::Value(desc));
+  dict.SetKey("value", base::Value(value));
+  return dict;
 }
 
 }  // namespace
@@ -1004,6 +1014,31 @@ void SuspendX11ScreenSaver(bool suspend) {
     return;
 
   x11::Connection::Get()->screensaver().Suspend({suspend});
+}
+
+base::Value GpuExtraInfoAsListValue(unsigned long system_visual,
+                                    unsigned long rgba_visual) {
+  base::Value result(base::Value::Type::LIST);
+  result.Append(
+      NewDescriptionValuePair("Window manager", ui::GuessWindowManagerName()));
+  {
+    std::unique_ptr<base::Environment> env(base::Environment::Create());
+    std::string value;
+    const char kXDGCurrentDesktop[] = "XDG_CURRENT_DESKTOP";
+    if (env->GetVar(kXDGCurrentDesktop, &value))
+      result.Append(NewDescriptionValuePair(kXDGCurrentDesktop, value));
+    const char kGDMSession[] = "GDMSESSION";
+    if (env->GetVar(kGDMSession, &value))
+      result.Append(NewDescriptionValuePair(kGDMSession, value));
+    result.Append(NewDescriptionValuePair(
+        "Compositing manager",
+        ui::IsCompositingManagerPresent() ? "Yes" : "No"));
+  }
+  result.Append(NewDescriptionValuePair("System visual ID",
+                                        base::NumberToString(system_visual)));
+  result.Append(NewDescriptionValuePair("RGBA visual ID",
+                                        base::NumberToString(rgba_visual)));
+  return result;
 }
 
 bool WmSupportsHint(x11::Atom atom) {

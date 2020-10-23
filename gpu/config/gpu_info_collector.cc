@@ -476,7 +476,7 @@ void CollectGraphicsInfoForTesting(GPUInfo* gpu_info) {
 #endif  // OS_ANDROID
 }
 
-bool CollectGpuExtraInfo(GpuExtraInfo* gpu_extra_info,
+bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
                          const GpuPreferences& prefs) {
   // Populate the list of ANGLE features by querying the functions exposed by
   // EGL_ANGLE_feature_control if it's available.

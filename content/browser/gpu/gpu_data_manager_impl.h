@@ -25,13 +25,13 @@
 #include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_control_list.h"
 #include "gpu/config/gpu_domain_guilt.h"
-#include "gpu/config/gpu_extra_info.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_mode.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/gpu/gpu.mojom.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/gpu_extra_info.h"
 
 class GURL;
 
@@ -103,14 +103,14 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void UpdateGpuFeatureInfo(const gpu::GpuFeatureInfo& gpu_feature_info,
                             const base::Optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
-  void UpdateGpuExtraInfo(const gpu::GpuExtraInfo& gpu_extra_info);
+  void UpdateGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
 
   gpu::GpuFeatureInfo GetGpuFeatureInfo() const;
 
   gpu::GPUInfo GetGPUInfoForHardwareGpu() const;
   gpu::GpuFeatureInfo GetGpuFeatureInfoForHardwareGpu() const;
 
-  gpu::GpuExtraInfo GetGpuExtraInfo() const;
+  gfx::GpuExtraInfo GetGpuExtraInfo() const;
 
   bool IsGpuCompositingDisabled() const;
 

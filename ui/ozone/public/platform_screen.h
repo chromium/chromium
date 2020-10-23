@@ -11,6 +11,8 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/values.h"
+#include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace display {
@@ -87,6 +89,11 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   // Returns currently used workspace. If a platform does not support this, the
   // empty string is returned.
   virtual std::string GetCurrentWorkspace();
+
+  // Returns human readable description of the window manager, desktop, and
+  // other system properties related to the compositing.
+  virtual base::Value GetGpuExtraInfoAsListValue(
+      const gfx::GpuExtraInfo& gpu_extra_info);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PlatformScreen);

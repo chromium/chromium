@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_CONFIG_GPU_EXTRA_INFO_H_
-#define GPU_CONFIG_GPU_EXTRA_INFO_H_
+#ifndef UI_GFX_GPU_EXTRA_INFO_H_
+#define UI_GFX_GPU_EXTRA_INFO_H_
 
 #include <string>
 #include <vector>
 
-#include "gpu/gpu_export.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gfx_export.h"
 
-#if defined(USE_X11)
+#if defined(USE_OZONE) || defined(USE_X11)
 typedef unsigned long VisualID;
 #endif
 
-namespace gpu {
+namespace gfx {
 
 // Specification of a feature that can be enabled/disable in ANGLE
-struct GPU_EXPORT ANGLEFeature {
+struct GFX_EXPORT ANGLEFeature {
   ANGLEFeature();
   ANGLEFeature(const ANGLEFeature& other);
   ANGLEFeature(ANGLEFeature&& other);
@@ -46,7 +46,7 @@ struct GPU_EXPORT ANGLEFeature {
 };
 using ANGLEFeatures = std::vector<ANGLEFeature>;
 
-struct GPU_EXPORT GpuExtraInfo {
+struct GFX_EXPORT GpuExtraInfo {
   GpuExtraInfo();
   GpuExtraInfo(const GpuExtraInfo&);
   GpuExtraInfo(GpuExtraInfo&&);
@@ -58,7 +58,7 @@ struct GPU_EXPORT GpuExtraInfo {
   // applicable.
   ANGLEFeatures angle_features;
 
-#if defined(USE_X11)
+#if defined(USE_OZONE) || defined(USE_X11)
   VisualID system_visual = 0;
   VisualID rgba_visual = 0;
 
@@ -66,6 +66,6 @@ struct GPU_EXPORT GpuExtraInfo {
 #endif
 };
 
-}  // namespace gpu
+}  // namespace gfx
 
-#endif  // GPU_CONFIG_GPU_EXTRA_INFO_H_
+#endif  // UI_GFX_GPU_EXTRA_INFO_H_

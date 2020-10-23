@@ -136,6 +136,12 @@ std::string X11ScreenOzone::GetCurrentWorkspace() {
   return x11_display_manager_->GetCurrentWorkspace();
 }
 
+base::Value X11ScreenOzone::GetGpuExtraInfoAsListValue(
+    const gfx::GpuExtraInfo& gpu_extra_info) {
+  return ui::GpuExtraInfoAsListValue(gpu_extra_info.system_visual,
+                                     gpu_extra_info.rgba_visual);
+}
+
 bool X11ScreenOzone::DispatchXEvent(x11::Event* xev) {
   return x11_display_manager_->ProcessEvent(xev);
 }

@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/values.h"
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
+#include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
@@ -129,6 +131,10 @@ class DISPLAY_EXPORT Screen {
   // by implementing and setting self as a DisplayObserver. It is also possible
   // to get current workspace through the GetCurrentWorkspace method.
   virtual std::string GetCurrentWorkspace();
+
+  // Returns human readable description of the window manager, desktop, and
+  // other system properties related to the compositing.
+  virtual base::Value GetGpuInfo(const gfx::GpuExtraInfo& gpu_extra_info);
 
  private:
   friend class ScopedDisplayForNewWindows;

@@ -2093,6 +2093,10 @@ source_set("browser") {
     deps += [ "//ui/events" ]
   }
 
+  if (use_x11) {
+    deps += [ "//ui/base/x" ]
+  }
+
   if (is_linux || is_chromeos) {
     sources += [
       "child_process_launcher_helper_linux.cc",

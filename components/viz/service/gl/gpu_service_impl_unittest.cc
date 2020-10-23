@@ -5,6 +5,7 @@
 #include "components/viz/service/gl/gpu_service_impl.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
@@ -72,7 +73,7 @@ class GpuServiceTest : public testing::Test {
     gpu_service_ = std::make_unique<GpuServiceImpl>(
         gpu_info, /*watchdog_thread=*/nullptr, io_thread_.task_runner(),
         gpu::GpuFeatureInfo(), gpu::GpuPreferences(), gpu::GPUInfo(),
-        gpu::GpuFeatureInfo(), gpu::GpuExtraInfo(),
+        gpu::GpuFeatureInfo(), gfx::GpuExtraInfo(),
         /*vulkan_implementation=*/nullptr,
         /*exit_callback=*/base::DoNothing());
   }

@@ -51,6 +51,8 @@ class X11ScreenOzone : public PlatformScreen,
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;
+  base::Value GetGpuExtraInfoAsListValue(
+      const gfx::GpuExtraInfo& gpu_extra_info) override;
 
   // Overridden from ui::XEventDispatcher:
   bool DispatchXEvent(x11::Event* event) override;

@@ -210,7 +210,6 @@ mojom("interfaces") {
     "context_result.mojom",
     "device_perf_info.mojom",
     "dx_diag_node.mojom",
-    "gpu_extra_info.mojom",
     "gpu_feature_info.mojom",
     "gpu_info.mojom",
     "gpu_peak_memory.mojom",
@@ -350,24 +349,6 @@ mojom("interfaces") {
       ]
       traits_sources = [ "dx_diag_node_mojom_traits.cc" ]
       traits_headers = [ "dx_diag_node_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.GpuExtraInfo"
-          cpp = "::gpu::GpuExtraInfo"
-        },
-        {
-          mojom = "gpu.mojom.ANGLEFeature"
-          cpp = "::gpu::ANGLEFeature"
-        },
-      ]
-      traits_sources = [ "gpu_extra_info_mojom_traits.cc" ]
-      traits_headers = [ "gpu_extra_info_mojom_traits.h" ]
-      traits_public_deps = [
-        "//gpu/config",
-        "//ui/gfx/geometry/mojom",
-      ]
     },
     {
       types = [

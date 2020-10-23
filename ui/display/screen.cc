@@ -101,6 +101,10 @@ std::string Screen::GetCurrentWorkspace() {
   return {};
 }
 
+base::Value Screen::GetGpuInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
+  return base::Value(base::Value::Type::LIST);
+}
+
 void Screen::SetScopedDisplayForNewWindows(int64_t display_id) {
   if (display_id == scoped_display_id_for_new_windows_)
     return;

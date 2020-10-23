@@ -6,9 +6,9 @@ module viz.mojom;
 
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
-import "gpu/ipc/common/gpu_extra_info.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "services/viz/privileged/mojom/gl/context_lost_reason.mojom";
+import "ui/gfx/mojom/gpu_extra_info.mojom";
 import "url/mojom/url.mojom";
 
 // Communication channel from the gpu process to the gpu host. This interface
@@ -21,7 +21,7 @@ interface GpuHost {
                 gpu.mojom.GpuFeatureInfo gpu_feature_info,
                 gpu.mojom.GpuInfo? gpu_info_for_hardware_gpu,
                 gpu.mojom.GpuFeatureInfo? gpu_feature_info_for_hardware_gpu,
-                gpu.mojom.GpuExtraInfo gpu_extra_info);
+                gfx.mojom.GpuExtraInfo gpu_extra_info);
   DidFailInitialize();
 
   DidCreateContextSuccessfully();

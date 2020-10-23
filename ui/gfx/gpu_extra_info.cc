@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/config/gpu_extra_info.h"
+#include "ui/gfx/gpu_extra_info.h"
 
-namespace gpu {
+namespace gfx {
 
 ANGLEFeature::ANGLEFeature() = default;
 ANGLEFeature::ANGLEFeature(const ANGLEFeature& other) = default;
@@ -20,4 +20,4 @@ GpuExtraInfo::~GpuExtraInfo() = default;
 GpuExtraInfo& GpuExtraInfo::operator=(const GpuExtraInfo&) = default;
 GpuExtraInfo& GpuExtraInfo::operator=(GpuExtraInfo&&) = default;
 
-}  // namespace gpu
+}  // namespace gfx
