@@ -679,9 +679,6 @@ void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
     types_to_associate = association_types_queue_.front().types;
   }
 
-  DVLOG(1) << "Associating " << ModelTypeSetToString(types_to_associate);
-  model_association_manager_.Associate(types_to_associate);
-
   for (ModelType type : types_to_associate) {
     if (ProtocolTypes().Has(type)) {
       RecordConfigurationStats(type);

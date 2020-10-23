@@ -53,10 +53,7 @@ static_assert(base::size(kStartOrder) ==
 ModelAssociationManager::ModelAssociationManager(
     const DataTypeController::TypeMap* controllers,
     ModelAssociationManagerDelegate* processor)
-    : controllers_(controllers),
-      delegate_(processor),
-      state_(IDLE),
-      notified_about_ready_for_configure_(false) {}
+    : controllers_(controllers), delegate_(processor) {}
 
 ModelAssociationManager::~ModelAssociationManager() = default;
 
@@ -86,7 +83,6 @@ void ModelAssociationManager::Initialize(ModelTypeSet desired_types,
   DVLOG(1) << "ModelAssociationManager: Initializing for "
            << ModelTypeSetToString(desired_types_);
 
-  state_ = INITIALIZED;
   notified_about_ready_for_configure_ = false;
 
   DVLOG(1) << "ModelAssociationManager: Stopping disabled types.";
@@ -156,7 +152,6 @@ void ModelAssociationManager::StopDatatypeImpl(
     DataTypeController* dtc,
     DataTypeController::StopCallback callback) {
   loaded_types_.Remove(dtc->type());
-  associated_types_.Remove(dtc->type());
 
   DCHECK(error.IsSet() || (dtc->state() != DataTypeController::NOT_RUNNING));
 
@@ -179,7 +174,6 @@ void ModelAssociationManager::LoadDesiredTypes() {
     DCHECK_NE(DataTypeController::STOPPING, dtc->state());
     if (dtc->state() == DataTypeController::NOT_RUNNING) {
       DCHECK(!loaded_types_.Has(dtc->type()));
-      DCHECK(!associated_types_.Has(dtc->type()));
       dtc->LoadModels(
           configure_context_,
           base::BindRepeating(&ModelAssociationManager::ModelLoadCallback,
@@ -188,20 +182,6 @@ void ModelAssociationManager::LoadDesiredTypes() {
   }
   // It's possible that all models are already loaded.
   NotifyDelegateIfReadyForConfigure();
-}
-
-void ModelAssociationManager::Associate(
-    const ModelTypeSet& types_to_associate) {
-  DCHECK_EQ(INITIALIZED, state_);
-  DCHECK(notified_about_ready_for_configure_);
-
-  ModelTypeSet associating_types = types_to_associate;
-  associating_types.RetainAll(desired_types_);
-  associating_types.RemoveAll(associated_types_);
-
-  DCHECK(loaded_types_.HasAll(associating_types));
-
-  associated_types_.PutAll(associating_types);
 }
 
 void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
@@ -222,9 +202,6 @@ void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
 
   desired_types_.Clear();
   loaded_types_.Clear();
-  associated_types_.Clear();
-
-  state_ = IDLE;
 }
 
 void ModelAssociationManager::ModelLoadCallback(ModelType type,

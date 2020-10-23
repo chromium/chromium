@@ -49,11 +49,8 @@ class ModelAssociationManager {
   virtual ~ModelAssociationManager();
 
   // Stops any data types that are *not* in |desired_types|, then kicks off
-  // loading of all |desired_types|. A subsequent Initialize() call is only
-  // allowed after the ModelAssociationManager has invoked
-  // OnModelAssociationDone() on the delegate. After this call, there should be
-  // several calls to Associate() to associate subsets of |desired_types|, which
-  // itself must be a subset of |preferred_types|.
+  // loading of all |desired_types|.
+  // |desired_types| must be a subset of |preferred_types|.
   // |preferred_types| contains all types selected by the user.
   void Initialize(ModelTypeSet desired_types,
                   ModelTypeSet preferred_types,
@@ -62,12 +59,6 @@ class ModelAssociationManager {
   // Can be called at any time. Synchronously stops all datatypes.
   void Stop(ShutdownReason shutdown_reason);
 
-  // Must only be called after all data type models have been loaded, i.e. after
-  // OnAllDataTypesReadyForConfigure() has been called on the delegate.
-  // |types_to_associate| should be subset of |desired_types| in Initialize().
-  // Synchronously invokes |OnModelAssociationDone| on the delegate.
-  void Associate(const ModelTypeSet& types_to_associate);
-
   // Stops an individual datatype |type| for |shutdown_reason|. |error| must be
   // an actual error (i.e. not UNSET).
   void StopDatatype(ModelType type,
@@ -75,19 +66,11 @@ class ModelAssociationManager {
                     SyncError error);
 
  private:
-  enum State {
-    // No configuration is in progress.
-    IDLE,
-    // The model association manager has been initialized with a set of desired
-    // types.
-    INITIALIZED,
-  };
-
   // Start loading non-running types that are in |desired_types_|.
   void LoadDesiredTypes();
 
   // Callback that will be invoked when the model for |type| finishes loading.
-  // This callback is passed to |LoadModels| function.
+  // This callback is passed to the controller's |LoadModels| method.
   void ModelLoadCallback(ModelType type, const SyncError& error);
 
   // A helper to stop an individual datatype.
@@ -107,21 +90,15 @@ class ModelAssociationManager {
   // The delegate in charge of handling model association results.
   ModelAssociationManagerDelegate* const delegate_;
 
-  State state_;
-
   ConfigureContext configure_context_;
 
   // Data types that are enabled.
   ModelTypeSet desired_types_;
 
-  // Data types that are loaded, i.e. ready to associate.
+  // Data types that are loaded.
   ModelTypeSet loaded_types_;
 
-  // Data types that are associated, i.e. no more action needed during
-  // reconfiguration if not disabled.
-  ModelTypeSet associated_types_;
-
-  bool notified_about_ready_for_configure_;
+  bool notified_about_ready_for_configure_ = false;
 
   base::WeakPtrFactory<ModelAssociationManager> weak_ptr_factory_{this};
 
