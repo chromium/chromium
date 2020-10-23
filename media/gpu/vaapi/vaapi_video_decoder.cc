@@ -143,16 +143,11 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  // TODO(jkardatzke): Implement protected media handling.
-  NOTREACHED();
-#else
   if (cdm_context || config.is_encrypted()) {
     VLOGF(1) << "Vaapi decoder does not support encrypted stream";
     std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
     return;
   }
-#endif
 
   // We expect the decoder to have released all output buffers (by the client
   // triggering a flush or reset), even if the
