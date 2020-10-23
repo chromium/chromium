@@ -41,6 +41,7 @@
 #include "ui/views/controls/menu/menu_image_util.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_separator.h"
+#include "ui/views/controls/menu/new_badge.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -53,38 +54,6 @@
 namespace views {
 
 namespace {
-
-// Returns the appropriate font to use for the "new" badge based on the font
-// currently being used to render the title of the menu item.
-gfx::FontList DeriveNewBadgeFont(const gfx::FontList& primary_font) {
-  // Preferred font is slightly smaller and slightly more bold than the title
-  // font. The size change is required to make it look correct in the badge; we
-  // add a small degree of bold to prevent color smearing/blurring due to font
-  // smoothing. This ensures readability on all platforms and in both light and
-  // dark modes.
-  return primary_font.Derive(MenuConfig::kNewBadgeFontSizeAdjustment,
-                             gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
-}
-
-// Returns the horizontal space required for the "new" badge.
-int GetNewBadgeRequiredWidth(const gfx::FontList& primary_font) {
-  const base::string16 new_text =
-      l10n_util::GetStringUTF16(IDS_MENU_ITEM_NEW_BADGE);
-  gfx::FontList badge_font = DeriveNewBadgeFont(primary_font);
-  return gfx::GetStringWidth(new_text, badge_font) +
-         2 * MenuConfig::kNewBadgeInternalPadding +
-         2 * MenuConfig::kNewBadgeHorizontalMargin;
-}
-
-// Returns the highlight rect for the "new" badge given the font and text rect
-// for the badge text.
-gfx::Rect GetNewBadgeRectOutsetAroundText(const gfx::FontList& badge_font,
-                                          const gfx::Rect& badge_text_rect) {
-  gfx::Rect badge_rect = badge_text_rect;
-  badge_rect.Inset(-gfx::AdjustVisualBorderForFont(
-      badge_font, gfx::Insets(MenuConfig::kNewBadgeInternalPadding)));
-  return badge_rect;
-}
 
 // EmptyMenuMenuItem ---------------------------------------------------------
 
@@ -289,8 +258,7 @@ base::string16 MenuItemView::GetAccessibleNameForMenuItem(
 
   if (is_new_feature) {
     accessible_name.push_back(' ');
-    accessible_name.append(l10n_util::GetStringUTF16(
-        IDS_MENU_ITEM_NEW_BADGE_SCREEN_READER_MESSAGE));
+    accessible_name.append(NewBadge::GetNewBadgeAccessibleDescription());
   }
 
   return accessible_name;
@@ -1027,12 +995,11 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
   PaintMinorIconAndText(canvas, style);
 
   if (ShouldShowNewBadge()) {
-    DrawNewBadge(
-        canvas,
-        gfx::Point(label_start + gfx::GetStringWidth(title(), style.font_list) +
-                       MenuConfig::kNewBadgeHorizontalMargin,
-                   top_margin),
-        style.font_list, flags);
+    NewBadge::DrawNewBadge(canvas, this,
+                           label_start +
+                               gfx::GetStringWidth(title(), style.font_list) +
+                               NewBadge::kNewBadgeHorizontalMargin,
+                           top_margin, style.font_list);
   }
 
   // Set the submenu indicator (arrow) image and color.
@@ -1291,7 +1258,9 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
                           : gfx::GetStringWidth(minor_text, style.font_list));
 
   if (ShouldShowNewBadge())
-    dimensions.minor_text_width += GetNewBadgeRequiredWidth(style.font_list);
+    dimensions.minor_text_width +=
+        NewBadge::GetNewBadgeSize(style.font_list).width() +
+        2 * NewBadge::kNewBadgeHorizontalMargin;
 
   // Determine the height to use.
   int label_text_height = secondary_title().empty()
@@ -1348,39 +1317,6 @@ int MenuItemView::GetLabelStartForThisItem() const {
   }
 
   return label_start;
-}
-
-void MenuItemView::DrawNewBadge(gfx::Canvas* canvas,
-                                const gfx::Point& unmirrored_badge_start,
-                                const gfx::FontList& primary_font,
-                                int text_render_flags) {
-  gfx::FontList badge_font = DeriveNewBadgeFont(primary_font);
-  const base::string16 new_text =
-      l10n_util::GetStringUTF16(IDS_MENU_ITEM_NEW_BADGE);
-
-  // Calculate bounding box for badge text.
-  gfx::Rect badge_text_bounds(unmirrored_badge_start,
-                              gfx::GetStringSize(new_text, badge_font));
-  badge_text_bounds.Offset(
-      MenuConfig::kNewBadgeInternalPadding,
-      gfx::GetFontCapHeightCenterOffset(primary_font, badge_font));
-  if (base::i18n::IsRTL())
-    badge_text_bounds.set_x(GetMirroredXForRect(badge_text_bounds));
-
-  // Render the badge itself.
-  cc::PaintFlags new_flags;
-  const SkColor background_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_ProminentButtonColor);
-  new_flags.setColor(background_color);
-  canvas->DrawRoundRect(
-      GetNewBadgeRectOutsetAroundText(badge_font, badge_text_bounds),
-      MenuConfig::kNewBadgeCornerRadius, new_flags);
-
-  // Render the badge text.
-  const SkColor foreground_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TextOnProminentButtonColor);
-  canvas->DrawStringRectWithFlags(new_text, badge_font, foreground_color,
-                                  badge_text_bounds, text_render_flags);
 }
 
 base::string16 MenuItemView::GetMinorText() const {

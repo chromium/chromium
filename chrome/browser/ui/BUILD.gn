@@ -3623,6 +3623,8 @@ static_library("ui") {
       "views/in_product_help/feature_promo_controller_views.h",
       "views/in_product_help/feature_promo_registry.cc",
       "views/in_product_help/feature_promo_registry.h",
+      "views/in_product_help/new_badge_label.cc",
+      "views/in_product_help/new_badge_label.h",
       "views/infobars/alternate_nav_infobar_view.cc",
       "views/infobars/alternate_nav_infobar_view.h",
       "views/infobars/confirm_infobar.cc",

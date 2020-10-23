@@ -20,6 +20,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
+#include "ui/views/controls/menu/new_badge.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
@@ -29,7 +30,7 @@ NSImage* NewTagImage() {
   static NSImage* new_tag = []() {
     // 1. Make the attributed string.
 
-    NSString* badge_text = l10n_util::GetNSString(IDS_MENU_ITEM_NEW_BADGE);
+    NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
 
     // The preferred font is slightly smaller and slightly more bold than the
     // menu font. The size change is required to make it look correct in the
@@ -39,7 +40,7 @@ NSImage* NewTagImage() {
     gfx::Font badge_font = gfx::Font(
         new gfx::PlatformFontMac(gfx::PlatformFontMac::SystemFontType::kMenu));
     badge_font =
-        badge_font.Derive(views::MenuConfig::kNewBadgeFontSizeAdjustment,
+        badge_font.Derive(views::NewBadge::kNewBadgeFontSizeAdjustment,
                           gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
 
     NSColor* badge_text_color = skia::SkColorToSRGBNSColor(
@@ -72,9 +73,9 @@ NSImage* NewTagImage() {
     badge_size.width = trunc(badge_size.width);
     badge_size.height = trunc(badge_size.height);
 
-    badge_size.width += 2 * views::MenuConfig::kNewBadgeInternalPadding +
-                        2 * views::MenuConfig::kNewBadgeHorizontalMargin;
-    badge_size.height += views::MenuConfig::kNewBadgeInternalPaddingTopMac;
+    badge_size.width += 2 * views::NewBadge::kNewBadgeInternalPadding +
+                        2 * views::NewBadge::kNewBadgeHorizontalMargin;
+    badge_size.height += views::NewBadge::kNewBadgeInternalPaddingTopMac;
 
     // 3. Craft the image.
 
@@ -83,12 +84,11 @@ NSImage* NewTagImage() {
                flipped:NO
         drawingHandler:^(NSRect dest_rect) {
           NSRect badge_frame = NSInsetRect(
-              dest_rect, views::MenuConfig::kNewBadgeHorizontalMargin, 0);
+              dest_rect, views::NewBadge::kNewBadgeHorizontalMargin, 0);
           NSBezierPath* rounded_badge_rect = [NSBezierPath
               bezierPathWithRoundedRect:badge_frame
-                                xRadius:views::MenuConfig::kNewBadgeCornerRadius
-                                yRadius:views::MenuConfig::
-                                            kNewBadgeCornerRadius];
+                                xRadius:views::NewBadge::kNewBadgeCornerRadius
+                                yRadius:views::NewBadge::kNewBadgeCornerRadius];
           NSColor* badge_color = skia::SkColorToSRGBNSColor(
               ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
                   ui::NativeTheme::kColorId_ProminentButtonColor));
@@ -96,9 +96,9 @@ NSImage* NewTagImage() {
           [rounded_badge_rect fill];
 
           NSPoint badge_text_location = NSMakePoint(
-              NSMinX(badge_frame) + views::MenuConfig::kNewBadgeInternalPadding,
+              NSMinX(badge_frame) + views::NewBadge::kNewBadgeInternalPadding,
               NSMinY(badge_frame) +
-                  views::MenuConfig::kNewBadgeInternalPaddingTopMac);
+                  views::NewBadge::kNewBadgeInternalPaddingTopMac);
           [badge_attr_string drawAtPoint:badge_text_location];
 
           return YES;
@@ -123,7 +123,7 @@ NSImage* NewTagImage() {
 }
 
 - (NSPoint)cellBaselineOffset {
-  return NSMakePoint(0, views::MenuConfig::kNewBadgeBaslineOffsetMac);
+  return NSMakePoint(0, views::NewBadge::kNewBadgeBaslineOffsetMac);
 }
 
 - (NSSize)cellSize {

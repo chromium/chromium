@@ -463,13 +463,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Get the horizontal position at which to draw the menu item's label.
   int GetLabelStartForThisItem() const;
 
-  // Draws the "new" badge on |canvas|. |unmirrored_badge_start| is the
-  // upper-left corner of the badge, not mirrored for RTL.
-  void DrawNewBadge(gfx::Canvas* canvas,
-                    const gfx::Point& unmirrored_badge_start,
-                    const gfx::FontList& primary_font,
-                    int text_render_flags);
-
   // Used by MenuController to cache the menu position in use by the
   // active menu.
   MenuPosition actual_menu_position() const { return actual_menu_position_; }
