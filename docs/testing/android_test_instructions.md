@@ -130,6 +130,12 @@ resize2fs android_emulator_sdk/sdk/system-images/android-25/x86/userdata.img 1G
 tune2fs -e continue android_emulator_sdk/sdk/system-images/android-25/x86/userdata.img
 ```
 
+### AdbCommandFailedError: failed to stat remote object
+
+There's a known issue (https://crbug.com/1094062) where the unit test binaries can fail on
+Android R and later: if you see this error, try rerunning on an Android version
+with API level <= 29 (Android <= Q).
+
 ## Symbolizing Crashes
 
 Crash stacks are logged and can be viewed using `adb logcat`. To symbolize the
