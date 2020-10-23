@@ -1707,7 +1707,7 @@ base::Optional<int> TabStrip::GetFocusedTabIndex() const {
 }
 
 views::View* TabStrip::GetTabViewForPromoAnchor(int index_hint) {
-  return tab_at(base::ClampToRange(index_hint, 0, tab_count()));
+  return tab_at(base::ClampToRange(index_hint, 0, tab_count() - 1));
 }
 
 views::View* TabStrip::GetDefaultFocusableChild() {
