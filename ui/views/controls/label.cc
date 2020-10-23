@@ -652,20 +652,33 @@ void Label::PaintText(gfx::Canvas* canvas) {
   if (display_text_)
     display_text_->Draw(canvas);
 
-#if DCHECK_IS_ON()
-  // Attempt to ensure that if we're using subpixel rendering, we're painting
-  // to an opaque background. What we don't want to find is an ancestor in the
-  // hierarchy that paints to a non-opaque layer.
+#if DCHECK_IS_ON() && !defined(OS_CHROMEOS)
+  // TODO(crbug.com/1139395): Enable this DCHECK on ChromeOS by fixing either
+  // this check (to correctly idenfify more paints-on-opaque cases), refactoring
+  // parents to use background() or by fixing subpixel-rendering issues that the
+  // DCHECK detects.
   if (!display_text_ || display_text_->subpixel_rendering_suppressed())
     return;
 
+  // Ensure that, if we're using subpixel rendering, we're painted to an opaque
+  // region. Subpixel rendering will sample from the r,g,b color channels of the
+  // canvas. These values are incorrect when sampling from transparent pixels.
+  // Note that these checks may need to be amended for other methods of painting
+  // opaquely underneath the Label or we might need to allow individual cases to
+  // skip this DCHECK.
   for (View* view = this; view; view = view->parent()) {
+    // This is our approximation of being painted on an opaque region. If any
+    // parent has an opaque background we assume that that background covers the
+    // text bounds. This is not necessarily true as the background could be
+    // inset from the parent bounds, and get_color() does not imply that all of
+    // the background is painted with the same opaque color.
     if (view->background() && IsOpaque(view->background()->get_color()))
       break;
 
-    if (view->layer() && view->layer()->fills_bounds_opaquely()) {
-      DLOG(WARNING) << "Ancestor view has a non-opaque layer: "
-                    << view->GetClassName() << " with ID " << view->GetID();
+    if (view->layer()) {
+      // If we aren't painted to an opaque background, we must paint to an
+      // opaque layer.
+      DCHECK(view->layer()->fills_bounds_opaquely());
       break;
     }
   }
