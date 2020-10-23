@@ -10,18 +10,18 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 /** Helper class for recording metrics related to TabbedPaintPreview. */
 public class StartupPaintPreviewMetrics {
     /** Used for recording the cause for exiting the Paint Preview player. */
     @IntDef({ExitCause.PULL_TO_REFRESH, ExitCause.SNACK_BAR_ACTION, ExitCause.COMPOSITOR_FAILURE,
             ExitCause.TAB_FINISHED_LOADING, ExitCause.LINK_CLICKED, ExitCause.NAVIGATION_STARTED,
-            ExitCause.TAB_DESTROYED, ExitCause.TAB_HIDDEN})
+            ExitCause.TAB_DESTROYED, ExitCause.TAB_HIDDEN, ExitCause.OFFLINE_AVAILABLE})
     @interface ExitCause {
         int PULL_TO_REFRESH = 0;
         int SNACK_BAR_ACTION = 1;
@@ -31,7 +31,8 @@ public class StartupPaintPreviewMetrics {
         int NAVIGATION_STARTED = 5;
         int TAB_DESTROYED = 6;
         int TAB_HIDDEN = 7;
-        int COUNT = 8;
+        int OFFLINE_AVAILABLE = 8;
+        int COUNT = 9;
     }
 
     private static final Map<Integer, String> UPTIME_HISTOGRAM_MAP = new HashMap<>();
@@ -52,6 +53,8 @@ public class StartupPaintPreviewMetrics {
                 "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedOnTabDestroy");
         UPTIME_HISTOGRAM_MAP.put(ExitCause.TAB_HIDDEN,
                 "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedOnTabHidden");
+        UPTIME_HISTOGRAM_MAP.put(ExitCause.OFFLINE_AVAILABLE,
+                "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedOnOfflineAvailable");
     }
 
     private long mShownTime;
@@ -61,15 +64,9 @@ public class StartupPaintPreviewMetrics {
         mShownTime = System.currentTimeMillis();
     }
 
-    void onFirstPaint(long activityOnCreateTimestamp, Callable<Boolean> shouldRecordFirstPaint) {
+    void onFirstPaint(long activityOnCreateTimestamp, Supplier<Boolean> shouldRecordFirstPaint) {
         mFirstPaintHappened = true;
-        boolean shouldRecordHistogram = false;
-        try {
-            shouldRecordHistogram = shouldRecordFirstPaint.call();
-        } catch (Exception e) {
-            // no-op just proceed.
-        }
-        if (shouldRecordHistogram) {
+        if (shouldRecordFirstPaint != null && shouldRecordFirstPaint.get()) {
             RecordHistogram.recordLongTimesHistogram(
                     "Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap",
                     SystemClock.elapsedRealtime() - activityOnCreateTimestamp);

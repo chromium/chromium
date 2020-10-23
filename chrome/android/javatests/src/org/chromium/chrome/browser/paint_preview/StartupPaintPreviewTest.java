@@ -131,8 +131,7 @@ public class StartupPaintPreviewTest {
      */
     @Test
     @MediumTest
-    public void testRemoveOnFirstMeaningfulPaint()
-            throws ExecutionException, UiObjectNotFoundException {
+    public void testRemoveOnFirstMeaningfulPaint() throws ExecutionException {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         StartupPaintPreview startupPaintPreview = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new StartupPaintPreview(tab, null, null, null));
@@ -144,6 +143,30 @@ public class StartupPaintPreviewTest {
         showAndWaitForInflation(startupPaintPreview, tabbedPaintPreview, dismissCallback);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> startupPaintPreview.onWebContentsFirstMeaningfulPaint(tab.getWebContents()));
+        assertAttachedAndShown(tabbedPaintPreview, false, false);
+        Assert.assertEquals(
+                "Dismiss callback should have been called.", 1, dismissCallback.getCallCount());
+    }
+
+    /**
+     * Tests that the paint preview is removed when offline page is shown.
+     */
+    @Test
+    @MediumTest
+    public void testRemoveOnOfflinePage() throws ExecutionException {
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        StartupPaintPreview startupPaintPreview = TestThreadUtils.runOnUiThreadBlocking(
+                () -> new StartupPaintPreview(tab, null, null, null));
+        TabbedPaintPreview tabbedPaintPreview =
+                TestThreadUtils.runOnUiThreadBlocking(() -> TabbedPaintPreview.get(tab));
+        // Offline page callback always returns true.
+        startupPaintPreview.setIsOfflinePage(() -> true);
+        CallbackHelper dismissCallback = new CallbackHelper();
+
+        showAndWaitForInflation(startupPaintPreview, tabbedPaintPreview, dismissCallback);
+        assertAttachedAndShown(tabbedPaintPreview, true, true);
+        // Should be removed on PageLoadFinished signal.
+        startupPaintPreview.getTabObserverForTesting().onPageLoadFinished(tab, null);
         assertAttachedAndShown(tabbedPaintPreview, false, false);
         Assert.assertEquals(
                 "Dismiss callback should have been called.", 1, dismissCallback.getCallCount());

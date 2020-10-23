@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
@@ -125,6 +126,7 @@ public class PaintPreviewHelper {
                 windowAndroidHelper.getActivityCreationTime());
         startupPaintPreview.setShouldRecordFirstPaint(
                 () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground());
+        startupPaintPreview.setIsOfflinePage(() -> OfflinePageUtils.isOfflinePage(tab));
         PageLoadMetrics.Observer observer = new PageLoadMetrics.Observer() {
             @Override
             public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
