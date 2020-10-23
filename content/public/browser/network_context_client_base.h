@@ -75,6 +75,9 @@ class CONTENT_EXPORT NetworkContextClientBase
 #if defined(OS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
+  void OnTrustTokenIssuanceDivertedToSystem(
+      network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+      OnTrustTokenIssuanceDivertedToSystemCallback callback) override;
 };
 
 }  // namespace content

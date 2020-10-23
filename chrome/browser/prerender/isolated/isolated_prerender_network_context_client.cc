@@ -97,3 +97,13 @@ void IsolatedPrerenderNetworkContextClient::OnGenerateHttpNegotiateAuthToken(
 #if defined(OS_CHROMEOS)
 void IsolatedPrerenderNetworkContextClient::OnTrustAnchorUsed() {}
 #endif
+
+void IsolatedPrerenderNetworkContextClient::
+    OnTrustTokenIssuanceDivertedToSystem(
+        network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+        OnTrustTokenIssuanceDivertedToSystemCallback callback) {
+  auto response = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
+  response->status =
+      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
+  std::move(callback).Run(std::move(response));
+}

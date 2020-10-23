@@ -167,4 +167,13 @@ void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
 void NetworkContextClientBase::OnTrustAnchorUsed() {}
 #endif
 
+void NetworkContextClientBase::OnTrustTokenIssuanceDivertedToSystem(
+    network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+    OnTrustTokenIssuanceDivertedToSystemCallback callback) {
+  auto response = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
+  response->status =
+      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
+  std::move(callback).Run(std::move(response));
+}
+
 }  // namespace content

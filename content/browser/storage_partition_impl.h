@@ -54,6 +54,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 
@@ -277,6 +278,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 #if defined(OS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
+  void OnTrustTokenIssuanceDivertedToSystem(
+      network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+      OnTrustTokenIssuanceDivertedToSystemCallback callback) override;
 
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter() {
     return url_loader_factory_getter_;

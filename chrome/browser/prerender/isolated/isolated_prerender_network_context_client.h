@@ -72,6 +72,9 @@ class IsolatedPrerenderNetworkContextClient
 #if defined(OS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
+  void OnTrustTokenIssuanceDivertedToSystem(
+      network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+      OnTrustTokenIssuanceDivertedToSystemCallback callback) override;
 };
 
 #endif  // CHROME_BROWSER_PRERENDER_ISOLATED_ISOLATED_PRERENDER_NETWORK_CONTEXT_CLIENT_H_

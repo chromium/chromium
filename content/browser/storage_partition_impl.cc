@@ -1891,6 +1891,17 @@ void StoragePartitionImpl::OnTrustAnchorUsed() {
 }
 #endif
 
+void StoragePartitionImpl::OnTrustTokenIssuanceDivertedToSystem(
+    network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+    OnTrustTokenIssuanceDivertedToSystemCallback callback) {
+  // TODO(crbug.com/1130272): Implement logic that allows executing Trust
+  // Tokens operations when available, rather than failing unconditionally.
+  auto response = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
+  response->status =
+      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
+  std::move(callback).Run(std::move(response));
+}
+
 void StoragePartitionImpl::ClearDataImpl(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,
