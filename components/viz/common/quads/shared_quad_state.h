@@ -11,7 +11,6 @@
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/mask_filter_info.h"
 #include "ui/gfx/rrect_f.h"
 #include "ui/gfx/transform.h"
 
@@ -37,7 +36,7 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   void SetAll(const gfx::Transform& quad_to_target_transform,
               const gfx::Rect& quad_layer_rect,
               const gfx::Rect& visible_layer_rect,
-              const gfx::MaskFilterInfo& mask_filter_info,
+              const gfx::RRectF& rounded_corner_bounds,
               const gfx::Rect& clip_rect,
               bool is_clipped,
               bool are_contents_opaque,
@@ -56,11 +55,9 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // The size of the visible area in the quads' originating layer, in the space
   // of the quad rects.
   gfx::Rect visible_quad_layer_rect;
-  // This mask filter's coordinates is in the target content space. It defines
-  // the corner radius to clip the quads with, and the |is_fast_rounded_corner|
-  // used by SurfaceAggregator to decide whether to merge quads for a surface
-  // into their target render pass for performance optimization.
-  gfx::MaskFilterInfo mask_filter_info;
+  // This rect lives in the target content space. It defines the corner radius
+  // to clip the quads with.
+  gfx::RRectF rounded_corner_bounds;
   // This rect lives in the target content space.
   gfx::Rect clip_rect;
   bool is_clipped = false;
@@ -69,6 +66,10 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   float opacity = 1.f;
   SkBlendMode blend_mode = SkBlendMode::kSrcOver;
   int sorting_context_id = 0;
+  // Used by SurfaceAggregator to decide whether to merge quads for a surface
+  // into their target render pass. It is a performance optimization by avoiding
+  // render passes as much as possible.
+  bool is_fast_rounded_corner = false;
   // This is for underlay optimization and used only in the SurfaceAggregator
   // and the OverlayProcessor. Do not set the value in CompositorRenderPass.
   // This index points to the damage rect in the surface damage rect list where

@@ -110,15 +110,15 @@ void VideoFrameResourceProvider::AppendQuads(
 
   gfx::Rect visible_quad_rect = quad_rect;
   gfx::Rect clip_rect;
-  gfx::MaskFilterInfo mask_filter_info;
+  gfx::RRectF rounded_corner_bounds;
   bool is_clipped = false;
   float draw_opacity = 1.0f;
   int sorting_context_id = 0;
 
   resource_updater_->AppendQuads(render_pass, std::move(frame), transform,
-                                 quad_rect, visible_quad_rect, mask_filter_info,
-                                 clip_rect, is_clipped, is_opaque, draw_opacity,
-                                 sorting_context_id);
+                                 quad_rect, visible_quad_rect,
+                                 rounded_corner_bounds, clip_rect, is_clipped,
+                                 is_opaque, draw_opacity, sorting_context_id);
 }
 
 void VideoFrameResourceProvider::ReleaseFrameResources() {
