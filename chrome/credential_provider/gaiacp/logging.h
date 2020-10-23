@@ -33,7 +33,8 @@ class putHR {
 
 // A helper macro which checks if the message should be logged based on log
 // level.
-#define LOG_ENABLED(LEVEL) (::logging::LOG_##LEVEL >= logging::GetMinLogLevel())
+#define LOG_ENABLED(LEVEL) \
+  (::logging::LOGGING_##LEVEL >= logging::GetMinLogLevel())
 
 // A macro that puts the function name into the logging stream.  This is a
 // drop-in replacement for the LOG macro.

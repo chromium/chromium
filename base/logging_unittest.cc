@@ -95,7 +95,7 @@ TEST_F(LoggingTest, BasicLogging) {
       .Times(DCHECK_IS_ON() ? 16 : 8)
       .WillRepeatedly(Return("log message"));
 
-  SetMinLogLevel(LOG_INFO);
+  SetMinLogLevel(LOGGING_INFO);
 
   EXPECT_TRUE(LOG_IS_ON(INFO));
   EXPECT_EQ(DCHECK_IS_ON(), DLOG_IS_ON(INFO));
@@ -127,21 +127,21 @@ TEST_F(LoggingTest, LogIsOn) {
   const bool kDfatalIsFatal = true;
 #endif  // defined(NDEBUG)
 
-  SetMinLogLevel(LOG_INFO);
+  SetMinLogLevel(LOGGING_INFO);
   EXPECT_TRUE(LOG_IS_ON(INFO));
   EXPECT_TRUE(LOG_IS_ON(WARNING));
   EXPECT_TRUE(LOG_IS_ON(ERROR));
   EXPECT_TRUE(LOG_IS_ON(FATAL));
   EXPECT_TRUE(LOG_IS_ON(DFATAL));
 
-  SetMinLogLevel(LOG_WARNING);
+  SetMinLogLevel(LOGGING_WARNING);
   EXPECT_FALSE(LOG_IS_ON(INFO));
   EXPECT_TRUE(LOG_IS_ON(WARNING));
   EXPECT_TRUE(LOG_IS_ON(ERROR));
   EXPECT_TRUE(LOG_IS_ON(FATAL));
   EXPECT_TRUE(LOG_IS_ON(DFATAL));
 
-  SetMinLogLevel(LOG_ERROR);
+  SetMinLogLevel(LOGGING_ERROR);
   EXPECT_FALSE(LOG_IS_ON(INFO));
   EXPECT_FALSE(LOG_IS_ON(WARNING));
   EXPECT_TRUE(LOG_IS_ON(ERROR));
@@ -149,7 +149,7 @@ TEST_F(LoggingTest, LogIsOn) {
   EXPECT_TRUE(LOG_IS_ON(DFATAL));
 
   // LOG_IS_ON(FATAL) should always be true.
-  SetMinLogLevel(LOG_FATAL + 1);
+  SetMinLogLevel(LOGGING_FATAL + 1);
   EXPECT_FALSE(LOG_IS_ON(INFO));
   EXPECT_FALSE(LOG_IS_ON(WARNING));
   EXPECT_FALSE(LOG_IS_ON(ERROR));
@@ -161,7 +161,7 @@ TEST_F(LoggingTest, LoggingIsLazyBySeverity) {
   MockLogSource mock_log_source;
   EXPECT_CALL(mock_log_source, Log()).Times(0);
 
-  SetMinLogLevel(LOG_WARNING);
+  SetMinLogLevel(LOGGING_WARNING);
 
   EXPECT_FALSE(LOG_IS_ON(INFO));
   EXPECT_FALSE(DLOG_IS_ON(INFO));
@@ -774,7 +774,7 @@ TEST_F(LoggingTest, FuchsiaLogging) {
       .Times(DCHECK_IS_ON() ? 2 : 1)
       .WillRepeatedly(Return("log message"));
 
-  SetMinLogLevel(LOG_INFO);
+  SetMinLogLevel(LOGGING_INFO);
 
   EXPECT_TRUE(LOG_IS_ON(INFO));
   EXPECT_EQ(DCHECK_IS_ON(), DLOG_IS_ON(INFO));

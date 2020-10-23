@@ -106,14 +106,14 @@ EventLogMessage::~EventLogMessage() {
   std::string message(log_message_.str());
   WORD log_type = EVENTLOG_ERROR_TYPE;
   switch (log_message_.severity()) {
-    case LOG_INFO:
+    case LOGGING_INFO:
       log_type = EVENTLOG_INFORMATION_TYPE;
       break;
-    case LOG_WARNING:
+    case LOGGING_WARNING:
       log_type = EVENTLOG_WARNING_TYPE;
       break;
-    case LOG_ERROR:
-    case LOG_FATAL:
+    case LOGGING_ERROR:
+    case LOGGING_FATAL:
       // The price of getting the stack trace is not worth the hassle for
       // non-error conditions.
       base::debug::StackTrace trace;
@@ -143,16 +143,16 @@ EventLogMessage::~EventLogMessage() {
   // See sys/syslog.h for reference.
   int priority = 3;
   switch (log_message_.severity()) {
-    case LOG_INFO:
+    case LOGGING_INFO:
       priority = 6;
       break;
-    case LOG_WARNING:
+    case LOGGING_WARNING:
       priority = 4;
       break;
-    case LOG_ERROR:
+    case LOGGING_ERROR:
       priority = 3;
       break;
-    case LOG_FATAL:
+    case LOGGING_FATAL:
       priority = 2;
       break;
   }

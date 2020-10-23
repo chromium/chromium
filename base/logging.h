@@ -349,40 +349,55 @@ typedef bool (*LogMessageHandlerFunction)(int severity,
 BASE_EXPORT void SetLogMessageHandler(LogMessageHandlerFunction handler);
 BASE_EXPORT LogMessageHandlerFunction GetLogMessageHandler();
 
-
-typedef int LogSeverity;
-const LogSeverity LOG_VERBOSE = -1;  // This is level 1 verbosity
+using LogSeverity = int;
+const LogSeverity LOGGING_VERBOSE = -1;  // This is level 1 verbosity
 // Note: the log severities are used to index into the array of names,
 // see log_severity_names.
-const LogSeverity LOG_INFO = 0;
-const LogSeverity LOG_WARNING = 1;
-const LogSeverity LOG_ERROR = 2;
-const LogSeverity LOG_FATAL = 3;
-const LogSeverity LOG_NUM_SEVERITIES = 4;
+const LogSeverity LOGGING_INFO = 0;
+const LogSeverity LOGGING_WARNING = 1;
+const LogSeverity LOGGING_ERROR = 2;
+const LogSeverity LOGGING_FATAL = 3;
+const LogSeverity LOGGING_NUM_SEVERITIES = 4;
 
-// LOG_DFATAL is LOG_FATAL in debug mode, ERROR in normal mode
+// LOGGING_DFATAL is LOGGING_FATAL in debug mode, ERROR in normal mode
 #if defined(NDEBUG)
-const LogSeverity LOG_DFATAL = LOG_ERROR;
+const LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
 #else
-const LogSeverity LOG_DFATAL = LOG_FATAL;
+const LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 #endif
+
+// This block duplicates the above entries to facilitate incremental conversion
+// from LOG_FOO to LOGGING_FOO.
+// TODO(thestig): Convert existing users to LOGGING_FOO and remove this block.
+const LogSeverity LOG_VERBOSE = LOGGING_VERBOSE;
+const LogSeverity LOG_INFO = LOGGING_INFO;
+const LogSeverity LOG_WARNING = LOGGING_WARNING;
+const LogSeverity LOG_ERROR = LOGGING_ERROR;
+const LogSeverity LOG_FATAL = LOGGING_FATAL;
+const LogSeverity LOG_NUM_SEVERITIES = LOGGING_NUM_SEVERITIES;
+const LogSeverity LOG_DFATAL = LOGGING_DFATAL;
 
 // A few definitions of macros that don't generate much code. These are used
 // by LOG() and LOG_IF, etc. Since these are used all over our code, it's
 // better to have compact code for these operations.
-#define COMPACT_GOOGLE_LOG_EX_INFO(ClassName, ...) \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOG_INFO, ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_WARNING(ClassName, ...)              \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOG_WARNING, \
+#define COMPACT_GOOGLE_LOG_EX_INFO(ClassName, ...)                  \
+  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_INFO, \
                        ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_ERROR(ClassName, ...) \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOG_ERROR, ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_FATAL(ClassName, ...) \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOG_FATAL, ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_DFATAL(ClassName, ...) \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOG_DFATAL, ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_DCHECK(ClassName, ...) \
-  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOG_DCHECK, ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_WARNING(ClassName, ...)                  \
+  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_WARNING, \
+                       ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_ERROR(ClassName, ...)                  \
+  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_ERROR, \
+                       ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_FATAL(ClassName, ...)                  \
+  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_FATAL, \
+                       ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_DFATAL(ClassName, ...)                  \
+  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_DFATAL, \
+                       ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_DCHECK(ClassName, ...)                  \
+  ::logging::ClassName(__FILE__, __LINE__, ::logging::LOGGING_DCHECK, \
+                       ##__VA_ARGS__)
 
 #define COMPACT_GOOGLE_LOG_INFO COMPACT_GOOGLE_LOG_EX_INFO(LogMessage)
 #define COMPACT_GOOGLE_LOG_WARNING COMPACT_GOOGLE_LOG_EX_WARNING(LogMessage)
@@ -402,14 +417,14 @@ const LogSeverity LOG_DFATAL = LOG_FATAL;
   COMPACT_GOOGLE_LOG_EX_ERROR(ClassName , ##__VA_ARGS__)
 #define COMPACT_GOOGLE_LOG_0 COMPACT_GOOGLE_LOG_ERROR
 // Needed for LOG_IS_ON(ERROR).
-const LogSeverity LOG_0 = LOG_ERROR;
+const LogSeverity LOGGING_0 = LOGGING_ERROR;
 #endif
 
 // As special cases, we can assume that LOG_IS_ON(FATAL) always holds. Also,
 // LOG_IS_ON(DFATAL) always holds in debug mode. In particular, CHECK()s will
 // always fire if they fail.
 #define LOG_IS_ON(severity) \
-  (::logging::ShouldCreateLogMessage(::logging::LOG_##severity))
+  (::logging::ShouldCreateLogMessage(::logging::LOGGING_##severity))
 
 // We don't do any caching tricks with VLOG_IS_ON() like the
 // google-glog version since it increases binary size.  This means
@@ -546,16 +561,16 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 #if DCHECK_IS_ON()
 
 #if defined(DCHECK_IS_CONFIGURABLE)
-BASE_EXPORT extern LogSeverity LOG_DCHECK;
+BASE_EXPORT extern LogSeverity LOGGING_DCHECK;
 #else
-const LogSeverity LOG_DCHECK = LOG_FATAL;
+const LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
 #else  // DCHECK_IS_ON()
 
-// There may be users of LOG_DCHECK that are enabled independently
+// There may be users of LOGGING_DCHECK that are enabled independently
 // of DCHECK_IS_ON(), so default to FATAL logging for those.
-const LogSeverity LOG_DCHECK = LOG_FATAL;
+const LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 
 #endif  // DCHECK_IS_ON()
 
@@ -576,7 +591,7 @@ class BASE_EXPORT LogMessage {
   // Used for LOG(severity).
   LogMessage(const char* file, int line, LogSeverity severity);
 
-  // Used for CHECK().  Implied severity = LOG_FATAL.
+  // Used for CHECK().  Implied severity = LOGGING_FATAL.
   LogMessage(const char* file, int line, const char* condition);
   LogMessage(const LogMessage&) = delete;
   LogMessage& operator=(const LogMessage&) = delete;
@@ -691,8 +706,7 @@ BASE_EXPORT FILE* DuplicateLogFILE();
 BASE_EXPORT void RawLog(int level, const char* message);
 
 #define RAW_LOG(level, message) \
-  ::logging::RawLog(::logging::LOG_##level, message)
-
+  ::logging::RawLog(::logging::LOGGING_##level, message)
 
 #if defined(OS_WIN)
 // Returns true if logging to file is enabled.

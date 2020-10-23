@@ -20,7 +20,7 @@ namespace logging {
 CheckError CheckError::Check(const char* file,
                              int line,
                              const char* condition) {
-  CheckError check_error(new LogMessage(file, line, LOG_FATAL));
+  CheckError check_error(new LogMessage(file, line, LOGGING_FATAL));
   check_error.stream() << "Check failed: " << condition << ". ";
   return check_error;
 }
@@ -28,7 +28,7 @@ CheckError CheckError::Check(const char* file,
 CheckError CheckError::CheckOp(const char* file,
                                int line,
                                CheckOpResult* check_op_result) {
-  CheckError check_error(new LogMessage(file, line, LOG_FATAL));
+  CheckError check_error(new LogMessage(file, line, LOGGING_FATAL));
   check_error.stream() << "Check failed: " << check_op_result->message_;
   free(check_op_result->message_);
   check_op_result->message_ = nullptr;
@@ -38,7 +38,7 @@ CheckError CheckError::CheckOp(const char* file,
 CheckError CheckError::DCheck(const char* file,
                               int line,
                               const char* condition) {
-  CheckError check_error(new LogMessage(file, line, LOG_DCHECK));
+  CheckError check_error(new LogMessage(file, line, LOGGING_DCHECK));
   check_error.stream() << "Check failed: " << condition << ". ";
   return check_error;
 }
@@ -46,7 +46,7 @@ CheckError CheckError::DCheck(const char* file,
 CheckError CheckError::DCheckOp(const char* file,
                                 int line,
                                 CheckOpResult* check_op_result) {
-  CheckError check_error(new LogMessage(file, line, LOG_DCHECK));
+  CheckError check_error(new LogMessage(file, line, LOGGING_DCHECK));
   check_error.stream() << "Check failed: " << check_op_result->message_;
   free(check_op_result->message_);
   check_op_result->message_ = nullptr;
@@ -59,9 +59,10 @@ CheckError CheckError::PCheck(const char* file,
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
 #if defined(OS_WIN)
   CheckError check_error(
-      new Win32ErrorLogMessage(file, line, LOG_FATAL, err_code));
+      new Win32ErrorLogMessage(file, line, LOGGING_FATAL, err_code));
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  CheckError check_error(new ErrnoLogMessage(file, line, LOG_FATAL, err_code));
+  CheckError check_error(
+      new ErrnoLogMessage(file, line, LOGGING_FATAL, err_code));
 #endif
   check_error.stream() << "Check failed: " << condition << ". ";
   return check_error;
@@ -77,9 +78,10 @@ CheckError CheckError::DPCheck(const char* file,
   SystemErrorCode err_code = logging::GetLastSystemErrorCode();
 #if defined(OS_WIN)
   CheckError check_error(
-      new Win32ErrorLogMessage(file, line, LOG_DCHECK, err_code));
+      new Win32ErrorLogMessage(file, line, LOGGING_DCHECK, err_code));
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  CheckError check_error(new ErrnoLogMessage(file, line, LOG_DCHECK, err_code));
+  CheckError check_error(
+      new ErrnoLogMessage(file, line, LOGGING_DCHECK, err_code));
 #endif
   check_error.stream() << "Check failed: " << condition << ". ";
   return check_error;
@@ -88,7 +90,7 @@ CheckError CheckError::DPCheck(const char* file,
 CheckError CheckError::NotImplemented(const char* file,
                                       int line,
                                       const char* function) {
-  CheckError check_error(new LogMessage(file, line, LOG_ERROR));
+  CheckError check_error(new LogMessage(file, line, LOGGING_ERROR));
   check_error.stream() << "Not implemented reached in " << function;
   return check_error;
 }
@@ -107,7 +109,7 @@ CheckError::~CheckError() {
 CheckError::CheckError(LogMessage* log_message) : log_message_(log_message) {}
 
 void RawCheck(const char* message) {
-  RawLog(LOG_FATAL, message);
+  RawLog(LOGGING_FATAL, message);
 }
 
 }  // namespace logging

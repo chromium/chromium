@@ -80,7 +80,8 @@ GetThreadPoolInitParams() {
 void V8DcheckCallbackHandler(const char* file, int line, const char* message) {
   // TODO(siggi): Set a crash key or a breadcrumb so the fact that we hit a
   //     V8 DCHECK gets out in the crash report.
-  ::logging::LogMessage(file, line, logging::LOG_DCHECK).stream() << message;
+  ::logging::LogMessage(file, line, logging::LOGGING_DCHECK).stream()
+      << message;
 }
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 

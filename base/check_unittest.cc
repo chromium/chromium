@@ -68,14 +68,14 @@ class ScopedCheckExpectation {
 #endif
 
 // Macro which expects a DCHECK to fire if DCHECKs are enabled.
-#define EXPECT_DCHECK(msg, check_expr)                                 \
-  do {                                                                 \
-    if (DCHECK_IS_ON() && logging::LOG_DCHECK == logging::LOG_FATAL) { \
-      ScopedCheckExpectation check_exp(__FILE__, __LINE__, msg);       \
-      check_expr;                                                      \
-    } else {                                                           \
-      check_expr;                                                      \
-    }                                                                  \
+#define EXPECT_DCHECK(msg, check_expr)                                         \
+  do {                                                                         \
+    if (DCHECK_IS_ON() && logging::LOGGING_DCHECK == logging::LOGGING_FATAL) { \
+      ScopedCheckExpectation check_exp(__FILE__, __LINE__, msg);               \
+      check_expr;                                                              \
+    } else {                                                                   \
+      check_expr;                                                              \
+    }                                                                          \
   } while (0)
 
 class CheckTest : public testing::Test {};
@@ -183,11 +183,11 @@ void DcheckEmptyFunction2() {}
 class ScopedDcheckSeverity {
  public:
   ScopedDcheckSeverity(logging::LogSeverity new_severity)
-      : old_severity_(logging::LOG_DCHECK) {
-    logging::LOG_DCHECK = new_severity;
+      : old_severity_(logging::LOGGING_DCHECK) {
+    logging::LOGGING_DCHECK = new_severity;
   }
 
-  ~ScopedDcheckSeverity() { logging::LOG_DCHECK = old_severity_; }
+  ~ScopedDcheckSeverity() { logging::LOGGING_DCHECK = old_severity_; }
 
  private:
   logging::LogSeverity old_severity_;
@@ -202,10 +202,10 @@ class ScopedDcheckSeverity {
 #endif
 TEST_F(CheckTest, MAYBE_Dcheck) {
 #if defined(DCHECK_IS_CONFIGURABLE)
-  // DCHECKs are enabled, and LOG_DCHECK is mutable, but defaults to non-fatal.
-  // Set it to LOG_FATAL to get the expected behavior from the rest of this
-  // test.
-  ScopedDcheckSeverity dcheck_severity(logging::LOG_FATAL);
+  // DCHECKs are enabled, and LOGGING_DCHECK is mutable, but defaults to
+  // non-fatal. Set it to LOGGING_FATAL to get the expected behavior from the
+  // rest of this test.
+  ScopedDcheckSeverity dcheck_severity(logging::LOGGING_FATAL);
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
@@ -307,42 +307,42 @@ TEST_F(CheckTest, ConfigurableDCheck) {
   // Verify that DCHECKs default to non-fatal in configurable-DCHECK builds.
   // Note that we require only that DCHECK is non-fatal by default, rather
   // than requiring that it be exactly INFO, ERROR, etc level.
-  EXPECT_LT(logging::LOG_DCHECK, logging::LOG_FATAL);
+  EXPECT_LT(logging::LOGGING_DCHECK, logging::LOGGING_FATAL);
   DCHECK(false);
 
   // Verify that DCHECK* aren't hard-wired to crash on failure.
-  logging::LOG_DCHECK = logging::LOG_INFO;
+  logging::LOGGING_DCHECK = logging::LOG_INFO;
   DCHECK(false);
   DCHECK_EQ(1, 2);
 
-  // Verify that DCHECK does crash if LOG_DCHECK is set to LOG_FATAL.
-  logging::LOG_DCHECK = logging::LOG_FATAL;
+  // Verify that DCHECK does crash if LOGGING_DCHECK is set to LOGGING_FATAL.
+  logging::LOGGING_DCHECK = logging::LOGGING_FATAL;
   EXPECT_CHECK("Check failed: false. ", DCHECK(false));
   EXPECT_CHECK("Check failed: 1 == 2 (1 vs. 2)", DCHECK_EQ(1, 2));
 }
 
 TEST_F(CheckTest, ConfigurableDCheckFeature) {
   // Initialize FeatureList with and without DcheckIsFatal, and verify the
-  // value of LOG_DCHECK. Note that we don't require that DCHECK take a
+  // value of LOGGING_DCHECK. Note that we don't require that DCHECK take a
   // specific value when the feature is off, only that it is non-fatal.
 
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitFromCommandLine("DcheckIsFatal", "");
-    EXPECT_EQ(logging::LOG_DCHECK, logging::LOG_FATAL);
+    EXPECT_EQ(logging::LOGGING_DCHECK, logging::LOGGING_FATAL);
   }
 
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitFromCommandLine("", "DcheckIsFatal");
-    EXPECT_LT(logging::LOG_DCHECK, logging::LOG_FATAL);
+    EXPECT_LT(logging::LOGGING_DCHECK, logging::LOGGING_FATAL);
   }
 
-  // The default case is last, so we leave LOG_DCHECK in the default state.
+  // The default case is last, so we leave LOGGING_DCHECK in the default state.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitFromCommandLine("", "");
-    EXPECT_LT(logging::LOG_DCHECK, logging::LOG_FATAL);
+    EXPECT_LT(logging::LOGGING_DCHECK, logging::LOGGING_FATAL);
   }
 }
 #endif  // defined(DCHECK_IS_CONFIGURABLE)

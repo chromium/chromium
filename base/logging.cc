@@ -142,11 +142,11 @@ VlogInfo* g_vlog_info = nullptr;
 VlogInfo* g_vlog_info_prev = nullptr;
 
 const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
-static_assert(LOG_NUM_SEVERITIES == base::size(log_severity_names),
+static_assert(LOGGING_NUM_SEVERITIES == base::size(log_severity_names),
               "Incorrect number of log_severity_names");
 
 const char* log_severity_name(int severity) {
-  if (severity >= 0 && severity < LOG_NUM_SEVERITIES)
+  if (severity >= 0 && severity < LOGGING_NUM_SEVERITIES)
     return log_severity_names[severity];
   return "UNKNOWN";
 }
@@ -162,8 +162,8 @@ int g_logging_destination = LOG_DEFAULT;
 LogFormat g_log_format = LogFormat::LOG_FORMAT_SYSLOG;
 #endif
 
-// For LOG_ERROR and above, always print to stderr.
-const int kAlwaysPrintErrorLevel = LOG_ERROR;
+// For LOGGING_ERROR and above, always print to stderr.
+const int kAlwaysPrintErrorLevel = LOGGING_ERROR;
 
 // Which log file to use? This is initialized by InitLogging or
 // will be lazily initialized to the default value when it is
@@ -347,10 +347,10 @@ void CloseLogFileUnlocked() {
 }  // namespace
 
 #if defined(DCHECK_IS_CONFIGURABLE)
-// In DCHECK-enabled Chrome builds, allow the meaning of LOG_DCHECK to be
+// In DCHECK-enabled Chrome builds, allow the meaning of LOGGING_DCHECK to be
 // determined at run-time. We default it to INFO, to avoid it triggering
 // crashes before the run-time has explicitly chosen the behaviour.
-BASE_EXPORT logging::LogSeverity LOG_DCHECK = LOG_INFO;
+BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
 // This is never instantiated, it's just used for EAT_STREAM_PARAMETERS to have
@@ -426,7 +426,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
     return true;
   }
 #endif
-  
+
   DCHECK(settings.log_file_path) << "LOG_TO_FILE set but no log_file_path!";
 
   if (!g_log_file_name)
@@ -439,7 +439,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 }
 
 void SetMinLogLevel(int level) {
-  g_min_log_level = std::min(LOG_FATAL, level);
+  g_min_log_level = std::min(LOGGING_FATAL, level);
 }
 
 int GetMinLogLevel() {
@@ -548,7 +548,7 @@ LogMessage::LogMessage(const char* file, int line, LogSeverity severity)
 }
 
 LogMessage::LogMessage(const char* file, int line, const char* condition)
-    : severity_(LOG_FATAL), file_(file), line_(line) {
+    : severity_(LOGGING_FATAL), file_(file), line_(line) {
   Init(file, line);
   stream_ << "Check failed: " << condition << ". ";
 }
@@ -557,7 +557,7 @@ LogMessage::~LogMessage() {
   size_t stack_start = stream_.tellp();
 #if !defined(OFFICIAL_BUILD) && !defined(OS_NACL) && !defined(__UCLIBC__) && \
     !defined(OS_AIX)
-  if (severity_ == LOG_FATAL && !base::debug::BeingDebugged()) {
+  if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
     // Include a stack trace on a fatal, unless a debugger is attached.
     base::debug::StackTrace stack_trace;
     stream_ << std::endl;  // Newline to separate from log message.
@@ -685,13 +685,13 @@ LogMessage::~LogMessage() {
 #define ASL_LEVEL_STR(level) ASL_LEVEL_STR_X(level)
 #define ASL_LEVEL_STR_X(level) #level
         switch (severity) {
-          case LOG_INFO:
+          case LOGGING_INFO:
             return ASL_LEVEL_STR(ASL_LEVEL_INFO);
-          case LOG_WARNING:
+          case LOGGING_WARNING:
             return ASL_LEVEL_STR(ASL_LEVEL_WARNING);
-          case LOG_ERROR:
+          case LOGGING_ERROR:
             return ASL_LEVEL_STR(ASL_LEVEL_ERR);
-          case LOG_FATAL:
+          case LOGGING_FATAL:
             return ASL_LEVEL_STR(ASL_LEVEL_CRIT);
           default:
             return severity < 0 ? ASL_LEVEL_STR(ASL_LEVEL_DEBUG)
@@ -725,13 +725,13 @@ LogMessage::~LogMessage() {
       } log(main_bundle_id.empty() ? nullptr : main_bundle_id.c_str());
       const os_log_type_t os_log_type = [](LogSeverity severity) {
         switch (severity) {
-          case LOG_INFO:
+          case LOGGING_INFO:
             return OS_LOG_TYPE_INFO;
-          case LOG_WARNING:
+          case LOGGING_WARNING:
             return OS_LOG_TYPE_DEFAULT;
-          case LOG_ERROR:
+          case LOGGING_ERROR:
             return OS_LOG_TYPE_ERROR;
-          case LOG_FATAL:
+          case LOGGING_FATAL:
             return OS_LOG_TYPE_FAULT;
           default:
             return severity < 0 ? OS_LOG_TYPE_DEBUG : OS_LOG_TYPE_DEFAULT;
@@ -745,16 +745,16 @@ LogMessage::~LogMessage() {
     android_LogPriority priority =
         (severity_ < 0) ? ANDROID_LOG_VERBOSE : ANDROID_LOG_UNKNOWN;
     switch (severity_) {
-      case LOG_INFO:
+      case LOGGING_INFO:
         priority = ANDROID_LOG_INFO;
         break;
-      case LOG_WARNING:
+      case LOGGING_WARNING:
         priority = ANDROID_LOG_WARN;
         break;
-      case LOG_ERROR:
+      case LOGGING_ERROR:
         priority = ANDROID_LOG_ERROR;
         break;
-      case LOG_FATAL:
+      case LOGGING_FATAL:
         priority = ANDROID_LOG_FATAL;
         break;
     }
@@ -777,16 +777,16 @@ LogMessage::~LogMessage() {
 #elif defined(OS_FUCHSIA)
     fx_log_severity_t severity = FX_LOG_INFO;
     switch (severity_) {
-      case LOG_INFO:
+      case LOGGING_INFO:
         severity = FX_LOG_INFO;
         break;
-      case LOG_WARNING:
+      case LOGGING_WARNING:
         severity = FX_LOG_WARNING;
         break;
-      case LOG_ERROR:
+      case LOGGING_ERROR:
         severity = FX_LOG_ERROR;
         break;
-      case LOG_FATAL:
+      case LOGGING_FATAL:
         // Don't use FX_LOG_FATAL, otherwise fx_logger_log() will abort().
         severity = FX_LOG_ERROR;
         break;
@@ -840,7 +840,7 @@ LogMessage::~LogMessage() {
     }
   }
 
-  if (severity_ == LOG_FATAL) {
+  if (severity_ == LOGGING_FATAL) {
     // Write the log message to the global activity tracker, if running.
     base::debug::GlobalActivityTracker* tracker =
         base::debug::GlobalActivityTracker::Get();
@@ -1109,7 +1109,7 @@ void RawLog(int level, const char* message) {
     }
   }
 
-  if (level == LOG_FATAL)
+  if (level == LOGGING_FATAL)
     base::debug::BreakDebugger();
 }
 
