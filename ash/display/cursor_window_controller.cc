@@ -5,6 +5,7 @@
 #include "ash/display/cursor_window_controller.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/display/display_color_manager.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -137,10 +138,18 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
   if (is_cursor_motion_blur_enabled_)
     return true;
 
-  if (features::IsCaptureModeEnabled() &&
-      CaptureModeController::Get()->is_recording_in_progress()) {
-    // To let the video capturer record the cursor.
-    return true;
+  if (features::IsCaptureModeEnabled()) {
+    auto* controller = CaptureModeController::Get();
+    if (controller->is_recording_in_progress()) {
+      // To let the video capturer record the cursor.
+      return true;
+    }
+
+    auto* session = controller->capture_mode_session();
+    if (session && session->is_drag_in_progress()) {
+      // To ensure the cursor is aligned with the dragged region.
+      return true;
+    }
   }
 
   // During startup, we may not have a preference service yet. We need to check

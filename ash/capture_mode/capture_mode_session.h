@@ -61,6 +61,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   aura::Window* current_root() const { return current_root_; }
   bool is_selecting_region() const { return is_selecting_region_; }
+  bool is_drag_in_progress() const { return is_drag_in_progress_; }
 
   // Gets the current window selected for |kWindow| capture source. Returns
   // nullptr if no window is available for selection.
@@ -150,7 +151,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // hide the cursor.
   void MaybeShowMagnifierGlassAtPoint(const gfx::Point& location_in_root);
 
-  // Closes |magnifier_glass_| and shows the cursor.
+  // Closes |magnifier_glass_|.
   void CloseMagnifierGlass();
 
   // Retrieves the anchor points on the current selected region associated with
@@ -239,6 +240,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // The object to specify the cursor type.
   std::unique_ptr<ScopedCursorSetter> cursor_setter_;
+
+  // True when dragging is in progress.
+  bool is_drag_in_progress_ = false;
 };
 
 }  // namespace ash

@@ -231,6 +231,15 @@ class CaptureModeSession::ScopedCursorSetter {
 
   bool IsCursorVisible() const { return cursor_manager_->IsCursorVisible(); }
 
+  void HideCursor() {
+    if (original_cursor_locked_ || !IsCursorVisible())
+      return;
+
+    cursor_manager_->UnlockCursor();
+    cursor_manager_->HideCursor();
+    cursor_manager_->LockCursor();
+  }
+
  private:
   wm::CursorManager* const cursor_manager_;
   const gfx::NativeCursor original_cursor_;
@@ -674,6 +683,11 @@ void CaptureModeSession::OnLocatedEventPressed(
   initial_location_in_root_ = location_in_root;
   previous_location_in_root_ = location_in_root;
 
+  // Use cursor compositing instead of the platform cursor when dragging to
+  // ensure the cursor is aligned with the region.
+  is_drag_in_progress_ = true;
+  Shell::Get()->UpdateCursorCompositingEnabled();
+
   if (is_selecting_region_)
     return;
 
@@ -756,6 +770,8 @@ void CaptureModeSession::OnLocatedEventReleased(
   fine_tune_position_ = FineTunePosition::kNone;
   anchor_points_.clear();
 
+  is_drag_in_progress_ = false;
+  Shell::Get()->UpdateCursorCompositingEnabled();
   cursor_setter_->UpdateCursor(
       GetCursorType(GetFineTunePosition(location_in_root, /*is_touch=*/false),
                     is_event_on_capture_bar));
@@ -874,13 +890,15 @@ void CaptureModeSession::MaybeShowMagnifierGlassAtPoint(
   if (!capture_mode_util::IsCornerFineTunePosition(fine_tune_position_))
     return;
 
-  // TODO(richui): Hide cursor here.
+  DCHECK(cursor_setter_);
+  // Cursor will be reshown the next time we call UpdateCursor (which should be
+  // in OnLocatedEventReleased).
+  cursor_setter_->HideCursor();
   magnifier_glass_.ShowFor(current_root_, location_in_root);
 }
 
 void CaptureModeSession::CloseMagnifierGlass() {
   magnifier_glass_.Close();
-  // TODO(richui): Show cursor here.
 }
 
 std::vector<gfx::Point> CaptureModeSession::GetAnchorPointsForPosition(

@@ -536,7 +536,8 @@ TEST_F(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-// Tests that the magnifying glass appears while fine tuning the capture region.
+// Tests that the magnifying glass appears while fine tuning the capture region,
+// and that the cursor is hidden if the magnifying glass is present.
 TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
   const gfx::Vector2d kDragDelta(50, 50);
   UpdateDisplay("800x800");
@@ -552,39 +553,47 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
 
   auto check_magnifier_shows_properly = [this](const gfx::Point& origin,
                                                const gfx::Point& destination,
-                                               bool should_show) {
-    // If |should_show|, check that the magnifying glass is centered on the
-    // mouse after press and during drag. If not |should_show|, check that
-    // the magnifying glass never shows. Should always be not visible when
-    // mouse button is released.
+                                               bool should_show_magnifier) {
+    // If |should_show_magnifier|, check that the magnifying glass is centered
+    // on the mouse after press and during drag, and that the cursor is hidden.
+    // If not |should_show_magnifier|, check that the magnifying glass never
+    // shows. Should always be not visible when mouse button is released.
     auto* event_generator = GetEventGenerator();
     base::Optional<gfx::Point> expected_origin =
-        should_show ? base::make_optional(origin) : base::nullopt;
+        should_show_magnifier ? base::make_optional(origin) : base::nullopt;
     base::Optional<gfx::Point> expected_destination =
-        should_show ? base::make_optional(destination) : base::nullopt;
+        should_show_magnifier ? base::make_optional(destination)
+                              : base::nullopt;
+
+    auto* cursor_manager = Shell::Get()->cursor_manager();
+    EXPECT_TRUE(cursor_manager->IsCursorVisible());
 
     // Move cursor to |origin| and click.
     event_generator->set_current_screen_location(origin);
     event_generator->PressLeftButton();
     EXPECT_EQ(expected_origin, GetMagnifierGlassCenterPoint());
+    EXPECT_NE(should_show_magnifier, cursor_manager->IsCursorVisible());
 
     // Drag to |destination| while holding left button.
     event_generator->MoveMouseTo(destination);
     EXPECT_EQ(expected_destination, GetMagnifierGlassCenterPoint());
+    EXPECT_NE(should_show_magnifier, cursor_manager->IsCursorVisible());
 
     // Drag back to |origin| while still holding left button.
     event_generator->MoveMouseTo(origin);
     EXPECT_EQ(expected_origin, GetMagnifierGlassCenterPoint());
+    EXPECT_NE(should_show_magnifier, cursor_manager->IsCursorVisible());
 
     // Release left button.
     event_generator->ReleaseLeftButton();
     EXPECT_EQ(base::nullopt, GetMagnifierGlassCenterPoint());
+    EXPECT_TRUE(cursor_manager->IsCursorVisible());
   };
 
   // Drag the capture region from within the existing selected region. The
   // magnifier should not be visible at any point.
   check_magnifier_shows_properly(gfx::Point(400, 250), gfx::Point(500, 350),
-                                 /*should_show=*/false);
+                                 /*should_show_magnifier=*/false);
 
   // Check that each corner fine tune position shows the magnifier when
   // dragging.
@@ -602,7 +611,7 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
             capture_region, fine_tune_position.position);
     check_magnifier_shows_properly(drag_affordance_location,
                                    drag_affordance_location + kDragDelta,
-                                   /*should_show=*/true);
+                                   /*should_show_magnifier=*/true);
   }
 }
 
@@ -867,7 +876,7 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
   EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
 
-  const gfx::Rect target_region(gfx::Rect(200, 200, 400, 400));
+  const gfx::Rect target_region(gfx::Rect(200, 200, 200, 200));
   SelectRegion(target_region);
 
   // Makes sure that the cursor is updated when the user releases the region
@@ -937,6 +946,52 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   EXPECT_FALSE(controller->IsActive());
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
   EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+}
+
+// Tests that in Region mode, cursor compositing is used instead of the system
+// cursor when the cursor is being dragged.
+TEST_F(CaptureModeTest, RegionDragCursorCompositing) {
+  auto* event_generator = GetEventGenerator();
+  auto* session = StartImageRegionCapture()->capture_mode_session();
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+
+  // Initially cursor should be visible and cursor compositing is not enabled.
+  EXPECT_FALSE(session->is_drag_in_progress());
+  EXPECT_FALSE(IsCursorCompositingEnabled());
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+
+  const gfx::Rect target_region(gfx::Rect(200, 200, 200, 200));
+
+  // For each start and end point try dragging and verify that cursor
+  // compositing is functioning as expected.
+  struct {
+    std::string trace;
+    gfx::Point start_point;
+    gfx::Point end_point;
+  } kDragCases[] = {
+      {"initial_region", target_region.origin(), target_region.bottom_right()},
+      {"edge_resize", target_region.right_center(),
+       gfx::Point(target_region.right_center() + gfx::Vector2d(50, 0))},
+      {"corner_resize", target_region.origin(), gfx::Point(175, 175)},
+      {"move", gfx::Point(250, 250), gfx::Point(300, 300)},
+  };
+
+  for (auto test_case : kDragCases) {
+    SCOPED_TRACE(test_case.trace);
+
+    event_generator->MoveMouseTo(test_case.start_point);
+    event_generator->PressLeftButton();
+    EXPECT_TRUE(session->is_drag_in_progress());
+    EXPECT_TRUE(IsCursorCompositingEnabled());
+
+    event_generator->MoveMouseTo(test_case.end_point);
+    EXPECT_TRUE(session->is_drag_in_progress());
+    EXPECT_TRUE(IsCursorCompositingEnabled());
+
+    event_generator->ReleaseLeftButton();
+    EXPECT_FALSE(session->is_drag_in_progress());
+    EXPECT_FALSE(IsCursorCompositingEnabled());
+  }
 }
 
 }  // namespace ash
