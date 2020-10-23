@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -230,6 +231,15 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
              !GetLayoutEmbeddedObject()->ShowsUnavailablePluginIndicator() &&
              GetObjectContentType() != ObjectContentType::kPlugin &&
              !is_delaying_load_event_) {
+    // If we're in a content-visibility subtree that can prevent layout, then
+    // add our layout object to the frame view's update list. This is typically
+    // done during layout, but if we're blocking layout, we will never update
+    // the plugin and thus delay the load event indefinitely.
+    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*this)) {
+      auto* embedded_object = GetLayoutEmbeddedObject();
+      if (auto* frame_view = embedded_object->GetFrameView())
+        frame_view->AddPartToUpdate(*embedded_object);
+    }
     is_delaying_load_event_ = true;
     GetDocument().IncrementLoadEventDelayCount();
     GetDocument().LoadPluginsSoon();

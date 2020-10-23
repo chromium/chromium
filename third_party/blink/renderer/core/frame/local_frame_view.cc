@@ -1202,7 +1202,14 @@ void LocalFrameView::UpdateGeometry() {
 }
 
 void LocalFrameView::AddPartToUpdate(LayoutEmbeddedObject& object) {
-  DCHECK(IsInPerformLayout());
+  // This is typically called during layout to ensure we update plugins.
+  // However, if layout is blocked (e.g. by content-visibility), we can add the
+  // part to update during layout tree attachment (which is a part of style
+  // recalc).
+  DCHECK(IsInPerformLayout() ||
+         (DisplayLockUtilities::NearestLockedExclusiveAncestor(object) &&
+          frame_->GetDocument()->InStyleRecalc()));
+
   // Tell the DOM element that it needs a Plugin update.
   Node* node = object.GetNode();
   DCHECK(node);
