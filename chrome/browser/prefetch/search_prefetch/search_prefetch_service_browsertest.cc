@@ -6,15 +6,23 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -29,6 +37,13 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
+namespace {
+constexpr char kSuggestDomain[] = "suggest.com";
+constexpr char kSearchDomain[] = "search.com";
+constexpr char kOmniboxSuggestPrefetchQuery[] = "porgs";
+constexpr char kOmniboxSuggestNonPrefetchQuery[] = "puffins";
+}  // namespace
+
 class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
  public:
   SearchPrefetchBaseBrowserTest() {
@@ -39,12 +54,21 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
         base::BindRepeating(&SearchPrefetchBaseBrowserTest::HandleSearchRequest,
                             base::Unretained(this)));
     EXPECT_TRUE(search_server_->Start());
+
+    search_suggest_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    search_suggest_server_->ServeFilesFromSourceDirectory("chrome/test/data");
+    search_suggest_server_->RegisterRequestHandler(base::BindRepeating(
+        &SearchPrefetchBaseBrowserTest::HandleSearchSuggestRequest,
+        base::Unretained(this)));
+    EXPECT_TRUE(search_suggest_server_->Start());
   }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    host_resolver()->AddRule("search.test", "127.0.0.1");
+    host_resolver()->AddRule(kSearchDomain, "127.0.0.1");
+    host_resolver()->AddRule(kSuggestDomain, "127.0.0.1");
 
     TemplateURLService* model =
         TemplateURLServiceFactory::GetForProfile(browser()->profile());
@@ -53,9 +77,12 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(model->loaded());
 
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("search.test"));
+    data.SetShortName(base::ASCIIToUTF16(kSearchDomain));
     data.SetKeyword(data.short_name());
     data.SetURL(GetSearchServerQueryURL("{searchTerms}").spec());
+    data.suggestions_url =
+        search_suggest_server_->GetURL(kSuggestDomain, "/?q={searchTerms}")
+            .spec();
 
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
@@ -83,11 +110,11 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
   }
 
   GURL GetSearchServerQueryURL(const std::string& path) const {
-    return search_server_->GetURL("search.test", "/search_page.html?q=" + path);
+    return search_server_->GetURL(kSearchDomain, "/search_page.html?q=" + path);
   }
 
   GURL GetSearchServerQueryURLWithNoQuery(const std::string& path) const {
-    return search_server_->GetURL("search.test", path);
+    return search_server_->GetURL(kSearchDomain, path);
   }
 
   void WaitUntilStatusChanges(base::string16 search_terms) {
@@ -97,6 +124,21 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
         search_terms);
     while (status == search_prefetch_service->GetSearchPrefetchStatusForTesting(
                          search_terms)) {
+      base::RunLoop run_loop;
+      run_loop.RunUntilIdle();
+    }
+  }
+
+  void WaitUntilStatusChangesTo(base::string16 search_terms,
+                                SearchPrefetchStatus status) {
+    auto* search_prefetch_service =
+        SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+    while (!search_prefetch_service
+                ->GetSearchPrefetchStatusForTesting(search_terms)
+                .has_value() ||
+           status != search_prefetch_service
+                         ->GetSearchPrefetchStatusForTesting(search_terms)
+                         .value()) {
       base::RunLoop run_loop;
       run_loop.RunUntilIdle();
     }
@@ -173,8 +215,51 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     }
   }
 
+  std::unique_ptr<net::test_server::HttpResponse> HandleSearchSuggestRequest(
+      const net::test_server::HttpRequest& request) {
+    // |content| is a json request that contains the search suggest response.
+    // The first item is the query (not used), the second is the results list,
+    // the third is descriptions, fifth is an extra data dictionary. The
+    // google:clientdata contains "phi" which is the prefetch index (i.e., which
+    // suggest can be prefetched).
+    std::string content = "";
+
+    if (request.GetURL().spec().find(kOmniboxSuggestPrefetchQuery) !=
+        std::string::npos) {
+      content = R"([
+      "porgs",
+      ["porgs","porgsandwich"],
+      ["", ""],
+      [],
+      {
+        "google:clientdata": {
+          "phi": 0
+        }
+      }])";
+    }
+
+    if (request.GetURL().spec().find(kOmniboxSuggestNonPrefetchQuery) !=
+        std::string::npos) {
+      content = R"([
+      "puffins",
+      ["puffins","puffinsalad"],
+      ["", ""],
+      [],
+      {}])";
+    }
+
+    std::unique_ptr<net::test_server::BasicHttpResponse> resp =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    resp->set_code(net::HTTP_OK);
+    resp->set_content_type("application/json");
+    resp->set_content(content);
+    return resp;
+  }
+
   std::vector<net::test_server::HttpRequest> search_server_requests_;
   std::unique_ptr<net::EmbeddedTestServer> search_server_;
+
+  std::unique_ptr<net::EmbeddedTestServer> search_suggest_server_;
 
   bool should_hang_requests_ = false;
 
@@ -492,6 +577,85 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("other_query")));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       OmniboxEditTriggersPrefetch) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+
+  // Trigger an omnibox suggest fetch that has a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::TimeDelta::FromSeconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kSuccessfullyCompleted);
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kSuccessfullyCompleted,
+            prefetch_status.value());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       OmniboxEditDoesNotTriggersPrefetch) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestNonPrefetchQuery;
+
+  // Trigger an omnibox suggest fetch that does not have a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::TimeDelta::FromSeconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  WaitForDuration(base::TimeDelta::FromMilliseconds(100));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
 }
 
 class SearchPrefetchServiceZeroCacheTimeBrowserTest

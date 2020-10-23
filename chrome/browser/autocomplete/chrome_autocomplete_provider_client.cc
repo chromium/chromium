@@ -25,6 +25,8 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/query_tiles/tile_service_factory.h"
@@ -459,6 +461,16 @@ bool ChromeAutocompleteProviderClient::IsBrowserUpdateAvailable() const {
 #else
   return UpgradeDetector::GetInstance()->is_upgrade_available();
 #endif
+}
+
+void ChromeAutocompleteProviderClient::OnAutocompleteControllerResultReady(
+    AutocompleteController* controller) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(profile_);
+
+  // Prefetches result pages that the search provider marked as prefetchable.
+  if (search_prefetch_service)
+    search_prefetch_service->OnResultChanged(controller);
 }
 
 bool ChromeAutocompleteProviderClient::StrippedURLsAreEqual(

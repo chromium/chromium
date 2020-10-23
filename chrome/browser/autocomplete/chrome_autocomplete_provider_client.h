@@ -84,6 +84,8 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsTabOpenWithURL(const GURL& url,
                         const AutocompleteInput* input) override;
   bool IsBrowserUpdateAvailable() const override;
+  void OnAutocompleteControllerResultReady(
+      AutocompleteController* controller) override;
 
   // For testing.
   void set_storage_partition(content::StoragePartition* storage_partition) {

@@ -1003,3 +1003,8 @@ bool AutocompleteController::OnMemoryDump(
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes, res);
   return true;
 }
+
+void AutocompleteController::SetStartStopTimerDurationForTesting(
+    base::TimeDelta duration) {
+  stop_timer_duration_ = duration;
+}

@@ -11,6 +11,8 @@
 #include "chrome/browser/prefetch/search_prefetch/prefetched_response_container.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/base_search_provider.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/browser_context.h"
@@ -246,4 +248,16 @@ void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {
 
 void SearchPrefetchService::ReportError() {
   last_error_time_ticks_ = base::TimeTicks::Now();
+}
+
+void SearchPrefetchService::OnResultChanged(
+    AutocompleteController* controller) {
+  const auto& result = controller->result();
+  for (const auto& match : result) {
+    // TODO(ryansturm): Pass a bool for IsTopResult to limit prefetch to when
+    // the match is the first item in the omnibox. https://crbug.com/1138649
+    if (BaseSearchProvider::ShouldPrefetch(match)) {
+      MaybePrefetchURL(match.destination_url);
+    }
+  }
 }

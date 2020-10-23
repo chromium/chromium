@@ -172,6 +172,9 @@ class AutocompleteController : public AutocompleteProviderListener,
     return last_time_default_match_changed_;
   }
 
+  // Sets the provider timeout duration for future calls to |Start()|.
+  void SetStartStopTimerDurationForTesting(base::TimeDelta duration);
+
  private:
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
@@ -320,12 +323,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Timer used to tell the providers to Stop() searching for matches.
   base::OneShotTimer stop_timer_;
 
-  // Amount of time (in ms) between when the user stops typing and
-  // when we send Stop() to every provider.  This is intended to avoid
-  // the disruptive effect of belated omnibox updates, updates that
-  // come after the user has had to time to read the whole dropdown
-  // and doesn't expect it to change.
-  const base::TimeDelta stop_timer_duration_;
+  // Amount of time between when the user stops typing and when we send Stop()
+  // to every provider.  This is intended to avoid the disruptive effect of
+  // belated omnibox updates, updates that come after the user has had to time
+  // to read the whole dropdown and doesn't expect it to change.
+  base::TimeDelta stop_timer_duration_;
 
   // True if a query is not currently running.
   bool done_;

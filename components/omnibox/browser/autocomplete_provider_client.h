@@ -150,8 +150,8 @@ class AutocompleteProviderClient {
   virtual void StartServiceWorker(const GURL& destination_url) {}
 
   // Called by |controller| when its results have changed and all providers are
-  // done processing the autocomplete request. Chrome ignores this. It's only
-  // used in components unit tests. TODO(blundell): remove it.
+  // done processing the autocomplete request. Used by chrome to inform the
+  // prefetch service of updated results.
   virtual void OnAutocompleteControllerResultReady(
       AutocompleteController* controller) {}
 

@@ -19,6 +19,8 @@ class Profile;
 class GURL;
 class PrefetchedResponseContainer;
 
+class AutocompleteController;
+
 enum class SearchPrefetchStatus {
   // The request is on the network and may move to any other state.
   kInFlight = 1,
@@ -35,6 +37,9 @@ class SearchPrefetchService : public KeyedService {
 
   SearchPrefetchService(const SearchPrefetchService&) = delete;
   SearchPrefetchService& operator=(const SearchPrefetchService&) = delete;
+
+  // Called when |controller| has updated information.
+  void OnResultChanged(AutocompleteController* controller);
 
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url);
