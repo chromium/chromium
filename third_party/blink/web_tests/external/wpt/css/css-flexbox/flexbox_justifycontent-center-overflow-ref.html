@@ -12,24 +12,26 @@ div {
 	position: relative;
 }
 span {
-	background: yellow;
-	margin: 1em 0 0 -2.85em;
+    background: white;
+	margin: 1em;
+	width: 2em;
 	height: 6em;
-	display: inline-block;
+	display: block;
+	position: absolute;
+}
+span:nth-child(1) {
+	background: yellow;
+	left: -4em;
 }
 span:nth-child(2) {
 	background: pink;
-	margin-left: 2em;
 }
 span:nth-child(3) {
 	background: lightblue;
-	margin-left: 0;
-	position: relative;
-	top: -7em;
-	left: 4.95em
+	left: 4em;
 }
 </style>
 
 <div>
-	<span>dam</span><span>dam</span><span>dam</span>
+	<span>x</span><span>x</span><span>x</span>
 </div>

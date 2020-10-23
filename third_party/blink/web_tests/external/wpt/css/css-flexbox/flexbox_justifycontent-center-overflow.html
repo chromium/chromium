@@ -8,7 +8,6 @@
 div {
 	font-family: monospace;
 	background: blue;
-	padding: 0;
 	margin: 1em 0 0 10em;
 	border: 1px solid black;
 	height: 8em;
@@ -20,8 +19,8 @@ div {
 span {
 	background: white;
 	margin: 1em;
-	width: 5em;
-	max-width: 6em;
+	min-width: 2em;
+	max-width: 2em;
 	display: inline-block;
 
 	flex: 1 0 0%;
@@ -32,5 +31,5 @@ span:nth-child(3) {background: lightblue;}
 </style>
 
 <div>
-	<span>dam</span><span>dam</span><span>dam</span>
+	<span>x</span><span>x</span><span>x</span>
 </div>
