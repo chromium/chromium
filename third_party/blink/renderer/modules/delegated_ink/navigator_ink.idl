@@ -5,7 +5,7 @@
 // https://github.com/WICG/ink-enhancement
 
 [
-    ImplementedAs=NavigatorInk,
+    ImplementedAs=Ink,
     RuntimeEnabled=DelegatedInkTrails,
     Exposed=Window
 ] partial interface Navigator {

@@ -10,7 +10,5 @@ blink_modules_sources("delegated_ink") {
     "delegated_ink_trail_presenter.h",
     "ink.cc",
     "ink.h",
-    "navigator_ink.cc",
-    "navigator_ink.h",
   ]
 }

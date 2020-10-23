@@ -5,12 +5,25 @@
 #include "third_party/blink/renderer/modules/delegated_ink/ink.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-Ink::Ink(LocalFrame* frame) : local_frame_(frame) {}
+const char Ink::kSupplementName[] = "Ink";
+
+Ink* Ink::ink(Navigator& navigator) {
+  DCHECK(RuntimeEnabledFeatures::DelegatedInkTrailsEnabled());
+  Ink* ink = Supplement<Navigator>::From<Ink>(navigator);
+  if (!ink) {
+    ink = MakeGarbageCollected<Ink>(navigator);
+    ProvideTo(navigator, ink);
+  }
+  return ink;
+}
+
+Ink::Ink(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
 ScriptPromise Ink::requestPresenter(ScriptState* state,
                                     String type,
@@ -35,8 +48,8 @@ ScriptPromise Ink::requestPresenter(ScriptState* state,
   }
 
   DelegatedInkTrailPresenter* trail_presenter =
-      DelegatedInkTrailPresenter::CreatePresenter(presentationArea,
-                                                  local_frame_);
+      DelegatedInkTrailPresenter::CreatePresenter(
+          presentationArea, GetSupplementable()->DomWindow()->GetFrame());
 
   resolver->Resolve(trail_presenter);
   return promise;
@@ -44,7 +57,7 @@ ScriptPromise Ink::requestPresenter(ScriptState* state,
 
 void Ink::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  visitor->Trace(local_frame_);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink
