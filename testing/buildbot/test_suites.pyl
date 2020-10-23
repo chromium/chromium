@@ -649,6 +649,15 @@
 
     'chromium_gtests': {
       'absl_hardening_tests': {},
+      'angle_unittests': {
+        'args': [
+          'angle_unittests',
+        ],
+        'android_args': [
+          '-v',
+        ],
+        'use_isolated_scripts_api': True,
+      },
       'base_unittests': {},
       'base_util_unittests': {},
       'blink_common_unittests': {},
@@ -706,15 +715,6 @@
       'shell_dialogs_unittests': {},
       'skia_unittests': {},
       'sql_unittests': {},
-      'standalone_angle_unittests': {
-        'args': [
-          'standalone_angle_unittests',
-        ],
-        'android_args': [
-          '-v',
-        ],
-        'use_isolated_scripts_api': True,
-      },
       'storage_unittests': {},
       'ui_base_unittests': {},
       'ui_touch_selection_unittests': {},
@@ -1619,11 +1619,11 @@
     'gpu_angle_deqp_egl_d3d11_gtests': {
       'angle_deqp_egl_d3d11_tests': {
         'args': [
-          'standalone_angle_deqp_egl_tests',
+          'angle_deqp_egl_tests',
           '--use-angle=d3d11',
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_egl_tests',
+        'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1631,13 +1631,13 @@
     'gpu_angle_deqp_egl_gl_gtests': {
       'angle_deqp_egl_gl_tests': {
         'args': [
-          'standalone_angle_deqp_egl_tests',
+          'angle_deqp_egl_tests',
           '--use-angle=gl',
           '--bot-mode',
           # Flaky when run with multiple processes.
           '--max-processes=1',
         ],
-        'test': 'standalone_angle_deqp_egl_tests',
+        'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1645,7 +1645,7 @@
     'gpu_angle_deqp_egl_gles_gtests': {
       'angle_deqp_egl_gles_tests': {
         'args': [
-          'standalone_angle_deqp_egl_tests',
+          'angle_deqp_egl_tests',
           '--use-angle=gles',
         ],
         'android_args': [
@@ -1655,7 +1655,7 @@
         'android_swarming': {
           'shards': 4,
         },
-        'test': 'standalone_angle_deqp_egl_tests',
+        'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1663,11 +1663,11 @@
     'gpu_angle_deqp_egl_metal_gtests': {
       'angle_deqp_egl_metal_tests': {
         'args': [
-          'standalone_angle_deqp_egl_tests',
+          'angle_deqp_egl_tests',
           '--use-angle=metal',
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_egl_tests',
+        'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1675,7 +1675,7 @@
     'gpu_angle_deqp_egl_vulkan_gtests': {
       'angle_deqp_egl_vulkan_tests': {
         'args': [
-          'standalone_angle_deqp_egl_tests',
+          'angle_deqp_egl_tests',
           '--use-angle=vulkan',
         ],
         'android_args': [
@@ -1691,7 +1691,7 @@
         'swarming': {
           'shards': 2,
         },
-        'test': 'standalone_angle_deqp_egl_tests',
+        'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1699,11 +1699,11 @@
     'gpu_angle_deqp_gles2_d3d11_gtests': {
       'angle_deqp_gles2_d3d11_tests': {
         'args': [
-          'standalone_angle_deqp_gles2_tests',
+          'angle_deqp_gles2_tests',
           '--use-angle=d3d11',
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_gles2_tests',
+        'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1711,11 +1711,11 @@
     'gpu_angle_deqp_gles2_gl_gtests': {
       'angle_deqp_gles2_gl_tests': {
         'args': [
-          'standalone_angle_deqp_gles2_tests',
+          'angle_deqp_gles2_tests',
           '--use-angle=gl',
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_gles2_tests',
+        'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1723,7 +1723,7 @@
     'gpu_angle_deqp_gles2_gles_gtests': {
       'angle_deqp_gles2_gles_tests': {
         'args': [
-          'standalone_angle_deqp_gles2_tests',
+          'angle_deqp_gles2_tests',
           '--use-angle=gles',
         ],
         'android_args': [
@@ -1736,7 +1736,7 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_gles2_tests',
+        'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1744,13 +1744,13 @@
     'gpu_angle_deqp_gles2_metal_gtests': {
       'angle_deqp_gles2_metal_tests': {
         'args': [
-          'standalone_angle_deqp_gles2_tests',
+          'angle_deqp_gles2_tests',
           '--use-angle=metal',
         ],
         'desktop_args': [
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_gles2_tests',
+        'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1758,7 +1758,7 @@
     'gpu_angle_deqp_gles2_vulkan_gtests': {
       'angle_deqp_gles2_vulkan_tests': {
         'args': [
-          'standalone_angle_deqp_gles2_tests',
+          'angle_deqp_gles2_tests',
           '--use-angle=vulkan',
         ],
         'android_args': [
@@ -1771,7 +1771,7 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_gles2_tests',
+        'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1779,14 +1779,14 @@
     'gpu_angle_deqp_gles31_d3d11_gtests': {
       'angle_deqp_gles31_d3d11_tests': {
         'args': [
-          'standalone_angle_deqp_gles31_tests',
+          'angle_deqp_gles31_tests',
           '--use-angle=d3d11',
           '--bot-mode',
         ],
         'swarming': {
           'shards': 2,
         },
-        'test': 'standalone_angle_deqp_gles31_tests',
+        'test': 'angle_deqp_gles31_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1794,14 +1794,14 @@
     'gpu_angle_deqp_gles31_gl_gtests': {
       'angle_deqp_gles31_gl_tests': {
         'args': [
-          'standalone_angle_deqp_gles31_tests',
+          'angle_deqp_gles31_tests',
           '--use-angle=gl',
           '--bot-mode',
         ],
         'swarming': {
           'shards': 2,
         },
-        'test': 'standalone_angle_deqp_gles31_tests',
+        'test': 'angle_deqp_gles31_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1809,7 +1809,7 @@
     'gpu_angle_deqp_gles31_vulkan_gtests': {
       'angle_deqp_gles31_vulkan_tests': {
         'args': [
-          'standalone_angle_deqp_gles31_tests',
+          'angle_deqp_gles31_tests',
           '--use-angle=vulkan',
         ],
         'android_args': [
@@ -1825,7 +1825,7 @@
         'swarming': {
           'shards': 2,
         },
-        'test': 'standalone_angle_deqp_gles31_tests',
+        'test': 'angle_deqp_gles31_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1833,14 +1833,14 @@
     'gpu_angle_deqp_gles3_d3d11_gtests': {
       'angle_deqp_gles3_d3d11_tests': {
         'args': [
-          'standalone_angle_deqp_gles3_tests',
+          'angle_deqp_gles3_tests',
           '--use-angle=d3d11',
           '--bot-mode',
         ],
         'swarming': {
           'shards': 2,
         },
-        'test': 'standalone_angle_deqp_gles3_tests',
+        'test': 'angle_deqp_gles3_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1848,14 +1848,14 @@
     'gpu_angle_deqp_gles3_gl_gtests': {
       'angle_deqp_gles3_gl_tests': {
         'args': [
-          'standalone_angle_deqp_gles3_tests',
+          'angle_deqp_gles3_tests',
           '--use-angle=gl',
           '--bot-mode',
         ],
         'swarming': {
           'shards': 4,
         },
-        'test': 'standalone_angle_deqp_gles3_tests',
+        'test': 'angle_deqp_gles3_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1863,7 +1863,7 @@
     'gpu_angle_deqp_gles3_gles_gtests': {
       'angle_deqp_gles3_gles_tests': {
         'args': [
-          'standalone_angle_deqp_gles3_tests',
+          'angle_deqp_gles3_tests',
           '--use-angle=gles',
         ],
         'android_args': [
@@ -1873,7 +1873,7 @@
         'android_swarming': {
           'shards': 12,
         },
-        'test': 'standalone_angle_deqp_gles3_tests',
+        'test': 'angle_deqp_gles3_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1881,7 +1881,7 @@
     'gpu_angle_deqp_gles3_vulkan_gtests': {
       'angle_deqp_gles3_vulkan_tests': {
         'args': [
-          'standalone_angle_deqp_gles3_tests',
+          'angle_deqp_gles3_tests',
           '--use-angle=vulkan',
         ],
         'android_args': [
@@ -1897,7 +1897,7 @@
         'swarming': {
           'shards': 4,
         },
-        'test': 'standalone_angle_deqp_gles3_tests',
+        'test': 'angle_deqp_gles3_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1905,7 +1905,7 @@
     'gpu_angle_deqp_khr_gles2_vulkan_gtests': {
       'angle_deqp_khr_gles2_vulkan_tests': {
         'args': [
-          'standalone_angle_deqp_khr_gles2_tests',
+          'angle_deqp_khr_gles2_tests',
           '--use-angle=vulkan',
         ],
         'android_args': [
@@ -1915,7 +1915,7 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_khr_gles2_tests',
+        'test': 'angle_deqp_khr_gles2_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1923,7 +1923,7 @@
     'gpu_angle_deqp_khr_gles31_vulkan_gtests': {
       'angle_deqp_khr_gles31_vulkan_tests': {
         'args': [
-          'standalone_angle_deqp_khr_gles31_tests',
+          'angle_deqp_khr_gles31_tests',
           '--use-angle=vulkan',
         ],
         'android_args': [
@@ -1936,7 +1936,7 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_khr_gles31_tests',
+        'test': 'angle_deqp_khr_gles31_tests',
         'use_isolated_scripts_api': True,
       },
     },
@@ -1944,7 +1944,7 @@
     'gpu_angle_deqp_khr_gles3_vulkan_gtests': {
       'angle_deqp_khr_gles3_vulkan_tests': {
         'args': [
-          'standalone_angle_deqp_khr_gles3_tests',
+          'angle_deqp_khr_gles3_tests',
           '--use-angle=vulkan',
         ],
         'android_args': [
@@ -1957,13 +1957,13 @@
         'desktop_args': [
           '--bot-mode',
         ],
-        'test': 'standalone_angle_deqp_khr_gles3_tests',
+        'test': 'angle_deqp_khr_gles3_tests',
         'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_end2end_gtests': {
-      'standalone_angle_end2end_tests': {
+      'angle_end2end_tests': {
         'android_args': [
           '--shard-timeout=180',
           '-v',
@@ -1972,7 +1972,7 @@
           'shards': 4,
         },
         'args': [
-          'standalone_angle_end2end_tests',
+          'angle_end2end_tests',
           '--gtest_filter=-*Vulkan_SwiftShader*',
         ],
         'desktop_args': [
@@ -1989,14 +1989,23 @@
       },
     },
 
+    'gpu_angle_fuchsia_unittests_isolated_scripts': {
+      'angle_unittests': {
+        'args': [
+          'bin/run_angle_unittests',
+        ],
+        'mixins': ['fuchsia_runner_logs'],
+      },
+    },
+
     'gpu_angle_gles1_conformance_gtests': {
-      'standalone_angle_gles1_conformance_tests': {
+      'angle_gles1_conformance_tests': {
         'android_args': [
           '--shard-timeout=180',
           '-v',
         ],
         'args': [
-          'standalone_angle_gles1_conformance_tests',
+          'angle_gles1_conformance_tests',
         ],
         'desktop_args': [
           '--bot-mode',
@@ -2007,9 +2016,9 @@
 
     # Actually uploads results to the perf dashboard
     'gpu_angle_perf_isolated_scripts': {
-      'standalone_angle_perftests': {
+      'angle_perftests': {
         'args': [
-          'standalone_angle_perftests',
+          'angle_perftests',
           '--non-telemetry=true',
           '--gtest-benchmark-name=angle_perftests',
           '-v',
@@ -2036,9 +2045,9 @@
     # The angle perf tests should eventually be run on every platform
     # ANGLE supports. Currently they run on Windows, Linux and Android.
     'gpu_angle_perf_smoke_isolated_scripts': {
-      'standalone_angle_perftests': {
+      'angle_perftests': {
         'args': [
-          'standalone_angle_perftests',
+          'angle_perftests',
           '--non-telemetry=true',
           '--gtest-benchmark-name=angle_perftests',
           '-v',
@@ -2085,9 +2094,9 @@
     },
 
     'gpu_angle_unit_gtests': {
-      'standalone_angle_unittests': {
+      'angle_unittests': {
         'args': [
-          'standalone_angle_unittests',
+          'angle_unittests',
         ],
         'android_args': [
           '-v',
@@ -2100,13 +2109,13 @@
       # TODO(ynovikov): the old generator script said the white box
       # tests are supposed to run everywhere angle_end2end_tests do, but
       # they actually ran only on Windows and Linux.
-      'standalone_angle_white_box_tests': {
+      'angle_white_box_tests': {
         'android_args': [
           '--shard-timeout=180',
           '-v',
         ],
         'args': [
-          'standalone_angle_white_box_tests',
+          'angle_white_box_tests',
         ],
         'desktop_args': [
           '--bot-mode',
@@ -2765,15 +2774,6 @@
           'skia_gold_test',
         ],
         'telemetry_test_name': 'pixel',
-      },
-    },
-
-    'gpu_standalone_angle_fuchsia_unittests_isolated_scripts': {
-      'standalone_angle_unittests': {
-        'args': [
-          'bin/run_standalone_angle_unittests',
-        ],
-        'mixins': ['fuchsia_runner_logs'],
       },
     },
 
@@ -4090,9 +4090,9 @@
     },
 
     'swangle_gtests': {
-      'standalone_angle_deqp_egl_tests': {
+      'angle_deqp_egl_tests': {
         'args': [
-          'standalone_angle_deqp_egl_tests',
+          'angle_deqp_egl_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
@@ -4101,9 +4101,9 @@
         ],
         'use_isolated_scripts_api': True,
       },
-      'standalone_angle_deqp_gles2_tests': {
+      'angle_deqp_gles2_tests': {
         'args': [
-          'standalone_angle_deqp_gles2_tests',
+          'angle_deqp_gles2_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
@@ -4112,9 +4112,9 @@
         ],
         'use_isolated_scripts_api': True,
       },
-      'standalone_angle_deqp_gles31_tests': {
+      'angle_deqp_gles31_tests': {
         'args': [
-          'standalone_angle_deqp_gles31_tests',
+          'angle_deqp_gles31_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
@@ -4126,9 +4126,9 @@
         },
         'use_isolated_scripts_api': True,
       },
-      'standalone_angle_deqp_gles3_tests': {
+      'angle_deqp_gles3_tests': {
         'args': [
-          'standalone_angle_deqp_gles3_tests',
+          'angle_deqp_gles3_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
@@ -4140,9 +4140,9 @@
         },
         'use_isolated_scripts_api': True,
       },
-      'standalone_angle_deqp_khr_gles2_tests': {
+      'angle_deqp_khr_gles2_tests': {
         'args': [
-          'standalone_angle_deqp_khr_gles2_tests',
+          'angle_deqp_khr_gles2_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
@@ -4151,9 +4151,9 @@
         ],
         'use_isolated_scripts_api': True,
       },
-      'standalone_angle_deqp_khr_gles31_tests': {
+      'angle_deqp_khr_gles31_tests': {
         'args': [
-          'standalone_angle_deqp_khr_gles31_tests',
+          'angle_deqp_khr_gles31_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
@@ -4162,9 +4162,9 @@
         ],
         'use_isolated_scripts_api': True,
       },
-      'standalone_angle_deqp_khr_gles3_tests': {
+      'angle_deqp_khr_gles3_tests': {
         'args': [
-          'standalone_angle_deqp_khr_gles3_tests',
+          'angle_deqp_khr_gles3_tests',
           '--use-angle=swiftshader',
           '--bot-mode',
         ],
@@ -4173,9 +4173,9 @@
         ],
         'use_isolated_scripts_api': True,
       },
-      'standalone_angle_end2end_tests': {
+      'angle_end2end_tests': {
         'args': [
-          'standalone_angle_end2end_tests',
+          'angle_end2end_tests',
           '--bot-mode',
           '--gtest_filter=*Vulkan_SwiftShader*',
         ],
@@ -4986,7 +4986,7 @@
 
     'fuchsia_x64_isolated_scripts': [
       'chromium_webkit_isolated_scripts',
-      'gpu_standalone_angle_fuchsia_unittests_isolated_scripts'
+      'gpu_angle_fuchsia_unittests_isolated_scripts'
     ],
 
     # BEGIN composition test suites used by the GPU bots

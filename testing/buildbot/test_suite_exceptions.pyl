@@ -74,6 +74,52 @@
       },
     },
   },
+  'angle_end2end_tests': {
+    'remove_from': [
+      # TODO(ynovikov) Investigate why the test breaks on older devices.
+      'Android FYI Release (Nexus 5)',
+      'Android FYI Release (Nexus 6)',
+      'Android FYI Release (Nexus 9)',
+      # Temporarily disabled due to AMDGPU-PRO issues crbug.com/786219
+      'Linux FYI Release (AMD R7 240)',
+      # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
+      'Linux FYI Debug (NVIDIA)',
+    ],
+  },
+  'angle_perftests': {
+    'remove_from': [
+      'Android FYI Release (Nexus 5)',  # crbug.com/915429
+      'Android FYI Release (Nexus 6)',  # anglebug.com/2433
+      'Android FYI Release (Nexus 6P)', # anglebug.com/4909
+      'Linux FYI GPU TSAN Release',  # crbug.com/950542
+    ],
+  },
+  'angle_unittests': {
+    'remove_from': [
+      # On Android, these are already run on the main waterfall.
+      'Android FYI Release (Nexus 5X)',
+      # Does not currently work on Lacros configurations.
+      'linux-lacros-tester-rel',
+      'linux-lacros-tester-fyi-rel',
+    ],
+    'modifications': {
+      'Linux ASan LSan Tests (1)': {
+        'swarming': {
+          'shards': 10,
+        },
+      },
+    },
+  },
+  'angle_white_box_tests': {
+    'remove_from': [
+      # https://crbug.com/1035178
+      'Win10 FYI x64 Release (AMD RX 550)',
+      # https://crbug.com/1035461
+      'Linux FYI GPU TSAN Release',
+      # https://crbug.com/1094629
+      'Linux FYI Release (AMD R7 240)',
+    ],
+  },
   'blink_platform_unittests': {
     'modifications': {
       # TODO(crbug.com/1108121): Remove this filter
@@ -2457,52 +2503,6 @@
         ],
       }
     }
-  },
-  'standalone_angle_end2end_tests': {
-    'remove_from': [
-      # TODO(ynovikov) Investigate why the test breaks on older devices.
-      'Android FYI Release (Nexus 5)',
-      'Android FYI Release (Nexus 6)',
-      'Android FYI Release (Nexus 9)',
-      # Temporarily disabled due to AMDGPU-PRO issues crbug.com/786219
-      'Linux FYI Release (AMD R7 240)',
-      # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
-      'Linux FYI Debug (NVIDIA)',
-    ],
-  },
-  'standalone_angle_perftests': {
-    'remove_from': [
-      'Android FYI Release (Nexus 5)',  # crbug.com/915429
-      'Android FYI Release (Nexus 6)',  # anglebug.com/2433
-      'Android FYI Release (Nexus 6P)', # anglebug.com/4909
-      'Linux FYI GPU TSAN Release',  # crbug.com/950542
-    ],
-  },
-  'standalone_angle_unittests': {
-    'remove_from': [
-      # On Android, these are already run on the main waterfall.
-      'Android FYI Release (Nexus 5X)',
-      # Does not currently work on Lacros configurations.
-      'linux-lacros-tester-rel',
-      'linux-lacros-tester-fyi-rel',
-    ],
-    'modifications': {
-      'Linux ASan LSan Tests (1)': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
-  'standalone_angle_white_box_tests': {
-    'remove_from': [
-      # https://crbug.com/1035178
-      'Win10 FYI x64 Release (AMD RX 550)',
-      # https://crbug.com/1035461
-      'Linux FYI GPU TSAN Release',
-      # https://crbug.com/1094629
-      'Linux FYI Release (AMD R7 240)',
-    ],
   },
   'storage_service_content_browsertests': {
     'modifications': {

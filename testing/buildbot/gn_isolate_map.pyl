@@ -116,10 +116,70 @@
     "label": "//third_party/angle:angle_apks",
     "type": "additional_compile_target",
   },
+  "angle_deqp_egl_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_egl_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_gles2_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles2_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_gles31_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles31_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_gles3_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_gles3_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_khr_gles2_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_khr_gles2_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_khr_gles3_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_khr_gles3_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_deqp_khr_gles31_tests": {
+    "label": "//third_party/angle/src/tests:angle_deqp_khr_gles31_tests",
+    "type": "script",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+  },
+  "angle_end2end_tests": {
+    "label": "//third_party/angle/src/tests:angle_end2end_tests",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+    "type": "script",
+  },
+  "angle_gles1_conformance_tests": {
+    "label": "//third_party/angle/src/tests:angle_gles1_conformance_tests",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+    "type": "script",
+  },
+  "angle_perftests": {
+    "label": "//third_party/angle/src/tests:angle_perftests",
+    "script": "//testing/scripts/run_performance_tests.py",
+    "type": "script",
+  },
   "angle_restricted_trace_gold_tests": {
     "type": "script",
     "label": "//third_party/angle/src/tests/restricted_traces:angle_restricted_trace_gold_tests",
     "script": "//third_party/angle/src/tests/restricted_traces/restricted_trace_gold_tests.py",
+  },
+  "angle_unittests": {
+    "label": "//third_party/angle/src/tests:angle_unittests",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+    "type": "script",
+  },
+  "angle_white_box_tests": {
+    "label": "//third_party/angle/src/tests:angle_white_box_tests",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+    "type": "script",
   },
   "app_list_unittests": {
     "label": "//ash/app_list:app_list_unittests",
@@ -1474,66 +1534,6 @@
   "sql_unittests": {
     "label": "//sql:sql_unittests",
     "type": "console_test_launcher",
-  },
-  "standalone_angle_deqp_egl_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_deqp_egl_tests",
-    "type": "script",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-  },
-  "standalone_angle_deqp_gles2_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_deqp_gles2_tests",
-    "type": "script",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-  },
-  "standalone_angle_deqp_gles31_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_deqp_gles31_tests",
-    "type": "script",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-  },
-  "standalone_angle_deqp_gles3_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_deqp_gles3_tests",
-    "type": "script",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-  },
-  "standalone_angle_deqp_khr_gles2_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_deqp_khr_gles2_tests",
-    "type": "script",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-  },
-  "standalone_angle_deqp_khr_gles3_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_deqp_khr_gles3_tests",
-    "type": "script",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-  },
-  "standalone_angle_deqp_khr_gles31_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_deqp_khr_gles31_tests",
-    "type": "script",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-  },
-  "standalone_angle_end2end_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_end2end_tests",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-    "type": "script",
-  },
-  "standalone_angle_gles1_conformance_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_gles1_conformance_tests",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-    "type": "script",
-  },
-  "standalone_angle_perftests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_perftests",
-    "script": "//testing/scripts/run_performance_tests.py",
-    "type": "script",
-  },
-  "standalone_angle_unittests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_unittests",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-    "type": "script",
-  },
-  "standalone_angle_white_box_tests": {
-    "label": "//third_party/angle/src/tests:standalone_angle_white_box_tests",
-    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
-    "type": "script",
   },
   "storage_unittests": {
     "label": "//storage:storage_unittests",

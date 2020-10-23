@@ -2233,7 +2233,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'gpu_standalone_angle_fuchsia_unittests_isolated_scripts',
+          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
           'arm64',
@@ -2247,7 +2247,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'gpu_standalone_angle_fuchsia_unittests_isolated_scripts',
+          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
           'arm64',
@@ -2271,7 +2271,7 @@
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'gpu_standalone_angle_fuchsia_unittests_isolated_scripts',
+          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
       },
       'fuchsia-fyi-x64-rel': {
@@ -3712,8 +3712,8 @@
       },
       'GPU FYI Fuchsia Builder' : {
         'additional_compile_targets': [
-          'standalone_angle_end2end_tests',
-          'standalone_angle_unittests',
+          'angle_end2end_tests',
+          'angle_unittests',
         ],
       },
       'GPU FYI Linux Builder' : {},
@@ -4480,7 +4480,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'gpu_standalone_angle_fuchsia_unittests_isolated_scripts',
+          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
           'arm64',
