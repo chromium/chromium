@@ -7,7 +7,7 @@
 // https://wicg.github.io/webhid/index.html#enumeration
 
 [
-    ImplementedAs=NavigatorHID,
+    ImplementedAs=HID,
     RuntimeEnabled=WebHID,
     SecureContext
 ] partial interface Navigator {

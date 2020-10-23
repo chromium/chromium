@@ -15,7 +15,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
@@ -82,12 +84,27 @@ mojom::blink::HidDeviceFilterPtr ConvertDeviceFilter(
 
 }  // namespace
 
-HID::HID(ExecutionContext& context)
-    : ExecutionContextClient(&context),
-      service_(&context),
-      feature_handle_for_scheduler_(context.GetScheduler()->RegisterFeature(
-          SchedulingPolicy::Feature::kWebHID,
-          {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
+const char HID::kSupplementName[] = "HID";
+
+HID* HID::hid(Navigator& navigator) {
+  if (!navigator.DomWindow())
+    return nullptr;
+
+  HID* hid = Supplement<Navigator>::From<HID>(navigator);
+  if (!hid) {
+    hid = MakeGarbageCollected<HID>(navigator);
+    ProvideTo(navigator, hid);
+  }
+  return hid;
+}
+
+HID::HID(Navigator& navigator)
+    : Supplement<Navigator>(navigator),
+      service_(navigator.DomWindow()),
+      feature_handle_for_scheduler_(
+          navigator.DomWindow()->GetScheduler()->RegisterFeature(
+              SchedulingPolicy::Feature::kWebHID,
+              {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
 
 HID::~HID() {
   DCHECK(get_devices_promises_.IsEmpty());
@@ -95,7 +112,7 @@ HID::~HID() {
 }
 
 ExecutionContext* HID::GetExecutionContext() const {
-  return ExecutionContextClient::GetExecutionContext();
+  return GetSupplementable()->DomWindow();
 }
 
 const AtomicString& HID::InterfaceName() const {
@@ -164,8 +181,7 @@ ScriptPromise HID::getDevices(ScriptState* script_state,
 ScriptPromise HID::requestDevice(ScriptState* script_state,
                                  const HIDDeviceRequestOptions* options,
                                  ExceptionState& exception_state) {
-  auto* frame = GetFrame();
-  if (!frame || !frame->GetDocument()) {
+  if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
     return ScriptPromise();
@@ -178,7 +194,8 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (!LocalFrame::HasTransientUserActivation(frame)) {
+  if (!LocalFrame::HasTransientUserActivation(
+          GetSupplementable()->DomWindow()->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
     return ScriptPromise();
@@ -289,7 +306,7 @@ void HID::Trace(Visitor* visitor) const {
   visitor->Trace(request_device_promises_);
   visitor->Trace(device_cache_);
   EventTargetWithInlineData::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink

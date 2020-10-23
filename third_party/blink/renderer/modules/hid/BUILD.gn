@@ -14,8 +14,6 @@ blink_modules_sources("hid") {
     "hid_device.h",
     "hid_input_report_event.cc",
     "hid_input_report_event.h",
-    "navigator_hid.cc",
-    "navigator_hid.h",
   ]
 }
 
