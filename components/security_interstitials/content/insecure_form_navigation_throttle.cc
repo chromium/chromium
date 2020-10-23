@@ -44,6 +44,12 @@ InsecureFormNavigationThrottle::WillStartRequest() {
     return content::NavigationThrottle::PROCEED;
   content::WebContents* contents = handle->GetWebContents();
 
+  // Do not set special error page HTML for insecure forms in subframes; those
+  // are already hard blocked.
+  if (!handle->IsInMainFrame()) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   url::Origin form_originating_origin =
       handle->GetInitiatorOrigin().value_or(url::Origin());
   if (!IsInsecureFormAction(handle->GetURL()) ||

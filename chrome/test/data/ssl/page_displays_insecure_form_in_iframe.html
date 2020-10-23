@@ -1,0 +1,15 @@
+<html>
+<head><title>Page that displays an insecure form inside an iframe</title>
+<script>
+function submitForm() {
+  subframe = document.getElementById("insecureFormFrame");
+  subframe.contentWindow.submitForm();
+}
+</script>
+</head>
+<body>
+This page contains an iframe, which contains a form that targets a non-secure URL,
+causing insecure content.<br>
+<iframe id="insecureFormFrame" src="https://REPLACE_WITH_HOST_AND_PORT/ssl/page_displays_insecure_form.html"></iframe>
+</body>
+</html>
