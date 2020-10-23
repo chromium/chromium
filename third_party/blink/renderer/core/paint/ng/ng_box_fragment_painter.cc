@@ -646,11 +646,6 @@ void NGBoxFragmentPainter::PaintBlockFlowContents(
     return;
   }
 
-  // MathML operators paint text (for example enlarged/stretched) content
-  // themselves using NGMathMLPainter.
-  if (UNLIKELY(fragment.IsMathMLOperator()))
-    return;
-
   // Trying to rule out a null GraphicsContext, see: https://crbug.com/1040298
   CHECK(&paint_info.context);
 

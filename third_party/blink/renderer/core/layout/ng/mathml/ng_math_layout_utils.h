@@ -83,7 +83,6 @@ MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(const ComputedStyle&,
                                                       UChar character);
 
 bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node);
-bool IsOperatorWithSpecialShaping(const NGBlockNode& node);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_LAYOUT_UTILS_H_

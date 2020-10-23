@@ -235,7 +235,6 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   include_border_left_ = sides_to_include.left;
   is_inline_formatting_context_ = builder->is_inline_formatting_context_;
   is_math_fraction_ = builder->is_math_fraction_;
-  is_math_operator_ = builder->is_math_operator_;
 
   bool has_layout_containment = layout_object_->ShouldApplyLayoutContainment();
   if (builder->baseline_.has_value() && !has_layout_containment) {
@@ -809,7 +808,6 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(include_border_bottom_, other.include_border_bottom_);
   DCHECK_EQ(include_border_left_, other.include_border_left_);
   DCHECK_EQ(is_math_fraction_, other.is_math_fraction_);
-  DCHECK_EQ(is_math_operator_, other.is_math_operator_);
 
   DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
   DCHECK_EQ(is_legacy_layout_root_, other.is_legacy_layout_root_);

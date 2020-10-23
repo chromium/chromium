@@ -337,7 +337,6 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       style_variant_(other.style_variant_),
       is_hidden_for_paint_(other.is_hidden_for_paint_),
       is_math_fraction_(other.is_math_fraction_),
-      is_math_operator_(other.is_math_operator_),
       base_or_resolved_direction_(other.base_or_resolved_direction_),
       may_have_descendant_above_block_start_(
           other.may_have_descendant_above_block_start_),

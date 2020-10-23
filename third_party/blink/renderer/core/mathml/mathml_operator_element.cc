@@ -94,10 +94,8 @@ MathMLOperatorElement::ParseOperatorContent() {
   if (HasOneTextChild()) {
     operator_content.characters = textContent();
     operator_content.characters.Ensure16Bit();
-    operator_content.code_point =
-        OperatorCodepoint(operator_content.characters);
-    operator_content.is_vertical =
-        Character::IsVerticalMathCharacter(operator_content.code_point);
+    operator_content.is_vertical = Character::IsVerticalMathCharacter(
+        OperatorCodepoint(operator_content.characters));
   }
   return operator_content;
 }

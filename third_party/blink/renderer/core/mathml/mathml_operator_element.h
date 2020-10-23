@@ -24,7 +24,6 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
 
   struct OperatorContent {
     String characters;
-    UChar32 code_point;
     bool is_vertical = true;
   };
   enum OperatorPropertyFlag {
