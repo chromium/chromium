@@ -599,7 +599,8 @@ void ValidateAndConvertPaymentDetailsUpdate(const PaymentDetailsUpdate* input,
   if (exception_state.HadException())
     return;
   if (input->hasTotal()) {
-    DCHECK(!RuntimeEnabledFeatures::DigitalGoodsEnabled() || !ignore_total);
+    DCHECK(!RuntimeEnabledFeatures::DigitalGoodsEnabled(&execution_context) ||
+           !ignore_total);
     if (ignore_total) {
       output->total =
           CreateTotalPlaceHolderForAppStoreBilling(execution_context);
@@ -1248,8 +1249,9 @@ PaymentRequest::PaymentRequest(
   if (exception_state.HadException())
     return;
 
-  ignore_total_ = RuntimeEnabledFeatures::DigitalGoodsEnabled() &&
-                  RequestingOnlyAppStoreBillingMethods(validated_method_data);
+  ignore_total_ =
+      RuntimeEnabledFeatures::DigitalGoodsEnabled(GetExecutionContext()) &&
+      RequestingOnlyAppStoreBillingMethods(validated_method_data);
   ValidateAndConvertPaymentDetailsInit(details, options_, validated_details,
                                        shipping_option_, ignore_total_,
                                        *GetExecutionContext(), exception_state);
