@@ -70,10 +70,10 @@ enum class MessageType : uint8_t {
 };
 
 struct StreamInfo {
-  StreamType stream_type;
-  AudioCodec audio_codec;
+  StreamType stream_type = StreamType::kMicRaw;
+  AudioCodec audio_codec = AudioCodec::kPcm;
   int num_channels = 0;
-  SampleFormat sample_format;
+  SampleFormat sample_format = SampleFormat::INTERLEAVED_INT16;
   int sample_rate = 0;
   int frames_per_buffer = 0;
 };
