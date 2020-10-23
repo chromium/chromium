@@ -8,13 +8,14 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import org.chromium.chrome.R;
 
 /** This class represents a bar to display at the bottom of the payment request UI. */
 public class PaymentRequestBottomBar extends ViewGroup {
-    private View mLogoWithName;
-    private View mLogo;
+    private ImageView mLogoWithName;
+    private ImageView mLogo;
     private View mPrimaryButton;
     private View mSecondaryButton;
     private View mSpace;
@@ -29,7 +30,13 @@ public class PaymentRequestBottomBar extends ViewGroup {
         super.onFinishInflate();
 
         mLogoWithName = findViewById(R.id.logo_name);
+        // Not doing it in the template because the //components payment_request_bottom_bar.xml
+        // cannot depend on the //chrome logo.png.
+        mLogoWithName.setImageResource(R.drawable.product_logo_name);
         mLogo = findViewById(R.id.logo);
+        // Not doing it in the template because the //components template
+        // payment_request_bottom_bar.xml cannot depend on the //chrome fre_product_logo.png.
+        mLogo.setImageResource(R.drawable.fre_product_logo);
         mPrimaryButton = findViewById(R.id.button_primary);
         mSecondaryButton = findViewById(R.id.button_secondary);
         mSpace = findViewById(R.id.space);

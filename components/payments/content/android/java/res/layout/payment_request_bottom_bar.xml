@@ -21,14 +21,12 @@
         android:id="@+id/logo_name"
         android:layout_width="72dp"
         android:layout_height="20dp"
-        android:src="@drawable/product_logo_name"
         tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/logo"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/fre_product_logo"
         tools:ignore="ContentDescription" />
 
     <Space
