@@ -157,7 +157,6 @@ class CORE_EXPORT NGLineBreaker {
                                        unsigned start,
                                        unsigned end);
 
-  void HandleTrailingSpaces(NGLineInfo*);
   void HandleTrailingSpaces(const NGInlineItem&, NGLineInfo*);
   void HandleTrailingSpaces(const NGInlineItem&,
                             const ShapeResult*,

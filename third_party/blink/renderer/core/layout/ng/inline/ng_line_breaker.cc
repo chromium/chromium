@@ -1155,12 +1155,6 @@ void NGLineBreaker::UpdateShapeResult(const NGLineInfo& line_info,
   item_result->inline_size = item_result->shape_result->SnappedWidth();
 }
 
-void NGLineBreaker::HandleTrailingSpaces(NGLineInfo* line_info) {
-  const Vector<NGInlineItem>& items = Items();
-  if (item_index_ < items.size())
-    HandleTrailingSpaces(items[item_index_], line_info);
-}
-
 inline void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
                                                 NGLineInfo* line_info) {
   const ShapeResult* shape_result = item.TextShapeResult();
@@ -2083,14 +2077,12 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
             continue;
           }
           // If this item starts with spaces followed by non-space characters,
-          // rewind to before this item. |HandleText()| will include the spaces
-          // and break there.
-          // TODO: optimize more?
+          // the line should break after the spaces. Rewind to before this item.
           Rewind(index, line_info);
-          HandleTrailingSpaces(line_info);
-#if DCHECK_IS_ON()
-          item_results.back().CheckConsistency(false);
-#endif
+          // Now we want to |HandleTrailingSpaces| in this |item|, but |Rewind|
+          // may have failed when we have floats. Set the |state_| to
+          // |kTrailing| and let the next |HandleText| to handle this.
+          state_ = LineBreakState::kTrailing;
           return;
         }
       }
