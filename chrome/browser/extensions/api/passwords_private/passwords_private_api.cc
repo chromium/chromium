@@ -130,7 +130,7 @@ ResponseAction PasswordsPrivateRequestPlaintextPasswordFunction::Run() {
 void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
     base::Optional<base::string16> password) {
   if (password) {
-    Respond(OneArgument(std::make_unique<base::Value>(std::move(*password))));
+    Respond(OneArgument(base::Value(std::move(*password))));
     return;
   }
 
@@ -238,7 +238,7 @@ ResponseAction PasswordsPrivateRequestExportProgressStatusFunction::Run() {
 
 // PasswordsPrivateIsOptedInForAccountStorageFunction
 ResponseAction PasswordsPrivateIsOptedInForAccountStorageFunction::Run() {
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
+  return RespondNow(OneArgument(base::Value(
       GetDelegate(browser_context())->IsOptedInForAccountStorage())));
 }
 

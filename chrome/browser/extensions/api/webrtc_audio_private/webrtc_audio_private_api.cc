@@ -230,7 +230,7 @@ void WebrtcAudioPrivateGetAssociatedSinkFunction::Reply(
   } else {
     sink_id = associated_sink_id;
   }
-  Respond(OneArgument(std::make_unique<base::Value>(sink_id)));
+  Respond(OneArgument(base::Value(sink_id)));
 }
 
 }  // namespace extensions

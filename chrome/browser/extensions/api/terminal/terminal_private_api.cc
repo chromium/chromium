@@ -392,7 +392,7 @@ void TerminalPrivateOpenTerminalProcessFunction::RespondOnUIThread(
     return;
   }
   SetLastActiveTerminal(terminal_id);
-  Respond(OneArgument(std::make_unique<base::Value>(terminal_id)));
+  Respond(OneArgument(base::Value(terminal_id)));
 }
 
 TerminalPrivateOpenVmshellProcessFunction::
@@ -437,7 +437,7 @@ void TerminalPrivateSendInputFunction::SendInputOnRegistryTaskRunner(
 }
 
 void TerminalPrivateSendInputFunction::RespondOnUIThread(bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 TerminalPrivateCloseTerminalProcessFunction::
@@ -472,7 +472,7 @@ void TerminalPrivateCloseTerminalProcessFunction::CloseOnRegistryTaskRunner(
 
 void TerminalPrivateCloseTerminalProcessFunction::RespondOnUIThread(
     bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 TerminalPrivateOnTerminalResizeFunction::
@@ -510,7 +510,7 @@ void TerminalPrivateOnTerminalResizeFunction::OnResizeOnRegistryTaskRunner(
 }
 
 void TerminalPrivateOnTerminalResizeFunction::RespondOnUIThread(bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 TerminalPrivateAckOutputFunction::~TerminalPrivateAckOutputFunction() = default;

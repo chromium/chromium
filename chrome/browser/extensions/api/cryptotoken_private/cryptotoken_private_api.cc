@@ -135,7 +135,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   }
 
   if (origin_url == app_id_url) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
 
   // Fetch the eTLD+1 of both.
@@ -156,7 +156,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
         "Could not find an eTLD for appId *", params->app_id_url)));
   }
   if (origin_etldp1 == app_id_etldp1) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
   // For legacy purposes, allow google.com origins to assert certain
   // gstatic.com appIds.
@@ -164,10 +164,10 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   if (origin_etldp1 == kGoogleDotCom) {
     for (const char* id : kGoogleGstaticAppIds) {
       if (params->app_id_url == id)
-        return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+        return RespondNow(OneArgument(base::Value(true)));
     }
   }
-  return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
+  return RespondNow(OneArgument(base::Value(false)));
 }
 
 CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::
@@ -220,20 +220,20 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
                    [&app_id](const base::Value& v) -> bool {
                      return v.GetString() == app_id;
                    }) != permit_attestation->end()) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
 
   // If the origin is blocked, reject attestation.
   if (device::DoesMatchWebAuthAttestationBlockedDomains(
           url::Origin::Create(origin_url))) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
+    return RespondNow(OneArgument(base::Value(false)));
   }
 
   // If prompting is disabled, allow attestation because that is the historical
   // behavior.
   if (!base::FeatureList::IsEnabled(
           ::features::kSecurityKeyAttestationPrompt)) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
 
 #if defined(OS_WIN)
@@ -249,7 +249,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
       device::WinWebAuthnApi::GetDefault()->IsAvailable() &&
       device::WinWebAuthnApi::GetDefault()->Version() >=
           WEBAUTHN_API_VERSION_2) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
 #endif  // defined(OS_WIN)
 
@@ -287,7 +287,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
 void CryptotokenPrivateCanAppIdGetAttestationFunction::Complete(bool result) {
   RecordAttestationEvent(result ? U2FAttestationPromptResult::kAllowed
                                 : U2FAttestationPromptResult::kBlocked);
-  Respond(OneArgument(std::make_unique<base::Value>(result)));
+  Respond(OneArgument(base::Value(result)));
 }
 
 ExtensionFunction::ResponseAction

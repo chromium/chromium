@@ -1125,8 +1125,7 @@ void DownloadsDownloadFunction::OnStarted(
   VLOG(1) << __func__ << " " << item << " " << interrupt_reason;
   if (item) {
     DCHECK_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, interrupt_reason);
-    Respond(OneArgument(
-        std::make_unique<base::Value>(static_cast<int>(item->GetId()))));
+    Respond(OneArgument(base::Value(static_cast<int>(item->GetId()))));
     if (!creator_suggested_filename.empty() ||
         (creator_conflict_action !=
          downloads::FILENAME_CONFLICT_ACTION_UNIQUIFY)) {
@@ -1622,7 +1621,7 @@ void DownloadsGetFileIconFunction::OnIconURLExtracted(const std::string& url) {
     return;
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_GET_FILE_ICON);
-  Respond(OneArgument(std::make_unique<base::Value>(url)));
+  Respond(OneArgument(base::Value(url)));
 }
 
 ExtensionDownloadsEventRouter::ExtensionDownloadsEventRouter(

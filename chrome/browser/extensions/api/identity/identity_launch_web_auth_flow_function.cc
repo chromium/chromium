@@ -95,7 +95,7 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowFailure(
 void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
     const GURL& redirect_url) {
   if (redirect_url.GetWithEmptyPath() == final_url_prefix_) {
-    Respond(OneArgument(std::make_unique<base::Value>(redirect_url.spec())));
+    Respond(OneArgument(base::Value(redirect_url.spec())));
     if (auth_flow_)
       auth_flow_.release()->DetachDelegateAndDelete();
     Release();  // Balanced in RunAsync.

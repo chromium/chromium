@@ -296,7 +296,7 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
   // TODO(gspencer): Fix file manager so that it never tries to set default in
   // cases where extensionless local files are part of the selection.
   if (suffixes.empty() && mime_types.empty()) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+    return RespondNow(OneArgument(base::Value(true)));
   }
 
   file_manager::file_tasks::UpdateDefaultTask(

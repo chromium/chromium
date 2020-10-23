@@ -478,8 +478,8 @@ ChromeosInfoPrivateIsTabletModeEnabledFunction::
 
 ExtensionFunction::ResponseAction
 ChromeosInfoPrivateIsTabletModeEnabledFunction::Run() {
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(ash::TabletMode::Get()->InTabletMode())));
+  return RespondNow(
+      OneArgument(base::Value(ash::TabletMode::Get()->InTabletMode())));
 }
 
 }  // namespace extensions

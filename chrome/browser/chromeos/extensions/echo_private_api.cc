@@ -297,7 +297,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
 void EchoPrivateGetUserConsentFunction::Finalize(bool consent) {
   // Consent should not be true if offers redeeming is disabled.
   CHECK(redeem_offers_allowed_ || !consent);
-  Respond(OneArgument(std::make_unique<base::Value>(consent)));
+  Respond(OneArgument(base::Value(consent)));
 
   // Release the reference added in |OnRedeemOffersAllowedChecked|, before
   // showing the dialog.

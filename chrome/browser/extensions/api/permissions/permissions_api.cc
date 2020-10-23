@@ -259,7 +259,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   // If all permissions are already active, nothing left to do.
   if (total_new_permissions->IsEmpty()) {
     constexpr bool granted = true;
-    return RespondNow(OneArgument(std::make_unique<base::Value>(granted)));
+    return RespondNow(OneArgument(base::Value(granted)));
   }
 
   // Automatically declines api permissions requests, which are blocked by

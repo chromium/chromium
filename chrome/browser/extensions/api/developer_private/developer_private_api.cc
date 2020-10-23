@@ -810,7 +810,7 @@ DeveloperPrivateGetExtensionSizeFunction::Run() {
 
 void DeveloperPrivateGetExtensionSizeFunction::OnSizeCalculated(
     const base::string16& size) {
-  Respond(OneArgument(std::make_unique<base::Value>(size)));
+  Respond(OneArgument(base::Value(size)));
 }
 
 DeveloperPrivateGetItemsInfoFunction::DeveloperPrivateGetItemsInfoFunction() {}
@@ -1475,7 +1475,7 @@ void DeveloperPrivateLoadDirectoryFunction::Load() {
 
   // TODO(grv) : The unpacked installer should fire an event when complete
   // and return the extension_id.
-  Respond(OneArgument(std::make_unique<base::Value>("-1")));
+  Respond(OneArgument(base::Value("-1")));
 }
 
 void DeveloperPrivateLoadDirectoryFunction::ClearExistingDirectoryContent(
@@ -1651,7 +1651,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
 
 void DeveloperPrivateChoosePathFunction::FileSelected(
     const base::FilePath& path) {
-  Respond(OneArgument(std::make_unique<base::Value>(path.LossyDisplayName())));
+  Respond(OneArgument(base::Value(path.LossyDisplayName())));
   Release();
 }
 
@@ -1666,7 +1666,7 @@ DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
+  return RespondNow(OneArgument(base::Value(
       Profile::FromBrowserContext(browser_context())->IsSupervised())));
 }
 

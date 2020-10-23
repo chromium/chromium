@@ -80,10 +80,10 @@ CloudPrintPrivateGetHostNameFunction::~CloudPrintPrivateGetHostNameFunction() {
 }
 
 ExtensionFunction::ResponseAction CloudPrintPrivateGetHostNameFunction::Run() {
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
-      CloudPrintTestsDelegate::Get()
-          ? CloudPrintTestsDelegate::Get()->GetHostName()
-          : net::GetHostName())));
+  return RespondNow(OneArgument(
+      base::Value(CloudPrintTestsDelegate::Get()
+                      ? CloudPrintTestsDelegate::Get()->GetHostName()
+                      : net::GetHostName())));
 }
 
 CloudPrintPrivateGetPrintersFunction::CloudPrintPrivateGetPrintersFunction() {
@@ -124,7 +124,7 @@ CloudPrintPrivateGetClientIdFunction::~CloudPrintPrivateGetClientIdFunction() {
 }
 
 ExtensionFunction::ResponseAction CloudPrintPrivateGetClientIdFunction::Run() {
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
+  return RespondNow(OneArgument(base::Value(
       CloudPrintTestsDelegate::Get()
           ? CloudPrintTestsDelegate::Get()->GetClientId()
           : google_apis::GetOAuth2ClientID(google_apis::CLIENT_CLOUD_PRINT))));

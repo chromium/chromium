@@ -322,7 +322,7 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
 }
 
 void FileManagerPrivateInternalZipSelectionFunction::OnZipDone(bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
@@ -401,7 +401,7 @@ void FileManagerPrivateRequestWebStoreAccessTokenFunction::OnAccessTokenFetched(
     DCHECK(access_token == auth_service_->access_token());
     if (logger)
       logger->Log(logging::LOG_INFO, "CWS OAuth token fetch succeeded.");
-    Respond(OneArgument(std::make_unique<base::Value>(access_token)));
+    Respond(OneArgument(base::Value(access_token)));
   } else {
     if (logger) {
       logger->Log(logging::LOG_ERROR,
@@ -515,7 +515,7 @@ FileManagerPrivateInternalGetMimeTypeFunction::Run() {
 
 void FileManagerPrivateInternalGetMimeTypeFunction::OnGetMimeType(
     const std::string& mimeType) {
-  Respond(OneArgument(std::make_unique<base::Value>(mimeType)));
+  Respond(OneArgument(base::Value(mimeType)));
 }
 
 FileManagerPrivateGetProvidersFunction::FileManagerPrivateGetProvidersFunction()
@@ -1100,8 +1100,8 @@ FileManagerPrivateDetectCharacterEncodingFunction::Run() {
 
   std::string encoding;
   bool success = base::DetectEncoding(input, &encoding);
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
-      success ? std::move(encoding) : std::string())));
+  return RespondNow(
+      OneArgument(base::Value(success ? std::move(encoding) : std::string())));
 }
 
 }  // namespace extensions

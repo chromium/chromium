@@ -40,7 +40,7 @@ EnterpriseReportingPrivateGetDeviceIdFunction::Run() {
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
   if (client_id.empty())
     return RespondNow(Error(enterprise_reporting::kDeviceIdNotFound));
-  return RespondNow(OneArgument(std::make_unique<base::Value>(client_id)));
+  return RespondNow(OneArgument(base::Value(client_id)));
 }
 
 EnterpriseReportingPrivateGetDeviceIdFunction::
@@ -89,7 +89,7 @@ void EnterpriseReportingPrivateGetPersistentSecretFunction::SendResponse(
     long int status) {
   if (status == 0) {  // Success.
     VLOG(1) << "The Endpoint Verification secret was retrieved.";
-    Respond(OneArgument(std::make_unique<base::Value>(base::Value::BlobStorage(
+    Respond(OneArgument(base::Value(base::Value::BlobStorage(
         reinterpret_cast<const uint8_t*>(data.data()),
         reinterpret_cast<const uint8_t*>(data.data() + data.size())))));
   } else {
@@ -141,10 +141,9 @@ void EnterpriseReportingPrivateGetDeviceDataFunction::SendResponse(
   switch (status) {
     case RetrieveDeviceDataStatus::kSuccess:
       VLOG(1) << "The Endpoint Verification data was retrieved.";
-      Respond(
-          OneArgument(std::make_unique<base::Value>(base::Value::BlobStorage(
-              reinterpret_cast<const uint8_t*>(data.data()),
-              reinterpret_cast<const uint8_t*>(data.data() + data.size())))));
+      Respond(OneArgument(base::Value(base::Value::BlobStorage(
+          reinterpret_cast<const uint8_t*>(data.data()),
+          reinterpret_cast<const uint8_t*>(data.data() + data.size())))));
       return;
     case RetrieveDeviceDataStatus::kDataRecordNotFound:
       VLOG(1) << "The Endpoint Verification data is not present.";

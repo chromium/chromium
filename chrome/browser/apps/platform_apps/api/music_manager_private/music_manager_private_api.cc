@@ -45,7 +45,7 @@ void MusicManagerPrivateGetDeviceIdFunction::DeviceIdCallback(
   if (device_id.empty()) {
     Respond(Error(kDeviceIdNotSupported));
   } else {
-    Respond(OneArgument(std::make_unique<base::Value>(device_id)));
+    Respond(OneArgument(base::Value(device_id)));
   }
 }
 

@@ -273,7 +273,7 @@ void CookiesGetFunction::GetCookieListCallback(
   }
 
   // The cookie doesn't exist; return null.
-  Respond(OneArgument(std::make_unique<base::Value>()));
+  Respond(OneArgument(base::Value()));
 }
 
 CookiesGetAllFunction::CookiesGetAllFunction() {

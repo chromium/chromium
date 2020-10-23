@@ -469,7 +469,7 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
                                     include_incognito_information(),
                                     &web_contents) ||
       !web_contents) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>()));
+    return RespondNow(OneArgument(base::Value()));
   }
 
   WebNavigationTabObserver* observer =
@@ -483,11 +483,11 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
       ExtensionApiFrameIdMap::Get()->GetRenderFrameHostById(web_contents,
                                                             frame_id);
   if (!frame_navigation_state.IsValidFrame(render_frame_host))
-    return RespondNow(OneArgument(std::make_unique<base::Value>()));
+    return RespondNow(OneArgument(base::Value()));
 
   GURL frame_url = frame_navigation_state.GetUrl(render_frame_host);
   if (!frame_navigation_state.IsValidUrl(frame_url))
-    return RespondNow(OneArgument(std::make_unique<base::Value>()));
+    return RespondNow(OneArgument(base::Value()));
 
   GetFrame::Results::Details frame_details;
   frame_details.url = frame_url.spec();
@@ -509,7 +509,7 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
                                     include_incognito_information(),
                                     &web_contents) ||
       !web_contents) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>()));
+    return RespondNow(OneArgument(base::Value()));
   }
 
   WebNavigationTabObserver* observer =

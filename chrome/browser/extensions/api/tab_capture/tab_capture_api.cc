@@ -479,7 +479,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
     return RespondNow(Error(kCapturingSameTab));
   }
 
-  return RespondNow(OneArgument(std::make_unique<base::Value>(device_id)));
+  return RespondNow(OneArgument(base::Value(device_id)));
 }
 
 }  // namespace extensions

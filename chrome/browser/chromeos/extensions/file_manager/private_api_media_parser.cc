@@ -71,7 +71,7 @@ void FileManagerPrivateInternalGetContentMimeTypeFunction::SniffMimeType(
     return;
   }
 
-  Respond(OneArgument(std::make_unique<base::Value>(mime_type)));
+  Respond(OneArgument(base::Value(mime_type)));
 }
 
 FileManagerPrivateInternalGetContentMetadataFunction::

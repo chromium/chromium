@@ -1023,7 +1023,7 @@ WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
 
 ExtensionFunction::ResponseValue
 WebstorePrivateIsPendingCustodianApprovalFunction::BuildResponse(bool result) {
-  return OneArgument(std::make_unique<base::Value>(result));
+  return OneArgument(base::Value(result));
 }
 
 WebstorePrivateGetReferrerChainFunction::

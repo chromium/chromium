@@ -303,8 +303,8 @@ ExtensionFunction::ResponseAction TtsResumeFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TtsIsSpeakingFunction::Run() {
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
-      content::TtsController::GetInstance()->IsSpeaking())));
+  return RespondNow(OneArgument(
+      base::Value(content::TtsController::GetInstance()->IsSpeaking())));
 }
 
 ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {

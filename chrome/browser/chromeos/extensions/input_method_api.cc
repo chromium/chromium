@@ -136,8 +136,8 @@ ExtensionFunction::ResponseAction
 InputMethodPrivateGetCurrentInputMethodFunction::Run() {
   chromeos::input_method::InputMethodManager* manager =
       chromeos::input_method::InputMethodManager::Get();
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
-      manager->GetActiveIMEState()->GetCurrentInputMethod().id())));
+  return RespondNow(OneArgument(
+      base::Value(manager->GetActiveIMEState()->GetCurrentInputMethod().id())));
 }
 
 ExtensionFunction::ResponseAction
@@ -335,7 +335,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
 
   ui::SurroundingTextInfo info = input_context->GetSurroundingTextInfo();
   if (!info.selection_range.IsValid())
-    return RespondNow(OneArgument(std::make_unique<base::Value>()));
+    return RespondNow(OneArgument(base::Value()));
 
   auto ret = std::make_unique<base::DictionaryValue>();
   uint32_t selection_start = info.selection_range.start();
@@ -587,7 +587,7 @@ InputMethodPrivateSetSelectionRangeFunction::Run() {
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
-  return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+  return RespondNow(OneArgument(base::Value(true)));
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {

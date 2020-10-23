@@ -349,7 +349,7 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
     CompleteAsyncRun(TwoArguments(std::make_unique<base::Value>(access_token),
                                   std::move(granted_scopes_value)));
   } else {
-    CompleteAsyncRun(OneArgument(std::make_unique<base::Value>(access_token)));
+    CompleteAsyncRun(OneArgument(base::Value(access_token)));
   }
 }
 

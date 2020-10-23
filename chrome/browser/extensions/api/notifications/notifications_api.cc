@@ -605,8 +605,7 @@ NotificationsCreateFunction::RunNotificationsApi() {
         api::notifications::Create::Results::Create(notification_id), error));
   }
 
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(notification_id)));
+  return RespondNow(OneArgument(base::Value(notification_id)));
 }
 
 NotificationsUpdateFunction::NotificationsUpdateFunction() {
@@ -627,7 +626,7 @@ NotificationsUpdateFunction::RunNotificationsApi() {
           CreateScopedIdentifier(extension_->id(), params_->notification_id));
 
   if (!matched_notification) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
+    return RespondNow(OneArgument(base::Value(false)));
   }
 
   // Copy the existing notification to get a writable version of it.
@@ -647,7 +646,7 @@ NotificationsUpdateFunction::RunNotificationsApi() {
 
   // No trouble, created the notification, send true to the callback and
   // succeed.
-  return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
+  return RespondNow(OneArgument(base::Value(true)));
 }
 
 NotificationsClearFunction::NotificationsClearFunction() {
@@ -664,7 +663,7 @@ NotificationsClearFunction::RunNotificationsApi() {
   bool cancel_result = GetDisplayHelper()->Close(
       CreateScopedIdentifier(extension_->id(), params_->notification_id));
 
-  return RespondNow(OneArgument(std::make_unique<base::Value>(cancel_result)));
+  return RespondNow(OneArgument(base::Value(cancel_result)));
 }
 
 NotificationsGetAllFunction::NotificationsGetAllFunction() {}
@@ -704,8 +703,8 @@ NotificationsGetPermissionLevelFunction::RunNotificationsApi() {
           ? api::notifications::PERMISSION_LEVEL_GRANTED
           : api::notifications::PERMISSION_LEVEL_DENIED;
 
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(api::notifications::ToString(result))));
+  return RespondNow(
+      OneArgument(base::Value(api::notifications::ToString(result))));
 }
 
 }  // namespace extensions

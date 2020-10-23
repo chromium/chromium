@@ -877,7 +877,7 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnTokenFetched(
     return;
   }
 
-  Respond(OneArgument(std::make_unique<base::Value>(
+  Respond(OneArgument(base::Value(
       download_url_.Resolve("?alt=media&access_token=" + access_token)
           .spec())));
 }

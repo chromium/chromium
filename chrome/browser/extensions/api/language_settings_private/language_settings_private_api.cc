@@ -564,7 +564,7 @@ LanguageSettingsPrivateAddSpellcheckWordFunction::Run() {
   }
 #endif
 
-  return RespondNow(OneArgument(std::make_unique<base::Value>(success)));
+  return RespondNow(OneArgument(base::Value(success)));
 }
 
 LanguageSettingsPrivateRemoveSpellcheckWordFunction::
@@ -590,7 +590,7 @@ LanguageSettingsPrivateRemoveSpellcheckWordFunction::Run() {
   }
 #endif
 
-  return RespondNow(OneArgument(std::make_unique<base::Value>(success)));
+  return RespondNow(OneArgument(base::Value(success)));
 }
 
 LanguageSettingsPrivateGetTranslateTargetLanguageFunction::
@@ -606,9 +606,8 @@ LanguageSettingsPrivateGetTranslateTargetLanguageFunction::Run() {
   language::LanguageModel* language_model =
       LanguageModelManagerFactory::GetForBrowserContext(profile)
           ->GetPrimaryModel();
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(TranslateService::GetTargetLanguage(
-          profile->GetPrefs(), language_model))));
+  return RespondNow(OneArgument(base::Value(TranslateService::GetTargetLanguage(
+      profile->GetPrefs(), language_model))));
 }
 
 #if defined(OS_CHROMEOS)

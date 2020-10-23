@@ -395,7 +395,7 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
 
   PrefService* prefs = user_prefs::UserPrefs::Get(GetProfile());
   if (!prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled))
-    return OneArgument(std::make_unique<base::Value>(false));
+    return OneArgument(base::Value(false));
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(GetProfile());
@@ -403,7 +403,7 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
   if (!parent_node)
     return Error(bookmark_keys::kNoParentError);
   bool can_paste = bookmarks::CanPasteFromClipboard(model, parent_node);
-  return OneArgument(std::make_unique<base::Value>(can_paste));
+  return OneArgument(base::Value(can_paste));
 }
 
 ExtensionFunction::ResponseValue

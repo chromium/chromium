@@ -114,8 +114,7 @@ FileManagerPrivateGetThumbnailFunction::FileManagerPrivateGetThumbnailFunction()
 
 void FileManagerPrivateGetThumbnailFunction::SendEncodedThumbnail(
     std::string thumbnail_data_url) {
-  Respond(OneArgument(
-      std::make_unique<base::Value>(std::move(thumbnail_data_url))));
+  Respond(OneArgument(base::Value(std::move(thumbnail_data_url))));
 }
 
 FileManagerPrivateInternalGetDriveThumbnailFunction::
@@ -176,7 +175,7 @@ FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
 void FileManagerPrivateInternalGetDriveThumbnailFunction::GotThumbnail(
     const base::Optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    Respond(OneArgument(std::make_unique<base::Value>("")));
+    Respond(OneArgument(base::Value("")));
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(

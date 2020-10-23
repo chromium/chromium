@@ -1834,7 +1834,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
 
   DCHECK_GT(group_id, 0);
 
-  return RespondNow(OneArgument(std::make_unique<base::Value>(group_id)));
+  return RespondNow(OneArgument(base::Value(group_id)));
 }
 
 ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
@@ -1957,7 +1957,7 @@ void TabsCaptureVisibleTabFunction::OnCaptureSuccess(const SkBitmap& bitmap) {
     return;
   }
 
-  Respond(OneArgument(std::make_unique<base::Value>(std::move(base64_result))));
+  Respond(OneArgument(base::Value(std::move(base64_result))));
 }
 
 void TabsCaptureVisibleTabFunction::OnCaptureFailure(CaptureResult result) {
@@ -2088,7 +2088,7 @@ void TabsDetectLanguageFunction::RespondWithLanguage(
     Observe(nullptr);
   }
 
-  Respond(OneArgument(std::make_unique<base::Value>(language)));
+  Respond(OneArgument(base::Value(language)));
   Release();  // Balanced in Run()
 }
 

@@ -136,7 +136,7 @@ void SyncFileSystemDeleteFileSystemFunction::DidDeleteFileSystem(
     return;
   }
 
-  Respond(OneArgument(std::make_unique<base::Value>(true)));
+  Respond(OneArgument(base::Value(true)));
 }
 
 ExtensionFunction::ResponseAction
@@ -386,9 +386,8 @@ SyncFileSystemSetConflictResolutionPolicyFunction::Run() {
 
 ExtensionFunction::ResponseAction
 SyncFileSystemGetConflictResolutionPolicyFunction::Run() {
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(sync_file_system::ToString(
-          sync_file_system::CONFLICT_RESOLUTION_POLICY_LAST_WRITE_WIN))));
+  return RespondNow(OneArgument(base::Value(sync_file_system::ToString(
+      sync_file_system::CONFLICT_RESOLUTION_POLICY_LAST_WRITE_WIN))));
 }
 
 ExtensionFunction::ResponseAction

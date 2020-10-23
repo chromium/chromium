@@ -1194,8 +1194,7 @@ AutotestPrivateGetAllEnterprisePoliciesFunction::Run() {
           .EnableDeviceInfo(true)
           .ToValue();
 
-  return RespondNow(OneArgument(
-      base::Value::ToUniquePtrValue(std::move(all_policies_array))));
+  return RespondNow(OneArgument(std::move(all_policies_array)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1514,7 +1513,7 @@ AutotestPrivateGetArcStartTimeFunction::Run() {
   double start_time =
       (arc_session_manager->arc_start_time() - base::TimeTicks())
           .InMillisecondsF();
-  return RespondNow(OneArgument(std::make_unique<base::Value>(start_time)));
+  return RespondNow(OneArgument(base::Value(start_time)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1620,8 +1619,7 @@ ExtensionFunction::ResponseAction AutotestPrivateIsAppShownFunction::Run() {
   const bool window_attached =
       item && item->status == ash::ShelfItemStatus::STATUS_RUNNING &&
       !controller->GetShelfSpinnerController()->HasApp(params->app_id);
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(window_attached)));
+  return RespondNow(OneArgument(base::Value(window_attached)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1634,7 +1632,7 @@ AutotestPrivateIsArcProvisionedFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateIsArcProvisionedFunction::Run() {
   DVLOG(1) << "AutotestPrivateIsArcProvisionedFunction";
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
+  return RespondNow(OneArgument(base::Value(
       arc::IsArcProvisioned(Profile::FromBrowserContext(browser_context())))));
 }
 
@@ -1820,7 +1818,7 @@ ExtensionFunction::ResponseAction AutotestPrivateLaunchArcAppFunction::Run() {
       launch_intent, 0 /* event_flags */,
       arc::UserInteractionType::APP_STARTED_FROM_EXTENSION_API,
       0 /* display_id */);
-  return RespondNow(OneArgument(std::make_unique<base::Value>(result)));
+  return RespondNow(OneArgument(base::Value(result)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1916,8 +1914,7 @@ AutotestPrivateGetClipboardTextDataFunction::Run() {
   base::string16 data;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &data);
-  return RespondNow(
-      OneArgument(base::Value::ToUniquePtrValue(base::Value(data))));
+  return RespondNow(OneArgument(base::Value(data)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2220,8 +2217,7 @@ void AutotestPrivateTakeScreenshotFunction::ScreenshotTaken(
         {"Error taking screenshot ",
          base::NumberToString(static_cast<int>(screenshot_result))})));
   }
-  Respond(
-      OneArgument(std::make_unique<base::Value>(GetPngDataAsString(png_data))));
+  Respond(OneArgument(base::Value(GetPngDataAsString(png_data))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2267,8 +2263,7 @@ void AutotestPrivateTakeScreenshotForDisplayFunction::ScreenshotTaken(
         {"Error taking screenshot ",
          base::NumberToString(static_cast<int>(screenshot_result))})));
   }
-  Respond(
-      OneArgument(std::make_unique<base::Value>(GetPngDataAsString(png_data))));
+  Respond(OneArgument(base::Value(GetPngDataAsString(png_data))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2878,8 +2873,8 @@ AutotestPrivateIsArcPackageListInitialRefreshedFunction::Run() {
   ArcAppListPrefs* const prefs =
       ArcAppListPrefs::Get(Profile::FromBrowserContext(browser_context()));
 
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(prefs->package_list_initial_refreshed())));
+  return RespondNow(
+      OneArgument(base::Value(prefs->package_list_initial_refreshed())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2953,7 +2948,7 @@ AutotestPrivateGetPrimaryDisplayScaleFactorFunction::Run() {
   display::Display primary_display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   float scale_factor = primary_display.device_scale_factor();
-  return RespondNow(OneArgument(std::make_unique<base::Value>(scale_factor)));
+  return RespondNow(OneArgument(base::Value(scale_factor)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2967,8 +2962,8 @@ ExtensionFunction::ResponseAction
 AutotestPrivateIsTabletModeEnabledFunction::Run() {
   DVLOG(1) << "AutotestPrivateIsTabletModeEnabledFunction";
 
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(ash::TabletMode::Get()->InTabletMode())));
+  return RespondNow(
+      OneArgument(base::Value(ash::TabletMode::Get()->InTabletMode())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2988,8 +2983,8 @@ AutotestPrivateSetTabletModeEnabledFunction::Run() {
   ash::TabletMode::Waiter waiter(params->enabled);
   ash::TabletMode::Get()->ForceUiTabletModeState(params->enabled);
   waiter.Wait();
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(ash::TabletMode::Get()->InTabletMode())));
+  return RespondNow(
+      OneArgument(base::Value(ash::TabletMode::Get()->InTabletMode())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3106,8 +3101,7 @@ AutotestPrivateGetShelfAutoHideBehaviorFunction::Run() {
       // SHELF_AUTO_HIDE_ALWAYS_HIDDEN not supported by shelf_prefs.cc
       return RespondNow(Error("SHELF_AUTO_HIDE_ALWAYS_HIDDEN not supported"));
   }
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(std::move(str_behavior))));
+  return RespondNow(OneArgument(base::Value(std::move(str_behavior))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3198,8 +3192,8 @@ AutotestPrivateGetShelfAlignmentFunction::Run() {
       // shelf_prefs.cc
       return RespondNow(Error("ShelfAlignment::kBottomLocked not supported"));
   }
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
-      api::autotest_private::ToString(alignment_type))));
+  return RespondNow(OneArgument(
+      base::Value(api::autotest_private::ToString(alignment_type))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3305,7 +3299,7 @@ AutotestPrivateSetOverviewModeStateFunction::Run() {
 void AutotestPrivateSetOverviewModeStateFunction::OnOverviewModeChanged(
     bool for_start,
     bool finished) {
-  auto arg = OneArgument(std::make_unique<base::Value>(finished));
+  auto arg = OneArgument(base::Value(finished));
   // On starting the overview animation, it needs to wait for 1 extra second
   // to trigger the occlusion tracker.
   if (for_start) {
@@ -3516,9 +3510,9 @@ void AutotestPrivateWaitForDisplayRotationFunction::
 
   display::Display display;
   display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_, &display);
-  Respond(OneArgument(std::make_unique<base::Value>(
-      display.is_valid() && (!target_rotation_.has_value() ||
-                             display.rotation() == *target_rotation_))));
+  Respond(OneArgument(base::Value(display.is_valid() &&
+                                  (!target_rotation_.has_value() ||
+                                   display.rotation() == *target_rotation_))));
   self_.reset();
 }
 
@@ -3552,9 +3546,8 @@ AutotestPrivateWaitForDisplayRotationFunction::CheckScreenRotationAnimation() {
                                                           &display);
     // This should never fail.
     DCHECK(display.is_valid());
-    return OneArgument(
-        std::make_unique<base::Value>(!target_rotation_.has_value() ||
-                                      display.rotation() == *target_rotation_));
+    return OneArgument(base::Value(!target_rotation_.has_value() ||
+                                   display.rotation() == *target_rotation_));
   }
   self_ = this;
 
@@ -3728,7 +3721,7 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
       return RespondNow(
           Error("The app window was already in the expected window state! "));
     } else {
-      return RespondNow(OneArgument(std::make_unique<base::Value>(
+      return RespondNow(OneArgument(base::Value(
           api::autotest_private::ToString(ToWindowStateType(expected_state)))));
     }
   }
@@ -3765,7 +3758,7 @@ void AutotestPrivateSetAppWindowStateFunction::WindowStateChanged(
     Respond(Error(
         "The app window was destroyed while waiting for its state change! "));
   } else {
-    Respond(OneArgument(std::make_unique<base::Value>(
+    Respond(OneArgument(base::Value(
         api::autotest_private::ToString(ToWindowStateType(expected_type)))));
   }
 }
@@ -3936,7 +3929,7 @@ void AutotestPrivateInstallPWAForCurrentURLFunction::PWALoaded() {
 void AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstalled(
     const web_app::AppId& app_id) {
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
-  Respond(OneArgument(std::make_unique<base::Value>(app_id)));
+  Respond(OneArgument(base::Value(app_id)));
   timeout_timer_.AbandonAndStop();
 }
 
@@ -3985,10 +3978,10 @@ AutotestPrivateActivateAcceleratorFunction::Run() {
           Error(base::StringPrintf("Accelerator is not registered 2")));
     }
     bool result = widget->GetFocusManager()->ProcessAccelerator(accelerator);
-    return RespondNow(OneArgument(std::make_unique<base::Value>(result)));
+    return RespondNow(OneArgument(base::Value(result)));
   }
   bool result = accelerator_controller->Process(accelerator);
-  return RespondNow(OneArgument(std::make_unique<base::Value>(result)));
+  return RespondNow(OneArgument(base::Value(result)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4030,7 +4023,7 @@ AutotestPrivateCreateNewDeskFunction::~AutotestPrivateCreateNewDeskFunction() =
 
 ExtensionFunction::ResponseAction AutotestPrivateCreateNewDeskFunction::Run() {
   const bool success = ash::AutotestDesksApi().CreateNewDesk();
-  return RespondNow(OneArgument(std::make_unique<base::Value>(success)));
+  return RespondNow(OneArgument(base::Value(success)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4053,14 +4046,14 @@ AutotestPrivateActivateDeskAtIndexFunction::Run() {
           base::BindOnce(
               &AutotestPrivateActivateDeskAtIndexFunction::OnAnimationComplete,
               this))) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
+    return RespondNow(OneArgument(base::Value(false)));
   }
 
   return RespondLater();
 }
 
 void AutotestPrivateActivateDeskAtIndexFunction::OnAnimationComplete() {
-  Respond(OneArgument(std::make_unique<base::Value>(true)));
+  Respond(OneArgument(base::Value(true)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4077,14 +4070,14 @@ AutotestPrivateRemoveActiveDeskFunction::Run() {
   if (!ash::AutotestDesksApi().RemoveActiveDesk(base::BindOnce(
           &AutotestPrivateRemoveActiveDeskFunction::OnAnimationComplete,
           this))) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
+    return RespondNow(OneArgument(base::Value(false)));
   }
 
   return RespondLater();
 }
 
 void AutotestPrivateRemoveActiveDeskFunction::OnAnimationComplete() {
-  Respond(OneArgument(std::make_unique<base::Value>(true)));
+  Respond(OneArgument(base::Value(true)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4110,7 +4103,7 @@ AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::Run() {
               &AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::
                   OnAnimationComplete,
               this))) {
-    return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
+    return RespondNow(OneArgument(base::Value(false)));
   }
 
   return RespondLater();
@@ -4118,7 +4111,7 @@ AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::Run() {
 
 void AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::
     OnAnimationComplete() {
-  Respond(OneArgument(std::make_unique<base::Value>(true)));
+  Respond(OneArgument(base::Value(true)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4400,7 +4393,7 @@ ExtensionFunction::ResponseAction AutotestPrivateStopTracingFunction::Run() {
 void AutotestPrivateStopTracingFunction::OnTracingComplete(
     std::unique_ptr<std::string> trace) {
   base::Value value(*trace.get());
-  Respond(OneArgument(base::Value::ToUniquePtrValue(std::move(value))));
+  Respond(OneArgument(std::move(value)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4725,8 +4718,8 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
 
 void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
-  Respond(OneArgument(std::make_unique<base::Value>(
-      ash::metrics_util::CalculateSmoothness(data))));
+  Respond(
+      OneArgument(base::Value(ash::metrics_util::CalculateSmoothness(data))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

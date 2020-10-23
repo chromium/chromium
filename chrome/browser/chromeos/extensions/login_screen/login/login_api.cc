@@ -141,8 +141,7 @@ LoginFetchDataForNextLoginAttemptFunction::Run() {
       local_state->GetString(prefs::kLoginExtensionApiDataForNextLoginAttempt);
   local_state->ClearPref(prefs::kLoginExtensionApiDataForNextLoginAttempt);
 
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(data_for_next_login_attempt)));
+  return RespondNow(OneArgument(base::Value(data_for_next_login_attempt)));
 }
 
 LoginLockManagedGuestSessionFunction::LoginLockManagedGuestSessionFunction() =

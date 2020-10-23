@@ -228,7 +228,7 @@ void WallpaperSetWallpaperFunction::OnWallpaperDecoded(
   }
 
   Respond(params_->details.thumbnail
-              ? OneArgument(std::make_unique<Value>(std::move(thumbnail_data)))
+              ? OneArgument(Value(std::move(thumbnail_data)))
               : NoArguments());
 }
 

@@ -371,7 +371,7 @@ WallpaperPrivateSetWallpaperIfExistsFunction::Run() {
 void WallpaperPrivateSetWallpaperIfExistsFunction::
     OnSetOnlineWallpaperIfExistsCallback(bool file_exists) {
   if (file_exists) {
-    Respond(OneArgument(std::make_unique<base::Value>(true)));
+    Respond(OneArgument(base::Value(true)));
   } else {
     auto args = std::make_unique<base::ListValue>();
     // TODO(crbug.com/830212): Do not send arguments when the function fails.
@@ -470,8 +470,7 @@ void WallpaperPrivateSetCustomWallpaperFunction::OnWallpaperDecoded(
     image.EnsureRepsForSupportedScales();
     std::vector<uint8_t> thumbnail_data = GenerateThumbnail(
         image, gfx::Size(kWallpaperThumbnailWidth, kWallpaperThumbnailHeight));
-    Respond(
-        OneArgument(std::make_unique<base::Value>(std::move(thumbnail_data))));
+    Respond(OneArgument(base::Value(std::move(thumbnail_data))));
   } else {
     Respond(NoArguments());
   }
@@ -577,8 +576,7 @@ void WallpaperPrivateGetThumbnailFunction::FileNotLoaded() {
 
 void WallpaperPrivateGetThumbnailFunction::FileLoaded(
     const std::string& data) {
-  Respond(OneArgument(
-      std::make_unique<Value>(base::as_bytes(base::make_span(data)))));
+  Respond(OneArgument(Value(base::as_bytes(base::make_span(data)))));
 }
 
 void WallpaperPrivateGetThumbnailFunction::Get(const base::FilePath& path) {
@@ -863,8 +861,7 @@ WallpaperPrivateGetCurrentWallpaperThumbnailFunction::Run() {
   image.EnsureRepsForSupportedScales();
   std::vector<uint8_t> thumbnail_data =
       GenerateThumbnail(image, thumbnail_size);
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(std::move(thumbnail_data))));
+  return RespondNow(OneArgument(base::Value(std::move(thumbnail_data))));
 }
 
 void WallpaperPrivateGetCurrentWallpaperThumbnailFunction::OnWallpaperDecoded(
