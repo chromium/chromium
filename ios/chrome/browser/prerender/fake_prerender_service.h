@@ -27,6 +27,7 @@ class FakePrerenderService : public PrerenderService {
   void StartPrerender(const GURL& url,
                       const web::Referrer& referrer,
                       ui::PageTransition transition,
+                      web::WebState* web_state_to_replace,
                       bool immediately) override;
   bool MaybeLoadPrerenderedURL(const GURL& url,
                                ui::PageTransition transition,

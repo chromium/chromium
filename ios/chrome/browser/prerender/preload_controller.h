@@ -48,9 +48,10 @@ class WebState;
 // Prerenders the given |url| with the given |transition|.  Normally, prerender
 // requests are fulfilled after a short delay, to prevent unnecessary prerenders
 // while the user is typing.  If |immediately| is YES, this method starts
-// prerendering immediately, with no delay.  |immediately| should be set to YES
-// only when there is a very high confidence that the user will navigate to the
-// given |url|.
+// prerendering immediately, with no delay. |currentWebState| is used to create
+// a new WebState for the prerender with the same session. |immediately| should
+// be set to YES only when there is a very high confidence that the user will
+// navigate to the given |url|.
 //
 // If there is already an existing request for |url|, this method does nothing
 // and does not reset the delay timer.  If there is an existing request for a
@@ -59,6 +60,7 @@ class WebState;
 - (void)prerenderURL:(const GURL&)url
             referrer:(const web::Referrer&)referrer
           transition:(ui::PageTransition)transition
+     currentWebState:(web::WebState*)currentWebState
          immediately:(BOOL)immediately;
 
 // Cancels any outstanding prerender requests and destroys any prerendered Tabs.

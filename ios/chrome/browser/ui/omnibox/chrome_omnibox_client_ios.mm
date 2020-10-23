@@ -159,7 +159,7 @@ void ChromeOmniboxClientIOS::OnResultChanged(
     ui::PageTransition transition = ui::PageTransitionFromInt(
         match.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
     service->StartPrerender(match.destination_url, web::Referrer(), transition,
-                            is_inline_autocomplete);
+                            controller_->GetWebState(), is_inline_autocomplete);
   } else {
     service->CancelPrerender();
   }

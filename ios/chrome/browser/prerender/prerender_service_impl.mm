@@ -38,10 +38,12 @@ void PrerenderServiceImpl::SetDelegate(id<PreloadControllerDelegate> delegate) {
 void PrerenderServiceImpl::StartPrerender(const GURL& url,
                                           const web::Referrer& referrer,
                                           ui::PageTransition transition,
+                                          web::WebState* web_state_to_replace,
                                           bool immediately) {
   [controller_ prerenderURL:url
                    referrer:referrer
                  transition:transition
+            currentWebState:web_state_to_replace
                 immediately:immediately];
 }
 

@@ -18,6 +18,7 @@ void FakePrerenderService::SetDelegate(id<PreloadControllerDelegate> delegate) {
 void FakePrerenderService::StartPrerender(const GURL& url,
                                           const web::Referrer& referrer,
                                           ui::PageTransition transition,
+                                          web::WebState* web_state_to_replace,
                                           bool immediately) {
   preload_url_ = url;
 }
