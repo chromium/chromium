@@ -27,11 +27,13 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_constants_aura.h"
 #include "ui/views/view_model.h"
@@ -309,6 +311,7 @@ void ContentsView::ActivePageChanged() {
 
   GetAppListMainView()->model()->SetState(state);
   UpdateSearchBoxVisibility(state);
+  app_list_view_->UpdateWindowTitle();
 }
 
 void ContentsView::ShowSearchResults(bool show) {

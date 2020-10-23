@@ -377,6 +377,9 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   // page. Called when the app list's visibility changes.
   void UpdatePageResetTimer(bool app_list_visibility);
 
+  // Updates the title of the window that contains the launcher.
+  void UpdateWindowTitle();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AppListControllerImplTest,
                            CheckAppListViewBoundsWhenVKeyboardEnabled);

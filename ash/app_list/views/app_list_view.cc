@@ -1572,9 +1572,40 @@ void AppListView::SetState(AppListViewState new_state) {
     GetInitiallyFocusedView()->RequestFocus();
   }
 
+  UpdateWindowTitle();
+
   // Updates the visibility of app list items according to the change of
   // |app_list_state_|.
   GetAppsContainerView()->UpdateControlVisibility(app_list_state_, is_in_drag_);
+}
+
+void AppListView::UpdateWindowTitle() {
+  if (!GetWidget())
+    return;
+  gfx::NativeView window = GetWidget()->GetNativeView();
+  AppListState contents_view_state = app_list_main_view_->model()->state();
+  if (window) {
+    if (contents_view_state == AppListState::kStateSearchResults ||
+        contents_view_state == AppListState::kStateEmbeddedAssistant) {
+      window->SetTitle(l10n_util::GetStringUTF16(
+          IDS_APP_LIST_LAUNCHER_ACCESSIBILITY_ANNOUNCEMENT));
+      return;
+    }
+    switch (app_list_state_) {
+      case AppListViewState::kPeeking:
+        window->SetTitle(l10n_util::GetStringUTF16(
+            IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT));
+        break;
+      case AppListViewState::kFullscreenAllApps:
+        window->SetTitle(l10n_util::GetStringUTF16(
+            IDS_APP_LIST_ALL_APPS_ACCESSIBILITY_ANNOUNCEMENT));
+        break;
+      case AppListViewState::kClosed:
+      case AppListViewState::kHalf:
+      case AppListViewState::kFullscreenSearch:
+        break;
+    }
+  }
 }
 
 base::TimeDelta AppListView::GetStateTransitionAnimationDuration(

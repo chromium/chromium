@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/accessibility/spoken_feedback_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -23,6 +24,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/browsertest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -103,6 +105,12 @@ class SpokenFeedbackAppListTest
       search_model->results()->Add(std::make_unique<TestSuggestionChipResult>(
           base::UTF8ToUTF16("Chip " + base::NumberToString(i))));
     }
+  }
+
+  void ReadWindowTitle() {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        browser()->profile(), extension_misc::kChromeVoxExtensionId,
+        "CommandHandler.onCommand('readCurrentTitle');");
   }
 
  private:
@@ -540,6 +548,42 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
   sm_.ExpectSpeech("Alert");
   sm_.ExpectSpeech("Moved to Page 1, row 4, column 1.");
 
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
+                       LauncherWindowTitleAnnouncement) {
+  EnableChromeVox();
+
+  sm_.Call(
+      [this]() { EXPECT_TRUE(PerformAcceleratorAction(ash::FOCUS_SHELF)); });
+  sm_.ExpectSpeechPattern("Launcher");
+  sm_.ExpectSpeech("Button");
+  sm_.ExpectSpeech("Shelf");
+  sm_.ExpectSpeech("Tool bar");
+  // Press space on the launcher button in shelf, this opens peeking
+  // launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeech("Edit text");
+  sm_.ExpectSpeech("Launcher, partial view");
+  sm_.Call([this]() { ReadWindowTitle(); });
+  sm_.ExpectSpeech("Launcher, partial view");
+  // Move focus to expand all apps button.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_UP); });
+  sm_.ExpectSpeech("Expand to all apps");
+  // Press space on expand arrow to go to fullscreen launcher.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeechPattern("Search your device,*");
+  sm_.ExpectSpeech("Edit text");
+  sm_.ExpectSpeech("Launcher, all apps");
+  sm_.Call([this]() { ReadWindowTitle(); });
+  sm_.ExpectSpeech("Launcher, all apps");
+  // Activate the search widget.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_A); });
+  sm_.ExpectSpeechPattern("Displaying *");
+  sm_.Call([this]() { ReadWindowTitle(); });
+  sm_.ExpectSpeech("Launcher");
   sm_.Replay();
 }
 
