@@ -5,6 +5,7 @@
 #include "weblayer/browser/browser_context_impl.h"
 
 #include "base/threading/thread_restrictions.h"
+#include "components/background_sync/background_sync_controller_impl.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/client_hints/browser/client_hints.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -33,6 +34,7 @@
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "weblayer/browser/background_sync/background_sync_controller_factory.h"
 #include "weblayer/browser/browsing_data_remover_delegate.h"
 #include "weblayer/browser/browsing_data_remover_delegate_factory.h"
 #include "weblayer/browser/client_hints_factory.h"
@@ -197,7 +199,7 @@ BrowserContextImpl::GetBackgroundFetchDelegate() {
 
 content::BackgroundSyncController*
 BrowserContextImpl::GetBackgroundSyncController() {
-  return nullptr;
+  return BackgroundSyncControllerFactory::GetForBrowserContext(this);
 }
 
 content::BrowsingDataRemoverDelegate*

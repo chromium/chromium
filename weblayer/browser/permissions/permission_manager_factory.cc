@@ -5,6 +5,7 @@
 #include "weblayer/browser/permissions/permission_manager_factory.h"
 
 #include "build/build_config.h"
+#include "components/background_sync/background_sync_permission_context.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/permission_context_base.h"
@@ -81,6 +82,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_CAMERA,
           blink::mojom::FeaturePolicyFeature::kCamera);
+  permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
+      std::make_unique<BackgroundSyncPermissionContext>(browser_context);
 
   // For now, all requests are denied. As features are added, their permission
   // contexts can be added here instead of DeniedPermissionContext.

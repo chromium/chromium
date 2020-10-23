@@ -9,18 +9,65 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/background_sync_parameters.h"
+#include "content/public/test/background_sync_test_util.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "weblayer/browser/background_sync/background_sync_controller_factory.h"
 #include "weblayer/browser/background_sync/background_sync_delegate_impl.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
+#include "weblayer/browser/tab_impl.h"
+#include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/weblayer_browser_test.h"
+#include "weblayer/test/weblayer_browser_test_utils.h"
 
 namespace {
 const char kExampleUrl[] = "https://www.example.com/";
 const char kTag[] = "test_tag";
 }  // namespace
+
 namespace weblayer {
 
-class BackgroundSyncBrowserTest : public WebLayerBrowserTest {};
+class BackgroundSyncBrowserTest : public WebLayerBrowserTest {
+ public:
+  BackgroundSyncBrowserTest() = default;
+  ~BackgroundSyncBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    sync_event_received_ = std::make_unique<base::RunLoop>();
+    content::background_sync_test_util::SetIgnoreNetworkChanges(
+        /* ignore= */ true);
+
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->RegisterRequestHandler(base::BindRepeating(
+        &BackgroundSyncBrowserTest::HandleRequest, base::Unretained(this)));
+    https_server_->AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("weblayer/test/data")));
+    ASSERT_TRUE(https_server_->Start());
+  }
+
+  // Intercepts all requests.
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().query() == "syncreceived") {
+      if (sync_event_received_)
+        sync_event_received_->Quit();
+    }
+
+    // The default handlers will take care of this request.
+    return nullptr;
+  }
+
+ protected:
+  content::WebContents* web_contents() {
+    return static_cast<TabImpl*>(shell()->tab())->web_contents();
+  }
+
+  std::unique_ptr<base::RunLoop> sync_event_received_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+};
 
 IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, GetBackgroundSyncController) {
   EXPECT_TRUE(BackgroundSyncControllerFactory::GetForBrowserContext(
@@ -100,6 +147,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, NormalProfile) {
       std::make_unique<BackgroundSyncDelegateImpl>(GetBrowserContext());
   ASSERT_TRUE(delegate);
   EXPECT_FALSE(delegate->IsProfileOffTheRecord());
+}
+
+IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, SyncEventFired) {
+  content::background_sync_test_util::SetOnline(web_contents(), false);
+  NavigateAndWaitForCompletion(
+      https_server_->GetURL("/background_sync_browsertest.html"), shell());
+  content::background_sync_test_util::SetOnline(web_contents(), true);
+  sync_event_received_->Run();
 }
 
 class IncognitoBackgroundSyncBrowserTest : public BackgroundSyncBrowserTest {
