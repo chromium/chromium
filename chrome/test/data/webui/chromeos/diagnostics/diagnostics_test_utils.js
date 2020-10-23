@@ -43,6 +43,15 @@ export function getResultEntries(element) {
 }
 
 /**
+ * Helper function for getting the routine-result-list from an element.
+ * @param {!HTMLElement} element
+ * @return {!HTMLElement}
+ */
+export function getResultList(element) {
+  return element.shadowRoot.querySelector('routine-result-list');
+}
+
+/**
  * Helper function to check if a substring exists in an element.
  * @param {!HTMLElement} element
  * @param {string} substring to check
