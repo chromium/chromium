@@ -86,13 +86,7 @@ class OverscrollActionsTabHelperTest : public PlatformTest {
 
 // Tests that OverscrollActionsControllerDelegate is set correctly and triggered
 // When there is a view pull.
-// TODO(crbug.com/944599): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_TestDelegateTrigger TestDelegateTrigger
-#else
-#define MAYBE_TestDelegateTrigger DISABLED_TestDelegateTrigger
-#endif
-TEST_F(OverscrollActionsTabHelperTest, MAYBE_TestDelegateTrigger) {
+TEST_F(OverscrollActionsTabHelperTest, TestDelegateTrigger) {
   web_state_.SetBrowserState(browser_state_.get());
   overscroll_tab_helper()->SetDelegate(overscroll_delegate_);
   // Start pull for page refresh action.
@@ -108,13 +102,7 @@ TEST_F(OverscrollActionsTabHelperTest, MAYBE_TestDelegateTrigger) {
 
 // Tests that overscrolls actions view style is set correctly, for regular
 // browsing browser state.
-// TODO(crbug.com/944599): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_TestRegularBrowserStateStyle TestRegularBrowserStateStyle
-#else
-#define MAYBE_TestRegularBrowserStateStyle DISABLED_TestRegularBrowserStateStyle
-#endif
-TEST_F(OverscrollActionsTabHelperTest, MAYBE_TestRegularBrowserStateStyle) {
+TEST_F(OverscrollActionsTabHelperTest, TestRegularBrowserStateStyle) {
   web_state_.SetBrowserState(browser_state_.get());
   overscroll_tab_helper()->SetDelegate(overscroll_delegate_);
   SimulatePullForRefreshAction();
@@ -125,16 +113,7 @@ TEST_F(OverscrollActionsTabHelperTest, MAYBE_TestRegularBrowserStateStyle) {
 
 // Tests that overscrolls actions view style is set correctly, for off the
 // record browser state.
-// TODO(crbug.com/944599): Fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_TestOffTheRecordBrowserStateStyle \
-  TestOffTheRecordBrowserStateStyle
-#else
-#define MAYBE_TestOffTheRecordBrowserStateStyle \
-  DISABLED_TestOffTheRecordBrowserStateStyle
-#endif
-TEST_F(OverscrollActionsTabHelperTest,
-       MAYBE_TestOffTheRecordBrowserStateStyle) {
+TEST_F(OverscrollActionsTabHelperTest, TestOffTheRecordBrowserStateStyle) {
   web_state_.SetBrowserState(
       browser_state_->GetOffTheRecordChromeBrowserState());
   overscroll_tab_helper()->SetDelegate(overscroll_delegate_);
