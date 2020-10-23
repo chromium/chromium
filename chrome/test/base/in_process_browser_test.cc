@@ -497,7 +497,7 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
 }
 #endif  // !defined(OS_MAC)
 
-#if !defined(OS_ANDROID)
+#if !defined(OS_ANDROID) && !defined(CHROME_OS)
 Browser* InProcessBrowserTest::CreateGuestBrowser() {
   // Get Guest profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -518,7 +518,7 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
   AddBlankTabAndShow(browser);
   return browser;
 }
-#endif
+#endif  // !defined(OS_ANDROID) && !defined(CHROME_OS)
 
 void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
   content::WindowedNotificationObserver observer(
