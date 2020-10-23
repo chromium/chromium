@@ -971,6 +971,23 @@ int main(int argc, const char* argv[]) {
                cxxConstructExpr(templated_function_arg_matcher)),
       &affected_expr_rewriter);
 
+  // Calls to constructors via an implicit cast =========
+  // Given
+  //   struct I { I(int*) {} };
+  //   void bar(I i) {}
+  //   struct S { int* y; };
+  //   void foo(const S& s) {
+  //     bar(s.y);  // implicit cast from |s.y| to I.
+  //   }
+  // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+  //
+  // See also testcases in tests/affected-expr-original.cc
+  auto implicit_ctor_expr_matcher = implicitCastExpr(has(cxxConstructExpr(allOf(
+      hasDeclaration(
+          cxxConstructorDecl(allOf(parameterCountIs(1), unless(isExplicit())))),
+      forEachArgumentWithParam(affected_expr_matcher, parmVarDecl())))));
+  match_finder.addMatcher(implicit_ctor_expr_matcher, &affected_expr_rewriter);
+
   // |auto| type declarations =========
   // Given
   //   struct S { int* y; };
