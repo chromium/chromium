@@ -300,6 +300,7 @@
       hasUserVerification: false,
       isUserConsenting: true,
       isUserVerified: false,
+      extensions: [],
     }, options);
     let mojoOptions = {};
     switch (options.protocol) {
@@ -334,9 +335,14 @@
     }
     mojoOptions.hasResidentKey = options.hasResidentKey;
     mojoOptions.hasUserVerification = options.hasUserVerification;
+    mojoOptions.hasLargeBlob = options.extensions.indexOf("largeBlob") !== -1;
     mojoOptions.isUserPresent = options.isUserConsenting;
+    // Force CTAP 2.1 to support large blob. This does not have any impact on
+    // WPTs until credProps is tested on WPTs, at which point we'll expose this.
+    mojoOptions.ctap2Version = blink.test.mojom.Ctap2Version.CTAP2_1;
 
     let authenticator = (await manager.createAuthenticator(mojoOptions)).authenticator;
+    await authenticator.setUserVerified(options.isUserVerified);
     return (await authenticator.getUniqueId()).id;
   };
 
