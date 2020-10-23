@@ -12173,9 +12173,8 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Search by Image Unavailable"/>
   <int value="5" label="OS Below Android O"/>
   <int value="6" label="Invalid Package"/>
-  <int value="7" label="Image Format Not Support"/>
-  <int value="8" label="Lens Shop Supported"/>
-  <int value="9" label="Lens Search And Shop Supported"/>
+  <int value="7" label="Lens Shop Supported"/>
+  <int value="8" label="Lens Search And Shop Supported"/>
 </enum>
 
 <enum name="ContextMenuOption">
