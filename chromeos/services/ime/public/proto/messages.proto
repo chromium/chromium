@@ -32,6 +32,7 @@ message PublicMessage {
     OnFocus on_focus = 2;
     OnKeyEvent on_key_event = 3;
     OnKeyEventReply on_key_event_reply = 4;
+    OnSurroundingTextChanged on_surrounding_text_changed = 5;
   }
 }
 
@@ -77,4 +78,19 @@ message ModifierState {
   optional bool control = 4;
   optional bool meta = 5;
   optional bool shift = 6;
+}
+
+// Protobuf version of InputEngine::SelectionRange in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message SelectionRange {
+  optional uint32 anchor = 1;
+  optional uint32 focus = 2;
+}
+
+// Protobuf version of InputEngine::OnSurroundingTextChanged in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message OnSurroundingTextChanged {
+  optional string text = 1;
+  optional uint32 offset = 2;
+  optional SelectionRange selection_range = 3;
 }

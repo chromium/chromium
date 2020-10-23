@@ -253,6 +253,13 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
     assistive_suggester_->OnSurroundingTextChanged(text, cursor_pos,
                                                    anchor_pos);
   }
+  if (ShouldUseFstMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
+    auto selection = ime::mojom::SelectionRange::New();
+    selection->anchor = anchor_pos;
+    selection->focus = cursor_pos;
+    remote_to_engine_->OnSurroundingTextChanged(
+        base::UTF16ToUTF8(text), offset_pos, std::move(selection));
+  }
   base_observer_->OnSurroundingTextChanged(engine_id, text, cursor_pos,
                                            anchor_pos, offset_pos);
 }

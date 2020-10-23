@@ -62,6 +62,10 @@ class TestClientChannel : mojom::InputChannel {
   MOCK_METHOD2(OnKeyEvent,
                void(const mojom::PhysicalKeyEventPtr event,
                     OnKeyEventCallback));
+  MOCK_METHOD3(OnSurroundingTextChanged,
+               void(const std::string& text,
+                    uint32_t offset,
+                    mojom::SelectionRangePtr selection_range));
   MOCK_METHOD0(ResetForRulebased, void());
   MOCK_METHOD1(GetRulebasedKeypressCountForTesting,
                void(GetRulebasedKeypressCountForTestingCallback));

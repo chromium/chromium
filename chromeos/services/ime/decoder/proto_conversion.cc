@@ -46,5 +46,23 @@ ime::PublicMessage OnKeyEventToProto(uint64_t seq_id,
   return message;
 }
 
+ime::PublicMessage OnSurroundingTextChangedToProto(
+    uint64_t seq_id,
+    const std::string& text,
+    uint32_t offset,
+    mojom::SelectionRangePtr selection_range) {
+  ime::PublicMessage message;
+  message.set_seq_id(seq_id);
+
+  ime::OnSurroundingTextChanged& params =
+      *message.mutable_on_surrounding_text_changed();
+  params.set_text(text);
+  params.set_offset(offset);
+  params.mutable_selection_range()->set_anchor(selection_range->anchor);
+  params.mutable_selection_range()->set_focus(selection_range->focus);
+
+  return message;
+}
+
 }  // namespace ime
 }  // namespace chromeos

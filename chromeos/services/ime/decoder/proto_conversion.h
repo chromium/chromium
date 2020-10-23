@@ -20,6 +20,14 @@ ime::PublicMessage OnFocusToProto(uint64_t seq_id);
 ime::PublicMessage OnKeyEventToProto(uint64_t seq_id,
                                      mojom::PhysicalKeyEventPtr event);
 
+// Converts arguments of a Mojo call to InputChannel::OnSurroundingTextChanged
+// into a proto.
+ime::PublicMessage OnSurroundingTextChangedToProto(
+    uint64_t seq_id,
+    const std::string& text,
+    uint32_t focus,
+    mojom::SelectionRangePtr selection_range);
+
 }  // namespace ime
 }  // namespace chromeos
 

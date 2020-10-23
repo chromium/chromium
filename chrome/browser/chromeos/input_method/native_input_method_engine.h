@@ -93,6 +93,10 @@ class NativeInputMethodEngine : public InputMethodEngine {
     void ProcessMessage(const std::vector<uint8_t>& message,
                         ProcessMessageCallback callback) override;
     void OnFocus() override {}
+    void OnSurroundingTextChanged(
+        const std::string& text,
+        uint32_t offset,
+        ime::mojom::SelectionRangePtr selection_range) override {}
     void ProcessKeypressForRulebased(
         ime::mojom::PhysicalKeyEventPtr event,
         ProcessKeypressForRulebasedCallback callback) override {}

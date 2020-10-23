@@ -111,6 +111,13 @@ void InputEngine::OnFocus() {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
+void InputEngine::OnSurroundingTextChanged(
+    const std::string& text,
+    uint32_t offset,
+    mojom::SelectionRangePtr selection_range) {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 void InputEngine::ProcessKeypressForRulebased(
     mojom::PhysicalKeyEventPtr event,
     ProcessKeypressForRulebasedCallback callback) {

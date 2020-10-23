@@ -48,5 +48,26 @@ TEST(ProtoConversionTest, OnKeyEventToProto) {
             expected_message.SerializeAsString());
 }
 
+TEST(ProtoConversionTest, OnSurroundingTextChangedToProto) {
+  const auto selection = mojom::SelectionRange::New(/*anchor=*/3, /*focus=*/2);
+
+  ime::PublicMessage expected_message;
+  expected_message.set_seq_id(42);
+  expected_message.mutable_on_surrounding_text_changed()->set_text("hello");
+  expected_message.mutable_on_surrounding_text_changed()->set_offset(1);
+  expected_message.mutable_on_surrounding_text_changed()
+      ->mutable_selection_range()
+      ->set_anchor(3);
+  expected_message.mutable_on_surrounding_text_changed()
+      ->mutable_selection_range()
+      ->set_focus(2);
+
+  ime::PublicMessage actual_message = OnSurroundingTextChangedToProto(
+      /*seq_id=*/42, "hello", /*offset=*/1, selection->Clone());
+
+  EXPECT_EQ(actual_message.SerializeAsString(),
+            expected_message.SerializeAsString());
+}
+
 }  // namespace ime
 }  // namespace chromeos
