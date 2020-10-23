@@ -81,7 +81,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   size_t keyboard_highlighted_target_ = 0;
 
-  views::View* root_view_ = nullptr;
   views::View* main_view_ = nullptr;
   views::View* default_view_ = nullptr;
   views::View* expanded_view_ = nullptr;

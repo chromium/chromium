@@ -14,4 +14,7 @@
   <message name="IDS_SHARESHEET_FEWER_APPS_LABEL" desc="The label for the button at the bottom of the sharesheet which clicks into the default sharesheet.">
     Fewer apps
   </message>
+  <message name="IDS_SHARESHEET_ZERO_STATE_LABEL" desc="The label shown to inform users that the sharesheet is empty.">
+    No apps available
+  </message>
 </grit-part>

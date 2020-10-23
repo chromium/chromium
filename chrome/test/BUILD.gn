@@ -2741,6 +2741,7 @@ if (!is_android) {
         "../browser/ui/views/frame/top_controls_slide_controller_chromeos_browsertest.cc",
         "../browser/ui/views/intent_picker_bubble_view_browsertest_chromeos.cc",
         "../browser/ui/views/plugin_vm/plugin_vm_installer_view_browsertest.cc",
+        "../browser/ui/views/sharesheet/sharesheet_bubble_view_browsertest.cc",
         "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
