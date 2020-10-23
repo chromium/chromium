@@ -39,6 +39,9 @@ class MinMaxButton : public views::ImageButton {
     SetBackground(std::make_unique<SolidSourceBackground>(kHUDLegendBackground,
                                                           /*radius=*/0));
     SetProperty(kHUDClickHandler, HTCLIENT);
+
+    DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 
   MinMaxButton(const MinMaxButton&) = delete;

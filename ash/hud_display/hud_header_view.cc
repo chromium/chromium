@@ -76,6 +76,9 @@ class SettingsButton : public views::ImageButton {
                                    kHUDSettingsIconSize, kHUDDefaultColor));
     SetBorder(views::CreateEmptyBorder(gfx::Insets(kSettingsIconBorder)));
     SetProperty(kHUDClickHandler, HTCLIENT);
+
+    DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 
   SettingsButton(const SettingsButton&) = delete;

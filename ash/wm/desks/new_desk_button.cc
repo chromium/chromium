@@ -46,6 +46,8 @@ NewDeskButton::NewDeskButton(views::ButtonListener* listener)
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusPainter(nullptr);
+  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   auto border = std::make_unique<WmHighlightItemBorder>(kCornerRadius);
   border_ptr_ = border.get();

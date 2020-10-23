@@ -88,6 +88,9 @@ HUDTabButton::HUDTabButton(Style style,
   SetBorder(views::CreateEmptyBorder(
       kSettingsIconBorder, kTabOverlayWidth + kTabTitleBorder,
       kSettingsIconBorder, kTabOverlayWidth + kTabTitleBorder));
+
+  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 void HUDTabButton::SetStyle(Style style) {
