@@ -52,6 +52,27 @@ export function getResultList(element) {
 }
 
 /**
+ * Helper function for getting an array of routine-result-entry
+ * element from a routine-section.
+ * @param {!HTMLElement} element
+ * @return {!Array<!HTMLElement>}
+ */
+export function getResultEntriesFromSection(element) {
+  return getResultEntries(getResultList(element));
+}
+
+/**
+ * Helper function for getting the Run Tests button from a routine-section.
+ * @param {!HTMLElement} element
+ * @return {!Array<!HTMLElement>}
+ */
+export function getRunTestsButtonFromSection(element) {
+  const button = element.$$('#runTestsButton');
+  assertTrue(!!button);
+  return button;
+}
+
+/**
  * Helper function to check if a substring exists in an element.
  * @param {!HTMLElement} element
  * @param {string} substring to check

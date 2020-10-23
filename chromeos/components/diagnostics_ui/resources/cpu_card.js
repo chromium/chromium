@@ -6,14 +6,13 @@ import './data_point.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './realtime_cpu_chart.js';
+import './routine_section.js'
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {CpuUsage, SystemDataProviderInterface} from './diagnostics_types.js'
+import {CpuUsage, RoutineName, SystemDataProviderInterface} from './diagnostics_types.js'
 import {getSystemDataProvider} from './mojo_interface_provider.js';
-
 
 /**
  * @fileoverview
@@ -32,6 +31,18 @@ Polymer({
   systemDataProvider_: null,
 
   properties: {
+    routines_: {
+      type: Array,
+      value: () => {
+        return [
+          RoutineName.kCpuStress,
+          RoutineName.kCpuCache,
+          RoutineName.kFloatingPoint,
+          RoutineName.kPrimeSearch,
+        ];
+      }
+    },
+
     /** @private {!CpuUsage} */
     cpuUsage_: {
       type: Object,

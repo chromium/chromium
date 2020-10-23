@@ -11,7 +11,7 @@ import {RoutineName} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress} from 'chrome://diagnostics/routine_list_executor.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
-import * as diagnostics_test_utils from './diagnostics_test_utils.js';
+import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('RoutineSectionTest', () => {
   /** @type {?HTMLElement} */
@@ -51,8 +51,7 @@ suite('RoutineSectionTest', () => {
    * @return {!RoutineList}
    */
   function getResultList() {
-    const resultList =
-        diagnostics_test_utils.getResultList(routineSectionElement);
+    const resultList = dx_utils.getResultList(routineSectionElement);
     assertTrue(!!resultList);
     return resultList;
   }
@@ -62,7 +61,7 @@ suite('RoutineSectionTest', () => {
    * @return {!CrButton}
    */
   function getRunTestsButton() {
-    const button = routineSectionElement.$$('#runTestsButton');
+    const button = dx_utils.getRunTestsButtonFromSection(routineSectionElement);
     assertTrue(!!button);
     return button;
   }
@@ -89,7 +88,7 @@ suite('RoutineSectionTest', () => {
    * @return {!Array<!RoutineResultEntry>}
    */
   function getEntries() {
-    return diagnostics_test_utils.getResultEntries(getResultList());
+    return dx_utils.getResultEntries(getResultList());
   }
 
   test('ElementRenders', () => {

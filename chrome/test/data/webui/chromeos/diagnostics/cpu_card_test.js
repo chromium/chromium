@@ -54,6 +54,34 @@ suite('CpuCardTest', () => {
     return flushTasks();
   }
 
+  /**
+   * Returns the routine-section from the card.
+   * @return {!RoutineSection}
+   */
+  function getRoutineSection() {
+    const routineSection = cpuElement.$$('routine-section');
+    assertTrue(!!routineSection);
+    return routineSection;
+  }
+
+  /**
+   * Returns the Run Tests button from inside the routine-section.
+   * @return {!CrButton}
+   */
+  function getRunTestsButton() {
+    const button = dx_utils.getRunTestsButtonFromSection(getRoutineSection());
+    assertTrue(!!button);
+    return button;
+  }
+
+  /**
+   * Returns whether the run tests button is disabled.
+   * @return {bool}
+   */
+  function isRunTestsButtonDisabled() {
+    return getRunTestsButton().disabled;
+  }
+
   test('CpuCardPopulated', () => {
     return initializeCpuCard(fakeCpuUsage).then(() => {
       const dataPoints = dx_utils.getDataPointElements(cpuElement);
@@ -66,6 +94,11 @@ suite('CpuCardTest', () => {
       const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);
       assertEquals(fakeCpuUsage[0].percent_usage_user, cpuChart.user);
       assertEquals(fakeCpuUsage[0].percent_usage_system, cpuChart.system);
+
+      // Verify the routine section is in the page.
+      assertTrue(!!getRoutineSection());
+      assertTrue(!!getRunTestsButton());
+      assertFalse(isRunTestsButtonDisabled());
     });
   });
 });
