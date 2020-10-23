@@ -41,6 +41,7 @@ namespace {
 constexpr char kSuggestDomain[] = "suggest.com";
 constexpr char kSearchDomain[] = "search.com";
 constexpr char kOmniboxSuggestPrefetchQuery[] = "porgs";
+constexpr char kOmniboxSuggestPrefetchSecondItemQuery[] = "porgsandwich";
 constexpr char kOmniboxSuggestNonPrefetchQuery[] = "puffins";
 }  // namespace
 
@@ -165,6 +166,8 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  void set_phi_is_one(bool phi_is_one) { phi_is_one_ = phi_is_one; }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
@@ -226,7 +229,19 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
     if (request.GetURL().spec().find(kOmniboxSuggestPrefetchQuery) !=
         std::string::npos) {
-      content = R"([
+      if (phi_is_one_) {
+        content = R"([
+      "porgs",
+      ["porgs","porgsandwich"],
+      ["", ""],
+      [],
+      {
+        "google:clientdata": {
+          "phi": 1
+        }
+      }])";
+      } else {
+        content = R"([
       "porgs",
       ["porgs","porgsandwich"],
       ["", ""],
@@ -236,6 +251,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
           "phi": 0
         }
       }])";
+      }
     }
 
     if (request.GetURL().spec().find(kOmniboxSuggestNonPrefetchQuery) !=
@@ -265,6 +281,11 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
   size_t search_server_request_count_ = 0;
   size_t search_server_prefetch_request_count_ = 0;
+
+  // Sets the prefetch index to be 1 instead of 0, making the second result
+  // prefetchable, but marking the first result as not prefetchable (must be
+  // used with |kkOmniboxSuggestPrefetchQuery|).
+  bool phi_is_one_ = false;
 };
 
 class SearchPrefetchServiceDisabledBrowserTest
@@ -658,6 +679,52 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
 }
 
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       OmniboxEditTriggersPrefetchForSecondMatch) {
+  // phi being set to one causes the order of prefetch suggest to be different.
+  // This should still prefetch a result for the |kOmniboxSuggestPrefetchQuery|.
+  set_phi_is_one(true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+
+  // Trigger an omnibox suggest fetch that has a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::TimeDelta::FromSeconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  WaitUntilStatusChangesTo(
+      base::ASCIIToUTF16(kOmniboxSuggestPrefetchSecondItemQuery),
+      SearchPrefetchStatus::kSuccessfullyCompleted);
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(kOmniboxSuggestPrefetchSecondItemQuery));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kSuccessfullyCompleted,
+            prefetch_status.value());
+
+  ui_test_utils::NavigateToURL(
+      browser(),
+      GetSearchServerQueryURL(kOmniboxSuggestPrefetchSecondItemQuery));
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+}
+
 class SearchPrefetchServiceZeroCacheTimeBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
@@ -765,4 +832,61 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroErrorTimeBrowserTest,
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("other_query")));
+}
+
+class SearchPrefetchServiceDefaultMatchOnlyBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchServiceDefaultMatchOnlyBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kSearchPrefetchServicePrefetching,
+          {{"only_prefetch_default_match", "true"}}},
+         {{kSearchPrefetchService}, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceDefaultMatchOnlyBrowserTest,
+                       OmniboxEditDoesNotTriggerPrefetchForSecondMatch) {
+  // phi being set to one causes the order of prefetch suggest to be different.
+  // This should still prefetch a result for the |kOmniboxSuggestPrefetchQuery|.
+  set_phi_is_one(true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+
+  // Trigger an omnibox suggest fetch that does not have a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(search_terms), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::TimeDelta::FromSeconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  WaitForDuration(base::TimeDelta::FromMilliseconds(100));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(kOmniboxSuggestPrefetchSecondItemQuery));
+  EXPECT_FALSE(prefetch_status.has_value());
+  ui_test_utils::NavigateToURL(
+      browser(),
+      GetSearchServerQueryURL(kOmniboxSuggestPrefetchSecondItemQuery));
+
+  auto inner_html = GetDocumentInnerHTML();
+
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
 }

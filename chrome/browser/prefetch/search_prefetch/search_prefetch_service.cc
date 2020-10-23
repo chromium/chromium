@@ -253,9 +253,17 @@ void SearchPrefetchService::ReportError() {
 void SearchPrefetchService::OnResultChanged(
     AutocompleteController* controller) {
   const auto& result = controller->result();
+  const auto* default_match = result.default_match();
+
+  // One arm of the experiment only prefetches the top match when it is default.
+  if (SearchPrefetchOnlyFetchDefaultMatch()) {
+    if (default_match && BaseSearchProvider::ShouldPrefetch(*default_match)) {
+      MaybePrefetchURL(default_match->destination_url);
+    }
+    return;
+  }
+
   for (const auto& match : result) {
-    // TODO(ryansturm): Pass a bool for IsTopResult to limit prefetch to when
-    // the match is the first item in the omnibox. https://crbug.com/1138649
     if (BaseSearchProvider::ShouldPrefetch(match)) {
       MaybePrefetchURL(match.destination_url);
     }

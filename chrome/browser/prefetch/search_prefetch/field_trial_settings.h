@@ -28,4 +28,8 @@ size_t SearchPrefetchMaxAttemptsPerCachingDuration();
 // service to stop prefetching responses.
 base::TimeDelta SearchPrefetchErrorBackoffDuration();
 
+// Only prefetch results when they are the top match and the default match.
+// Nothing is prefetched if the default match is not prefetchable.
+bool SearchPrefetchOnlyFetchDefaultMatch();
+
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

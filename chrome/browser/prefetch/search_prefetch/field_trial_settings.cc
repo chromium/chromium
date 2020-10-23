@@ -48,3 +48,8 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration() {
                                              "error_backoff_duration_ms",
                                              60000));
 }
+
+bool SearchPrefetchOnlyFetchDefaultMatch() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kSearchPrefetchServicePrefetching, "only_prefetch_default_match", false);
+}
