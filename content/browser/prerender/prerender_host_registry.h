@@ -16,7 +16,7 @@ class PrerenderHost;
 
 // Prerender2:
 // PrerenderHostRegistry manages running prerender hosts and provides the host
-// to navigation code for swapping to prerendered contents. This is created and
+// to navigation code for activating prerendered contents. This is created and
 // owned by StoragePartitionImpl.
 //
 // TODO(https://crbug.com/1132746): Once the Prerender2 is migrated to the

@@ -21,7 +21,7 @@ class WebContents;
 // Prerender2:
 // PrerenderHost creates a new WebContents and starts prerendering with that.
 // Then navigation code is expected to find this host from PrerenderHostRegistry
-// and swap in the prerendered WebContents upon navigation. This is created per
+// and activate the prerendered WebContents upon navigation. This is created per
 // request from a renderer process via PrerenderProcessor or will directly be
 // created for browser-initiated prerendering (this code path is not implemented
 // yet). This is owned by PrerenderHostRegistry.
@@ -45,10 +45,10 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  // Swaps `current_render_frame_host`'s contents with the prerendered
-  // contents. Returns false when swap didn't occur for some reason (e.g., the
-  // prerendered contents are not ready to swap).
-  bool SwapToPrerenderedContents(
+  // Activates the prerendered contents. Returns false when activation didn't
+  // occur for some reason (e.g., the prerendered contents are not ready for
+  // activation yet).
+  bool ActivatePrerenderedContents(
       RenderFrameHostImpl& current_render_frame_host);
 
  private:
@@ -61,8 +61,8 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   // use the new MPArch mechanism.
   std::unique_ptr<WebContents> prerendered_contents_;
 
-  // Indicates if `prerendered_contents_` is ready to swap.
-  bool is_ready_to_swap_ = false;
+  // Indicates if `prerendered_contents_` is ready for activation.
+  bool is_ready_for_activation_ = false;
 };
 
 }  // namespace content

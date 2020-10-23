@@ -72,8 +72,7 @@ TEST_F(PrerenderHostTest, StartPrerendering) {
   // the prerendered contents.
   prerender_host->DidFinishNavigation(nullptr);
 
-  // Swap to the prerendered contents.
-  EXPECT_TRUE(prerender_host->SwapToPrerenderedContents(*render_frame_host));
+  EXPECT_TRUE(prerender_host->ActivatePrerenderedContents(*render_frame_host));
 }
 
 }  // namespace

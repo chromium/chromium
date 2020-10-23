@@ -59,21 +59,22 @@ void PrerenderHost::StartPrerendering() {
 }
 
 void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
-  // The prerendered contents are considered ready for swapping when it reaches
-  // DidFinishNavigation.
-  DCHECK(!is_ready_to_swap_);
-  is_ready_to_swap_ = true;
+  // The prerendered contents are considered ready for activation when it
+  // reaches DidFinishNavigation.
+  DCHECK(!is_ready_for_activation_);
+  is_ready_for_activation_ = true;
 
   // Stop observing the events about the prerendered contents.
   Observe(nullptr);
 }
 
-bool PrerenderHost::SwapToPrerenderedContents(
+bool PrerenderHost::ActivatePrerenderedContents(
     RenderFrameHostImpl& current_render_frame_host) {
   // TODO(https://crbug.com/1132746): We may have to cancel prerendering if
-  // SwapToPrerenderedContents() is called before DidFinishNavigation() because
-  // it is likely that the prerenderered contents are never used after that.
-  if (!is_ready_to_swap_ || !prerendered_contents_)
+  // ActivatePrerenderedContents() is called before DidFinishNavigation()
+  // because it is likely that the prerenderered contents are never used after
+  // that.
+  if (!is_ready_for_activation_ || !prerendered_contents_)
     return false;
 
   auto* current_web_contents =
@@ -81,10 +82,10 @@ bool PrerenderHost::SwapToPrerenderedContents(
   if (!current_web_contents)
     return false;
 
-  // Swap to the prerendered contents.
+  // Activate the prerendered contents.
   WebContentsDelegate* delegate = current_web_contents->GetDelegate();
   DCHECK(delegate);
-  // Tentatively use Portal's activation function that swaps WebContents.
+  // Tentatively use Portal's activation function.
   // TODO(https://crbug.com/1132746): Replace this with the MPArch.
   delegate->ActivatePortalWebContents(current_web_contents,
                                       std::move(prerendered_contents_));
