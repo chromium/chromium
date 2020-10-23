@@ -560,6 +560,10 @@ void HTMLCanvasElement::DisableAcceleration(
   // We must force a paint invalidation on the canvas even if it's
   // content did not change because it layer was destroyed.
   DidDraw();
+  // Force full paint invalidation to ensure the unaccelerated contents will be
+  // painted regardless of low latency.
+  if (auto* layout_object = GetLayoutObject())
+    layout_object->SetShouldDoFullPaintInvalidation();
   SetNeedsCompositingUpdate();
 }
 

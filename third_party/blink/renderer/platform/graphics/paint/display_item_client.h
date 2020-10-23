@@ -112,7 +112,6 @@ class PLATFORM_EXPORT DisplayItemClient {
   friend class FakeDisplayItemClient;
   friend class ObjectPaintInvalidatorTest;
   friend class PaintController;
-  friend class GraphicsLayer;  // Temporary for Validate().
 
   void Validate() const {
     paint_invalidation_reason_ = PaintInvalidationReason::kNone;

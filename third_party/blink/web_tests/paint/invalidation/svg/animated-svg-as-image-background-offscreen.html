@@ -3,6 +3,11 @@
 <script>
 window.testIsAsync = true;
 
+// Disable paint under-invalidation checking because it forces repaint and
+// cause false-positive of raster invalidation when the offscreen image changes.
+if (window.internals)
+    internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = false;
+
 function repaintTest() {
     if (window.internals)
         internals.advanceImageAnimation(testTarget);

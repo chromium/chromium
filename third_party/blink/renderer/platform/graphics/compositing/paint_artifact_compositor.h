@@ -158,7 +158,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
               const Vector<const TransformPaintPropertyNode*>&
                   scroll_translation_nodes);
 
-  void UpdateRepaintedLayerProperties() const;
+  void UpdateRepaintedLayerProperties(const Vector<PreCompositedLayerInfo>&);
 
   bool DirectlyUpdateCompositedOpacityValue(const EffectPaintPropertyNode&);
   bool DirectlyUpdateScrollOffsetTransform(const TransformPaintPropertyNode&);

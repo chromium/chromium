@@ -109,9 +109,9 @@ are treated in different ways during painting:
 *   Compositing container chain: same as paint chain, but for compositing
     container.
 
-*   Paint invalidation container: the nearest object on the compositing
-    container chain which is composited. CompositeAfterPaint doesn't have this
-    concept.
+*   Directly composited container: the nearest object on the compositing
+    container chain which is directly composited. [CompositeAfterPaint] doesn't
+    have this concept.
 
 *   Visual rect: the bounding box of all pixels that will be painted by a
     for a [display item](../../platform/graphics/paint/README.md#display-items)
@@ -141,34 +141,32 @@ layout (the `LayoutObject` tree) to the inputs of the compositor
 
 This process is done in the following document lifecycle phases:
 
-*   Compositing update (`kInCompositingUpdate`, `kCompositingInputsClean`)
-    *    Decides layerization (GraphicsLayers).
-    *    This is only needed for the
-         [current compositing algorithm](#Current-compositing-algorithm-CompositeBeforePaint_)
-         and will go away with
-         [CompositeAfterPaint](#New-compositing-algorithm-CompositeAfterPaint_).
+*   Compositing inputs update (`kInCompositingInputsUpdate`)
+    *    Decides direct compositing reasons
+    *    This is only needed for the [current compositing algorithm]
+         and will go away with [CompositeAfterPaint].
 *   [PrePaint](#PrePaint) (`kInPrePaint`)
     *    [Paint invalidation](#Paint-invalidation) which invalidates display
          items which need to be painted.
     *    [Builds paint property trees](#Building-paint-property-trees).
+*   Compositing assignments update (`kInCompositingAssignmentsUpdate`)
+    *    Decides layerization (GraphicsLayers).
+    *    This is only needed for the [current compositing algorithm]
+         and will go away with [CompositeAfterPaint].
 *   [Paint](#Paint) (`kInPaint`)
     *    Walks the LayoutObject tree and creates a display item list.
     *    Groups the display list into paint chunks which share the same
          property tree state.
     *    Commits the results to the compositor.
-        *    [CompositeAfterPaint](##New-compositing-algorithm-CompositeAfterPaint_)
-             will decide layerization at this point.
+        *    [CompositeAfterPaint] will decide layerization at this point.
         *    Passes the paint chunks to the compositor in a cc::Layer list.
         *    Converts the blink property tree nodes into cc property tree nodes.
 
 
-Compositing decisions are currently made before paint (see
-[Current compositing algorithm](#Current-compositing-algorithm-CompositeBeforePaint_))
+Compositing decisions are currently made before paint (see [Current compositing algorithm])
 but there is an in-progress refactoring to make compositing decisions after
-paint (see
-[CompositeAfterPaint](##New-compositing-algorithm-CompositeAfterPaint_)). The
-most recent step towards CompositeAfterPaint was a project called
-[BlinkGenPropertyTrees](https://docs.google.com/document/d/17GKr2uIH2O5GthdTyvJpv1qZjoHYoLgrzvCkbCHoID4/view)
+paint (see [CompositeAfterPaint]). The
+most recent step towards CompositeAfterPaint was a project called [BlinkGenPropertyTrees]
 which uses the compositing decisions from the current compositor
 (PaintLayerCompositor, which produces GraphicsLayers) with the new
 CompositeAfterPaint compositor (PaintArtifactCompositor). This is done by a step
@@ -180,12 +178,11 @@ the PaintArtifactCompositor. This approach starts using
 much of the new PaintArtifactCompositor logic (e.g., converting blink property
 trees to cc property trees) without changing how compositing decisions are made.
 
-[Debugging blink objects](https://docs.google.com/document/d/1vgQY11pxRQUDAufxSsc2xKyQCKGPftZ5wZnjY2El4w8/view)
-has information about dumping the paint and compositing datastructures for
-debugging.
+[Debugging blink objects] has information about dumping the paint and compositing
+data structures for debugging.
 
 
-### Current compositing algorithm (CompositeBeforePaint)
+### Current compositing algorithm (pre-CompositeAfterPaint)
 
 The current compositing system chooses which `LayoutObject`s paint into their
 own composited backing texture. This is called "having a compositing trigger".
@@ -256,9 +253,10 @@ the result on `PaintLayer`, accessible via
 `PaintLayer::PotentialCompositingReasonsFromStyle`. Dirty bits in
 `StyleDifference` determine whether this has to be re-computed on a particular
 lifecycle update.
- * `kInCompositingUpdate`: compute (2) `CompositingInputsUpdater`. Also
+ * `kInCompositingInputsUpdate`: compute (2) `CompositingInputsUpdater`. Also
  set the composited scrolling bit on `PaintLayerScrollableArea` if applicable.
- * `kCompositingInputsClean`: compute (3), the rest of (4), and (5), in
+ * `kInPrePaint`: 
+ * `kInCompositingAssignmentUpdatre`: compute (3), the rest of (4), and (5), in
 `CompositingRequirementsUpdater`
 
 
@@ -270,54 +268,52 @@ from layout
   |
   v
 +------------------------------+
-| LayoutObject/PaintLayer tree |-----------+
-+------------------------------+           |
-  |                                        |
-  | PaintLayerCompositor::UpdateIfNeeded() |
-  |   CompositingInputsUpdater::Update()   |
-  |   CompositingLayerAssigner::Assign()   |
-  |   GraphicsLayerUpdater::Update()       | PrePaintTreeWalk::Walk()
-  |   GraphicsLayerTreeBuilder::Rebuild()  |   PaintPropertyTreeBuider::UpdatePropertiesForSelf()
-  v                                        |
+| LayoutObject/PaintLayer tree |---------------+
++------------------------------+               |
+  | (PLC = PaintLayerCompositor)               |
+  | PLC::UpdateInputsIfNeededRecursive()       |
+  |   CompositingInputsUpdater::Update()       |
+  |                                            | PrePaintTreeWalk::Walk()
+  |                                            |   PaintPropertyTreeBuilder::UpdateForSelf()
+  |                                            |   PaintPropertyTreeBuilder::UpdateForChildren()
+  | PLC::UpdateAssignmentsIfNeededRecursive()  |
+  |   CompositingLayerAssigner::Assign()       |
+  |   GraphicsLayerUpdater::Update()           |
+  |   GraphicsLayerTreeBuilder::Rebuild()      |
+  v                                            v
 +--------------------+                   +------------------+
 | GraphicsLayer tree |<------------------|  Property trees  |
 +--------------------+                   +------------------+
-      |                                    |              |
-      |<-----------------------------------+              |
-      | LocalFrameView::PaintTree()                       |
-      |   LocalFrameView::PaintGraphicsLayerRecursively() |
-      |     GraphicsLayer::Paint()                        |
-      |       CompositedLayerMapping::PaintContents()     |
-      |         PaintLayerPainter::PaintLayerContents()   |
-      |           ObjectPainter::Paint()                  |
-      v                                                   |
-    +---------------------------------+                   |
-    | DisplayItemList/PaintChunk list |                   |
-    +---------------------------------+                   |
-      |                                                   |
-      |<--------------------------------------------------+
-      | PaintChunksToCcLayer::Convert()                   |
-      v                                                   |
-+--------------------------------------------------+      |
-| GraphicsLayerDisplayItem/ForeignLayerDisplayItem |      |
-+--------------------------------------------------+      |
-  |                                                       |
-  |    LocalFrameView::PushPaintArtifactToCompositor()    |
-  |         PaintArtifactCompositor::Update()             |
-  +--------------------+       +--------------------------+
-                       |       |
-                       v       v
-        +----------------+  +-----------------------+
-        | cc::Layer list |  |   cc property trees   |
-        +----------------+  +-----------------------+
-                |              |
-  +-------------+--------------+
-  | to compositor
+  |                                        |              |
+  |<---------------------------------------+              |
+  | LocalFrameView::PaintTree()                           |
+  |   GraphicsLayer::PaintRecursively()                   |
+  |     GraphicsLayer::Paint()                            |
+  |       CompositedLayerMapping::PaintContents()         |
+  |         PaintLayerPainter::PaintLayerContents()       |
+  |           ObjectPainter::Paint()                      |
+  +-------------------------------+                       |
+  |                               |                       |
+  v                               v                       |
++---------------+   +--------------------------------+    |
+| PaintArtifact |   | Vector<PreCompositedLayerInfo> |    |
++---------------+   +--------------------------------+    |
+  |                                      |                |
+  |<-------------------------------------|----------------+
+  | PaintChunksToCcLayer::Convert()      |                |
+  |                                      |                |
+  |    PaintArtifactCompositor::Update() |<---------------+
+  v                                      v                v
++----------------------+   +----------------+   +-------------------+
+| cc::DisplayItemLists |   | cc::Layer list |   | cc property trees |
++----------------------+   +----------------+   +-------------------+
+  |                                |                      |
+  +--------------------------------+----------------------+
+  | to compositor (cc)
   v
 ```
-[Debugging blink objects](https://docs.google.com/document/d/1vgQY11pxRQUDAufxSsc2xKyQCKGPftZ5wZnjY2El4w8/view)
-has information about dumping these paint and compositing datastructures for
-debugging.
+[Debugging blink objects] has information about dumping these paint and compositing
+data structures for debugging.
 
 ### New compositing algorithm (CompositeAfterPaint)
 
@@ -337,64 +333,55 @@ from layout
   |
   v
 +------------------------------+
-| LayoutObject/PaintLayer tree |
-+------------------------------+
-  |     |
-  |     | PrePaintTreeWalk::Walk()
-  |     |   PaintPropertyTreeBuider::UpdatePropertiesForSelf()
-  |     v
-  |   +--------------------------------+
-  |<--|         Property trees         |
-  |   +--------------------------------+
-  |                                  |
-  | LocalFrameView::PaintTree()      |
-  |   FramePainter::Paint()          |
-  |     PaintLayerPainter::Paint()   |
-  |       ObjectPainter::Paint()     |
-  v                                  |
-+---------------------------------+  |
-| DisplayItemList/PaintChunk list |  |
-+---------------------------------+  |
-  |                                  |
-  |<---------------------------------+
-  | LocalFrameView::PushPaintArtifactToCompositor()
-  |   PaintArtifactCompositor::Update()
-  |
-  +---+---------------------------------+
-  |   v                                 |
-  | +----------------------+            |
-  | | Chunk list for layer |            |
-  | +----------------------+            |
-  |   |                                 |
-  |   | PaintChunksToCcLayer::Convert() |
-  v   v                                 v
-+----------------+ +-----------------------+
-| cc::Layer list | |   cc property trees   |
-+----------------+ +-----------------------+
-  |                  |
-  +------------------+
-  | to compositor
+| LayoutObject/PaintLayer tree |-----------+
++------------------------------+           | PrePaintTreeWalk::Walk()
+  |                                        |   PaintPropertyTreeBuilder::UpdatePropertiesForSelf()
+  |                                        |   PaintPropertyTreeBuilder::UpdateForChildren()
+  |                                        v
+  |                                      +------------------+
+  |<-------------------------------------|  Property trees  |
+  | LocalFrameView::PaintTree()          +------------------+
+  |   FramePainter::Paint()                              |
+  |     PaintLayerPainter::Paint()                       |
+  |       ObjectPainter::Paint()                         |
+  v                                                      |
++---------------+                                        |
+| PaintArtifact |                                        |
++---------------+                                        |
+  |                                                      |
+  |<-----------------------------------------------------+
+  |         PaintArtifactCompositor::Update()            |
+  +----------------------------------+                   |
+  v                                  |                   |
++----------------------+             |                   |
+| Chunk list for layer |             |                   |
++----------------------+             |                   |
+  |                                  |                   |
+  | PaintChunksToCcLayer::Convert()  |                   |
+  v                                  v                   v
++----------------------+   +----------------+   +-------------------+
+| cc::DisplayItemLists |   | cc::Layer list |   | cc property trees |
++----------------------+   +----------------+   +-------------------+
+  |                                |                     |
+  +--------------------------------+---------------------+
+  | to compositor (cc)
   v
 ```
-[Debugging blink objects](https://docs.google.com/document/d/1vgQY11pxRQUDAufxSsc2xKyQCKGPftZ5wZnjY2El4w8/view)
-has information about dumping these paint and compositing datastructures for
-debugging.
+[Debugging blink objects] has information about dumping these paint and compositing
+data structures for debugging.
 
 ### Comparison of the current and new compositing algorithms
 
-The
-[current compositing design](#Current-compositing-algorithm-CompositeBeforePaint_)
-is an incremental step towards the new
-[CompositeAfterPaint](##New-compositing-algorithm-CompositeAfterPaint_) design
-and was launched as [BlinkGenPropertyTrees](https://docs.google.com/document/d/17GKr2uIH2O5GthdTyvJpv1qZjoHYoLgrzvCkbCHoID4/view). The design before
+The [current compositing design]
+is an incremental step towards the new [CompositeAfterPaint] design
+and was launched as [BlinkGenPropertyTrees]. The design before
 BlinkGenPropertyTrees is not described in this document.
 
 
-|                                 | Current (CompositeBeforePaint)               | New (CompositeAfterPaint) |
+|                                 | Current (pre-CompositeAfterPaint)            | New (CompositeAfterPaint) |
 |---------------------------------|:---------------------------------------------|:--------------------------|
 | REF::CompositeAfterPaintEnabled | False                                        | True                      |
 | Layerization                    | PaintLayerCompositor, CompositedLayerMapping | PaintArtifactCompositor   |
-| PaintController                 | One per GraphicsLayer                        | One per LocalFrameView    |
 
 ## PrePaint
 [`PrePaintTreeWalk`](pre_paint_tree_walk.h)
@@ -426,9 +413,9 @@ is created for the root `LayoutView`. During the tree walk, one
 `PaintInvalidatorContext` passed from the parent object. It tracks the following
 information to provide O(1) complexity access to them if possible:
 
-*   Paint invalidation container (Slimming Paint v1 only): As described by
-    the definitions in [Other glossaries](#Other-glossaries), the paint
-    invalidation container for stacked objects can differ from normal objects,
+*   Directly composited container ([pre-CompositeAfterPaint] only): As described by
+    the definitions in [Other glossaries](#Other-glossaries), the directly composited
+    container container for stacked objects can differ from normal objects,
     we have to track both separately. Here is an example:
 
         <div style="overflow: scroll">
@@ -437,7 +424,7 @@ information to provide O(1) complexity access to them if possible:
         </div>
 
     If the scroller is composited (for high-DPI screens for example), it is the
-    paint invalidation container for div B, but not A.
+    directly composited container for div B, but not A.
 
 *   Painting layer: the layer which will initiate painting of the current
     object. It's the same value as `LayoutObject::PaintingLayer()`.
@@ -615,13 +602,13 @@ segments the display item list into
 [`PaintChunk`](../../platform/graphics/paint/paint_chunk.h)s which are
 sequential display items that share a common property tree state.
 
-With the
-[current compositing algorithm](#Current-compositing-algorithm-CompositeBeforePaint_),
-the paint-order `LayoutObject` treewalk is initiated by `GraphicsLayer`s, and
-each `GraphicsLayer` contains a `PaintController`. In the new compositing
-approach,
-[CompositeAfterPaint](##New-compositing-algorithm-CompositeAfterPaint_), there
-is only one `PaintController` for the entire `LocalFrameView`.
+There is only one `PaintController` for the entire `LocalFrameView` tree.
+With the [current compositing algorithm], the paint-order `LayoutObject`
+treewalk is initiated by `GraphicsLayer`s, and each `GraphicsLayer` creates
+a subsequence in the `PaintController` and a `PreCompositedLayerInfo`
+which records the range of the subsequence (as a `PaintChunkSubset`) in the
+`PaintController`. In the new compositing approach, [CompositeAfterPaint],
+we paint from the root `LocalFrameView` in paint order.
 
 ### Paint result caching
 
@@ -647,6 +634,8 @@ There are many conditions affecting whether we need to generate subsequence for
 a PaintLayer and whether we can use cached subsequence for a PaintLayer. See
 `ShouldCreateSubsequence()` and `shouldRepaintSubsequence()` in
 `PaintLayerPainter.cpp` for the conditions.
+
+In [pre-CompositeAfterPaint], a `GraphicsLayer` also creates a subsequence.
 
 ### Empty paint phase optimization
 
@@ -711,14 +700,14 @@ structures:
 
 ### Scrollbar painting
 
-For now in pre-CompositeAfterPaint, we have distinct paths for composited
+For now in [pre-CompositeAfterPaint], we have distinct paths for composited
 scrollbars and non-composited scrollbars. For a composited scrollbar,
 PaintArtifactCompositor creates a GraphicsLayer, then ScrollingCoordinator
 creates the cc scrollbar layer which is set as the content layer of the
 GraphicsLayer. For a non-composited scrollbar, ScrollableAreaPainter paints
 the scrollbar into various drawing display items.
 
-In CompositeAfterPaint, during painting, for a non-custom scrollbar we create a
+In [CompositeAfterPaint], during painting, for a non-custom scrollbar we create a
 [ScrollbarDisplayItem](../../platform/graphics/paint/scrollbar_display_item.h)
 which contains a [cc::Scrollbar](../../../../cc/input/scrollbar.h) and other
 information that are needed to actually paint the scrollbar into a paint record
@@ -753,3 +742,8 @@ geometry information might no longer be updated\(\*\), and its
 painter needs to be rewritten to paint NGFragments.
 For example, see how BlockPainter is being rewritten as NGBoxFragmentPainter.
 
+[Debugging blink objects]: https://docs.google.com/document/d/1vgQY11pxRQUDAufxSsc2xKyQCKGPftZ5wZnjY2El4w8/view
+[BlinkGenPropertyTrees]: https://docs.google.com/document/d/17GKr2uIH2O5GthdTyvJpv1qZjoHYoLgrzvCkbCHoID4/view
+[current compositing design]: #Current-compositing-algorithm-pre-CompositeAfterPaint_
+[pre-CompositeAfterPaint]: #Current-compositing-algorithm-pre-CompositeAfterPaint_
+[CompositeAfterPaint] #New-compositing-algorithm-CompositeAfterPaint_

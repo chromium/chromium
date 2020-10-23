@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='test' class='composited box'",
+      "name": "LayoutNGBlockFlow DIV id='test' class='composited box changed'",
       "bounds": [202, 202],
       "transform": 2
     }

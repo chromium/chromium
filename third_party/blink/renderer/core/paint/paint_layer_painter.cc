@@ -467,7 +467,10 @@ PaintResult PaintLayerPainter::PaintLayerContents(
 
   base::Optional<ScopedPaintChunkHint> paint_chunk_hint;
   base::Optional<IntRect> visual_rect;
-  if (should_paint_content) {
+  if (should_paint_content &&
+      (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
+       // See GraphicsLayer::Paint() for the reason of this condition.
+       is_painting_composited_background)) {
     visual_rect.emplace(
         FirstFragmentVisualRect(paint_layer_.GetLayoutObject()));
     paint_chunk_hint.emplace(context.GetPaintController(),

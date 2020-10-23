@@ -86,7 +86,7 @@ void PaintInvalidator::UpdateDirectlyCompositedContainer(
     // descendants in its own frame, because it doesn't establish stacking
     // context for stacked contents in sub-frames.
     // Contents stacked in the root stacking context in this frame should use
-    // this frame's PaintInvalidationContainer.
+    // this frame's directly_composited_container.
     context.directly_composited_container_for_stacked_contents =
         context.directly_composited_container =
             &object.DirectlyCompositableContainer();

@@ -107,7 +107,6 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
   PaintRecordBuilder builder;
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     frame_overlay->Paint(builder.Context());
-    builder.EndRecording()->Playback(&canvas);
   } else {
     auto* graphics_layer = frame_overlay->GetGraphicsLayer();
     EXPECT_FALSE(graphics_layer->IsHitTestable());
@@ -116,11 +115,8 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
     Vector<PreCompositedLayerInfo> pre_composited_layers;
     graphics_layer->PaintRecursively(builder.Context(), pre_composited_layers);
     ASSERT_EQ(1u, pre_composited_layers.size());
-    graphics_layer->GetPaintController().FinishCycle();
-    SkiaPaintCanvas paint_canvas(&canvas);
-    graphics_layer->GetPaintController().GetPaintArtifact().Replay(
-        paint_canvas, PropertyTreeState::Root());
   }
+  builder.EndRecording()->Playback(&canvas);
 }
 
 TEST_P(FrameOverlayTest, DeviceEmulationScale) {
@@ -131,12 +127,10 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
   GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
+  auto* frame_view = GetWebView()->MainFrameImpl()->GetFrameView();
   std::unique_ptr<FrameOverlay> frame_overlay = CreateSolidYellowOverlay();
   frame_overlay->UpdatePrePaint();
-  auto* transform = GetWebView()
-                        ->MainFrameImpl()
-                        ->GetFrame()
-                        ->GetPage()
+  auto* transform = frame_view->GetPage()
                         ->GetVisualViewport()
                         .GetDeviceEmulationTransformNode();
   EXPECT_EQ(TransformationMatrix().Scale(1.5), transform->Matrix());
@@ -145,35 +139,32 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
   EXPECT_EQ(&ClipPaintPropertyNode::Root(), &state.Clip());
   EXPECT_EQ(&EffectPaintPropertyNode::Root(), &state.Effect());
 
-  auto check_paint_results = [&frame_overlay,
-                              &state](PaintController& paint_controller) {
-    EXPECT_THAT(
-        paint_controller.GetDisplayItemList(),
-        ElementsAre(IsSameId(frame_overlay.get(), DisplayItem::kFrameOverlay)));
-    EXPECT_EQ(IntRect(0, 0, 800, 600),
-              paint_controller.GetDisplayItemList()[0].VisualRect());
-    EXPECT_THAT(
-        paint_controller.PaintChunks(),
-        ElementsAre(IsPaintChunk(
-            0, 1, PaintChunk::Id(*frame_overlay, DisplayItem::kFrameOverlay),
-            state, nullptr, IntRect(0, 0, 800, 600))));
-  };
-
   PaintController paint_controller(PaintController::kTransient);
   GraphicsContext context(paint_controller);
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     frame_overlay->Paint(context);
-    paint_controller.CommitNewDisplayItems();
-    check_paint_results(paint_controller);
   } else {
     auto* graphics_layer = frame_overlay->GetGraphicsLayer();
     EXPECT_FALSE(graphics_layer->IsHitTestable());
     EXPECT_EQ(state, graphics_layer->GetPropertyTreeState());
     Vector<PreCompositedLayerInfo> pre_composited_layers;
-    graphics_layer->PaintRecursively(context, pre_composited_layers);
-    check_paint_results(graphics_layer->GetPaintController());
-    graphics_layer->GetPaintController().FinishCycle();
+    EXPECT_TRUE(
+        graphics_layer->PaintRecursively(context, pre_composited_layers));
+    ASSERT_EQ(1u, pre_composited_layers.size());
+    EXPECT_EQ(graphics_layer, pre_composited_layers[0].graphics_layer);
   }
+  paint_controller.CommitNewDisplayItems();
+
+  EXPECT_THAT(
+      paint_controller.GetDisplayItemList(),
+      ElementsAre(IsSameId(frame_overlay.get(), DisplayItem::kFrameOverlay)));
+  EXPECT_EQ(IntRect(0, 0, 800, 600),
+            paint_controller.GetDisplayItemList()[0].VisualRect());
+  EXPECT_THAT(
+      paint_controller.PaintChunks(),
+      ElementsAre(IsPaintChunk(
+          0, 1, PaintChunk::Id(*frame_overlay, DisplayItem::kFrameOverlay),
+          state, nullptr, IntRect(0, 0, 800, 600))));
 }
 
 TEST_P(FrameOverlayTest, LayerOrder) {

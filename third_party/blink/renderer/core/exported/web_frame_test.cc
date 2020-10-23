@@ -11601,12 +11601,10 @@ TEST_F(WebFrameTest, RootLayerMinimumHeight) {
           ->GetCompositedLayerMapping()
           ->MainGraphicsLayer()
           ->GetRasterInvalidationTracking();
-  ASSERT_TRUE(invalidation_tracking);
-  const auto& raster_invalidations = invalidation_tracking->Invalidations();
-
   // We don't issue raster invalidation, because the content paints into the
   // scrolling contents layer whose size hasn't changed.
-  EXPECT_TRUE(raster_invalidations.IsEmpty());
+  EXPECT_TRUE(!invalidation_tracking ||
+              invalidation_tracking->Invalidations().IsEmpty());
 
   document->View()->SetTracksRasterInvalidations(false);
 }

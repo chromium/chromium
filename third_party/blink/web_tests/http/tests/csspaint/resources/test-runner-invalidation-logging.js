@@ -13,6 +13,13 @@
 //      { property: 'margin-inline-start', invalidationProperty: 'margin-left', prevValue: 'calc(50px + 50px)', value: '100px', noInvalidation: true }
 // ]);
 
+// Under-invalidation checking doesn't work with testRunnerInvalidationLogging()
+// because paint would be forced when there is no invalidation, causing
+// unexpected setting of hasRepainted flag and change of painted color of the
+// paint worklet.
+if (window.internals)
+    internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = false;
+
 function testRunnerInvalidationLogging(imageType, tests) {
     const keys = tests.map(function(obj) { return obj.property; });
     const workletCode = 'const properties = ' + JSON.stringify(keys) + ';\n' + `

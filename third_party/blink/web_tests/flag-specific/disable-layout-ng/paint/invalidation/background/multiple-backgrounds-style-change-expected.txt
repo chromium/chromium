@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV id='test' class='composited box'",
+      "name": "LayoutBlockFlow DIV id='test' class='composited box changed'",
       "bounds": [202, 202],
       "transform": 2
     }

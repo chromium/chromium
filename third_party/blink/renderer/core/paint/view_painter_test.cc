@@ -49,40 +49,15 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
                                    mojom::blink::ScrollType::kUser);
   frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
 
-  const DisplayItem* background_display_item = nullptr;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    const auto& display_items = RootPaintController().GetDisplayItemList();
-    const auto& background_client = prefer_compositing_to_lcd_text
-                                        ? GetLayoutView()
-                                        : ViewScrollingBackgroundClient();
-    background_display_item = &display_items[0];
-    EXPECT_THAT(*background_display_item,
-                IsSameId(&background_client, DisplayItem::kDocumentBackground));
-  } else {
-    // If we prefer compositing to LCD text, the fixed background should go in a
-    // different layer from the scrolling content; otherwise, it should go in
-    // the same layer (i.e., the scrolling contents layer).
-    if (prefer_compositing_to_lcd_text) {
-      const auto& display_items = GetLayoutView()
-                                      .Layer()
-                                      ->GraphicsLayerBacking(&GetLayoutView())
-                                      ->GetPaintController()
-                                      .GetDisplayItemList();
-      EXPECT_THAT(display_items,
-                  ElementsAre(IsSameId(&GetLayoutView(),
-                                       DisplayItem::kDocumentBackground)));
-      background_display_item = &display_items[0];
-    } else {
-      const auto& display_items = RootPaintController().GetDisplayItemList();
-      EXPECT_THAT(display_items,
-                  ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
-      background_display_item = &display_items[0];
-    }
-  }
+  const auto& background_client = prefer_compositing_to_lcd_text
+                                      ? GetLayoutView()
+                                      : ViewScrollingBackgroundClient();
+  const auto& background_display_item = static_cast<const DrawingDisplayItem&>(
+      GetPaintController().GetDisplayItemList()[0]);
+  EXPECT_THAT(background_display_item,
+              IsSameId(&background_client, DisplayItem::kDocumentBackground));
 
-  sk_sp<const PaintRecord> record =
-      static_cast<const DrawingDisplayItem*>(background_display_item)
-          ->GetPaintRecord();
+  sk_sp<const PaintRecord> record = background_display_item.GetPaintRecord();
   ASSERT_EQ(record->size(), 2u);
   cc::PaintOpBuffer::Iterator it(record.get());
   ASSERT_EQ((*++it)->GetType(), cc::PaintOpType::DrawRect);
@@ -126,7 +101,7 @@ TEST_P(ViewPainterTest, DocumentBackgroundWithScroll) {
     // hit test does not prevent the background squashing with the scrolling
     // contents.
     EXPECT_THAT(
-        RootPaintController().PaintChunks()[0],
+        GetPaintController().PaintChunks()[0],
         IsPaintChunk(
             0, 0, PaintChunk::Id(GetLayoutView(), DisplayItem::kScrollHitTest),
             GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
@@ -158,7 +133,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(&child, kBackgroundType)));
 
-  const auto& paint_chunks = RootPaintController().PaintChunks();
+  const auto& paint_chunks = GetPaintController().PaintChunks();
   HitTestData scroll_hit_test_data;
   scroll_hit_test_data.scroll_translation =
       GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
@@ -244,14 +219,14 @@ TEST_P(ViewPainterTouchActionRectTest, TouchActionRectScrollingContents) {
         GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
     scroll_hit_test_data.scroll_hit_test_rect = IntRect(0, 0, 800, 600);
     EXPECT_THAT(
-        RootPaintController().PaintChunks()[0],
+        GetPaintController().PaintChunks()[0],
         IsPaintChunk(
             0, 0,
             PaintChunk::Id(*GetLayoutView().Layer(), DisplayItem::kLayerChunk),
             GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
             &non_scrolling_hit_test_data, IntRect(0, 0, 800, 600)));
     EXPECT_THAT(
-        RootPaintController().PaintChunks()[1],
+        GetPaintController().PaintChunks()[1],
         IsPaintChunk(
             0, 0, PaintChunk::Id(GetLayoutView(), DisplayItem::kScrollHitTest),
             GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
@@ -297,38 +272,23 @@ TEST_P(ViewPainterTouchActionRectTest, TouchActionRectNonScrollingContents) {
         GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
     scroll_hit_test_data.scroll_hit_test_rect = IntRect(0, 0, 800, 600);
     EXPECT_THAT(
-        RootPaintController().PaintChunks()[0],
+        GetPaintController().PaintChunks()[0],
         IsPaintChunk(0, 1,
                      PaintChunk::Id(*view->Layer(), DisplayItem::kLayerChunk),
                      non_scrolling_properties, &view_hit_test_data,
                      IntRect(0, 0, 800, 600)));
     EXPECT_THAT(
-        RootPaintController().PaintChunks()[1],
+        GetPaintController().PaintChunks()[1],
         IsPaintChunk(1, 1, PaintChunk::Id(*view, DisplayItem::kScrollHitTest),
                      non_scrolling_properties, &scroll_hit_test_data,
                      IntRect(0, 0, 800, 600)));
-    EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(IsPaintChunk(
-            1, 1, PaintChunk::Id(*html->Layer(), DisplayItem::kLayerChunk),
-            scrolling_properties, &scrolling_hit_test_data,
-            IntRect(0, 0, 800, 3000))));
-  } else {
-    auto& non_scrolling_paint_controller =
-        view->Layer()->GraphicsLayerBacking(view)->GetPaintController();
-    EXPECT_THAT(
-        non_scrolling_paint_controller.PaintChunks(),
-        ElementsAre(IsPaintChunk(
-            0, 1, PaintChunk::Id(*view->Layer(), DisplayItem::kLayerChunk),
-            non_scrolling_properties, &view_hit_test_data,
-            IntRect(0, 0, 800, 600))));
-    EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(IsPaintChunk(
-            0, 0, PaintChunk::Id(*html->Layer(), DisplayItem::kLayerChunk),
-            scrolling_properties, &scrolling_hit_test_data,
-            IntRect(0, 0, 800, 3000))));
   }
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(IsPaintChunk(
+          1, 1, PaintChunk::Id(*html->Layer(), DisplayItem::kLayerChunk),
+          scrolling_properties, &scrolling_hit_test_data,
+          IntRect(0, 0, 800, 3000))));
 }
 
 }  // namespace blink

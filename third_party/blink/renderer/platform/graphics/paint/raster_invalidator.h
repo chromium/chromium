@@ -44,6 +44,12 @@ class PLATFORM_EXPORT RasterInvalidator {
                 const PropertyTreeState& layer_state,
                 const DisplayItemClient* layer_client = nullptr);
 
+  // Called in pre-CompositeAfterPaint when a GraphicsLayer doesn't need
+  // repaint and raster invalidation, but RasterInvalidator needs to know the
+  // chunks in the new PaintArtifact.
+  void SetChunksWithoutInvalidation(const PaintChunkSubset&,
+                                    const PropertyTreeState& layer_state);
+
   const gfx::Rect& LayerBounds() const { return layer_bounds_; }
 
   size_t ApproximateUnsharedMemoryUsage() const;
@@ -88,6 +94,11 @@ class PLATFORM_EXPORT RasterInvalidator {
                                    const PaintChunkSubset&,
                                    const PropertyTreeState& layer_state,
                                    Vector<PaintChunkInfo>& new_chunks_info);
+
+  void UpdateChunksInfoWithoutInvalidation(
+      const PaintChunkSubset&,
+      const PropertyTreeState& layer_state,
+      Vector<PaintChunkInfo>& new_chunks_info);
 
   ALWAYS_INLINE const PaintChunk& GetOldChunk(wtf_size_t index) const;
   ALWAYS_INLINE wtf_size_t MatchNewChunkToOldChunk(const PaintChunk& new_chunk,
@@ -134,7 +145,7 @@ class PLATFORM_EXPORT RasterInvalidator {
   }
 
   gfx::Rect layer_bounds_;
-  Vector<PaintChunkInfo> old_paint_chunks_info_;
+  Vector<PaintChunkInfo> old_chunks_info_;
   scoped_refptr<const PaintArtifact> old_paint_artifact_;
 
   struct RasterInvalidationTrackingInfo {
