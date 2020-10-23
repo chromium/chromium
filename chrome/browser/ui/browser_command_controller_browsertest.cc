@@ -84,38 +84,20 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, DisableFind) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FIND));
 }
 
-// Note that a Browser's destructor, when the browser's profile is guest, will
-// create and execute a BrowsingDataRemover.
-// Flakes http://crbug.com/471953
+// TODO(https://crbug.com/1125474): Expand to cover ChromeOS and ephemeral Guest
+// profiles.
+#if !defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
-                       DISABLED_NewAvatarMenuEnabledInGuestMode) {
+                       NewAvatarMenuEnabledInGuestMode) {
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
 
-  // Create a guest browser nicely. Using CreateProfile() and CreateBrowser()
-  // does incomplete initialization that would lead to
-  // SystemUrlRequestContextGetter being leaked.
-  profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
-  ui_test_utils::WaitForBrowserToOpen();
-  EXPECT_EQ(2U, BrowserList::GetInstance()->size());
-
-  // Access the browser that was created for the new Guest Profile.
-  Profile* guest = g_browser_process->profile_manager()->GetProfileByPath(
-      ProfileManager::GetGuestProfilePath());
-  Browser* browser = chrome::FindAnyBrowser(guest, true);
+  Browser* browser = CreateGuestBrowser();
   EXPECT_TRUE(browser);
 
-  // The BrowsingDataRemover needs a loaded TemplateUrlService or else it hangs
-  // on to a CallbackList::Subscription forever.
-  TemplateURLServiceFactory::GetForProfile(guest)->set_loaded(true);
-
   const CommandUpdater* command_updater = browser->command_controller();
-#if defined(OS_CHROMEOS)
-  // Chrome OS uses system tray menu to handle multi-profiles.
-  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
-#else
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
-#endif
 }
+#endif
 
 #if defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, LockedFullscreen) {
