@@ -48,6 +48,10 @@ FormFieldData CreateFieldByRole(ServerFieldType role) {
       field.label = ASCIIToUTF16("E-mail address");
       field.name = ASCIIToUTF16("email");
       break;
+    case ServerFieldType::ADDRESS_HOME_LINE1:
+      field.label = ASCIIToUTF16("Address");
+      field.name = ASCIIToUTF16("home_line_one");
+      break;
     case ServerFieldType::ADDRESS_HOME_CITY:
       field.label = ASCIIToUTF16("City");
       field.name = ASCIIToUTF16("city");
@@ -84,11 +88,18 @@ FormFieldData CreateFieldByRole(ServerFieldType role) {
   return field;
 }
 
-FormData GetFormData(const FormAttributes& form_attributes) {
+FormData GetFormData(const TestFormAttributes& test_form_attributes) {
   FormData form_data;
 
-  form_data.url = GURL(form_attributes.form_url);
-  for (const FieldDataDescription& field_description : form_attributes.fields) {
+  form_data.url = GURL(test_form_attributes.url);
+  form_data.action = GURL(test_form_attributes.action);
+  form_data.name = ASCIIToUTF16(test_form_attributes.name);
+  if (test_form_attributes.unique_renderer_id)
+    form_data.unique_renderer_id = *test_form_attributes.unique_renderer_id;
+  if (test_form_attributes.main_frame_origin)
+    form_data.main_frame_origin = *test_form_attributes.main_frame_origin;
+  for (const FieldDataDescription& field_description :
+       test_form_attributes.fields) {
     FormFieldData field = CreateFieldByRole(field_description.role);
     field.form_control_type = field_description.form_control_type;
     field.is_focusable = field_description.is_focusable;
@@ -98,11 +109,15 @@ FormData GetFormData(const FormAttributes& form_attributes) {
       field.label = ASCIIToUTF16(field_description.label);
     if (ASCIIToUTF16(field_description.name) != ASCIIToUTF16(kNameText))
       field.name = ASCIIToUTF16(field_description.name);
+    if (field_description.value)
+      field.value = ASCIIToUTF16(*field_description.value);
+    if (field_description.is_autofilled)
+      field.is_autofilled = *field_description.is_autofilled;
     field.should_autocomplete = field_description.should_autocomplete;
     form_data.fields.push_back(field);
   }
-  form_data.is_formless_checkout = form_attributes.is_formless_checkout;
-  form_data.is_form_tag = form_attributes.is_form_tag;
+  form_data.is_formless_checkout = test_form_attributes.is_formless_checkout;
+  form_data.is_form_tag = test_form_attributes.is_form_tag;
 
   return form_data;
 }

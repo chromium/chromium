@@ -26,7 +26,10 @@ constexpr char kLabelText[] = "label";
 constexpr char kNameText[] = "name";
 
 // Default form url.
-constexpr char kFormUrl[] = "http://www.foo.com/";
+constexpr char kFormUrl[] = "http://example.com/form.html";
+
+// Default form action url.
+constexpr char kFormActionUrl[] = "http://example.com/submit.html";
 
 }  // namespace
 
@@ -39,17 +42,23 @@ struct FieldDataDescription {
   bool is_focusable = true;
   const char* label = kLabelText;
   const char* name = kNameText;
+  base::Optional<const char*> value = base::nullopt;
   const char* autocomplete_attribute = nullptr;
   const char* form_control_type = "text";
   bool should_autocomplete = true;
+  base::Optional<bool> is_autofilled = base::nullopt;
 };
 
 // Attributes provided to the test form.
 template <typename = void>
-struct FormAttributes {
-  const char* description_for_logging = "";
-  std::vector<FieldDataDescription<>> fields = {};
-  const char* form_url = kFormUrl;
+struct TestFormAttributes {
+  const char* description_for_logging;
+  std::vector<FieldDataDescription<>> fields;
+  base::Optional<FormRendererId> unique_renderer_id = base::nullopt;
+  const char* name = "TestForm";
+  const char* url = kFormUrl;
+  const char* action = kFormActionUrl;
+  base::Optional<url::Origin> main_frame_origin = base::nullopt;
   bool is_formless_checkout = false;
   bool is_form_tag = true;
 };
@@ -57,7 +66,7 @@ struct FormAttributes {
 // Flags determining whether the corresponding check should be run on the test
 // form.
 template <typename = void>
-struct FormFlags {
+struct TestFormFlags {
   // false means the function is not to be called.
   bool determine_heuristic_type = false;
   bool parse_query_response = false;
@@ -90,15 +99,15 @@ struct ExpectedFieldTypeValues {
 // Describes a test case for the parser.
 template <typename = void>
 struct FormStructureTestCase {
-  FormAttributes<> form_attributes;
-  FormFlags<> form_flags;
+  TestFormAttributes<> form_attributes;
+  TestFormFlags<> form_flags;
   ExpectedFieldTypeValues<> expected_field_types;
 };
 
 }  // namespace internal
 
 using FieldDataDescription = internal::FieldDataDescription<>;
-using FormAttributes = internal::FormAttributes<>;
+using TestFormAttributes = internal::TestFormAttributes<>;
 using FormStructureTestCase = internal::FormStructureTestCase<>;
 
 // Describes the |form_data|. Use this in SCOPED_TRACE if other logging
@@ -109,7 +118,7 @@ testing::Message DescribeFormData(const FormData& form_data);
 FormFieldData CreateFieldByRole(ServerFieldType role);
 
 // Creates a FormData to be fed to the parser.
-FormData GetFormData(const FormAttributes& form_attributes);
+FormData GetFormData(const TestFormAttributes& test_form_attributes);
 
 class FormStructureTest : public testing::Test {
  protected:

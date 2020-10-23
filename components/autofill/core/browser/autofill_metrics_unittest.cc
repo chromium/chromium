@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/credit_card_form_event_logger.h"
@@ -642,53 +643,43 @@ INSTANTIATE_TEST_SUITE_P(AutofillMetricsTest,
 // Test that we log quality metrics appropriately.
 TEST_F(AutofillMetricsTest, QualityMetrics) {
   // Set up our form data.
-  FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
-  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+  FormData form =
+      test::GetFormData({.description_for_logging = "QualityMetrics",
+                         .fields = {{.label = "Autofilled",
+                                     .name = "autofilled",
+                                     .value = "Elvis Aaron Presley",
+                                     .is_autofilled = true},
+                                    {.label = "Autofill Failed",
+                                     .name = "autofillfailed",
+                                     .value = "buddy@gmail.com",
+                                     .is_autofilled = false},
+                                    {.label = "Empty",
+                                     .name = "empty",
+                                     .value = "",
+                                     .is_autofilled = false},
+                                    {.label = "Unknown",
+                                     .name = "unknown",
+                                     .value = "garbage",
+                                     .is_autofilled = false},
+                                    {.label = "Select",
+                                     .name = "select",
+                                     .value = "USA",
+                                     .form_control_type = "select-one",
+                                     .is_autofilled = false},
+                                    {.role = ServerFieldType::PHONE_HOME_NUMBER,
+                                     .value = "2345678901",
+                                     .form_control_type = "tel",
+                                     .is_autofilled = true}},
+                         .unique_renderer_id = MakeFormRendererId(),
+                         .main_frame_origin = url::Origin::Create(
+                             autofill_client_.form_origin())});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Autofilled", "autofilled", "Elvis Aaron Presley",
-                            "text", &field);
-  field.is_autofilled = true;
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FIRST);
-
-  test::CreateTestFormField("Autofill Failed", "autofillfailed",
-                            "buddy@gmail.com", "text", &field);
-  field.is_autofilled = false;
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_NUMBER);
-  server_types.push_back(EMAIL_ADDRESS);
-
-  test::CreateTestFormField("Empty", "empty", "", "text", &field);
-  field.is_autofilled = false;
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FIRST);
-
-  test::CreateTestFormField("Unknown", "unknown", "garbage", "text", &field);
-  field.is_autofilled = false;
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_NUMBER);
-  server_types.push_back(EMAIL_ADDRESS);
-
-  test::CreateTestFormField("Select", "select", "USA", "select-one", &field);
-  field.is_autofilled = false;
-  form.fields.push_back(field);
-  heuristic_types.push_back(UNKNOWN_TYPE);
-  server_types.push_back(NO_SERVER_DATA);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "tel", &field);
-  field.is_autofilled = true;
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
+      PHONE_HOME_NUMBER, UNKNOWN_TYPE,      PHONE_HOME_CITY_AND_NUMBER};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FIRST,    EMAIL_ADDRESS,  NAME_FIRST,
+      EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -831,50 +822,31 @@ TEST_F(AutofillMetricsTest, QualityMetrics) {
 // Test that the ProfileImportStatus logs a no import.
 TEST_F(AutofillMetricsTest, ProfileImportStatus_NoImport) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging = "ProfileImportStatus_NoImport",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
+            .value = "3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE,
+            .value = "Invalid State"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP,
+            .value = "00000000000000000"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY,
+            .value = "NoACountry"}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one",
-                            "3734 Elvis Presley Blvd.", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("City", "city", "New York", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("State", "state", "InvalidState", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
-
-  test::CreateTestFormField("ZIP", "zip", "00000000000000000", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "country", "NoACountry", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -904,50 +876,28 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_NoImport) {
 // Test that the ProfileImportStatus logs a regular import.
 TEST_F(AutofillMetricsTest, ProfileImportStatus_RegularImport) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging = "ProfileImportStatus_RegularImport",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
+            .value = "3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = "CA"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one",
-                            "3734 Elvis Presley Blvd.", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("City", "city", "New York", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("State", "state", "CA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
-
-  test::CreateTestFormField("ZIP", "zip", "37373", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "country", "USA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -977,54 +927,36 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_RegularImport) {
 // Test that the ProfileImportStatus logs a section union mport.
 TEST_F(AutofillMetricsTest, ProfileImportStatus_UnionImport) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging = "ProfileImportStatus_UnionImport",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
+            .value = "3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY,
+            .value = "New York",
+            .autocomplete_attribute = "section-billing locality"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE,
+            .value = "CA",
+            .autocomplete_attribute = "section-shipping address-level1"}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one",
-                            "3734 Elvis Presley Blvd.", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("ZIP", "zip", "37373", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "country", "USA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("City", "city", "New York", "text", &field);
-  // Assign a specific section.
-  field.autocomplete_attribute = "section-billing locality";
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("State", "state", "CA", "text", &field);
-  // Make the state a different section than the city.
-  field.autocomplete_attribute = "section-shipping address-level1";
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
+  std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
+                                                  ADDRESS_HOME_LINE1,
+                                                  ADDRESS_HOME_ZIP,
+                                                  ADDRESS_HOME_COUNTRY,
+                                                  PHONE_HOME_CITY_AND_NUMBER,
+                                                  ADDRESS_HOME_CITY,
+                                                  ADDRESS_HOME_STATE};
+  std::vector<ServerFieldType> server_types = {NAME_FULL,
+                                               ADDRESS_HOME_LINE1,
+                                               ADDRESS_HOME_ZIP,
+                                               ADDRESS_HOME_COUNTRY,
+                                               PHONE_HOME_CITY_AND_NUMBER,
+                                               ADDRESS_HOME_CITY,
+                                               ADDRESS_HOME_STATE};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -1079,50 +1011,28 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_UnionImport) {
 // 'perfect' profile import.
 TEST_F(AutofillMetricsTest, ProfileImportRequirements_AllFulfilled) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging = "ProfileImportRequirements_AllFulfilled",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
+            .value = "3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = "CA"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one",
-                            "3734 Elvis Presley Blvd.", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("City", "city", "New York", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("State", "state", "CA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
-
-  test::CreateTestFormField("ZIP", "zip", "37373", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "country", "USA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -1180,49 +1090,28 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_AllFulfilled) {
 // ADDRESS_HOME_LINE1 is missing.
 TEST_F(AutofillMetricsTest, ProfileImportRequirements_MissingHomeLineOne) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging =
+           "ProfileImportRequirements_MissingHomeLineOne",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1, .value = ""},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = "CA"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one", "", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("City", "city", "New York", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("State", "state", "CA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
-
-  test::CreateTestFormField("ZIP", "zip", "37373", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "country", "USA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -1282,50 +1171,30 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_MissingHomeLineOne) {
 TEST_F(AutofillMetricsTest,
        ProfileImportRequirements_AllFulfilledForNonStateCountry) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging =
+           "ProfileImportRequirements_AllFulfilledForNonStateCountry",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
+            .value = "3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = ""},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY,
+            .value = "Germany"}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one",
-                            "3734 Elvis Presley Blvd.", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("City", "city", "New York", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("State", "state", "", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
-
-  test::CreateTestFormField("ZIP", "zip", "37373", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "country", "Germany", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -1383,56 +1252,38 @@ TEST_F(AutofillMetricsTest,
 TEST_F(AutofillMetricsTest,
        ProfileImportRequirements_FilledButInvalidZipEmailAndState) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging =
+           "ProfileImportRequirements_FilledButInvalidZipEmailAndState",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
+            .value = "3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE,
+            .value = "DefNotAState"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "1234567890"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"},
+           {.role = ServerFieldType::EMAIL_ADDRESS,
+            .value = "test_noat_test.io"}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one",
-                            "3734 Elvis Presley Blvd.", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("City", "city", "New York", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("State", "state", "DefNotAState", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
-
-  test::CreateTestFormField("ZIP", "zip", "1234567890", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "country", "USA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
-
-  test::CreateTestFormField("Email1", "email1", "test_noat_test.io", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(EMAIL_ADDRESS);
-  server_types.push_back(EMAIL_ADDRESS);
+  std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
+                                                  ADDRESS_HOME_LINE1,
+                                                  ADDRESS_HOME_CITY,
+                                                  PHONE_HOME_CITY_AND_NUMBER,
+                                                  ADDRESS_HOME_STATE,
+                                                  ADDRESS_HOME_ZIP,
+                                                  ADDRESS_HOME_COUNTRY,
+                                                  EMAIL_ADDRESS};
+  std::vector<ServerFieldType> server_types = {NAME_FULL,
+                                               ADDRESS_HOME_LINE1,
+                                               ADDRESS_HOME_CITY,
+                                               PHONE_HOME_CITY_AND_NUMBER,
+                                               ADDRESS_HOME_STATE,
+                                               ADDRESS_HOME_ZIP,
+                                               ADDRESS_HOME_COUNTRY,
+                                               EMAIL_ADDRESS};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -1490,61 +1341,41 @@ TEST_F(AutofillMetricsTest,
 // profile with multiple email addresses.
 TEST_F(AutofillMetricsTest, ProfileImportRequirements_NonUniqueEmail) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging = "ProfileImportRequirements_NonUniqueEmail",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
+            .value = "3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = "CA"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"},
+           {.role = ServerFieldType::EMAIL_ADDRESS,
+            .value = "test_noat_test.io"},
+           {.label = "Email1",
+            .name = ".email1",
+            .value = "not_test@test.io"}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one",
-                            "3734 Elvis Presley Blvd.", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("City", "city", "New York", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("Phone", "phone", "2345678901", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("State", "state", "CA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
-
-  test::CreateTestFormField("ZIP", "zip", "37373", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "country", "USA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
-
-  test::CreateTestFormField("Email1", "email1", "test@test.io", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(EMAIL_ADDRESS);
-  server_types.push_back(EMAIL_ADDRESS);
-
-  test::CreateTestFormField("Email2", "email2", "not_test@test.io", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(EMAIL_ADDRESS);
-  server_types.push_back(EMAIL_ADDRESS);
+  std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
+                                                  ADDRESS_HOME_LINE1,
+                                                  ADDRESS_HOME_CITY,
+                                                  PHONE_HOME_CITY_AND_NUMBER,
+                                                  ADDRESS_HOME_STATE,
+                                                  ADDRESS_HOME_ZIP,
+                                                  ADDRESS_HOME_COUNTRY,
+                                                  EMAIL_ADDRESS,
+                                                  EMAIL_ADDRESS};
+  std::vector<ServerFieldType> server_types = {NAME_FULL,
+                                               ADDRESS_HOME_LINE1,
+                                               ADDRESS_HOME_CITY,
+                                               PHONE_HOME_CITY_AND_NUMBER,
+                                               ADDRESS_HOME_STATE,
+                                               ADDRESS_HOME_ZIP,
+                                               ADDRESS_HOME_COUNTRY,
+                                               EMAIL_ADDRESS,
+                                               EMAIL_ADDRESS};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
@@ -1602,50 +1433,29 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_NonUniqueEmail) {
 // missing.
 TEST_F(AutofillMetricsTest, ProfileImportRequirements_OnlyAddressLineOne) {
   // Set up our form data.
-  FormData form;
-  form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  FormData form = test::GetFormData(
+      {.description_for_logging =
+           "ProfileImportRequirements_OnlyAddressLineOne",
+       .fields = {
+           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
+            .value = "3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = ""},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = ""},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = ""},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = ""},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = ""}}});
 
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  FormFieldData field;
-
-  test::CreateTestFormField("Name", "name", "Elvis Aaron Presley", "text",
-                            &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(NAME_FULL);
-  server_types.push_back(NAME_FULL);
-
-  test::CreateTestFormField("Address", "home_line_one",
-                            "3734 Elvis Presley Blvd.", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_LINE1);
-  server_types.push_back(ADDRESS_HOME_LINE1);
-
-  test::CreateTestFormField("City", "city", "", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_CITY);
-  server_types.push_back(ADDRESS_HOME_CITY);
-
-  test::CreateTestFormField("Phone", "phone", "", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-  server_types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-
-  test::CreateTestFormField("State", "state", "", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_STATE);
-  server_types.push_back(ADDRESS_HOME_STATE);
-
-  test::CreateTestFormField("ZIP", "zip", "", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_ZIP);
-  server_types.push_back(ADDRESS_HOME_ZIP);
-
-  test::CreateTestFormField("Country", "", "USA", "text", &field);
-  form.fields.push_back(field);
-  heuristic_types.push_back(ADDRESS_HOME_COUNTRY);
-  server_types.push_back(ADDRESS_HOME_COUNTRY);
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
 
   // Simulate having seen this form on page load.
   autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
