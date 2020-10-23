@@ -14,9 +14,11 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -112,6 +114,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final SnackbarManager.SnackbarManageable mSnackbarManageable;
     private final Snackbar mUndoClosureSnackBar;
+    private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
 
     private CallbackController mCallbackController = new CallbackController();
     private final OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
@@ -120,6 +123,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
     private TabGroupModelFilter.Observer mTabGroupModelFilterObserver;
     private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private Callback<Boolean> mOmniboxFocusObserver;
     private boolean mIsTabGroupUiVisible;
     private boolean mIsShowingOverViewMode;
     private boolean mActivatedButNotShown;
@@ -132,7 +136,8 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
             ThemeColorProvider themeColorProvider,
             @Nullable TabGridDialogMediator.DialogController dialogController,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            SnackbarManager.SnackbarManageable snackbarManageable) {
+            SnackbarManager.SnackbarManageable snackbarManageable,
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mContext = context;
         mResetHandler = resetHandler;
         mModel = model;
@@ -143,6 +148,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         mTabGridDialogController = dialogController;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mSnackbarManageable = snackbarManageable;
+        mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mUndoClosureSnackBar =
                 Snackbar.make(context.getString(R.string.undo_tab_strip_closure_message), this,
                                 Snackbar.TYPE_ACTION,
@@ -331,6 +337,17 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                 }
             };
             mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
+        }
+
+        if (TabUiFeatureUtilities.isLaunchBugFixEnabled()) {
+            mOmniboxFocusObserver = isFocus -> {
+                // Hide tab strip when omnibox gains focus and try to re-show it when omnibox loses
+                // focus.
+                int tabId = (isFocus == null || !isFocus) ? mTabModelSelector.getCurrentTabId()
+                                                          : Tab.INVALID_TAB_ID;
+                resetTabStripWithRelatedTabsForId(tabId);
+            };
+            mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
         }
 
         mThemeColorObserver =
@@ -523,6 +540,9 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
+        }
+        if (mOmniboxFocusObserver != null) {
+            mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
         }
         mThemeColorProvider.removeThemeColorObserver(mThemeColorObserver);
         mThemeColorProvider.removeTintObserver(mTintObserver);

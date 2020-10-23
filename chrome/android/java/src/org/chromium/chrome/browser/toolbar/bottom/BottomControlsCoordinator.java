@@ -77,6 +77,7 @@ public class BottomControlsCoordinator {
      *         whether the bar should be focused, and the second is the OmniboxFocusReason.
      * @param overviewModeBehaviorSupplier Supplier for the overview mode manager.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control scrim view.
+     * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      */
     @SuppressLint("CutPasteId") // Not actually cut and paste since it's View vs ViewGroup.
     public BottomControlsCoordinator(BrowserControlsSizer controlsSizer,
@@ -87,7 +88,8 @@ public class BottomControlsCoordinator {
             Supplier<Boolean> showStartSurfaceCallable, Runnable openHomepageAction,
             Callback<Integer> setUrlBarFocusAction,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ScrimCoordinator scrimCoordinator) {
+            ScrimCoordinator scrimCoordinator,
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         final ScrollingBottomViewResourceFrameLayout root =
                 (ScrollingBottomViewResourceFrameLayout) stub.inflate();
 
@@ -108,7 +110,7 @@ public class BottomControlsCoordinator {
                 || TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
             mTabGroupUi = TabManagementModuleProvider.getDelegate().createTabGroupUi(
                     root.findViewById(R.id.bottom_container_slot), themeColorProvider,
-                    scrimCoordinator);
+                    scrimCoordinator, omniboxFocusStateSupplier);
         }
         Toast.setGlobalExtraYOffset(
                 root.getResources().getDimensionPixelSize(bottomControlsHeightId));

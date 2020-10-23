@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -40,6 +41,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -131,6 +134,8 @@ public class TabGroupUiMediatorUnitTest {
     SnackbarManager.SnackbarManageable mSnackbarManageable;
     @Mock
     SnackbarManager mSnackbarManager;
+    @Mock
+    ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverArgumentCaptor;
     @Captor
@@ -147,6 +152,8 @@ public class TabGroupUiMediatorUnitTest {
     ArgumentCaptor<PauseResumeWithNativeObserver> mPauseResumeWithNativeObserverArgumentCaptor;
     @Captor
     ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor
+    ArgumentCaptor<Callback<Boolean>> mOmniboxFocusObserverCaptor;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -205,7 +212,8 @@ public class TabGroupUiMediatorUnitTest {
                 TabUiFeatureUtilities.isTabGroupsAndroidEnabled() ? mTabGridDialogController : null;
         mTabGroupUiMediator = new TabGroupUiMediator(mContext, mVisibilityController, mResetHandler,
                 mModel, mTabModelSelector, mTabCreatorManager, mOverviewModeBehaviorSupplier,
-                mThemeColorProvider, controller, mActivityLifecycleDispatcher, mSnackbarManageable);
+                mThemeColorProvider, controller, mActivityLifecycleDispatcher, mSnackbarManageable,
+                mOmniboxFocusStateSupplier);
 
         if (currentTab == null) {
             verifyNeverReset();
@@ -345,6 +353,11 @@ public class TabGroupUiMediatorUnitTest {
 
         // Set up SnackbarManageable.
         doReturn(mSnackbarManager).when(mSnackbarManageable).getSnackbarManager();
+
+        // Set up omnibox focus state observer.
+        doReturn(nullValue())
+                .when(mOmniboxFocusStateSupplier)
+                .addObserver(mOmniboxFocusObserverCaptor.capture());
 
         mResetHandlerInOrder = inOrder(mResetHandler);
         mVisibilityControllerInOrder = inOrder(mVisibilityController);
@@ -1328,5 +1341,18 @@ public class TabGroupUiMediatorUnitTest {
 
         tabObserverDestroyInOrder.verify(mTab1, never())
                 .removeObserver(mTabObserverCaptor.capture());
+    }
+
+    @Test
+    public void testOmniboxFocusChange() {
+        TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX.setForTesting(true);
+        initAndAssertProperties(mTab2);
+
+        mOmniboxFocusObserverCaptor.getValue().onResult(true);
+        verifyResetStrip(false, null);
+
+        doReturn(TAB2_ID).when(mTabModelSelector).getCurrentTabId();
+        mOmniboxFocusObserverCaptor.getValue().onResult(false);
+        verifyResetStrip(true, mTabGroup2);
     }
 }

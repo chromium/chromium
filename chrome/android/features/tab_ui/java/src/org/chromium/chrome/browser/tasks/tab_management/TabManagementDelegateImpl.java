@@ -80,8 +80,10 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
 
     @Override
     public TabGroupUi createTabGroupUi(ViewGroup parentView, ThemeColorProvider themeColorProvider,
-            ScrimCoordinator scrimCoordinator) {
-        return new TabGroupUiCoordinator(parentView, themeColorProvider, scrimCoordinator);
+            ScrimCoordinator scrimCoordinator,
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
+        return new TabGroupUiCoordinator(
+                parentView, themeColorProvider, scrimCoordinator, omniboxFocusStateSupplier);
     }
 
     @Override
