@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_test_expectations_parser.h"
@@ -25,7 +26,7 @@ namespace gpu {
 namespace {
 
 GPUTestConfig::OS GetCurrentOS() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   return GPUTestConfig::kOsChromeOS;
 #elif defined(OS_LINUX) || defined(OS_OPENBSD)
   return GPUTestConfig::kOsLinux;

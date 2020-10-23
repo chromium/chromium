@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -40,7 +41,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #elif defined(OS_MAC)
 #include "gpu/command_buffer/service/shared_image_backing_factory_iosurface.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
 #include "gpu/command_buffer/service/shared_image_backing_factory_ozone.h"
 #endif
 
@@ -145,7 +146,7 @@ SharedImageFactory::SharedImageFactory(
   // OSX
   DCHECK(gr_context_type_ == GrContextType::kGL ||
          gr_context_type_ == GrContextType::kMetal);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
   if (gr_context_type_ == GrContextType::kVulkan) {
     interop_backing_factory_ =
         std::make_unique<SharedImageBackingFactoryOzone>(context_state);

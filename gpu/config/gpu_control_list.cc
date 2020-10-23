@@ -16,6 +16,7 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -273,7 +274,7 @@ bool GpuControlList::More::GLVersionInfoMismatch(
 
 // static
 GpuControlList::GLType GpuControlList::More::GetDefaultGLType() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   return kGLTypeGL;
 #elif defined(OS_LINUX) || defined(OS_OPENBSD)
   return kGLTypeGL;
@@ -773,7 +774,7 @@ uint32_t GpuControlList::max_entry_id() const {
 
 // static
 GpuControlList::OsType GpuControlList::GetOsType() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   return kOsChromeOS;
 #elif defined(OS_WIN)
   return kOsWin;

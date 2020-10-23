@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/gpu_export.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/buffer_types.h"
@@ -260,7 +261,7 @@ struct GPU_EXPORT GpuPreferences {
   // ===================================
   // Settings from //media/base/media_switches.h
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // The direct VideoDecoder is disallowed in this particular SoC/platform. This
   // flag is a reflection of whatever ChromeOS command line builder says.
   bool platform_disallows_chromeos_direct_video_decoder = false;

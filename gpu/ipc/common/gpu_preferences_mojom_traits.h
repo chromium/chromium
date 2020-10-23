@@ -6,6 +6,7 @@
 #define GPU_IPC_COMMON_GPU_PREFERENCES_MOJOM_TRAITS_H_
 
 #include <vector>
+#include "build/chromeos_buildflags.h"
 
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_preferences.mojom-shared.h"
@@ -185,7 +186,7 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
     out->enable_native_gpu_memory_buffers =
         prefs.enable_native_gpu_memory_buffers();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     out->platform_disallows_chromeos_direct_video_decoder =
         prefs.platform_disallows_chromeos_direct_video_decoder();
 #endif
@@ -369,7 +370,7 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
       const gpu::GpuPreferences& prefs) {
     return prefs.enable_native_gpu_memory_buffers;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   static bool platform_disallows_chromeos_direct_video_decoder(
       const gpu::GpuPreferences& prefs) {
     return prefs.platform_disallows_chromeos_direct_video_decoder;

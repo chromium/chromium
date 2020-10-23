@@ -22,6 +22,7 @@
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
@@ -56,7 +57,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gl/gl_image_native_pixmap.h"
 #endif
@@ -64,7 +65,7 @@
 namespace gpu {
 class Buffer;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 namespace {
 
 struct CleanUpContext {
@@ -246,7 +247,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
 
   std::vector<sk_sp<SkImage>> plane_sk_images;
   base::Optional<base::ScopedClosureRunner> notify_gl_state_changed;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Right now, we only support YUV 4:2:0 for the output of the decoder (either
   // as YV12 or NV12).
   //

@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 
@@ -54,7 +55,7 @@ action("process_json") {
     args += [ "macosx" ]
   } else if (is_android) {
     args += [ "android" ]
-  } else if (is_chromeos) {
+  } else if (is_ash) {
     args += [ "chromeos" ]
   } else if (is_fuchsia) {
     args += [ "fuchsia" ]
@@ -179,6 +180,7 @@ source_set("config_sources") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/common:common_sources",
     "//gpu/ipc/common:gpu_preferences_interface",
     "//gpu/vulkan:buildflags",

@@ -72,6 +72,7 @@ component("service") {
   ]
   deps = [
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
 
     # crbug.com/799267: crash_key needs to be added explicitly for Windows and
     # Mac even though it's not directly referenced, because it's being
