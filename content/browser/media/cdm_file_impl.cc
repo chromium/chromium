@@ -454,8 +454,10 @@ void CdmFileImpl::Read(ReadCallback callback) {
   // |this|, and if |this| is destructed it will destroy the file reader on the
   // IO thread.
   file_reader_ = base::SequenceBound<FileReader>(GetIOThreadTaskRunner({}));
-  file_reader_.Post(FROM_HERE, &FileReader::Read, file_system_context_,
-                    CreateFileSystemURL(file_name_), std::move(read_done_cb));
+  // TODO(dcheng): Migrate this to use Then()?
+  file_reader_.AsyncCall(&FileReader::Read)
+      .WithArgs(file_system_context_, CreateFileSystemURL(file_name_),
+                std::move(read_done_cb));
 }
 
 void CdmFileImpl::ReadDone(bool success, std::vector<uint8_t> data) {
@@ -601,9 +603,10 @@ void CdmFileImpl::OnTempFileIsEmpty(scoped_refptr<net::IOBuffer> buffer,
   // base::Unretained() is OK as |file_writer_| is owned by |this|, and if
   // |this| is destructed it will destroy |file_writer_| on the IO thread.
   file_writer_ = base::SequenceBound<FileWriter>(GetIOThreadTaskRunner({}));
-  file_writer_.Post(FROM_HERE, &FileWriter::Write, file_system_context_,
-                    CreateFileSystemURL(temp_file_name_), std::move(buffer),
-                    bytes_to_write, std::move(write_done_cb));
+  // TODO(dcheng): Migrate this to use Then()?
+  file_writer_.AsyncCall(&FileWriter::Write)
+      .WithArgs(file_system_context_, CreateFileSystemURL(temp_file_name_),
+                std::move(buffer), bytes_to_write, std::move(write_done_cb));
 }
 
 void CdmFileImpl::WriteDone(bool success) {

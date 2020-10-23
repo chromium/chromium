@@ -37,12 +37,11 @@ class WeakLearningTaskController : public LearningTaskController {
     for (auto& id : outstanding_observations_) {
       const base::Optional<TargetValue>& default_value = id.second;
       if (default_value) {
-        controller_->Post(FROM_HERE,
-                          &LearningTaskController::CompleteObservation,
-                          id.first, *default_value);
+        controller_->AsyncCall(&LearningTaskController::CompleteObservation)
+            .WithArgs(id.first, *default_value);
       } else {
-        controller_->Post(FROM_HERE, &LearningTaskController::CancelObservation,
-                          id.first);
+        controller_->AsyncCall(&LearningTaskController::CancelObservation)
+            .WithArgs(id.first);
       }
     }
   }
@@ -59,8 +58,8 @@ class WeakLearningTaskController : public LearningTaskController {
     // We don't send along the default value because LearningTaskControllerImpl
     // doesn't support it.  Since all client calls eventually come through us
     // anyway, it seems okay to handle it here.
-    controller_->Post(FROM_HERE, &LearningTaskController::BeginObservation, id,
-                      features, base::nullopt, source_id);
+    controller_->AsyncCall(&LearningTaskController::BeginObservation)
+        .WithArgs(id, features, base::nullopt, source_id);
   }
 
   void CompleteObservation(base::UnguessableToken id,
@@ -68,16 +67,16 @@ class WeakLearningTaskController : public LearningTaskController {
     if (!weak_session_)
       return;
     outstanding_observations_.erase(id);
-    controller_->Post(FROM_HERE, &LearningTaskController::CompleteObservation,
-                      id, completion);
+    controller_->AsyncCall(&LearningTaskController::CompleteObservation)
+        .WithArgs(id, completion);
   }
 
   void CancelObservation(base::UnguessableToken id) override {
     if (!weak_session_)
       return;
     outstanding_observations_.erase(id);
-    controller_->Post(FROM_HERE, &LearningTaskController::CancelObservation,
-                      id);
+    controller_->AsyncCall(&LearningTaskController::CancelObservation)
+        .WithArgs(id);
   }
 
   void UpdateDefaultTarget(
@@ -93,8 +92,8 @@ class WeakLearningTaskController : public LearningTaskController {
 
   void PredictDistribution(const FeatureVector& features,
                            PredictionCB callback) override {
-    controller_->Post(FROM_HERE, &LearningTaskController::PredictDistribution,
-                      features, std::move(callback));
+    controller_->AsyncCall(&LearningTaskController::PredictDistribution)
+        .WithArgs(features, std::move(callback));
   }
 
   base::WeakPtr<LearningSessionImpl> weak_session_;

@@ -34,9 +34,8 @@ class LearningSessionImplTest : public testing::Test {
       // As a complete hack, call the only public method on fp so that
       // we can verify that it was given to us by the session.
       if (!feature_provider_.is_null()) {
-        feature_provider_.Post(FROM_HERE, &FeatureProvider::AddFeatures,
-                               FeatureVector(),
-                               FeatureProvider::FeatureVectorCB());
+        feature_provider_.AsyncCall(&FeatureProvider::AddFeatures)
+            .WithArgs(FeatureVector(), FeatureProvider::FeatureVectorCB());
       }
     }
 
