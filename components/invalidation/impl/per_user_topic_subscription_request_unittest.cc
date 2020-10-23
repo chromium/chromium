@@ -5,7 +5,6 @@
 #include "components/invalidation/impl/per_user_topic_subscription_request.h"
 
 #include "base/bind.h"
-#include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -30,24 +29,6 @@ namespace {
 using testing::_;
 using testing::SaveArg;
 
-MATCHER_P(EqualsJSON, json, "equals JSON") {
-  base::Optional<base::Value> expected = base::JSONReader::Read(json);
-  if (!expected) {
-    *result_listener << "INTERNAL ERROR: couldn't parse expected JSON";
-    return false;
-  }
-
-  base::JSONReader::ValueWithError actual =
-      base::JSONReader::ReadAndReturnValueWithError(arg);
-  if (!actual.value) {
-    *result_listener << "input:" << actual.error_line << ":"
-                     << actual.error_column << ": "
-                     << "parse error: " << actual.error_message;
-    return false;
-  }
-  return *expected == *actual.value;
-}
-
 network::mojom::URLResponseHeadPtr CreateHeadersForTest(int responce_code) {
   auto head = network::mojom::URLResponseHead::New();
   head->headers = new net::HttpResponseHeaders(base::StringPrintf(
@@ -60,7 +41,8 @@ network::mojom::URLResponseHeadPtr CreateHeadersForTest(int responce_code) {
 
 class PerUserTopicSubscriptionRequestTest : public testing::Test {
  public:
-  PerUserTopicSubscriptionRequestTest() {}
+  PerUserTopicSubscriptionRequestTest() = default;
+  ~PerUserTopicSubscriptionRequestTest() override = default;
 
   GURL url(PerUserTopicSubscriptionRequest* request) {
     return request->GetUrlForTesting();
@@ -74,8 +56,6 @@ class PerUserTopicSubscriptionRequestTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   network::TestURLLoaderFactory url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerUserTopicSubscriptionRequestTest);
 };
 
 TEST_F(PerUserTopicSubscriptionRequestTest,
