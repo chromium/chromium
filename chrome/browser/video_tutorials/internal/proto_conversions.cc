@@ -26,9 +26,8 @@ FeatureType ToFeatureType(proto::FeatureType type) {
     case proto::FeatureType::TEST:
       return FeatureType::kTest;
     default:
-      NOTREACHED();
+      return static_cast<FeatureType>(type);
   }
-  return FeatureType::kInvalid;
 }
 
 proto::FeatureType FromFeatureType(FeatureType type) {
@@ -48,9 +47,8 @@ proto::FeatureType FromFeatureType(FeatureType type) {
     case FeatureType::kTest:
       return proto::FeatureType::TEST;
     default:
-      NOTREACHED();
+      return static_cast<proto::FeatureType>(type);
   }
-  return proto::FeatureType::INVALID;
 }
 
 }  // namespace

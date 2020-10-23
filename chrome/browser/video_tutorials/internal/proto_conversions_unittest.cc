@@ -23,6 +23,13 @@ TEST(VideoTutorialsProtoConversionsTest, FeatureConversion) {
     TutorialFromProto(&intermediate, &actual);
     EXPECT_EQ(expected, actual);
   }
+
+  // Test an unknown feature.
+  FeatureType unknown = static_cast<FeatureType>(80);
+  expected.feature = unknown;
+  TutorialToProto(&expected, &intermediate);
+  TutorialFromProto(&intermediate, &actual);
+  EXPECT_EQ(expected, actual);
 }
 
 // Verify round-way conversion of Tutorial struct.
