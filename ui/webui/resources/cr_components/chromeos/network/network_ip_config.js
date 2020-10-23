@@ -197,6 +197,11 @@ Polymer({
    * @private
    */
   canChangeIPConfigType_(managedProperties) {
+    if (managedProperties.type ===
+        chromeos.networkConfig.mojom.NetworkType.kCellular) {
+      // Cellular IP config properties can not be changed.
+      return false;
+    }
     const ipConfigType = managedProperties.ipAddressConfigType;
     return !ipConfigType || !this.isNetworkPolicyEnforced(ipConfigType);
   },

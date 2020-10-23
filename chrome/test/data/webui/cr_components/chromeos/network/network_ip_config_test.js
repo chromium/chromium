@@ -19,6 +19,33 @@ suite('NetworkIpConfigTest', function() {
     Polymer.dom.flush();
   });
 
+  test('Enabled', function() {
+    const mojom = chromeos.networkConfig.mojom;
+    assertTrue(!!ipConfig.$.autoConfigIpToggle);
+
+    // WiFi non-policy networks should enable autoConfigIpToggle.
+    ipConfig.managedProperties = {
+      ipAddressConfigType: {
+        activeValue: 'Static',
+        policySource: mojom.PolicySource.kNone,
+      },
+      type: mojom.NetworkType.kWiFi,
+    };
+    Polymer.dom.flush();
+    assertFalse(ipConfig.$.autoConfigIpToggle.disabled);
+
+    // Cellular network should disable autoConfigIpToggle.
+    ipConfig.managedProperties = {
+      ipAddressConfigType: {
+        activeValue: 'Static',
+        policySource: mojom.PolicySource.kNone,
+      },
+      type: mojom.NetworkType.kCellular,
+    };
+    Polymer.dom.flush();
+    assertTrue(ipConfig.$.autoConfigIpToggle.disabled);
+  });
+
   test('Auto-config toggle policy enforcement', function() {
     const mojom = chromeos.networkConfig.mojom;
 
@@ -34,7 +61,7 @@ suite('NetworkIpConfigTest', function() {
     // ipAddressConfigType policy is not enforced (kNone).
     ipConfig.managedProperties = {
       ipAddressConfigType: {
-        activeValue: "Static",
+        activeValue: 'Static',
         policySource: mojom.PolicySource.kNone,
       },
     };
@@ -44,7 +71,7 @@ suite('NetworkIpConfigTest', function() {
     // ipAddressConfigType policy is enforced.
     ipConfig.managedProperties = {
       ipAddressConfigType: {
-        activeValue: "Static",
+        activeValue: 'Static',
         policySource: mojom.PolicySource.kUserPolicyEnforced,
       },
     };
