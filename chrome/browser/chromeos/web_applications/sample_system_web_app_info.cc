@@ -24,7 +24,9 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
   info->title = base::UTF8ToUTF16("Sample System Web App");
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
-      {{"app_icon_192.png", 192, IDR_SAMPLE_SYSTEM_WEB_APP_ICON_192}}, *info);
+      {{"app_icon_192.png", 192,
+        IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_APP_ICON_192_PNG}},
+      *info);
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
