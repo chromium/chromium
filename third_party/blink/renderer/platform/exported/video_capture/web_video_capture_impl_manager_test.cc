@@ -51,7 +51,7 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
   MockVideoCaptureImpl(const media::VideoCaptureSessionId& session_id,
                        PauseResumeCallback* pause_callback,
                        base::OnceClosure destruct_callback)
-      : VideoCaptureImpl(session_id),
+      : VideoCaptureImpl(session_id, base::ThreadTaskRunnerHandle::Get()),
         pause_callback_(pause_callback),
         destruct_callback_(std::move(destruct_callback)) {}
 
