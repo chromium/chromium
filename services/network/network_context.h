@@ -89,17 +89,18 @@ class CertVerifierWithTrustAnchors;
 class CookieManager;
 class ExpectCTReporter;
 class HostResolver;
+class MdnsResponderManager;
 class NetworkService;
 class NetworkServiceNetworkDelegate;
 class NetworkServiceProxyDelegate;
-class MdnsResponderManager;
 class P2PSocketManager;
+class PendingTrustTokenStore;
 class ProxyLookupRequest;
 class QuicTransport;
 class ResourceScheduler;
 class ResourceSchedulerClient;
+class SessionCleanupCookieStore;
 class SQLiteTrustTokenPersister;
-class PendingTrustTokenStore;
 class WebSocketFactory;
 
 namespace cors {
@@ -515,7 +516,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
  private:
   URLRequestContextOwner MakeURLRequestContext(
       mojo::PendingRemote<mojom::URLLoaderFactory>
-          url_loader_factory_for_cert_net_fetcher);
+          url_loader_factory_for_cert_net_fetcher,
+      scoped_refptr<SessionCleanupCookieStore>);
+  scoped_refptr<SessionCleanupCookieStore> MakeSessionCleanupCookieStore()
+      const;
 
   // Invoked when the HTTP cache was cleared. Invokes |callback|.
   void OnHttpCacheCleared(ClearHttpCacheCallback callback,

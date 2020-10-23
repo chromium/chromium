@@ -399,9 +399,17 @@ NetworkContext::NetworkContext(
           url_loader_factory_for_cert_net_fetcher
               .InitWithNewPipeAndPassReceiver();
 
+  scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store =
+      MakeSessionCleanupCookieStore();
+
   url_request_context_owner_ =
-      MakeURLRequestContext(std::move(url_loader_factory_for_cert_net_fetcher));
+      MakeURLRequestContext(std::move(url_loader_factory_for_cert_net_fetcher),
+                            session_cleanup_cookie_store);
   url_request_context_ = url_request_context_owner_.url_request_context.get();
+  cookie_manager_ = std::make_unique<CookieManager>(
+      url_request_context_owner_.url_request_context->cookie_store(),
+      std::move(session_cleanup_cookie_store),
+      std::move(params_->cookie_manager_params));
 
   network_service_->RegisterNetworkContext(this);
 
@@ -1808,7 +1816,8 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
 
 URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     mojo::PendingRemote<mojom::URLLoaderFactory>
-        url_loader_factory_for_cert_net_fetcher) {
+        url_loader_factory_for_cert_net_fetcher,
+    scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store) {
   URLRequestContextBuilderMojo builder;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -1907,33 +1916,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         network_service_->network_quality_estimator());
   }
 
-  scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store;
-  if (params_->cookie_path) {
-    scoped_refptr<base::SequencedTaskRunner> client_task_runner =
-        base::ThreadTaskRunnerHandle::Get();
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), net::GetCookieStoreBackgroundSequencePriority(),
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-
-    net::CookieCryptoDelegate* crypto_delegate = nullptr;
-    if (params_->enable_encrypted_cookies) {
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMECAST)
-      DCHECK(network_service_->os_crypt_config_set())
-          << "NetworkService::SetCryptConfig must be called before creating a "
-             "NetworkContext with encrypted cookies.";
-#endif
-      crypto_delegate = cookie_config::GetCookieCryptoDelegate();
-    }
-    scoped_refptr<net::SQLitePersistentCookieStore> sqlite_store(
-        new net::SQLitePersistentCookieStore(
-            params_->cookie_path.value(), client_task_runner,
-            background_task_runner, params_->restore_old_session_cookies,
-            crypto_delegate));
-
-    session_cleanup_cookie_store =
-        base::MakeRefCounted<SessionCleanupCookieStore>(sqlite_store);
-
+  if (session_cleanup_cookie_store) {
     std::unique_ptr<net::CookieMonster> cookie_store =
         std::make_unique<net::CookieMonster>(session_cleanup_cookie_store.get(),
                                              net_log);
@@ -1941,9 +1924,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       cookie_store->SetPersistSessionCookies(true);
 
     builder.SetCookieStore(std::move(cookie_store));
-  } else {
-    DCHECK(!params_->restore_old_session_cookies);
-    DCHECK(!params_->persist_session_cookies);
   }
 
   if (base::FeatureList::IsEnabled(features::kTrustTokens)) {
@@ -2268,15 +2248,42 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         result.url_request_context->proxy_resolution_service());
   }
 
-  cookie_manager_ = std::make_unique<CookieManager>(
-      result.url_request_context->cookie_store(),
-      std::move(session_cleanup_cookie_store),
-      std::move(params_->cookie_manager_params));
-
   if (cert_net_fetcher_)
     cert_net_fetcher_->SetURLRequestContext(result.url_request_context.get());
 
   return result;
+}
+
+scoped_refptr<SessionCleanupCookieStore>
+NetworkContext::MakeSessionCleanupCookieStore() const {
+  if (!params_->cookie_path) {
+    DCHECK(!params_->restore_old_session_cookies);
+    DCHECK(!params_->persist_session_cookies);
+    return nullptr;
+  }
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::ThreadTaskRunnerHandle::Get();
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), net::GetCookieStoreBackgroundSequencePriority(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+
+  net::CookieCryptoDelegate* crypto_delegate = nullptr;
+  if (params_->enable_encrypted_cookies) {
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMECAST)
+    DCHECK(network_service_->os_crypt_config_set())
+        << "NetworkService::SetCryptConfig must be called before creating a "
+           "NetworkContext with encrypted cookies.";
+#endif
+    crypto_delegate = cookie_config::GetCookieCryptoDelegate();
+  }
+  scoped_refptr<net::SQLitePersistentCookieStore> sqlite_store(
+      new net::SQLitePersistentCookieStore(
+          params_->cookie_path.value(), client_task_runner,
+          background_task_runner, params_->restore_old_session_cookies,
+          crypto_delegate));
+
+  return base::MakeRefCounted<SessionCleanupCookieStore>(sqlite_store);
 }
 
 void NetworkContext::OnHttpCacheCleared(ClearHttpCacheCallback callback,
