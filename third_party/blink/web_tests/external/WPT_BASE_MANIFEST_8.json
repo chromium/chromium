@@ -243542,7 +243542,7 @@
        []
       ],
       "safari-technology-preview.rb": [
-       "1a3620529c0403522a3ace06f9f1606d1633c5f8",
+       "115dd1b8f210b639a69a8f3cfa21f4edf7579243",
        []
       ],
       "system_info.yml": [
@@ -358566,6 +358566,13 @@
        ],
        "embed-dimension.html": [
         "608ed331c9e5b23052338ce90f127572ece72294",
+        [
+         null,
+         {}
+        ]
+       ],
+       "embed-document-under-content-visibility.html": [
+        "26a77918e0c6653cd168cd09bc1945d2851a8562",
         [
          null,
          {}
