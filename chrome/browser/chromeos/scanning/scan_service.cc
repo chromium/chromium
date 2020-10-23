@@ -126,7 +126,7 @@ void ScanService::OnPageReceived(const mojo_ipc::FileType file_type,
 
   // The |page_number| is 0-indexed.
   const std::string filename = base::StringPrintf(
-      "scan_%02d%02d%02d-%02d%02d%02d_page_%d.png", start_time_.year,
+      "scan_%02d%02d%02d-%02d%02d%02d_%d.png", start_time_.year,
       start_time_.month, start_time_.day_of_month, start_time_.hour,
       start_time_.minute, start_time_.second, page_number + 1);
   const auto file_path = root_dir_.Append(kMyFilesPath).Append(filename);

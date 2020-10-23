@@ -6,11 +6,14 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/scanning/fake_lorgnette_scanner_manager.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom-test-utils.h"
@@ -65,11 +68,15 @@ class ScanServiceTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(
-        base::CreateDirectory(temp_dir_.GetPath().Append(kMyFilesPath)));
+    ASSERT_TRUE(base::CreateDirectory(saved_image_dir()));
     scan_service_.SetRootDirForTesting(temp_dir_.GetPath());
     scan_service_.BindInterface(
         scan_service_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  // Path to the directory that scanned images are saved in.
+  base::FilePath saved_image_dir() {
+    return temp_dir_.GetPath().Append(kMyFilesPath);
   }
 
   // Gets scanners by calling ScanService::GetScanners() via the mojo::Remote.
@@ -105,7 +112,8 @@ class ScanServiceTest : public testing::Test {
   FakeLorgnetteScannerManager fake_lorgnette_scanner_manager_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   ScanService scan_service_{&fake_lorgnette_scanner_manager_};
   mojo::Remote<mojo_ipc::ScanService> scan_service_remote_;
@@ -199,10 +207,20 @@ TEST_F(ScanServiceTest, Scan) {
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
+  base::Time::Exploded scan_time;
+  // Since we're using mock time, this is deterministic.
+  base::Time::Now().LocalExplode(&scan_time);
+  base::FilePath saved_scan_path = saved_image_dir().Append(
+      base::StringPrintf("scan_%02d%02d%02d-%02d%02d%02d_1.png", scan_time.year,
+                         scan_time.month, scan_time.day_of_month,
+                         scan_time.hour, scan_time.minute, scan_time.second));
+  EXPECT_FALSE(base::PathExists(saved_scan_path));
+
   // Saving scanned images is currently only supported for the PNG file type.
   mojo_ipc::ScanSettings settings;
   settings.file_type = mojo_ipc::FileType::kPng;
   EXPECT_TRUE(Scan(scanners[0]->id, settings.Clone()));
+  EXPECT_TRUE(base::PathExists(saved_scan_path));
 }
 
 }  // namespace chromeos
