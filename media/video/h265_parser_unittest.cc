@@ -37,6 +37,17 @@ TEST(H265ParserTest, RawHevcStreamFileParsing) {
 
     ++num_parsed_nalus;
     DVLOG(4) << "Found NALU " << nalu.nal_unit_type;
+
+    switch (nalu.nal_unit_type) {
+      case H265NALU::SPS_NUT:
+        int sps_id;
+        res = parser.ParseSPS(&sps_id);
+        ASSERT_TRUE(!!parser.GetSPS(sps_id));
+        break;
+      default:
+        break;
+    }
+    ASSERT_EQ(res, H265Parser::kOk);
   }
 }
 
