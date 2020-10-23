@@ -56,7 +56,7 @@ include_rules = [
   "+components/storage_monitor",
   "+components/subresource_filter/content/browser",
   "+components/federated_learning",
-  "+components/sync/model",
+  "+components/sync/test/model",
   "+components/sync_preferences",
   "+components/unified_consent",
   "+components/update_client",

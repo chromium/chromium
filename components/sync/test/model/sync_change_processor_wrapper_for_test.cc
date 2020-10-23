@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/sync_change_processor_wrapper_for_test.h"
+#include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
 
 #include "base/bind.h"
 #include "components/sync/model/syncable_service.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_SYNC_ERROR_FACTORY_MOCK_H_
-#define COMPONENTS_SYNC_MODEL_SYNC_ERROR_FACTORY_MOCK_H_
+#ifndef COMPONENTS_SYNC_TEST_MODEL_SYNC_ERROR_FACTORY_MOCK_H_
+#define COMPONENTS_SYNC_TEST_MODEL_SYNC_ERROR_FACTORY_MOCK_H_
 
 #include <string>
 
@@ -24,4 +24,4 @@ class SyncErrorFactoryMock : public SyncErrorFactory {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_SYNC_ERROR_FACTORY_MOCK_H_
+#endif  // COMPONENTS_SYNC_TEST_MODEL_SYNC_ERROR_FACTORY_MOCK_H_

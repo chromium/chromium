@@ -15,7 +15,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store_test_util.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
@@ -24,6 +23,7 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/engine/mock_model_type_worker.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
+#include "components/sync/test/model/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

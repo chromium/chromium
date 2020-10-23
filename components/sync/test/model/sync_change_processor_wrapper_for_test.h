@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_SYNC_CHANGE_PROCESSOR_WRAPPER_FOR_TEST_H_
-#define COMPONENTS_SYNC_MODEL_SYNC_CHANGE_PROCESSOR_WRAPPER_FOR_TEST_H_
+#ifndef COMPONENTS_SYNC_TEST_MODEL_SYNC_CHANGE_PROCESSOR_WRAPPER_FOR_TEST_H_
+#define COMPONENTS_SYNC_TEST_MODEL_SYNC_CHANGE_PROCESSOR_WRAPPER_FOR_TEST_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -43,4 +43,4 @@ class SyncChangeProcessorWrapperForTest : public SyncChangeProcessor {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_SYNC_CHANGE_PROCESSOR_WRAPPER_FOR_TEST_H_
+#endif  // COMPONENTS_SYNC_TEST_MODEL_SYNC_CHANGE_PROCESSOR_WRAPPER_FOR_TEST_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_FAKE_SYNC_CHANGE_PROCESSOR_H_
-#define COMPONENTS_SYNC_MODEL_FAKE_SYNC_CHANGE_PROCESSOR_H_
+#ifndef COMPONENTS_SYNC_TEST_MODEL_FAKE_SYNC_CHANGE_PROCESSOR_H_
+#define COMPONENTS_SYNC_TEST_MODEL_FAKE_SYNC_CHANGE_PROCESSOR_H_
 
 #include <string>
 
@@ -45,4 +45,4 @@ class FakeSyncChangeProcessor : public SyncChangeProcessor {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_FAKE_SYNC_CHANGE_PROCESSOR_H_
+#endif  // COMPONENTS_SYNC_TEST_MODEL_FAKE_SYNC_CHANGE_PROCESSOR_H_
