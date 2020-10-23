@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1124 tests; 1113 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1125 tests; 1114 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
@@ -1134,5 +1134,6 @@ PASS AudioNode interface: worklet_node must inherit property "channelCount" with
 PASS AudioNode interface: worklet_node must inherit property "channelCountMode" with the proper type
 PASS AudioNode interface: worklet_node must inherit property "channelInterpretation" with the proper type
 PASS AudioWorkletProcessor interface: existence and properties of interface object
+PASS WorkletGlobalScope interface: existence and properties of interface object
 Harness: the test ran to completion.
 

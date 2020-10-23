@@ -2,6 +2,7 @@ This is a testharness.js-based test.
 PASS Initial iceGatheringState should be new
 PASS iceGatheringState should eventually become complete after setLocalDescription
 PASS setLocalDescription(reoffer) with no new transports should not cause iceGatheringState to change
+PASS setLocalDescription() with no transports should not cause iceGatheringState to change
 PASS setLocalDescription(reoffer) with a new transport should cause iceGatheringState to go to "checking" and then "complete"
 FAIL sRD does not cause ICE gathering state changes promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Rollback not supported in Plan B"
 FAIL renegotiation that closes all transports should result in ICE gathering state "new" promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'stop' of undefined"

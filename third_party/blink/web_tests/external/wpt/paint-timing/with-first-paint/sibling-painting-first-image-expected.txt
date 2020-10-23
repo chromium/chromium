@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Frame ignores paint-timing events fired from sibling frame. assert_equals: expected 1 but got 2
+Harness: the test ran to completion.
+

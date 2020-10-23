@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1459 tests; 1376 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1467 tests; 1384 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -1298,6 +1298,14 @@ PASS SharedWorker interface: attribute port
 PASS SharedWorker interface: attribute onerror
 PASS WorkerNavigator interface: existence and properties of interface object
 PASS WorkerLocation interface: existence and properties of interface object
+PASS WorkletGlobalScope interface: existence and properties of interface object
+PASS Worklet interface: existence and properties of interface object
+PASS Worklet interface object length
+PASS Worklet interface object name
+PASS Worklet interface: existence and properties of interface prototype object
+PASS Worklet interface: existence and properties of interface prototype object's "constructor" property
+PASS Worklet interface: existence and properties of interface prototype object's @@unscopables property
+PASS Worklet interface: operation addModule(USVString, optional WorkletOptions)
 PASS Storage interface: existence and properties of interface object
 PASS Storage interface object length
 PASS Storage interface object name

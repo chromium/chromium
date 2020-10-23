@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 802 tests; 794 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 804 tests; 796 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -784,6 +784,8 @@ PASS WorkerLocation interface: self.location must inherit property "port" with t
 PASS WorkerLocation interface: self.location must inherit property "pathname" with the proper type
 PASS WorkerLocation interface: self.location must inherit property "search" with the proper type
 PASS WorkerLocation interface: self.location must inherit property "hash" with the proper type
+PASS WorkletGlobalScope interface: existence and properties of interface object
+PASS Worklet interface: existence and properties of interface object
 PASS Storage interface: existence and properties of interface object
 PASS StorageEvent interface: existence and properties of interface object
 PASS HTMLMarqueeElement interface: existence and properties of interface object

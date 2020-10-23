@@ -38,7 +38,7 @@ async_test(function (t) {
     }));
     const iframe = document.createElement('iframe');
     iframe.id = 'child-iframe';
-    iframe.src = 'resources/subframe-painting.html';
+    iframe.src = '../resources/subframe-painting.html';
     document.body.appendChild(iframe);
 }, 'Parent frame ignores paint-timing events fired from child image rendering.');
 </script>

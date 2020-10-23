@@ -34,7 +34,7 @@ async_test(function (t) {
         assert_equals(bufferedEntries[0].name, "first-paint");
       });
       const img = document.createElement("IMG");
-      img.src = "resources/circles.png";
+      img.src = "../resources/circles.png";
       img.onload = function() {
         function secondTestPaintEntries() {
           const moreBufferedEntries = performance.getEntriesByType('paint');
