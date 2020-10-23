@@ -739,9 +739,7 @@ int BrowserView::GetTabStripHeight() const {
 }
 
 TabSearchButton* BrowserView::GetTabSearchButton() {
-  return base::FeatureList::IsEnabled(features::kTabSearch)
-             ? tab_strip_region_view_->tab_search_button()
-             : nullptr;
+  return tab_strip_region_view_->tab_search_button();
 }
 
 bool BrowserView::IsTabStripVisible() const {

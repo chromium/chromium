@@ -115,7 +115,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                views::MaximumFlexSizeRule::kUnbounded));
 
   if (base::FeatureList::IsEnabled(features::kTabSearch) &&
-      !tab_strip_->controller()->GetProfile()->IsIncognitoProfile()) {
+      !tab_strip_->controller()->GetProfile()->IsIncognitoProfile() &&
+      tab_strip_->controller()->GetBrowser()->is_type_normal()) {
     auto tab_search_button = std::make_unique<TabSearchButton>(tab_strip_);
     tab_search_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
