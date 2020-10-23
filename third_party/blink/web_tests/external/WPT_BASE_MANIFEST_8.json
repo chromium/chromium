@@ -462,6 +462,13 @@
       ]
      ],
      "crashtests": {
+      "line-break-float-crash.html": [
+       "bdf47c3e8ae024e596629dc4061cc7e075503150",
+       [
+        null,
+        {}
+       ]
+      ],
       "trailing-space-with-cr-crash.html": [
        "48c223e352d378e10b7cc10e5e49e8613e43c380",
        [
@@ -168876,10 +168883,6 @@
      []
     ],
     "headers": {
-     "header-content-type-expected.txt": [
-      "da57bc3c832c95221c361bee277a35cacecd82a2",
-      []
-     ],
      "header-referrer.js": [
       "ebd67df1d767636a5044cec105ee5d3b1a3e606a",
       []
@@ -168890,8 +168893,8 @@
       "f5caaf4b8d3d64a8016b080c110414f9cb1eb3f7",
       []
      ],
-     "content-type.py": [
-      "d3be7d4dc124aa4314db9cc2ecb7a99403cced18",
+     "content-type-and-body.py": [
+      "1c8c4c7ec16129b0c60094262edd456c83a52da1",
       []
      ],
      "inspect-header.py": [
@@ -218489,10 +218492,6 @@
        "2d.drawImage.animated.poster-expected.txt": [
         "5ef858d2314729c5cf09250e06c19c983c237857",
         []
-       ],
-       "2d.drawImage.zerosource.image-expected.txt": [
-        "bbb09e3b2bbc6c66ebc0cc922d19eea8f893be12",
-        []
        ]
       },
       "drawing-text-to-the-canvas": {
@@ -219586,7 +219585,7 @@
          []
         ],
         "drawing-images-to-the-canvas.yaml": [
-         "208f1289f13b39da2e0704c6e2d8c140c4bde38d",
+         "e71f46f61e2fe999981a04120ba2b17b5c5ff2cc",
          []
         ],
         "drawing-rectangles-to-the-canvas.yaml": [
@@ -219656,7 +219655,7 @@
          []
         ],
         "drawing-images-to-the-canvas.yaml": [
-         "61cdd407fedbe0aca6a3e8575684e5976661faec",
+         "a16518864eed7dac41cbc20207fcc211db2501ab",
          []
         ],
         "drawing-rectangles-to-the-canvas.yaml": [
@@ -270426,8 +270425,8 @@
      ]
     ],
     "headers": {
-     "header-content-type.html": [
-      "e2f2705ee64943cc595a1cc12488270db83c40fc",
+     "header-content-type-and-body.html": [
+      "0369cffdf473e760003331636b86d8280c342d96",
       [
        null,
        {}
@@ -334889,7 +334888,7 @@
         ]
        ],
        "2d.drawImage.zerosource.image.html": [
-        "f358d8e2a775caa9827de41f7887befc5d3f5e8e",
+        "8739265a8b25c7c6e41cb127cebd3e336dad2162",
         [
          null,
          {}
@@ -341779,7 +341778,7 @@
         ]
        ],
        "2d.drawImage.zerosource.html": [
-        "3ff3c974fadb24a6034a385d836665a94afcf31c",
+        "d83a935dcf2d47c1a7055dc593179b9f4bcaade4",
         [
          null,
          {
@@ -341788,7 +341787,7 @@
         ]
        ],
        "2d.drawImage.zerosource.image.html": [
-        "ee2e00ffb9215ec021c0988bbba2ad46d59cd8de",
+        "3a9a1c6f7a3284d0a87abab579b69b1afdbd9aec",
         [
          null,
          {
@@ -341797,14 +341796,14 @@
         ]
        ],
        "2d.drawImage.zerosource.image.worker.js": [
-        "f89490da88239d04f68d5fe436c258f23870ef3c",
+        "200a311f7b24bbc517aba78925787a58b7e6a3cb",
         [
          "html/canvas/offscreen/drawing-images-to-the-canvas/2d.drawImage.zerosource.image.worker.html",
          {}
         ]
        ],
        "2d.drawImage.zerosource.worker.js": [
-        "5b27ad754614b1387ec3fd271520c023e88e6075",
+        "37ef6d87352571d49d9c7d30f08c5e52b87dab16",
         [
          "html/canvas/offscreen/drawing-images-to-the-canvas/2d.drawImage.zerosource.worker.html",
          {}
