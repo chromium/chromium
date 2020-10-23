@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -54,7 +55,8 @@ public class GoogleServicesSettings
     private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
-    private static final String PREF_ALLOW_SIGNIN = "allow_signin";
+    @VisibleForTesting
+    public static final String PREF_ALLOW_SIGNIN = "allow_signin";
     private static final String PREF_SEARCH_SUGGESTIONS = "search_suggestions";
     private static final String PREF_NAVIGATION_ERROR = "navigation_error";
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
