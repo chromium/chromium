@@ -499,8 +499,7 @@ class TokenPreloadScanner::StartTagScanner {
       // FIXME - Don't match media multiple times.
       matched_ &= MediaAttributeMatches(*media_values_, attribute_value);
     } else if (Match(attribute_name, html_names::kTypeAttr)) {
-      matched_ &= MIMETypeRegistry::IsSupportedImagePrefixedMIMEType(
-          ContentType(attribute_value).GetType());
+      matched_ &= HTMLImageElement::SupportedImageType(attribute_value);
     }
   }
 
@@ -633,14 +632,13 @@ class TokenPreloadScanner::StartTagScanner {
              MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
                  ContentType(type_attribute_value_).GetType());
     } else if (link_is_preload_) {
+      if (type == ResourceType::kImage)
+        return HTMLImageElement::SupportedImageType(type_attribute_value_);
       if (type_attribute_value_.IsEmpty())
         return true;
       String type_from_attribute = ContentType(type_attribute_value_).GetType();
       if ((type == ResourceType::kFont &&
            !MIMETypeRegistry::IsSupportedFontMIMEType(type_from_attribute)) ||
-          (type == ResourceType::kImage &&
-           !MIMETypeRegistry::IsSupportedImagePrefixedMIMEType(
-               type_from_attribute)) ||
           (type == ResourceType::kCSSStyleSheet &&
            !MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
                type_from_attribute))) {

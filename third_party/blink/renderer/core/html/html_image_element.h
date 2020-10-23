@@ -181,6 +181,8 @@ class CORE_EXPORT HTMLImageElement final
   void SetIsAdRelated() { is_ad_related_ = true; }
   bool IsAdRelated() const override { return is_ad_related_; }
 
+  static bool SupportedImageType(const String& type);
+
  protected:
   // Controls how an image element appears in the layout. See:
   // https://html.spec.whatwg.org/C/#image-request

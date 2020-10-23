@@ -335,7 +335,7 @@ String HTMLImageElement::AltText() const {
   return FastGetAttribute(html_names::kTitleAttr);
 }
 
-static bool SupportedImageType(const String& type) {
+bool HTMLImageElement::SupportedImageType(const String& type) {
   String trimmed_type = ContentType(type).GetType();
   // An empty type attribute is implicitly supported.
   if (trimmed_type.IsEmpty())
@@ -367,7 +367,7 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
     if (srcset.IsEmpty())
       continue;
     String type = source->FastGetAttribute(html_names::kTypeAttr);
-    if (!type.IsEmpty() && !SupportedImageType(type))
+    if (!SupportedImageType(type))
       continue;
 
     if (!source->MediaQueryMatches())

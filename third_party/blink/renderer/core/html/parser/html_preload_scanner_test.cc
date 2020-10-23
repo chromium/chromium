@@ -762,6 +762,10 @@ TEST_F(HTMLPreloadScannerTest, testPicture) {
        "<picture><source srcset='srcset_bla.gif'><img src='bla.gif'></picture>",
        "srcset_bla.gif", "http://example.test/", ResourceType::kImage, 0},
       {"http://example.test",
+       "<picture><source srcset='srcset_bla.gif' type=''><img "
+       "src='bla.gif'></picture>",
+       "srcset_bla.gif", "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
        "<picture><source sizes='50vw' srcset='srcset_bla.gif'><img "
        "src='bla.gif'></picture>",
        "srcset_bla.gif", "http://example.test/", ResourceType::kImage, 250},
