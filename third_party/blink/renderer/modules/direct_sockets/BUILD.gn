@@ -8,5 +8,10 @@ blink_modules_sources("direct_sockets") {
   sources = [
     "navigator_socket.cc",
     "navigator_socket.h",
+    "tcp_socket.cc",
+    "tcp_socket.h",
+    "udp_socket.cc",
+    "udp_socket.h",
   ]
+  deps = [ "//net:net" ]
 }

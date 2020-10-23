@@ -175,8 +175,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/device_orientation/device_orientation_event_init.idl",
           "//third_party/blink/renderer/modules/device_orientation/window_device_motion.idl",
           "//third_party/blink/renderer/modules/device_orientation/window_device_orientation.idl",
-          "//third_party/blink/renderer/modules/direct_sockets/navigator_socket.idl",
-          "//third_party/blink/renderer/modules/direct_sockets/socket_options.idl",
           "//third_party/blink/renderer/modules/donottrack/navigator_do_not_track.idl",
           "//third_party/blink/renderer/modules/encoding/text_decode_options.idl",
           "//third_party/blink/renderer/modules/encoding/text_decoder.idl",
@@ -1021,10 +1019,14 @@ static_idl_files_in_modules = get_path_info(
         ],
         "abspath")
 
-# Serial
+# Serial and Direct Sockets
 if (!is_android) {
   static_idl_files_in_modules += get_path_info(
           [
+            "//third_party/blink/renderer/modules/direct_sockets/navigator_socket.idl",
+            "//third_party/blink/renderer/modules/direct_sockets/tcp_socket.idl",
+            "//third_party/blink/renderer/modules/direct_sockets/udp_socket.idl",
+            "//third_party/blink/renderer/modules/direct_sockets/socket_options.idl",
             "//third_party/blink/renderer/modules/serial/navigator_serial.idl",
             "//third_party/blink/renderer/modules/serial/serial.idl",
             "//third_party/blink/renderer/modules/serial/serial_connection_event.idl",

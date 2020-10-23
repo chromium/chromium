@@ -1174,6 +1174,17 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/modules/direct_sockets/',
+        ],
+        'allowed': [
+            'net::DefineNetworkTrafficAnnotation',
+            'net::Error',
+            'net::MutableNetworkTrafficAnnotationTag',
+            'net::NetworkTrafficAnnotationTag',
+        ]
+    },
+    {
         'paths': ['third_party/blink/renderer/modules/manifest/'],
         'allowed': ['net::ParseMimeTypeWithoutParameter'],
     },

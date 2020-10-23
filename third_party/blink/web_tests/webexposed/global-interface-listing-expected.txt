@@ -8271,6 +8271,10 @@ interface SyncManager
     method constructor
     method getTags
     method register
+interface TCPSocket
+    attribute @@toStringTag
+    method close
+    method constructor
 interface TaskAttributionTiming : PerformanceEntry
     attribute @@toStringTag
     getter containerId
@@ -8533,6 +8537,10 @@ interface TrustedTypePolicyFactory : EventTarget
     method isScript
     method isScriptURL
     setter onbeforecreatepolicy
+interface UDPSocket
+    attribute @@toStringTag
+    method close
+    method constructor
 interface UIEvent : Event
     attribute @@toStringTag
     getter detail

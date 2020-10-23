@@ -8,6 +8,7 @@
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
@@ -30,9 +31,9 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
     return *direct_sockets_service_;
   }
 
-  net::Error EnsurePermission(
-      const blink::mojom::DirectSocketOptions& options) {
-    return direct_sockets_service().EnsurePermission(options);
+  net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options) {
+    net::IPAddress remote_address;
+    return direct_sockets_service().ValidateOptions(options, remote_address);
   }
 
  private:
@@ -44,14 +45,20 @@ TEST_F(DirectSocketsUnitTest, RenderFrameDeleted) {
   direct_sockets_service().RenderFrameDeleted(main_rfh());
 
   blink::mojom::DirectSocketOptions options;
-  EXPECT_EQ(EnsurePermission(options), net::ERR_CONTEXT_SHUT_DOWN);
+  EXPECT_EQ(ValidateOptions(options), net::ERR_CONTEXT_SHUT_DOWN);
 }
 
 TEST_F(DirectSocketsUnitTest, WebContentsDestroyed) {
   direct_sockets_service().WebContentsDestroyed();
 
   blink::mojom::DirectSocketOptions options;
-  EXPECT_EQ(EnsurePermission(options), net::ERR_CONTEXT_SHUT_DOWN);
+  EXPECT_EQ(ValidateOptions(options), net::ERR_CONTEXT_SHUT_DOWN);
+}
+
+// TODO(crbug.com/1119597): Allow the user to enter the address.
+TEST_F(DirectSocketsUnitTest, RemoteAddressCurrentlyRequired) {
+  blink::mojom::DirectSocketOptions options;
+  EXPECT_EQ(ValidateOptions(options), net::ERR_NAME_NOT_RESOLVED);
 }
 
 }  // namespace content

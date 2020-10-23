@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+modules_idl_files = [
+  "tcp_socket.idl",
+  "udp_socket.idl",
+]
+
 modules_dictionary_idl_files = [ "socket_options.idl" ]
 
 modules_dependency_idl_files = [ "navigator_socket.idl" ]

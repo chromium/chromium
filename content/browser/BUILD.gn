@@ -773,8 +773,6 @@ source_set("browser") {
     "devtools/shared_worker_devtools_manager.h",
     "devtools/worker_devtools_agent_host.cc",
     "devtools/worker_devtools_agent_host.h",
-    "direct_sockets/direct_sockets_service_impl.cc",
-    "direct_sockets/direct_sockets_service_impl.h",
     "display_cutout/display_cutout_constants.h",
     "display_cutout/display_cutout_host_impl.cc",
     "display_cutout/display_cutout_host_impl.h",
@@ -2594,6 +2592,10 @@ source_set("browser") {
       "host_zoom_map_impl.cc",
       "host_zoom_map_impl.h",
       "media/session/audio_focus_delegate_default.cc",
+
+      # The Direct Sockets API is not implemented on Android.
+      "direct_sockets/direct_sockets_service_impl.cc",
+      "direct_sockets/direct_sockets_service_impl.h",
 
       # The Serial API is not implemented on Android.
       "serial/serial_service.cc",

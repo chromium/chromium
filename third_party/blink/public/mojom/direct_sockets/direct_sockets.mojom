@@ -7,6 +7,11 @@ module blink.mojom;
 // Explainer for the Direct Sockets API:
 // https://github.com/WICG/raw-sockets/blob/master/docs/explainer.md
 
+import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/tcp_socket.mojom";
+import "services/network/public/mojom/udp_socket.mojom";
+
 struct DirectSocketOptions {
   string? local_hostname;
   uint16 local_port = 0;
@@ -17,8 +22,7 @@ struct DirectSocketOptions {
   int32 send_buffer_size = 0;
   int32 receive_buffer_size = 0;
 
-  // These are only relevant for TCP:
-  bool keep_alive = false;
+  // Only relevant for TCP:
   bool no_delay = false;
 };
 
@@ -26,15 +30,32 @@ struct DirectSocketOptions {
 // permission checking, chooser showing, etc.
 // The browser process implements the interface, and the renderer process
 // sends messages to it.
-// The return values are net::Error codes. 0 indicates success.
 interface DirectSocketsService {
-  // TODO(crbug.com/905818): Return TCP socket details
+  // Creates a connected TCP socket.
+  // |result| is a net::Error code (net::OK on success).
+  // |observer| if non-null will be used to listen for any network connection
+  // error on the newly established connection.
+  // Caller is to use |send_stream| to send data and |receive_stream|
+  // to receive data over the connection.
   OpenTcpSocket(
-      DirectSocketOptions options)
-      => (int32 result);
+      DirectSocketOptions options,
+      network.mojom.MutableNetworkTrafficAnnotationTag traffic_annotation,
+      pending_receiver<network.mojom.TCPConnectedSocket> receiver,
+      pending_remote<network.mojom.SocketObserver>? observer)
+      => (int32 result,
+          network.mojom.IPEndPoint? local_addr,
+          network.mojom.IPEndPoint? peer_addr,
+          handle<data_pipe_consumer>? receive_stream,
+          handle<data_pipe_producer>? send_stream);
 
-  // TODO(crbug.com/1119620): Return UDP socket details
+  // Creates a 'connected' UDP socket.
+  // |result| is a net::Error code (net::OK on success).
+  // Caller can supply a |listener| to listen for incoming datagrams.
   OpenUdpSocket(
-      DirectSocketOptions options)
-      => (int32 result);
+      DirectSocketOptions options,
+      pending_receiver<network.mojom.UDPSocket> receiver,
+      pending_remote<network.mojom.UDPSocketListener>? listener)
+      => (int32 result,
+          network.mojom.IPEndPoint? local_addr,
+          network.mojom.IPEndPoint? peer_addr);
 };
