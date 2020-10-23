@@ -744,7 +744,7 @@
   {
     "name": "d3d11-video-decoder",
     "owners": [ "liberato", "tmathmeyer", "//media/OWNERS" ],
-    "expiry_milestone": 78
+    "expiry_milestone": 89
   },
   {
     "name": "dark-light-mode",
