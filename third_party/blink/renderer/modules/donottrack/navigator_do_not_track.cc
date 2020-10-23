@@ -30,40 +30,18 @@
 
 #include "third_party/blink/renderer/modules/donottrack/navigator_do_not_track.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 
 namespace blink {
+namespace NavigatorDoNotTrack {
 
-NavigatorDoNotTrack::NavigatorDoNotTrack(Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
-
-void NavigatorDoNotTrack::Trace(Visitor* visitor) const {
-  Supplement<Navigator>::Trace(visitor);
+String doNotTrack(Navigator& navigator) {
+  LocalDOMWindow* window = navigator.DomWindow();
+  return window ? window->GetFrame()->Client()->DoNotTrackValue() : String();
 }
 
-const char NavigatorDoNotTrack::kSupplementName[] = "NavigatorDoNotTrack";
-
-NavigatorDoNotTrack& NavigatorDoNotTrack::From(Navigator& navigator) {
-  NavigatorDoNotTrack* supplement =
-      Supplement<Navigator>::From<NavigatorDoNotTrack>(navigator);
-  if (!supplement) {
-    supplement = MakeGarbageCollected<NavigatorDoNotTrack>(navigator);
-    ProvideTo(navigator, supplement);
-  }
-  return *supplement;
-}
-
-String NavigatorDoNotTrack::doNotTrack(Navigator& navigator) {
-  return NavigatorDoNotTrack::From(navigator).doNotTrack();
-}
-
-String NavigatorDoNotTrack::doNotTrack() {
-  LocalFrame* frame = GetSupplementable()->GetFrame();
-  if (!frame || !frame->Client())
-    return String();
-  return frame->Client()->DoNotTrackValue();
-}
-
+}  // namespace NavigatorDoNotTrack
 }  // namespace blink

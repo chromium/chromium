@@ -32,28 +32,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DONOTTRACK_NAVIGATOR_DO_NOT_TRACK_H_
 
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
 class Navigator;
 
-class NavigatorDoNotTrack final : public GarbageCollected<NavigatorDoNotTrack>,
-                                  public Supplement<Navigator> {
- public:
-  static const char kSupplementName[];
-
-  static NavigatorDoNotTrack& From(Navigator&);
-  static String doNotTrack(Navigator&);
-
-  String doNotTrack();
-
-  explicit NavigatorDoNotTrack(Navigator&);
-
-  void Trace(Visitor*) const override;
-};
+namespace NavigatorDoNotTrack {
+String doNotTrack(Navigator&);
+}
 
 }  // namespace blink
 
