@@ -132,7 +132,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
         DownloadNotificationUmaHelper.recordForegroundServiceLifecycleHistogram(
                 DownloadNotificationUmaHelper.ForegroundLifecycle.STOP);
         DownloadNotificationUmaHelper.recordServiceStoppedHistogram(
-                DownloadNotificationUmaHelper.ServiceStopped.STOPPED, true /* withForeground */);
+                DownloadNotificationUmaHelper.ServiceStopped.STOPPED);
 
         // Handle notifications and stop foreground.
         if (stopForegroundNotification == StopForegroundNotification.KILL) {
@@ -173,7 +173,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
         // In the case the service was restarted when the intent is null.
         if (intent == null) {
             DownloadNotificationUmaHelper.recordServiceStoppedHistogram(
-                    DownloadNotificationUmaHelper.ServiceStopped.START_STICKY, true);
+                    DownloadNotificationUmaHelper.ServiceStopped.START_STICKY);
 
             // Allow observers to restart service on their own, if needed.
             getService().stopSelf();
@@ -186,7 +186,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     @Override
     public void onDestroy() {
         DownloadNotificationUmaHelper.recordServiceStoppedHistogram(
-                DownloadNotificationUmaHelper.ServiceStopped.DESTROYED, true /* withForeground */);
+                DownloadNotificationUmaHelper.ServiceStopped.DESTROYED);
         DownloadForegroundServiceObservers.alertObserversServiceDestroyed();
         super.onDestroy();
     }
@@ -194,7 +194,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         DownloadNotificationUmaHelper.recordServiceStoppedHistogram(
-                DownloadNotificationUmaHelper.ServiceStopped.TASK_REMOVED, true /*withForeground*/);
+                DownloadNotificationUmaHelper.ServiceStopped.TASK_REMOVED);
         DownloadForegroundServiceObservers.alertObserversTaskRemoved();
         super.onTaskRemoved(rootIntent);
     }
@@ -202,7 +202,7 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     @Override
     public void onLowMemory() {
         DownloadNotificationUmaHelper.recordServiceStoppedHistogram(
-                DownloadNotificationUmaHelper.ServiceStopped.LOW_MEMORY, true /* withForeground */);
+                DownloadNotificationUmaHelper.ServiceStopped.LOW_MEMORY);
         super.onLowMemory();
     }
 

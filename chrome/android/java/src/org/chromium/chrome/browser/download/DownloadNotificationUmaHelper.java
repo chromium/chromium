@@ -108,18 +108,11 @@ public final class DownloadNotificationUmaHelper {
      * understand the frequency of unexpected stops (low memory, task removed, etc).
      * @param stopType Type of the foreground stop that is being recorded ({@link ServiceStopped}).
      */
-    static void recordServiceStoppedHistogram(
-            @ServiceStopped int stopType, boolean withForeground) {
+    static void recordServiceStoppedHistogram(@ServiceStopped int stopType) {
         if (!LibraryLoader.getInstance().isInitialized()) return;
-        if (withForeground) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.DownloadManager.ServiceStopped.DownloadForeground", stopType,
                     ServiceStopped.NUM_ENTRIES);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Android.DownloadManager.ServiceStopped.DownloadNotification", stopType,
-                    ServiceStopped.NUM_ENTRIES);
-        }
     }
 
     /**
