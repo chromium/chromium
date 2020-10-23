@@ -3768,6 +3768,11 @@ void WebViewImpl::UpdateWebPreferences(
   ApplyCommandLineToSettings(SettingsImpl());
 }
 
+void WebViewImpl::UpdateRendererPreferences(
+    const blink::RendererPreferences& preferences) {
+  web_view_client_->OnSetRendererPreferences(preferences);
+}
+
 void WebViewImpl::SetIsActive(bool active) {
   if (GetPage())
     GetPage()->GetFocusController().SetActive(active);

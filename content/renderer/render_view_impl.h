@@ -209,6 +209,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   bool AllowPopupsDuringPageUnload() override;
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
+  void OnSetRendererPreferences(
+      const blink::RendererPreferences& renderer_prefs) override;
   void ZoomLevelChanged() override;
   void DidCommitCompositorFrameForLocalMainFrame(
       base::TimeTicks commit_start_time) override;
@@ -330,7 +332,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       blink::WebNavigationPolicy policy);
 
   void OnMoveOrResizeStarted();
-  void OnSetRendererPrefs(const blink::RendererPreferences& renderer_prefs);
 
   // Misc private functions ----------------------------------------------------
 

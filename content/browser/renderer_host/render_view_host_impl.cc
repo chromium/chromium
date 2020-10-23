@@ -837,6 +837,15 @@ void RenderViewHostImpl::SendWebPreferencesToRenderer() {
     broadcast->UpdateWebPreferences(delegate_->GetOrCreateWebPreferences());
 }
 
+void RenderViewHostImpl::SendRendererPreferencesToRenderer(
+    const blink::RendererPreferences& preferences) {
+  if (auto& broadcast = GetAssociatedPageBroadcast()) {
+    if (!will_send_renderer_preferences_callback_for_testing_.is_null())
+      will_send_renderer_preferences_callback_for_testing_.Run(preferences);
+    broadcast->UpdateRendererPreferences(preferences);
+  }
+}
+
 void RenderViewHostImpl::OnHardwareConfigurationChanged() {
   delegate_->RecomputeWebPreferencesSlow();
 }
@@ -957,6 +966,11 @@ bool RenderViewHostImpl::IsTestRenderViewHost() const {
 void RenderViewHostImpl::SetWillEnterBackForwardCacheCallbackForTesting(
     const WillEnterBackForwardCacheCallbackForTesting& callback) {
   will_enter_back_forward_cache_callback_for_testing_ = callback;
+}
+
+void RenderViewHostImpl::SetWillSendRendererPreferencesCallbackForTesting(
+    const WillSendRendererPreferencesCallbackForTesting& callback) {
+  will_send_renderer_preferences_callback_for_testing_ = callback;
 }
 
 }  // namespace content

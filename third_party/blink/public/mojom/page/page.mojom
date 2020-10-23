@@ -6,6 +6,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
+import "third_party/blink/public/mojom/renderer_preferences.mojom";
 
 enum PagehideDispatch {
   // We haven't dispatched pagehide and should do so when appropriate.
@@ -60,4 +61,7 @@ interface PageBroadcast {
 
   // Notifies the renderer when updating a set of blink preferences.
   UpdateWebPreferences(blink.mojom.WebPreferences preferences);
+
+  // Updates renderer preferences.
+  UpdateRendererPreferences(blink.mojom.RendererPreferences preferences);
 };

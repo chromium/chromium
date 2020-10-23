@@ -35,6 +35,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
@@ -98,6 +99,9 @@ class WebViewClient {
   virtual void OnPageVisibilityChanged(mojom::PageVisibilityState visibility) {}
 
   virtual void OnPageFrozenChanged(bool frozen) {}
+
+  virtual void OnSetRendererPreferences(
+      const blink::RendererPreferences& renderer_prefs) {}
 
   // UI ------------------------------------------------------------------
 

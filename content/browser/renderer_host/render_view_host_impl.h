@@ -60,6 +60,11 @@ class TimeoutMonitor;
 using WillEnterBackForwardCacheCallbackForTesting =
     base::RepeatingCallback<void()>;
 
+// A callback which will be called immediately before sending the
+// RendererPreferences information to the renderer.
+using WillSendRendererPreferencesCallbackForTesting =
+    base::RepeatingCallback<void(const blink::RendererPreferences&)>;
+
 // This implements the RenderViewHost interface that is exposed to
 // embedders of content, and adds things only visible to content.
 //
@@ -129,6 +134,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   void NotifyMoveOrResizeStarted() override;
 
   void SendWebPreferencesToRenderer();
+  void SendRendererPreferencesToRenderer(
+      const blink::RendererPreferences& preferences);
 
   // RenderProcessHostObserver implementation
   void RenderProcessExited(RenderProcessHost* host,
@@ -288,6 +295,9 @@ class CONTENT_EXPORT RenderViewHostImpl
   void SetWillEnterBackForwardCacheCallbackForTesting(
       const WillEnterBackForwardCacheCallbackForTesting& callback);
 
+  void SetWillSendRendererPreferencesCallbackForTesting(
+      const WillSendRendererPreferencesCallbackForTesting& callback);
+
   void BindPageBroadcast(
       mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast>
           page_broadcast);
@@ -438,6 +448,9 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   WillEnterBackForwardCacheCallbackForTesting
       will_enter_back_forward_cache_callback_for_testing_;
+
+  WillSendRendererPreferencesCallbackForTesting
+      will_send_renderer_preferences_callback_for_testing_;
 
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast_;
 

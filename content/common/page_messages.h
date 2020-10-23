@@ -6,7 +6,6 @@
 #define CONTENT_COMMON_PAGE_MESSAGES_H_
 
 #include "content/public/common/common_param_traits.h"
-#include "content/public/common/page_visibility_state.h"
 #include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
@@ -26,9 +25,6 @@
 IPC_MESSAGE_ROUTED2(PageMsg_SetHistoryOffsetAndLength,
                     int /* history_offset */,
                     int /* history_length */)
-
-// Sends updated preferences to the renderer.
-IPC_MESSAGE_ROUTED1(PageMsg_SetRendererPrefs, blink::RendererPreferences)
 
 // -----------------------------------------------------------------------------
 // Messages sent from the renderer to the browser.

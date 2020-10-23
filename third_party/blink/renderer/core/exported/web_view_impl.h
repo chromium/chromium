@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
@@ -227,6 +228,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetInsidePortal(bool is_inside_portal) override;
   void UpdateWebPreferences(
       const blink::web_pref::WebPreferences& preferences) override;
+  void UpdateRendererPreferences(
+      const blink::RendererPreferences& preferences) override;
 
   void DispatchPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);

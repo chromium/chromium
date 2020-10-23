@@ -2625,8 +2625,12 @@ void WebContentsImpl::SyncRendererPrefs() {
 
   blink::RendererPreferences renderer_preferences = GetRendererPrefs();
   RenderViewHostImpl::GetPlatformSpecificPrefs(&renderer_preferences);
-  SendPageMessage(
-      new PageMsg_SetRendererPrefs(MSG_ROUTING_NONE, renderer_preferences));
+  ExecutePageBroadcastMethod(base::BindRepeating(
+      [](const blink::RendererPreferences& preferences,
+         RenderViewHostImpl* rvh) {
+        rvh->SendRendererPreferencesToRenderer(preferences);
+      },
+      renderer_preferences));
 }
 
 void WebContentsImpl::OnCookiesAccessed(NavigationHandle* navigation,

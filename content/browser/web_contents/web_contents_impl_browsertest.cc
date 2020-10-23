@@ -2951,17 +2951,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NotifyPreferencesChanged) {
 
 namespace {
 
-class OutgoingSetRendererPrefsIPCWatcher {
+class OutgoingSetRendererPrefsMojoWatcher {
  public:
-  OutgoingSetRendererPrefsIPCWatcher(RenderProcessHostImpl* rph)
-      : rph_(rph), outgoing_message_seen_(false) {
-    rph_->SetIpcSendWatcherForTesting(
-        base::BindRepeating(&OutgoingSetRendererPrefsIPCWatcher::OnMessage,
-                            base::Unretained(this)));
+  explicit OutgoingSetRendererPrefsMojoWatcher(RenderViewHostImpl* rvh)
+      : rvh_(rvh), outgoing_message_seen_(false) {
+    rvh_->SetWillSendRendererPreferencesCallbackForTesting(base::BindRepeating(
+        &OutgoingSetRendererPrefsMojoWatcher::OnRendererPreferencesSent,
+        base::Unretained(this)));
   }
-  ~OutgoingSetRendererPrefsIPCWatcher() {
-    rph_->SetIpcSendWatcherForTesting(
-        base::RepeatingCallback<void(const IPC::Message& msg)>());
+  ~OutgoingSetRendererPrefsMojoWatcher() {
+    rvh_->SetWillSendRendererPreferencesCallbackForTesting(
+        base::RepeatingCallback<void(const blink::RendererPreferences&)>());
   }
 
   void WaitForIPC() {
@@ -2977,20 +2977,15 @@ class OutgoingSetRendererPrefsIPCWatcher {
   }
 
  private:
-  void OnMessage(const IPC::Message& message) {
-    IPC_BEGIN_MESSAGE_MAP(OutgoingSetRendererPrefsIPCWatcher, message)
-      IPC_MESSAGE_HANDLER(PageMsg_SetRendererPrefs, OnSetRendererPrefs)
-    IPC_END_MESSAGE_MAP()
-  }
-
-  void OnSetRendererPrefs(const blink::RendererPreferences& renderer_prefs) {
+  void OnRendererPreferencesSent(
+      const blink::RendererPreferences& preferences) {
     outgoing_message_seen_ = true;
-    renderer_preferences_ = renderer_prefs;
+    renderer_preferences_ = preferences;
     if (run_loop_)
       run_loop_->Quit();
   }
 
-  RenderProcessHostImpl* rph_;
+  RenderViewHostImpl* rvh_;
   bool outgoing_message_seen_;
   std::unique_ptr<base::RunLoop> run_loop_;
   blink::RendererPreferences renderer_preferences_;
@@ -3012,34 +3007,34 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SyncRendererPrefs) {
       web_contents->GetMutableRendererPrefs();
   const bool use_custom_colors_old = renderer_preferences->use_custom_colors;
 
-  // Retrieve all unique render process hosts.
-  std::vector<RenderProcessHostImpl*> render_process_hosts;
+  // Retrieve all unique render view hosts.
+  std::vector<RenderViewHostImpl*> render_view_hosts;
   for (FrameTreeNode* frame_tree_node : web_contents->GetFrameTree()->Nodes()) {
-    RenderProcessHostImpl* render_process_host =
-        static_cast<RenderProcessHostImpl*>(
-            frame_tree_node->current_frame_host()->GetProcess());
-    ASSERT_NE(nullptr, render_process_host);
-    DLOG(INFO) << "render_process_host=" << render_process_host;
+    RenderViewHostImpl* render_view_host = static_cast<RenderViewHostImpl*>(
+        frame_tree_node->current_frame_host()->GetRenderViewHost());
+    ASSERT_NE(nullptr, render_view_host);
+    DLOG(INFO) << "render_view_host=" << render_view_host;
 
-    // It's possible (Android e.g.) for frame hosts to share a
-    // RenderProcessHost.
-    if (std::find(render_process_hosts.begin(), render_process_hosts.end(),
-                  render_process_host) == render_process_hosts.end()) {
-      render_process_hosts.push_back(render_process_host);
+    // Multiple frame hosts can be associated to the same RenderViewHost.
+    if (std::find(render_view_hosts.begin(), render_view_hosts.end(),
+                  render_view_host) == render_view_hosts.end()) {
+      render_view_hosts.push_back(render_view_host);
     }
   }
 
-  // Set up watchers for PageMsg_SetRendererPrefs message being sent from unique
+  // Set up watchers for SetRendererPreferences message being sent from unique
   // render process hosts.
-  std::vector<std::unique_ptr<OutgoingSetRendererPrefsIPCWatcher>> ipc_watchers;
-  for (auto* render_process_host : render_process_hosts) {
-    ipc_watchers.push_back(std::make_unique<OutgoingSetRendererPrefsIPCWatcher>(
-        render_process_host));
+  std::vector<std::unique_ptr<OutgoingSetRendererPrefsMojoWatcher>>
+      mojo_watchers;
+  for (auto* render_view_host : render_view_hosts) {
+    mojo_watchers.push_back(
+        std::make_unique<OutgoingSetRendererPrefsMojoWatcher>(
+            render_view_host));
 
-    // Make sure the IPC watchers have the same default value for the arbitrary
+    // Make sure the Mojo watchers have the same default value for the arbitrary
     // preference.
     EXPECT_EQ(use_custom_colors_old,
-              ipc_watchers.back()->renderer_preferences().use_custom_colors);
+              mojo_watchers.back()->renderer_preferences().use_custom_colors);
   }
 
   // Change the arbitrary renderer preference.
@@ -3047,11 +3042,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SyncRendererPrefs) {
   renderer_preferences->use_custom_colors = use_custom_colors_new;
   web_contents->SyncRendererPrefs();
 
-  // Ensure IPC is sent to each frame.
-  for (auto& ipc_watcher : ipc_watchers) {
-    ipc_watcher->WaitForIPC();
+  // Ensure Mojo messages are sent to each frame.
+  for (auto& mojo_watcher : mojo_watchers) {
+    mojo_watcher->WaitForIPC();
     EXPECT_EQ(use_custom_colors_new,
-              ipc_watcher->renderer_preferences().use_custom_colors);
+              mojo_watcher->renderer_preferences().use_custom_colors);
   }
 
   renderer_preferences->use_custom_colors = use_custom_colors_old;

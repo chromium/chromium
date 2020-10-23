@@ -172,7 +172,7 @@ void RenderViewImpl::Initialize(
   if (params->window_was_created_with_opener)
     GetWebView()->SetOpenedByDOM();
 
-  OnSetRendererPrefs(params->renderer_preferences);
+  OnSetRendererPreferences(params->renderer_preferences);
 
   GetContentClient()->renderer()->RenderViewCreated(this);
 
@@ -366,7 +366,6 @@ bool RenderViewImpl::OnMessageReceived(const IPC::Message& message) {
     // Page messages.
     IPC_MESSAGE_HANDLER(PageMsg_SetHistoryOffsetAndLength,
                         OnSetHistoryOffsetAndLength)
-    IPC_MESSAGE_HANDLER(PageMsg_SetRendererPrefs, OnSetRendererPrefs)
 
     // Adding a new message? Add platform independent ones first, then put the
     // platform specific ones at the end.
@@ -758,7 +757,7 @@ blink::WebView* RenderViewImpl::GetWebView() {
   return webview_;
 }
 
-void RenderViewImpl::OnSetRendererPrefs(
+void RenderViewImpl::OnSetRendererPreferences(
     const blink::RendererPreferences& renderer_prefs) {
   std::string old_accept_languages = renderer_preferences_.accept_languages;
 
