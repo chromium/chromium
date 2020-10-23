@@ -24,6 +24,7 @@ class MEDIA_EXPORT AudioPcmEncoder : public AudioEncoder {
   // AudioEncoder:
   void EncodeAudioImpl(const AudioBus& audio_bus,
                        base::TimeTicks capture_time) override;
+  void FlushImpl() override;
 };
 
 }  // namespace media

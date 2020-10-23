@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
@@ -182,16 +183,13 @@ WebmMuxer::WebmMuxer(AudioCodec audio_codec,
   info->set_writing_app("Chrome");
   info->set_muxing_app("Chrome");
 
-  // Creation is done on a different thread than main activities.
-  thread_checker_.DetachFromThread();
+  // Creation can be done on a different sequence than main activities.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 WebmMuxer::~WebmMuxer() {
-  // No need to segment_.Finalize() since is not Seekable(), i.e. a live
-  // stream, but is a good practice.
-  DCHECK(thread_checker_.CalledOnValidThread());
-  FlushQueues();
-  segment_.Finalize();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Flush();
 }
 
 bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
@@ -200,7 +198,7 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
                                base::TimeTicks timestamp,
                                bool is_key_frame) {
   DVLOG(1) << __func__ << " - " << encoded_data.size() << "B";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(params.codec == kCodecVP8 || params.codec == kCodecVP9 ||
          params.codec == kCodecH264)
       << " Unsupported video codec: " << GetCodecName(params.codec);
@@ -244,7 +242,7 @@ bool WebmMuxer::OnEncodedAudio(const media::AudioParameters& params,
                                std::string encoded_data,
                                base::TimeTicks timestamp) {
   DVLOG(2) << __func__ << " - " << encoded_data.size() << "B";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!audio_track_index_) {
     AddAudioTrack(params);
@@ -266,25 +264,33 @@ bool WebmMuxer::OnEncodedAudio(const media::AudioParameters& params,
 
 void WebmMuxer::Pause() {
   DVLOG(1) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!elapsed_time_in_pause_)
     elapsed_time_in_pause_.reset(new base::ElapsedTimer());
 }
 
 void WebmMuxer::Resume() {
   DVLOG(1) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (elapsed_time_in_pause_) {
     total_time_in_pause_ += elapsed_time_in_pause_->Elapsed();
     elapsed_time_in_pause_.reset();
   }
 }
 
+bool WebmMuxer::Flush() {
+  // No need to segment_.Finalize() since is not Seekable(), i.e. a live
+  // stream, but is a good practice.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  FlushQueues();
+  return segment_.Finalize();
+}
+
 void WebmMuxer::AddVideoTrack(
     const gfx::Size& frame_size,
     double frame_rate,
     const base::Optional<gfx::ColorSpace>& color_space) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, video_track_index_)
       << "WebmMuxer can only be initialized once.";
 
@@ -329,7 +335,7 @@ void WebmMuxer::AddVideoTrack(
 
 void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
   DVLOG(1) << __func__ << " " << params.AsHumanReadableString();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, audio_track_index_)
       << "WebmMuxer audio can only be initialised once.";
 
@@ -370,7 +376,7 @@ void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
 }
 
 mkvmuxer::int32 WebmMuxer::Write(const void* buf, mkvmuxer::uint32 len) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buf);
   write_data_callback_.Run(
       base::StringPiece(reinterpret_cast<const char*>(buf), len));
@@ -399,14 +405,14 @@ void WebmMuxer::ElementStartNotify(mkvmuxer::uint64 element_id,
 }
 
 void WebmMuxer::FlushQueues() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while ((!video_frames_.empty() || !audio_frames_.empty()) &&
          FlushNextFrame()) {
   }
 }
 
 bool WebmMuxer::PartiallyFlushQueues() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool result = true;
   while (!(has_video_ && video_frames_.empty()) &&
          !(has_audio_ && audio_frames_.empty()) && result) {
@@ -416,7 +422,7 @@ bool WebmMuxer::PartiallyFlushQueues() {
 }
 
 bool WebmMuxer::FlushNextFrame() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeDelta min_timestamp = base::TimeDelta::Max();
   base::circular_deque<EncodedFrame>* queue = &video_frames_;
   uint8_t track_index = video_track_index_;

@@ -27,4 +27,8 @@ void AudioPcmEncoder::EncodeAudioImpl(const AudioBus& audio_bus,
                          ComputeTimestamp(audio_bus.frames(), capture_time)));
 }
 
+void AudioPcmEncoder::FlushImpl() {
+  // No buffering is done here, so do nothing.
+}
+
 }  // namespace media

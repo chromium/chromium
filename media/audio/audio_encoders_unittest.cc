@@ -82,7 +82,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
   ~AudioEncodersTest() override = default;
 
   const AudioParameters& input_params() const { return input_params_; }
-  const AudioEncoder* encoder() const { return encoder_.get(); }
+  AudioEncoder* encoder() const { return encoder_.get(); }
   int encode_callback_count() const { return encode_callback_count_; }
 
   void SetEncoder(std::unique_ptr<AudioEncoder> encoder) {
@@ -199,6 +199,14 @@ TEST_P(AudioEncodersTest, OpusEncoder) {
     total_frames += ProduceAudioAndEncode();
 
   EXPECT_EQ(1, encode_callback_count());
+
+  // If there are remaining frames in the opus encoder FIFO, we need to flush
+  // them before we destroy the encoder. Flushing should trigger the encode
+  // callback and we should be able to decode the resulting encoded frames.
+  if (total_frames > frames_in_60_ms) {
+    encoder()->Flush();
+    EXPECT_EQ(2, encode_callback_count());
+  }
 
   opus_decoder_destroy(opus_decoder);
   opus_decoder = nullptr;

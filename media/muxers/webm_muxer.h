@@ -13,8 +13,8 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/numerics/safe_math.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "media/base/audio_codecs.h"
@@ -89,6 +89,10 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
   void Pause();
   void Resume();
 
+  // Drains and writes out all buffered frames and finalizes the segment.
+  // Returns true on success, false otherwise.
+  bool Flush();
+
   void ForceOneLibWebmErrorForTesting() { force_one_libwebm_error_ = true; }
 
  private:
@@ -136,9 +140,6 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
   base::TimeTicks UpdateLastTimestampMonotonically(
       base::TimeTicks timestamp,
       base::TimeTicks* last_timestamp);
-
-  // Used to DCHECK that we are called on the correct thread.
-  base::ThreadChecker thread_checker_;
 
   // Audio codec configured on construction. Video codec is taken from first
   // received frame.
@@ -191,6 +192,8 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
   // If muxing audio and video, this queue holds frames until the first audio
   // frame appears.
   base::circular_deque<EncodedFrame> video_frames_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(WebmMuxer);
 };

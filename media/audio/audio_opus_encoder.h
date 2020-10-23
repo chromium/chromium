@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/optional.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_encoder.h"
@@ -36,6 +37,7 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // AudioEncoder:
   void EncodeAudioImpl(const AudioBus& audio_bus,
                        base::TimeTicks capture_time) override;
+  void FlushImpl() override;
 
  private:
   // Called synchronously by |fifo_| once enough audio frames have been
@@ -70,6 +72,11 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // The actual libopus encoder instance. This is nullptr if creating the
   // encoder fails.
   OwnedOpusEncoder opus_encoder_;
+
+  // If FlushImpl() was called while |fifo_| has some frames but not full yet,
+  // this will be the number of flushed frames, which is used to compute the
+  // timestamp provided in the output |EncodedAudioBuffer|.
+  base::Optional<int> number_of_flushed_frames_;
 };
 
 }  // namespace media

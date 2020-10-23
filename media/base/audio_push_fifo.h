@@ -42,6 +42,9 @@ class MEDIA_EXPORT AudioPushFifo final {
   // OutputCallback.
   int frames_per_buffer() const { return frames_per_buffer_; }
 
+  // The number of frames currently queued in this FIFO.
+  int queued_frames() const { return queued_frames_; }
+
   // Must be called at least once before the first call to Push().  May be
   // called later (e.g., to support an audio format change).
   void Reset(int frames_per_buffer);

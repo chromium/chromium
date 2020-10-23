@@ -207,7 +207,10 @@ AudioOpusEncoder::AudioOpusEncoder(const AudioParameters& input_params,
       converted_params_.frames_per_buffer()));
 }
 
-AudioOpusEncoder::~AudioOpusEncoder() = default;
+AudioOpusEncoder::~AudioOpusEncoder() {
+  DCHECK_EQ(fifo_.queued_frames(), 0)
+      << "Must flush the encoder before destroying to avoid dropping frames.";
+}
 
 void AudioOpusEncoder::EncodeAudioImpl(const AudioBus& audio_bus,
                                        base::TimeTicks capture_time) {
@@ -218,6 +221,20 @@ void AudioOpusEncoder::EncodeAudioImpl(const AudioBus& audio_bus,
   // The |fifo_| won't trigger OnFifoOutput() until we have enough frames
   // suitable for the converter.
   fifo_.Push(audio_bus);
+}
+
+void AudioOpusEncoder::FlushImpl() {
+  // Initializing the opus encoder may have failed.
+  if (!opus_encoder_)
+    return;
+
+  // This is needed to correctly compute the timestamp, since the number of
+  // frames of |output_bus| provided to OnFifoOutput() will always be equal to
+  // the full frames_per_buffer(), as the fifo's Flush() will pad the remaining
+  // empty frames with zeros.
+  number_of_flushed_frames_ = fifo_.queued_frames();
+  fifo_.Flush();
+  number_of_flushed_frames_ = base::nullopt;
 }
 
 void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
@@ -236,7 +253,9 @@ void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
     DCHECK_GT(encoded_data_size, 1u);
     encode_callback().Run(EncodedAudioBuffer(
         converted_params_, std::move(encoded_data), encoded_data_size,
-        ComputeTimestamp(output_bus.frames(), last_capture_time())));
+        ComputeTimestamp(
+            number_of_flushed_frames_.value_or(output_bus.frames()),
+            last_capture_time())));
   }
 }
 

@@ -38,14 +38,16 @@ AudioEncoder::AudioEncoder(const AudioParameters& input_params,
   DCHECK(audio_input_params_.IsValid());
   DCHECK(!encode_callback_.is_null());
   DCHECK(!status_callback_.is_null());
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-AudioEncoder::~AudioEncoder() = default;
+AudioEncoder::~AudioEncoder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void AudioEncoder::EncodeAudio(const AudioBus& audio_bus,
                                base::TimeTicks capture_time) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(audio_bus.channels(), audio_input_params_.channels());
   DCHECK(!capture_time.is_null());
 
@@ -59,6 +61,12 @@ void AudioEncoder::EncodeAudio(const AudioBus& audio_bus,
   last_capture_time_ = capture_time;
 
   EncodeAudioImpl(audio_bus, capture_time);
+}
+
+void AudioEncoder::Flush() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  FlushImpl();
 }
 
 base::TimeTicks AudioEncoder::ComputeTimestamp(

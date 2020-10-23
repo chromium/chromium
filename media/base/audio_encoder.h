@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -41,7 +41,8 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
   // number of encoded bytes may not be known in advance.
   const size_t encoded_data_size;
 
-  // The capture time of the first sample of the current AudioBus.
+  // The capture time of the first sample of the current AudioBus, or a previous
+  // AudioBus If this output was generated because of a call to Flush().
   const base::TimeTicks timestamp;
 };
 
@@ -50,9 +51,9 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
 class MEDIA_EXPORT AudioEncoder {
  public:
   // Signature of the callback invoked to provide the encoded audio data. It is
-  // invoked on the same thread on which EncodeAudio() is called. The utility
+  // invoked on the same sequence on which EncodeAudio() is called. The utility
   // media::BindToCurrentLoop() can be used to create a callback that will be
-  // invoked on the same thread it is constructed on.
+  // invoked on the same sequence it is constructed on.
   using EncodeCB = base::RepeatingCallback<void(EncodedAudioBuffer output)>;
 
   // Signature of the callback to report errors.
@@ -62,8 +63,8 @@ class MEDIA_EXPORT AudioEncoder {
   // encoder, and a callback to trigger to provide the encoded audio data.
   // |input_params| must be valid, and |encode_callback| and |status_callback|
   // must not be null callbacks. All calls to EncodeAudio() must happen on the
-  // same thread (usually an encoder thread), but the encoder itself can be
-  // constructed on any thread.
+  // same sequence (usually an encoder blocking pool sequence), but the encoder
+  // itself can be constructed on any sequence.
   AudioEncoder(const AudioParameters& input_params,
                EncodeCB encode_callback,
                StatusCB status_callback);
@@ -79,6 +80,11 @@ class MEDIA_EXPORT AudioEncoder {
   // actual encoding.
   void EncodeAudio(const AudioBus& audio_bus, base::TimeTicks capture_time);
 
+  // Some encoders may choose to buffer audio frames before they encode them.
+  // This function provides a mechanism to drain and encode any buffered frames
+  // (if any). Must be called on the encoder sequence.
+  void Flush();
+
  protected:
   const EncodeCB& encode_callback() const { return encode_callback_; }
   const StatusCB& status_callback() const { return status_callback_; }
@@ -86,6 +92,8 @@ class MEDIA_EXPORT AudioEncoder {
 
   virtual void EncodeAudioImpl(const AudioBus& audio_bus,
                                base::TimeTicks capture_time) = 0;
+
+  virtual void FlushImpl() = 0;
 
   // Computes the timestamp of an AudioBus which has |num_frames| and was
   // captured at |capture_time|. This timestamp is the capture time of the first
@@ -104,7 +112,7 @@ class MEDIA_EXPORT AudioEncoder {
   // EncodeAudio().
   base::TimeTicks last_capture_time_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media
