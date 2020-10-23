@@ -50,8 +50,6 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kLoginDisplay[] = "login";
-
 CertificateProviderService* GetLoginScreenCertProviderService() {
   DCHECK(ProfileHelper::IsSigninProfileInitialized());
   return CertificateProviderServiceFactory::GetForBrowserContext(
@@ -71,7 +69,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
     : login_display_(std::make_unique<LoginDisplayMojo>(this)),
       user_board_view_mojo_(std::make_unique<UserBoardViewMojo>()),
       user_selection_screen_(
-          std::make_unique<ChromeUserSelectionScreen>(kLoginDisplay)),
+          std::make_unique<ChromeUserSelectionScreen>(displayed_screen)),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()),
       displayed_screen_(displayed_screen) {
   user_selection_screen_->SetView(user_board_view_mojo_.get());

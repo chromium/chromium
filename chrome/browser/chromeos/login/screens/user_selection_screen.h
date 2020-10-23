@@ -39,6 +39,8 @@ class EasyUnlockService;
 class LoginDisplayWebUIHandler;
 class UserBoardView;
 
+enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN, LOCK_SCREEN };
+
 // This class represents User Selection screen: user pod-based login screen.
 class UserSelectionScreen
     : public ui::UserActivityObserver,
@@ -47,7 +49,7 @@ class UserSelectionScreen
       public session_manager::SessionManagerObserver,
       public PasswordSyncTokenLoginChecker::Observer {
  public:
-  explicit UserSelectionScreen(const std::string& display_type);
+  explicit UserSelectionScreen(DisplayedScreen display_type);
   ~UserSelectionScreen() override;
 
   void SetHandler(LoginDisplayWebUIHandler* handler);
@@ -165,8 +167,8 @@ class UserSelectionScreen
 
   LoginDisplayWebUIHandler* handler_ = nullptr;
 
-  // Purpose of the screen (see constants in OobeUI).
-  const std::string display_type_;
+  // Purpose of the screen.
+  const DisplayedScreen display_type_;
 
   // Set of Users that are visible.
   user_manager::UserList users_;

@@ -136,7 +136,7 @@ class UserAddingFinishObserver : public chromeos::UserAddingScreen::Observer {
       run_loop_->Quit();
   }
 
-  void OnUserAddingStarted() override {
+  void OnBeforeUserAddingScreenStarted() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     finished_ = false;
   }

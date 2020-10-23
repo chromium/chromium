@@ -120,13 +120,20 @@ void UserAddingScreenImpl::Start() {
   bool viewBasedEnabled =
       chromeos::features::IsViewBasedMultiprofileLoginEnabled();
   if (viewBasedEnabled) {
-    display_host_ = new chromeos::LoginDisplayHostMojo(
-        LoginDisplayHostMojo::DisplayedScreen::USER_ADDING_SCREEN);
+    display_host_ =
+        new chromeos::LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
     reporter_mojo_ = std::make_unique<LoadTimeReporterMojo>();
   } else {
     display_host_ = new chromeos::LoginDisplayHostWebUI();
     reporter_web_ui_ = std::make_unique<LoadTimeReporterWebUi>();
   }
+
+  // This triggers input method manager to filter login screen methods. This
+  // should happen before setting user input method, which happens when focusing
+  // user pod (triggered by SetSessionState)"
+  for (auto& observer : observers_)
+    observer.OnBeforeUserAddingScreenStarted();
+
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOGIN_SECONDARY);
   display_host_->StartUserAdding(base::BindOnce(
@@ -135,8 +142,6 @@ void UserAddingScreenImpl::Start() {
     reporter_web_ui_->Observe(display_host_->GetOobeUI());
   }
 
-  for (auto& observer : observers_)
-    observer.OnUserAddingStarted();
 }
 
 void UserAddingScreenImpl::Cancel() {

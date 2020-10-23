@@ -19,7 +19,7 @@ UserAddingScreenInputMethodsController::
   screen_->RemoveObserver(this);
 }
 
-void UserAddingScreenInputMethodsController::OnUserAddingStarted() {
+void UserAddingScreenInputMethodsController::OnBeforeUserAddingScreenStarted() {
   active_user_on_show_ = user_manager::UserManager::Get()->GetActiveUser();
   input_method::InputMethodManager* imm =
       input_method::InputMethodManager::Get();

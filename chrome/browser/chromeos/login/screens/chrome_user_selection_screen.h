@@ -23,7 +23,7 @@ class ChromeUserSelectionScreen
     : public UserSelectionScreen,
       public policy::DeviceLocalAccountPolicyService::Observer {
  public:
-  explicit ChromeUserSelectionScreen(const std::string& display_type);
+  explicit ChromeUserSelectionScreen(DisplayedScreen display_type);
   ~ChromeUserSelectionScreen() override;
 
   // UserSelectionScreen:

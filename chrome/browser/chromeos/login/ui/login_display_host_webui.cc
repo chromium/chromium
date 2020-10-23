@@ -233,8 +233,8 @@ void ShowLoginWizardFinish(
     // Tests may have already allocated an instance for us to use.
     display_host = chromeos::LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
-    display_host = new chromeos::LoginDisplayHostMojo(
-        LoginDisplayHostMojo::DisplayedScreen::SIGN_IN_SCREEN);
+    display_host =
+        new chromeos::LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
   } else {
     display_host = new chromeos::LoginDisplayHostWebUI();
   }

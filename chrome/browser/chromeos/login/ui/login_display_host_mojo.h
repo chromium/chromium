@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/login/challenge_response_auth_keys_loader.h"
+#include "chrome/browser/chromeos/login/screens/user_selection_screen.h"
 #include "chrome/browser/chromeos/login/security_token_pin_dialog_host_ash_impl.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_common.h"
 #include "chrome/browser/chromeos/login/ui/oobe_ui_dialog_delegate.h"
@@ -47,8 +48,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                              public OobeUI::Observer,
                              public views::ViewObserver {
  public:
-  enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN };
-
   explicit LoginDisplayHostMojo(DisplayedScreen displayed_screen);
   ~LoginDisplayHostMojo() override;
 

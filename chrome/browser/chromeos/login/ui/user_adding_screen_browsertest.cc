@@ -74,7 +74,7 @@ class UserAddingScreenTest : public LoginManagerTest,
       run_loop_->Quit();
   }
 
-  void OnUserAddingStarted() override {
+  void OnBeforeUserAddingScreenStarted() override {
     ++user_adding_started_;
     finished_ = false;
   }

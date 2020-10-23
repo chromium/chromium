@@ -493,11 +493,11 @@ class UserSelectionScreen::TpmLockedChecker {
   base::WeakPtrFactory<TpmLockedChecker> weak_ptr_factory_{this};
 };
 
-UserSelectionScreen::UserSelectionScreen(const std::string& display_type)
+UserSelectionScreen::UserSelectionScreen(DisplayedScreen display_type)
     : BaseScreen(UserBoardView::kScreenId, OobeScreenPriority::DEFAULT),
       display_type_(display_type) {
   session_manager::SessionManager::Get()->AddObserver(this);
-  if (display_type_ != OobeUI::kLoginDisplay)
+  if (display_type_ != DisplayedScreen::SIGN_IN_SCREEN)
     return;
   allowed_input_methods_subscription_ =
       CrosSettings::Get()->AddSettingsObserver(
@@ -807,7 +807,7 @@ void UserSelectionScreen::CheckUserStatus(const AccountId& account_id) {
   }
 
   // Run dircrypto migration check only on the login screen when necessary.
-  if (display_type_ == OobeUI::kLoginDisplay &&
+  if (display_type_ == DisplayedScreen::SIGN_IN_SCREEN &&
       ShouldCheckNeedDircryptoMigration()) {
     if (!dircrypto_migration_checker_) {
       dircrypto_migration_checker_ =
@@ -832,7 +832,8 @@ void UserSelectionScreen::HandleFocusPod(const AccountId& account_id) {
   CheckUserStatus(account_id);
   lock_screen_utils::SetUserInputMethod(
       account_id, ime_state_.get(),
-      display_type_ == OobeUI::kLoginDisplay /* honor_device_policy */);
+      display_type_ ==
+          DisplayedScreen::SIGN_IN_SCREEN /* honor_device_policy */);
   lock_screen_utils::SetKeyboardSettings(account_id);
 
   bool use_24hour_clock = false;
@@ -857,12 +858,12 @@ void UserSelectionScreen::HandleFocusPod(const AccountId& account_id) {
 void UserSelectionScreen::HandleNoPodFocused() {
   focused_pod_account_id_ = EmptyAccountId();
   focused_user_clock_type_.reset();
-  if (display_type_ == OobeUI::kLoginDisplay)
+  if (display_type_ == DisplayedScreen::SIGN_IN_SCREEN)
     lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
 }
 
 void UserSelectionScreen::OnAllowedInputMethodsChanged() {
-  DCHECK_EQ(display_type_, OobeUI::kLoginDisplay);
+  DCHECK_EQ(display_type_, DisplayedScreen::SIGN_IN_SCREEN);
   if (focused_pod_account_id_.is_valid()) {
     std::string user_input_method =
         lock_screen_utils::GetUserLastInputMethod(focused_pod_account_id_);
@@ -912,13 +913,16 @@ proximity_auth::mojom::AuthType UserSelectionScreen::GetAuthType(
 
 proximity_auth::ScreenlockBridge::LockHandler::ScreenType
 UserSelectionScreen::GetScreenType() const {
-  if (display_type_ == OobeUI::kLockDisplay)
-    return LOCK_SCREEN;
+  switch (display_type_) {
+    case DisplayedScreen::LOCK_SCREEN:
+      return ScreenType::LOCK_SCREEN;
 
-  if (display_type_ == OobeUI::kLoginDisplay)
-    return SIGNIN_SCREEN;
+    case DisplayedScreen::SIGN_IN_SCREEN:
+      return ScreenType::SIGNIN_SCREEN;
 
-  return OTHER_SCREEN;
+    default:
+      return ScreenType::OTHER_SCREEN;
+  }
 }
 
 void UserSelectionScreen::ShowBannerMessage(const base::string16& message,

@@ -15,7 +15,7 @@ namespace chromeos {
 class UserAddingScreen {
  public:
   struct Observer {
-    virtual void OnUserAddingStarted() {}
+    virtual void OnBeforeUserAddingScreenStarted() {}
     virtual void OnUserAddingFinished() {}
     virtual ~Observer() {}
   };

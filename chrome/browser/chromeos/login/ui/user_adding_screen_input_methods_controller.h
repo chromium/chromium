@@ -24,7 +24,7 @@ class UserAddingScreenInputMethodsController
   ~UserAddingScreenInputMethodsController() override;
 
   // UserAddingScreen::Observer implementation:
-  void OnUserAddingStarted() override;
+  void OnBeforeUserAddingScreenStarted() override;
   void OnUserAddingFinished() override;
 
  private:
