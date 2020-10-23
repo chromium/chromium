@@ -66,17 +66,22 @@ void FakeSensorDevice::SetChannels(const std::vector<ChannelData>& channels) {
   channels_enabled_.assign(channels_.size(), false);
 }
 
-void FakeSensorDevice::GetAttribute(const std::string& attr_name,
-                                    GetAttributeCallback callback) {
+void FakeSensorDevice::GetAttributes(const std::vector<std::string>& attr_names,
+                                     GetAttributesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Optional<std::string> value = base::nullopt;
-  auto it = attributes_.find(attr_name);
-  if (it != attributes_.end())
-    value = it->second;
+  std::vector<base::Optional<std::string>> values;
+  values.reserve(attr_names.size());
+  for (const auto& attr_name : attr_names) {
+    auto it = attributes_.find(attr_name);
+    if (it != attributes_.end())
+      values.push_back(it->second);
+    else
+      values.push_back(base::nullopt);
+  }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(value)));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(values)));
 }
 
 void FakeSensorDevice::SetFrequency(double frequency,

@@ -48,8 +48,8 @@ class FakeSensorDevice final : public mojom::SensorDevice {
 
   // Implementation of mojom::SensorDevice.
   void SetTimeout(uint32_t timeout) override {}
-  void GetAttribute(const std::string& attr_name,
-                    GetAttributeCallback callback) override;
+  void GetAttributes(const std::vector<std::string>& attr_names,
+                     GetAttributesCallback callback) override;
   void SetFrequency(double frequency, SetFrequencyCallback callback) override;
   void StartReadingSamples(
       mojo::PendingRemote<mojom::SensorDeviceSamplesObserver> observer)

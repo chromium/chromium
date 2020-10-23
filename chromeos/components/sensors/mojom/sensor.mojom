@@ -71,9 +71,10 @@ interface SensorDevice {
   // Default: 5000 milliseconds.
   SetTimeout@0(uint32 timeout);
 
-  // Gets the |attr_name| attribute of this device into |value| in string.
-  // Returns base::nullopt if the attribute cannot be read.
-  GetAttribute@1(string attr_name) => (string? value);
+  // Gets the |attr_names| attributes of this device into |values| as strings.
+  // When an attribute cannot be read, its value in |values| is set to null.
+  // |values| and |attr_names| always have the same size.
+  GetAttributes@1(array<string> attr_names) => (array<string?> values);
 
   // Sets the frequency in Hz of the device before starting to read samples.
   // If no frequency or an invalid frequency is set, an
