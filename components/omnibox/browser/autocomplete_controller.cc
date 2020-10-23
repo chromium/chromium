@@ -38,6 +38,7 @@
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/local_history_zero_suggest_provider.h"
+#include "components/omnibox/browser/most_visited_sites_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
@@ -290,22 +291,22 @@ AutocompleteController::AutocompleteController(
         ZeroSuggestProvider::Create(provider_client_.get(), this);
     if (zero_suggest_provider_)
       providers_.push_back(zero_suggest_provider_);
-#if defined(OS_ANDROID)
+  }
+  if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
+    providers_.push_back(
+        LocalHistoryZeroSuggestProvider::Create(provider_client_.get(), this));
+  }
+  if (provider_types & AutocompleteProvider::TYPE_MOST_VISITED_SITES) {
+    providers_.push_back(
+        new MostVisitedSitesProvider(provider_client_.get(), this));
     // Note: the need for the always-present verbatim match originates from the
     // OmniboxSearchReadyIncognito feature.
     // The feature aims at showing SRO in an Incognito mode, where the
     // ZeroSuggestProvider intentionally never gets invoked.
     // The gating flag here should be removed when the SRO Incognito is
     // launched.
-    if (base::FeatureList::IsEnabled(omnibox::kOmniboxSearchReadyIncognito)) {
-      providers_.push_back(
-          new ZeroSuggestVerbatimMatchProvider(provider_client_.get()));
-    }
-#endif
-  }
-  if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
     providers_.push_back(
-        LocalHistoryZeroSuggestProvider::Create(provider_client_.get(), this));
+        new ZeroSuggestVerbatimMatchProvider(provider_client_.get()));
   }
   if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
     document_provider_ = DocumentProvider::Create(provider_client_.get(), this);

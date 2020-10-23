@@ -151,6 +151,8 @@ class AutocompleteProvider
     TYPE_ON_DEVICE_HEAD = 1 << 10,
     TYPE_ZERO_SUGGEST_LOCAL_HISTORY = 1 << 11,
     TYPE_QUERY_TILE = 1 << 12,
+    TYPE_MOST_VISITED_SITES = 1 << 13,
+    TYPE_VERBATIM_MATCH = 1 << 14,
   };
 
   explicit AutocompleteProvider(Type type);

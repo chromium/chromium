@@ -55,9 +55,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
     // suggestions. The endpoint is sent the user's authentication state and
     // the current URL.
     REMOTE_SEND_URL,
-
-    // Gets the most visited sites from local history.
-    MOST_VISITED,
   };
 
   // Creates and returns an instance of this provider.
@@ -152,12 +149,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // page.
   AutocompleteMatch MatchForCurrentText();
 
-  // When the user is in the Most Visited field trial, we ask the TopSites
-  // service for the most visited URLs. It then calls back to this function to
-  // return those |urls|.
-  void OnMostVisitedUrlsAvailable(size_t request_num,
-                                  const history::MostVisitedURLList& urls);
-
   // When the user is in the remote omnibox suggestions field trial, we ask
   // the RemoteSuggestionsService for a loader to retrieve recommendations.
   // When the loader has started, the remote suggestion service then calls
@@ -191,9 +182,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // When the provider is not running, the result type is set to NONE.
   ResultType result_type_running_;
 
-  // For reconciling asynchronous requests for most visited URLs.
-  size_t most_visited_request_num_ = 0;
-
   // The URL for which a suggestion fetch is pending.
   std::string current_query_;
 
@@ -217,8 +205,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Contains suggest and navigation results as well as relevance parsed from
   // the response for the most recent zero suggest input URL.
   SearchSuggestionParser::Results results_;
-
-  history::MostVisitedURLList most_visited_urls_;
 
   // For callbacks that may be run after destruction.
   base::WeakPtrFactory<ZeroSuggestProvider> weak_ptr_factory_{this};

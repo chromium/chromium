@@ -36,59 +36,10 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
-class FakeEmptyTopSites : public history::TopSites {
- public:
-  FakeEmptyTopSites() {
-  }
-  FakeEmptyTopSites(const FakeEmptyTopSites&) = delete;
-  FakeEmptyTopSites& operator=(const FakeEmptyTopSites&) = delete;
-
-  // history::TopSites:
-  void GetMostVisitedURLs(GetMostVisitedURLsCallback callback) override;
-  void SyncWithHistory() override {}
-  bool HasBlockedUrls() const override { return false; }
-  void AddBlockedUrl(const GURL& url) override {}
-  void RemoveBlockedUrl(const GURL& url) override {}
-  bool IsBlocked(const GURL& url) override { return false; }
-  void ClearBlockedUrls() override {}
-  bool IsFull() override { return false; }
-  bool loaded() const override {
-    return false;
-  }
-  history::PrepopulatedPageList GetPrepopulatedPages() override {
-    return history::PrepopulatedPageList();
-  }
-  void OnNavigationCommitted(const GURL& url) override {}
-
-  // RefcountedKeyedService:
-  void ShutdownOnUIThread() override {}
-
-  // Only runs a single callback, so that the test can specify a different
-  // set per call.
-  void RunACallback(const history::MostVisitedURLList& urls) {
-    DCHECK(!callbacks.empty());
-    std::move(callbacks.front()).Run(urls);
-    callbacks.pop_front();
-  }
-
- protected:
-  // A test-specific field for controlling when most visited callback is run
-  // after top sites have been requested.
-  std::list<GetMostVisitedURLsCallback> callbacks;
-
-  ~FakeEmptyTopSites() override {}
-};
-
-void FakeEmptyTopSites::GetMostVisitedURLs(
-    GetMostVisitedURLsCallback callback) {
-  callbacks.push_back(std::move(callback));
-}
-
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   FakeAutocompleteProviderClient()
-      : template_url_service_(new TemplateURLService(nullptr, 0)),
-        top_sites_(new FakeEmptyTopSites()) {
+      : template_url_service_(new TemplateURLService(nullptr, 0)) {
     pref_service_.registry()->RegisterStringPref(
         omnibox::kZeroSuggestCachedResults, std::string());
   }
@@ -98,8 +49,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
       const FakeAutocompleteProviderClient&) = delete;
 
   bool SearchSuggestEnabled() const override { return true; }
-
-  scoped_refptr<history::TopSites> GetTopSites() override { return top_sites_; }
 
   TemplateURLService* GetTemplateURLService() override {
     return template_url_service_.get();
@@ -131,11 +80,9 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
  private:
   std::unique_ptr<TemplateURLService> template_url_service_;
-  scoped_refptr<history::TopSites> top_sites_;
   TestingPrefServiceSimple pref_service_;
   TestSchemeClassifier scheme_classifier_;
 };
-
 }  // namespace
 
 class ZeroSuggestProviderTest : public testing::Test,
@@ -222,9 +169,6 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroSuggestSuggestions) {
   // ZeroSuggest should never deal with prefix suggestions.
   EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(prefix_input));
 
-  // This should always be true, as otherwise we will break MostVisited.
-  // TODO(tommycli): We should split this into its own provider to avoid
-  // breaking it again.
   EXPECT_TRUE(provider_->AllowZeroSuggestSuggestions(on_focus_input));
 
   EXPECT_FALSE(provider_->AllowZeroSuggestSuggestions(on_clobber_input));
@@ -263,22 +207,11 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
         GURL suggest_url = GetSuggestURL(current_page_classification);
         const auto result_type = ZeroSuggestProvider::TypeOfResultToRun(
             client_.get(), input, suggest_url);
-#if !defined(OS_ANDROID) && !defined(OS_IOS)  // Desktop
         EXPECT_EQ(BaseSearchProvider::IsNTPPage(current_page_classification) &&
                           remote_no_url_allowed
                       ? ZeroSuggestProvider::ResultType::REMOTE_NO_URL
                       : ZeroSuggestProvider::ResultType::NONE,
                   result_type);
-#else                                         // Android and iOS
-        EXPECT_EQ(BaseSearchProvider::IsNTPPage(current_page_classification) &&
-                          remote_no_url_allowed
-                      ? ZeroSuggestProvider::ResultType::REMOTE_NO_URL
-                      : !BaseSearchProvider::IsSearchResultsPage(
-                            current_page_classification)
-                            ? ZeroSuggestProvider::ResultType::MOST_VISITED
-                            : ZeroSuggestProvider::ResultType::NONE,
-                  result_type);
-#endif
       };
 
   // Verify OTHER defaults (contextual web).
@@ -352,13 +285,8 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
   on_clobber_input.set_current_url(GURL(input_url));
   on_clobber_input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  const ZeroSuggestProvider::ResultType kDefaultContextualWebResultType =
-      ZeroSuggestProvider::ResultType::MOST_VISITED;
-#else
   const ZeroSuggestProvider::ResultType kDefaultContextualWebResultType =
       ZeroSuggestProvider::ResultType::NONE;
-#endif
 
   EXPECT_EQ(kDefaultContextualWebResultType,
             ZeroSuggestProvider::TypeOfResultToRun(
@@ -454,87 +382,6 @@ TEST_F(ZeroSuggestProviderTest, TestStartWillStopForSomeInput) {
   provider_->Start(input2, false);
   EXPECT_TRUE(provider_->done_);
 }
-
-// MostVisited in only ever enabled on Mobile platforms.
-#if defined(OS_IOS) || defined(OS_ANDROID)
-TEST_F(ZeroSuggestProviderTest, TestMostVisitedCallback) {
-  std::string current_url("http://www.foxnews.com/");
-  std::string input_url("http://www.cnn.com/");
-  AutocompleteInput input(base::ASCIIToUTF16(input_url),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_current_url(GURL(current_url));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
-  history::MostVisitedURLList urls;
-  history::MostVisitedURL url(GURL("http://foo.com/"),
-                              base::ASCIIToUTF16("Foo"));
-  urls.push_back(url);
-
-  provider_->Start(input, false);
-  EXPECT_TRUE(provider_->matches().empty());
-  scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
-  static_cast<FakeEmptyTopSites*>(top_sites.get())->RunACallback(urls);
-  // Should have verbatim match + most visited url match.
-  EXPECT_EQ(2U, provider_->matches().size());
-  provider_->Stop(false, false);
-
-  provider_->Start(input, false);
-  provider_->Stop(false, false);
-  EXPECT_TRUE(provider_->matches().empty());
-  // Most visited results arriving after Stop() has been called, ensure they
-  // are not displayed.
-  static_cast<FakeEmptyTopSites*>(top_sites.get())->RunACallback(urls);
-  EXPECT_TRUE(provider_->matches().empty());
-
-  history::MostVisitedURLList urls2;
-  urls2.push_back(history::MostVisitedURL(GURL("http://bar.com/"),
-                                          base::ASCIIToUTF16("Bar")));
-  urls2.push_back(history::MostVisitedURL(GURL("http://zinga.com/"),
-                                          base::ASCIIToUTF16("Zinga")));
-  provider_->Start(input, false);
-  provider_->Stop(false, false);
-  provider_->Start(input, false);
-  static_cast<FakeEmptyTopSites*>(top_sites.get())->RunACallback(urls);
-  // Stale results should get rejected.
-  EXPECT_TRUE(provider_->matches().empty());
-  static_cast<FakeEmptyTopSites*>(top_sites.get())->RunACallback(urls2);
-  EXPECT_FALSE(provider_->matches().empty());
-  provider_->Stop(false, false);
-}
-
-TEST_F(ZeroSuggestProviderTest, TestMostVisitedNavigateToSearchPage) {
-  std::string current_url("http://www.foxnews.com/");
-  std::string input_url("http://www.cnn.com/");
-  AutocompleteInput input(base::ASCIIToUTF16(input_url),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_current_url(GURL(current_url));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
-  history::MostVisitedURLList urls;
-  history::MostVisitedURL url(GURL("http://foo.com/"),
-                              base::ASCIIToUTF16("Foo"));
-  urls.push_back(url);
-
-  provider_->Start(input, false);
-  EXPECT_TRUE(provider_->matches().empty());
-  // Stop() doesn't always get called.
-
-  std::string search_url("https://www.google.com/?q=flowers");
-  AutocompleteInput srp_input(
-      base::ASCIIToUTF16(search_url),
-      metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      TestSchemeClassifier());
-  srp_input.set_current_url(GURL(search_url));
-  srp_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
-
-  provider_->Start(srp_input, false);
-  EXPECT_TRUE(provider_->matches().empty());
-  // Most visited results arriving after a new request has been started.
-  scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
-  static_cast<FakeEmptyTopSites*>(top_sites.get())->RunACallback(urls);
-  EXPECT_TRUE(provider_->matches().empty());
-}
-#endif  // defined(OS_IOS) || defined(OS_ANDROID)
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
   EXPECT_CALL(*client_, IsAuthenticated())

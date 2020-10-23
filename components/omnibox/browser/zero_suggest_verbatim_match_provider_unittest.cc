@@ -9,9 +9,11 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -32,11 +34,13 @@ class ZeroSuggestVerbatimMatchProviderTest
 bool ZeroSuggestVerbatimMatchProviderTest::IsVerbatimMatchEligible() const {
   switch (GetParam()) {
     case metrics::OmniboxEventProto::OTHER:
+      return true;
     case metrics::OmniboxEventProto::
         SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT:
     case metrics::OmniboxEventProto::
         SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
-      return true;
+      return base::FeatureList::IsEnabled(
+          omnibox::kOmniboxSearchReadyIncognito);
     default:
       return false;
   }

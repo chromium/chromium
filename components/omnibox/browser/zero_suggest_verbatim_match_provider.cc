@@ -4,9 +4,11 @@
 
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
 
+#include "base/feature_list.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/verbatim_match.h"
+#include "components/omnibox/common/omnibox_features.h"
 
 namespace {
 // The relevance score for verbatim match.
@@ -23,6 +25,8 @@ bool IsVerbatimMatchEligible(
         SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT:
     case metrics::OmniboxEventProto::
         SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
+      return base::FeatureList::IsEnabled(
+          omnibox::kOmniboxSearchReadyIncognito);
     case metrics::OmniboxEventProto::OTHER:
       return true;
     default:
@@ -34,7 +38,7 @@ bool IsVerbatimMatchEligible(
 
 ZeroSuggestVerbatimMatchProvider::ZeroSuggestVerbatimMatchProvider(
     AutocompleteProviderClient* client)
-    : AutocompleteProvider(TYPE_ZERO_SUGGEST), client_(client) {}
+    : AutocompleteProvider(TYPE_VERBATIM_MATCH), client_(client) {}
 
 ZeroSuggestVerbatimMatchProvider::~ZeroSuggestVerbatimMatchProvider() = default;
 
@@ -46,21 +50,28 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
 
   // Only offer verbatim match after the user just focused the Omnibox,
   // or if the input field is empty.
-  if (!((input.focus_type() == OmniboxFocusType::ON_FOCUS) ||
-        (input.type() == metrics::OmniboxInputType::EMPTY))) {
+  if (input.focus_type() == OmniboxFocusType::DEFAULT)
+    return;
+
+  // For consistency with other zero-prefix providers.
+  const auto& page_url = input.current_url();
+  if (input.type() != metrics::OmniboxInputType::EMPTY &&
+      !(page_url.is_valid() &&
+        ((page_url.scheme() == url::kHttpScheme) ||
+         (page_url.scheme() == url::kHttpsScheme) ||
+         (page_url.scheme() == url::kAboutScheme) ||
+         (page_url.scheme() ==
+          client_->GetEmbedderRepresentationOfAboutScheme())))) {
     return;
   }
-  // Do not offer verbatim match, if the Omnibox does not contain a valid URL.
-  if (!input.current_url().is_valid())
-    return;
 
   AutocompleteInput verbatim_input = input;
   verbatim_input.set_prevent_inline_autocomplete(true);
   verbatim_input.set_allow_exact_keyword_match(false);
 
   AutocompleteMatch match = VerbatimMatchForURL(
-      client_, verbatim_input, input.current_url(), input.current_title(),
-      nullptr, kVerbatimMatchRelevanceScore);
+      client_, verbatim_input, page_url, input.current_title(), nullptr,
+      kVerbatimMatchRelevanceScore);
 
   // In the case of native pages, the classifier may replace the URL with an
   // empty content, resulting with a verbatim match that does not point
