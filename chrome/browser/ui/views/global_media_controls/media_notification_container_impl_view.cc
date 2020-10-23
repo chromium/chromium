@@ -69,6 +69,7 @@ class MediaNotificationContainerImplView::DismissButton
     views::ConfigureVectorImageButton(this);
     views::InstallFixedSizeCircleHighlightPathGenerator(
         this, kDismissButtonBackgroundRadius);
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   }
 
   ~DismissButton() override = default;
@@ -126,7 +127,6 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
       &MediaNotificationContainerImplView::DismissNotification,
       base::Unretained(this)));
   dismiss_button->SetPreferredSize(kDismissButtonSize);
-  dismiss_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   dismiss_button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLOBAL_MEDIA_CONTROLS_DISMISS_ICON_TOOLTIP_TEXT));
   dismiss_button_ =
