@@ -80,7 +80,6 @@ class DummyExecutionContextForLookup : public ExecutionContext {
 ExecutionContextRegistry::ExecutionContextRegistry() = default;
 
 ExecutionContextRegistry::~ExecutionContextRegistry() = default;
-
 // static
 ExecutionContextRegistry* ExecutionContextRegistry::GetFromGraph(Graph* graph) {
   return GraphRegisteredImpl<ExecutionContextRegistryImpl>::GetFromGraph(graph);

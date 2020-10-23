@@ -4,9 +4,9 @@
 
 #include "chrome/browser/performance_manager/decorators/process_priority_aggregator.h"
 
-#include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 
 namespace performance_manager {
@@ -113,54 +113,50 @@ ProcessPriorityAggregator::Data* ProcessPriorityAggregator::Data::GetForTesting(
 }
 
 ProcessPriorityAggregator::ProcessPriorityAggregator() = default;
+
 ProcessPriorityAggregator::~ProcessPriorityAggregator() = default;
 
-void ProcessPriorityAggregator::OnFrameNodeAdded(const FrameNode* frame_node) {
-  auto* process_node = ProcessNodeImpl::FromNode(frame_node->GetProcessNode());
-  DataImpl* data = DataImpl::Get(process_node);
-  data->Increment(frame_node->GetPriorityAndReason().priority());
-  // This is a nop if the priority didn't actually change.
-  process_node->set_priority(data->GetPriority());
-}
-
-void ProcessPriorityAggregator::OnBeforeFrameNodeRemoved(
-    const FrameNode* frame_node) {
-  auto* process_node = ProcessNodeImpl::FromNode(frame_node->GetProcessNode());
-  DataImpl* data = DataImpl::Get(process_node);
-  data->Decrement(frame_node->GetPriorityAndReason().priority());
-  // This is a nop if the priority didn't actually change.
-  process_node->set_priority(data->GetPriority());
-}
-
-void ProcessPriorityAggregator::OnPriorityAndReasonChanged(
-    const FrameNode* frame_node,
-    const PriorityAndReason& previous_value) {
-  // If the priority itself didn't change then ignore this notification.
-  const PriorityAndReason& new_value = frame_node->GetPriorityAndReason();
-  if (new_value.priority() == previous_value.priority())
-    return;
-
-  // Update the distinct frame priority counts, and set the process priority
-  // accordingly.
-  auto* process_node = ProcessNodeImpl::FromNode(frame_node->GetProcessNode());
-  DataImpl* data = DataImpl::Get(process_node);
-  data->Decrement(previous_value.priority());
-  data->Increment(new_value.priority());
-  // This is a nop if the priority didn't actually change.
-  process_node->set_priority(data->GetPriority());
+void ProcessPriorityAggregator::OnBeforeGraphDestroyed(Graph* graph) {
+  auto* registry =
+      execution_context::ExecutionContextRegistry::GetFromGraph(graph);
+  if (registry && registry->HasObserver(this))
+    registry->RemoveObserver(this);
 }
 
 void ProcessPriorityAggregator::OnPassedToGraph(Graph* graph) {
-  graph->AddFrameNodeObserver(this);
-  graph->AddProcessNodeObserver(this);
+  graph->AddGraphObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
+  graph->AddProcessNodeObserver(this);
+
+  auto* registry =
+      execution_context::ExecutionContextRegistry::GetFromGraph(graph);
+  // We expect the registry to exist before we are passed to the graph.
+  DCHECK(registry);
+  registry->AddObserver(this);
 }
 
 void ProcessPriorityAggregator::OnTakenFromGraph(Graph* graph) {
-  graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
+  // Call OnBeforeGraphDestroyed as well. This unregisters us from the
+  // ExecutionContextRegistry in case we're being removed from the graph prior
+  // to its destruction.
+  OnBeforeGraphDestroyed(graph);
+
   graph->RemoveProcessNodeObserver(this);
-  graph->RemoveFrameNodeObserver(this);
+  graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
+  graph->RemoveGraphObserver(this);
+}
+
+base::Value ProcessPriorityAggregator::DescribeProcessNodeData(
+    const ProcessNode* node) const {
+  DataImpl* data = DataImpl::Get(ProcessNodeImpl::FromNode(node));
+  if (data == nullptr)
+    return base::Value();
+
+  base::Value ret(base::Value::Type::DICTIONARY);
+  ret.SetIntKey("user_visible_count", data->user_visible_count_);
+  ret.SetIntKey("user_blocking_count", data->user_blocking_count_);
+  return ret;
 }
 
 void ProcessPriorityAggregator::OnProcessNodeAdded(
@@ -182,16 +178,40 @@ void ProcessPriorityAggregator::OnBeforeProcessNodeRemoved(
 #endif
 }
 
-base::Value ProcessPriorityAggregator::DescribeProcessNodeData(
-    const ProcessNode* node) const {
-  DataImpl* data = DataImpl::Get(ProcessNodeImpl::FromNode(node));
-  if (data == nullptr)
-    return base::Value();
+void ProcessPriorityAggregator::OnExecutionContextAdded(
+    const execution_context::ExecutionContext* ec) {
+  auto* process_node = ProcessNodeImpl::FromNode(ec->GetProcessNode());
+  DataImpl* data = DataImpl::Get(process_node);
+  data->Increment(ec->GetPriorityAndReason().priority());
+  // This is a nop if the priority didn't actually change.
+  process_node->set_priority(data->GetPriority());
+}
 
-  base::Value ret(base::Value::Type::DICTIONARY);
-  ret.SetIntKey("user_visible_count", data->user_visible_count_);
-  ret.SetIntKey("user_blocking_count", data->user_blocking_count_);
-  return ret;
+void ProcessPriorityAggregator::OnBeforeExecutionContextRemoved(
+    const execution_context::ExecutionContext* ec) {
+  auto* process_node = ProcessNodeImpl::FromNode(ec->GetProcessNode());
+  DataImpl* data = DataImpl::Get(process_node);
+  data->Decrement(ec->GetPriorityAndReason().priority());
+  // This is a nop if the priority didn't actually change.
+  process_node->set_priority(data->GetPriority());
+}
+
+void ProcessPriorityAggregator::OnPriorityAndReasonChanged(
+    const execution_context::ExecutionContext* ec,
+    const PriorityAndReason& previous_value) {
+  // If the priority itself didn't change then ignore this notification.
+  const PriorityAndReason& new_value = ec->GetPriorityAndReason();
+  if (new_value.priority() == previous_value.priority())
+    return;
+
+  // Update the distinct frame priority counts, and set the process priority
+  // accordingly.
+  auto* process_node = ProcessNodeImpl::FromNode(ec->GetProcessNode());
+  DataImpl* data = DataImpl::Get(process_node);
+  data->Decrement(previous_value.priority());
+  data->Increment(new_value.priority());
+  // This is a nop if the priority didn't actually change.
+  process_node->set_priority(data->GetPriority());
 }
 
 }  // namespace performance_manager

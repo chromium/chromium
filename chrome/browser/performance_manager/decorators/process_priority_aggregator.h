@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_PROCESS_PRIORITY_AGGREGATOR_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_PROCESS_PRIORITY_AGGREGATOR_H_
 
-#include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -19,32 +19,41 @@ class ProcessNodeImpl;
 // priority as an aggregate of the priorities of all executions contexts (frames
 // and workers) it hosts. A process will inherit the priority of the highest
 // priority context that it hosts.
-class ProcessPriorityAggregator : public FrameNode::ObserverDefaultImpl,
-                                  public GraphOwnedDefaultImpl,
-                                  public NodeDataDescriberDefaultImpl,
-                                  public ProcessNode::ObserverDefaultImpl {
+class ProcessPriorityAggregator
+    : public GraphObserver,
+      public GraphOwnedDefaultImpl,
+      public NodeDataDescriberDefaultImpl,
+      public ProcessNode::ObserverDefaultImpl,
+      public execution_context::ExecutionContextObserverDefaultImpl {
  public:
   class Data;
 
   ProcessPriorityAggregator();
   ~ProcessPriorityAggregator() override;
 
-  // FrameNodeObserver implementation:
-  void OnFrameNodeAdded(const FrameNode* frame_node) override;
-  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-  void OnPriorityAndReasonChanged(
-      const FrameNode* frame_node,
-      const PriorityAndReason& previous_value) override;
+  // GraphObserver implementation:
+  void OnBeforeGraphDestroyed(Graph* graph) override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
+  // NodeDataDescriber implementation:
+  base::Value DescribeProcessNodeData(const ProcessNode* node) const override;
+
   // ProcessNodeObserver implementation:
   void OnProcessNodeAdded(const ProcessNode* process_node) override;
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
 
-  base::Value DescribeProcessNodeData(const ProcessNode* node) const override;
+  // ExecutionContextObserver implementation:
+  void OnExecutionContextAdded(
+      const execution_context::ExecutionContext* ec) override;
+  void OnBeforeExecutionContextRemoved(
+      const execution_context::ExecutionContext* ec) override;
+  void OnPriorityAndReasonChanged(
+      const execution_context::ExecutionContext* ec,
+      const execution_context_priority::PriorityAndReason& previous_value)
+      override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProcessPriorityAggregator);

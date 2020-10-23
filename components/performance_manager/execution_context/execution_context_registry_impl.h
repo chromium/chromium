@@ -91,7 +91,9 @@ class ExecutionContextRegistryImpl
                      ExecutionContextKeyEqual>
       execution_contexts_;
 
-  base::ObserverList<ExecutionContextObserver, /* check_empty = */ true>
+  base::ObserverList<ExecutionContextObserver,
+                     /* check_empty = */ true,
+                     /* allow_reentrancy */ false>
       observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);

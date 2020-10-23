@@ -140,6 +140,39 @@ struct MockSinglePageWithFrameAndWorkerInSingleProcessGraph
   void DeleteWorker();
 };
 
+// The following graph topology is created to emulate a scenario where multiple
+// pages making use of workers are hosted in multiple processes (e.g.
+// out-of-process iFrames and multiple pages in a process):
+//
+//    Pg    OPg
+//    |     |
+//    F     OF
+//   /\    /  \
+//  W  \  /   CF
+//   \ | /    | \
+//     Pr     | OW
+//            | /
+//            OPr
+//
+// Where:
+// Pg: page
+// OPg: other_page
+// F: frame(frame_tree_id:0)
+// OF: other_frame(frame_tree_id:1)
+// CF: child_frame(frame_tree_id:3)
+// W: worker
+// OW: other_worker
+// Pr: process(pid:1)
+// OPr: other_process(pid:2)
+struct MockMultiplePagesAndWorkersWithMultipleProcessesGraph
+    : public MockMultiplePagesWithMultipleProcessesGraph {
+  explicit MockMultiplePagesAndWorkersWithMultipleProcessesGraph(
+      TestGraphImpl* graph);
+  ~MockMultiplePagesAndWorkersWithMultipleProcessesGraph();
+  TestNodeWrapper<WorkerNodeImpl> worker;
+  TestNodeWrapper<WorkerNodeImpl> other_worker;
+};
+
 }  // namespace performance_manager
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_MOCK_GRAPHS_H_

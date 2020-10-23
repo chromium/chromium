@@ -109,4 +109,25 @@ void MockSinglePageWithFrameAndWorkerInSingleProcessGraph::DeleteWorker() {
   worker.reset();
 }
 
+MockMultiplePagesAndWorkersWithMultipleProcessesGraph::
+    MockMultiplePagesAndWorkersWithMultipleProcessesGraph(TestGraphImpl* graph)
+    : MockMultiplePagesWithMultipleProcessesGraph(graph),
+      worker(TestNodeWrapper<WorkerNodeImpl>::Create(
+          graph,
+          WorkerNode::WorkerType::kDedicated,
+          process.get())),
+      other_worker(TestNodeWrapper<WorkerNodeImpl>::Create(
+          graph,
+          WorkerNode::WorkerType::kDedicated,
+          other_process.get())) {
+  worker->AddClientFrame(frame.get());
+  other_worker->AddClientFrame(child_frame.get());
+}
+
+MockMultiplePagesAndWorkersWithMultipleProcessesGraph::
+    ~MockMultiplePagesAndWorkersWithMultipleProcessesGraph() {
+  other_worker->RemoveClientFrame(child_frame.get());
+  worker->RemoveClientFrame(frame.get());
+}
+
 }  // namespace performance_manager
