@@ -81,7 +81,7 @@ ContentSettingImageView::ContentSettingImageView(
       bubble_view_(nullptr) {
   DCHECK(delegate_);
   SetUpForInOutAnimation();
-  image()->EnableCanvasFlippingForRTLUI(true);
+  image()->SetFlipCanvasOnPaintForRTLUI(true);
 
   base::Optional<ViewID> view_id =
       GetViewID(content_setting_image_model_->image_type());

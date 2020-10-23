@@ -241,7 +241,7 @@ MoveToAccountStoreBubbleView::MovingBannerView::MovingBannerView(
 
   auto arrow_view = std::make_unique<views::ColorTrackingIconView>(
       kChevronRightIcon, gfx::kFaviconSize);
-  arrow_view->EnableCanvasFlippingForRTLUI(true);
+  arrow_view->SetFlipCanvasOnPaintForRTLUI(true);
   AddChildView(std::move(arrow_view));
 
   to_view = AddChildView(std::move(to_image));

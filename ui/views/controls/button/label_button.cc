@@ -379,11 +379,6 @@ void LabelButton::Layout() {
   Button::Layout();
 }
 
-void LabelButton::EnableCanvasFlippingForRTLUI(bool flip) {
-  Button::EnableCanvasFlippingForRTLUI(flip);
-  image_->EnableCanvasFlippingForRTLUI(flip);
-}
-
 void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (GetIsDefault())
     node_data->AddState(ax::mojom::State::kDefault);
@@ -608,6 +603,10 @@ Button::ButtonState LabelButton::ImageStateForState(
     ButtonState for_state) const {
   return button_state_image_models_[for_state].IsEmpty() ? STATE_NORMAL
                                                          : for_state;
+}
+
+void LabelButton::FlipCanvasOnPaintForRTLUIChanged() {
+  image_->SetFlipCanvasOnPaintForRTLUI(GetFlipCanvasOnPaintForRTLUI());
 }
 
 BEGIN_METADATA(LabelButton, Button)

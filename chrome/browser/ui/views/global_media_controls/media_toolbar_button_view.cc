@@ -37,7 +37,7 @@ MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
       feature_promo_controller_(browser_view->feature_promo_controller()) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  EnableCanvasFlippingForRTLUI(false);
+  SetFlipCanvasOnPaintForRTLUI(false);
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_ICON_TOOLTIP_TEXT));
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);

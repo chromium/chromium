@@ -1488,7 +1488,7 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateOverflowButton() {
   // By default, menu buttons are not flipped because they generally contain
   // text and flipping the gfx::Canvas object will break text rendering. Since
   // the overflow button does not contain text, we can safely flip it.
-  button->EnableCanvasFlippingForRTLUI(true);
+  button->SetFlipCanvasOnPaintForRTLUI(true);
 
   // Make visible as necessary.
   button->SetVisible(false);

@@ -190,7 +190,7 @@ FindBarView::FindBarView(FindBarHost* host) {
   close_button_ = AddChildView(std::move(close_button));
   SetCommonButtonAttributes(close_button_);
 
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
 
   // Normally we could space objects horizontally by simply passing a constant
   // value to BoxLayout for between-child spacing.  But for the vector image

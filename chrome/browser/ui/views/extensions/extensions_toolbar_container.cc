@@ -51,7 +51,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
 
   model_observer_.Add(model_);
   // Do not flip the Extensions icon in RTL.
-  extensions_button_->EnableCanvasFlippingForRTLUI(false);
+  extensions_button_->SetFlipCanvasOnPaintForRTLUI(false);
 
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,

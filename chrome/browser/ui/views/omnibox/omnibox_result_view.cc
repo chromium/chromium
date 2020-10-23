@@ -182,7 +182,7 @@ OmniboxResultView::OmniboxResultView(
 
   keyword_view_ = AddChildView(std::make_unique<OmniboxMatchCellView>(this));
   keyword_view_->SetVisible(false);
-  keyword_view_->icon()->EnableCanvasFlippingForRTLUI(true);
+  keyword_view_->icon()->SetFlipCanvasOnPaintForRTLUI(true);
   keyword_view_->icon()->SizeToPreferredSize();
 }
 

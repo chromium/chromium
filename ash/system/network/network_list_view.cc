@@ -508,7 +508,7 @@ views::View* NetworkListView::CreatePowerStatusView(const NetworkInfo& info) {
   views::ImageView* icon = new views::ImageView;
   const SkColor icon_color = GetIconColor();
   icon->SetPreferredSize(gfx::Size(kMenuIconSize, kMenuIconSize));
-  icon->EnableCanvasFlippingForRTLUI(true);
+  icon->SetFlipCanvasOnPaintForRTLUI(true);
   PowerStatus::BatteryImageInfo icon_info;
   icon_info.charge_percent = info.battery_percentage;
   icon->SetImage(PowerStatus::GetBatteryImage(

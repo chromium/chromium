@@ -51,7 +51,7 @@ FloatingMenuButton::FloatingMenuButton(views::ButtonListener* listener,
       is_a11y_togglable_(is_a11y_togglable) {
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
-  EnableCanvasFlippingForRTLUI(flip_for_rtl);
+  SetFlipCanvasOnPaintForRTLUI(flip_for_rtl);
   SetPreferredSize(gfx::Size(size_, size_));
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);

@@ -1148,8 +1148,30 @@ void View::SetNativeThemeForTesting(ui::NativeTheme* theme) {
 
 // RTL painting ----------------------------------------------------------------
 
-void View::EnableCanvasFlippingForRTLUI(bool enable) {
+bool View::GetFlipCanvasOnPaintForRTLUI() const {
+  return flip_canvas_on_paint_for_rtl_ui_;
+}
+
+void View::SetFlipCanvasOnPaintForRTLUI(bool enable) {
+  if (enable == flip_canvas_on_paint_for_rtl_ui_)
+    return;
   flip_canvas_on_paint_for_rtl_ui_ = enable;
+
+  OnPropertyChanged(&flip_canvas_on_paint_for_rtl_ui_, kPropertyEffectsPaint);
+}
+
+PropertyChangedSubscription View::AddFlipCanvasOnPaintForRTLUIChangedCallback(
+    PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&flip_canvas_on_paint_for_rtl_ui_,
+                                    std::move(callback));
+}
+
+void View::SetMirrored(bool is_mirrored) {
+  if (is_mirrored_ && is_mirrored_.value() == is_mirrored)
+    return;
+  is_mirrored_ = is_mirrored;
+
+  OnPropertyChanged(&is_mirrored_, kPropertyEffectsPaint);
 }
 
 bool View::GetMirrored() const {
@@ -3053,6 +3075,7 @@ BEGIN_METADATA_BASE(View)
 ADD_READONLY_PROPERTY_METADATA(const char*, ClassName)
 ADD_PROPERTY_METADATA(bool, Enabled)
 ADD_PROPERTY_METADATA(View::FocusBehavior, FocusBehavior)
+ADD_PROPERTY_METADATA(bool, FlipCanvasOnPaintForRTLUI)
 ADD_PROPERTY_METADATA(int, Group)
 ADD_PROPERTY_METADATA(int, ID)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MaximumSize)

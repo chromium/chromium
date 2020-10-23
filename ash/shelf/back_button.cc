@@ -30,7 +30,7 @@ const char BackButton::kViewClassName[] = "ash/BackButton";
 
 BackButton::BackButton(Shelf* shelf) : ShelfControlButton(shelf, this) {
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
 }
 
 BackButton::~BackButton() {}

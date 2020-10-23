@@ -149,7 +149,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
   SetNotifyEnterExitOnChild(true);
 
   // Flip the canvas in RTL so the separator is drawn on the correct side.
-  separator_view_->EnableCanvasFlippingForRTLUI(true);
+  separator_view_->SetFlipCanvasOnPaintForRTLUI(true);
 
   auto alert_view = std::make_unique<views::AXVirtualView>();
   alert_view->GetCustomData().role = ax::mojom::Role::kAlert;

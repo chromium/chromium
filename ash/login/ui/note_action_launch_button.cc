@@ -192,7 +192,7 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton,
                               ShelfConfig::Get()->shelf_icon_color()));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetFocusPainter(nullptr);
-    EnableCanvasFlippingForRTLUI(true);
+    SetFlipCanvasOnPaintForRTLUI(true);
     SetPreferredSize(gfx::Size(kLargeBubbleRadiusDp, kLargeBubbleRadiusDp));
     SetEventTargeter(
         std::make_unique<views::ViewTargeter>(&event_targeter_delegate_));

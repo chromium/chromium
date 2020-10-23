@@ -67,7 +67,7 @@ AvatarToolbarButton::AvatarToolbarButton(Browser* browser,
 
   // The avatar should not flip with RTL UI. This does not affect text rendering
   // and LabelButton image/label placement is still flipped like usual.
-  EnableCanvasFlippingForRTLUI(false);
+  SetFlipCanvasOnPaintForRTLUI(false);
 
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
 

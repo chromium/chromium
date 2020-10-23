@@ -53,7 +53,7 @@ int RoundToPercent(double fractional_value) {
 ProgressBar::ProgressBar(int preferred_height, bool allow_round_corner)
     : preferred_height_(preferred_height),
       allow_round_corner_(allow_round_corner) {
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
 }
 
 ProgressBar::~ProgressBar() = default;

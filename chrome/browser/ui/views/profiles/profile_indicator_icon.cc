@@ -9,7 +9,7 @@
 
 ProfileIndicatorIcon::ProfileIndicatorIcon() {
   // In RTL mode, the incognito icon should be looking the opposite direction.
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
 }
 
 ProfileIndicatorIcon::~ProfileIndicatorIcon() {}

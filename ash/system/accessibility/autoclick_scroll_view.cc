@@ -120,7 +120,7 @@ class AutoclickScrollButton : public CustomShapeButton,
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
     // Disable canvas flipping, as scroll left should always be left no matter
     // the language orientation.
-    EnableCanvasFlippingForRTLUI(false);
+    SetFlipCanvasOnPaintForRTLUI(false);
     scroll_hover_timer_ = std::make_unique<base::RetainingOneShotTimer>(
         FROM_HERE,
         base::TimeDelta::FromMilliseconds(

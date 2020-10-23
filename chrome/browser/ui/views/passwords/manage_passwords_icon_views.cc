@@ -25,7 +25,7 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate) {
   // Password icon should not be mirrored in RTL.
-  image()->EnableCanvasFlippingForRTLUI(false);
+  image()->SetFlipCanvasOnPaintForRTLUI(false);
 }
 
 ManagePasswordsIconViews::~ManagePasswordsIconViews() = default;

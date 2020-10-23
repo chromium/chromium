@@ -72,7 +72,7 @@ class ScrollBarThumb : public BaseScrollBarThumb {
 
 ScrollBarButton::ScrollBarButton(PressedCallback callback, Type type)
     : BaseScrollBarButton(std::move(callback)), type_(type) {
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
   DCHECK_EQ(FocusBehavior::NEVER, GetFocusBehavior());
 }
 
@@ -196,7 +196,7 @@ ui::NativeTheme::State ScrollBarThumb::GetNativeThemeState() const {
 }  // namespace
 
 ScrollBarViews::ScrollBarViews(bool horizontal) : ScrollBar(horizontal) {
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
   state_ = ui::NativeTheme::kNormal;
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());

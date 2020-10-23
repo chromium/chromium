@@ -50,7 +50,7 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
   SetFocusForPlatform();
 
   // Image.
-  EnableCanvasFlippingForRTLUI(false);
+  SetFlipCanvasOnPaintForRTLUI(false);
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 

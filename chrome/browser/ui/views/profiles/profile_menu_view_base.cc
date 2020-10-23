@@ -732,7 +732,7 @@ void ProfileMenuViewBase::AddShortcutFeatureButton(
                               base::Unretained(this), std::move(action)),
           icon, text, SK_ColorTRANSPARENT,
           /*show_border=*/true));
-  button->EnableCanvasFlippingForRTLUI(false);
+  button->SetFlipCanvasOnPaintForRTLUI(false);
 }
 
 void ProfileMenuViewBase::AddFeatureButton(const base::string16& text,

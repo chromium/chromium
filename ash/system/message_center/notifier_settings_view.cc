@@ -724,7 +724,7 @@ std::unique_ptr<views::View> NotifierSettingsView::CreateToggleButtonRow(
   auto* label_ptr = row_view->AddChildView(std::move(label));
   row_layout->SetFlexForView(label_ptr, 1);
 
-  toggle_button->EnableCanvasFlippingForRTLUI(true);
+  toggle_button->SetFlipCanvasOnPaintForRTLUI(true);
   row_view->AddChildView(std::move(toggle_button));
 
   return row_view;

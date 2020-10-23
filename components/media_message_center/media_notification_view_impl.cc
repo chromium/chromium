@@ -230,7 +230,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY));
   play_pause_button->SetToggledTooltipText(l10n_util::GetStringUTF16(
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE));
-  play_pause_button->EnableCanvasFlippingForRTLUI(false);
+  play_pause_button->SetFlipCanvasOnPaintForRTLUI(false);
   play_pause_button_ =
       playback_button_container_->AddChildView(std::move(play_pause_button));
 
@@ -277,7 +277,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP));
   picture_in_picture_button->SetToggledTooltipText(l10n_util::GetStringUTF16(
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP));
-  picture_in_picture_button->EnableCanvasFlippingForRTLUI(false);
+  picture_in_picture_button->SetFlipCanvasOnPaintForRTLUI(false);
   picture_in_picture_button_ =
       button_row_->AddChildView(std::move(picture_in_picture_button));
 
@@ -588,7 +588,7 @@ void MediaNotificationViewImpl::CreateMediaButton(
   button->SetAccessibleName(accessible_name);
   button->SetTooltipText(accessible_name);
   button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  button->EnableCanvasFlippingForRTLUI(false);
+  button->SetFlipCanvasOnPaintForRTLUI(false);
   playback_button_container_->AddChildView(std::move(button));
 }
 

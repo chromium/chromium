@@ -64,7 +64,7 @@ class DownloadsHeader : public views::Button {
     SetupLabel(label);
 
     auto* chevron = AddChildView(std::make_unique<views::ImageView>());
-    chevron->EnableCanvasFlippingForRTLUI(true);
+    chevron->SetFlipCanvasOnPaintForRTLUI(true);
 
     const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorPrimary);

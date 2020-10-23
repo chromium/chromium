@@ -87,7 +87,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
   // Make sure icons are flipped by default so that back, forward, etc. follows
   // UI direction.
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
 
   SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 

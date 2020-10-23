@@ -58,7 +58,7 @@ TouchSelectionMenuViews::TouchSelectionMenuViews(
   set_margins(kMenuMargins);
   SetCanActivate(false);
   set_adjust_if_offscreen(true);
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
 
   SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal,

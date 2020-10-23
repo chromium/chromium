@@ -290,7 +290,7 @@ void ToolbarView::Init() {
       base::BindRepeating(&ToolbarView::AppMenuButtonPressed,
                           base::Unretained(this)),
       this);
-  app_menu_button->EnableCanvasFlippingForRTLUI(true);
+  app_menu_button->SetFlipCanvasOnPaintForRTLUI(true);
   app_menu_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_APP));
   app_menu_button->SetTooltipText(

@@ -73,7 +73,7 @@ float GetNearestAllowedValue(const base::flat_set<float>& allowed_values,
 
 Slider::Slider(SliderListener* listener) : listener_(listener) {
   highlight_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
-  EnableCanvasFlippingForRTLUI(true);
+  SetFlipCanvasOnPaintForRTLUI(true);
 #if defined(OS_APPLE)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 #else

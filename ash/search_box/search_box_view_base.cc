@@ -277,7 +277,7 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   content_container_->AddChildView(search_box_right_space_);
 
   assistant_button_ = new SearchBoxImageButton(this);
-  assistant_button_->EnableCanvasFlippingForRTLUI(false);
+  assistant_button_->SetFlipCanvasOnPaintForRTLUI(false);
   // Default hidden, child class should decide if it should shown.
   assistant_button_->SetVisible(false);
   content_container_->AddChildView(assistant_button_);
