@@ -253,12 +253,19 @@ VISIT_PROTO_FIELDS(const sync_pb::ChromiumExtensionsActivity& proto) {
   VISIT(bookmark_writes_since_last_commit);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::CustomNudgeDelay& proto) {
+  VISIT(datatype_id);
+  VISIT(delay_ms);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::ClientCommand& proto) {
   VISIT(set_sync_poll_interval);
   VISIT(max_commit_batch_size);
   VISIT(sessions_commit_delay_seconds);
   VISIT(throttle_delay_seconds);
   VISIT(client_invalidation_hint_buffer_size);
+  VISIT(gu_retry_delay_seconds);
+  VISIT_REP(custom_nudge_delays);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ClientConfigParams& proto) {
