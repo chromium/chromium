@@ -325,6 +325,7 @@ crbug.com/968791 virtual/scalefactor200/external/wpt/css/filter-effects/filters-
 
 # Service workers new newtwork button added
 crbug.com/1137050 http/tests/devtools/service-workers/service-workers-view.js [ Skip ]
+crbug.com/1137050 http/tests/devtools/service-workers/service-workers-redundant.js [ Skip ]
 
 # ==== Regressions introduced by BlinkGenPropertyTrees =====
 # Reflection / mask ordering issue
