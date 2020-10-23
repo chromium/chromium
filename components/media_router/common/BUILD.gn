@@ -54,9 +54,12 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/media_router/common/mojom:logger",
   ]
   public_deps = [ ":common" ]
   sources = [
+    "test/mock_logger.cc",
+    "test/mock_logger.h",
     "test/test_helper.cc",
     "test/test_helper.h",
   ]

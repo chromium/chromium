@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/router/test/mock_logger.h"
+#include "components/media_router/common/test/mock_logger.h"
 
 namespace media_router {
 
