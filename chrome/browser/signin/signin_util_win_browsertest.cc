@@ -59,6 +59,9 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
           callback) override {
     std::move(callback).Run(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
   }
+  void ShowSyncDisabledConfirmation(
+      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+          callback) override {}
   void ShowSyncSettings() override {}
   void SwitchToProfile(Profile* new_profile) override {}
 };

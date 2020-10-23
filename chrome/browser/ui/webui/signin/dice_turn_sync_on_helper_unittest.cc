@@ -87,6 +87,9 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
+  void ShowSyncDisabledConfirmation(
+      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+          callback) override {}
   void ShowSyncSettings() override;
   void SwitchToProfile(Profile* new_profile) override;
 

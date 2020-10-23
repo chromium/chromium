@@ -90,6 +90,14 @@ class DiceTurnSyncOnHelper
         base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
             callback) = 0;
 
+    // Shows a confirmation screen offering to stay signed-in or to signout.
+    // |callback| must be called.
+    // TODO(crbug.com/1126913): Use a new enum for this callback with only
+    // values that make sense here (stay signed-in / signout).
+    virtual void ShowSyncDisabledConfirmation(
+        base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+            callback) = 0;
+
     // Opens the Sync settings page.
     virtual void ShowSyncSettings() = 0;
 
