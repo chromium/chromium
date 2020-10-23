@@ -79,11 +79,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 #pragma mark - Device Utilities
 
-- (void)rotateDeviceToOrientation:(UIDeviceOrientation)deviceOrientation
-                            error:(NSError**)error {
-  [EarlGrey rotateDeviceToOrientation:deviceOrientation error:error];
-}
-
 - (BOOL)isIPadIdiom {
   UIUserInterfaceIdiom idiom =
       [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] userInterfaceIdiom];

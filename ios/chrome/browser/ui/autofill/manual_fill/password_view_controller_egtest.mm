@@ -484,8 +484,8 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                error:nil];
 
   // Verify the password controller table view is still visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]

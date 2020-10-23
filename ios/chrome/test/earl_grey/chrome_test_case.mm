@@ -227,7 +227,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
       _originalOrientation) {
     // Rotate the device back to the original orientation, since some tests
     // attempt to run in other orientations.
-    [ChromeEarlGrey rotateDeviceToOrientation:_originalOrientation error:nil];
+    [EarlGrey rotateDeviceToOrientation:_originalOrientation error:nil];
   }
   [super tearDown];
   _executedTestMethodSetUp = NO;
@@ -349,8 +349,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
 
   // Enforce the assumption that the tests are runing in portrait.
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
 }
 
 // Resets the application state.

@@ -46,11 +46,6 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 
 #pragma mark - Device Utilities
 
-// Simulate the user action to rotate the device to a certain orientation.
-// TODO(crbug.com/1017265): Remove along EG1 support.
-- (void)rotateDeviceToOrientation:(UIDeviceOrientation)deviceOrientation
-                            error:(NSError**)error;
-
 // Returns YES if running on an iPad.
 - (BOOL)isIPadIdiom;
 

@@ -73,8 +73,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.
 - (void)tearDown {
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [super tearDown];
 }
 
@@ -332,24 +331,22 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab_title]];
 
   // Show the tab switcher and return to the BVC, in portrait.
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab_title);
   [ChromeEarlGrey
       waitForWebStateContainingText:base::SysNSStringToUTF8(tab_title)];
 
   // Show the tab switcher and return to the BVC, in landscape.
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                error:nil];
   [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab_title);
   [ChromeEarlGrey
       waitForWebStateContainingText:base::SysNSStringToUTF8(tab_title)];
 
   // Show the tab switcher and return to the BVC, in portrait.
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab_title);
   [ChromeEarlGrey
