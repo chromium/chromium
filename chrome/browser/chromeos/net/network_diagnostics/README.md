@@ -127,10 +127,9 @@ Tests whether the internet connection is behind a captive portal.
 
 Problems:
 * `kNoActiveNetworks`: No active networks found.
-* `kRestrictedConnectivity`: The active network is detected to be behind a
-   captive portal and have restricted connectivity.
-* `kCaptivePortalState`: The active network is detected to be behind a captive
-   portal.
+* `kRestrictedConnectivity`: The active network is behind a captive portal and
+   has restricted connectivity.
+* `kCaptivePortalState`: The active network is behind a captive portal.
 
 ### Firewall Routines
 
