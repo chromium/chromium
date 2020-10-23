@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.layouts;
+package org.chromium.chrome.browser.layouts;
 
 /**
  * Exposes the current {@link Layout} state as well as a way to listen to {@link Layout} state
@@ -19,13 +19,13 @@ public interface LayoutStateProvider {
          * @param layoutType LayoutType of the started showing Layout.
          * @param showToolbar Whether or not to show the normal toolbar when animating into the
          */
-        default void onStartedShowing(@Layout.LayoutType int layoutType, boolean showToolbar) {}
+        default void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {}
 
         /**
          * Called when Layout finishes showing.
          * @param layoutType LayoutType of the finished showing Layout.
          */
-        default void onFinishedShowing(@Layout.LayoutType int layoutType) {}
+        default void onFinishedShowing(@LayoutType int layoutType) {}
 
         // TODO(crbug.com/1108496): Reiterate to see whether the showToolbar and delayAnimation
         // param is needed.
@@ -37,13 +37,13 @@ public interface LayoutStateProvider {
          * @param delayAnimation Whether or not to delay any related animations until after Layout
          */
         default void onStartedHiding(
-                @Layout.LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {}
+                @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {}
 
         /**
          * Called when Layout finishes hiding.
          * @param layoutType LayoutType of the finished hiding Layout.
          */
-        default void onFinishedHiding(@Layout.LayoutType int layoutType) {}
+        default void onFinishedHiding(@LayoutType int layoutType) {}
 
         /**
          * Called when a layout wants to hint that a new tab might be selected soon. This is not
@@ -55,9 +55,9 @@ public interface LayoutStateProvider {
 
     /**
      * @return Whether or not the {@link Layout} is visible.
-     * @param layoutType whether the {@link Layout} give {@link Layout.LayoutType} is visible.
+     * @param layoutType whether the {@link Layout} give {@link LayoutType} is visible.
      */
-    boolean isLayoutVisible(@Layout.LayoutType int layoutType);
+    boolean isLayoutVisible(@LayoutType int layoutType);
 
     /**
      * @param listener Registers {@code listener} for all layout status changes.

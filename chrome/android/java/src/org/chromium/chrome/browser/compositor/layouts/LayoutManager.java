@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -1133,7 +1135,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     }
 
     protected final void notifyObserversLayoutStartedShowing(
-            @Layout.LayoutType int layoutType, boolean showToolbar) {
+            @LayoutType int layoutType, boolean showToolbar) {
         mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
             for (LayoutStateObserver observer : mLayoutObservers) {
                 observer.onStartedShowing(layoutType, showToolbar);
@@ -1141,7 +1143,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         });
     }
 
-    protected final void notifyObserversLayoutFinishedShowing(@Layout.LayoutType int layoutType) {
+    protected final void notifyObserversLayoutFinishedShowing(@LayoutType int layoutType) {
         mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
             for (LayoutStateObserver observer : mLayoutObservers) {
                 observer.onFinishedShowing(layoutType);
@@ -1150,7 +1152,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     }
 
     protected final void notifyObserversLayoutStartedHiding(
-            @Layout.LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
+            @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
         mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
             for (LayoutStateObserver observer : mLayoutObservers) {
                 observer.onStartedHiding(layoutType, showToolbar, delayAnimation);
@@ -1158,7 +1160,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         });
     }
 
-    protected final void notifyObserversLayoutFinishedHiding(@Layout.LayoutType int layoutType) {
+    protected final void notifyObserversLayoutFinishedHiding(@LayoutType int layoutType) {
         mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
             for (LayoutStateObserver observer : mLayoutObservers) {
                 observer.onFinishedHiding(layoutType);

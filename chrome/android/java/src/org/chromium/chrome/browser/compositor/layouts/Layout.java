@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -38,18 +39,6 @@ import java.util.List;
  */
 
 public abstract class Layout implements TabContentManager.ThumbnailChangeListener {
-    /**
-     * The type info of the Layout.
-     */
-    @IntDef({LayoutType.BROWSING, LayoutType.TAB_SWITCHER, LayoutType.TOOLBAR_SWIPE,
-            LayoutType.SIMPLE_ANIMATION})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface LayoutType {
-        int BROWSING = 0;
-        int TAB_SWITCHER = 1;
-        int TOOLBAR_SWIPE = 2;
-        int SIMPLE_ANIMATION = 3;
-    }
 
     /**
      * The orientation of the device.
