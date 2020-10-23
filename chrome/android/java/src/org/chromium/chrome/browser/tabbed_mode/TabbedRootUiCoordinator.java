@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.language.LanguageAskPrompt;
-import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
@@ -66,7 +65,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 /**
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.
  */
-public class TabbedRootUiCoordinator extends RootUiCoordinator implements NativeInitObserver {
+public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private static boolean sEnableStatusIndicatorForTests;
 
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
@@ -216,6 +215,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
 
     @Override
     public void onFinishNativeInitialization() {
+        super.onFinishNativeInitialization();
         assert mLayoutManager != null;
         // clang-format off
         mHistoryNavigationCoordinator = HistoryNavigationCoordinator.create(

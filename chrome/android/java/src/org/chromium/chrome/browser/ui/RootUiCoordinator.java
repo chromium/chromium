@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -46,13 +47,13 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
+import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -109,7 +110,7 @@ import java.util.function.Consumer;
  * still being discussed See https://crbug.com/931496.
  */
 public class RootUiCoordinator
-        implements Destroyable, InflationObserver,
+        implements Destroyable, InflationObserver, NativeInitObserver,
                    MenuOrKeyboardActionController.MenuOrKeyboardActionHandler, AppMenuBlocker {
     protected ChromeActivity mActivity;
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
@@ -351,14 +352,6 @@ public class RootUiCoordinator
 
         initFindToolbarManager();
         initializeToolbar();
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
-            MessageContainer container = mActivity.findViewById(R.id.message_container);
-            mMessageContainerCoordinator =
-                    new MessageContainerCoordinator(container, getBrowserControlsManager());
-            mMessageDispatcher = MessagesFactory.createMessageDispatcher(container);
-            MessagesFactory.attachMessageDispatcher(
-                    mActivity.getWindowAndroid(), mMessageDispatcher);
-        }
     }
 
     @Override
@@ -402,6 +395,19 @@ public class RootUiCoordinator
             public void onExitVr() {}
         };
         VrModuleProvider.registerVrModeObserver(mVrModeObserver);
+    }
+
+    @Override
+    @CallSuper
+    public void onFinishNativeInitialization() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
+            MessageContainer container = mActivity.findViewById(R.id.message_container);
+            mMessageContainerCoordinator =
+                    new MessageContainerCoordinator(container, getBrowserControlsManager());
+            mMessageDispatcher = MessagesFactory.createMessageDispatcher(container);
+            MessagesFactory.attachMessageDispatcher(
+                    mActivity.getWindowAndroid(), mMessageDispatcher);
+        }
     }
 
     /**

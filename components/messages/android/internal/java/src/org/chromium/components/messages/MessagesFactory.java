@@ -10,6 +10,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class MessagesFactory {
     /**
      * Creates an instance of ManagedMessageDispatcher.
+     * @param container The MessageContainer for displaying message banners.
      * @return The constructed ManagedMessageDispatcher.
      */
     public static ManagedMessageDispatcher createMessageDispatcher(MessageContainer container) {

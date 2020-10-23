@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -29,8 +28,7 @@ import org.chromium.components.feature_engagement.Tracker;
 /**
  * A {@link RootUiCoordinator} variant that controls UI for {@link BaseCustomTabActivity}.
  */
-public class BaseCustomTabRootUiCoordinator
-        extends RootUiCoordinator implements NativeInitObserver {
+public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<CustomTabActivityNavigationController> mNavigationController;
 
@@ -61,6 +59,7 @@ public class BaseCustomTabRootUiCoordinator
 
     @Override
     public void onFinishNativeInitialization() {
+        super.onFinishNativeInitialization();
         if (!ReengagementNotificationController.isEnabled()) return;
         new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable(profile -> {
             assert profile != null : "Unexpectedly null profile from TabModel.";
