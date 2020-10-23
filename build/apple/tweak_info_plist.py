@@ -263,6 +263,9 @@ def Main(argv):
                     choices=('ios', 'mac'),
                     default='mac',
                     help='The target platform of the bundle')
+  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
+  parser.add_option('--lock-to-version',
+                    help='Set CFBundleVersion to given value + @MAJOR@@PATH@')
   parser.add_option(
       '--version-overrides',
       action='append',
@@ -326,10 +329,17 @@ def Main(argv):
         'CFBundleVersion': '@BUILD@.@PATCH@',
     }
   else:
-    version_format_for_key = {
-        'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
-        'CFBundleVersion': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
-    }
+    # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
+    if options.lock_to_version:
+      version_format_for_key = {
+          'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
+          'CFBundleVersion': options.lock_to_version + '.@MAJOR@@PATCH@'
+      }
+    else:
+      version_format_for_key = {
+          'CFBundleShortVersionString': '@MAJOR@.@BUILD@.@PATCH@',
+          'CFBundleVersion': '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
+      }
 
   if options.use_breakpad:
     version_format_for_key['BreakpadVersion'] = \
