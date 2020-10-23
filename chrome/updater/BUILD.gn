@@ -344,15 +344,16 @@ if (is_win || is_mac) {
     }
   }
 
-  group("updater_integration_tests") {
-    testonly = true
+  script_test("updater_integration_tests") {
+    script = "//testing/scripts/run_isolated_script_test.py"
+
+    args = [ "@WrappedPath(" +
+             rebase_path("//chrome/updater/run_updater_tests.py",
+                         root_build_dir) + ")" ]
 
     data = [
       "//chrome/updater/run_updater_tests.py",
       "//chrome/updater/test/",
-      "//testing/scripts/common.py",
-      "//testing/scripts/run_isolated_script_test.py",
-      "//testing/xvfb.py",
       "//third_party/catapult/third_party/typ/",
     ]
 

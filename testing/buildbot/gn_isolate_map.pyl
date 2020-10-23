@@ -1703,12 +1703,8 @@
     "type": "windowed_test_launcher",
   },
   "updater_integration_tests": {
-    "args": [
-      "../../chrome/updater/run_updater_tests.py",
-    ],
+    "type": "generated_script",
     "label": "//chrome/updater:updater_integration_tests",
-    "script": "//testing/scripts/run_isolated_script_test.py",
-    "type": "script",
   },
   "updater_tests": {
     "label": "//chrome/updater:updater_tests",
