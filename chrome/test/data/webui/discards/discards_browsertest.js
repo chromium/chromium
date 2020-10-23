@@ -10,7 +10,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var DiscardsTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
-    return 'chrome://test?module=discards/discards_test.js';
+    return 'chrome://discards/test_loader.html?module=discards/discards_test.js';
   }
 
   get extraLibraries() {
@@ -18,11 +18,6 @@ var DiscardsTest = class extends testing.Test {
       '//third_party/mocha/mocha.js',
       '//chrome/test/data/webui/mocha_adapter.js',
     ];
-  }
-
-  /** @override */
-  get webuiHost() {
-    return 'discards';
   }
 };
 

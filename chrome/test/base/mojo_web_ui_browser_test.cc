@@ -125,6 +125,9 @@ void MojoWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
   BaseWebUIBrowserTest::BrowsePreload(browse_to);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  if (use_mojo_modules_)
+    return;
+
   if (use_mojo_lite_bindings_) {
     std::string test_mojo_lite_js =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

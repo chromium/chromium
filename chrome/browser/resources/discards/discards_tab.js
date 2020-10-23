@@ -4,12 +4,14 @@
 
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link_css.m.js';
-import './mojo_api.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
+import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState, LifecycleUnitState} from './chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-webui.js';
+import {DetailsProviderRemote, LifecycleUnitVisibility, TabDiscardsInfo} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
 import {boolToString, durationToString, getOrCreateDetailsProvider} from './discards.js';
 import {SortedTableBehavior} from './sorted_table_behavior.js';
 
@@ -48,7 +50,7 @@ export function compareTabDiscardsInfos(sortKey, a, b) {
   if (sortKey === 'state') {
     // If the keys are discarding state, then break ties using the discard
     // reason.
-    if (val1 === val2 && val1 === mojom.LifecycleUnitState.DISCARDED) {
+    if (val1 === val2 && val1 === LifecycleUnitState.DISCARDED) {
       val1 = a['discardReason'];
       val2 = b['discardReason'];
     }
@@ -85,7 +87,7 @@ Polymer({
   properties: {
     /**
      * List of tabinfos.
-     * @private {?Array<!discards.mojom.TabDiscardsInfo>}
+     * @private {?Array<!TabDiscardsInfo>}
      */
     tabInfos_: {
       type: Array,
@@ -95,7 +97,7 @@ Polymer({
   /** @private The current update timer if any. */
   updateTimer_: 0,
 
-  /** @private {(discards.mojom.DetailsProviderRemote|null)} */
+  /** @private {(DetailsProviderRemote|null)} */
   discardsDetailsProvider_: null,
 
   /** @override */
@@ -133,18 +135,18 @@ Polymer({
   /**
    * Returns a string representation of a visibility enum value for display in
    * a table.
-   * @param {discards.mojom.LifecycleUnitVisibility} visibility A visibility
+   * @param {LifecycleUnitVisibility} visibility A visibility
    *     value.
    * @return {string} A string representation of the visibility.
    * @private
    */
   visibilityToString_(visibility) {
     switch (visibility) {
-      case discards.mojom.LifecycleUnitVisibility.HIDDEN:
+      case LifecycleUnitVisibility.HIDDEN:
         return 'hidden';
-      case discards.mojom.LifecycleUnitVisibility.OCCLUDED:
+      case LifecycleUnitVisibility.OCCLUDED:
         return 'occluded';
-      case discards.mojom.LifecycleUnitVisibility.VISIBLE:
+      case LifecycleUnitVisibility.VISIBLE:
         return 'visible';
     }
     assertNotReached('Unknown visibility: ' + visibility);
@@ -153,18 +155,18 @@ Polymer({
   /**
    * Returns a string representation of a loading state enum value for display
    * in a table.
-   * @param {mojom.LifecycleUnitLoadingState} loadingState A loading state
+   * @param {LifecycleUnitLoadingState} loadingState A loading state
    *    value.
    * @return {string} A string representation of the loading state.
    * @private
    */
   loadingStateToString_(loadingState) {
     switch (loadingState) {
-      case mojom.LifecycleUnitLoadingState.UNLOADED:
+      case LifecycleUnitLoadingState.UNLOADED:
         return 'unloaded';
-      case mojom.LifecycleUnitLoadingState.LOADING:
+      case LifecycleUnitLoadingState.LOADING:
         return 'loading';
-      case mojom.LifecycleUnitLoadingState.LOADED:
+      case LifecycleUnitLoadingState.LOADED:
         return 'loaded';
     }
     assertNotReached('Unknown loadingState: ' + loadingState);
@@ -172,15 +174,15 @@ Polymer({
 
   /**
    * Returns a string representation of a discard reason.
-   * @param {mojom.LifecycleUnitDiscardReason} reason The discard reason.
+   * @param {LifecycleUnitDiscardReason} reason The discard reason.
    * @return {string} A string representation of the discarding reason.
    * @private
    */
   discardReasonToString_(reason) {
     switch (reason) {
-      case mojom.LifecycleUnitDiscardReason.EXTERNAL:
+      case LifecycleUnitDiscardReason.EXTERNAL:
         return 'external';
-      case mojom.LifecycleUnitDiscardReason.URGENT:
+      case LifecycleUnitDiscardReason.URGENT:
         return 'urgent';
     }
     assertNotReached('Unknown discard reason: ' + reason);
@@ -188,14 +190,13 @@ Polymer({
 
   /**
    * Returns a string representation of a lifecycle state.
-   * @param {mojom.LifecycleUnitState} state The lifecycle state.
-   * @param {mojom.LifecycleUnitDiscardReason} reason The discard reason. This
+   * @param {LifecycleUnitState} state The lifecycle state.
+   * @param {LifecycleUnitDiscardReason} reason The discard reason. This
    *     is only used if the state is discard related.
-   * @param {discards.mojom.LifecycleUnitVisibility} visibility A visibility
-   *     value.
+   * @param {LifecycleUnitVisibility} visibility A visibility value.
    * @param {boolean} hasFocus Whether or not the tab has input focus.
-   * @param {mojoBase.mojom.TimeDelta} stateChangeTime Delta between Unix
-   *     Epoch and time at which the lifecycle state has changed.
+   * @param {TimeDelta} stateChangeTime Delta between Unix Epoch and the time at
+   *     which the lifecycle state has changed.
    * @return {string} A string representation of the lifecycle state,
    *     augmented with the discard reason if appropriate.
    * @private
@@ -204,29 +205,29 @@ Polymer({
       state, reason, visibility, hasFocus, stateChangeTime) {
     const pageLifecycleStateFromVisibilityAndFocus = function() {
       switch (visibility) {
-        case discards.mojom.LifecycleUnitVisibility.HIDDEN:
-        case discards.mojom.LifecycleUnitVisibility.OCCLUDED:
+        case LifecycleUnitVisibility.HIDDEN:
+        case LifecycleUnitVisibility.OCCLUDED:
           // An occluded page is also considered hidden.
           return 'hidden';
-        case discards.mojom.LifecycleUnitVisibility.VISIBLE:
+        case LifecycleUnitVisibility.VISIBLE:
           return hasFocus ? 'active' : 'passive';
       }
       assertNotReached('Unknown visibility: ' + visibility);
     };
 
     switch (state) {
-      case mojom.LifecycleUnitState.ACTIVE:
+      case LifecycleUnitState.ACTIVE:
         return pageLifecycleStateFromVisibilityAndFocus();
-      case mojom.LifecycleUnitState.THROTTLED:
+      case LifecycleUnitState.THROTTLED:
         return pageLifecycleStateFromVisibilityAndFocus() + ' (throttled)';
-      case mojom.LifecycleUnitState.DISCARDED:
+      case LifecycleUnitState.DISCARDED:
         return 'discarded (' + this.discardReasonToString_(reason) + ')' +
-            ((reason === mojom.LifecycleUnitDiscardReason.URGENT) ? ' at ' +
+            ((reason === LifecycleUnitDiscardReason.URGENT) ? ' at ' +
                      // Must convert since Date constructor takes
                      // milliseconds.
                      (new Date(stateChangeTime.microseconds / 1000))
                          .toLocaleString() :
-                                                                    '');
+                                                              '');
     }
     assertNotReached('Unknown lifecycle state: ' + state);
   },
@@ -257,7 +258,7 @@ Polymer({
 
   /**
    * Formats an items reactivation for display.
-   * @param {discards.mojom.TabDiscardsInfo} item The item in question.
+   * @param {TabDiscardsInfo} item The item in question.
    * @return {string} The formatted reactivation score.
    * @private
    */
@@ -268,7 +269,7 @@ Polymer({
 
   /**
    * Formats an items site engagement score for display.
-   * @param {discards.mojom.TabDiscardsInfo} item The item in question.
+   * @param {TabDiscardsInfo} item The item in question.
    * @return {string} The formatted site engagemetn score.
    * @private
    */
@@ -278,7 +279,7 @@ Polymer({
 
   /**
    * Retrieves favicon style tag value for an item.
-   * @param {discards.mojom.TabDiscardsInfo} item The item in question.
+   * @param {TabDiscardsInfo} item The item in question.
    * @return {string} A style to retrieve and display the item's favicon.
    * @private
    */
@@ -288,12 +289,12 @@ Polymer({
 
   /**
    * Formats an items lifecycle state for display.
-   * @param {discards.mojom.TabDiscardsInfo} item The item in question.
+   * @param {TabDiscardsInfo} item The item in question.
    * @return {string} A human readable lifecycle state.
    * @private
    */
   getLifeCycleState_(item) {
-    if (item.loadingState !== mojom.LifecycleUnitLoadingState.UNLOADED ||
+    if (item.loadingState !== LifecycleUnitLoadingState.UNLOADED ||
         item.discardCount > 0) {
       return this.lifecycleStateToString_(
           item.state, item.discardReason, item.visibility, item.hasFocus,
@@ -326,7 +327,7 @@ Polymer({
 
   /**
    * Tests whether an item has reasons why it cannot be discarded.
-   * @param {discards.mojom.TabDiscardsInfo} item The item in question.
+   * @param {TabDiscardsInfo} item The item in question.
    * @return {boolean} true iff there are reasons why the item cannot be
    *     discarded.
    * @private
@@ -337,26 +338,26 @@ Polymer({
 
   /**
    * Tests whether an item can be loaded.
-   * @param {discards.mojom.TabDiscardsInfo} item The item in question.
+   * @param {TabDiscardsInfo} item The item in question.
    * @return {boolean} true iff the item can be loaded.
    * @private
    */
   canLoad_(item) {
-    return item.loadingState === mojom.LifecycleUnitLoadingState.UNLOADED;
+    return item.loadingState === LifecycleUnitLoadingState.UNLOADED;
   },
 
   /**
    * Tests whether an item can be discarded.
-   * @param {discards.mojom.TabDiscardsInfo} item The item in question.
+   * @param {TabDiscardsInfo} item The item in question.
    * @return {boolean} true iff the item can be discarded.
    * @private
    */
   canDiscard_(item) {
-    if (item.visibility === discards.mojom.LifecycleUnitVisibility.HIDDEN ||
-        item.visibility === discards.mojom.LifecycleUnitVisibility.OCCLUDED) {
+    if (item.visibility === LifecycleUnitVisibility.HIDDEN ||
+        item.visibility === LifecycleUnitVisibility.OCCLUDED) {
       // Only tabs that aren't visible can be discarded for now.
       switch (item.state) {
-        case mojom.LifecycleUnitState.DISCARDED:
+        case LifecycleUnitState.DISCARDED:
           return false;
       }
       return true;

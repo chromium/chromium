@@ -50,17 +50,15 @@
     <includes>
       <if expr="is_win or is_macosx or desktop_linux or chromeos">
         <include name="IDR_COMMANDER_HTML" file="resources\commander\commander.html" type="BINDATA" />
-        <include name="IDR_DISCARDS_MOJO_API_JS" file="resources\discards\mojo_api.js" type="BINDATA" />
         <include name="IDR_DISCARDS_DATABASE_TAB_JS" file="${root_gen_dir}\chrome\browser\resources\discards\database_tab.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_DISCARDS_DISCARDS_MAIN_JS" file="${root_gen_dir}\chrome\browser\resources\discards\discards_main.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_DISCARDS_DISCARDS_TAB_JS" file="${root_gen_dir}\chrome\browser\resources\discards\discards_tab.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_DISCARDS_GRAPH_TAB_JS" file="${root_gen_dir}\chrome\browser\resources\discards\graph_tab.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_DISCARDS_HTML" file="resources\discards\discards.html" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_DISCARDS_JS" file="resources\discards\discards.js" type="BINDATA" />
-        <include name="IDR_DISCARDS_LIFECYCLE_UNIT_STATE_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\resource_coordinator\lifecycle_unit_state.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\discards\discards.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_MOJO_PUBLIC_BASE_PROCESS_ID_MOJOM_LITE_JS" file="${root_gen_dir}\mojo\public\mojom\base\process_id.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_DISCARDS_SITE_DATA_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\discards\site_data.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_DISCARDS_LIFECYCLE_UNIT_STATE_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\resource_coordinator\lifecycle_unit_state.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_DISCARDS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\discards\discards.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_DISCARDS_SITE_DATA_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\discards\site_data.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_DISCARDS_SORTED_TABLE_BEHAVIOR_JS" file="resources\discards\sorted_table_behavior.js" type="BINDATA" />
       </if>
       <if expr="is_win or is_macosx or (is_linux and not chromeos)">

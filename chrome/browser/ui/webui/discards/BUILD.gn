@@ -16,5 +16,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//mojo/public/mojom/base",
       "//url/mojom:url_mojom_gurl",
     ]
+
+    webui_module_path = "/chrome/browser/ui/webui/discards"
   }
 }

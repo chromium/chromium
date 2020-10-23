@@ -38,7 +38,8 @@ template("js2gtest") {
   assert(defined(invoker.test_type) &&
          (invoker.test_type == "webui" || invoker.test_type == "unit" ||
           invoker.test_type == "extension" ||
-          invoker.test_type == "mojo_lite_webui"))
+          invoker.test_type == "mojo_lite_webui" ||
+          invoker.test_type == "mojo_webui"))
   action_name = target_name + "_action"
   source_set_name = target_name
 

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './mojo_api.js';
-
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {GraphChangeStreamInterface, GraphChangeStreamReceiver, GraphDump, GraphDumpRemote} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
+
 /**
- * @implements {discards.mojom.GraphChangeStreamInterface}
+ * @implements {GraphChangeStreamInterface}
  */
 class DiscardsGraphChangeStreamImpl {
   /** @param {Window} contentWindow */
@@ -83,14 +83,14 @@ Polymer({
   /**
    * The Mojo graph data source.
    *
-   * @private {discards.mojom.GraphDumpRemote}
+   * @private {GraphDumpRemote}
    */
   graphDump_: null,
 
   /**
    * The graph change listener.
    *
-   * @private {discards.mojom.GraphChangeStreamInterface}
+   * @private {GraphChangeStreamInterface}
    */
   changeListener_: null,
 
@@ -102,7 +102,7 @@ Polymer({
 
   /** @override */
   ready() {
-    this.graphDump_ = discards.mojom.GraphDump.getRemote();
+    this.graphDump_ = GraphDump.getRemote();
   },
 
   /** @override */
@@ -137,8 +137,7 @@ Polymer({
     this.contentWindow_ = this.$.webView.contentWindow;
     this.changeListener_ =
         new DiscardsGraphChangeStreamImpl(this.contentWindow_);
-    this.client_ =
-        new discards.mojom.GraphChangeStreamReceiver(this.changeListener_);
+    this.client_ = new GraphChangeStreamReceiver(this.changeListener_);
     // Subscribe for graph updates.
     this.graphDump_.subscribeToChanges(
         this.client_.$.bindNewPipeAndPassRemote());

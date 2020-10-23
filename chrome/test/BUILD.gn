@@ -857,6 +857,7 @@ if (!is_android) {
     data_deps = [
       "//chrome:browser_tests_pak",
       "//chrome/browser/resources/media/mei_preload:component",
+      "//chrome/test/data:web_ui_test_mojom_js_module",
       "//chrome/test/data/webui:modulize",
       "//components/policy/proto",
       "//third_party/private_membership:private_membership_proto",
@@ -1723,6 +1724,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/resources:browser_tests_js",
         "//chrome/test/data/webui:browser_tests_js_mojo_lite_webui",
+        "//chrome/test/data/webui:browser_tests_js_mojo_webui",
         "//chrome/test/data/webui:browser_tests_js_webui",
       ]
       if (is_chromeos) {

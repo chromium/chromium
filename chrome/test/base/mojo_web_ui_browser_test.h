@@ -18,6 +18,7 @@ class MojoWebUIBrowserTest : public BaseWebUIBrowserTest {
   MojoWebUIBrowserTest();
   ~MojoWebUIBrowserTest() override;
 
+  void set_use_mojo_modules() { use_mojo_modules_ = true; }
   void set_use_mojo_lite_bindings() { use_mojo_lite_bindings_ = true; }
 
   // WebUIBrowserTest:
@@ -29,6 +30,7 @@ class MojoWebUIBrowserTest : public BaseWebUIBrowserTest {
   class WebUITestContentBrowserClient;
   std::unique_ptr<WebUITestContentBrowserClient> test_content_browser_client_;
 
+  bool use_mojo_modules_ = false;
   bool use_mojo_lite_bindings_ = false;
 };
 

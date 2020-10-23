@@ -1003,9 +1003,9 @@ class Generator(generator.Generator):
           # resource, or we're a shared resource importing another shared
           # resource. In both cases, we assume a relative import path will
           # suffice.
-          import_path = os.path.relpath(
-              import_path.lstrip(_SHARED_MODULE_PREFIX),
-              this_module_path.lstrip(_SHARED_MODULE_PREFIX))
+          import_path = urllib_request.pathname2url(
+              os.path.relpath(import_path.lstrip(_SHARED_MODULE_PREFIX),
+                              this_module_path.lstrip(_SHARED_MODULE_PREFIX)))
           if (not import_path.startswith('.')
               and not import_path.startswith('/')):
             import_path = './' + import_path

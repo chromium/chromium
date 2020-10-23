@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Need to import this manually as test_api.js assumes that Mojo JS bindings
-// already exist, for all tests of "mojo_lite_webui" type.
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+// We need to import this manually, because test_api.js assumes it will be
+// be loaded for any test of "mojo_webui" type.
+import '../mojo_webui_test_support.js';
 
 import {durationToString, maybeMakePlural} from 'chrome://discards/discards.js';
 import {compareTabDiscardsInfos} from 'chrome://discards/discards_tab.js';

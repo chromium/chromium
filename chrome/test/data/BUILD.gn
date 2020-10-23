@@ -30,6 +30,13 @@ mojom("web_ui_test_bindings") {
     "webui/mojo/foobar.mojom",
     "webui/web_ui_test.mojom",
   ]
+  webui_module_path = "/"
+}
+
+copy("web_ui_test_mojom_js_module") {
+  sources = [ "$root_gen_dir/mojom-webui/chrome/test/data/webui/web_ui_test.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/webui/web_ui_test.mojom-webui.js" ]
+  deps = [ ":web_ui_test_bindings_webui_js" ]
 }
 
 group("closure_compile") {

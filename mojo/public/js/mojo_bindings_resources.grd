@@ -76,18 +76,26 @@
           resource_path="mojo/mojo/public/mojom/base/text_direction.mojom-lite.js"
           type="BINDATA" />
       <if expr="is_win or is_macosx or is_linux or is_android">
+        <include name="IDR_MOJO_PROCESS_ID_MOJOM_WEBUI_JS"
+            file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/process_id.mojom-webui.js"
+            use_base_dir="false"
+            resource_path="mojo/mojo/public/mojom/base/process_id.mojom-webui.js"
+            type="BINDATA" />
         <include name="IDR_MOJO_TIME_MOJOM_HTML"
             file="${root_gen_dir}/mojo/public/mojom/base/time.mojom.html"
             use_base_dir="false"
             resource_path="mojo/mojo/public/mojom/base/time.mojom.html"
-            type="BINDATA"
-            compress="gzip" />
+          type="BINDATA" />
         <include name="IDR_MOJO_TIME_MOJOM_LITE_JS"
             file="${root_gen_dir}/mojo/public/mojom/base/time.mojom-lite.js"
             resource_path="mojo/mojo/public/mojom/base/time.mojom-lite.js"
             use_base_dir="false"
-            type="BINDATA"
-            compress="gzip" />
+            type="BINDATA" />
+        <include name="IDR_MOJO_TIME_MOJOM_WEBUI_JS"
+            file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/time.mojom-webui.js"
+            use_base_dir="false"
+            resource_path="mojo/mojo/public/mojom/base/time.mojom-webui.js"
+            type="BINDATA" />
       </if>
     </includes>
   </release>

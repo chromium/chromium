@@ -34,7 +34,8 @@ const [_,
  depsFile,
  // Path to C++ file generation is outputting to.
  outputFile,
- // Type of this test. One of 'extension', 'unit', 'webui', 'mojo_lite_webui'.
+ // Type of this test. One of 'extension', 'unit', 'webui', 'mojo_lite_webui',
+ // 'mojo_webui'.
  testType] = arguments;
 
 
@@ -49,7 +50,8 @@ if (!fullTestFilePath.startsWith(srcRootPath)) {
  */
 const testFile = fullTestFilePath.substr(srcRootPath.length);
 
-const TEST_TYPES = new Set(['extension', 'unit', 'webui', 'mojo_lite_webui']);
+const TEST_TYPES =
+    new Set(['extension', 'unit', 'webui', 'mojo_lite_webui', 'mojo_webui']);
 
 if (!TEST_TYPES.has(testType)) {
   print('Invalid test type: ' + testType);
@@ -137,8 +139,11 @@ ${argHint}
   //               ExtensionJSBrowserTest superclass.
   // 'unit' - unit_tests harness, js2unit rule, V8UnitTest superclass.
   // 'mojo_lite_webui' - browser_tests harness, js2webui rule,
-  //                     MojoWebUIBrowserTest with mojo_lite bindings.
-  // superclass. Uses Mojo to communicate test results.
+  //                     MojoWebUIBrowserTest with mojo_lite bindings. Uses Mojo
+  //                     to communicate test results.
+  // 'mojo_webui' - browser_tests harness, js2webui rule, MojoWebUIBrowserTest
+  //                with mojo bindings JS modules. Uses Mojo to communicate test
+  //                results.
   // 'webui' - browser_tests harness, js2webui rule, WebUIBrowserTest
   // superclass. Uses chrome.send to communicate test results.
   if (testType === 'extension') {
@@ -151,7 +156,7 @@ ${argHint}
     testing.Test.prototype.typedefCppFixture = 'V8UnitTest';
     testF = 'TEST_F';
     addSetPreloadInfo = false;
-  } else if (testType === 'mojo_lite_webui') {
+  } else if (testType === 'mojo_lite_webui' || testType == 'mojo_webui') {
     output('#include "chrome/test/base/mojo_web_ui_browser_test.h"');
     testing.Test.prototype.typedefCppFixture = 'MojoWebUIBrowserTest';
     testF = 'IN_PROC_BROWSER_TEST_F';
@@ -536,6 +541,9 @@ ${testF}(${testFixture}, ${testFunction}) {
   if (testType == 'mojo_lite_webui') {
     output(`
   set_use_mojo_lite_bindings();`);
+  } else if (testType == 'mojo_webui') {
+    output(`
+  set_use_mojo_modules();`);
   }
   if (webuiHost) {
     output(`

@@ -2,28 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-  // The following variables are initialized by 'initialize'.
-  // Points to the DiscardsDetailsProviderRemote.
-  let discardsDetailsProvider;
+import {DetailsProvider, DetailsProviderRemote} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
+import {SiteDataProvider, SiteDataProviderRemote} from './chrome/browser/ui/webui/discards/site_data.mojom-webui.js';
 
-  /**
-   * @return {!discards.mojom.DetailsProviderRemote} Provides discards details.
-   */
-  export function getOrCreateDetailsProvider() {
-    if (!discardsDetailsProvider) {
-      discardsDetailsProvider = discards.mojom.DetailsProvider.getRemote();
-    }
-    return discardsDetailsProvider;
+// The following variables are initialized by 'initialize'.
+// Points to the DiscardsDetailsProviderRemote.
+let discardsDetailsProvider;
+
+/**
+ * @return {!DetailsProviderRemote} Provides discards details.
+ */
+export function getOrCreateDetailsProvider() {
+  if (!discardsDetailsProvider) {
+    discardsDetailsProvider = DetailsProvider.getRemote();
   }
+  return discardsDetailsProvider;
+}
 
   let siteDataProvider;
 
   /**
-   * @return {!discards.mojom.SiteDataProviderRemote} Provides site data info.
+   * @return {!SiteDataProviderRemote} Provides site data info.
    */
   export function getOrCreateSiteDataProvider() {
     if (!siteDataProvider) {
-      siteDataProvider = discards.mojom.SiteDataProvider.getRemote();
+      siteDataProvider = SiteDataProvider.getRemote();
     }
     return siteDataProvider;
   }

@@ -594,7 +594,17 @@ function testDone(result) {
       result = testResult();
     }
 
-    if (hasWindow && window.webUiTest) {
+    const [success, errorMessage] = /** @type {!Array} */ (result);
+    if (hasWindow && window.reportMojoWebUITestResult) {
+      // For "mojo_webui" test types, reportMojoWebUITestResult should already
+      // be defined globally, because such tests must manually import the
+      // mojo_webui_test_support.js module which defines it.
+      if (success) {
+        window.reportMojoWebUITestResult();
+      } else {
+        window.reportMojoWebUITestResult(errorMessage);
+      }
+    } else if (hasWindow && window.webUiTest) {
       let testRunner;
       if (webUiTest.mojom.TestRunnerPtr) {
         // For mojo WebUI tests.
@@ -615,17 +625,17 @@ function testDone(result) {
         assertNotReached(
             'Mojo bindings found, but no valid test interface loaded');
       }
-      if (result[0]) {
+      if (success) {
         testRunner.testComplete();
       } else {
-        testRunner.testComplete(result[1]);
+        testRunner.testComplete(errorMessage);
       }
     } else if (chrome.send) {
       // For WebUI and v8 unit tests.
       chrome.send('testResult', result);
     } else if (window.domAutomationController.send) {
       // For extension tests.
-      const valueResult = {'result': result[0], message: result[1]};
+      const valueResult = {'result': success, message: errorMessage};
       window.domAutomationController.send(JSON.stringify(valueResult));
     } else {
       assertNotReached('No test framework available');

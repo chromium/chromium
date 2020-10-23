@@ -5,18 +5,18 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './mojo_api.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SiteDataDatabaseSize, SiteDataEntry, SiteDataFeature, SiteDataProviderRemote} from './chrome/browser/ui/webui/discards/site_data.mojom-webui.js';
 import {boolToString, durationToString, getOrCreateSiteDataProvider, secondsToString} from './discards.js';
 import {SortedTableBehavior} from './sorted_table_behavior.js';
 
 /**
  * Compares two db rows by their origin.
- * @param {discards.mojom.SiteDataEntry} a The first value being compared.
- * @param {discards.mojom.SiteDataEntry} b The second value being compared.
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
  * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
@@ -26,8 +26,8 @@ function compareRowsByOrigin(a, b) {
 
 /**
  * Compares two db rows by their dirty bit.
- * @param {discards.mojom.SiteDataEntry} a The first value being compared.
- * @param {discards.mojom.SiteDataEntry} b The second value being compared.
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
  * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
@@ -37,8 +37,8 @@ function compareRowsByIsDirty(a, b) {
 
 /**
  * Compares two db rows by their last load time.
- * @param {discards.mojom.SiteDataEntry} a The first value being compared.
- * @param {discards.mojom.SiteDataEntry} b The second value being compared.
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
  * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
@@ -48,8 +48,8 @@ function compareRowsByLastLoaded(a, b) {
 
 /**
  * Compares two db rows by their CPU usage.
- * @param {discards.mojom.SiteDataEntry} a The first value being compared.
- * @param {discards.mojom.SiteDataEntry} b The second value being compared.
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
  * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
@@ -63,8 +63,8 @@ function compareRowsByCpuUsage(a, b) {
 
 /**
  * Compares two db rows by their memory usage.
- * @param {discards.mojom.SiteDataEntry} a The first value being compared.
- * @param {discards.mojom.SiteDataEntry} b The second value being compared.
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
  * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
@@ -78,8 +78,8 @@ function compareRowsByMemoryUsage(a, b) {
 
 /**
  * Compares two db rows by their load duration.
- * @param {discards.mojom.SiteDataEntry} a The first value being compared.
- * @param {discards.mojom.SiteDataEntry} b The second value being compared.
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
  * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
@@ -95,8 +95,7 @@ function compareRowsByLoadDuration(a, b) {
 
 /**
  * @param {string} sortKey The sort key to get a function for.
- * @return {function(discards.mojom.SiteDataEntry,
-                     discards.mojom.SiteDataEntry): number}
+ * @return {function(SiteDataEntry, SiteDataEntry): number}
  *     A comparison function that compares two tab infos, returns
  *     negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
@@ -184,7 +183,7 @@ Polymer({
   properties: {
     /**
      * List of database rows.
-     * @private {?Array<!discards.mojom.SiteDataEntry>}
+     * @private {?Array<!SiteDataEntry>}
      */
     rows_: {
       type: Array,
@@ -192,7 +191,7 @@ Polymer({
 
     /**
      * The database size response.
-     * @private {!discards.mojom.SiteDataDatabaseSize}
+     * @private {!SiteDataDatabaseSize}
      */
     size_: {
       type: Object,
@@ -217,7 +216,7 @@ Polymer({
   /** @private {!Object} */
   requestedOrigins_: {},
 
-  /** @private {?discards.mojom.SiteDataProviderRemote} */
+  /** @private {?SiteDataProviderRemote} */
   siteDataProvider_: null,
 
   /** @override */
@@ -388,7 +387,7 @@ Polymer({
   },
 
   /**
-   * @param {?discards.mojom.SiteDataFeature} feature The feature in question.
+   * @param {?SiteDataFeature} feature The feature in question.
    * @return {string} A human-readable string representing the feature.
    * @private
    */

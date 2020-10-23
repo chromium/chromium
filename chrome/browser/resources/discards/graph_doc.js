@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FavIconInfo, FrameInfo, GraphChangeStreamInterface, PageInfo, ProcessInfo, WorkerInfo} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
+
 // Radius of a node circle.
 const /** number */ kNodeRadius = 6;
 
@@ -343,10 +345,10 @@ class GraphNode {
 }
 
 class PageNode extends GraphNode {
-  /** @param {!discards.mojom.PageInfo} page */
+  /** @param {!PageInfo} page */
   constructor(page) {
     super(page.id);
-    /** @type {!discards.mojom.PageInfo} */
+    /** @type {!PageInfo} */
     this.page = page;
     this.y = kPageNodesTargetY;
   }
@@ -392,10 +394,10 @@ class PageNode extends GraphNode {
 }
 
 class FrameNode extends GraphNode {
-  /** @param {!discards.mojom.FrameInfo} frame */
+  /** @param {!FrameInfo} frame */
   constructor(frame) {
     super(frame.id);
-    /** @type {!discards.mojom.FrameInfo} frame */
+    /** @type {!FrameInfo} frame */
     this.frame = frame;
     this.color = this.selectColor(frame.processId);
   }
@@ -425,10 +427,10 @@ class FrameNode extends GraphNode {
 }
 
 class ProcessNode extends GraphNode {
-  /** @param {!discards.mojom.ProcessInfo} process */
+  /** @param {!ProcessInfo} process */
   constructor(process) {
     super(process.id);
-    /** @type {!discards.mojom.ProcessInfo} */
+    /** @type {!ProcessInfo} */
     this.process = process;
 
     this.color = this.selectColor(process.id);
@@ -466,10 +468,10 @@ class ProcessNode extends GraphNode {
 }
 
 class WorkerNode extends GraphNode {
-  /** @param {!discards.mojom.WorkerInfo} worker */
+  /** @param {!WorkerInfo} worker */
   constructor(worker) {
     super(worker.id);
-    /** @type {!discards.mojom.WorkerInfo} */
+    /** @type {!WorkerInfo} */
     this.worker = worker;
 
     this.color = this.selectColor(worker.processId);
@@ -567,7 +569,7 @@ function boundingForce(graphHeight, graphWidth) {
 }
 
 /**
- * @implements {discards.mojom.GraphChangeStreamInterface}
+ * @implements {GraphChangeStreamInterface}
  */
 class Graph {
   /**
@@ -893,39 +895,39 @@ class Graph {
     switch (type) {
       case 'frameCreated':
         this.frameCreated(
-            /** @type {!discards.mojom.FrameInfo} */ (data));
+            /** @type {!FrameInfo} */ (data));
         break;
       case 'pageCreated':
         this.pageCreated(
-            /** @type {!discards.mojom.PageInfo} */ (data));
+            /** @type {!PageInfo} */ (data));
         break;
       case 'processCreated':
         this.processCreated(
-            /** @type {!discards.mojom.ProcessInfo} */ (data));
+            /** @type {!ProcessInfo} */ (data));
         break;
       case 'workerCreated':
         this.workerCreated(
-            /** @type {!discards.mojom.WorkerInfo} */ (data));
+            /** @type {!WorkerInfo} */ (data));
         break;
       case 'frameChanged':
         this.frameChanged(
-            /** @type {!discards.mojom.FrameInfo} */ (data));
+            /** @type {!FrameInfo} */ (data));
         break;
       case 'pageChanged':
         this.pageChanged(
-            /** @type {!discards.mojom.PageInfo} */ (data));
+            /** @type {!PageInfo} */ (data));
         break;
       case 'processChanged':
         this.processChanged(
-            /** @type {!discards.mojom.ProcessInfo} */ (data));
+            /** @type {!ProcessInfo} */ (data));
         break;
       case 'favIconDataAvailable':
         this.favIconDataAvailable(
-            /** @type {!discards.mojom.FavIconInfo} */ (data));
+            /** @type {!FavIconInfo} */ (data));
         break;
       case 'workerChanged':
         this.workerChanged(
-            /** @type {!discards.mojom.WorkerInfo} */ (data));
+            /** @type {!WorkerInfo} */ (data));
         break;
       case 'nodeDeleted':
         this.nodeDeleted(/** @type {number} */ (data));

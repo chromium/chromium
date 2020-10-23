@@ -43,6 +43,8 @@ mojom_component("base") {
     enabled_features += [ "file_path_is_string" ]
   }
 
+  webui_module_path = "chrome://resources/mojo/mojo/public/mojom/base"
+
   output_prefix = "mojo_base_mojom"
   macro_prefix = "MOJO_BASE_MOJOM"
 
