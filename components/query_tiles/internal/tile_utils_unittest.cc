@@ -12,11 +12,23 @@
 namespace query_tiles {
 namespace {
 
+// Tests that nothing happens when sorting an empty TileGroup.
+TEST(TileUtilsTest, SortEmptyTileGroup) {
+  TileGroup group;
+  std::map<std::string, TileStats> tile_stats;
+  tile_stats["guid-1-3"] = TileStats(group.last_updated_ts, 0.7);
+  tile_stats["guid-1-4"] = TileStats(group.last_updated_ts, 0.4);
+
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
+  EXPECT_EQ(tile_stats["guid-1-3"].score, 0.7);
+  EXPECT_EQ(tile_stats["guid-1-4"].score, 0.4);
+}
+
 TEST(TileUtilsTest, Sort) {
   TileGroup group;
   test::ResetTestGroup(&group);
 
-  SortTiles(&group.tiles, &group.tile_stats);
+  SortTilesAndClearUnusedStats(&group.tiles, &group.tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-3");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
@@ -32,7 +44,7 @@ TEST(TileUtilsTest, SortWithEmptytile_stats) {
 
   std::map<std::string, TileStats> tile_stats;
 
-  SortTiles(&group.tiles, &tile_stats);
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-2");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
@@ -51,7 +63,7 @@ TEST(TileUtilsTest, SortWithNewTilesAtTheFront) {
   tile_stats["guid-1-4"] = TileStats(group.last_updated_ts, 0.4);
   tile_stats["guid-2-2"] = TileStats(group.last_updated_ts, 0.6);
 
-  SortTiles(&group.tiles, &tile_stats);
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-2");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
@@ -77,7 +89,7 @@ TEST(TileUtilsTest, SortWithNewTilesAtTheEnd) {
   tile_stats["guid-1-2"] = TileStats(group.last_updated_ts, 0.2);
   tile_stats["guid-2-1"] = TileStats(group.last_updated_ts, 0.3);
 
-  SortTiles(&group.tiles, &tile_stats);
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-2");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
@@ -96,12 +108,31 @@ TEST(TileUtilsTest, SortWithNewTilesInTheMiddle) {
   tile_stats["guid-1-1"] = TileStats(group.last_updated_ts, 0.5);
   tile_stats["guid-1-3"] = TileStats(group.last_updated_ts, 0.7);
 
-  SortTiles(&group.tiles, &tile_stats);
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-3");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
   EXPECT_EQ(tile_stats["guid-1-2"].score, 0.5);
   EXPECT_EQ(tile_stats["guid-1-2"].last_clicked_time, group.last_updated_ts);
+}
+
+// Test the case that stats for unused tiles are cleared.
+TEST(TileUtilsTest, UnusedTilesCleared) {
+  TileGroup group;
+  test::ResetTestGroup(&group);
+  std::string unsed_tile_id = "guid-x";
+
+  std::map<std::string, TileStats> tile_stats;
+  tile_stats["guid-1-1"] = TileStats(group.last_updated_ts, 0.5);
+  tile_stats["guid-1-3"] = TileStats(group.last_updated_ts, 0.7);
+  // Stats for a tile that is no longer used.
+  tile_stats[unsed_tile_id] = TileStats(group.last_updated_ts, 0.1);
+
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
+  EXPECT_EQ(group.tiles[0]->id, "guid-1-3");
+  EXPECT_EQ(group.tiles[1]->id, "guid-1-1");
+  EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
+  EXPECT_TRUE(tile_stats.find(unsed_tile_id) == tile_stats.end());
 }
 
 TEST(TileUtilsTest, CalculateTileScore) {

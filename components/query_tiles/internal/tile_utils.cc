@@ -23,10 +23,9 @@ struct TileComparator {
   std::map<std::string, double> tile_score_map;
 };
 
-}  // namespace
-
 void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
-               std::map<std::string, TileStats>* tile_stats) {
+               std::map<std::string, TileStats>* tile_stats,
+               std::map<std::string, double>* score_map) {
   if (!tiles || tiles->empty())
     return;
 
@@ -36,7 +35,6 @@ void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
   base::Time now_time = base::Time::Now();
   TileStats last_tile_stats(now_time, last_score);
   size_t new_tile_index = 0;
-  std::map<std::string, double> score_map;
   // Find any tiles that don't have scores, and add new entries for them.
   for (size_t i = 0; i < tiles->size(); ++i) {
     auto iter = tile_stats->find((*tiles)[i]->id);
@@ -66,7 +64,7 @@ void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
       }
       for (size_t j = new_tile_index; j < i; ++j) {
         tile_stats->emplace((*tiles)[j]->id, new_stats);
-        score_map.emplace((*tiles)[j]->id, min_score);
+        score_map->emplace((*tiles)[j]->id, min_score);
       }
     }
     // Move |new_tile_index| to the next one that might not have
@@ -74,20 +72,39 @@ void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
     new_tile_index = i + 1;
     last_score = new_score;
     last_tile_stats = iter->second;
-    score_map.emplace((*tiles)[i]->id, last_score);
+    score_map->emplace((*tiles)[i]->id, last_score);
   }
   // Fill the new tiles at the end with 0 score.
   if (new_tile_index < tiles->size()) {
     TileStats new_stats(now_time, 0);
     for (size_t j = new_tile_index; j < tiles->size(); ++j) {
       tile_stats->emplace((*tiles)[j]->id, new_stats);
-      score_map.emplace((*tiles)[j]->id, 0);
+      score_map->emplace((*tiles)[j]->id, 0);
     }
   }
   // Sort the tiles in descending order.
-  std::sort(tiles->begin(), tiles->end(), TileComparator(score_map));
+  std::sort(tiles->begin(), tiles->end(), TileComparator(*score_map));
   for (auto& tile : *tiles)
-    SortTiles(&tile->sub_tiles, tile_stats);
+    SortTiles(&tile->sub_tiles, tile_stats, score_map);
+}
+
+}  // namespace
+
+void SortTilesAndClearUnusedStats(
+    std::vector<std::unique_ptr<Tile>>* tiles,
+    std::map<std::string, TileStats>* tile_stats) {
+  if (!tiles || tiles->empty())
+    return;
+  std::map<std::string, double> score_map;
+  SortTiles(tiles, tile_stats, &score_map);
+  auto iter = tile_stats->begin();
+  while (iter != tile_stats->end()) {
+    if (score_map.find(iter->first) == score_map.end()) {
+      iter = tile_stats->erase(iter);
+    } else {
+      iter++;
+    }
+  }
 }
 
 double CalculateTileScore(const TileStats& tile_stats,

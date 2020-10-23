@@ -15,7 +15,8 @@ namespace query_tiles {
 
 // Function to sort a vector of tiles based on their score in |tile_stats|. If
 // a tile ID doesn't exists in |tile_stats|, a new entry will be created and
-// a score will be calculated.
+// a score will be calculated. If a tile ID in |tile_stats| doesn't show up in
+// |tiles|, it will be removed.
 // To calculate scores for new tiles, ordering from the server response will
 // be taken into consideration. As the server has already ordered tiles
 // according to their importance.
@@ -30,8 +31,8 @@ namespace query_tiles {
 // will result in (0.5, 0.5, 0.7, 0). And for new tiles at the front, they are
 // guaranteed a minimum score. So that if all the other tiles haven't been
 // clicked for a while, it will have a chance to be placed at the front.
-void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
-               std::map<std::string, TileStats>* tile_stats);
+void SortTilesAndClearUnusedStats(std::vector<std::unique_ptr<Tile>>* tiles,
+                                  std::map<std::string, TileStats>* tile_stats);
 
 // Calculates the current tile score based on |current_time|. Tile score will
 // decay over time.

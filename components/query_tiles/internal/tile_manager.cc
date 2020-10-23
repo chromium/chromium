@@ -168,8 +168,10 @@ class TileManagerImpl : public TileManager {
       tile_stats_group_ = std::move(loaded_groups[kTileStatsGroup]);
       // prevent the stats group from being deleted.
       loaded_groups.erase(kTileStatsGroup);
-      if (tile_group_)
-        SortTiles(&tile_group_->tiles, &tile_stats_group_->tile_stats);
+      if (tile_group_) {
+        SortTilesAndClearUnusedStats(&tile_group_->tiles,
+                                     &tile_stats_group_->tile_stats);
+      }
     }
 
     // Deletes other groups.
@@ -253,7 +255,7 @@ class TileManagerImpl : public TileManager {
     // Find the parent tile first. If it cannot be found, that's fine as the
     // old tile score will be used.
     std::vector<std::unique_ptr<Tile>>* tiles = &tile_group_->tiles;
-    if (parent_tile_id.has_value()) {
+    if (parent_tile_id) {
       for (const auto& tile : tile_group_->tiles) {
         if (tile->id == parent_tile_id.value()) {
           tiles = &tile->sub_tiles;
@@ -261,7 +263,7 @@ class TileManagerImpl : public TileManager {
         }
       }
     }
-    // Now check if a tile has the same query text.
+    // Now check if a sub tile has the same query text.
     for (const auto& tile : *tiles) {
       if (query_text == base::UTF8ToUTF16(tile->query_text)) {
         OnTileClicked(tile->id);
