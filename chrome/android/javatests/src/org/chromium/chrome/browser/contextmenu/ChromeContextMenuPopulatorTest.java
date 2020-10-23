@@ -106,7 +106,7 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     private void checkMenuOptions(int[]... tabs) {
-        List<Pair<Integer, ModelList>> contextMenuState = mPopulator.buildContextMenu(false);
+        List<Pair<Integer, ModelList>> contextMenuState = mPopulator.buildContextMenu();
 
         assertEquals("Number of groups doesn't match", tabs[0] == null ? 0 : tabs.length,
                 contextMenuState.size());

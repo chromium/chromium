@@ -19,7 +19,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
@@ -320,7 +319,7 @@ public class LensUtils {
 
     public static boolean isGoogleLensShoppingFeatureEnabled(boolean isIncognito) {
         return (useLensWithShopSimilarProducts() || useLensWithShopImageWithGoogleLens()
-                       || useLensWithSearchSimilarProducts() || enableShoppyImageMenuItem())
+                       || useLensWithSearchSimilarProducts())
                 && !(isIncognito
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS,
@@ -368,17 +367,6 @@ public class LensUtils {
                 ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS,
                 LENS_SHOPPING_FEATURE_FLAG_VARIANT_NAME);
         return variation.equals("ShopImageWithGoogleLens");
-    }
-
-    /**
-     * Whether to display the lens menu item shop image with google lens.
-     */
-    public static boolean enableShoppyImageMenuItem() {
-        String variation = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS,
-                LENS_SHOPPING_FEATURE_FLAG_VARIANT_NAME);
-        return LensController.getInstance().isSdkAvailable()
-                && variation.equals("ShopImageWithGoogleLensShoppyImage");
     }
 
     /**

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.lens;
 
-import android.net.Uri;
-
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.AppHooks;
 
@@ -32,28 +30,6 @@ public class LensController {
     public boolean isSdkAvailable() {
         return false;
     }
-
-    // TODO(yusuyoutube): deprecate once we switch to use #queryImage.
-    /**
-     * Classify an image and once complete trigger a callback with a boolean on whether that image
-     * supports a lens action.
-     * @param imageUri The URI of the image to classify.
-     * @param classifyCallback A callback to trigger once classification is complete.
-     */
-    public void classifyImage(Uri imageUri, Callback<Boolean> classifyCallback) {}
-
-    // TODO(yusuyoutube): deprecate once we switch to use #queryImage.
-    /**
-     * Classify an image and once complete trigger a callback with a boolean on whether that image
-     * supports a lens action.
-     * @param imageUri The URI of the image to classify.
-     * @param pageUrl Url of the top level page domain.
-     * @param titleOrAltText Title or alt text of the selected image tag.
-     * @param classifyCallback A callback to trigger once classification is complete.
-     *
-     */
-    public void classifyImage(Uri imageUri, String pageUrl, String titleOrAltText,
-            Callback<Boolean> classifyCallback) {}
 
     /**
      * Classify an image and once complete trigger a callback with a LensQueryResult on whether that

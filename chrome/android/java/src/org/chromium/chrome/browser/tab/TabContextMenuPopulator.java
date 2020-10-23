@@ -34,8 +34,8 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @Override
-    public List<Pair<Integer, ModelList>> buildContextMenu(boolean isShoppyImage) {
-        List<Pair<Integer, ModelList>> itemGroups = mPopulator.buildContextMenu(isShoppyImage);
+    public List<Pair<Integer, ModelList>> buildContextMenu() {
+        List<Pair<Integer, ModelList>> itemGroups = mPopulator.buildContextMenu();
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) {
             observers.next().onContextMenuShown(mTab);
