@@ -111,6 +111,8 @@ class NET_EXPORT CanonicalCookie {
   // that was already ingested into the cookie store.
   // This should NOT be used to create a new CanonicalCookie that was not
   // already in the store.
+  // Returns nullptr if the resulting cookie is not canonical,
+  // i.e. cc->IsCanonical() returns false.
   static std::unique_ptr<CanonicalCookie> FromStorage(
       const std::string& name,
       const std::string& value,

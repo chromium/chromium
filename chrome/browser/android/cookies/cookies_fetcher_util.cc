@@ -96,8 +96,6 @@ static void JNI_CookiesFetcher_RestoreCookies(
   std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
   std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
 
-  // This factory method will DCHECK IsCanonical() to check if the cookie is
-  // valid.
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::FromStorage(
           base::android::ConvertJavaStringToUTF8(env, name),
@@ -112,6 +110,8 @@ static void JNI_CookiesFetcher_RestoreCookies(
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
           static_cast<net::CookiePriority>(priority),
           static_cast<net::CookieSourceScheme>(source_scheme));
+  if (!cookie)
+    return;
 
   // Assume HTTPS - since the cookies are being restored from another store,
   // they have already gone through the strict secure check.

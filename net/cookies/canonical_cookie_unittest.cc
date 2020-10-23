@@ -2123,6 +2123,15 @@ TEST(CanonicalCookieTest, FromStorage) {
   EXPECT_EQ(COOKIE_PRIORITY_MEDIUM, cc->Priority());
   EXPECT_EQ(CookieSourceScheme::kSecure, cc->SourceScheme());
   EXPECT_FALSE(cc->IsDomainCookie());
+
+  // Should return nullptr when the cookie is not canonical.
+  // In this case the cookie is not canonical because its name attribute
+  // contains a newline character.
+  EXPECT_FALSE(CanonicalCookie::FromStorage(
+      "A\n", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      CookieSourceScheme::kSecure));
 }
 
 TEST(CanonicalCookieTest, IsSetPermittedInContext) {

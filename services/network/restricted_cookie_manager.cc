@@ -389,6 +389,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
       cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(), now,
       cookie.ExpiryDate(), now, cookie.IsSecure(), cookie.IsHttpOnly(),
       cookie.SameSite(), cookie.Priority(), source_scheme);
+  DCHECK(sanitized_cookie);
   net::CanonicalCookie cookie_copy = *sanitized_cookie;
 
   net::CookieOptions options =

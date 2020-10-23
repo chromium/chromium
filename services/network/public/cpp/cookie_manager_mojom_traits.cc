@@ -390,11 +390,14 @@ bool StructTraits<
   if (!cookie.ReadSourceScheme(&source_scheme))
     return false;
 
-  *out = net::CanonicalCookie(name, value, domain, path, creation_time,
-                              expiry_time, last_access_time, cookie.secure(),
-                              cookie.httponly(), site_restrictions, priority,
-                              source_scheme);
-  return out->IsCanonical();
+  auto cc = net::CanonicalCookie::FromStorage(
+      name, value, domain, path, creation_time, expiry_time, last_access_time,
+      cookie.secure(), cookie.httponly(), site_restrictions, priority,
+      source_scheme);
+  if (!cc)
+    return false;
+  *out = *cc;
+  return true;
 }
 
 bool StructTraits<network::mojom::CookieInclusionStatusDataView,

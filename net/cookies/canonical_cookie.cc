@@ -521,7 +521,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
   std::unique_ptr<CanonicalCookie> cc(std::make_unique<CanonicalCookie>(
       name, value, domain, path, creation, expiration, last_access, secure,
       httponly, same_site, priority, source_scheme));
-  DCHECK(cc->IsCanonical());
+  if (!cc->IsCanonical())
+    return nullptr;
   return cc;
 }
 
