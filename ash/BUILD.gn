@@ -2165,6 +2165,7 @@ test("ash_unittests") {
     "system/phonehub/phone_hub_ui_controller_unittest.cc",
     "system/phonehub/phone_status_view_unittest.cc",
     "system/phonehub/quick_actions_view_unittest.cc",
+    "system/phonehub/silence_phone_quick_action_controller_unittest.cc",
     "system/phonehub/task_continuation_view_unittest.cc",
     "system/power/backlights_forced_off_setter_unittest.cc",
     "system/power/peripheral_battery_notifier_unittest.cc",

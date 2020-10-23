@@ -105,10 +105,14 @@ TEST_F(QuickActionsViewTest, SilencePhoneToggle) {
                                                              DummyEvent());
   EXPECT_TRUE(dnd_controller()->IsDndEnabled());
 
+  // Locate phone should be disabled when do not disturb is enabled.
+  EXPECT_FALSE(actions_view()->locate_phone_for_testing()->GetEnabled());
+
   // Togge again to disable.
   actions_view()->silence_phone_for_testing()->ButtonPressed(nullptr,
                                                              DummyEvent());
   EXPECT_FALSE(dnd_controller()->IsDndEnabled());
+  EXPECT_TRUE(actions_view()->locate_phone_for_testing()->GetEnabled());
 
   // Test the error state.
   dnd_controller()->SetShouldRequestFail(true);

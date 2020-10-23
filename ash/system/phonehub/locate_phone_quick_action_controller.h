@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_PHONEHUB_LOCATE_PHONE_QUICK_ACTION_CONTROLLER_H_
 #define ASH_SYSTEM_PHONEHUB_LOCATE_PHONE_QUICK_ACTION_CONTROLLER_H_
 
-#include "ash/system/phonehub/quick_action_controller_base.h"
+#include "ash/system/phonehub/silence_phone_quick_action_controller.h"
 #include "chromeos/components/phonehub/find_my_device_controller.h"
 
 namespace base {
@@ -17,10 +17,12 @@ namespace ash {
 // Controller of a quick action item that toggles Locate phone mode.
 class LocatePhoneQuickActionController
     : public QuickActionControllerBase,
+      public SilencePhoneQuickActionController::Observer,
       public chromeos::phonehub::FindMyDeviceController::Observer {
  public:
-  explicit LocatePhoneQuickActionController(
-      chromeos::phonehub::FindMyDeviceController* find_my_device_controller);
+  LocatePhoneQuickActionController(
+      chromeos::phonehub::FindMyDeviceController* find_my_device_controller,
+      SilencePhoneQuickActionController* silence_phone_controller);
   ~LocatePhoneQuickActionController() override;
   LocatePhoneQuickActionController(LocatePhoneQuickActionController&) = delete;
   LocatePhoneQuickActionController operator=(
@@ -30,13 +32,20 @@ class LocatePhoneQuickActionController
   QuickActionItem* CreateItem() override;
   void OnButtonPressed(bool is_now_enabled) override;
 
+  // SilencePhoneQuickActionController::Observer:
+  void OnSilencePhoneItemStateChanged() override;
+
   // chromeos::phonehub::FindMyDeviceController::Observer:
   void OnPhoneRingingStateChanged() override;
 
  private:
   // All the possible states that the locate phone button can be viewed. Each
   // state has a corresponding icon, labels and tooltip view.
-  enum class ActionState { kOff, kOn };
+  enum class ActionState { kNotAvailable, kOff, kOn };
+
+  // Compute and update the state of the item according to Silence Phone item
+  // and FindMyDeviceController.
+  void UpdateState();
 
   // Set the item (including icon, label and tooltips) to a certain state.
   void SetItemState(ActionState state);
@@ -47,10 +56,14 @@ class LocatePhoneQuickActionController
 
   chromeos::phonehub::FindMyDeviceController* find_my_device_controller_ =
       nullptr;
+  SilencePhoneQuickActionController* silence_phone_controller_ = nullptr;
   QuickActionItem* item_ = nullptr;
 
   // Keep track the current state of the item.
-  ActionState state_;
+  ActionState state_ = ActionState::kOff;
+
+  // Keep track the state of Silence Phone item.
+  bool is_silence_enabled_ = false;
 
   // State that user requests when clicking the button.
   base::Optional<ActionState> requested_state_;
