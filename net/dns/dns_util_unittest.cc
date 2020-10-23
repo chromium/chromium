@@ -4,12 +4,15 @@
 
 #include "net/dns/dns_util.h"
 
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
+
+using testing::Eq;
 
 class DNSUtilTest : public testing::Test {
 };
@@ -79,19 +82,22 @@ TEST_F(DNSUtilTest, DNSDomainFromUnrestrictedDot) {
       &out));
 }
 
-TEST_F(DNSUtilTest, DNSDomainToString) {
-  EXPECT_EQ("", DNSDomainToString(IncludeNUL("")));
-  EXPECT_EQ("foo", DNSDomainToString(IncludeNUL("\003foo")));
-  EXPECT_EQ("foo.bar", DNSDomainToString(IncludeNUL("\003foo\003bar")));
-  EXPECT_EQ("foo.bar.uk",
-            DNSDomainToString(IncludeNUL("\003foo\003bar\002uk")));
+TEST_F(DNSUtilTest, DnsDomainToString) {
+  EXPECT_THAT(DnsDomainToString(IncludeNUL("")), testing::Optional(Eq("")));
+  EXPECT_THAT(DnsDomainToString(IncludeNUL("\003foo")),
+              testing::Optional(Eq("foo")));
+  EXPECT_THAT(DnsDomainToString(IncludeNUL("\003foo\003bar")),
+              testing::Optional(Eq("foo.bar")));
+  EXPECT_THAT(DnsDomainToString(IncludeNUL("\003foo\003bar\002uk")),
+              testing::Optional(Eq("foo.bar.uk")));
 
   // It should cope with a lack of root label.
-  EXPECT_EQ("foo.bar", DNSDomainToString("\003foo\003bar"));
+  EXPECT_THAT(DnsDomainToString("\003foo\003bar"),
+              testing::Optional(Eq("foo.bar")));
 
-  // Invalid inputs should return an empty string.
-  EXPECT_EQ("", DNSDomainToString(IncludeNUL("\x80")));
-  EXPECT_EQ("", DNSDomainToString("\x06"));
+  // Invalid inputs should return nullopt.
+  EXPECT_EQ(DnsDomainToString(IncludeNUL("\x80")), base::nullopt);
+  EXPECT_EQ(DnsDomainToString("\x06"), base::nullopt);
 }
 
 TEST_F(DNSUtilTest, IsValidDNSDomain) {

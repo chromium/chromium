@@ -6,6 +6,7 @@
 #include <cmath>
 #include <numeric>
 #include <queue>
+#include <string>
 #include <utility>
 
 #include "services/network/mdns_responder.h"
@@ -16,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -966,11 +968,12 @@ void MdnsResponderManager::OnMdnsQueryReceived(
   // responder only provides APIs to create address records, and hence limited
   // to handle only such records. Once we have expanded the API surface to
   // include the service publishing, the handling logic should be unified.
-  const std::string qname = net::DNSDomainToString(query.qname());
+  const base::Optional<std::string> qname =
+      net::DnsDomainToString(query.qname());
   if (base::FeatureList::IsEnabled(
           features::kMdnsResponderGeneratedNameListing)) {
-    if (should_respond_to_generator_service_query_ &&
-        qname == kMdnsNameGeneratorServiceInstanceName) {
+    if (should_respond_to_generator_service_query_ && qname &&
+        qname.value() == kMdnsNameGeneratorServiceInstanceName) {
       HandleMdnsNameGeneratorServiceQuery(query, recv_socket_handler_id);
       return;
     }
@@ -1233,8 +1236,11 @@ void MdnsResponder::RemoveNameForAddress(
 void MdnsResponder::OnMdnsQueryReceived(const net::DnsQuery& query,
                                         uint16_t recv_socket_handler_id) {
   // Currently we only support a single question in DnsQuery.
-  std::string dotted_name_to_resolve = net::DNSDomainToString(query.qname());
-  auto it = name_addr_map_.find(dotted_name_to_resolve);
+  base::Optional<std::string> dotted_name_to_resolve =
+      net::DnsDomainToString(query.qname());
+  if (!dotted_name_to_resolve)
+    return;
+  auto it = name_addr_map_.find(dotted_name_to_resolve.value());
   if (it == name_addr_map_.end())
     return;
 

@@ -476,7 +476,7 @@ uint16_t DnsResponse::qtype() const {
 }
 
 std::string DnsResponse::GetDottedName() const {
-  return DNSDomainToString(qname());
+  return DnsDomainToString(qname()).value_or("");
 }
 
 DnsRecordParser DnsResponse::Parser() const {

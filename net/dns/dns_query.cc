@@ -100,7 +100,10 @@ DnsQuery::DnsQuery(uint16_t id,
                    const OptRecordRdata* opt_rdata,
                    PaddingStrategy padding_strategy)
     : qname_size_(qname.size()) {
-  DCHECK(!DNSDomainToString(qname).empty());
+#if DCHECK_IS_ON()
+  base::Optional<std::string> dotted_name = DnsDomainToString(qname);
+  DCHECK(dotted_name && !dotted_name.value().empty());
+#endif  // DCHECK_IS_ON()
 
   size_t buffer_size = kHeaderSize + QuestionSize(qname_size_);
   base::Optional<OptRecordRdata> merged_opt_rdata =

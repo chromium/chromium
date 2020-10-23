@@ -1368,9 +1368,11 @@ class DnsTransactionImpl : public DnsTransaction,
 
   // Begins query for the current name. Makes the first attempt.
   AttemptResult StartQuery() {
-    std::string dotted_qname = DNSDomainToString(qnames_.front());
-    net_log_.BeginEventWithStringParams(NetLogEventType::DNS_TRANSACTION_QUERY,
-                                        "qname", dotted_qname);
+    base::Optional<std::string> dotted_qname =
+        DnsDomainToString(qnames_.front());
+    net_log_.BeginEventWithStringParams(
+        NetLogEventType::DNS_TRANSACTION_QUERY, "qname",
+        dotted_qname.value_or("???MALFORMED_NAME???"));
 
     attempts_.clear();
     had_tcp_retry_ = false;

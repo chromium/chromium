@@ -21,6 +21,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1221,8 +1222,13 @@ bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
     // An entry matches if it is either an exact match, or if it is a prefix
     // match and the includeSubDomains directive was included.
     if (i == 0 || j->second.include_subdomains) {
+      base::Optional<std::string> dotted_name =
+          DnsDomainToString(host_sub_chunk);
+      if (!dotted_name)
+        return false;
+
       *result = j->second;
-      result->domain = DNSDomainToString(host_sub_chunk);
+      result->domain = std::move(dotted_name).value();
       return true;
     }
   }
@@ -1262,8 +1268,13 @@ bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
     // implement HPKP, so this logic is only used via AddHPKP(), reachable from
     // Cronet.
     if (i == 0 || j->second.include_subdomains) {
+      base::Optional<std::string> dotted_name =
+          DnsDomainToString(host_sub_chunk);
+      if (!dotted_name)
+        return false;
+
       *result = j->second;
-      result->domain = DNSDomainToString(host_sub_chunk);
+      result->domain = std::move(dotted_name).value();
       return true;
     }
 
