@@ -64088,6 +64088,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="15" label="kExtensionNotWhitelistedError"/>
   <int value="16" label="kChallengeBadBase64Error"/>
   <int value="17" label="kDeviceWebBasedAttestationNotOobeError"/>
+  <int value="18" label="kGetPublicKeyFailedError"/>
+  <int value="19" label="kMarkCorporateKeyFailedError"/>
 </enum>
 
 <enum name="SamlInSessionPasswordChangeEvent">
