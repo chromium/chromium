@@ -89,6 +89,7 @@ class CORE_EXPORT NGFragmentItemsBuilder {
    public:
     const NGInlineBreakToken* inline_break_token = nullptr;
     LayoutUnit used_block_size;
+    wtf_size_t line_count = 0;
     bool succeeded = false;
   };
 
@@ -100,7 +101,8 @@ class CORE_EXPORT NGFragmentItemsBuilder {
       const NGFragmentItems& items,
       const PhysicalSize& container_size,
       NGBoxFragmentBuilder* container_builder = nullptr,
-      const NGFragmentItem* end_item = nullptr);
+      const NGFragmentItem* end_item = nullptr,
+      wtf_size_t max_lines = 0);
 
   struct ItemWithOffset {
     DISALLOW_NEW();
