@@ -28,6 +28,16 @@ using Microsoft::WRL::ComPtr;
 namespace views {
 namespace test {
 
+#define EXPECT_UIA_BOOL_EQ(node, property_id, expected)               \
+  {                                                                   \
+    ScopedVariant expectedVariant(expected);                          \
+    ASSERT_EQ(VT_BOOL, expectedVariant.type());                       \
+    ScopedVariant actual;                                             \
+    ASSERT_HRESULT_SUCCEEDED(                                         \
+        node->GetPropertyValue(property_id, actual.Receive()));       \
+    EXPECT_EQ(expectedVariant.ptr()->boolVal, actual.ptr()->boolVal); \
+  }
+
 namespace {
 
 // Whether |left| represents the same COM object as |right|.
@@ -61,6 +71,13 @@ class ViewAXPlatformNodeDelegateWinTest : public ViewsTestBase {
     ComPtr<IServiceProvider> service_provider;
     ASSERT_EQ(S_OK, view_accessible.As(&service_provider));
     ASSERT_EQ(S_OK, service_provider->QueryService(IID_IAccessible2_2, result));
+  }
+
+  ComPtr<IRawElementProviderSimple> GetIRawElementProviderSimple(View* view) {
+    ComPtr<IRawElementProviderSimple> result;
+    EXPECT_HRESULT_SUCCEEDED(view->GetNativeViewAccessible()->QueryInterface(
+        __uuidof(IRawElementProviderSimple), &result));
+    return result;
   }
 };
 
@@ -487,6 +504,31 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, GridRowColumnCount) {
                      ax::mojom::kUnknownAriaColumnOrRowCount);
   EXPECT_EQ(E_UNEXPECTED, grid_provider->get_RowCount(&row_count));
   EXPECT_EQ(E_UNEXPECTED, grid_provider->get_ColumnCount(&column_count));
+}
+
+TEST_F(ViewAXPlatformNodeDelegateWinTest, IsUIAControlIsTrueEvenWhenReadonly) {
+  // This test ensures that the value returned by
+  // AXPlatformNodeWin::IsUIAControl returns true even if the element is
+  // read-only. The previous implementation was incorrect and used to return
+  // false for read-only views, causing all sorts of issues with ATs.
+  //
+  // Since we can't test IsUIAControl directly, we go through the
+  // UIA_IsControlElementPropertyId, which is computed using IsUIAControl.
+
+  Widget widget;
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget.Init(std::move(init_params));
+
+  View* content = widget.SetContentsView(std::make_unique<View>());
+
+  Textfield* text_field = new Textfield();
+  text_field->SetReadOnly(true);
+  content->AddChildView(text_field);
+
+  ComPtr<IRawElementProviderSimple> textfield_provider =
+      GetIRawElementProviderSimple(text_field);
+  EXPECT_UIA_BOOL_EQ(textfield_provider, UIA_IsControlElementPropertyId, true);
 }
 }  // namespace test
 }  // namespace views

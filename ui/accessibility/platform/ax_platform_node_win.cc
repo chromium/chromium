@@ -7191,8 +7191,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
   }  // end of web-content only case.
 
   const AXNodeData& data = GetData();
-  return !((IsReadOnlySupported(data.role) && data.IsReadOnlyOrDisabled()) ||
-           data.HasState(ax::mojom::State::kInvisible) ||
+  return !(data.HasState(ax::mojom::State::kInvisible) ||
            (data.IsIgnored() && !data.HasState(ax::mojom::State::kFocusable)));
 }
 
