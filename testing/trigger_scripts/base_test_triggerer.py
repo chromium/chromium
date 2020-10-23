@@ -26,7 +26,44 @@ import logging
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
   __file__))))
 
+# .exe on Windows.
+EXECUTABLE_SUFFIX = '.exe' if sys.platform == 'win32' else ''
+
 SWARMING_PY = os.path.join(SRC_DIR, 'tools', 'swarming_client', 'swarming.py')
+SWARMING_GO = os.path.join(SRC_DIR, 'tools', 'luci-go',
+                           'swarming' + EXECUTABLE_SUFFIX)
+
+
+def _convert_to_go_swarming_args(args):
+  go_args = []
+  map_flags = {'--dimension', '--env', '--env-prefix', '--named-cache'}
+  has_opt_dim = False
+  i = 0
+  while i < len(args):
+    current_arg = args[i]
+    go_args.append(current_arg)
+    i += 1
+    if current_arg in map_flags:
+      go_args.append('{}={}'.format(args[i], args[i + 1]))
+      i += 2
+    elif current_arg == '--cipd-package':
+      # https://source.chromium.org/chromium/infra/infra/+/master:luci/client/swarming.py;l=1175-1177;drc=67e502dbf7a2a863c95e0d54fa486413d24d57a5
+      path, name, version = args[i].split(':', 2)
+      # https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/client/cmd/swarming/lib/trigger.go;l=458-465;drc=ef40d3f3503c2cc7bb0f3f6807b14a39bafb6ce4
+      go_args.append('{}:{}={}'.format(path, name, version))
+      i += 1
+    elif current_arg == '--optional-dimension':
+      assert not has_opt_dim, ('Go swarming only supports one '
+                               '--optional-dimension, got: %s (index=%d)') % (
+                                   args[i:i + 3], i)
+      has_opt_dim = True
+
+      k, v, exp = args[i:i + 3]
+      # https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/client/cmd/swarming/lib/trigger.go;l=243;drc=ef40d3f3503c2cc7bb0f3f6807b14a39bafb6ce4
+      go_args.append('{}={}:{}'.format(k, v, exp))
+      i += 3
+  return go_args
+
 
 def strip_unicode(obj):
   """Recursively re-encodes strings as utf-8 inside |obj|. Returns the result.
@@ -197,8 +234,13 @@ class BaseTestTriggerer(object):
 
   def run_swarming(self, args, verbose):
     if verbose:
-      logging.info('Running Swarming with args: %s' % args)
+      logging.info('Running Swarming with args: %s', args)
     return subprocess.call([sys.executable, SWARMING_PY] + args)
+
+  def run_swarming_go(self, args, verbose):
+    if verbose:
+      logging.info('Running Go `swarming` with args: %s', args)
+    return subprocess.call([SWARMING_GO] + _convert_to_go_swarming_args(args))
 
   def prune_test_specific_configs(self, args, verbose):
     # Ability for base class to further prune configs to
