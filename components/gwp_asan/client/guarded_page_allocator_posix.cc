@@ -7,6 +7,7 @@
 #include <sys/mman.h>
 
 #include "base/check.h"
+#include "base/posix/eintr_wrapper.h"
 
 namespace gwp_asan {
 namespace internal {
@@ -25,7 +26,8 @@ void GuardedPageAllocator::UnmapRegion() {
 }
 
 void GuardedPageAllocator::MarkPageReadWrite(void* ptr) {
-  int err = mprotect(ptr, state_.page_size, PROT_READ | PROT_WRITE);
+  int err =
+      HANDLE_EINTR(mprotect(ptr, state_.page_size, PROT_READ | PROT_WRITE));
   PCHECK(err == 0) << "mprotect";
 }
 

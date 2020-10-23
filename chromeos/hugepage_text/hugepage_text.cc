@@ -14,6 +14,7 @@
 
 #include "base/bit_cast.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
 
 // CHROMEOS_ORDERFILE_USE is a flag intended to use orderfile
 // to link Chrome. Only when orderfile is used, we will use hugepages.
@@ -134,7 +135,7 @@ static void MremapHugetlbText(void* vaddr, const size_t hsize) {
   NoAsanAlignedMemcpy(haddr, vaddr, hsize);
 
   // change mapping protection to read only now that it has done the copy
-  if (mprotect(haddr, hsize, PROT_READ | PROT_EXEC)) {
+  if (HANDLE_EINTR(mprotect(haddr, hsize, PROT_READ | PROT_EXEC))) {
     PLOG(INFO) << "can not change protection to r-x, fall back to small page";
     munmap(haddr, hsize);
     return;

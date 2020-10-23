@@ -413,7 +413,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     // any hidden calls to malloc.
     void *malloc_thunk =
         reinterpret_cast<void*>(reinterpret_cast<intptr_t>(malloc) & ~4095);
-    mprotect(malloc_thunk, 4096, PROT_READ | PROT_WRITE | PROT_EXEC);
+    HANDLE_EINTR(mprotect(malloc_thunk, 4096, PROT_READ | PROT_WRITE | PROT_EXEC));
     memset(reinterpret_cast<void*>(malloc), 0xff, 8);
 #endif  // 0
 
