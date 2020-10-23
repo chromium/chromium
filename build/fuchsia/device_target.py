@@ -31,6 +31,10 @@ CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
 # Number of seconds to wait for device discovery.
 BOOT_DISCOVERY_TIMEOUT_SECS = 2 * 60
 
+# The timeout limit for one call to the device-finder tool.
+_DEVICE_FINDER_TIMEOUT_LIMIT_SECS = \
+    BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS
+
 # Time between a reboot command is issued and when connection attempts from the
 # host begin.
 _REBOOT_SLEEP_PERIOD = 20
@@ -170,7 +174,7 @@ class DeviceTarget(target.Target):
           dev_finder_path,
           'resolve',
           '-timeout',
-          "%ds" % BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS,
+          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS,
           '-device-limit',
           '1',  # Exit early as soon as a host is found.
           self._node_name
@@ -178,7 +182,7 @@ class DeviceTarget(target.Target):
     else:
       command = [
           dev_finder_path, 'list', '-full', '-timeout',
-          "%ds" % BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS
+          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS
       ]
 
     proc = subprocess.Popen(command,
