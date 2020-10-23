@@ -2136,6 +2136,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name):
         "{} {}".format(arg_type, arg_name)
         for arg_type, arg_name in arg_type_and_names
     ]
+    arg_decls.append("v8::FastApiCallbackOptions& arg_callback_options")
     func_def = CxxFuncDefNode(name=function_name,
                               arg_decls=arg_decls,
                               return_type=return_type)
@@ -2150,7 +2151,7 @@ v8::Isolate::DisallowJavascriptExecutionScope no_js_exec_scope(
     v8::Isolate::DisallowJavascriptExecutionScope::CRASH_ON_FAILURE);
 {blink_class}* blink_receiver =
     ToScriptWrappable(v8_receiver)->ToImpl<{blink_class}>();
-return blink_receiver->{member_func}({blink_arguments});\
+return blink_receiver->{member_func}({blink_arguments}, arg_callback_options);\
 """
     blink_class = blink_class_name(cg_context.interface)
     member_func = backward_compatible_api_func(cg_context)
@@ -4357,7 +4358,7 @@ def _make_property_entry_receiver_check(property_):
 def _make_property_entry_v8_c_function(entry):
     if entry.no_alloc_direct_callback_name is None:
         return None
-    return "v8::CFunction::Make({})".format(
+    return "v8::CFunction::MakeWithFallbackSupport({})".format(
         entry.no_alloc_direct_callback_name)
 
 

@@ -1944,12 +1944,27 @@ bool WebGLRenderingContextBase::ValidateAndUpdateBufferBindTarget(
   return true;
 }
 
-void WebGLRenderingContextBase::bindBuffer(GLenum target, WebGLBuffer* buffer) {
+void WebGLRenderingContextBase::bindBufferImpl(GLenum target,
+                                               WebGLBuffer* buffer) {
   if (!ValidateNullableWebGLObject("bindBuffer", buffer))
     return;
   if (!ValidateAndUpdateBufferBindTarget("bindBuffer", target, buffer))
     return;
   ContextGL()->BindBuffer(target, ObjectOrZero(buffer));
+}
+
+void WebGLRenderingContextBase::bindBuffer(GLenum target, WebGLBuffer* buffer) {
+  fast_call_.FlushDeferredEvents(this);
+
+  bindBufferImpl(target, buffer);
+}
+
+void WebGLRenderingContextBase::bindBuffer(
+    GLenum target,
+    WebGLBuffer* buffer,
+    v8::FastApiCallbackOptions& options) {
+  auto scoped_call = fast_call_.EnterScoped(&options.fallback);
+  bindBufferImpl(target, buffer);
 }
 
 void WebGLRenderingContextBase::bindFramebuffer(GLenum target,
@@ -1980,8 +1995,8 @@ void WebGLRenderingContextBase::bindRenderbuffer(
     render_buffer->SetHasEverBeenBound();
 }
 
-void WebGLRenderingContextBase::bindTexture(GLenum target,
-                                            WebGLTexture* texture) {
+void WebGLRenderingContextBase::bindTextureImpl(GLenum target,
+                                                WebGLTexture* texture) {
   if (!ValidateNullableWebGLObject("bindTexture", texture))
     return;
   if (texture && texture->GetTarget() && texture->GetTarget() != target) {
@@ -2054,6 +2069,21 @@ void WebGLRenderingContextBase::bindTexture(GLenum target,
   // platforms is fairly involved (will require a HashMap from texture ID
   // in all ports), and we have not had any complaints, so the logic has
   // been removed.
+}
+
+void WebGLRenderingContextBase::bindTexture(GLenum target,
+                                            WebGLTexture* texture) {
+  fast_call_.FlushDeferredEvents(this);
+
+  bindTextureImpl(target, texture);
+}
+
+void WebGLRenderingContextBase::bindTexture(
+    GLenum target,
+    WebGLTexture* texture,
+    v8::FastApiCallbackOptions& options) {
+  auto scoped_call = fast_call_.EnterScoped(&options.fallback);
+  bindTextureImpl(target, texture);
 }
 
 void WebGLRenderingContextBase::blendColor(GLfloat red,
@@ -2776,6 +2806,14 @@ void WebGLRenderingContextBase::drawArrays(GLenum mode,
   ContextGL()->DrawArrays(mode, first, count);
 }
 
+void WebGLRenderingContextBase::drawArrays(
+    GLenum mode,
+    GLint first,
+    GLsizei count,
+    v8::FastApiCallbackOptions& options) {
+  drawArrays(mode, first, count);
+}
+
 void WebGLRenderingContextBase::drawElements(GLenum mode,
                                              GLsizei count,
                                              GLenum type,
@@ -2795,6 +2833,15 @@ void WebGLRenderingContextBase::drawElements(GLenum mode,
   ContextGL()->DrawElements(
       mode, count, type,
       reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
+}
+
+void WebGLRenderingContextBase::drawElements(
+    GLenum mode,
+    GLsizei count,
+    GLenum type,
+    int64_t offset,
+    v8::FastApiCallbackOptions& options) {
+  drawElements(mode, count, type, offset);
 }
 
 void WebGLRenderingContextBase::DrawArraysInstancedANGLE(GLenum mode,

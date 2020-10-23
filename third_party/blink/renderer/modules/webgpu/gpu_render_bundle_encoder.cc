@@ -150,6 +150,14 @@ void GPURenderBundleEncoder::draw(uint32_t vertexCount,
                                      firstVertex, firstInstance);
 }
 
+void GPURenderBundleEncoder::draw(uint32_t vertexCount,
+                                  uint32_t instanceCount,
+                                  uint32_t firstVertex,
+                                  uint32_t firstInstance,
+                                  v8::FastApiCallbackOptions& options) {
+  draw(vertexCount, instanceCount, firstVertex, firstInstance);
+}
+
 void GPURenderBundleEncoder::drawIndexed(uint32_t indexCount,
                                          uint32_t instanceCount,
                                          uint32_t firstIndex,
@@ -158,6 +166,15 @@ void GPURenderBundleEncoder::drawIndexed(uint32_t indexCount,
   GetProcs().renderBundleEncoderDrawIndexed(GetHandle(), indexCount,
                                             instanceCount, firstIndex,
                                             baseVertex, firstInstance);
+}
+
+void GPURenderBundleEncoder::drawIndexed(uint32_t indexCount,
+                                         uint32_t instanceCount,
+                                         uint32_t firstIndex,
+                                         int32_t baseVertex,
+                                         uint32_t firstInstance,
+                                         v8::FastApiCallbackOptions& options) {
+  drawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
 }
 
 void GPURenderBundleEncoder::drawIndirect(GPUBuffer* indirectBuffer,

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_pass_encoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "v8/include/v8-fast-api-calls.h"
 
 namespace blink {
 
@@ -66,11 +67,22 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
             uint32_t instanceCount,
             uint32_t firstVertex,
             uint32_t firstInstance);
+  void draw(uint32_t vertexCount,
+            uint32_t instanceCount,
+            uint32_t firstVertex,
+            uint32_t firstInstance,
+            v8::FastApiCallbackOptions& options);
   void drawIndexed(uint32_t indexCount,
                    uint32_t instanceCount,
                    uint32_t firstIndex,
                    int32_t baseVertex,
                    uint32_t firstInstance);
+  void drawIndexed(uint32_t indexCount,
+                   uint32_t instanceCount,
+                   uint32_t firstIndex,
+                   int32_t baseVertex,
+                   uint32_t firstInstance,
+                   v8::FastApiCallbackOptions& options);
   void drawIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
   void drawIndexedIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
   void executeBundles(const HeapVector<Member<GPURenderBundle>>& bundles);
