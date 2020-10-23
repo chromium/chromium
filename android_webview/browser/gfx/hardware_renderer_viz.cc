@@ -271,8 +271,9 @@ HardwareRendererViz::OnViz::GetPreferredFrameIntervalForFrameSinkId(
 
 HardwareRendererViz::HardwareRendererViz(
     RenderThreadManager* state,
-    RootFrameSinkGetter root_frame_sink_getter)
-    : HardwareRenderer(state) {
+    RootFrameSinkGetter root_frame_sink_getter,
+    AwVulkanContextProvider* context_provider)
+    : HardwareRenderer(state), output_surface_provider_(context_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
   DCHECK(output_surface_provider_.renderer_settings().use_skia_renderer);
 

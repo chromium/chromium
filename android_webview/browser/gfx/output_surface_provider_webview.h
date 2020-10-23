@@ -23,9 +23,13 @@ class OutputSurface;
 
 namespace android_webview {
 
+class AwVulkanContextProvider;
+
+// Effectively a data struct to pass pointers from render thread to viz thread.
 class OutputSurfaceProviderWebview {
  public:
-  OutputSurfaceProviderWebview();
+  explicit OutputSurfaceProviderWebview(
+      AwVulkanContextProvider* vulkan_context_provider);
   ~OutputSurfaceProviderWebview();
 
   std::unique_ptr<viz::OutputSurface> CreateOutputSurface();
@@ -45,8 +49,9 @@ class OutputSurfaceProviderWebview {
  private:
   void InitializeContext();
 
+  AwVulkanContextProvider* const vulkan_context_provider_;
   // The member variables are effectively const after constructor, so it's safe
-  // to call accessors on different threads
+  // to call accessors on different threads.
   viz::RendererSettings renderer_settings_;
   viz::DebugRendererSettings debug_settings_;
   scoped_refptr<AwGLSurface> gl_surface_;

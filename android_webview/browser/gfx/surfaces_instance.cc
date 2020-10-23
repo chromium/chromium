@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
-#include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/deferred_gpu_command_service.h"
 #include "android_webview/browser/gfx/gpu_service_web_view.h"
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
@@ -61,7 +60,8 @@ scoped_refptr<SurfacesInstance> SurfacesInstance::GetOrCreateInstance() {
 
 SurfacesInstance::SurfacesInstance()
     : frame_sink_id_allocator_(kDefaultClientId),
-      frame_sink_id_(AllocateFrameSinkId()) {
+      frame_sink_id_(AllocateFrameSinkId()),
+      output_surface_provider_(nullptr) {
   // The SharedBitmapManager is null as we do not support or use software
   // compositing on Android.
   frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(

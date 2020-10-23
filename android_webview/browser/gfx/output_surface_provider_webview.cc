@@ -40,7 +40,9 @@ void OnContextLost(bool synthetic_loss) {
 
 }  // namespace
 
-OutputSurfaceProviderWebview::OutputSurfaceProviderWebview() {
+OutputSurfaceProviderWebview::OutputSurfaceProviderWebview(
+    AwVulkanContextProvider* vulkan_context_provider)
+    : vulkan_context_provider_(vulkan_context_provider) {
   // Should be kept in sync with compositor_impl_android.cc.
   renderer_settings_.allow_antialiasing = false;
   renderer_settings_.highp_threshold_min = 2048;
@@ -52,6 +54,8 @@ OutputSurfaceProviderWebview::OutputSurfaceProviderWebview() {
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   enable_vulkan_ = command_line->HasSwitch(switches::kWebViewEnableVulkan);
+  DCHECK(!enable_vulkan_ || vulkan_context_provider_);
+
   enable_shared_image_ =
       base::FeatureList::IsEnabled(features::kEnableSharedImageForWebview);
   LOG_IF(FATAL, enable_vulkan_ && !enable_shared_image_)
@@ -90,15 +94,11 @@ void OutputSurfaceProviderWebview::InitializeContext() {
         share_group.get(), gl_surface_.get(), gl::GLContextAttribs());
     gl_context->MakeCurrent(gl_surface_.get());
 
-    auto vulkan_context_provider =
-        enable_vulkan_ ? AwVulkanContextProvider::GetOrCreateInstance()
-                       : nullptr;
-
     shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
         share_group, gl_surface_, std::move(gl_context),
         false /* use_virtualized_gl_contexts */, base::BindOnce(&OnContextLost),
         GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
-        vulkan_context_provider.get());
+        vulkan_context_provider_);
     if (!enable_vulkan_) {
       auto feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
           workarounds, GpuServiceWebView::GetInstance()->gpu_feature_info());

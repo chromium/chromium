@@ -172,6 +172,12 @@ void RenderThreadManager::CommitFrameOnRT() {
     hardware_renderer_->CommitFrame();
 }
 
+void RenderThreadManager::SetVulkanContextProviderOnRT(
+    AwVulkanContextProvider* context_provider) {
+  DCHECK(!hardware_renderer_);
+  vulkan_context_provider_ = context_provider;
+}
+
 void RenderThreadManager::UpdateViewTreeForceDarkStateOnRT(
     bool view_tree_force_dark_state) {
   if (view_tree_force_dark_state_ == view_tree_force_dark_state)
@@ -199,8 +205,8 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
         getter = root_frame_sink_getter_;
       }
       DCHECK(getter);
-      hardware_renderer_.reset(
-          new HardwareRendererViz(this, std::move(getter)));
+      hardware_renderer_.reset(new HardwareRendererViz(
+          this, std::move(getter), vulkan_context_provider_));
     } else {
       hardware_renderer_.reset(new HardwareRendererSingleThread(this));
     }

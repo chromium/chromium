@@ -16,10 +16,13 @@
 
 namespace android_webview {
 
+class AwVulkanContextProvider;
+
 class HardwareRendererViz : public HardwareRenderer {
  public:
   HardwareRendererViz(RenderThreadManager* state,
-                      RootFrameSinkGetter root_frame_sink_getter);
+                      RootFrameSinkGetter root_frame_sink_getter,
+                      AwVulkanContextProvider* context_provider);
   ~HardwareRendererViz() override;
 
   // HardwareRenderer overrides.

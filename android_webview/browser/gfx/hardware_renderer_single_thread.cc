@@ -51,8 +51,7 @@ HardwareRendererSingleThread::~HardwareRendererSingleThread() {
 
 void HardwareRendererSingleThread::DrawAndSwap(
     HardwareRendererDrawParams* params) {
-  TRACE_EVENT1("android_webview", "HardwareRendererSingleThread::DrawAndSwap",
-               "vulkan", surfaces_->is_using_vulkan());
+  TRACE_EVENT0("android_webview", "HardwareRendererSingleThread::DrawAndSwap");
 
   bool submitted_new_frame = false;
   uint32_t frame_token = 0u;

@@ -42,8 +42,8 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
     DISALLOW_COPY_AND_ASSIGN(ScopedSecondaryCBDraw);
   };
 
-  static scoped_refptr<AwVulkanContextProvider> GetOrCreateInstance(
-      AwDrawFn_InitVkParams* params = nullptr);
+  static scoped_refptr<AwVulkanContextProvider> Create(
+      AwDrawFn_InitVkParams* params);
 
   // viz::VulkanContextProvider implementation:
   gpu::VulkanImplementation* GetVulkanImplementation() override;
@@ -54,13 +54,8 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
 
-  VkPhysicalDevice physical_device() {
-    return device_queue_->GetVulkanPhysicalDevice();
-  }
-  VkDevice device() { return device_queue_->GetVulkanDevice(); }
-  VkQueue queue() { return device_queue_->GetVulkanQueue(); }
-  gpu::VulkanImplementation* implementation() { return implementation_.get(); }
-  GrDirectContext* gr_context() { return gr_context_.get(); }
+  VkDevice device() { return globals_->device_queue->GetVulkanDevice(); }
+  VkQueue queue() { return globals_->device_queue->GetVulkanQueue(); }
 
  private:
   friend class base::RefCounted<AwVulkanContextProvider>;
@@ -72,9 +67,24 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   void SecondaryCBDrawBegin(sk_sp<GrVkSecondaryCBDrawContext> draw_context);
   void SecondaryCMBDrawSubmitted();
 
-  std::unique_ptr<gpu::VulkanImplementation> implementation_;
-  std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
-  sk_sp<GrDirectContext> gr_context_;
+  struct Globals : base::RefCountedThreadSafe<Globals> {
+    static scoped_refptr<Globals> GetOrCreateInstance(
+        AwDrawFn_InitVkParams* params);
+
+    Globals();
+    bool Initialize(AwDrawFn_InitVkParams* params);
+
+    std::unique_ptr<gpu::VulkanImplementation> implementation;
+    std::unique_ptr<gpu::VulkanDeviceQueue> device_queue;
+    sk_sp<GrDirectContext> gr_context;
+
+   private:
+    friend base::RefCountedThreadSafe<Globals>;
+    ~Globals();
+  };
+  static Globals* g_globals;
+
+  scoped_refptr<Globals> globals_;
   sk_sp<GrVkSecondaryCBDrawContext> draw_context_;
   std::vector<base::OnceClosure> post_submit_tasks_;
   std::vector<VkSemaphore> post_submit_semaphores_;
