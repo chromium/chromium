@@ -36,10 +36,6 @@ class MockModelAssociationManagerDelegate
   ~MockModelAssociationManagerDelegate() override = default;
   MOCK_METHOD(void, OnAllDataTypesReadyForConfigure, (), (override));
   MOCK_METHOD(void,
-              OnSingleDataTypeAssociationDone,
-              (ModelType type),
-              (override));
-  MOCK_METHOD(void,
               OnSingleDataTypeWillStop,
               (ModelType, const SyncError& error),
               (override));
@@ -354,8 +350,6 @@ TEST_F(SyncModelAssociationManagerTest, KeepsMetadataForPreferredDataType) {
   ModelTypeSet desired_types = preferred_types;
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        BuildConfigureContext());
@@ -392,8 +386,6 @@ TEST_F(SyncModelAssociationManagerTest, ClearsMetadataForNotPreferredDataType) {
   ModelTypeSet desired_types = preferred_types;
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        BuildConfigureContext());
@@ -437,8 +429,6 @@ TEST_F(SyncModelAssociationManagerTest,
   configure_context.cache_guid = "test_cache_guid";
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
@@ -458,7 +448,6 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(APPS, _));
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
@@ -489,8 +478,6 @@ TEST_F(SyncModelAssociationManagerTest,
   configure_context.cache_guid = "test_cache_guid";
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);
@@ -510,7 +497,6 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(APPS, _));
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
 
   model_association_manager.Initialize(desired_types, preferred_types,
                                        configure_context);

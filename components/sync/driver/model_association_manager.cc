@@ -195,26 +195,13 @@ void ModelAssociationManager::Associate(
   DCHECK_EQ(INITIALIZED, state_);
   DCHECK(notified_about_ready_for_configure_);
 
-  DVLOG(1) << "Starting association for "
-           << ModelTypeSetToString(types_to_associate);
-
   ModelTypeSet associating_types = types_to_associate;
   associating_types.RetainAll(desired_types_);
   associating_types.RemoveAll(associated_types_);
 
   DCHECK(loaded_types_.HasAll(associating_types));
 
-  // Associate types in specified order.
-  for (ModelType type : kStartOrder) {
-    if (associating_types.Has(type)) {
-      associated_types_.Put(type);
-      associating_types.Remove(type);
-
-      if (ProtocolTypes().Has(type))
-        delegate_->OnSingleDataTypeAssociationDone(type);
-    }
-  }
-  DCHECK(associating_types.Empty());
+  associated_types_.PutAll(associating_types);
 }
 
 void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {

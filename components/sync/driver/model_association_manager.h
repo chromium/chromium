@@ -26,10 +26,6 @@ class ModelAssociationManagerDelegate {
   // ModelAssociationManager::Initialize().
   virtual void OnAllDataTypesReadyForConfigure() = 0;
 
-  // Called when model association (MergeDataAndStartSyncing) has completed
-  // for |type|, regardless of success or failure.
-  virtual void OnSingleDataTypeAssociationDone(ModelType type) = 0;
-
   // Called when the ModelAssociationManager has decided it must stop |type|,
   // likely because it is no longer a desired data type, sync is shutting down,
   // or some error occurred during loading.

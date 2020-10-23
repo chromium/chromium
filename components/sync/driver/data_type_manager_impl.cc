@@ -682,6 +682,12 @@ void DataTypeManagerImpl::StartNextAssociation(AssociationGroup group) {
   DVLOG(1) << "Associating " << ModelTypeSetToString(types_to_associate);
   model_association_manager_.Associate(types_to_associate);
 
+  for (ModelType type : types_to_associate) {
+    if (ProtocolTypes().Has(type)) {
+      RecordConfigurationStats(type);
+    }
+  }
+
   DCHECK(state_ == STOPPING || state_ == CONFIGURING);
 
   if (state_ == STOPPING)
@@ -736,33 +742,35 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
   }
 }
 
-void DataTypeManagerImpl::OnSingleDataTypeAssociationDone(ModelType type) {
+void DataTypeManagerImpl::RecordConfigurationStats(ModelType type) {
   DCHECK(!association_types_queue_.empty());
 
   if (!debug_info_listener_.IsInitialized())
     return;
 
+  if (configuration_stats_.count(type) > 0)
+    return;
+
   AssociationTypesInfo& info = association_types_queue_.front();
-  configuration_stats_.push_back(DataTypeConfigurationStats());
-  configuration_stats_.back().model_type = type;
+  configuration_stats_[type].model_type = type;
   if (info.types.Has(type)) {
     // Times in |info| only apply to non-slow types.
-    configuration_stats_.back().download_wait_time =
+    configuration_stats_[type].download_wait_time =
         info.download_start_time - last_restart_time_;
     if (info.first_sync_types.Has(type)) {
-      configuration_stats_.back().download_time =
+      configuration_stats_[type].download_time =
           info.download_ready_time - info.download_start_time;
     }
     if (info.ready_types.Has(type)) {
-      configuration_stats_.back().association_wait_time_for_high_priority =
+      configuration_stats_[type].association_wait_time_for_high_priority =
           info.ready_association_request_time - info.download_start_time;
     } else {
-      configuration_stats_.back().association_wait_time_for_high_priority =
+      configuration_stats_[type].association_wait_time_for_high_priority =
           info.full_association_request_time - info.download_ready_time;
     }
-    configuration_stats_.back().high_priority_types_configured_before =
+    configuration_stats_[type].high_priority_types_configured_before =
         info.high_priority_types_before;
-    configuration_stats_.back().same_priority_types_configured_before =
+    configuration_stats_[type].same_priority_types_configured_before =
         info.configured_types;
     info.configured_types.Put(type);
   }
@@ -833,9 +841,15 @@ void DataTypeManagerImpl::NotifyDone(const ConfigureResult& raw_result) {
       base::UmaHistogramLongTimes(prefix_uma + ".OK", configure_time);
       if (debug_info_listener_.IsInitialized() &&
           !configuration_stats_.empty()) {
+        std::vector<DataTypeConfigurationStats> stats;
+        for (auto& type_and_stat : configuration_stats_) {
+          // Note: |configuration_stats_| gets cleared below, so it's okay to
+          // destroy its contents here.
+          stats.push_back(std::move(type_and_stat.second));
+        }
         debug_info_listener_.Call(
             FROM_HERE, &DataTypeDebugInfoListener::OnDataTypeConfigureComplete,
-            configuration_stats_);
+            stats);
       }
       configuration_stats_.clear();
       break;

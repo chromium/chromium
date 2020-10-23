@@ -57,7 +57,6 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // |ModelAssociationManagerDelegate| implementation.
   void OnAllDataTypesReadyForConfigure() override;
-  void OnSingleDataTypeAssociationDone(ModelType type) override;
   void OnSingleDataTypeWillStop(ModelType type,
                                 const SyncError& error) override;
 
@@ -104,6 +103,8 @@ class DataTypeManagerImpl : public DataTypeManager,
     // any db changes and/or downloads before associating.
     UNREADY_AT_CONFIG,
   };
+
+  void RecordConfigurationStats(ModelType type);
 
   // Return model types in |state_map| that match |state|.
   static ModelTypeSet GetDataTypesInState(
@@ -264,7 +265,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   const DataTypeEncryptionHandler* encryption_handler_;
 
   // Association and time stats of data type configuration.
-  std::vector<DataTypeConfigurationStats> configuration_stats_;
+  std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;
 
   // Configuration process is started when ModelAssociationManager notifies
   // DataTypeManager that all types are ready for configure.
