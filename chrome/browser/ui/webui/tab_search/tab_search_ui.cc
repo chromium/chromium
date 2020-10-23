@@ -28,7 +28,7 @@
 #if BUILDFLAG(ENABLE_TAB_SEARCH)
 namespace {
 constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/tab_search/";
+    "@out_folder@/gen/chrome/browser/resources/tab_search_merge/";
 }
 #endif  // BUILDFLAG(ENABLE_TAB_SEARCH)
 

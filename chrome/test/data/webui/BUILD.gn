@@ -29,7 +29,7 @@ if (include_js_tests) {
     ]
 
     if (enable_tab_search) {
-      sources += [ "tab_search/test/tab_search_interactive_ui_tests.js" ]
+      sources += [ "tab_search_merge/tab_search_interactive_ui_tests.js" ]
     }
 
     gen_include_files = [
@@ -180,7 +180,7 @@ if (include_js_tests) {
       sources += [ "print_preview/print_preview_ui_browsertest.js" ]
     }
     if (enable_tab_search) {
-      sources += [ "tab_search/test/tab_search_browsertest.js" ]
+      sources += [ "tab_search_merge/tab_search_browsertest.js" ]
     }
     if (enable_webui_tab_strip) {
       sources += [ "tab_strip/tab_strip_browsertest.js" ]
@@ -502,7 +502,7 @@ group("closure_compile") {
     ]
   }
   if (enable_tab_search) {
-    deps += [ "tab_search/test:closure_compile" ]
+    deps += [ "tab_search_merge:closure_compile" ]
   }
 }
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TabSearchApiProxy} from 'chrome://tab-search/tab_search_api_proxy.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
 /** @implements {TabSearchApiProxy} */
 export class TestTabSearchApiProxy extends TestBrowserProxy {

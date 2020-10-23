@@ -176,8 +176,8 @@ suite('FuzzySearchTest', () => {
     assertDeepEquals(records, fuzzySearch('', records, options));
 
     assertDeepEquals(archMatchedRecords, fuzzySearch('arch', records, options));
-    assertDeepEquals(searchMatchedRecords,
-                     fuzzySearch('search', records, options));
+    assertDeepEquals(
+        searchMatchedRecords, fuzzySearch('search', records, options));
 
     // No matches should return an empty list.
     assertDeepEquals([], fuzzySearch('archh', records, options));
@@ -214,10 +214,10 @@ suite('FuzzySearchTest', () => {
       },
     ];
 
-    assertDeepEquals(backslashMatchedRecords,
-                     fuzzySearch('\\test', records, options));
-    assertDeepEquals(quoteMatchedRecords,
-                     fuzzySearch('\"end', records, options));
+    assertDeepEquals(
+        backslashMatchedRecords, fuzzySearch('\\test', records, options));
+    assertDeepEquals(
+        quoteMatchedRecords, fuzzySearch('\"end', records, options));
   });
 
   test('Test exact match result scoring accounts for match position.', () => {

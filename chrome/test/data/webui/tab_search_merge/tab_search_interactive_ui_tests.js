@@ -14,7 +14,7 @@ GEN('#include "services/network/public/cpp/features.h"');
 var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search/test_loader.html?module=tab_search/test/tab_search_app_focus_test.js';
+    return 'chrome://tab-search/test_loader.html?module=tab_search_merge/tab_search_app_focus_test.js';
   }
 
   get extraLibraries() {
@@ -32,7 +32,7 @@ var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
       ]
     };
   }
-}
+};
 
 TEST_F('TabSearchInteractiveUITest', 'All', function() {
   mocha.run();

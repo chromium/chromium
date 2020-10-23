@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
-import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js'
+import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js';
 import {TabSearchItem} from 'chrome://tab-search/tab_search_item.js';
 import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
 

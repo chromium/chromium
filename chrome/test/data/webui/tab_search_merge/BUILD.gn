@@ -7,7 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://tab-search/=../../chrome/browser/resources/tab-search/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://tab-search/=../../chrome/browser/resources/tab-search-merge/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
@@ -22,7 +22,7 @@ js_type_check("closure_compile") {
 js_library("fuzzy_search_test") {
   deps = [
     ":test_tab_search_api_proxy",
-    "../..:chai_assert",
+    "..:chai_assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -30,8 +30,8 @@ js_library("fuzzy_search_test") {
 js_library("tab_search_app_test") {
   deps = [
     ":test_tab_search_api_proxy",
-    "../..:chai_assert",
-    "//chrome/browser/resources/tab_search:app",
+    "..:chai_assert",
+    "//chrome/browser/resources/tab_search_merge:app",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -39,24 +39,24 @@ js_library("tab_search_app_test") {
 js_library("tab_search_app_focus_test") {
   deps = [
     ":test_tab_search_api_proxy",
-    "../..:chai_assert",
-    "//chrome/browser/resources/tab_search:app",
+    "..:chai_assert",
+    "//chrome/browser/resources/tab_search_merge:app",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("test_tab_search_api_proxy") {
   deps = [
-    "//chrome/browser/resources/tab_search:tab_search_api_proxy",
+    "..:test_browser_proxy.m",
+    "//chrome/browser/resources/tab_search_merge:tab_search_api_proxy",
     "//chrome/browser/ui/webui/tab_search:mojo_bindings_js_library_for_compile",
-    "//chrome/test/data/webui:test_browser_proxy.m",
   ]
 }
 
 js_library("tab_search_item_test") {
   deps = [
-    "../..:chai_assert",
-    "//chrome/browser/resources/tab_search:tab_search_item",
+    "..:chai_assert",
+    "//chrome/browser/resources/tab_search_merge:tab_search_item",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
