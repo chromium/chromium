@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/guid.h"
+#include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/notification/download_notification_manager.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -82,9 +85,12 @@ class DownloadItemNotificationTest : public testing::Test {
         GURL("http://www.example.com/download.bin")));
     content::DownloadItemUtils::AttachInfo(download_item_.get(), profile_,
                                            nullptr);
+    enterprise_connectors::ConnectorsManager::GetInstance()->SetUpForTesting();
   }
 
   void TearDown() override {
+    enterprise_connectors::ConnectorsManager::GetInstance()
+        ->TearDownForTesting();
     download_item_notification_ = nullptr;  // will be free'd in the manager.
     download_notification_manager_.reset();
     profile_manager_.reset();
@@ -275,16 +281,28 @@ TEST_F(DownloadItemNotificationTest, DeepScanning) {
 
   // Can't open while scanning.
   profile_manager_->local_state()->Get()->SetManagedPref(
-      prefs::kDelayDeliveryUntilVerdict,
-      std::make_unique<base::Value>(safe_browsing::DELAY_DOWNLOADS));
+      enterprise_connectors::kOnFileDownloadedPref,
+      std::make_unique<base::Value>(*base::JSONReader::Read(R"([
+        {
+          "service_provider": "google",
+          "enable": [{"url_list": ["*"], "tags": ["malware"]}],
+          "block_until_verdict": 1
+        }
+      ])")));
   EXPECT_CALL(*download_item_, OpenDownload()).Times(0);
   EXPECT_CALL(*download_item_, SetOpenWhenComplete(true)).Times(1);
   download_item_notification_->Click(base::nullopt, base::nullopt);
 
   // Can be opened while scanning.
   profile_manager_->local_state()->Get()->SetManagedPref(
-      prefs::kDelayDeliveryUntilVerdict,
-      std::make_unique<base::Value>(safe_browsing::DELAY_NONE));
+      enterprise_connectors::kOnFileDownloadedPref,
+      std::make_unique<base::Value>(*base::JSONReader::Read(R"([
+        {
+          "service_provider": "google",
+          "enable": [{"url_list": ["*"], "tags": ["malware"]}],
+          "block_until_verdict": 0
+        }
+      ])")));
   EXPECT_CALL(*download_item_, OpenDownload()).Times(1);
   download_item_notification_->Click(base::nullopt, base::nullopt);
 

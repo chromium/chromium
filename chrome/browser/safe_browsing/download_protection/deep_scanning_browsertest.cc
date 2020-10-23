@@ -114,7 +114,7 @@ class DownloadDeepScanningBrowserTest
   }
 
   void SetUpReporting() {
-    SetUnsafeEventsReportingPolicy(true);
+    SetOnSecurityEventReporting(true);
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
         browser()->profile())

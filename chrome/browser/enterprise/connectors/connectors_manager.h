@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 
-#include <set>
-
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
@@ -25,8 +23,7 @@ class NoDestructor;
 namespace enterprise_connectors {
 
 // Controls whether the Enterprise Connectors policies should be read by
-// ConnectorsManager. Legacy policies will be read as a fallback if this feature
-// is disabled.
+// ConnectorsManager.
 extern const base::Feature kEnterpriseConnectorsEnabled;
 
 // For the moment, service provider configurations are static and only support
@@ -104,35 +101,11 @@ class ConnectorsManager {
   void StartObservingPref(AnalysisConnector connector);
   void StartObservingPref(ReportingConnector connector);
 
-  // Private legacy functions.
-  // These functions are used to interact with legacy policies and should stay
-  // private. They should be removed once legacy policies are deprecated.
-
-  // Returns analysis settings based on legacy policies.
-  base::Optional<AnalysisSettings> GetAnalysisSettingsFromLegacyPolicies(
-      const GURL& url,
-      AnalysisConnector connector) const;
-
-  BlockUntilVerdict LegacyBlockUntilVerdict(bool upload) const;
-  bool LegacyBlockPasswordProtectedFiles(bool upload) const;
-  bool LegacyBlockLargeFiles(bool upload) const;
-  bool LegacyBlockUnsupportedFileTypes(bool upload) const;
-
-  // Functions that check a url against the corresponding URL patterns policies.
-  bool MatchURLAgainstLegacyDlpPolicies(const GURL& url, bool upload) const;
-  bool MatchURLAgainstLegacyMalwarePolicies(const GURL& url, bool upload) const;
-  std::set<std::string> MatchURLAgainstLegacyPolicies(const GURL& url,
-                                                      bool upload) const;
-
   // Validates which settings should be applied to an analysis connector event
   // against connector policies. Cache the policy value the first time this is
   // called for every different connector.
   base::Optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
       ReportingConnector connector);
-
-  // Returns reporting settings based on legacy policies.
-  base::Optional<ReportingSettings> GetReportingSettingsFromLegacyPolicies(
-      ReportingConnector connector) const;
 
   // Cached values of available service providers. This information validates
   // the Connector policies have a valid provider.
