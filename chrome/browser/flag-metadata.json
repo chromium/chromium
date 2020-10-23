@@ -1190,6 +1190,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "enable-autofill-account-indicator-footer",
+    "owners": [ "annelim@google.com, mdjones@chromium.org"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-autofill-account-wallet-storage",
     "owners": [ "treib", "jsaul@google.com", "butter-team@google.com" ],
     "expiry_milestone": 88

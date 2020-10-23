@@ -6685,6 +6685,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kConnectivityDiagnosticsWebUi)},
 #endif  // defined(OS_CHROMEOS)
 
+#if defined(OS_ANDROID)
+    {"enable-autofill-account-indicator-footer",
+     flag_descriptions::kEnableAutofillInfoBarAccountIndicationFooterName,
+     flag_descriptions::
+         kEnableAutofillInfoBarAccountIndicationFooterDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableInfoBarAccountIndicationFooter)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

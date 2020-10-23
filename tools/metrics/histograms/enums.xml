@@ -44107,6 +44107,8 @@ from previous Chrome versions.
   <int value="375785554" label="UserActivationV2:disabled"/>
   <int value="375934458" label="PortalsCrossOrigin:enabled"/>
   <int value="377093001" label="WebRtcHWH264Encoding:disabled"/>
+  <int value="378948081"
+      label="AutofillEnableInfoBarAccountIndicationFooter:disabled"/>
   <int value="378994579" label="Previews:enabled"/>
   <int value="379190682" label="ReorderBookmarks:enabled"/>
   <int value="379326303" label="enable-add-to-shelf"/>
@@ -44417,6 +44419,8 @@ from previous Chrome versions.
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
+  <int value="693545401"
+      label="AutofillEnableInfoBarAccountIndicationFooter:enabled"/>
   <int value="694985670" label="OmniboxUIExperimentNarrowDropdown:disabled"/>
   <int value="695385040" label="enable-external-drive-rename"/>
   <int value="696261973" label="GaiaActionButtons:enabled"/>

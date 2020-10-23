@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/SavePasswordInfoBar_jni.h"
 #include "chrome/browser/password_manager/android/save_password_infobar_delegate_android.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -16,8 +17,11 @@
 using base::android::JavaParamRef;
 
 SavePasswordInfoBar::SavePasswordInfoBar(
-    std::unique_ptr<SavePasswordInfoBarDelegate> delegate)
-    : ChromeConfirmInfoBar(std::move(delegate)) {}
+    std::unique_ptr<SavePasswordInfoBarDelegate> delegate,
+    AccountInfo account_info)
+    : ChromeConfirmInfoBar(std::move(delegate)) {
+  account_info_ = account_info;
+}
 
 SavePasswordInfoBar::~SavePasswordInfoBar() {}
 
@@ -36,11 +40,13 @@ SavePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
       ConvertUTF16ToJavaString(env, save_password_delegate->GetMessageText());
   ScopedJavaLocalRef<jstring> details_message_text = ConvertUTF16ToJavaString(
       env, save_password_delegate->GetDetailsMessageText());
+  ScopedJavaLocalRef<jobject> account_info =
+      ConvertToJavaAccountInfo(env, account_info_);
 
   base::android::ScopedJavaLocalRef<jobject> infobar;
   infobar.Reset(Java_SavePasswordInfoBar_show(
       env, GetJavaIconId(), message_text, details_message_text, ok_button_text,
-      cancel_button_text));
+      cancel_button_text, account_info));
 
   java_infobar_.Reset(env, infobar.obj());
   return infobar;

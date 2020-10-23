@@ -7,7 +7,10 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 class SavePasswordInfoBarDelegate;
 
@@ -15,7 +18,8 @@ class SavePasswordInfoBarDelegate;
 class SavePasswordInfoBar : public ChromeConfirmInfoBar {
  public:
   explicit SavePasswordInfoBar(
-      std::unique_ptr<SavePasswordInfoBarDelegate> delegate);
+      std::unique_ptr<SavePasswordInfoBarDelegate> delegate,
+      AccountInfo account_info);
   ~SavePasswordInfoBar() override;
 
  private:
@@ -26,6 +30,8 @@ class SavePasswordInfoBar : public ChromeConfirmInfoBar {
                      const base::android::JavaParamRef<jobject>& obj) override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_infobar_;
+
+  AccountInfo account_info_;
 
   DISALLOW_COPY_AND_ASSIGN(SavePasswordInfoBar);
 };

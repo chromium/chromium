@@ -66,6 +66,7 @@ namespace {
 const base::Feature* kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillCreditCardAuthentication,
     &autofill::features::kAutofillDownstreamCvcPromptUseGooglePayLogo,
+    &autofill::features::kAutofillEnableInfoBarAccountIndicationFooter,
     &autofill::features::kAutofillKeyboardAccessory,
     &autofill::features::kAutofillManualFallbackAndroid,
     &autofill::features::kAutofillRefreshStyleAndroid,
