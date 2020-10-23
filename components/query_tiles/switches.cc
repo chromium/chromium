@@ -10,6 +10,8 @@ const base::Feature kQueryTilesGeoFilter{"QueryTilesGeoFilter",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kQueryTiles{"QueryTiles",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kQueryTilesInNTP{"QueryTilesInNTP",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kQueryTilesInOmnibox{"QueryTilesInOmnibox",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kQueryTilesEnableQueryEditing{

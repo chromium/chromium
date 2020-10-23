@@ -253,6 +253,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &performance_hints::features::kPageInfoPerformanceHints,
     &query_tiles::features::kQueryTilesGeoFilter,
     &query_tiles::features::kQueryTiles,
+    &query_tiles::features::kQueryTilesInNTP,
     &query_tiles::features::kQueryTilesInOmnibox,
     &query_tiles::features::kQueryTilesEnableQueryEditing,
     &query_tiles::features::kQueryTilesLocalOrdering,

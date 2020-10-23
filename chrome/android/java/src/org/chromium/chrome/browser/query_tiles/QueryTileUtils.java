@@ -11,13 +11,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
  */
 public class QueryTileUtils {
     /**
-     * This is the main feature flag for query tiles. All other flags are effective only when this
-     * flag is enabled.
-     * @return Whether the query tile feature is enabled.
+     * Whether query tiles is enabled and should be shown on NTP.
+     * @return Whether the query tile feature is enabled on NTP.
      */
-    public static boolean isFeatureEnabled() {
+    public static boolean isQueryTilesEnabledOnNTP() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_GEO_FILTER)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES);
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_IN_NTP);
     }
 
     /**
