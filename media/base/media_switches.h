@@ -239,6 +239,17 @@ MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
 
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
 
+enum class kCrosGlobalMediaControlsPinOptions {
+  kPin,
+  kNotPin,
+  kHeuristic,
+};
+
+// Feature param used to force default pin/unpin for global media controls in
+// CrOS.
+MEDIA_EXPORT extern const base::FeatureParam<kCrosGlobalMediaControlsPinOptions>
+    kCrosGlobalMediaControlsPinParam;
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_MEDIA_SWITCHES_H_

@@ -366,4 +366,51 @@ TEST_F(MediaTrayTest, DialogAnchor) {
   EXPECT_EQ(initial_bounds, GetBubbleBounds());
 }
 
+class MediaTrayPinnedParamTest : public AshTestBase {
+ public:
+  MediaTrayPinnedParamTest() = default;
+  ~MediaTrayPinnedParamTest() override = default;
+
+  void SetUp() override {
+    auto& pin_param = media::kCrosGlobalMediaControlsPinParam;
+    feature_list_.InitAndEnableFeatureWithParameters(
+        media::kGlobalMediaControlsForChromeOS,
+        {{pin_param.name,
+          pin_param.GetName(media::kCrosGlobalMediaControlsPinOptions::kPin)}});
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(MediaTrayPinnedParamTest, PinParamTest) {
+  UpdateDisplay("100x100");
+  EXPECT_TRUE(MediaTray::IsPinnedToShelf());
+}
+
+class MediaTrayNotPinnedParamTest : public AshTestBase {
+ public:
+  MediaTrayNotPinnedParamTest() = default;
+  ~MediaTrayNotPinnedParamTest() override = default;
+
+  void SetUp() override {
+    auto& pin_param = media::kCrosGlobalMediaControlsPinParam;
+    feature_list_.InitAndEnableFeatureWithParameters(
+        media::kGlobalMediaControlsForChromeOS,
+        {{pin_param.name,
+          pin_param.GetName(
+              media::kCrosGlobalMediaControlsPinOptions::kNotPin)}});
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(MediaTrayNotPinnedParamTest, PinParamTest) {
+  UpdateDisplay("2560x1440");
+  EXPECT_FALSE(MediaTray::IsPinnedToShelf());
+}
+
 }  // namespace ash

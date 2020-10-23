@@ -381,6 +381,19 @@ const base::Feature kGlobalMediaControlsForCast{
 const base::Feature kGlobalMediaControlsForChromeOS{
     "GlobalMediaControlsForChromeOS", base::FEATURE_DISABLED_BY_DEFAULT};
 
+constexpr base::FeatureParam<kCrosGlobalMediaControlsPinOptions>::Option
+    kCrosGlobalMediaControlsParamOptions[] = {
+        {kCrosGlobalMediaControlsPinOptions::kPin, "default-pinned"},
+        {kCrosGlobalMediaControlsPinOptions::kNotPin, "default-unpinned"},
+        {kCrosGlobalMediaControlsPinOptions::kHeuristic, "heuristic"}};
+
+constexpr base::FeatureParam<kCrosGlobalMediaControlsPinOptions>
+    kCrosGlobalMediaControlsPinParam(
+        &kGlobalMediaControlsForChromeOS,
+        "CrosGlobalMediaControlsPinParam",
+        kCrosGlobalMediaControlsPinOptions::kHeuristic,
+        &kCrosGlobalMediaControlsParamOptions);
+
 // Allow global media controls notifications to be dragged out into overlay
 // notifications. It is no-op if kGlobalMediaControls is not enabled.
 const base::Feature kGlobalMediaControlsOverlayControls{

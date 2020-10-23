@@ -24,6 +24,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -65,6 +66,21 @@ bool GetIsPinnedToShelfByDefault() {
 
   float diagonal_len = sqrt(pow(screen_width, 2) + pow(screen_height, 2));
   return diagonal_len > kMinimumScreenSizeDiagonal;
+}
+
+// Used for getting default pin state for experiment.
+bool GetIsPinnedToShelfByFeatureParams() {
+  switch (media::kCrosGlobalMediaControlsPinParam.Get()) {
+    case media::kCrosGlobalMediaControlsPinOptions::kPin:
+      return true;
+    case media::kCrosGlobalMediaControlsPinOptions::kNotPin:
+      return false;
+    case media::kCrosGlobalMediaControlsPinOptions::kHeuristic:
+      return GetIsPinnedToShelfByDefault();
+  }
+
+  NOTREACHED();
+  return false;
 }
 
 // Enum that specifies the pin state of global media controls.
@@ -135,7 +151,7 @@ bool MediaTray::IsPinnedToShelf() {
     case PinState::kUnpinned:
       return false;
     case PinState::kDefault:
-      return GetIsPinnedToShelfByDefault();
+      return GetIsPinnedToShelfByFeatureParams();
   }
 
   NOTREACHED();
