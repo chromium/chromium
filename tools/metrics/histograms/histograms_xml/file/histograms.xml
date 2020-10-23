@@ -203,8 +203,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.ImportController.DeviceYanked" enum="Boolean"
-    expires_after="M88">
+    expires_after="M92">
   <owner>slangley@chromium.org</owner>
+  <owner>weifangsun@chromium.org</owner>
   <summary>
     Chrome OS Files App: Whether an external media device was removed during the
     upload process.
@@ -212,8 +213,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.ImportController.ImportCancelled"
-    enum="BooleanCanceled" expires_after="M88">
+    enum="BooleanCanceled" expires_after="M92">
   <owner>slangley@chromium.org</owner>
+  <owner>weifangsun@chromium.org</owner>
   <summary>
     Chrome OS Files App: Whether the media import process was cancelled.
   </summary>
