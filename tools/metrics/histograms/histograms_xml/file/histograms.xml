@@ -357,7 +357,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Notification.Show"
-    enum="FileManagerNotificationType" expires_after="2020-11-01">
+    enum="FileManagerNotificationType" expires_after="M92">
   <owner>fukino@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
@@ -366,7 +366,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Notification.UserAction"
-    enum="FileManagerNotificationUserAction" expires_after="2020-11-01">
+    enum="FileManagerNotificationUserAction" expires_after="M92">
   <owner>fukino@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
