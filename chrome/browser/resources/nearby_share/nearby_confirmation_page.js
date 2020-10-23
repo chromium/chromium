@@ -90,6 +90,16 @@ Polymer({
     },
 
     /**
+     * Preview info for the file(s) to send. Expected to start
+     * as null, then change to a valid object before this component is shown.
+     * @type {?nearbyShare.mojom.SendPreview}
+     */
+    sendPreview: {
+      type: Object,
+      value: null,
+    },
+
+    /**
      * Token to show to the user to confirm the selected share target. Expected
      * to start as null, then change to a valid object via updates from the
      * transferUpdateListener.
@@ -223,7 +233,8 @@ Polymer({
    * @private
    */
   attachmentTitle_() {
-    // TODO(crbug.com/1123942): Pass attachments to UI.
-    return 'Unknown file';
+    return this.sendPreview && this.sendPreview.description ?
+        this.sendPreview.description :
+        'Unknown file';
   },
 });

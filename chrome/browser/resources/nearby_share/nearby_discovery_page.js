@@ -51,11 +51,12 @@ Polymer({
 
   properties: {
     /**
-     * The description of the attachments
-     * @type {?string}
+     * Preview info for the file(s) to be shared.
+     * @type {?nearbyShare.mojom.SendPreview}
      */
-    attachmentsDescription: {
-      type: String,
+    sendPreview: {
+      notify: true,
+      type: Object,
       value: null,
     },
 
@@ -177,7 +178,7 @@ Polymer({
     ];
 
     getDiscoveryManager().getSendPreview().then(result => {
-      this.attachmentsDescription = result.sendPreview.description;
+      this.sendPreview = result.sendPreview;
       // TODO (vecore): Setup icon and handle case of more than one attachment.
     });
 

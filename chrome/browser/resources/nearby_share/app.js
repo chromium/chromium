@@ -42,8 +42,7 @@ Polymer({
     /**
      * Set by the nearby-discovery-page component when switching to the
      * nearby-confirmation-page.
-     * @type {?nearbyShare.mojom.ConfirmationManagerInterface}
-     * @private
+     * @private {?nearbyShare.mojom.ConfirmationManagerInterface}
      */
     confirmationManager_: {
       type: Object,
@@ -53,8 +52,7 @@ Polymer({
     /**
      * Set by the nearby-discovery-page component when switching to the
      * nearby-confirmation-page.
-     * @type {?nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
-     * @private
+     * @private {?nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
      */
     transferUpdateListener_: {
       type: Object,
@@ -64,10 +62,18 @@ Polymer({
     /**
      * The currently selected share target set by the nearby-discovery-page
      * component when the user selects a device.
-     * @type {?nearbyShare.mojom.ShareTarget}
-     * @private
+     * @private {?nearbyShare.mojom.ShareTarget}
      */
     selectedShareTarget_: {
+      type: Object,
+      value: null,
+    },
+
+    /**
+     * Preview info of attachment to be sent, set by the nearby-discovery-page.
+     * @private {?nearbyShare.mojom.SendPreview}
+     */
+    sendPreview_: {
       type: Object,
       value: null,
     },

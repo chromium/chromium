@@ -98,4 +98,16 @@ suite('ConfirmatonPageTest', function() {
                              .textContent;
     assertEquals(name, renderedName);
   });
+
+  test('renders attachment title', function() {
+    const title = 'Filename';
+    confirmationPageElement.sendPreview = {
+      description: title,
+      fileCount: 1,
+      shareType: nearbyShare.mojom.ShareType.kUnknownFile
+    };
+    const renderedTitle =
+        confirmationPageElement.$$('nearby-preview').$$('#title').textContent;
+    assertEquals(title, renderedTitle);
+  });
 });
