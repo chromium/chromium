@@ -6,8 +6,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("vibration") {
   sources = [
-    "navigator_vibration.cc",
-    "navigator_vibration.h",
     "vibration_controller.cc",
     "vibration_controller.h",
   ]

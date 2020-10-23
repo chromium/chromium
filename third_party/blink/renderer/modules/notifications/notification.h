@@ -42,7 +42,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/vibration/navigator_vibration.h"
+#include "third_party/blink/renderer/modules/vibration/vibration_controller.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -110,7 +110,7 @@ class MODULES_EXPORT Notification final
   String image() const;
   String icon() const;
   String badge() const;
-  NavigatorVibration::VibrationPattern vibrate() const;
+  VibrationController::VibrationPattern vibrate() const;
   DOMTimeStamp timestamp() const;
   bool renotify() const;
   bool silent() const;

@@ -20,7 +20,7 @@
 // https://w3c.github.io/vibration/#vibration-interface
 
 [
-    ImplementedAs=NavigatorVibration
+    ImplementedAs=VibrationController
 ] partial interface Navigator {
     // FIXME: should be union type https://crbug.com/240176
     // FIXME: The contents of the pattern argument should be clamped.

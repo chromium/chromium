@@ -316,8 +316,8 @@ String Notification::badge() const {
   return data_->badge.GetString();
 }
 
-NavigatorVibration::VibrationPattern Notification::vibrate() const {
-  NavigatorVibration::VibrationPattern pattern;
+VibrationController::VibrationPattern Notification::vibrate() const {
+  VibrationController::VibrationPattern pattern;
   if (data_->vibration_pattern.has_value()) {
     pattern.AppendRange(data_->vibration_pattern->begin(),
                         data_->vibration_pattern->end());

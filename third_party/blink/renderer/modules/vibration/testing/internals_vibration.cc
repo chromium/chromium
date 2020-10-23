@@ -32,25 +32,20 @@
 
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/testing/internals.h"
-#include "third_party/blink/renderer/modules/vibration/navigator_vibration.h"
 #include "third_party/blink/renderer/modules/vibration/vibration_controller.h"
 
 namespace blink {
 
 bool InternalsVibration::isVibrating(Internals&, Navigator* navigator) {
-  DCHECK(navigator && navigator->GetFrame());
-  return NavigatorVibration::From(*navigator)
-      .Controller(*navigator->GetFrame())
-      ->IsRunning();
+  DCHECK(navigator && navigator->DomWindow());
+  return VibrationController::From(*navigator).IsRunning();
 }
 
 Vector<unsigned> InternalsVibration::pendingVibrationPattern(
     Internals&,
     Navigator* navigator) {
-  DCHECK(navigator && navigator->GetFrame());
-  return NavigatorVibration::From(*navigator)
-      .Controller(*navigator->GetFrame())
-      ->Pattern();
+  DCHECK(navigator && navigator->DomWindow());
+  return VibrationController::From(*navigator).Pattern();
 }
 
 }  // namespace blink
