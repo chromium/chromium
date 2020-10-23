@@ -8,6 +8,8 @@ static_library("backend") {
   sources = [
     "cros_healthd_helpers.cc",
     "cros_healthd_helpers.h",
+    "diagnostics_manager.cc",
+    "diagnostics_manager.h",
     "power_manager_client_conversions.cc",
     "power_manager_client_conversions.h",
     "system_data_provider.cc",
