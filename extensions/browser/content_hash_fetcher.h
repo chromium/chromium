@@ -44,10 +44,12 @@ namespace internals {
 class ContentHashFetcher {
  public:
   // A callback for when fetch is complete.
-  // The response contents is passed through std::unique_ptr<std::string>.
+  // The response contents is passed through std::unique_ptr<std::string>. In
+  // case of failure the error code is passed as a last argument.
   using HashFetcherCallback =
       base::OnceCallback<void(ContentHash::FetchKey,
-                              std::unique_ptr<std::string>)>;
+                              std::unique_ptr<std::string>,
+                              ContentHash::FetchErrorCode)>;
 
   ContentHashFetcher(ContentHash::FetchKey fetch_key);
 

@@ -26,6 +26,7 @@
 #include "extensions/common/file_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -45,10 +46,19 @@ void ContentHashFetcher::OnSimpleLoaderComplete(
           << " is_success:" << !!response_body << " "
           << fetch_key_.fetch_url.possibly_invalid_spec();
   DCHECK(hash_fetcher_callback_);
+  DCHECK(simple_loader_);
+  bool report_http_response_code =
+      (simple_loader_->NetError() == net::OK ||
+       simple_loader_->NetError() == net::ERR_HTTP_RESPONSE_CODE_FAILURE) &&
+      simple_loader_->ResponseInfo() && simple_loader_->ResponseInfo()->headers;
   response_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(hash_fetcher_callback_), std::move(fetch_key_),
-                     std::move(response_body)));
+      base::BindOnce(
+          std::move(hash_fetcher_callback_), std::move(fetch_key_),
+          std::move(response_body),
+          report_http_response_code
+              ? simple_loader_->ResponseInfo()->headers->response_code()
+              : simple_loader_->NetError()));
   delete this;
 }
 

@@ -50,6 +50,9 @@ namespace extensions {
 // take long time. This cancellation can be performed through |is_cancelled|.
 class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
  public:
+  // The combined (network or http response) error code while fetching.
+  using FetchErrorCode = int;
+
   // Holds key to identify an extension for content verification, parameters to
   // fetch verified_contents.json and other supplementary info.
   struct FetchKey {
@@ -158,7 +161,8 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   using GetVerifiedContentsCallback = base::OnceCallback<void(
       FetchKey key,
       std::unique_ptr<VerifiedContents> verified_contents,
-      bool did_attempt_fetch)>;
+      bool did_attempt_fetch,
+      FetchErrorCode fetch_error)>;
 
   ContentHash(const ExtensionId& id,
               const base::FilePath& root,
@@ -181,7 +185,8 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   static void DidFetchVerifiedContents(
       GetVerifiedContentsCallback callback,
       FetchKey key,
-      std::unique_ptr<std::string> fetched_contents);
+      std::unique_ptr<std::string> fetched_contents,
+      FetchErrorCode fetch_error);
 
   // Step 2/2: computed_hashes.json.
   static void GetComputedHashes(
@@ -190,16 +195,18 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
       CreatedCallback created_callback,
       FetchKey key,
       std::unique_ptr<VerifiedContents> verified_contents,
-      bool did_attempt_fetch);
+      bool did_attempt_fetch,
+      FetchErrorCode fetch_error);
 
   static void DispatchFetchFailure(
       const ExtensionId& extension_id,
       const base::FilePath& extension_root,
       ContentVerifierDelegate::VerifierSourceType source_type,
       CreatedCallback created_callback,
-      const IsCancelledCallback& is_cancelled);
+      const IsCancelledCallback& is_cancelled,
+      FetchErrorCode fetch_error);
 
-  static void RecordFetchResult(bool success);
+  static void RecordFetchResult(bool success, FetchErrorCode fetch_error);
 
   // Computes hashes for all files in |key_.extension_root|, and uses
   // a ComputedHashes::Writer to write that information into |hashes_file|.

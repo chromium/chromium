@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
@@ -22,6 +23,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/file_util.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -103,7 +105,7 @@ void ContentHash::Create(
 
     GetComputedHashes(source_type, is_cancelled, std::move(created_callback),
                       std::move(key), /*verified_contents=*/nullptr,
-                      /*did_attempt_fetch=*/false);
+                      /*did_attempt_fetch=*/false, /*fetch_error=*/net::OK);
   }
 }
 
@@ -180,7 +182,7 @@ void ContentHash::GetVerifiedContents(
   if (verified_contents) {
     std::move(verified_contents_callback)
         .Run(std::move(key), std::move(verified_contents),
-             /*did_attempt_fetch=*/false);
+             /*did_attempt_fetch=*/false, /*fetch_error=*/net::OK);
     return;
   }
 
@@ -241,20 +243,22 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
 void ContentHash::DidFetchVerifiedContents(
     GetVerifiedContentsCallback verified_contents_callback,
     FetchKey key,
-    std::unique_ptr<std::string> fetched_contents) {
+    std::unique_ptr<std::string> fetched_contents,
+    FetchErrorCode fetch_error) {
   std::unique_ptr<VerifiedContents> verified_contents =
       StoreAndRetrieveVerifiedContents(std::move(fetched_contents), key);
 
   if (!verified_contents) {
     std::move(verified_contents_callback)
-        .Run(std::move(key), nullptr, /*did_attempt_fetch=*/true);
+        .Run(std::move(key), nullptr, /*did_attempt_fetch=*/true,
+             /*fetch_error=*/fetch_error);
     return;
   }
 
-  RecordFetchResult(true);
+  RecordFetchResult(true, fetch_error);
   std::move(verified_contents_callback)
       .Run(std::move(key), std::move(verified_contents),
-           /*did_attempt_fetch=*/true);
+           /*did_attempt_fetch=*/true, /*fetch_error=*/fetch_error);
 }
 
 // static
@@ -264,14 +268,15 @@ void ContentHash::GetComputedHashes(
     CreatedCallback created_callback,
     FetchKey key,
     std::unique_ptr<VerifiedContents> verified_contents,
-    bool did_attempt_fetch) {
+    bool did_attempt_fetch,
+    FetchErrorCode fetch_error) {
   if (source_type ==
           ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES &&
       !verified_contents) {
     DCHECK(did_attempt_fetch);
     ContentHash::DispatchFetchFailure(key.extension_id, key.extension_root,
                                       source_type, std::move(created_callback),
-                                      is_cancelled);
+                                      is_cancelled, fetch_error);
     return;
   }
   scoped_refptr<ContentHash> hash =
@@ -288,11 +293,12 @@ void ContentHash::DispatchFetchFailure(
     const base::FilePath& extension_root,
     ContentVerifierDelegate::VerifierSourceType source_type,
     CreatedCallback created_callback,
-    const IsCancelledCallback& is_cancelled) {
+    const IsCancelledCallback& is_cancelled,
+    FetchErrorCode fetch_error) {
   DCHECK_EQ(ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES,
             source_type)
       << "Only signed hashes should attempt fetching verified_contents.json";
-  RecordFetchResult(false);
+  RecordFetchResult(false, fetch_error);
   // NOTE: bare new because ContentHash constructor is private.
   scoped_refptr<ContentHash> content_hash =
       new ContentHash(extension_id, extension_root, source_type, nullptr);
@@ -301,8 +307,12 @@ void ContentHash::DispatchFetchFailure(
 }
 
 // static
-void ContentHash::RecordFetchResult(bool success) {
+void ContentHash::RecordFetchResult(bool success, int fetch_error) {
   UMA_HISTOGRAM_BOOLEAN("Extensions.ContentVerification.FetchResult", success);
+  if (!success) {
+    base::UmaHistogramSparse("Extensions.ContentVerification.FetchFailureError",
+                             fetch_error);
+  }
 }
 
 bool ContentHash::ShouldComputeHashesForResource(
