@@ -12,6 +12,7 @@
 #include "base/atomic_ref_count.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/server/mac/service_delegate.h"
@@ -25,6 +26,9 @@ class SequencedTaskRunner;
 }
 
 namespace updater {
+
+class ControlService;
+class UpdateService;
 
 class AppServerMac : public AppServer {
  public:
@@ -40,7 +44,8 @@ class AppServerMac : public AppServer {
   ~AppServerMac() override;
 
   // Overrides of AppServer.
-  void ActiveDuty() override;
+  void ActiveDuty(scoped_refptr<UpdateService> update_service,
+                  scoped_refptr<ControlService> control_service) override;
   bool SwapRPCInterfaces() override;
   void UninstallSelf() override;
 

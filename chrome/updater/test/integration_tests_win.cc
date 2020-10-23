@@ -6,14 +6,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/process/launch.h"
-#include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/test/integration_tests.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
@@ -30,25 +29,6 @@ base::FilePath GetInstallerPath() {
   return test_executable.DirName().AppendASCII("UpdaterSetup.exe");
 }
 
-bool Run(base::CommandLine command_line, int* exit_code) {
-  auto process = base::LaunchProcess(command_line, {});
-  if (!process.IsValid())
-    return false;
-  if (!process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(60),
-                                      exit_code))
-    return false;
-  base::WaitableEvent sleep(base::WaitableEvent::ResetPolicy::MANUAL,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-  // The process will exit before it is done uninstalling: sleep for five
-  // seconds to allow uninstall to complete.
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&sleep)),
-      base::TimeDelta::FromSeconds(5));
-  sleep.Wait();
-  return true;
-}
-
 base::FilePath GetProductPath() {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &app_data_dir))
@@ -62,6 +42,8 @@ base::FilePath GetExecutablePath() {
   return GetProductPath().AppendASCII("updater.exe");
 }
 
+}  // namespace
+
 base::FilePath GetDataDirPath() {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &app_data_dir))
@@ -69,8 +51,6 @@ base::FilePath GetDataDirPath() {
   return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
-
-}  // namespace
 
 void Clean() {
   // TODO(crbug.com/1062288): Delete the Client / ClientState registry keys.
@@ -158,6 +138,10 @@ void Uninstall() {
   int exit_code = -1;
   ASSERT_TRUE(Run(command_line, &exit_code));
   EXPECT_EQ(0, exit_code);
+
+  // Uninstallation involves a race with the uninstall.cmd script and the
+  // process exit. Sleep to allow the script to complete its work.
+  SleepFor(5);
 }
 
 }  // namespace test

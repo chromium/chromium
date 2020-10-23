@@ -185,9 +185,6 @@ constexpr int kErrorFailedToLockPrefsMutex = 1;
 // The server candidate failed to promote itself to active.
 constexpr int kErrorFailedToSwap = 2;
 
-// The server has finished qualification and will not do further operations.
-constexpr int kErrorQualificationExit = 3;
-
 // Policy Management constants.
 extern const char kProxyModeDirect[];
 extern const char kProxyModeAutoDetect[];

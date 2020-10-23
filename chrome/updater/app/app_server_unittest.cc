@@ -8,11 +8,14 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/control_service.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/prefs/pref_service.h"
@@ -31,11 +34,12 @@ class AppServerTest : public AppServer {
   AppServerTest() {
     ON_CALL(*this, ActiveDuty)
         .WillByDefault(Invoke(this, &AppServerTest::Shutdown0));
-    ON_CALL(*this, UninstallSelf)
-        .WillByDefault(Invoke(this, &AppServerTest::Shutdown0));
   }
 
-  MOCK_METHOD(void, ActiveDuty, (), (override));
+  MOCK_METHOD(void,
+              ActiveDuty,
+              (scoped_refptr<UpdateService>, scoped_refptr<ControlService>),
+              (override));
   MOCK_METHOD(bool, SwapRPCInterfaces, (), (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));
 
@@ -89,11 +93,11 @@ TEST_F(AppServerTestCase, SimpleQualify) {
   }
   auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to qualify and then shutdown.
-  EXPECT_CALL(*app, ActiveDuty).Times(0);
+  // Expect the app to qualify and then ActiveDuty.
+  EXPECT_CALL(*app, ActiveDuty).Times(1);
   EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
   EXPECT_CALL(*app, UninstallSelf).Times(0);
-  EXPECT_EQ(app->Run(), kErrorQualificationExit);
+  EXPECT_EQ(app->Run(), 0);
   EXPECT_TRUE(CreateLocalPrefs()->GetQualified());
 }
 
@@ -108,8 +112,8 @@ TEST_F(AppServerTestCase, SelfUninstall) {
   }
   auto app = base::MakeRefCounted<AppServerTest>();
 
-  // Expect the app to SelfUninstall and then Shutdown(0).
-  EXPECT_CALL(*app, ActiveDuty).Times(0);
+  // Expect the app to ActiveDuty then SelfUninstall.
+  EXPECT_CALL(*app, ActiveDuty).Times(1);
   EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
   EXPECT_CALL(*app, UninstallSelf).Times(1);
   EXPECT_EQ(app->Run(), 0);

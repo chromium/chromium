@@ -9,14 +9,13 @@
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
-#include "base/process/launch.h"
-#include "base/process/process.h"
 #include "base/version.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #import "chrome/updater/mac/util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/test/integration_tests.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_version.h"
@@ -26,6 +25,9 @@
 namespace updater {
 
 namespace test {
+
+// crbug.com/1112527: These tests are not compatible with component build.
+#if !defined(COMPONENT_BUILD)
 
 namespace {
 
@@ -57,23 +59,13 @@ base::FilePath GetProductPath() {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
+}  // namespace
+
 base::FilePath GetDataDirPath() {
   return base::mac::GetUserLibraryPath()
       .AppendASCII("Application Support")
       .AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
-}  // namespace
-
-bool Run(base::CommandLine command_line, int* exit_code) {
-  auto process = base::LaunchProcess(command_line, {});
-  if (!process.IsValid())
-    return false;
-  if (!process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(60),
-                                      exit_code))
-    return false;
-  return true;
 }
 
 void Clean() {
@@ -182,6 +174,8 @@ void Uninstall() {
 base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version) {
   return GetExecutableFolderPathForVersion(version);
 }
+
+#endif  // !defined(COMPONENT_BUILD)
 
 }  // namespace test
 

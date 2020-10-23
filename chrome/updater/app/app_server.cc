@@ -8,11 +8,18 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/control_service.h"
+#include "chrome/updater/control_service_impl.h"
+#include "chrome/updater/control_service_impl_inactive.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/update_service.h"
+#include "chrome/updater/update_service_impl.h"
+#include "chrome/updater/update_service_impl_inactive.h"
 #include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
 
@@ -41,7 +48,10 @@ base::OnceClosure AppServer::ModeCheck() {
 
   if (this_version < active_version) {
     global_prefs = nullptr;
-    return base::BindOnce(&AppServer::UninstallSelf, this);
+    uninstall_ = true;
+    return base::BindOnce(&AppServer::ActiveDuty, this,
+                          MakeInactiveUpdateService(),
+                          MakeInactiveControlService());
   }
 
   if (active_version != base::Version("0") && active_version != this_version) {
@@ -58,12 +68,18 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   config_ = base::MakeRefCounted<Configurator>(std::move(global_prefs));
-  return base::BindOnce(&AppServer::ActiveDuty, this);
+  return base::BindOnce(&AppServer::ActiveDuty, this,
+                        base::MakeRefCounted<UpdateServiceImpl>(config_),
+                        base::MakeRefCounted<ControlServiceImpl>(config_));
 }
 
 void AppServer::Uninitialize() {
   if (config_)
     PrefsCommitPendingWrites(config_->GetPrefService());
+  if (uninstall_) {
+    VLOG(1) << "Uninstalling version " << UPDATER_VERSION_STRING;
+    UninstallSelf();
+  }
 }
 
 void AppServer::FirstTaskRun() {
@@ -75,7 +91,10 @@ void AppServer::Qualify(std::unique_ptr<LocalPrefs> local_prefs) {
   DVLOG(2) << __func__;
   local_prefs->SetQualified(true);
   PrefsCommitPendingWrites(local_prefs->GetPrefService());
-  Shutdown(kErrorQualificationExit);
+
+  // Start ActiveDuty with inactive service implementations. To use active
+  // implementations, the server would have to ModeCheck again.
+  ActiveDuty(MakeInactiveUpdateService(), MakeInactiveControlService());
 }
 
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {

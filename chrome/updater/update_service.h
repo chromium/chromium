@@ -56,7 +56,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // A function argument was invalid.
     kInvalidArgument = 7,
 
-    // Change the traits class in this file when adding new values.
+    // This server is not the active server.
+    kInactive = 8,
+
+    // Change the EnumTraits class in this file when adding new values.
   };
 
   // Run time errors are organized in specific categories to indicate the
@@ -215,7 +218,7 @@ template <>
 struct EnumTraits<UpdateService::Result> {
   using Result = UpdateService::Result;
   static constexpr Result first_elem = Result::kSuccess;
-  static constexpr Result last_elem = Result::kInvalidArgument;
+  static constexpr Result last_elem = Result::kInactive;
 };
 
 template <>

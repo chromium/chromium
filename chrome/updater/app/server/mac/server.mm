@@ -21,11 +21,11 @@
 #include "chrome/updater/app/server/mac/service_delegate.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/control_service_impl.h"
+#include "chrome/updater/control_service.h"
 #include "chrome/updater/mac/setup/setup.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/update_service_impl.h"
+#include "chrome/updater/update_service.h"
 
 namespace updater {
 
@@ -43,7 +43,8 @@ void AppServerMac::Uninitialize() {
   AppServer::Uninitialize();
 }
 
-void AppServerMac::ActiveDuty() {
+void AppServerMac::ActiveDuty(scoped_refptr<UpdateService> update_service,
+                              scoped_refptr<ControlService> control_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -58,8 +59,7 @@ void AppServerMac::ActiveDuty() {
     @autoreleasepool {
       // Sets up a listener and delegate for the CRUControlling XPC connection.
       control_service_delegate_.reset([[CRUControlServiceXPCDelegate alloc]
-          initWithControlService:base::MakeRefCounted<ControlServiceImpl>(
-                                     config_)
+          initWithControlService:control_service
                        appServer:scoped_refptr<AppServerMac>(this)]);
 
       control_service_listener_.reset([[NSXPCListener alloc]
@@ -74,7 +74,7 @@ void AppServerMac::ActiveDuty() {
       // Sets up a listener and delegate for the CRUUpdateChecking XPC
       // connection.
       update_check_delegate_.reset([[CRUUpdateCheckServiceXPCDelegate alloc]
-          initWithUpdateService:base::MakeRefCounted<UpdateServiceImpl>(config_)
+          initWithUpdateService:update_service
                       appServer:scoped_refptr<AppServerMac>(this)]);
 
       update_check_listener_.reset([[NSXPCListener alloc]
@@ -91,9 +91,7 @@ void AppServerMac::ActiveDuty() {
 }
 
 void AppServerMac::UninstallSelf() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&UninstallCandidate),
-      base::BindOnce(&AppServerMac::Shutdown, this));
+  UninstallCandidate();
 }
 
 bool AppServerMac::SwapRPCInterfaces() {

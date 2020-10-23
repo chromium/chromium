@@ -28,6 +28,14 @@ void ExpectClean();
 // Places the updater into test mode (use local servers and disable CUP).
 void EnterTestMode();
 
+// Sleeps for the given number of seconds. This should be avoided, but in some
+// cases surrounding uninstall it is necessary since the processes can exit
+// prior to completing the actual uninstallation.
+void SleepFor(int seconds);
+
+// Returns the path to the updater data dir.
+base::FilePath GetDataDirPath();
+
 // Expects that the updater is installed on the system.
 void ExpectInstalled();
 

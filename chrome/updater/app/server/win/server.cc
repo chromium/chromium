@@ -20,9 +20,9 @@
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/configurator.h"
-#include "chrome/updater/control_service_impl.h"
+#include "chrome/updater/control_service.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/update_service_impl.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/wrl_module.h"
 #include "components/prefs/pref_service.h"
@@ -147,23 +147,22 @@ void ComServerApp::Stop() {
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce([]() {
         scoped_refptr<ComServerApp> this_server = AppServerSingletonInstance();
-        this_server->config_->GetPrefService()->CommitPendingWrite();
         this_server->update_service_ = nullptr;
         this_server->control_service_ = nullptr;
-        this_server->config_ = nullptr;
         this_server->Shutdown(0);
       }));
 }
 
-void ComServerApp::ActiveDuty() {
+void ComServerApp::ActiveDuty(scoped_refptr<UpdateService> update_service,
+                              scoped_refptr<ControlService> control_service) {
   if (!com_initializer_.Succeeded()) {
     PLOG(ERROR) << "Failed to initialize COM";
     Shutdown(-1);
     return;
   }
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
-  update_service_ = base::MakeRefCounted<UpdateServiceImpl>(config_);
-  control_service_ = base::MakeRefCounted<ControlServiceImpl>(config_);
+  update_service_ = update_service;
+  control_service_ = control_service;
   CreateWRLModule();
   HRESULT hr = RegisterClassObjects();
   if (FAILED(hr))

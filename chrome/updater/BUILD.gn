@@ -96,6 +96,8 @@ if (is_win || is_mac) {
       "configurator.h",
       "control_service_impl.cc",
       "control_service_impl.h",
+      "control_service_impl_inactive.cc",
+      "control_service_impl_inactive.h",
       "crx_downloader_factory.h",
       "external_constants.cc",
       "external_constants.h",
@@ -113,6 +115,8 @@ if (is_win || is_mac) {
       "tag.h",
       "update_service_impl.cc",
       "update_service_impl.h",
+      "update_service_impl_inactive.cc",
+      "update_service_impl_inactive.h",
       "updater.cc",
       "updater.h",
     ]

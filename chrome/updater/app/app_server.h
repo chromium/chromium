@@ -14,8 +14,10 @@
 namespace updater {
 
 class Configurator;
+class ControlService;
 class GlobalPrefs;
 class LocalPrefs;
+class UpdateService;
 
 // AppServer runs as the updater server process. Multiple servers of different
 // application versions can be run side-by-side. Each such server is called a
@@ -32,15 +34,15 @@ class AppServer : public App {
   // Overrides of App.
   void Uninitialize() override;
 
-  scoped_refptr<Configurator> config_;
-
  private:
   // Overrides of App.
   void Initialize() final;
   void FirstTaskRun() final;
 
-  // Set up the server for normal active-candidate functions.
-  virtual void ActiveDuty() = 0;
+  // Set up the server for normal active version functions using the provided
+  // services.
+  virtual void ActiveDuty(scoped_refptr<UpdateService> update_service,
+                          scoped_refptr<ControlService> control_service) = 0;
 
   // Set up all non-side-by-side RPC interfaces to point to this candidate
   // server.
@@ -63,6 +65,11 @@ class AppServer : public App {
   bool SwapVersions(GlobalPrefs* global_prefs);
 
   base::OnceClosure first_task_;
+  scoped_refptr<Configurator> config_;
+
+  // If true, this version of the updater should uninstall itself during
+  // shutdown.
+  bool uninstall_ = false;
 };
 
 scoped_refptr<App> AppServerInstance();

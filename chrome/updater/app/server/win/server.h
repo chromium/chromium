@@ -55,7 +55,8 @@ class ComServerApp : public AppServer {
   void InitializeThreadPool() override;
 
   // Overrides for AppServer
-  void ActiveDuty() override;
+  void ActiveDuty(scoped_refptr<UpdateService> update_service,
+                  scoped_refptr<ControlService> control_service) override;
   bool SwapRPCInterfaces() override;
   void UninstallSelf() override;
 
