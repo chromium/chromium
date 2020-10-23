@@ -2504,6 +2504,8 @@ void QuicChromiumClientSession::OnKeyUpdate(quic::KeyUpdateReason reason) {
   net_log_.AddEventWithStringParams(NetLogEventType::QUIC_SESSION_KEY_UPDATE,
                                     "reason",
                                     quic::KeyUpdateReasonString(reason));
+
+  base::UmaHistogramEnumeration("Net.QuicSession.KeyUpdate.Reason", reason);
 }
 
 void QuicChromiumClientSession::OnProofValid(

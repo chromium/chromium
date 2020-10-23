@@ -61312,6 +61312,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="13668" label="kUnitConversionResult"/>
 </enum>
 
+<enum name="QuicKeyUpdateReason">
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kRemote"/>
+  <int value="2" label="kLocalForTests"/>
+  <int value="3" label="kLocalForInteropRunner"/>
+  <int value="4" label="kLocalAeadConfidentialityLimit"/>
+  <int value="5" label="kLocalKeyUpdateLimitOverride"/>
+</enum>
+
 <enum name="QuickofficeErrorTypes">
   <int value="0" label="doc uncaught js exception"/>
   <int value="1" label="docx uncaught js exception"/>
