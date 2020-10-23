@@ -4,6 +4,14 @@
     color: var(--diagnostics-overview-text-color);
   }
 
+  #headerIcon {
+    /*
+     * TODO(joonbug): Replace w/ real colors, and also extend as a property
+     * if dynamic colors.
+     */
+    --iron-icon-fill-color: rgb(26,115,232);
+  }
+
   paper-progress {
     border-radius: 5px;
     display: inline-block;
@@ -22,7 +30,12 @@
 </style>
 
 <div id="barChartContainer">
-  <label id="chartName">[[header]]</label>
+  <label id="chartName">
+    <template is="dom-if" if="[[headerIcon.length]]">
+      <iron-icon id="headerIcon" icon="[[headerIcon]]"></iron-icon>
+    </template>
+    [[header]]
+  </label>
   <div class="body">
     <paper-progress id="barChart" value="[[value]]" max="[[max]]"></paper-progress>
     <label id="percentageLabel">[[computePercentage_(value, max)]]</label>
