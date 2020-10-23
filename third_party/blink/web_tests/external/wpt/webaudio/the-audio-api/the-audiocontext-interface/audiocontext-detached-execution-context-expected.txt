@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS # AUDIT TASK RUNNER STARTED.
+PASS Executing "decoding-on-detached-iframe"
+PASS Audit report
+PASS > [decoding-on-detached-iframe] 
+FAIL X decodeAudioData() upon a detached iframe rejected correctly but got NotAllowedError instead of InvalidStateError. Got Promise. assert_true: expected true got false
+FAIL < [decoding-on-detached-iframe] 1 out of 1 assertions were failed. assert_true: expected true got false
+FAIL # AUDIT TASK RUNNER FINISHED: 1 out of 1 tasks were failed. assert_true: expected true got false
+Harness: the test ran to completion.
+

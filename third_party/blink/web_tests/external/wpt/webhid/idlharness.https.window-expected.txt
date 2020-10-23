@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 112 tests; 63 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 64 tests; 63 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -45,54 +45,6 @@ PASS HIDInputReportEvent interface: existence and properties of interface protot
 PASS HIDInputReportEvent interface: attribute device
 PASS HIDInputReportEvent interface: attribute reportId
 PASS HIDInputReportEvent interface: attribute data
-FAIL HIDReportItem interface: existence and properties of interface object assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface object length assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface object name assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: existence and properties of interface prototype object assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute isAbsolute assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute isArray assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute isRange assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute hasNull assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute usages assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute usageMinimum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute usageMaximum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute designatorMinimum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute designatorMaximum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute stringMinimum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute stringMaximum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute reportSize assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute reportCount assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute unitExponent assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute unit assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute logicalMinimum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute logicalMaximum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute physicalMinimum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportItem interface: attribute physicalMaximum assert_own_property: self does not have own property "HIDReportItem" expected property "HIDReportItem" missing
-FAIL HIDReportInfo interface: existence and properties of interface object assert_own_property: self does not have own property "HIDReportInfo" expected property "HIDReportInfo" missing
-FAIL HIDReportInfo interface object length assert_own_property: self does not have own property "HIDReportInfo" expected property "HIDReportInfo" missing
-FAIL HIDReportInfo interface object name assert_own_property: self does not have own property "HIDReportInfo" expected property "HIDReportInfo" missing
-FAIL HIDReportInfo interface: existence and properties of interface prototype object assert_own_property: self does not have own property "HIDReportInfo" expected property "HIDReportInfo" missing
-FAIL HIDReportInfo interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "HIDReportInfo" expected property "HIDReportInfo" missing
-FAIL HIDReportInfo interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "HIDReportInfo" expected property "HIDReportInfo" missing
-FAIL HIDReportInfo interface: attribute reportId assert_own_property: self does not have own property "HIDReportInfo" expected property "HIDReportInfo" missing
-FAIL HIDReportInfo interface: attribute items assert_own_property: self does not have own property "HIDReportInfo" expected property "HIDReportInfo" missing
-FAIL HIDCollectionInfo interface: existence and properties of interface object assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface object length assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface object name assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: existence and properties of interface prototype object assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: attribute usagePage assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: attribute usage assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: attribute children assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: attribute inputReports assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: attribute outputReports assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: attribute featureReports assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: attribute reportIds assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: operation getField(BufferSource, HIDFieldOptions) assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
-FAIL HIDCollectionInfo interface: operation setField(BufferSource, HIDFieldOptions, double) assert_own_property: self does not have own property "HIDCollectionInfo" expected property "HIDCollectionInfo" missing
 PASS HIDDevice interface: existence and properties of interface object
 PASS HIDDevice interface object length
 PASS HIDDevice interface object name
