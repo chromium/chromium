@@ -33,6 +33,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/views_features.h"
 
 using media_session::mojom::MediaSessionAction;
 
@@ -131,17 +132,16 @@ void MediaDialogView::HideMediaDialog() {
 void MediaDialogView::AddedToWidget() {
   int corner_radius =
       views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH);
-
   views::BubbleFrameView* frame = GetBubbleFrameView();
-  if (frame) {
+  if (frame)
     frame->SetCornerRadius(corner_radius);
+  if (!base::FeatureList::IsEnabled(
+          views::features::kEnableMDRoundedCornersOnDialogs)) {
+    SetPaintToLayer();
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
+    if (base::FeatureList::IsEnabled(media::kLiveCaption))
+      layer()->SetFillsBoundsOpaquely(false);
   }
-
-  SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
-  if (IsLiveCaptionEnabled())
-    layer()->SetFillsBoundsOpaquely(false);
-
   service_->SetDialogDelegate(this);
 }
 
@@ -158,7 +158,7 @@ gfx::Size MediaDialogView::CalculatePreferredSize() const {
 
 void MediaDialogView::UpdateBubbleSize() {
   SizeToContents();
-  if (!IsLiveCaptionEnabled())
+  if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return;
 
   const int width = GetPreferredSize().width();
@@ -230,7 +230,7 @@ MediaDialogView::~MediaDialogView() {
 void MediaDialogView::Init() {
   // Remove margins.
   set_margins(gfx::Insets());
-  if (!IsLiveCaptionEnabled()) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaption)) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     return;
   }
@@ -246,6 +246,13 @@ void MediaDialogView::Init() {
               gfx::Insets(kLiveCaptionHorizontalMarginDip,
                           kLiveCaptionVerticalMarginDip),
               kLiveCaptionBetweenChildSpacing));
+  if (!base::FeatureList::IsEnabled(
+          views::features::kEnableMDRoundedCornersOnDialogs)) {
+    SkColor native_theme_bg_color = GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_BubbleBackground);
+    live_caption_container->SetBackground(
+        views::CreateSolidBackground(native_theme_bg_color));
+  }
 
   views::ImageView* live_caption_image = new views::ImageView();
   live_caption_image->SetImage(
@@ -286,8 +293,4 @@ void MediaDialogView::ToggleLiveCaption(const ui::Event& event) {
   bool enabled = !profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled);
   profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
   live_caption_button_->SetIsOn(enabled);
-}
-
-bool MediaDialogView::IsLiveCaptionEnabled() {
-  return base::FeatureList::IsEnabled(media::kLiveCaption);
 }

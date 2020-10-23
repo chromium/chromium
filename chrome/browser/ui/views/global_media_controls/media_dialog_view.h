@@ -92,7 +92,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void ToggleLiveCaption(const ui::Event& event);
 
   void UpdateBubbleSize();
-  bool IsLiveCaptionEnabled();
 
   MediaNotificationService* const service_;
 
