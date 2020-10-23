@@ -144,6 +144,7 @@ void BluetoothTestMac::InitWithFakeAdapter() {
   adapter_mac_->SetCentralManagerForTesting((id)mock_central_manager_->get());
   adapter_mac_->SetPowerStateFunctionForTesting(base::BindRepeating(
       &BluetoothTestMac::SetMockControllerPowerState, base::Unretained(this)));
+  adapter_mac_->SetPresentForTesting(true);
 }
 
 void BluetoothTestMac::ResetEventCounts() {

@@ -234,6 +234,7 @@ component("bluetooth") {
     ]
     frameworks = [
       "IOBluetooth.framework",
+      "IOKit.framework",
       "Foundation.framework",
     ]
   }
