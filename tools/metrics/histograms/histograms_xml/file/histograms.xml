@@ -497,7 +497,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Recent.LoadArcMedia" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
@@ -507,7 +507,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Recent.LoadCrostini" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
@@ -517,7 +517,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Recent.LoadDownloads" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
@@ -526,7 +526,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.Recent.LoadDrive" units="ms" expires_after="M88">
+<histogram name="FileBrowser.Recent.LoadDrive" units="ms" expires_after="M92">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
@@ -535,7 +535,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.Recent.LoadTotal" units="ms" expires_after="M88">
+<histogram name="FileBrowser.Recent.LoadTotal" units="ms" expires_after="M92">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
