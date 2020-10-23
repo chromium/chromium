@@ -111,6 +111,13 @@ gfx::Size DialogClientView::CalculatePreferredSize() const {
 }
 
 gfx::Size DialogClientView::GetMinimumSize() const {
+  // TODO(pbos): Try to find a way for ClientView::GetMinimumSize() to be
+  // fixed-width aware. For now this uses min-size = preferred size for
+  // fixed-width dialogs (even though min height might not be preferred height).
+  // Fixing this might require View::GetMinHeightForWidth().
+  if (GetDialogDelegate()->fixed_width())
+    return CalculatePreferredSize();
+
   return GetBoundingSizeForVerticalStack(
       ClientView::GetMinimumSize(), button_row_container_->GetMinimumSize());
 }

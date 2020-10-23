@@ -36,7 +36,6 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
   // views::DialogDelegateView:
   bool Accept() override;
   bool Cancel() override;
-  gfx::Size CalculatePreferredSize() const override;
 
   static CrostiniUninstallerView* GetActiveViewForTesting();
   void set_destructor_callback_for_testing(base::OnceClosure callback) {

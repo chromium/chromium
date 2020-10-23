@@ -62,13 +62,6 @@ void CrostiniRecoveryView::Show(Profile* profile,
   g_crostini_recovery_view->GetWidget()->Show();
 }
 
-gfx::Size CrostiniRecoveryView::CalculatePreferredSize() const {
-  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH) -
-                           margins().width();
-  return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
-}
-
 bool CrostiniRecoveryView::Accept() {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
   SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, false);
@@ -126,6 +119,8 @@ CrostiniRecoveryView::CrostiniRecoveryView(
       l10n_util::GetStringUTF16(IDS_CROSTINI_RECOVERY_TERMINAL_BUTTON));
   SetShowCloseButton(false);
   SetTitle(IDS_CROSTINI_RECOVERY_TITLE);
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(

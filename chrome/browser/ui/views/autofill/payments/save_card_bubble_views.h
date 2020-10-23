@@ -39,12 +39,8 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
   // SaveCardBubbleView:
   void Hide() override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  // LocationBarBubbleDelegateView:
   void AddedToWidget() override;
-
-  // views::WidgetDelegate:
-  bool ShouldShowCloseButton() const override;
   base::string16 GetWindowTitle() const override;
   void WindowClosing() override;
   void OnWidgetClosing(views::Widget* widget) override;
@@ -86,7 +82,7 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
   // Attributes IDs to the dialog's DialogDelegate-supplied buttons.
   void AssignIdsToDialogButtons();
 
-  // views::BubbleDialogDelegateView:
+  // LocationBarBubbleDelegateView:
   void Init() override;
 
   void OnDialogAccepted();

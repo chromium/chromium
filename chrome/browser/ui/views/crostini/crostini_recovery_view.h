@@ -27,7 +27,6 @@ class CrostiniRecoveryView : public views::BubbleDialogDelegateView {
                    crostini::CrostiniSuccessCallback callback);
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   bool Accept() override;
   bool Cancel() override;
 

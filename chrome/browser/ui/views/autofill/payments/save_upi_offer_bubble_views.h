@@ -31,20 +31,14 @@ class SaveUPIOfferBubbleViews : public autofill::SaveUPIBubble,
   // Displays the bubble.
   void Show();
 
-  // LocationBarBubbleDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-
  private:
   // views::View:
   bool Accept() override;
 
-  // views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
-
   // autofill::SaveUPIBubble:
   void Hide() override;
 
-  // views::BubbleDialogDelegateView:
+  // LocationBarBubbleDelegateView:
   void Init() override;
 
   ~SaveUPIOfferBubbleViews() override;

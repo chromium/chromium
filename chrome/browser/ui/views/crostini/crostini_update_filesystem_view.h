@@ -19,9 +19,6 @@ class CrostiniUpdateFilesystemView : public views::BubbleDialogDelegateView {
  public:
   static void Show(Profile* profile);
 
-  // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-
   static CrostiniUpdateFilesystemView* GetActiveViewForTesting();
 
  private:

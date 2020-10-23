@@ -90,13 +90,6 @@ void CrostiniUpdateFilesystemView::Show(Profile* profile) {
   g_crostini_update_filesystem_view_dialog->GetWidget()->Show();
 }
 
-gfx::Size CrostiniUpdateFilesystemView::CalculatePreferredSize() const {
-  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH) -
-                           margins().width();
-  return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
-}
-
 // static
 CrostiniUpdateFilesystemView*
 CrostiniUpdateFilesystemView::GetActiveViewForTesting() {
@@ -109,6 +102,9 @@ CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
   SetShowCloseButton(false);
   SetTitle(IDS_CROSTINI_UPGRADING_LABEL);
   SetButtons(ui::DIALOG_BUTTON_OK);
+
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(

@@ -22,7 +22,6 @@ class CrostiniAnsibleSoftwareConfigView
  public:
   // views::DialogDelegateView:
   bool Accept() override;
-  gfx::Size CalculatePreferredSize() const override;
 
   // crostini::AnsibleManagementService::Observer:
   void OnAnsibleSoftwareConfigurationStarted() override;

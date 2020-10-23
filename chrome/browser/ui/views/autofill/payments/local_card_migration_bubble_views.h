@@ -35,9 +35,7 @@ class LocalCardMigrationBubbleViews : public LocalCardMigrationBubble,
   void Hide() override;
 
   // LocationBarBubbleDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
-  bool ShouldShowCloseButton() const override;
   base::string16 GetWindowTitle() const override;
   void WindowClosing() override;
   void OnWidgetClosing(views::Widget* widget) override;

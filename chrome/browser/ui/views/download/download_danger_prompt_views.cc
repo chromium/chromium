@@ -52,7 +52,6 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
   void InvokeActionForTesting(Action action) override;
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   base::string16 GetWindowTitle() const override;
   ui::ModalType GetModalType() const override;
 
@@ -88,6 +87,9 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
                  show_context_
                      ? l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD)
                      : l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD_AGAIN));
+
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   auto make_done_callback = [&](DownloadDangerPrompt::Action action) {
     return base::BindOnce(&DownloadDangerPromptViews::RunDone,
@@ -180,13 +182,6 @@ void DownloadDangerPromptViews::OnDownloadUpdated(
     RunDone(DISMISS);
     Cancel();
   }
-}
-
-gfx::Size DownloadDangerPromptViews::CalculatePreferredSize() const {
-  int preferred_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                        margins().width();
-  return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
 }
 
 base::string16 DownloadDangerPromptViews::GetMessageBody() const {
