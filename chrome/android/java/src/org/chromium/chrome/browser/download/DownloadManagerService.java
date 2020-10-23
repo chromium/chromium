@@ -1007,6 +1007,10 @@ public class DownloadManagerService implements DownloadController.Observer,
             }
             incrementDownloadRetryCount(item.getId(), false);
         }
+
+        // Downloads started from incognito mode should not be resumed in reduced mode.
+        if (!ProfileManager.isInitialized() && item.getDownloadInfo().isOffTheRecord()) return;
+
         DownloadManagerServiceJni.get().resumeDownload(getNativeDownloadManagerService(),
                 DownloadManagerService.this, item.getId(),
                 getProfileKey(item.getDownloadInfo().isOffTheRecord()), hasUserGesture);
