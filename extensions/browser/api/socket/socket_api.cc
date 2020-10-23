@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
@@ -564,16 +565,14 @@ void SocketReadFunction::AsyncWorkStart() {
 void SocketReadFunction::OnCompleted(int bytes_read,
                                      scoped_refptr<net::IOBuffer> io_buffer,
                                      bool socket_destroying) {
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetInteger(kResultCodeKey, bytes_read);
-  if (bytes_read > 0) {
-    result->Set(kDataKey, base::Value::CreateWithCopiedBuffer(io_buffer->data(),
-                                                              bytes_read));
-  } else {
-    result->Set(kDataKey,
-                std::make_unique<base::Value>(base::Value::Type::BINARY));
-  }
-  SetResult(std::move(result));
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetIntKey(kResultCodeKey, bytes_read);
+  base::span<const uint8_t> data_span;
+  if (bytes_read > 0)
+    data_span = base::as_bytes(base::make_span(io_buffer->data(), bytes_read));
+  result.SetKey(kDataKey, base::Value(data_span));
+  SetResult(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(std::move(result))));
 
   AsyncWorkCompleted();
 }
@@ -646,18 +645,16 @@ void SocketRecvFromFunction::OnCompleted(int bytes_read,
                                          bool socket_destroying,
                                          const std::string& address,
                                          uint16_t port) {
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetInteger(kResultCodeKey, bytes_read);
-  if (bytes_read > 0) {
-    result->Set(kDataKey, base::Value::CreateWithCopiedBuffer(io_buffer->data(),
-                                                              bytes_read));
-  } else {
-    result->Set(kDataKey,
-                std::make_unique<base::Value>(base::Value::Type::BINARY));
-  }
-  result->SetString(kAddressKey, address);
-  result->SetInteger(kPortKey, port);
-  SetResult(std::move(result));
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetIntKey(kResultCodeKey, bytes_read);
+  base::span<const uint8_t> data_span;
+  if (bytes_read > 0)
+    data_span = base::as_bytes(base::make_span(io_buffer->data(), bytes_read));
+  result.SetKey(kDataKey, base::Value(data_span));
+  result.SetStringKey(kAddressKey, address);
+  result.SetIntKey(kPortKey, port);
+  SetResult(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(std::move(result))));
 
   AsyncWorkCompleted();
 }

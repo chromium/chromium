@@ -490,13 +490,12 @@ void UsbTransferFunction::OnCompleted(
 void UsbTransferFunction::OnTransferInCompleted(
     UsbTransferStatus status,
     const std::vector<uint8_t>& data) {
-  auto transfer_info = std::make_unique<base::DictionaryValue>();
-  transfer_info->SetInteger(kResultCodeKey, static_cast<int>(status));
-  transfer_info->Set(
-      kDataKey, base::Value::CreateWithCopiedBuffer(
-                    reinterpret_cast<const char*>(data.data()), data.size()));
+  base::Value transfer_info(base::Value::Type::DICTIONARY);
+  transfer_info.SetIntKey(kResultCodeKey, static_cast<int>(status));
+  transfer_info.SetKey(kDataKey, base::Value(data));
 
-  OnCompleted(status, std::move(transfer_info));
+  OnCompleted(status, base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+                          std::move(transfer_info))));
 }
 
 void UsbTransferFunction::OnTransferOutCompleted(UsbTransferStatus status) {

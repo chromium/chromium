@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "extensions/common/api/cast_channel.h"
@@ -60,29 +61,28 @@ bool CastMessageToMessageInfo(const ::cast::channel::CastMessage& message_proto,
   message->destination_id = message_proto.destination_id();
   message->namespace_ = message_proto.namespace_();
   // Determine the type of the payload and fill base::Value appropriately.
-  std::unique_ptr<base::Value> value;
+  base::Value value;
   switch (message_proto.payload_type()) {
     case ::cast::channel::CastMessage_PayloadType_STRING:
       if (message_proto.has_payload_utf8())
-        value.reset(new base::Value(message_proto.payload_utf8()));
+        value = base::Value(message_proto.payload_utf8());
       break;
     case ::cast::channel::CastMessage_PayloadType_BINARY:
-      if (message_proto.has_payload_binary())
-        value = base::Value::CreateWithCopiedBuffer(
-            message_proto.payload_binary().data(),
-            message_proto.payload_binary().size());
+      if (message_proto.has_payload_binary()) {
+        value = base::Value(
+            base::as_bytes(base::make_span(message_proto.payload_binary())));
+      }
       break;
     default:
       // Unknown payload type. value will remain unset.
       break;
   }
-  if (value.get()) {
-    DCHECK(!message->data.get());
-    message->data = std::move(value);
-    return true;
-  } else {
+  if (value.is_none())
     return false;
-  }
+
+  DCHECK(!message->data.get());
+  message->data = base::Value::ToUniquePtrValue(std::move(value));
+  return true;
 }
 
 }  // namespace extensions

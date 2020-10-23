@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "extensions/browser/api/web_request/upload_data_presenter.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
@@ -52,22 +53,20 @@ TEST(WebRequestUploadDataPresenterTest, RawData) {
   const size_t block2_size = sizeof(block2) - 1;
 
   // Expected output.
-  std::unique_ptr<base::Value> expected_a(
-      base::Value::CreateWithCopiedBuffer(block1, block1_size));
-  ASSERT_TRUE(expected_a.get() != NULL);
-  std::unique_ptr<base::Value> expected_b(new base::Value(kFilename));
-  ASSERT_TRUE(expected_b.get() != NULL);
-  std::unique_ptr<base::Value> expected_c(
-      base::Value::CreateWithCopiedBuffer(block2, block2_size));
-  ASSERT_TRUE(expected_c.get() != NULL);
+  base::Value expected_a(base::as_bytes(base::make_span(block1, block1_size)));
+  base::Value expected_b(kFilename);
+  base::Value expected_c(base::as_bytes(base::make_span(block2, block2_size)));
 
   base::ListValue expected_list;
-  subtle::AppendKeyValuePair(keys::kRequestBodyRawBytesKey,
-                             std::move(expected_a), &expected_list);
-  subtle::AppendKeyValuePair(keys::kRequestBodyRawFileKey,
-                             std::move(expected_b), &expected_list);
-  subtle::AppendKeyValuePair(keys::kRequestBodyRawBytesKey,
-                             std::move(expected_c), &expected_list);
+  subtle::AppendKeyValuePair(
+      keys::kRequestBodyRawBytesKey,
+      base::Value::ToUniquePtrValue(std::move(expected_a)), &expected_list);
+  subtle::AppendKeyValuePair(
+      keys::kRequestBodyRawFileKey,
+      base::Value::ToUniquePtrValue(std::move(expected_b)), &expected_list);
+  subtle::AppendKeyValuePair(
+      keys::kRequestBodyRawBytesKey,
+      base::Value::ToUniquePtrValue(std::move(expected_c)), &expected_list);
 
   // Real output.
   RawDataPresenter raw_presenter;
@@ -76,9 +75,8 @@ TEST(WebRequestUploadDataPresenterTest, RawData) {
   raw_presenter.FeedNextBytes(block2, block2_size);
   EXPECT_TRUE(raw_presenter.Succeeded());
   std::unique_ptr<base::Value> result = raw_presenter.Result();
-  ASSERT_TRUE(result.get() != NULL);
-
-  EXPECT_TRUE(result->Equals(&expected_list));
+  ASSERT_TRUE(result);
+  EXPECT_EQ(expected_list, *result);
 }
 
 }  // namespace extensions

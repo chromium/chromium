@@ -405,18 +405,12 @@ TEST_F(ArgumentSpecUnitTest, Test) {
                   base::Value(base::Value::Type::BINARY));
     {
       // A non-empty (but zero-filled) ArrayBufferView.
-      const char kBuffer[] = {0, 0, 0, 0};
-      std::unique_ptr<base::Value> expected_value =
-          base::Value::CreateWithCopiedBuffer(kBuffer, base::size(kBuffer));
-      ASSERT_TRUE(expected_value);
       ExpectSuccessWithNoConversion(spec, "(new Int32Array(2))");
     }
     {
       // Actual data.
-      const char kBuffer[] = {'p', 'i', 'n', 'g'};
-      std::unique_ptr<base::Value> expected_value =
-          base::Value::CreateWithCopiedBuffer(kBuffer, base::size(kBuffer));
-      ASSERT_TRUE(expected_value);
+      const uint8_t kBuffer[] = {'p', 'i', 'n', 'g'};
+      base::Value expected_value(base::make_span(kBuffer));
       ExpectSuccess(spec,
                     "var b = new ArrayBuffer(4);\n"
                     "var v = new Uint8Array(b);\n"
@@ -424,7 +418,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
                     "for (var i = 0; i < s.length; ++i)\n"
                     "  v[i] = s.charCodeAt(i);\n"
                     "b;",
-                    *expected_value);
+                    expected_value);
     }
     ExpectFailure(spec, "1",
                   InvalidType(api_errors::kTypeBinary, kTypeInteger));
