@@ -212,7 +212,7 @@ void IsolatedPrerenderProxyingURLLoaderFactory::InProgressRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (on_complete_metrics_callback_) {
     std::move(on_complete_metrics_callback_)
-        .Run(redirect_chain_[0], head_->Clone(), status);
+        .Run(redirect_chain_[0], head_ ? head_->Clone() : nullptr, status);
   }
   MaybeReportResourceLoadSuccess(status);
   target_client_->OnComplete(status);
