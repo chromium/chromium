@@ -1,0 +1,80 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of WebLayer histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="PhoneHub.Adoption.FeatureStatusChangesSinceLogin"
+    enum="PhoneHubFeatureStatus" expires_after="M98">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The feature status changes to PhoneHub after login. Note that this does not
+    include the steady state feature status on user login or the status changes
+    to the feature status prior to that.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.Adoption.LoginFeatureStatus"
+    enum="PhoneHubFeatureStatus" expires_after="M98">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>The steady state feature status of PhoneHub on user login.</summary>
+</histogram>
+
+<histogram name="PhoneHub.Connectivity.Duration" units="ms" expires_after="M98">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time the phone is in the connected state, and becomes
+    disconnected.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.Connectivity.Latency" units="ms" expires_after="M98">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time the phone is in the connecting state, and becomes
+    connected.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.Connectivity.Success" enum="BooleanSuccess"
+    expires_after="M98">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>The success rate of connecting to the Phone.</summary>
+</histogram>
+
+<histogram name="PhoneHub.Usage.SentMessageTypeCount"
+    enum="PhoneHubMessageType" expires_after="M98">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Counts for each command sent. Note that PhoneHubMessageType also includes
+    message types that are recieved by CrOS. Those will always have a zero value
+    in this histogram.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -73,6 +73,7 @@ tools/metrics/histograms/histograms_xml/page/histograms.xml
 tools/metrics/histograms/histograms_xml/password/histograms.xml
 tools/metrics/histograms/histograms_xml/payment/histograms.xml
 tools/metrics/histograms/histograms_xml/permissions/histograms.xml
+tools/metrics/histograms/histograms_xml/phonehub/histograms.xml
 tools/metrics/histograms/histograms_xml/platform/histograms.xml
 tools/metrics/histograms/histograms_xml/plugin/histograms.xml
 tools/metrics/histograms/histograms_xml/power/histograms.xml

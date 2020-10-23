@@ -5,6 +5,7 @@
 #include "chromeos/components/phonehub/connection_manager_impl.h"
 
 #include "base/bind_helpers.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
@@ -17,7 +18,55 @@ namespace {
 constexpr char kPhoneHubFeatureName[] = "phone_hub";
 constexpr base::TimeDelta kConnectionTimeoutSeconds(
     base::TimeDelta::FromSeconds(15u));
+
+void RecordConnectionSuccessMetric(bool success) {
+  UMA_HISTOGRAM_BOOLEAN("PhoneHub.Connectivity.Success", success);
+}
+
 }  // namespace
+
+ConnectionManagerImpl::MetricsRecorder::MetricsRecorder(
+    ConnectionManager* connection_manager,
+    base::Clock* clock)
+    : connection_manager_(connection_manager),
+      status_(connection_manager->GetStatus()),
+      clock_(clock),
+      status_change_timestamp_(clock_->Now()) {
+  connection_manager_->AddObserver(this);
+}
+
+ConnectionManagerImpl::MetricsRecorder::~MetricsRecorder() {
+  connection_manager_->RemoveObserver(this);
+}
+
+void ConnectionManagerImpl::MetricsRecorder::OnConnectionStatusChanged() {
+  const ConnectionManager::Status prev_status = status_;
+  status_ = connection_manager_->GetStatus();
+
+  const base::TimeDelta delta = clock_->Now() - status_change_timestamp_;
+  status_change_timestamp_ = clock_->Now();
+
+  switch (status_) {
+    case ConnectionManager::Status::kConnecting:
+      break;
+
+    case ConnectionManager::Status::kDisconnected:
+      if (prev_status == ConnectionManager::Status::kConnected) {
+        UMA_HISTOGRAM_TIMES("PhoneHub.Connectivity.Duration", delta);
+      } else {
+        DCHECK(prev_status == ConnectionManager::Status::kConnecting);
+        RecordConnectionSuccessMetric(false);
+      }
+      break;
+
+    case ConnectionManager::Status::kConnected:
+      if (prev_status == ConnectionManager::Status::kConnecting) {
+        UMA_HISTOGRAM_TIMES("PhoneHub.Connectivity.Latency", delta);
+        RecordConnectionSuccessMetric(true);
+      }
+      break;
+  }
+}
 
 ConnectionManagerImpl::ConnectionManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
@@ -26,24 +75,29 @@ ConnectionManagerImpl::ConnectionManagerImpl(
     : ConnectionManagerImpl(multidevice_setup_client,
                             device_sync_client,
                             secure_channel_client,
-                            std::make_unique<base::OneShotTimer>()) {}
+                            std::make_unique<base::OneShotTimer>(),
+                            base::DefaultClock::GetInstance()) {}
 
 ConnectionManagerImpl::ConnectionManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     device_sync::DeviceSyncClient* device_sync_client,
     chromeos::secure_channel::SecureChannelClient* secure_channel_client,
-    std::unique_ptr<base::OneShotTimer> timer)
+    std::unique_ptr<base::OneShotTimer> timer,
+    base::Clock* clock)
     : multidevice_setup_client_(multidevice_setup_client),
       device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
-      timer_(std::move(timer)) {
+      timer_(std::move(timer)),
+      metrics_recorder_(std::make_unique<MetricsRecorder>(this, clock)) {
   DCHECK(multidevice_setup_client_);
   DCHECK(device_sync_client_);
   DCHECK(secure_channel_client_);
   DCHECK(timer_);
+  DCHECK(metrics_recorder_);
 }
 
 ConnectionManagerImpl::~ConnectionManagerImpl() {
+  metrics_recorder_.reset();
   if (channel_)
     channel_->RemoveObserver(this);
 }

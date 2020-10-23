@@ -6,10 +6,10 @@
 
 #include <netinet/in.h>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/connection_manager.h"
-#include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -44,8 +44,7 @@ void MessageSenderImpl::SendCrosState(bool notification_setting_enabled) {
   proto::CrosState request;
   request.set_notification_setting(is_notification_enabled);
 
-  connection_manager_->SendMessage(
-      SerializeMessage(proto::MessageType::PROVIDE_CROS_STATE, &request));
+  SendMessage(proto::MessageType::PROVIDE_CROS_STATE, &request);
 }
 
 void MessageSenderImpl::SendUpdateNotificationModeRequest(
@@ -56,8 +55,7 @@ void MessageSenderImpl::SendUpdateNotificationModeRequest(
   proto::UpdateNotificationModeRequest request;
   request.set_notification_mode(notification_mode);
 
-  connection_manager_->SendMessage(SerializeMessage(
-      proto::MessageType::UPDATE_NOTIFICATION_MODE_REQUEST, &request));
+  SendMessage(proto::MessageType::UPDATE_NOTIFICATION_MODE_REQUEST, &request);
 }
 
 void MessageSenderImpl::SendUpdateBatteryModeRequest(
@@ -68,8 +66,7 @@ void MessageSenderImpl::SendUpdateBatteryModeRequest(
   proto::UpdateBatteryModeRequest request;
   request.set_battery_mode(battery_mode);
 
-  connection_manager_->SendMessage(SerializeMessage(
-      proto::MessageType::UPDATE_BATTERY_MODE_REQUEST, &request));
+  SendMessage(proto::MessageType::UPDATE_BATTERY_MODE_REQUEST, &request);
 }
 
 void MessageSenderImpl::SendDismissNotificationRequest(
@@ -77,8 +74,7 @@ void MessageSenderImpl::SendDismissNotificationRequest(
   proto::DismissNotificationRequest request;
   request.set_notification_id(notification_id);
 
-  connection_manager_->SendMessage(SerializeMessage(
-      proto::MessageType::DISMISS_NOTIFICATION_REQUEST, &request));
+  SendMessage(proto::MessageType::DISMISS_NOTIFICATION_REQUEST, &request);
 }
 
 void MessageSenderImpl::SendNotificationInlineReplyRequest(
@@ -88,15 +84,14 @@ void MessageSenderImpl::SendNotificationInlineReplyRequest(
   request.set_notification_id(notification_id);
   request.set_reply_text(base::UTF16ToUTF8(reply_text));
 
-  connection_manager_->SendMessage(SerializeMessage(
-      proto::MessageType::NOTIFICATION_INLINE_REPLY_REQUEST, &request));
+  SendMessage(proto::MessageType::NOTIFICATION_INLINE_REPLY_REQUEST, &request);
 }
 
 void MessageSenderImpl::SendShowNotificationAccessSetupRequest() {
   proto::ShowNotificationAccessSetupRequest request;
 
-  connection_manager_->SendMessage(SerializeMessage(
-      proto::MessageType::SHOW_NOTIFICATION_ACCESS_SETUP_REQUEST, &request));
+  SendMessage(proto::MessageType::SHOW_NOTIFICATION_ACCESS_SETUP_REQUEST,
+              &request);
 }
 
 void MessageSenderImpl::SendRingDeviceRequest(bool device_ringing_enabled) {
@@ -106,8 +101,14 @@ void MessageSenderImpl::SendRingDeviceRequest(bool device_ringing_enabled) {
   proto::RingDeviceRequest request;
   request.set_ring_status(ringing_enabled);
 
-  connection_manager_->SendMessage(
-      SerializeMessage(proto::MessageType::RING_DEVICE_REQUEST, &request));
+  SendMessage(proto::MessageType::RING_DEVICE_REQUEST, &request);
+}
+
+void MessageSenderImpl::SendMessage(proto::MessageType message_type,
+                                    google::protobuf::MessageLite* request) {
+  connection_manager_->SendMessage(SerializeMessage(message_type, request));
+  UMA_HISTOGRAM_ENUMERATION("PhoneHub.Usage.SentMessageTypeCount", message_type,
+                            proto::MessageType_MAX);
 }
 
 }  // namespace phonehub

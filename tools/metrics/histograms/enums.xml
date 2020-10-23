@@ -57651,11 +57651,40 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Phone Collected, WebOTP Used, OTC Used"/>
 </enum>
 
+<enum name="PhoneHubFeatureStatus">
+  <int value="0" label="Not eligible for feature"/>
+  <int value="1" label="Eligible phone but not set up"/>
+  <int value="2" label="Phone selected and pending setup"/>
+  <int value="3" label="Disabled"/>
+  <int value="4" label="Unavalable Bluetooth off"/>
+  <int value="5" label="Unavalable Bluetooth disconnected"/>
+  <int value="6" label="Enabled and connecting"/>
+  <int value="7" label="Enabled and connected"/>
+</enum>
+
 <enum name="PhoneHubInterstitialScreenEvent">
   <int value="0" label="Screen Shown"/>
   <int value="1" label="Learn More Clicked"/>
   <int value="2" label="Dismiss Clicked"/>
   <int value="3" label="Confirm Clicked"/>
+</enum>
+
+<enum name="PhoneHubMessageType">
+  <int value="0" label="Provide CrOS State"/>
+  <int value="1" label="Phone status snapshot"/>
+  <int value="2" label="Phone status update"/>
+  <int value="3" label="Update notification mode request"/>
+  <int value="4" label="Update notification mode response"/>
+  <int value="5" label="Ring device request"/>
+  <int value="6" label="Ring device response"/>
+  <int value="7" label="Update battery mode request"/>
+  <int value="8" label="Update battery mode response"/>
+  <int value="9" label="Dismiss notification request"/>
+  <int value="10" label="Dismiss notification response"/>
+  <int value="11" label="Notification inline reply request"/>
+  <int value="12" label="Notification inline reply response"/>
+  <int value="13" label="Show notification access setup request"/>
+  <int value="14" label="Show notification access setup response"/>
 </enum>
 
 <enum name="PhoneNumberRegexVariantResult">

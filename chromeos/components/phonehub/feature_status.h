@@ -14,6 +14,10 @@ namespace phonehub {
 // that there is no value representing "prohibited" - when the feature is
 // prohibited by enterprise policy, we don't instantiate Phone Hub-related logic
 // at all.
+// Note: This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other). Entries should never be modified
+// or deleted. Only additions possible.
 enum class FeatureStatus {
   // The user's devices are not eligible for the feature. This means that either
   // the Chrome OS device or the user's phone (or both) have not enrolled with
@@ -45,7 +49,10 @@ enum class FeatureStatus {
   kEnabledAndConnecting = 6,
 
   // The feature is enabled, and there is an active connection with the phone.
-  kEnabledAndConnected = 7
+  kEnabledAndConnected = 7,
+
+  // Max value needed for metrics.
+  kMaxValue = kEnabledAndConnected
 };
 
 std::ostream& operator<<(std::ostream& stream, FeatureStatus status);

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/strings/string16.h"
+#include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -34,6 +35,9 @@ class MessageSenderImpl : public MessageSender {
   void SendRingDeviceRequest(bool device_ringing_enabled) override;
 
  private:
+  void SendMessage(proto::MessageType message_type,
+                   google::protobuf::MessageLite* request);
+
   ConnectionManager* connection_manager_;
 };
 

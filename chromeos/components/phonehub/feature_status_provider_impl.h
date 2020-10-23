@@ -19,7 +19,6 @@ namespace phonehub {
 
 // FeatureStatusProvider implementation which utilizes DeviceSyncClient,
 // MultiDeviceSetupClient and BluetoothAdapter to determine the current status.
-// TODO(khorimoto): Add metrics for initial status and status changes.
 class FeatureStatusProviderImpl
     : public FeatureStatusProvider,
       public device_sync::DeviceSyncClient::Observer,
@@ -66,12 +65,15 @@ class FeatureStatusProviderImpl
   // ConnectionManager::Observer:
   void OnConnectionStatusChanged() override;
 
+  void RecordFeatureStatusOnLogin();
+
   device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   ConnectionManager* connection_manager_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::Optional<FeatureStatus> status_;
+  bool is_login_status_metric_recorded_ = false;
 
   base::WeakPtrFactory<FeatureStatusProviderImpl> weak_ptr_factory_{this};
 };
