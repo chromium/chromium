@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -811,6 +812,15 @@ CompositorAnimations::CheckCanStartSVGElementOnCompositor(
   FailureReasons reasons = kNoFailure;
   if (svg_element.HasMainThreadAnimations())
     reasons |= kTargetHasIncompatibleAnimations;
+  if (!svg_element.InstancesForElement().IsEmpty()) {
+    // TODO(crbug.com/785246): Currently when an SVGElement has svg:use
+    // instances, each instance gets style from the original element, using
+    // the original element's animation (thus the animation affects
+    // transform nodes). This should be removed once instances style
+    // themmselves and create their own blink::Animation objects for CSS
+    // animations and transitions.
+    reasons |= kTargetHasInvalidCompositingState;
+  }
   return reasons;
 }
 
@@ -834,6 +844,10 @@ CompositorAnimations::CheckCanStartTransformAnimationOnCompositorForSVG(
                     .IsZero()) {
       // TODO(crbug.com/1134775): Similarly, composited animation would also
       // remove the additional translation of LayoutSVGTransformableContainer.
+      reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
+    } else if (svg_element.ComputedStyleRef().SvgStyle().VectorEffect()) {
+      // If vector-effect is set so something other than none, transform
+      // affects paint thus animation can not be composited.
       reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
     }
   }

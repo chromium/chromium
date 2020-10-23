@@ -2233,17 +2233,20 @@ TEST_P(AnimationCompositorAnimationsTest,
     </style>
     <svg id="svg" class="animate">
       <rect id="rect" class="animate"/>
+      <rect id="rect-useref" class="animate"/>
       <rect id="rect-smil" class="animate">
         <animateMotion dur="10s" repeatCount="indefinite"
                        path="M0,0 L100,100 z"/>
       </rect>
       <rect id="rect-mixed" class="animate-mixed"/>
+      <rect id="rect-effect" class="animate"
+            vector-effect="non-scaling-stroke"/>
       <svg id="embedded-svg" class="animate"/>
       <foreignObject id="foreign" class="animate"/>
       <foreignObject id="foreign-zoomed" class="animate"
                      style="zoom: 1.5; will-change: opacity"/>
-      <use id="use" href="#rect" class="animate"/>
-      <use id="use-offset" href="#rect" x="10" class="animate"/>
+      <use id="use" href="#rect-useref" class="animate"/>
+      <use id="use-offset" href="#rect-useref" x="10" class="animate"/>
     </svg>
   )HTML");
 
@@ -2254,8 +2257,10 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   EXPECT_TRUE(CanStartAnimation("svg"));
   EXPECT_TRUE(CanStartAnimation("rect"));
+  EXPECT_FALSE(CanStartAnimation("rect-useref"));
   EXPECT_FALSE(CanStartAnimation("rect-smil"));
   EXPECT_FALSE(CanStartAnimation("rect-mixed"));
+  EXPECT_FALSE(CanStartAnimation("rect-effect"));
   EXPECT_FALSE(CanStartAnimation("embedded-svg"));
   EXPECT_TRUE(CanStartAnimation("foreign"));
   EXPECT_FALSE(CanStartAnimation("foreign-zoomed"));
