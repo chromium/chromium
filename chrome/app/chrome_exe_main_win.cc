@@ -228,6 +228,10 @@ int main() {
           0, kStackSize, FIBER_FLAG_FLOAT_SWITCH, FiberBinder, &fiber_state);
       if (big_stack_fiber) {
         ::SwitchToFiber(big_stack_fiber);
+        // The fibers must be cleaned up to avoid obscure TLS-related shutdown
+        // crashes.
+        ::DeleteFiber(big_stack_fiber);
+        ::ConvertFiberToThread();
         // Control returns here after Chrome has finished running on FiberMain.
         return fiber_state.fiber_result;
       }
