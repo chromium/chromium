@@ -29,6 +29,14 @@ ime::PublicMessage OnFocusToProto(uint64_t seq_id) {
   return message;
 }
 
+ime::PublicMessage OnBlurToProto(uint64_t seq_id) {
+  ime::PublicMessage message;
+  message.set_seq_id(seq_id);
+
+  *message.mutable_on_blur() = ime::OnBlur();
+  return message;
+}
+
 ime::PublicMessage OnKeyEventToProto(uint64_t seq_id,
                                      mojom::PhysicalKeyEventPtr event) {
   ime::PublicMessage message;

@@ -33,6 +33,7 @@ message PublicMessage {
     OnKeyEvent on_key_event = 3;
     OnKeyEventReply on_key_event_reply = 4;
     OnSurroundingTextChanged on_surrounding_text_changed = 5;
+    OnBlur on_blur = 6;
   }
 }
 
@@ -41,6 +42,10 @@ message PublicMessage {
 message OnFocus {
   // TODO(crbug/1019541): Add information about the input field.
 }
+
+// Protobuf version of InputEngine::OnBlur in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message OnBlur {}
 
 // Protobuf version of InputEngine::OnKeyEvent in
 // chromeos/services/ime/public/mojom/input_engine.mojom

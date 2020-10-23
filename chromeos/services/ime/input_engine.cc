@@ -111,6 +111,10 @@ void InputEngine::OnFocus() {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
+void InputEngine::OnBlur() {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 void InputEngine::OnSurroundingTextChanged(
     const std::string& text,
     uint32_t offset,

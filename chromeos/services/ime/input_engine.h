@@ -47,6 +47,7 @@ class InputEngine : public mojom::InputChannel {
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
   void OnFocus() override;
+  void OnBlur() override;
   void OnSurroundingTextChanged(
       const std::string& text,
       uint32_t offset,

@@ -21,6 +21,17 @@ TEST(ProtoConversionTest, OnFocusToProto) {
             expected_message.SerializeAsString());
 }
 
+TEST(ProtoConversionTest, OnBlurToProto) {
+  ime::PublicMessage expected_message;
+  expected_message.set_seq_id(42);
+  *expected_message.mutable_on_blur() = ime::OnBlur();
+
+  ime::PublicMessage actual_message = OnBlurToProto(/*seq_id=*/42);
+
+  EXPECT_EQ(actual_message.SerializeAsString(),
+            expected_message.SerializeAsString());
+}
+
 TEST(ProtoConversionTest, OnKeyEventToProto) {
   auto modifier_state = mojom::ModifierState::New();
   modifier_state->shift = true;

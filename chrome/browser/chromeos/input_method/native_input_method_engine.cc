@@ -187,6 +187,11 @@ void NativeInputMethodEngine::ImeObserver::OnBlur(int context_id) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled())
     assistive_suggester_->OnBlur();
 
+  if (active_engine_id_ && ShouldUseFstMojoEngine(*active_engine_id_) &&
+      remote_to_engine_.is_bound()) {
+    remote_to_engine_->OnBlur();
+  }
+
   base_observer_->OnBlur(context_id);
 }
 

@@ -16,6 +16,9 @@ namespace ime {
 // Converts arguments of a Mojo call to InputChannel::OnFocus into a proto.
 ime::PublicMessage OnFocusToProto(uint64_t seq_id);
 
+// Converts arguments of a Mojo call to InputChannel::OnBlur into a proto.
+ime::PublicMessage OnBlurToProto(uint64_t seq_id);
+
 // Converts arguments of a Mojo call to InputChannel::OnKeyEvent into a proto.
 ime::PublicMessage OnKeyEventToProto(uint64_t seq_id,
                                      mojom::PhysicalKeyEventPtr event);

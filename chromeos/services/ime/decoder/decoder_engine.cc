@@ -145,6 +145,14 @@ void DecoderEngine::OnFocus() {
                  base::DoNothing());
 }
 
+void DecoderEngine::OnBlur() {
+  const uint64_t seq_id = current_seq_id_;
+  ++current_seq_id_;
+
+  ProcessMessage(WrapAndSerializeMessage(OnBlurToProto(seq_id)),
+                 base::DoNothing());
+}
+
 void DecoderEngine::OnKeyEvent(mojom::PhysicalKeyEventPtr event,
                                OnKeyEventCallback callback) {
   const uint64_t seq_id = current_seq_id_;
