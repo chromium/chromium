@@ -223,6 +223,10 @@ def _check_redundant_virtual_expectations(host, port, path, expectations):
     for exp in expectations:
         if not exp.test:
             continue
+        # TODO(crbug.com/1080691): For now, ignore redundant entries created by
+        # WPT import.
+        if port.is_wpt_test(exp.test):
+            continue
 
         base_test = port.lookup_virtual_test_base(exp.test)
         if base_test:
@@ -313,10 +317,8 @@ def _check_expectations(host, port, path, test_expectations, options, wpt_tests)
             host, port, path, expectations))
     # TODO(crbug.com/1080691): Change this to failures once
     # wpt_expectations_updater is fixed.
-    if not getattr(options, 'no_check_redundant_virtual_expectations', False):
-        warnings.extend(
-            _check_redundant_virtual_expectations(host, port, path,
-                                                  expectations))
+    warnings.extend(
+        _check_redundant_virtual_expectations(host, port, path, expectations))
     return failures, warnings
 
 
@@ -459,10 +461,6 @@ def main(argv, stderr, host=None):
         action='append',
         default=[],
         help='paths to additional expectation files to lint.')
-    parser.add_option('--no-check-redundant-virtual-expectations',
-                      action='store_true',
-                      default=False,
-                      help='skip checking redundant virtual expectations.')
 
     options, _ = parser.parse_args(argv)
 

@@ -38,10 +38,7 @@ def PresubmitCheckTestExpectations(input_api, output_api):
         os_path.dirname(os_path.abspath(__file__)), '..', '..',
         'lint_test_expectations.py')
     _, errs = input_api.subprocess.Popen(
-        [
-            input_api.python_executable, lint_path,
-            '--no-check-redundant-virtual-expectations'
-        ],
+        [input_api.python_executable, lint_path],
         stdout=input_api.subprocess.PIPE,
         stderr=input_api.subprocess.PIPE).communicate()
     if not errs:
@@ -54,4 +51,3 @@ def PresubmitCheckTestExpectations(input_api, output_api):
     if errs.rstrip().endswith('Lint succeeded with warnings.'):
         return [output_api.PresubmitPromptWarning(errs)]
     return [output_api.PresubmitError(errs)]
-

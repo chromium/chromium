@@ -345,7 +345,8 @@ class LintTest(LoggingTestCase):
 
         port = host.port_factory.get(options.platform, options=options)
         port.virtual_test_suites = lambda: [
-            VirtualTestSuite(prefix='foo', bases=['test'], args=['--foo'])
+            VirtualTestSuite(
+                prefix='foo', bases=['test', 'external/wpt'], args=['--foo'])
         ]
         test_expectations = (
             '# tags: [ mac win ]\n'
@@ -359,7 +360,11 @@ class LintTest(LoggingTestCase):
             'crbug.com/1234 virtual/foo/test/test2.html [ Failure ]\n'
             'test/subtest/test2.html [ Failure ]\n'
             'virtual/foo/test/subtest/* [ Pass ]\n'
-            'virtual/foo/test/subtest/test2.html [ Failure ]')
+            'virtual/foo/test/subtest/test2.html [ Failure ]\n'
+            'external/wpt/wpt.html [ Failure ]\n'
+            # TODO(crbug.com/1080691): This is redundant with the above one, but
+            # for now we intentially ignore it.
+            'virtual/foo/external/wpt/wpt.html [ Failure ]\n')
         port.expectations_dict = lambda: {
             'testexpectations': test_expectations
         }
