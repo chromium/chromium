@@ -524,3 +524,15 @@ QUIC_FLAG(
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_granular_qpack_error_codes,
           false)
+
+// When true, the server delays its Initial ACK-only packets the full
+// max_ack_delay.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_delay_initial_ack, false)
+
+// If true, session tickets will always be enabled in QUIC.
+QUIC_FLAG(bool,
+          FLAGS_quic_restart_flag_quic_session_tickets_always_enabled,
+          false)
+
+// If true, QUIC client with TLS will not try 0-RTT.
+QUIC_FLAG(bool, FLAGS_quic_disable_client_tls_zero_rtt, false)
