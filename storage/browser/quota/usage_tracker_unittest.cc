@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -117,7 +118,7 @@ class UsageTrackerTestQuotaClient : public QuotaClient {
 class UsageTrackerTest : public testing::Test {
  public:
   UsageTrackerTest()
-      : storage_policy_(new MockSpecialStoragePolicy()),
+      : storage_policy_(base::MakeRefCounted<MockSpecialStoragePolicy>()),
         quota_client_(base::MakeRefCounted<UsageTrackerTestQuotaClient>()),
         usage_tracker_(GetQuotaClientMap(),
                        StorageType::kTemporary,
