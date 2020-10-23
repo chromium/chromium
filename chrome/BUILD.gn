@@ -137,6 +137,9 @@ if (!is_android && !is_mac) {
     }
 
     data_deps = []
+    if (chromeos_is_browser_only && also_build_ash_chrome) {
+      data_deps += [ "//chrome:chrome(//build/toolchain/linux:ash_clang_x64)" ]
+    }
 
     if (is_win) {
       sources += [
