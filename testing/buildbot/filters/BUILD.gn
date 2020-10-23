@@ -151,10 +151,7 @@ source_set("gl_tests_filters") {
 source_set("interactive_ui_tests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/autofill.interactive_ui_tests.filter",
-    "//testing/buildbot/filters/lacros.interactive_ui_tests.filter",
-  ]
+  data = [ "//testing/buildbot/filters/lacros.interactive_ui_tests.filter" ]
 }
 
 source_set("linux_ozone_views_unittests_filters") {

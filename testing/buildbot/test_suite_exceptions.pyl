@@ -1513,27 +1513,11 @@
           'shards': 6,
         },
       },
-      'Win 7 Tests x64 (1)': {
-        # These tests are continually flaky on Win7 bots, crbug.com/967588
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/autofill.interactive_ui_tests.filter',
-        ],
-      },
       # temporary, https://crbug.com/818832
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,
       },
-      'Win7 Tests (1)': {
-        # These tests are continually flaky on Win7 bots, crbug.com/967588
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/autofill.interactive_ui_tests.filter',
-        ],
-      },
       'Win7 Tests (dbg)(1)': {
-        # These tests are continually flaky on Win7 bots, crbug.com/967588
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/autofill.interactive_ui_tests.filter',
-        ],
         'swarming': {
           'shards': 4,
         },

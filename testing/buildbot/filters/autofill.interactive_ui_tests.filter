@@ -1,8 +1,0 @@
-# TODO(crbug.com/967588): Allow Win7 interactive_ui_tests to disable autofill tests.
--All/AutofillCompanyInteractiveTest.*
--All/AutofillDynamicFormInteractiveTest.*
--All/AutofillRestrictUnownedFieldsTest.*
--AutofillCreditCardInteractiveTest.*
--AutofillInteractiveTest.*
--AutofillInteractiveIsolationTest.*
--AutofillInteractiveTestWithHistogramTester.*
