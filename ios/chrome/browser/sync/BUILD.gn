@@ -143,6 +143,7 @@ source_set("unit_tests") {
     "//components/sync",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/favicon",
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",

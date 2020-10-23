@@ -244,14 +244,17 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
   // Bookmark sync is enabled by default.  Register unless explicitly
   // disabled.
   if (!disabled_types.Has(syncer::BOOKMARKS)) {
+    favicon::FaviconService* favicon_service =
+        sync_client_->GetFaviconService();
+    // Services can be null in tests.
+    if (bookmark_sync_service_ && favicon_service) {
       controllers.push_back(std::make_unique<ModelTypeController>(
           syncer::BOOKMARKS,
-          std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-              ui_thread_,
-              base::BindRepeating(&sync_bookmarks::BookmarkSyncService::
-                                      GetBookmarkSyncControllerDelegate,
-                                  base::Unretained(bookmark_sync_service_),
-                                  sync_client_->GetFaviconService()))));
+          std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+              bookmark_sync_service_
+                  ->GetBookmarkSyncControllerDelegate(favicon_service)
+                  .get())));
+    }
   }
 
   // These features are enabled only if history is not disabled.

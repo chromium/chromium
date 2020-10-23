@@ -12,6 +12,8 @@
 #include "base/feature_list.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -42,7 +44,12 @@ class ProfileSyncServiceFactoryTest : public testing::Test {
 #if defined(OS_CHROMEOS)
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 #endif  // defined(OS_CHROMEOS)
-    profile_ = std::make_unique<TestingProfile>();
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(FaviconServiceFactory::GetInstance(),
+                              FaviconServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                              HistoryServiceFactory::GetDefaultFactory());
+    profile_ = builder.Build();
     // Some services will only be created if there is a WebDataService.
     profile_->CreateWebDataService();
   }
