@@ -1055,7 +1055,7 @@
     {
       name: "LayoutNGTextArea",
       depends_on: ["EditingNG"],
-      status: "test",
+      status: "experimental",
     },
     {
       name: "LayoutNGTextField",
