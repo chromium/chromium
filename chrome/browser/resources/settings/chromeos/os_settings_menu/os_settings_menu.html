@@ -48,8 +48,8 @@
         padding: var(--tap-target-padding) 0;
       }
 
-      /* The "item" draws the icon, text, and rounded background. */
-      a > .item {
+      /* "item" class draws the icon, text, and rounded background. */
+      a.item {
         align-items: center;
         border-block-end-width: var(--focus-border-width);
         border-block-start-width: var(--focus-border-width);
@@ -66,24 +66,23 @@
         margin-inline-end: 2px;
         min-height: 32px;
         padding-inline-start: 20px;
-        pointer-events: none;
       }
 
-      :host-context([dir=rtl]) a > .item {
+      :host-context([dir=rtl]) a.item {
         /* Chrome doesn't support border-start-end-radius, so override. */
         border-radius: 20px 0 0 20px;
       }
 
-      a.iron-selected > .item {
+      a.iron-selected.item {
         background-color: var(--cros-menu-button-bg-color-active);
         color: var(--menu-link-color);
       }
 
-      :host-context(.focus-outline-visible) a:focus > .item {
+      :host-context(.focus-outline-visible) a:focus.item {
         border-color: var(--cros-menu-button-outline-color-focused);
       }
 
-      a:hover:not(.iron-selected) > .item {
+      a:hover:not(.iron-selected).item {
         background-color: var(--cros-menu-button-bg-color-hover);
       }
 
@@ -94,7 +93,7 @@
         vertical-align: top;
       }
 
-      a.iron-selected > .item > iron-icon {
+      a.iron-selected.item > iron-icon {
         fill: var(--menu-link-color);
       }
 
@@ -158,62 +157,44 @@
         attr-for-selected="href" on-iron-activate="onSelectorActivate_"
         selectable="a"
         role="navigation" on-click="onLinkClick_">
-      <a href="/internet">
-        <div class="item">
-          <iron-icon icon="os-settings:network-wifi"></iron-icon>
-          $i18n{internetPageTitle}
-        </div>
+      <a href="/internet" class="item">
+        <iron-icon icon="os-settings:network-wifi"></iron-icon>
+        $i18n{internetPageTitle}
       </a>
-      <a href="/bluetooth">
-        <div class="item">
-          <iron-icon icon="cr:bluetooth"></iron-icon>
-          $i18n{bluetoothPageTitle}
-        </div>
+      <a href="/bluetooth" class="item">
+        <iron-icon icon="cr:bluetooth"></iron-icon>
+        $i18n{bluetoothPageTitle}
       </a>
-      <a id="multidevice" href="/multidevice"
+      <a id="multidevice" href="/multidevice" class="item"
           hidden="[[isGuestMode_]]">
-        <div class="item">
-          <iron-icon icon="os-settings:multidevice-better-together-suite">
-          </iron-icon>
-          $i18n{multidevicePageTitle}
-        </div>
+        <iron-icon icon="os-settings:multidevice-better-together-suite">
+        </iron-icon>
+        $i18n{multidevicePageTitle}
       </a>
-      <a id="osPeople" href="/osPeople" hidden="[[isGuestMode_]]">
-        <div class="item">
-          <iron-icon icon="cr:person"></iron-icon>
-          $i18n{osPeoplePageTitle}
-        </div>
+      <a id="osPeople" href="/osPeople" hidden="[[isGuestMode_]]" class="item">
+        <iron-icon icon="cr:person"></iron-icon>
+        $i18n{osPeoplePageTitle}
       </a>
-      <a href="/device">
-        <div class="item">
-          <iron-icon icon="os-settings:laptop-chromebook"></iron-icon>
-          $i18n{devicePageTitle}
-        </div>
+      <a href="/device" class="item">
+        <iron-icon icon="os-settings:laptop-chromebook"></iron-icon>
+        $i18n{devicePageTitle}
       </a>
-      <a id="personalization" href="/personalization"
+      <a id="personalization" href="/personalization" class="item"
           hidden="[[isGuestMode_]]">
-        <div class="item">
-          <iron-icon icon="os-settings:paint-brush"></iron-icon>
-          $i18n{personalizationPageTitle}
-        </div>
+        <iron-icon icon="os-settings:paint-brush"></iron-icon>
+        $i18n{personalizationPageTitle}
       </a>
-      <a href="/osSearch">
-        <div class="item">
-          <iron-icon icon="cr:search"></iron-icon>
-          $i18n{osSearchPageTitle}
-        </div>
+      <a href="/osSearch" class="item">
+        <iron-icon icon="cr:search"></iron-icon>
+        $i18n{osSearchPageTitle}
       </a>
-      <a href="/apps">
-        <div class="item">
-          <iron-icon icon="os-settings:apps"></iron-icon>
-          $i18n{appsPageTitle}
-        </div>
+      <a href="/apps" class="item">
+        <iron-icon icon="os-settings:apps"></iron-icon>
+        $i18n{appsPageTitle}
       </a>
-      <a href="/crostini" hidden="[[!showCrostini]]">
-        <div class="item">
-          <iron-icon icon="os-settings:crostini-mascot"></iron-icon>
-          $i18n{crostiniPageTitle}
-        </div>
+      <a href="/crostini" hidden="[[!showCrostini]]" class="item">
+        <iron-icon icon="os-settings:crostini-mascot"></iron-icon>
+        $i18n{crostiniPageTitle}
       </a>
       <cr-button id="advancedButton"
           aria-expanded$="[[boolToString_(advancedOpened)]]"
@@ -225,55 +206,39 @@
       <iron-collapse id="advancedSubmenu" opened="[[advancedOpened]]">
         <iron-selector id="subMenu" selectable="a" attr-for-selected="href"
             role="navigation" on-click="onLinkClick_">
-          <a href="/dateTime">
-            <div class="item">
-              <iron-icon icon="os-settings:access-time"></iron-icon>
-              $i18n{dateTimePageTitle}
-            </div>
+          <a href="/dateTime" class="item">
+            <iron-icon icon="os-settings:access-time"></iron-icon>
+            $i18n{dateTimePageTitle}
           </a>
-          <a href="/osPrivacy">
-            <div class="item">
+          <a href="/osPrivacy" class="item">
               <iron-icon icon="cr:security"></iron-icon>
               $i18n{privacyPageTitle}
-            </div>
           </a>
-          <a href="/osLanguages">
-            <div class="item">
-              <iron-icon icon="os-settings:language"></iron-icon>
-              $i18n{osLanguagesPageTitle}
-            </div>
+          <a href="/osLanguages" class="item">
+            <iron-icon icon="os-settings:language"></iron-icon>
+            $i18n{osLanguagesPageTitle}
           </a>
-          <a href="/files" hidden="[[isGuestMode_]]">
-            <div class="item">
-              <iron-icon icon="os-settings:folder-outline"></iron-icon>
-              $i18n{filesPageTitle}
-            </div>
+          <a href="/files" hidden="[[isGuestMode_]]" class="item">
+            <iron-icon icon="os-settings:folder-outline"></iron-icon>
+            $i18n{filesPageTitle}
           </a>
-          <a href="/osPrinting">
-            <div class="item">
-              <iron-icon icon="os-settings:print"></iron-icon>
-              $i18n{printingPageTitle}
-            </div>
+          <a href="/osPrinting" class="item">
+            <iron-icon icon="os-settings:print"></iron-icon>
+            $i18n{printingPageTitle}
           </a>
-          <a href="/osAccessibility">
-            <div class="item">
-              <iron-icon icon="os-settings:accessibility"></iron-icon>
-              $i18n{a11yPageTitle}
-            </div>
+          <a href="/osAccessibility" class="item">
+            <iron-icon icon="os-settings:accessibility"></iron-icon>
+            $i18n{a11yPageTitle}
           </a>
-          <a id="osReset" href="/osReset" hidden="[[!showReset]]">
-            <div class="item">
-              <iron-icon icon="os-settings:restore"></iron-icon>
-              $i18n{resetPageTitle}
-            </div>
+          <a id="osReset" href="/osReset" hidden="[[!showReset]]" class="item">
+            <iron-icon icon="os-settings:restore"></iron-icon>
+            $i18n{resetPageTitle}
           </a>
         </iron-selector>
       </iron-collapse>
       <div id="menuSeparator"></div>
-      <a id="aboutItem" href="/help">
-        <div class="item">
-          $i18n{aboutOsPageTitle}
-        </div>
+      <a id="aboutItem" href="/help" class="item">
+        $i18n{aboutOsPageTitle}
       </a>
     </iron-selector>
   </template>
