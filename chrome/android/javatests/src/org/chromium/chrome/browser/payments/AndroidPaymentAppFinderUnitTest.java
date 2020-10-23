@@ -34,7 +34,6 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryParams;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
-import org.chromium.components.payments.PaymentManifestWebDataService;
 import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;

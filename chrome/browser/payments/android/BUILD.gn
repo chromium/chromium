@@ -11,6 +11,7 @@ import("//build/config/android/rules.gni")
 generate_jni("jni_headers") {
   sources = [
     "../../../android/java/src/org/chromium/chrome/browser/payments/PaymentAppServiceBridge.java",
+    "../../../android/java/src/org/chromium/chrome/browser/payments/PaymentManifestWebDataService.java",
     "../../../android/java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
     "../../../android/java/src/org/chromium/chrome/browser/payments/SslValidityChecker.java",
   ]

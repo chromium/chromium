@@ -16,7 +16,6 @@ import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestDownloader.ManifestDownloadCallback;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentManifestParser.ManifestParseCallback;
-import org.chromium.components.payments.PaymentManifestWebDataService;
 import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
