@@ -147,6 +147,8 @@ blink_core_sources_frame = [
   "platform_event_controller.h",
   "platform_event_dispatcher.cc",
   "platform_event_dispatcher.h",
+  "policy_container.cc",
+  "policy_container.h",
   "remote_dom_window.cc",
   "remote_dom_window.h",
   "remote_frame.cc",

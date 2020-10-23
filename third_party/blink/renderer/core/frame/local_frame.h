@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -713,6 +714,9 @@ class CORE_EXPORT LocalFrame final
     return text_fragment_selector_generator_;
   }
 
+  PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
+  void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
+
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
@@ -937,6 +941,8 @@ class CORE_EXPORT LocalFrame final
 
   // Manages a transient affordance for this frame to enter fullscreen.
   TransientAllowFullscreen transient_allow_fullscreen_;
+
+  std::unique_ptr<PolicyContainer> policy_container_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

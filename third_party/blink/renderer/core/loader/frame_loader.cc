@@ -1048,6 +1048,17 @@ void FrameLoader::CommitNavigation(
         network::mojom::ContentSecurityPolicySource::kHTTP);
   }
 
+  // The navigation to the initial empty document is committed directly by Blink
+  // and doesn't have a policy container.
+  //
+  // TODO(antoniosartori): Implement inheritance from the parent/opener for the
+  // initial empty document.
+  if (navigation_params->policy_container) {
+    frame_->SetPolicyContainer(
+        PolicyContainer::CreateFromWebPolicyContainerClient(
+            std::move(navigation_params->policy_container)));
+  }
+
   base::Optional<Document::UnloadEventTiming> unload_timing;
   FrameSwapScope frame_swap_scope(frame_owner);
   {

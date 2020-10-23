@@ -20,6 +20,7 @@
 #include "content/public/common/navigation_policy.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_render_thread.h"
+#include "content/public/test/policy_container_utils.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -283,6 +284,7 @@ void TestRenderFrame::Navigate(network::mojom::URLResponseHeadPtr head,
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factory_bundle =
       ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
           std::make_unique<network::NotImplementedURLLoaderFactory>());
+
   CommitNavigation(std::move(common_params), std::move(commit_params),
                    std::move(head), mojo::ScopedDataPipeConsumerHandle(),
                    network::mojom::URLLoaderClientEndpointsPtr(),
@@ -291,6 +293,7 @@ void TestRenderFrame::Navigate(network::mojom::URLResponseHeadPtr head,
                    blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
                    mojo::NullRemote() /* prefetch_loader_factory */,
                    base::UnguessableToken::Create(),
+                   CreateStubPolicyContainerClient(),
                    base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
                                   base::Unretained(mock_frame_host_.get())));
 }

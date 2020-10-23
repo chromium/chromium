@@ -1141,6 +1141,16 @@ v8::MaybeLocal<v8::Value> CallMethodOnFrame(blink::WebNavigationControl* frame,
       static_cast<int>(args.size()), args.data());
 }
 
+std::unique_ptr<blink::WebPolicyContainerClient> ToWebPolicyContainerClient(
+    blink::mojom::PolicyContainerClientPtr in) {
+  if (!in)
+    return nullptr;
+
+  return std::make_unique<blink::WebPolicyContainerClient>(
+      blink::WebPolicyContainerData{in->policies->referrer_policy},
+      std::move(in->remote));
+}
+
 }  // namespace
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
@@ -3092,6 +3102,7 @@ void RenderFrameImpl::CommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
+    blink::mojom::PolicyContainerClientPtr policy_container,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
   DCHECK(navigation_client_impl_);
   DCHECK(!IsRendererDebugURL(common_params->url));
@@ -3126,6 +3137,8 @@ void RenderFrameImpl::CommitNavigation(
   navigation_params->is_client_redirect = is_client_redirect;
   FillMiscNavigationParams(*common_params, *commit_params,
                            navigation_params.get());
+  navigation_params->policy_container =
+      ToWebPolicyContainerClient(std::move(policy_container));
 
   auto commit_with_params = base::BindOnce(
       &RenderFrameImpl::CommitNavigationWithParams, weak_factory_.GetWeakPtr(),

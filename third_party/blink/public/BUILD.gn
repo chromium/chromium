@@ -228,6 +228,8 @@ source_set("blink_headers") {
     "platform/web_mixed_content_context_type.h",
     "platform/web_navigation_body_loader.h",
     "platform/web_network_state_notifier.h",
+    "platform/web_policy_container.cc",
+    "platform/web_policy_container.h",
     "platform/web_prescient_networking.h",
     "platform/web_private_ptr.h",
     "platform/web_rect.h",

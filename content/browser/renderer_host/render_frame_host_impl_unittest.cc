@@ -98,8 +98,8 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   EXPECT_EQ(main_rfh->policy_container()->referrer_policy(),
             network::mojom::ReferrerPolicy::kDefault);
 
-  main_rfh->policy_container()->SetReferrerPolicy(
-      network::mojom::ReferrerPolicy::kAlways);
+  static_cast<blink::mojom::PolicyContainerHost*>(main_rfh->policy_container())
+      ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways);
   EXPECT_EQ(main_rfh->policy_container()->referrer_policy(),
             network::mojom::ReferrerPolicy::kAlways);
 
@@ -115,8 +115,9 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
 
   // Create a new WebContents with opener and test that the new main frame
   // inherits the policy container from the opener.
-  child_frame->policy_container()->SetReferrerPolicy(
-      network::mojom::ReferrerPolicy::kNever);
+  static_cast<blink::mojom::PolicyContainerHost*>(
+      child_frame->policy_container())
+      ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
   WebContents::CreateParams params(browser_context());
   std::unique_ptr<WebContentsImpl> new_contents(
       WebContentsImpl::CreateWithOpener(params, child_frame));

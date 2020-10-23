@@ -6550,6 +6550,8 @@ void RenderFrameHostImpl::CommitNavigation(
       last_navigation_previews_state_ = common_params->previews_state;
 
     DCHECK(navigation_request->policy_container());
+    blink::mojom::PolicyContainerClientPtr policy_container =
+        navigation_request->policy_container()->CreateClientForBlink();
 
     SendCommitNavigation(
         navigation_client, navigation_request, std::move(common_params),
@@ -6558,7 +6560,7 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_loader_factories),
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
-        devtools_navigation_token);
+        std::move(policy_container), devtools_navigation_token);
 
     // |remote_object| is an associated interface ptr, so calls can't be made on
     // it until its request endpoint is sent. Now that the request endpoint was
@@ -8905,6 +8907,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
+    blink::mojom::PolicyContainerClientPtr policy_container,
     const base::UnguessableToken& devtools_navigation_token) {
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
@@ -8913,6 +8916,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller), std::move(container_info),
       std::move(prefetch_loader_factory), devtools_navigation_token,
+      std::move(policy_container),
       BuildCommitNavigationCallback(navigation_request));
 }
 

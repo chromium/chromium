@@ -736,6 +736,11 @@ void LocalFrame::SetOptimizationGuideHints(
   }
 }
 
+void LocalFrame::SetPolicyContainer(
+    std::unique_ptr<PolicyContainer> container) {
+  policy_container_ = std::move(container);
+}
+
 void LocalFrame::Reload(WebFrameLoadType load_type) {
   DCHECK(IsReloadLoadType(load_type));
   if (!loader_.GetDocumentLoader()->GetHistoryItem())

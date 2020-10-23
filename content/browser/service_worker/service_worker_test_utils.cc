@@ -27,6 +27,7 @@
 #include "content/common/frame_messages.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/common/child_process_host.h"
+#include "content/public/test/policy_container_utils.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -129,6 +130,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
+      blink::mojom::PolicyContainerClientPtr policy_container,
       CommitNavigationCallback callback) override {
     std::move(on_received_callback_).Run(std::move(container_info));
     std::move(callback).Run(nullptr, nullptr);
@@ -279,12 +281,13 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
           },
           loop.QuitClosure(), &received_info)),
       navigation_client_.BindNewPipeAndPassReceiver());
+
   navigation_client_->CommitNavigation(
       CreateCommonNavigationParams(), CreateCommitNavigationParams(),
       network::mojom::URLResponseHead::New(),
       mojo::ScopedDataPipeConsumerHandle(), nullptr, nullptr, base::nullopt,
       nullptr, std::move(info), mojo::NullRemote(),
-      base::UnguessableToken::Create(),
+      base::UnguessableToken::Create(), CreateStubPolicyContainerClient(),
       base::BindOnce(
           [](std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params>
                  validated_params,
