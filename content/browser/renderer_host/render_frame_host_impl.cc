@@ -8454,12 +8454,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     bool is_same_document_navigation) {
   // Sanity-check the page transition for frame type.
   DCHECK_EQ(ui::PageTransitionIsMainFrame(params->transition), !GetParent());
-
-  // Check that the committing navigation token matches the navigation request.
-  if (navigation_request &&
-      navigation_request->commit_params().navigation_token !=
-          params->navigation_token) {
-    navigation_request.reset();
+  if (navigation_request) {
+    DCHECK_EQ(navigation_request->commit_params().navigation_token,
+              params->navigation_token);
   }
 
   if (!navigation_request) {
