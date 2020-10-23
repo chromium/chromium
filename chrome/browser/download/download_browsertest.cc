@@ -2721,6 +2721,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
 // Times out often on debug ChromeOS because test is slow.
 #if defined(OS_CHROMEOS) && (!defined(NDEBUG) || defined(MEMORY_SANITIZER))
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
+#elif defined(OS_MAC) || defined(OS_LINUX)
+// Started to be flaky on Linux and Mac too. https://crbug.com/1141263
+#define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
 #else
 #define MAYBE_SaveLargeImage SaveLargeImage
 #endif
@@ -4203,7 +4206,13 @@ IN_PROC_BROWSER_TEST_F(DownloadWakeLockTest,
 }
 
 // Downloading a data URL that's bigger than url::kMaxURLChars should work.
-IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadLargeDataURL) {
+#if defined(OS_LINUX)
+// Flaky on Linux. https://crbug.com/1141278
+#define MAYBE_DownloadLargeDataURL DISABLED_DownloadLargeDataURL
+#else
+#define MAYBE_DownloadLargeDataURL DownloadLargeDataURL
+#endif
+IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadLargeDataURL) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
 
