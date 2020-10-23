@@ -69,6 +69,8 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
             mCookieInUse.setImageView(
                     R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
             mCookieInUse.setImageColor(R.color.default_icon_color_blue);
+            // Disabling enables passthrough of clicks to the main preference.
+            mCookieInUse.setImageViewEnabled(false);
             mCookieInUse.setOnPreferenceClickListener(preference -> {
                 showClearCookiesConfirmation();
                 return true;
