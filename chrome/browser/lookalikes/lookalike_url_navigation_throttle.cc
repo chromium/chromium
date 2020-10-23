@@ -25,10 +25,10 @@
 #include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/reputation_service.h"
-#include "chrome/browser/reputation/safety_tips_config.h"
 #include "components/lookalikes/core/lookalike_url_ui_util.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/prerender/browser/prerender_contents.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
@@ -298,7 +298,7 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
   }
 
   // Fetch the component allowlist.
-  const auto* proto = GetSafetyTipsRemoteConfigProto();
+  const auto* proto = reputation::GetSafetyTipsRemoteConfigProto();
 
   // When there's no proto (like at browser start), fail-safe and don't block.
   if (!proto) {
@@ -306,7 +306,8 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
   }
 
   // If the URL is in the component allowlist, don't show any warning.
-  if (IsUrlAllowlistedBySafetyTipsComponent(proto, url.GetWithEmptyPath())) {
+  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
+          proto, url.GetWithEmptyPath())) {
     return false;
   }
 
@@ -337,7 +338,8 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
   }
 
   const LookalikeTargetAllowlistChecker in_target_allowlist =
-      base::BindRepeating(&IsTargetHostAllowlistedBySafetyTipsComponent, proto);
+      base::BindRepeating(
+          &reputation::IsTargetHostAllowlistedBySafetyTipsComponent, proto);
   std::string matched_domain;
   if (GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
                         &matched_domain, match_type)) {

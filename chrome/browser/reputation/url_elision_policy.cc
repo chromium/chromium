@@ -6,9 +6,9 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/reputation/local_heuristics.h"
-#include "chrome/browser/reputation/safety_tips_config.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
 
 #include "url/gurl.h"
@@ -30,8 +30,8 @@ bool ShouldElideToRegistrableDomain(const GURL& url) {
     return false;
   }
 
-  auto* proto = GetSafetyTipsRemoteConfigProto();
-  if (!proto || IsUrlAllowlistedBySafetyTipsComponent(proto, url)) {
+  auto* proto = reputation::GetSafetyTipsRemoteConfigProto();
+  if (!proto || reputation::IsUrlAllowlistedBySafetyTipsComponent(proto, url)) {
     // Not having a proto happens when the component hasn't downloaded yet. This
     // should only happen for a short window following initial Chrome install.
     return false;

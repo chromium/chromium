@@ -4372,7 +4372,6 @@ test("unit_tests") {
       "../browser/lookalikes/lookalike_url_navigation_throttle_unittest.cc",
       "../browser/reputation/local_heuristics_unittest.cc",
       "../browser/reputation/reputation_service_unittest.cc",
-      "../browser/reputation/safety_tips_config_unittest.cc",
       "../browser/reputation/url_elision_policy_unittest.cc",
 
       # Media remoting is not supported on Android for now.

@@ -4,11 +4,13 @@
 
 #include <vector>
 
-#include "chrome/browser/reputation/safety_tips_config.h"
+#include "components/reputation/core/safety_tips_config.h"
 
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace reputation {
 
 TEST(SafetyTipsConfigTest, TestUrlAllowlist) {
   SetSafetyTipAllowlistPatterns({"example.com/"}, {});
@@ -27,3 +29,5 @@ TEST(SafetyTipsConfigTest, TestTargetUrlAllowlist) {
   EXPECT_FALSE(
       IsTargetHostAllowlistedBySafetyTipsComponent(config, "example.org"));
 }
+
+}  // namespace reputation

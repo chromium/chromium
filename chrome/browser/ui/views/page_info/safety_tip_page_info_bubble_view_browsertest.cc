@@ -19,10 +19,7 @@
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
-#include "chrome/browser/reputation/safety_tips.pb.h"
-#include "chrome/browser/reputation/safety_tips_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -35,6 +32,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
+#include "components/reputation/core/safety_tips.pb.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_state/core/features.h"
@@ -203,7 +203,7 @@ void TriggerWarningFromBlocklist(Browser* browser,
   safe_browsing::V4ProtocolManagerUtil::CanonicalizeUrl(url, &host, &path,
                                                         &query);
   // For simplicity, ignore query
-  SetSafetyTipBadRepPatterns({host + path});
+  reputation::SetSafetyTipBadRepPatterns({host + path});
   SetEngagementScore(browser, url, kLowEngagement);
   NavigateToURL(browser, url, disposition);
 }
@@ -278,7 +278,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest
         break;
     }
 
-    InitializeSafetyTipConfig();
+    reputation::InitializeSafetyTipConfig();
     InProcessBrowserTest::SetUp();
   }
 
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        NoShowOnHighEngagement) {
   auto kNavigatedUrl = GetURL("site1.com");
-  SetSafetyTipBadRepPatterns({"site1.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
 
   SetEngagementScore(browser(), kNavigatedUrl, kHighEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   Browser* incognito_browser = new Browser(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(), true));
   auto kNavigatedUrl = GetURL("site1.com");
-  SetSafetyTipBadRepPatterns({"site1.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
 
   SetEngagementScore(incognito_browser, kNavigatedUrl, kHighEngagement);
   NavigateToURL(incognito_browser, kNavigatedUrl,
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 // Ensure blocked sites get blocked.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest, ShowOnBlock) {
   auto kNavigatedUrl = GetURL("site1.com");
-  SetSafetyTipBadRepPatterns({"site1.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowingOrSuspiciousSitesDisabled());
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest, ShowOnBlock) {
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest, NoShowOnError) {
   auto kNavigatedUrl =
       embedded_test_server()->GetURL("site1.com", "/close-socket");
-  SetSafetyTipBadRepPatterns({"site1.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   Browser* incognito_browser = new Browser(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(), true));
   auto kNavigatedUrl = GetURL("site1.com");
-  SetSafetyTipBadRepPatterns({"site1.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
 
   NavigateToURL(incognito_browser, kNavigatedUrl,
                 WindowOpenDisposition::CURRENT_TAB);
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        StillShowAfterSameDocNav) {
   auto kNavigatedUrl = GetURL("site1.com");
-  SetSafetyTipBadRepPatterns({"site1.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
 
   // Generate a Safety Tip.
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
@@ -559,14 +559,14 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   auto kNavigatedUrl = GetURL("site1.com");
 
   // Ensure a Safety Tip is triggered initially...
-  SetSafetyTipBadRepPatterns({"site1.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowingOrSuspiciousSitesDisabled());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kBadReputation, GURL()));
 
   // ...but suppressed by the allowlist.
-  SetSafetyTipAllowlistPatterns({"site1.com/"}, {});
+  reputation::SetSafetyTipAllowlistPatterns({"site1.com/"}, {});
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   const std::vector<const char*> kUrls = {"site1.com", "bla.site2.com",
                                           "bla.site3.com"};
 
-  SetSafetyTipBadRepPatterns({"site1.com/", "site2.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/", "site2.com/"});
   SetEnterpriseAllowlistForTesting(browser()->profile()->GetPrefs(),
                                    {"site1.com", "bla.site2.com", "site3.com"});
 
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   const GURL kFrameUrl =
       embedded_test_server()->GetURL("b.com", "/title1.html");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  SetSafetyTipBadRepPatterns({"a.com/"});
+  reputation::SetSafetyTipBadRepPatterns({"a.com/"});
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(IsUIShowingOrSuspiciousSitesDisabled());
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_TRUE(IsUIShowingOrAllFeaturesEnabled());
 
   // ...but suppressed by the allowlist.
-  SetSafetyTipAllowlistPatterns({"xn--googl-fsa.sk/"}, {});
+  reputation::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.sk/"}, {});
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   // This domain is one edit distance from one of a top 500 domain.
   const GURL kNavigatedUrl = GetURL("gooogle.com");
 
-  SetSafetyTipAllowlistPatterns({}, {"google\\.com"});
+  reputation::SetSafetyTipAllowlistPatterns({}, {"google\\.com"});
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
@@ -1111,8 +1111,8 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        NotShownOnUnknownFlag) {
   auto kNavigatedUrl = GetURL("site1.com");
-  SetSafetyTipPatternsWithFlagType(
-      {"site1.com/"}, chrome_browser_safety_tips::FlaggedPage::UNKNOWN);
+  reputation::SetSafetyTipPatternsWithFlagType(
+      {"site1.com/"}, reputation::FlaggedPage::UNKNOWN);
 
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
@@ -1127,8 +1127,8 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        NotShownOnYoungDomain) {
   auto kNavigatedUrl = GetURL("site1.com");
-  SetSafetyTipPatternsWithFlagType(
-      {"site1.com/"}, chrome_browser_safety_tips::FlaggedPage::YOUNG_DOMAIN);
+  reputation::SetSafetyTipPatternsWithFlagType(
+      {"site1.com/"}, reputation::FlaggedPage::YOUNG_DOMAIN);
 
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);

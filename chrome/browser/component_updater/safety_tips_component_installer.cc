@@ -14,8 +14,8 @@
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/reputation/safety_tips.pb.h"
-#include "chrome/browser/reputation/safety_tips_config.h"
+#include "components/reputation/core/safety_tips.pb.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -33,8 +33,8 @@ const uint8_t kSafetyTipsPublicKeySHA256[32] = {
     0xd1, 0x16, 0x1e, 0xd4, 0x63, 0x21, 0xfe, 0x79, 0x5d, 0x02, 0x30,
     0xc2, 0xcf, 0x4a, 0x9c, 0x8a, 0x39, 0xcc, 0x4a, 0x00, 0xce};
 
-std::unique_ptr<chrome_browser_safety_tips::SafetyTipsConfig>
-LoadSafetyTipsProtoFromDisk(const base::FilePath& pb_path) {
+std::unique_ptr<reputation::SafetyTipsConfig> LoadSafetyTipsProtoFromDisk(
+    const base::FilePath& pb_path) {
   std::string binary_pb;
   if (!base::ReadFileToString(pb_path, &binary_pb)) {
     // The file won't exist on new installations, so this is not always an
@@ -42,7 +42,7 @@ LoadSafetyTipsProtoFromDisk(const base::FilePath& pb_path) {
     DVLOG(1) << "Failed reading from " << pb_path.value();
     return nullptr;
   }
-  auto proto = std::make_unique<chrome_browser_safety_tips::SafetyTipsConfig>();
+  auto proto = std::make_unique<reputation::SafetyTipsConfig>();
   if (!proto->ParseFromString(binary_pb)) {
     DVLOG(1) << "Failed parsing proto " << pb_path.value();
     return nullptr;
@@ -101,7 +101,7 @@ void SafetyTipsComponentInstallerPolicy::ComponentReady(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadSafetyTipsProtoFromDisk, pb_path),
-      base::BindOnce(&SetSafetyTipsRemoteConfigProto));
+      base::BindOnce(&reputation::SetSafetyTipsRemoteConfigProto));
 }
 
 // Called during startup and installation before ComponentReady().

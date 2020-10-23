@@ -19,8 +19,6 @@
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
-#include "chrome/browser/reputation/safety_tips_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_features.h"
@@ -30,6 +28,8 @@
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
@@ -220,7 +220,7 @@ class LookalikeUrlNavigationThrottleBrowserTest
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
-    InitializeSafetyTipConfig();
+    reputation::InitializeSafetyTipConfig();
     InProcessBrowserTest::SetUp();
   }
 
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   const GURL kNavigatedUrl = GetURL("googlé.com");
 
   // Clear out any existing proto.
-  SetSafetyTipsRemoteConfigProto(nullptr);
+  reputation::SetSafetyTipsRemoteConfigProto(nullptr);
 
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   TestInterstitialNotShown(browser(), kNavigatedUrl);
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_EmbedderAllowlist) {
   const GURL kNavigatedUrl = GetURL("google.com.allowlisted.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  SetSafetyTipAllowlistPatterns({"allowlisted.com/"}, {});
+  reputation::SetSafetyTipAllowlistPatterns({"allowlisted.com/"}, {});
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   CheckNoUkm();
 }
@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_TargetAllowlist) {
   const GURL kNavigatedUrl = GetURL("foo.scholar.google.com.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  SetSafetyTipAllowlistPatterns({}, {"scholar\\.google\\.com"});
+  reputation::SetSafetyTipAllowlistPatterns({}, {"scholar\\.google\\.com"});
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   CheckNoUkm();
 }
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_TargetAllowlistWithNoSeparators) {
   const GURL kNavigatedUrl = GetURL("googlecom.example.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  SetSafetyTipAllowlistPatterns({}, {"google\\.com"});
+  reputation::SetSafetyTipAllowlistPatterns({}, {"google\\.com"});
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   CheckNoUkm();
 }
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        EditDistance_TopDomain_Target_Allowlist) {
   base::HistogramTester histograms;
-  SetSafetyTipAllowlistPatterns({}, {"google\\.com"});
+  reputation::SetSafetyTipAllowlistPatterns({}, {"google\\.com"});
 
   // The skeleton of this domain, gooogle.corn, is one 1 edit away from
   // google.corn, the skeleton of google.com.
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        EditDistance_EngagedDomain_Target_Allowlist) {
   base::HistogramTester histograms;
   SetEngagementScore(browser(), GURL("https://test-site.com"), kHighEngagement);
-  SetSafetyTipAllowlistPatterns({}, {"test-site\\.com"});
+  reputation::SetSafetyTipAllowlistPatterns({}, {"test-site\\.com"});
 
   // The skeleton of this domain is one 1 edit away from the skeleton of
   // test-site.com.
@@ -955,7 +955,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 // The site is allowed by the component updater.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        AllowedByComponentUpdater) {
-  SetSafetyTipAllowlistPatterns(
+  reputation::SetSafetyTipAllowlistPatterns(
       {"xn--googl-fsa.com/",  // googlé.com in punycode
        "site.test/", "another-site.test/"},
       {});

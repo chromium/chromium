@@ -29,7 +29,6 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ssl/tls_deprecation_config.h"
@@ -48,6 +47,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/safe_browsing/content/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -2295,7 +2295,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, SafetyTipFormHistogram) {
     base::HistogramTester histograms;
     if (flag_page) {
       // Set up a bad reputation Safety Tip on the page containing the form.
-      SetSafetyTipBadRepPatterns({server.GetURL("/").host() + "/"});
+      reputation::SetSafetyTipBadRepPatterns({server.GetURL("/").host() + "/"});
     }
 
     // Use a different host for targeting the form so that a Safety Tip doesn't

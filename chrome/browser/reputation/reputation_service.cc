@@ -17,10 +17,10 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/local_heuristics.h"
-#include "chrome/browser/reputation/safety_tips_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -78,7 +78,7 @@ bool ShouldSuppressWarning(Profile* profile, const GURL& url) {
     return true;
   }
 
-  auto* proto = GetSafetyTipsRemoteConfigProto();
+  auto* proto = reputation::GetSafetyTipsRemoteConfigProto();
   if (!proto) {
     // This happens when the component hasn't downloaded yet. This should only
     // happen for a short time after initial upgrade to M79.
@@ -87,7 +87,7 @@ bool ShouldSuppressWarning(Profile* profile, const GURL& url) {
     // flag on any known false positives until the client received the update.
     return true;
   }
-  return IsUrlAllowlistedBySafetyTipsComponent(proto, url);
+  return reputation::IsUrlAllowlistedBySafetyTipsComponent(proto, url);
 }
 
 }  // namespace
@@ -176,7 +176,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   }
 
   // 2. Server-side blocklist check.
-  SafetyTipStatus status = GetSafetyTipUrlBlockType(url);
+  SafetyTipStatus status = reputation::GetSafetyTipUrlBlockType(url);
   if (status != SafetyTipStatus::kNone) {
     if (!done_checking_reputation_status) {
       result.safety_tip_status = status;

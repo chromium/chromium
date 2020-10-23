@@ -11,9 +11,9 @@
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
-#include "chrome/browser/reputation/safety_tips_config.h"
 #include "chrome/common/chrome_features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/security_state/core/features.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -59,10 +59,10 @@ bool ShouldTriggerSafetyTipFromLookalike(
     return false;
   }
 
-  auto* config = GetSafetyTipsRemoteConfigProto();
+  auto* config = reputation::GetSafetyTipsRemoteConfigProto();
   const LookalikeTargetAllowlistChecker in_target_allowlist =
-      base::BindRepeating(&IsTargetHostAllowlistedBySafetyTipsComponent,
-                          config);
+      base::BindRepeating(
+          &reputation::IsTargetHostAllowlistedBySafetyTipsComponent, config);
   if (!GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
                          &matched_domain, &match_type)) {
     return false;

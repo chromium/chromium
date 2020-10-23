@@ -21,7 +21,6 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_impl.h"
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
@@ -32,6 +31,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -1781,7 +1781,7 @@ class OmniboxViewViewsRevealOnHoverTest
             {},
             GetParam().second) {
     // The lookalike allowlist is used by the registrable-domain-elision code.
-    InitializeBlankLookalikeAllowlistForTesting();
+    reputation::InitializeBlankLookalikeAllowlistForTesting();
   }
 
   OmniboxViewViewsRevealOnHoverTest(const OmniboxViewViewsRevealOnHoverTest&) =
@@ -2024,7 +2024,7 @@ class OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest
             {},
             GetParam().second) {
     // The lookalike allowlist is used by the registrable-domain-elision code.
-    InitializeBlankLookalikeAllowlistForTesting();
+    reputation::InitializeBlankLookalikeAllowlistForTesting();
   }
 
   OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest(
@@ -2596,7 +2596,7 @@ class OmniboxViewViewsHideOnInteractionTest
             {},
             GetParam().second) {
     // The lookalike allowlist is used by the registrable-domain-elision code.
-    InitializeBlankLookalikeAllowlistForTesting();
+    reputation::InitializeBlankLookalikeAllowlistForTesting();
   }
 
   OmniboxViewViewsHideOnInteractionTest(

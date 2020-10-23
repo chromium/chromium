@@ -5,8 +5,8 @@
 #include "chrome/browser/reputation/url_elision_policy.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -40,7 +40,7 @@ class UrlElisionPolicyTest : public testing::Test {
         test::kDafsa, sizeof(test::kDafsa));
 
     // Ensure that the allowlist exists (as otherwise we'll never elide).
-    InitializeBlankLookalikeAllowlistForTesting();
+    reputation::InitializeBlankLookalikeAllowlistForTesting();
   }
 
   ~UrlElisionPolicyTest() override = default;
@@ -75,7 +75,8 @@ TEST_F(UrlElisionPolicyTest, DoesntElideAllowlistedDomains) {
   EXPECT_TRUE(ShouldElideToRegistrableDomain(kUrl));
 
   // ...but not when allowlisted.
-  SetSafetyTipAllowlistPatterns({"alongbutstillallowlisteddomain.com/"}, {});
+  reputation::SetSafetyTipAllowlistPatterns(
+      {"alongbutstillallowlisteddomain.com/"}, {});
   EXPECT_FALSE(ShouldElideToRegistrableDomain(kUrl));
 }
 

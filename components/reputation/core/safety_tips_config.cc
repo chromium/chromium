@@ -2,29 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reputation/safety_tips_config.h"
+#include "components/reputation/core/safety_tips_config.h"
 
 #include "base/no_destructor.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
-using chrome_browser_safety_tips::FlaggedPage;
-using chrome_browser_safety_tips::UrlPattern;
 using safe_browsing::V4ProtocolManagerUtil;
+
+namespace reputation {
 
 namespace {
 
 class SafetyTipsConfigSingleton {
  public:
-  void SetProto(
-      std::unique_ptr<chrome_browser_safety_tips::SafetyTipsConfig> proto) {
+  void SetProto(std::unique_ptr<SafetyTipsConfig> proto) {
     proto_ = std::move(proto);
   }
 
-  chrome_browser_safety_tips::SafetyTipsConfig* GetProto() const {
-    return proto_.get();
-  }
+  SafetyTipsConfig* GetProto() const { return proto_.get(); }
 
   static SafetyTipsConfigSingleton& GetInstance() {
     static base::NoDestructor<SafetyTipsConfigSingleton> instance;
@@ -32,7 +29,7 @@ class SafetyTipsConfigSingleton {
   }
 
  private:
-  std::unique_ptr<chrome_browser_safety_tips::SafetyTipsConfig> proto_;
+  std::unique_ptr<SafetyTipsConfig> proto_;
 };
 
 // Given a URL, generates all possible variant URLs to check the blocklist for.
@@ -85,20 +82,17 @@ security_state::SafetyTipStatus FlagTypeToSafetyTipStatus(
 }  // namespace
 
 // static
-void SetSafetyTipsRemoteConfigProto(
-    std::unique_ptr<chrome_browser_safety_tips::SafetyTipsConfig> proto) {
+void SetSafetyTipsRemoteConfigProto(std::unique_ptr<SafetyTipsConfig> proto) {
   SafetyTipsConfigSingleton::GetInstance().SetProto(std::move(proto));
 }
 
 // static
-const chrome_browser_safety_tips::SafetyTipsConfig*
-GetSafetyTipsRemoteConfigProto() {
+const SafetyTipsConfig* GetSafetyTipsRemoteConfigProto() {
   return SafetyTipsConfigSingleton::GetInstance().GetProto();
 }
 
-bool IsUrlAllowlistedBySafetyTipsComponent(
-    const chrome_browser_safety_tips::SafetyTipsConfig* proto,
-    const GURL& url) {
+bool IsUrlAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
+                                           const GURL& url) {
   DCHECK(proto);
   DCHECK(url.is_valid());
   std::vector<std::string> patterns;
@@ -121,9 +115,8 @@ bool IsUrlAllowlistedBySafetyTipsComponent(
   return false;
 }
 
-bool IsTargetHostAllowlistedBySafetyTipsComponent(
-    const chrome_browser_safety_tips::SafetyTipsConfig* proto,
-    const std::string& hostname) {
+bool IsTargetHostAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
+                                                  const std::string& hostname) {
   DCHECK(!hostname.empty());
   if (proto == nullptr) {
     return false;
@@ -175,3 +168,5 @@ security_state::SafetyTipStatus GetSafetyTipUrlBlockType(const GURL& url) {
 
   return security_state::SafetyTipStatus::kNone;
 }
+
+}  // namespace reputation

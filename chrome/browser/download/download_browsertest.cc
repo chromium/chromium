@@ -64,7 +64,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -95,6 +94,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -4075,7 +4075,7 @@ IN_PROC_BROWSER_TEST_P(DownloadTestWithOptionalSafetyTipsFeature, SafetyTips) {
 
   // When a Safety Tip is triggered, test with the feature both enabled and
   // disabled. The same metrics should be recorded either way.
-  SetSafetyTipBadRepPatterns(
+  reputation::SetSafetyTipBadRepPatterns(
       {embedded_test_server()->GetURL("/").host() + "/"});
 
   base::HistogramTester histogram_tester;

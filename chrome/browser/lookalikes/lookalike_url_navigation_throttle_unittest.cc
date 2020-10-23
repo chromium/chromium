@@ -6,9 +6,9 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/lookalikes/core/features.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -22,7 +22,7 @@ class LookalikeThrottleTest : public ChromeRenderViewHostTestHarness {};
 TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
   base::HistogramTester test;
 
-  InitializeSafetyTipConfig();
+  reputation::InitializeSafetyTipConfig();
 
   const struct TestCase {
     const char* hostname;
