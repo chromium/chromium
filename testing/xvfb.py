@@ -8,7 +8,6 @@
 
 import os
 import os.path
-import psutil
 import random
 import re
 import signal
@@ -18,6 +17,11 @@ import threading
 import time
 import test_env
 
+try:
+  import psutil
+except ImportError:
+  raise Exception(
+        'Failed to import psutil. Run under vpython or install psutil.')
 
 class _XvfbProcessError(Exception):
   """Exception raised when Xvfb cannot start."""
