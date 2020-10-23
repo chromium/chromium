@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -403,19 +402,15 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
   UMA_HISTOGRAM_BOOLEAN("Event.ClickTargetChangedDueToInteractiveElement",
                         click_target_node != old_click_target_node);
 
-  DEFINE_STATIC_LOCAL(BooleanHistogram, histogram,
-                      ("Event.ClickNotFiredDueToDomManipulation"));
+  const bool click_element_still_in_flat_tree =
+      (click_element_ && click_element_->CanParticipateInFlatTree() &&
+       click_element_->isConnected());
+  UMA_HISTOGRAM_BOOLEAN("Event.ClickNotFiredDueToDomManipulation",
+                        !click_element_still_in_flat_tree);
+  DCHECK_EQ(click_element_ == mouse_down_element_,
+            click_element_still_in_flat_tree);
 
-  if (click_element_ && click_element_->CanParticipateInFlatTree() &&
-      click_element_->isConnected()) {
-    DCHECK(click_element_ == mouse_down_element_);
-    histogram.Count(false);
-  } else {
-    histogram.Count(true);
-  }
-
-  if ((click_element_ && click_element_->CanParticipateInFlatTree() &&
-       click_element_->isConnected()) ||
+  if (click_element_still_in_flat_tree ||
       RuntimeEnabledFeatures::ClickRetargettingEnabled()) {
     return DispatchMouseEvent(
         click_target_node,
