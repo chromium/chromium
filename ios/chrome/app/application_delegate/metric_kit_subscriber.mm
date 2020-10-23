@@ -271,9 +271,14 @@ void WriteDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads)
 #endif
 
 - (void)processPayload:(MXMetricPayload*)payload API_AVAILABLE(ios(13.0)) {
+  // TODO(crbug.com/1140474): See related bug for why |bundleVersion| comes from
+  // mainBundle instead of from version_info::GetVersionNumber(). Remove once
+  // iOS 14.2 reaches mass adoption.
+  NSString* bundleVersion =
+      [[NSBundle mainBundle] infoDictionary][(NSString*)kCFBundleVersionKey];
   if (payload.includesMultipleApplicationVersions ||
       base::SysNSStringToUTF8(payload.metaData.applicationBuildVersion) !=
-          version_info::GetVersionNumber()) {
+          base::SysNSStringToUTF8(bundleVersion)) {
     // The metrics will be reported on the current version of Chrome.
     // Ignore any report that contains data from another version to avoid
     // confusion.
