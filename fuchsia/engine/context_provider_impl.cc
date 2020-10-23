@@ -70,6 +70,11 @@ constexpr char kMixedContentAutoupgradeFeatureName[] =
 constexpr char kDisableMixedContentAutoupgradeOrigin[] =
     "disable-mixed-content-autoupgrade";
 
+// This flag is auto generated for a GPU workaround with the same name in
+// gpu/config/gpu_workaround_list.txt. There is no string to reference so it's
+// defined here.
+constexpr char kDisableMipmapGeneration[] = "disable_mipmap_generation";
+
 // Returns the underlying channel if |directory| is a client endpoint for a
 // |fuchsia::io::Directory| protocol. Otherwise, returns an empty channel.
 zx::channel ValidateDirectoryAndTakeChannel(
@@ -155,6 +160,7 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,
       cc::switches::kEnableGpuBenchmarking,
+      kDisableMipmapGeneration,
       switches::kDisableFeatures,
       switches::kDisableGpuWatchdog,
       // TODO(crbug.com/1082821): Remove this switch from the allow-list.
