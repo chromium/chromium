@@ -24,6 +24,30 @@
     <cr-toggle checked="{{shouldEnableFakePhoneHubManager_}}">
     </cr-toggle>
   </div>
+  <template is="dom-if" if="[[!shouldEnableFakePhoneHubManager_]]" restamp>
+    <div class="cr-row">
+      <div class="cr-padded-text">
+        Click to undo Notification Setup UI user dismissal. Note that
+        Notification access must be revoked by the phone (Toggle "Google Play
+        Services" to off in Apps & notifications > Special app access >
+        Notification access.
+      </div>
+      <cr-button class="internals-button"
+          on-click="onResetHasNotificationSetupUiBeenDismissedButtonClick_">
+        Reset
+      </cr-button>
+    </div>
+    <div class="cr-row">
+      <div class="cr-padded-text">
+        Click to undo Onboarding UI user dismissal. Note that the user must
+        have not started the opt-in flow yet.
+      </div>
+      <cr-button class="internals-button"
+          on-click="onResetShouldShowOnboardingUiButtonClick_">
+        Reset
+      </cr-button>
+    </div>
+  </template>
   <template is="dom-if" if="[[shouldEnableFakePhoneHubManager_]]" restamp>
     <div class="cr-row">
       <div class="cr-padded-text">

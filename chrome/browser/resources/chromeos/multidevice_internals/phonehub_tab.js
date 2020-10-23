@@ -15,6 +15,7 @@ import './shared_style.js';
 import './quick_action_controller_form.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultidevicePhoneHubBrowserProxy} from './multidevice_phonehub_browser_proxy.js';
 import {FeatureStatus} from './types.js';
@@ -44,6 +45,10 @@ Polymer({
   is: 'phonehub-tab',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /** @private */
@@ -121,6 +126,13 @@ Polymer({
     this.browserProxy_ = MultidevicePhoneHubBrowserProxy.getInstance();
   },
 
+  /** @override */
+  attached() {
+    this.addWebUIListener(
+        'should-show-onboarding-ui-changed',
+        this.onShouldShowOnboardingUiChanged_.bind(this));
+  },
+
   /**
    * @return {boolean}
    * @private
@@ -188,6 +200,26 @@ Polymer({
   /** @private */
   onPhoneHubFlagButtonClick_() {
     window.open('chrome://flags/#enable-phone-hub');
+  },
+
+  /**
+   * @param {boolean} shouldShowOnboardingUi
+   * @private
+   */
+  onShouldShowOnboardingUiChanged_(shouldShowOnboardingUi) {
+    if (this.shouldShowOnboardingFlow_ !== shouldShowOnboardingUi) {
+      this.shouldShowOnboardingFlow_ = shouldShowOnboardingUi;
+    }
+  },
+
+  /** @private */
+  onResetHasNotificationSetupUiBeenDismissedButtonClick_() {
+    this.browserProxy_.resetHasNotificationSetupUiBeenDismissed();
+  },
+
+  /** @private */
+  onResetShouldShowOnboardingUiButtonClick_() {
+    this.browserProxy_.resetShouldShowOnboardingUi();
   },
 
   /** @private */

@@ -9,6 +9,7 @@
 #include "chromeos/components/phonehub/do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/find_my_device_controller.h"
 #include "chromeos/components/phonehub/notification_manager.h"
+#include "chromeos/components/phonehub/onboarding_ui_tracker.h"
 #include "chromeos/components/phonehub/tether_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -26,7 +27,8 @@ class MultidevicePhoneHubHandler
       public phonehub::NotificationManager::Observer,
       public phonehub::DoNotDisturbController::Observer,
       public phonehub::FindMyDeviceController::Observer,
-      public phonehub::TetherController::Observer {
+      public phonehub::TetherController::Observer,
+      public phonehub::OnboardingUiTracker::Observer {
  public:
   MultidevicePhoneHubHandler();
   MultidevicePhoneHubHandler(const MultidevicePhoneHubHandler&) = delete;
@@ -53,6 +55,9 @@ class MultidevicePhoneHubHandler
   // TetherController::Observer
   void OnTetherStatusChanged() override;
 
+  // OnboardingUiTracker::Observer
+  void OnShouldShowOnboardingUiChanged() override;
+
   void EnableRealPhoneHubManager();
   void EnableFakePhoneHubManager();
   void HandleEnableFakePhoneHubManager(const base::ListValue* args);
@@ -66,6 +71,9 @@ class MultidevicePhoneHubHandler
   void HandleEnableDnd(const base::ListValue* args);
   void HandleSetFindMyDeviceStatus(const base::ListValue* args);
   void HandleSetTetherStatus(const base::ListValue* args);
+  void HandleResetShouldShowOnboardingUi(const base::ListValue* args);
+  void HandleResetHasNotificationSetupUiBeenDismissed(
+      const base::ListValue* args);
 
   void AddObservers();
   void RemoveObservers();
@@ -83,6 +91,9 @@ class MultidevicePhoneHubHandler
   ScopedObserver<phonehub::TetherController,
                  phonehub::TetherController::Observer>
       tether_controller_observer_{this};
+  ScopedObserver<phonehub::OnboardingUiTracker,
+                 phonehub::OnboardingUiTracker::Observer>
+      onboarding_ui_tracker_observer_{this};
 };
 
 }  // namespace multidevice

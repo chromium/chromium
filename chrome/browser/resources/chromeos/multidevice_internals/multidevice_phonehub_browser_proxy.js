@@ -99,6 +99,21 @@ export class MultidevicePhoneHubBrowserProxy {
   setTetherStatus(tetherStatus) {
     chrome.send('setTetherStatus', [tetherStatus]);
   }
+
+  /**
+   * Resets should show onboarding UI for the real PhoneHubManager.
+   */
+  resetShouldShowOnboardingUi() {
+    chrome.send('resetShouldShowOnboardingUi');
+  }
+
+  /**
+   * Resets notification setup UI to not having been dismissed for the real
+   * PhoneHubManager.
+   */
+  resetHasNotificationSetupUiBeenDismissed() {
+    chrome.send('resetHasNotificationSetupUiBeenDismissed');
+  }
 }
 
 addSingletonGetter(MultidevicePhoneHubBrowserProxy);

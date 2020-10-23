@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/components/phonehub/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
@@ -184,6 +186,18 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
       "setTetherStatus",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetTetherStatus,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "resetShouldShowOnboardingUi",
+      base::BindRepeating(
+          &MultidevicePhoneHubHandler::HandleResetShouldShowOnboardingUi,
+          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "resetHasNotificationSetupUiBeenDismissed",
+      base::BindRepeating(&MultidevicePhoneHubHandler::
+                              HandleResetHasNotificationSetupUiBeenDismissed,
+                          base::Unretained(this)));
 }
 
 void MultidevicePhoneHubHandler::OnJavascriptDisallowed() {
@@ -199,6 +213,8 @@ void MultidevicePhoneHubHandler::AddObservers() {
       fake_phone_hub_manager_->fake_find_my_device_controller());
   tether_controller_observer_.Add(
       fake_phone_hub_manager_->fake_tether_controller());
+  onboarding_ui_tracker_observer_.Add(
+      fake_phone_hub_manager_->fake_onboarding_ui_tracker());
 }
 
 void MultidevicePhoneHubHandler::RemoveObservers() {
@@ -227,6 +243,12 @@ void MultidevicePhoneHubHandler::RemoveObservers() {
       fake_phone_hub_manager_->fake_tether_controller();
   if (tether_controller_observer_.IsObserving(fake_tether_controller)) {
     tether_controller_observer_.Remove(fake_tether_controller);
+  }
+
+  phonehub::OnboardingUiTracker* fake_onboarding_ui_tracker =
+      fake_phone_hub_manager_->fake_onboarding_ui_tracker();
+  if (onboarding_ui_tracker_observer_.IsObserving(fake_onboarding_ui_tracker)) {
+    onboarding_ui_tracker_observer_.Remove(fake_onboarding_ui_tracker);
   }
 }
 
@@ -259,6 +281,14 @@ void MultidevicePhoneHubHandler::OnTetherStatusChanged() {
   int status_as_int = static_cast<int>(
       fake_phone_hub_manager_->fake_tether_controller()->GetStatus());
   FireWebUIListener("tether-status-changed", base::Value(status_as_int));
+}
+
+void MultidevicePhoneHubHandler::OnShouldShowOnboardingUiChanged() {
+  bool should_show_onboarding_ui =
+      fake_phone_hub_manager_->fake_onboarding_ui_tracker()
+          ->ShouldShowOnboardingUi();
+  FireWebUIListener("should-show-onboarding-ui-changed",
+                    base::Value(should_show_onboarding_ui));
 }
 
 void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
@@ -526,6 +556,23 @@ void MultidevicePhoneHubHandler::HandleRemoveNotification(
   fake_phone_hub_manager_->fake_notification_manager()->RemoveNotification(
       notification_id);
   PA_LOG(VERBOSE) << "Removed notification with id " << notification_id;
+}
+
+void MultidevicePhoneHubHandler::HandleResetShouldShowOnboardingUi(
+    const base::ListValue* args) {
+  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
+  prefs->SetBoolean(
+      chromeos::phonehub::prefs::kHasDismissedUiAfterCompletingOnboarding,
+      false);
+  PA_LOG(VERBOSE) << "Reset kHasDismissedUiAfterCompletingOnboarding pref";
+}
+
+void MultidevicePhoneHubHandler::HandleResetHasNotificationSetupUiBeenDismissed(
+    const base::ListValue* args) {
+  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
+  prefs->SetBoolean(chromeos::phonehub::prefs::kHasDismissedSetupRequiredUi,
+                    false);
+  PA_LOG(VERBOSE) << "Reset kHasDismissedSetupRequiredUi pref";
 }
 
 }  // namespace multidevice
