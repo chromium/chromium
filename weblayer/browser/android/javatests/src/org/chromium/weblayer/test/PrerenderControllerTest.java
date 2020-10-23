@@ -53,6 +53,7 @@ public class PrerenderControllerTest {
     @Test
     @SmallTest
     @Feature({"WebLayer"})
+    @MinWebLayerVersion(88)
     public void testAddingPrerender() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         testServer.setRequestHandler(mRequestHandler);
