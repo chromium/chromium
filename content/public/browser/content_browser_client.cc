@@ -200,6 +200,12 @@ bool ContentBrowserClient::IsHandledURL(const GURL& url) {
   return false;
 }
 
+bool ContentBrowserClient::HasCustomSchemeHandler(
+    content::BrowserContext* browser_context,
+    const std::string& scheme) {
+  return false;
+}
+
 bool ContentBrowserClient::CanCommitURL(RenderProcessHost* process_host,
                                         const GURL& site_url) {
   return true;

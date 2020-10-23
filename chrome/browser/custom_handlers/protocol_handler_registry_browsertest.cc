@@ -17,7 +17,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +30,30 @@
 #endif
 
 using content::WebContents;
+
+namespace {
+
+class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
+ public:
+  explicit ProtocolHandlerChangeWaiter(ProtocolHandlerRegistry* registry) {
+    registry_observer_.Add(registry);
+  }
+  ProtocolHandlerChangeWaiter(const ProtocolHandlerChangeWaiter&) = delete;
+  ProtocolHandlerChangeWaiter& operator=(const ProtocolHandlerChangeWaiter&) =
+      delete;
+  ~ProtocolHandlerChangeWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+  // ProtocolHandlerRegistry::Observer:
+  void OnProtocolHandlerRegistryChanged() override { run_loop_.Quit(); }
+
+ private:
+  ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
+      registry_observer_{this};
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
 
 class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
  public:
@@ -154,13 +177,10 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
 #if defined(OS_MAC)
   ASSERT_TRUE(test::RegisterAppWithLaunchServices());
 #endif
-  permissions::PermissionRequestManager* manager =
-      permissions::PermissionRequestManager::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
-  auto prompt_factory =
-      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
-  prompt_factory->set_response_type(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
+  permissions::PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
 
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
@@ -170,16 +190,66 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
       "chrome-extension://" + extension->id() + "/test.html";
 
   // Register the handler.
-  ui_test_utils::NavigateToURL(browser(), GURL(handler_url));
-  ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
-
-  // Wait until the prompt is "displayed" and "accepted".
-  base::RunLoop().RunUntilIdle();
+  {
+    ProtocolHandlerRegistry* registry =
+        ProtocolHandlerRegistryFactory::GetForBrowserContext(
+            browser()->profile());
+    ProtocolHandlerChangeWaiter waiter(registry);
+    ui_test_utils::NavigateToURL(browser(), GURL(handler_url));
+    ASSERT_TRUE(content::ExecuteScript(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "navigator.registerProtocolHandler('geo', 'test.html?%s', 'test');"));
+    waiter.Wait();
+  }
 
   // Test the handler.
   ui_test_utils::NavigateToURL(browser(), GURL("geo:test"));
   ASSERT_EQ(GURL(handler_url + "?geo%3Atest"),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+class RegisterProtocolHandlerAndServiceWorkerInterceptor
+    : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Navigate to the test page.
+    ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(
+                       "/protocol_handler/service_workers/"
+                       "test_protocol_handler_and_service_workers.html"));
+
+    // Bypass permission dialogs for registering new protocol handlers.
+    permissions::PermissionRequestManager::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents())
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::ACCEPT_ALL);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerAndServiceWorkerInterceptor,
+                       RegisterFetchListenerForHTMLHandler) {
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Register a service worker intercepting requests to the HTML handler.
+  EXPECT_EQ(true, content::EvalJs(web_contents,
+                                  "registerFetchListenerForHTMLHandler();"));
+
+  {
+    // Register a HTML handler with a user gesture.
+    ProtocolHandlerRegistry* registry =
+        ProtocolHandlerRegistryFactory::GetForBrowserContext(
+            browser()->profile());
+    ProtocolHandlerChangeWaiter waiter(registry);
+    ASSERT_TRUE(content::ExecJs(web_contents, "registerHTMLHandler();"));
+    waiter.Wait();
+  }
+
+  // Verify that a page with the registered scheme is managed by the service
+  // worker, not the HTML handler.
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents,
+                            "pageWithCustomSchemeHandledByServiceWorker();"));
 }

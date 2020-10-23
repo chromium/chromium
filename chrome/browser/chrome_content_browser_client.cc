@@ -1811,6 +1811,18 @@ bool ChromeContentBrowserClient::IsHandledURL(const GURL& url) {
   return ProfileIOData::IsHandledURL(url);
 }
 
+bool ChromeContentBrowserClient::HasCustomSchemeHandler(
+    content::BrowserContext* browser_context,
+    const std::string& scheme) {
+  if (ProtocolHandlerRegistry* protocol_handler_registry =
+          ProtocolHandlerRegistryFactory::GetForBrowserContext(
+              browser_context)) {
+    return protocol_handler_registry->IsHandledProtocol(scheme);
+  }
+
+  return false;
+}
+
 bool ChromeContentBrowserClient::CanCommitURL(
     content::RenderProcessHost* process_host,
     const GURL& url) {
