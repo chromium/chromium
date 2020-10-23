@@ -458,6 +458,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.Ranker.Decision"
+    enum="TranslateRankerDecision" expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the decision (show UI, don't show UI, or not queried) of the Translate
+    Ranker for a page load. This value is logged once the page load is completed
+    or the first time that Chrome is backgrounded during the course of the page
+    load, whichever comes first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.Ranker.Version" units="version"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the version of the Translate Ranker used for a page load. This value is
+    logged once the page load is completed or the first time that Chrome is
+    backgrounded during the course of the page load, whichever comes first.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PageScheme" enum="TranslateScheme"
     expires_after="M77">
   <owner>kenjibaheux@google.com</owner>

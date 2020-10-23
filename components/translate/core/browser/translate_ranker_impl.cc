@@ -25,6 +25,7 @@
 #include "components/assist_ranker/ranker_model.h"
 #include "components/assist_ranker/ranker_model_loader_impl.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -223,7 +224,8 @@ uint32_t TranslateRankerImpl::GetModelVersion() const {
 }
 
 bool TranslateRankerImpl::ShouldOfferTranslation(
-    metrics::TranslateEventProto* translate_event) {
+    metrics::TranslateEventProto* translate_event,
+    TranslateMetricsLogger* translate_metrics_logger) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // The ranker is a gate in the "show a translation prompt" flow. To retain
   // the pre-existing functionality, it defaults to returning true in the
@@ -239,6 +241,8 @@ bool TranslateRankerImpl::ShouldOfferTranslation(
   if (!is_query_enabled_ && !is_enforcement_enabled_) {
     translate_event->set_ranker_response(
         metrics::TranslateEventProto::NOT_QUERIED);
+    translate_metrics_logger->LogRankerMetrics(RankerDecision::kNotQueried,
+                                               GetModelVersion());
     return kDefaultResponse;
   }
 
@@ -248,6 +252,8 @@ bool TranslateRankerImpl::ShouldOfferTranslation(
   if (model_ == nullptr) {
     translate_event->set_ranker_response(
         metrics::TranslateEventProto::NOT_QUERIED);
+    translate_metrics_logger->LogRankerMetrics(RankerDecision::kNotQueried,
+                                               GetModelVersion());
     return kDefaultResponse;
   }
 
@@ -260,6 +266,10 @@ bool TranslateRankerImpl::ShouldOfferTranslation(
   translate_event->set_ranker_response(
       result ? metrics::TranslateEventProto::SHOW
              : metrics::TranslateEventProto::DONT_SHOW);
+
+  translate_metrics_logger->LogRankerMetrics(
+      result ? RankerDecision::kShowUI : RankerDecision::kDontShowUI,
+      GetModelVersion());
 
   if (!is_enforcement_enabled_) {
     return kDefaultResponse;

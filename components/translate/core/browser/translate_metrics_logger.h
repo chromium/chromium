@@ -5,9 +5,19 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_METRICS_LOGGER_H_
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_METRICS_LOGGER_H_
 
+#include <stdint.h>
+
 namespace translate {
 
-class TranslateManager;
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RankerDecision {
+  kUninitialized = 0,
+  kNotQueried = 1,
+  kShowUI = 2,
+  kDontShowUI = 3,
+  kMaxValue = kDontShowUI,
+};
 
 // TranslateMetricsLogger tracks and logs various UKM and UMA metrics for Chrome
 // Translate over the course of a page load.
@@ -27,10 +37,8 @@ class TranslateMetricsLogger {
   // won't be called again.
   virtual void RecordMetrics(bool is_final) = 0;
 
-  // TODO(curranmax): Split this into two interfaces. One for the interaction
-  // with the |TranslatePageLoadMetricsObserver|, and the other for the
-  // interaction with |TranslateManager| and the rest of the Translate code.
-  // https://crbug.com/1114868.
+  virtual void LogRankerMetrics(RankerDecision ranker_decision,
+                                uint32_t ranker_version) = 0;
 };
 
 }  // namespace translate

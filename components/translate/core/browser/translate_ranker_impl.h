@@ -36,6 +36,8 @@ class TranslateEventProto;
 
 namespace translate {
 
+class TranslateMetricsLogger;
+
 extern const char kDefaultTranslateRankerModelURL[];
 
 // Features used to enable ranker query, enforcement and logging. Note that
@@ -98,7 +100,8 @@ class TranslateRankerImpl : public TranslateRanker {
   void EnableLogging(bool value) override;
   uint32_t GetModelVersion() const override;
   bool ShouldOfferTranslation(
-      metrics::TranslateEventProto* translate_event) override;
+      metrics::TranslateEventProto* translate_event,
+      TranslateMetricsLogger* translate_metrics_logger) override;
   void FlushTranslateEvents(
       std::vector<metrics::TranslateEventProto>* events) override;
   void RecordTranslateEvent(

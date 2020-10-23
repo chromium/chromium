@@ -72731,6 +72731,13 @@ Full version information for the fingerprint enum values:
   <int value="6" label="CLD can complement a sub code"/>
 </enum>
 
+<enum name="TranslateRankerDecision">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Not queried"/>
+  <int value="2" label="Show UI"/>
+  <int value="3" label="Don't show UI"/>
+</enum>
+
 <enum name="TranslateScheme">
   <int value="0" label="http"/>
   <int value="1" label="https"/>

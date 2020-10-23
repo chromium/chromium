@@ -769,7 +769,8 @@ const TranslateTriggerDecision TranslateManager::ComputePossibleOutcomes(
   // trained appropriately under those scenarios.
   if (!language::ShouldPreventRankerEnforcementInIndia(
           translate_prefs->GetForceTriggerOnEnglishPagesCount()) &&
-      !translate_ranker_->ShouldOfferTranslation(translate_event_.get())) {
+      !translate_ranker_->ShouldOfferTranslation(
+          translate_event_.get(), GetActiveTranslateMetricsLogger())) {
     decision.SuppressFromRanker();
   }
 

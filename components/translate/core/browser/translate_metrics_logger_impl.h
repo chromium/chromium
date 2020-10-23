@@ -12,6 +12,9 @@
 
 namespace translate {
 
+extern const char kTranslatePageLoadRankerDecision[];
+extern const char kTranslatePageLoadRankerVersion[];
+
 class NullTranslateMetricsLogger : public TranslateMetricsLogger {
  public:
   NullTranslateMetricsLogger() = default;
@@ -20,6 +23,8 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void OnPageLoadStart(bool is_foreground) override {}
   void OnForegroundChange(bool is_foreground) override {}
   void RecordMetrics(bool is_final) override {}
+  void LogRankerMetrics(RankerDecision ranker_decision,
+                        uint32_t ranker_version) override {}
 };
 
 class TranslateManager;
@@ -40,10 +45,15 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void OnPageLoadStart(bool is_foreground) override;
   void OnForegroundChange(bool is_foreground) override;
   void RecordMetrics(bool is_final) override;
+  void LogRankerMetrics(RankerDecision ranker_decision,
+                        uint32_t ranker_version) override;
 
   // TODO(curranmax): Add appropriate functions for the Translate code to log
   // relevant events. https://crbug.com/1114868.
  private:
+  // Logs all page load frequency UMA metrics based on the stored state.
+  void RecordPageLoadUmaMetrics();
+
   base::WeakPtr<TranslateManager> translate_manager_;
 
   // Since |RecordMetrics()| can be called multiple times, such as when Chrome
@@ -54,6 +64,10 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // Tracks if the associated page is in the foreground (|true|) or the
   // background (|false|)
   bool is_foreground_{false};
+
+  // Stores state about TranslateRanker for this page load.
+  RankerDecision ranker_decision_{RankerDecision::kUninitialized};
+  uint32_t ranker_version_{0};
 
   base::WeakPtrFactory<TranslateMetricsLoggerImpl> weak_method_factory_{this};
 };

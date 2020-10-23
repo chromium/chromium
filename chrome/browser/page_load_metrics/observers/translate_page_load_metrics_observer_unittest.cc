@@ -7,24 +7,19 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/translate/core/browser/mock_translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-class MockTranslateMetricsLogger : public translate::TranslateMetricsLogger {
- public:
-  MOCK_METHOD1(OnPageLoadStart, void(bool));
-  MOCK_METHOD1(OnForegroundChange, void(bool));
-  MOCK_METHOD1(RecordMetrics, void(bool));
-};
-
-// Wraps the above MockTranslateMetricsLogger so that test can retain a pointer
-// to the MockTranslateMetricsLogger after the TranslatePageLoadMetricsObserver
-// is done with it.
+// Wraps a MockTranslateMetricsLogger so that test can retain a pointer to the
+// MockTranslateMetricsLogger after the TranslatePageLoadMetricsObserver is done
+// with it.
 class MockTranslateMetricsLoggerContainer
     : public translate::TranslateMetricsLogger {
  public:
   explicit MockTranslateMetricsLoggerContainer(
-      MockTranslateMetricsLogger* mock_translate_metrics_logger)
+      translate::testing::MockTranslateMetricsLogger*
+          mock_translate_metrics_logger)
       : mock_translate_metrics_logger_(mock_translate_metrics_logger) {}
 
   void OnPageLoadStart(bool is_foreground) override {
@@ -39,8 +34,15 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->RecordMetrics(is_final);
   }
 
+  void LogRankerMetrics(translate::RankerDecision ranker_decision,
+                        uint32_t ranker_version) override {
+    mock_translate_metrics_logger_->LogRankerMetrics(ranker_decision,
+                                                     ranker_version);
+  }
+
  private:
-  MockTranslateMetricsLogger* mock_translate_metrics_logger_;  // Weak.
+  translate::testing::MockTranslateMetricsLogger*
+      mock_translate_metrics_logger_;  // Weak.
 };
 
 class TranslatePageLoadMetricsObserverTest
@@ -51,12 +53,13 @@ class TranslatePageLoadMetricsObserverTest
 
     // Creates the MockTranslateMetricsLogger that will be used for this test.
     mock_translate_metrics_logger_ =
-        std::make_unique<MockTranslateMetricsLogger>();
+        std::make_unique<translate::testing::MockTranslateMetricsLogger>();
   }
 
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
-    MockTranslateMetricsLogger* raw_mock_translate_metrics_logger =
-        mock_translate_metrics_logger_.get();
+    translate::testing::MockTranslateMetricsLogger*
+        raw_mock_translate_metrics_logger =
+            mock_translate_metrics_logger_.get();
 
     // Wraps the raw pointer in a container.
     std::unique_ptr<MockTranslateMetricsLoggerContainer>
@@ -68,14 +71,16 @@ class TranslatePageLoadMetricsObserverTest
         std::move(mock_translate_metrics_logger_container)));
   }
 
-  MockTranslateMetricsLogger& mock_translate_metrics_logger() const {
+  translate::testing::MockTranslateMetricsLogger&
+  mock_translate_metrics_logger() const {
     return *mock_translate_metrics_logger_;
   }
 
  private:
   // This is the TranslateMetricsLoggers used in a test.It is owned by the
   // TranslatePageLoadMetricsObserverTest.
-  std::unique_ptr<MockTranslateMetricsLogger> mock_translate_metrics_logger_;
+  std::unique_ptr<translate::testing::MockTranslateMetricsLogger>
+      mock_translate_metrics_logger_;
 };
 
 TEST_F(TranslatePageLoadMetricsObserverTest, SinglePageLoad) {

@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "translate_browser_metrics_unittest.cc",
     "translate_language_list_unittest.cc",
     "translate_manager_unittest.cc",
+    "translate_metrics_logger_impl_unittest.cc",
     "translate_prefs_unittest.cc",
     "translate_ranker_impl_unittest.cc",
     "translate_script_unittest.cc",
@@ -141,6 +142,8 @@ source_set("test_support") {
     "mock_translate_client.h",
     "mock_translate_driver.cc",
     "mock_translate_driver.h",
+    "mock_translate_metrics_logger.cc",
+    "mock_translate_metrics_logger.h",
     "mock_translate_ranker.cc",
     "mock_translate_ranker.h",
   ]
