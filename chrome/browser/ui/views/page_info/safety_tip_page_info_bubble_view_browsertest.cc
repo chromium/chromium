@@ -856,7 +856,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 // Tests that the SafetyTipShown histogram triggers correctly.
 // Flaky on all platforms: https://crbug.com/1139955
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       DISABLE_SafetyTipShownHistogram) {
+                       DISABLED_SafetyTipShownHistogram) {
   const char kHistogramName[] = "Security.SafetyTips.SafetyTipShown";
   base::HistogramTester histograms;
 
