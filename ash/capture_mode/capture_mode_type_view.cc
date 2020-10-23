@@ -9,8 +9,10 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
@@ -50,6 +52,11 @@ CaptureModeTypeView::CaptureModeTypeView()
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   OnCaptureTypeChanged(CaptureModeController::Get()->type());
+
+  image_toggle_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SCREENSHOT));
+  video_toggle_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SCREENRECORD));
 }
 
 CaptureModeTypeView::~CaptureModeTypeView() = default;

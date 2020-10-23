@@ -39,6 +39,9 @@ class ASH_EXPORT CaptureModeSourceView : public views::View {
   // Called when the capture source changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
 
+  // Called when the capture type changes to update tooltip texts.
+  void OnCaptureTypeChanged(CaptureModeType type);
+
  private:
   void OnFullscreenToggle();
   void OnRegionToggle();

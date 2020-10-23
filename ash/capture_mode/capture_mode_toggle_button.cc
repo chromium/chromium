@@ -24,9 +24,6 @@ CaptureModeToggleButton::CaptureModeToggleButton(
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   GetViewAccessibility().OverrideIsLeaf(true);
 
-  // TODO(afakhry): Fix this.
-  SetTooltipText(base::UTF8ToUTF16(GetClassName()));
-
   SetInstallFocusRingOnFocus(true);
   SetFocusForPlatform();
   const auto* color_provider = AshColorProvider::Get();
@@ -57,7 +54,9 @@ void CaptureModeToggleButton::OnPaintBackground(gfx::Canvas* canvas) {
 
 void CaptureModeToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ImageButton::GetAccessibleNodeData(node_data);
-  node_data->SetName(GetTooltipText(gfx::Point()));
+  const base::string16 tooltip = GetTooltipText(gfx::Point());
+  DCHECK(!tooltip.empty());
+  node_data->SetName(tooltip);
   node_data->role = ax::mojom::Role::kToggleButton;
   node_data->SetCheckedState(GetToggled() ? ax::mojom::CheckedState::kTrue
                                           : ax::mojom::CheckedState::kFalse);

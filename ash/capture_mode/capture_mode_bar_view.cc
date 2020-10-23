@@ -91,6 +91,7 @@ void CaptureModeBarView::OnCaptureSourceChanged(CaptureModeSource new_source) {
 
 void CaptureModeBarView::OnCaptureTypeChanged(CaptureModeType new_type) {
   capture_type_view_->OnCaptureTypeChanged(new_type);
+  capture_source_view_->OnCaptureTypeChanged(new_type);
 }
 
 void CaptureModeBarView::OnButtonPressed() {
