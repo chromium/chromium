@@ -88,6 +88,10 @@ class PopupTracker : public content::WebContentsObserver,
   int num_activation_events_ = 0;
   int num_gesture_scroll_begin_events_ = 0;
 
+  // Number of redirects taken by the pop-up during navigation.
+  int num_redirects_ = 0;
+  bool first_navigation_committed_ = false;
+
   // The id of the web contents that created the popup at the time of creation.
   // SourceIds are permanent so it's okay to use at any point so long as it's
   // not invalid.

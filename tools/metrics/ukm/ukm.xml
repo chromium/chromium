@@ -10257,6 +10257,13 @@ be describing additional metrics about the same event.
       start, or raw key down event.
     </summary>
   </metric>
+  <metric name="RedirectCount">
+    <summary>
+      The number of redirects taken by the pop-up's initial navigation. This
+      does not include javascript navigations initiated by the opening document
+      for the pop-up.
+    </summary>
+  </metric>
   <metric name="SafeBrowsingStatus" enum="PopupSafeBrowsingStatus">
     <summary>
       The site's safe browsing status if the pop-up's navigation commits.

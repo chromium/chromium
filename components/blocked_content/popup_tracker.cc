@@ -102,6 +102,7 @@ void PopupTracker::WebContentsDestroyed() {
             num_activation_events_, kMaxSubcatagoryInteractions))
         .SetNumGestureScrollBeginInteractions(CappedUserInteractions(
             num_gesture_scroll_begin_events_, kMaxSubcatagoryInteractions))
+        .SetRedirectCount(num_redirects_)
         .Record(ukm::UkmRecorder::Get());
   }
 }
@@ -111,6 +112,13 @@ void PopupTracker::DidFinishNavigation(
   if (!navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
     return;
+  }
+
+  if (navigation_handle->IsInMainFrame() && !first_navigation_committed_) {
+    first_navigation_committed_ = true;
+    // The last page in the redirect chain is the current page, the number of
+    // redirects is one less than the size of the chain.
+    num_redirects_ = navigation_handle->GetRedirectChain().size() - 1;
   }
 
   if (!first_load_visible_time_start_) {
