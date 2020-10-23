@@ -93,6 +93,7 @@ class OmniboxPopupContentsView : public views::View,
 
  private:
   friend class OmniboxPopupContentsViewTest;
+  friend class OmniboxSuggestionButtonRowBrowserTest;
   class AutocompletePopupWidget;
 
   // Returns the target popup bounds in screen coordinates based on the bounds

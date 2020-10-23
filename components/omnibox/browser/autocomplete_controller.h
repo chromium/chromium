@@ -174,6 +174,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
  private:
   friend class AutocompleteProviderTest;
+  friend class OmniboxSuggestionButtonRowBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateAssistedQueryStats);
