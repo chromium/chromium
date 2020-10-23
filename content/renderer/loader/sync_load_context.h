@@ -108,7 +108,6 @@ class CONTENT_EXPORT SyncLoadContext : public RequestPeer {
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
-  scoped_refptr<base::TaskRunner> GetTaskRunner() override;
 
   void OnFinishCreatingBlob(blink::mojom::SerializedBlobPtr blob);
 

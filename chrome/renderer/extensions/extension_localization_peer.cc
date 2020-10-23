@@ -116,10 +116,6 @@ void ExtensionLocalizationPeer::OnCompletedRequest(
   CompleteRequest();
 }
 
-scoped_refptr<base::TaskRunner> ExtensionLocalizationPeer::GetTaskRunner() {
-  return original_peer_->GetTaskRunner();
-}
-
 void ExtensionLocalizationPeer::OnReadableBody(
     MojoResult,
     const mojo::HandleSignalsState&) {

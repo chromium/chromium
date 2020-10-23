@@ -257,10 +257,6 @@ void SyncLoadContext::OnCompletedRequest(
   CompleteRequest();
 }
 
-scoped_refptr<base::TaskRunner> SyncLoadContext::GetTaskRunner() {
-  return task_runner_;
-}
-
 void SyncLoadContext::OnFinishCreatingBlob(
     blink::mojom::SerializedBlobPtr blob) {
   DCHECK(!Completed());

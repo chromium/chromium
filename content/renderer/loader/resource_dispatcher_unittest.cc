@@ -225,9 +225,6 @@ class TestResourceDispatcherDelegate : public ResourceDispatcherDelegate {
       original_peer_->OnStartLoadingResponseBody(std::move(body_handle_));
       original_peer_->OnCompletedRequest(status);
     }
-    scoped_refptr<base::TaskRunner> GetTaskRunner() override {
-      return blink::scheduler::GetSingleThreadTaskRunnerForTesting();
-    }
 
    private:
     std::unique_ptr<RequestPeer> original_peer_;

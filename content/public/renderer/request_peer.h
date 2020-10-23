@@ -73,9 +73,6 @@ class CONTENT_EXPORT RequestPeer {
   virtual void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  // Returns the task runner on which this request peer is running.
-  virtual scoped_refptr<base::TaskRunner> GetTaskRunner() = 0;
-
   virtual ~RequestPeer() {}
 };
 
