@@ -35,6 +35,7 @@ namespace {
 constexpr base::TimeDelta kTimeLimit = base::TimeDelta::FromSeconds(2);
 constexpr int kWarmupRuns = 10000;
 constexpr int kTimeCheckInterval = 100000;
+constexpr size_t kAllocSize = 40;
 
 // Size constants are mostly arbitrary, but try to simulate something like CSS
 // parsing which consists of lots of relatively small objects.
@@ -135,35 +136,45 @@ class MemoryAllocationPerfNode {
 #if !defined(MEMORY_CONSTRAINED)
 float SingleBucket(Allocator* allocator) {
   auto* first =
-      reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(40));
+      reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(kAllocSize));
+  size_t allocated_memory = kAllocSize;
 
   LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   MemoryAllocationPerfNode* cur = first;
   do {
-    auto* next =
-        reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(40));
+    auto* next = reinterpret_cast<MemoryAllocationPerfNode*>(
+        allocator->Alloc(kAllocSize));
     CHECK_NE(next, nullptr);
     cur->SetNext(next);
     cur = next;
     timer.NextLap();
+    allocated_memory += kAllocSize;
+    // With multiple threads, can get OOM otherwise.
+    if (allocated_memory > 200e6) {
+      cur->SetNext(nullptr);
+      MemoryAllocationPerfNode::FreeAll(first->GetNext(), allocator);
+      cur = first;
+      allocated_memory = kAllocSize;
+    }
   } while (!timer.HasTimeLimitExpired());
+
   // next_ = nullptr only works if the class constructor is called (it's not
   // called in this case because then we can allocate arbitrary-length
   // payloads.)
   cur->SetNext(nullptr);
-
   MemoryAllocationPerfNode::FreeAll(first, allocator);
+
   return timer.LapsPerSecond();
 }
 #endif  // defined(MEMORY_CONSTRAINED)
 
 float SingleBucketWithFree(Allocator* allocator) {
   // Allocate an initial element to make sure the bucket stays set up.
-  void* elem = allocator->Alloc(40);
+  void* elem = allocator->Alloc(kAllocSize);
 
   LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
-    void* cur = allocator->Alloc(40);
+    void* cur = allocator->Alloc(kAllocSize);
     CHECK_NE(cur, nullptr);
     allocator->Free(cur);
     timer.NextLap();
@@ -176,22 +187,34 @@ float SingleBucketWithFree(Allocator* allocator) {
 #if !defined(MEMORY_CONSTRAINED)
 float MultiBucket(Allocator* allocator) {
   auto* first =
-      reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(40));
+      reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(kAllocSize));
   MemoryAllocationPerfNode* cur = first;
+  size_t allocated_memory = kAllocSize;
 
   LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     for (int i = 0; i < kMultiBucketRounds; i++) {
-      auto* next = reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(
-          kMultiBucketMinimumSize + (i * kMultiBucketIncrement)));
+      size_t size = kMultiBucketMinimumSize + (i * kMultiBucketIncrement);
+      auto* next =
+          reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(size));
       CHECK_NE(next, nullptr);
       cur->SetNext(next);
       cur = next;
+      allocated_memory += size;
     }
+
+    // Can OOM with multiple threads.
+    if (allocated_memory > 100e6) {
+      cur->SetNext(nullptr);
+      MemoryAllocationPerfNode::FreeAll(first->GetNext(), allocator);
+      cur = first;
+      allocated_memory = kAllocSize;
+    }
+
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
-  cur->SetNext(nullptr);
 
+  cur->SetNext(nullptr);
   MemoryAllocationPerfNode::FreeAll(first, allocator);
 
   return timer.LapsPerSecond() * kMultiBucketRounds;
