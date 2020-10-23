@@ -5,7 +5,9 @@
 #include "chromeos/services/ime/decoder/decoder_engine.h"
 
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,7 +72,11 @@ class StubInputChannel : public mojom::InputChannel {
 // Sets up the test environment for Mojo and inject a mock ImeEngineMainEntry.
 class DecoderEngineTest : public testing::Test {
  protected:
-  void SetUp() final { FakeEngineMainEntryForTesting(&mock_main_entry_); }
+  void SetUp() final {
+    FakeEngineMainEntryForTesting(&mock_main_entry_);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kSystemLatinPhysicalTyping}, {});
+  }
 
   void TearDown() final { FakeEngineMainEntryForTesting(nullptr); }
 
@@ -79,6 +85,8 @@ class DecoderEngineTest : public testing::Test {
  private:
   // Mojo calls need a SequencedTaskRunner.
   base::test::SingleThreadTaskEnvironment task_environment;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DecoderEngineTest, BindRequestBindsInterfaces) {

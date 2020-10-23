@@ -5,8 +5,9 @@
 #include "chromeos/services/ime/decoder/decoder_engine.h"
 
 #include "base/bind_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 #include "chromeos/services/ime/ime_decoder.h"
@@ -189,6 +190,11 @@ void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
 }
 
 void DecoderEngine::OnReply(const std::vector<uint8_t>& message) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kSystemLatinPhysicalTyping)) {
+    return;
+  }
+
   ime::Wrapper wrapper;
   if (!wrapper.ParseFromArray(message.data(), message.size()) ||
       !wrapper.has_public_message()) {

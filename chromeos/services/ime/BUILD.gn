@@ -86,6 +86,7 @@ source_set("services_unittests") {
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//chromeos/constants:constants",
     "//chromeos/services/ime/public/mojom",
     "//chromeos/services/ime/public/proto:messages_proto",
     "//mojo/public/cpp/bindings",
