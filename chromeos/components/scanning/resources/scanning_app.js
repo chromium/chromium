@@ -8,6 +8,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
+import './page_size_select.js';
 import './resolution_select.js';
 import './scanner_select.js';
 import './source_select.js';
@@ -17,7 +18,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {getScanService} from './mojo_interface_provider.js';
 import {ScannerArr} from './scanning_app_types.js';
-import {colorModeFromString, tokenToString} from './scanning_app_util.js';
+import {colorModeFromString, pageSizeFromString, tokenToString} from './scanning_app_util.js';
 
 /**
  * @fileoverview
@@ -65,7 +66,20 @@ Polymer({
     selectedColorMode: String,
 
     /** @type {?string} */
+    selectedPageSize: String,
+
+    /** @type {?string} */
     selectedResolution: String,
+
+    /**
+     * @type {!Array<chromeos.scanning.mojom.PageSize>}
+     * @private
+     */
+    selectedSourcePageSizes_: {
+      type: Array,
+      value: () => [],
+      computed: 'computePageSizes_(selectedSource)',
+    },
 
     /**
      * @type {?string}
@@ -108,6 +122,21 @@ Polymer({
   },
 
   /**
+   * @param {?string} selectedSource
+   * @return {!Array<chromeos.scanning.mojom.PageSize>}
+   * @private
+   */
+  computePageSizes_(selectedSource) {
+    for (const source of this.capabilities_.sources) {
+      if (source.name === selectedSource) {
+        return source.pageSizes;
+      }
+    }
+
+    return [];
+  },
+
+  /**
    * @param {!{capabilities: !chromeos.scanning.mojom.ScannerCapabilities}}
    *     response
    * @private
@@ -119,6 +148,8 @@ Polymer({
     // first options in the dropdowns.
     this.selectedSource = this.capabilities_.sources[0].name;
     this.selectedColorMode = this.capabilities_.colorModes[0].toString();
+    this.selectedPageSize =
+        this.capabilities_.sources[0].pageSizes[0].toString();
     this.selectedResolution = this.capabilities_.resolutions[0].toString();
 
     // PDF is the default file type.
@@ -173,7 +204,7 @@ Polymer({
   onScanClick_() {
     if (!this.selectedScannerId || !this.selectedSource ||
         !this.selectedFileType || !this.selectedColorMode ||
-        !this.selectedResolution) {
+        !this.selectedPageSize || !this.selectedResolution) {
       // TODO(jschettler): Replace status text with finalized i18n strings.
       this.statusText_ = 'Failed to start scan.';
       return;
@@ -196,7 +227,7 @@ Polymer({
       'sourceName': this.selectedSource,
       'fileType': chromeos.scanning.mojom.FileType.kPng,
       'colorMode': colorModeFromString(this.selectedColorMode),
-      'pageSize': chromeos.scanning.mojom.PageSize.kNaLetter,
+      'pageSize': pageSizeFromString(this.selectedPageSize),
       'resolutionDpi': Number(this.selectedResolution),
     };
     this.scanService_

@@ -55,6 +55,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
       {"pdfOptionText", IDS_SCANNING_APP_PDF_OPTION_TEXT},
       {"pngOptionText", IDS_SCANNING_APP_PNG_OPTION_TEXT},
+      {"pageSizeDropdownLabel", IDS_SCANNING_APP_PAGE_SIZE_DROPDOWN_LABEL},
       {"resolutionDropdownLabel", IDS_SCANNING_APP_RESOLUTION_DROPDOWN_LABEL},
       {"resolutionOptionText", IDS_SCANNING_APP_RESOLUTION_OPTION_TEXT},
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},

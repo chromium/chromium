@@ -46,6 +46,27 @@ export function getColorModeString(mojoColorMode) {
 }
 
 /**
+ * Converts a chromeos.scanning.mojom.PageSize to a string that can be
+ * displayed in the page size dropdown.
+ * @param {chromeos.scanning.mojom.PageSize} pageSize
+ * @return {!string}
+ */
+export function getPageSizeString(pageSize) {
+  // TODO(jschettler): Replace with finalized i18n strings.
+  switch (pageSize) {
+    case chromeos.scanning.mojom.PageSize.kIsoA4:
+      return 'A4';
+    case chromeos.scanning.mojom.PageSize.kNaLetter:
+      return 'Letter';
+    case chromeos.scanning.mojom.PageSize.kMax:
+      return 'Fit to scan area';
+    default:
+      assertNotReached();
+      return 'Unknown';
+  }
+}
+
+/**
  * Converts a chromeos.scanning.mojom.SourceType to a string that can be
  * displayed in the source dropdown.
  * @param {number} mojoSourceType
@@ -66,6 +87,26 @@ export function getSourceTypeString(mojoSourceType) {
     default:
       assertNotReached();
       return 'Unknown';
+  }
+}
+
+/**
+ * Converts a chromeos.scanning.mojom.PageSize string to the corresponding enum
+ * value.
+ * @param {!string} pageSizeString
+ * @return {chromeos.scanning.mojom.PageSize}
+ */
+export function pageSizeFromString(pageSizeString) {
+  switch (pageSizeString) {
+    case chromeos.scanning.mojom.PageSize.kIsoA4.toString():
+      return chromeos.scanning.mojom.PageSize.kIsoA4;
+    case chromeos.scanning.mojom.PageSize.kNaLetter.toString():
+      return chromeos.scanning.mojom.PageSize.kNaLetter;
+    case chromeos.scanning.mojom.PageSize.kMax.toString():
+      return chromeos.scanning.mojom.PageSize.kMax;
+    default:
+      assertNotReached();
+      return chromeos.scanning.mojom.PageSize.kNaLetter;
   }
 }
 

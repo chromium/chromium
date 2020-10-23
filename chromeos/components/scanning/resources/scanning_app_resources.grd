@@ -24,6 +24,8 @@
       <include name="IDR_SCANNING_APP_FILE_TYPE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/file_type_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_COLOR_MODE_SELECT_HTML" file="color_mode_select.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_COLOR_MODE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/color_mode_select.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_PAGE_SIZE_SELECT_HTML" file="page_size_select.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_PAGE_SIZE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/page_size_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_RESOLUTION_SELECT_HTML" file="resolution_select.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_RESOLUTION_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/resolution_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCAN_SETTINGS_SECTION_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scan_settings_section.js" use_base_dir="false" type="BINDATA"/>

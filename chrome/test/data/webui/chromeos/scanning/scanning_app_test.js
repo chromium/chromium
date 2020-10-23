@@ -9,7 +9,7 @@ import 'chrome://scanning/scanning_app.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
-import {getColorModeString, getSourceTypeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {getColorModeString, getPageSizeString, getSourceTypeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
@@ -21,6 +21,12 @@ const FileType = {
   JPG: chromeos.scanning.mojom.FileType.kJpg,
   PDF: chromeos.scanning.mojom.FileType.kPdf,
   PNG: chromeos.scanning.mojom.FileType.kPng,
+};
+
+const PageSize = {
+  A4: chromeos.scanning.mojom.PageSize.kIsoA4,
+  Letter: chromeos.scanning.mojom.PageSize.kNaLetter,
+  Max: chromeos.scanning.mojom.PageSize.kMax,
 };
 
 const SourceType = {
@@ -226,7 +232,11 @@ suite('ScanningAppTest', () => {
 
     const firstCapabilities = {
       sources: [
-        {type: SourceType.FLATBED, name: 'platen'},
+        {
+          type: SourceType.FLATBED,
+          name: 'platen',
+          pageSizes: [PageSize.A4, PageSize.Letter, PageSize.Max]
+        },
         {type: SourceType.ADF_DUPLEX, name: 'adf duplex'}
       ],
       colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
@@ -256,6 +266,9 @@ suite('ScanningAppTest', () => {
               firstCapabilities.colorModes[0].toString(),
               scanningApp.selectedColorMode);
           assertEquals(
+              firstCapabilities.sources[0].pageSizes[0].toString(),
+              scanningApp.selectedPageSize);
+          assertEquals(
               firstCapabilities.resolutions[0].toString(),
               scanningApp.selectedResolution);
 
@@ -270,6 +283,8 @@ suite('ScanningAppTest', () => {
           const colorModeSelect =
               scanningApp.$$('#colorModeSelect').$$('select');
           assertFalse(colorModeSelect.disabled);
+          const pageSizeSelect = scanningApp.$$('#pageSizeSelect').$$('select');
+          assertFalse(pageSizeSelect.disabled);
           const resolutionSelect =
               scanningApp.$$('#resolutionSelect').$$('select');
           assertFalse(resolutionSelect.disabled);
@@ -291,6 +306,7 @@ suite('ScanningAppTest', () => {
           assertTrue(sourceSelect.disabled);
           assertTrue(fileTypeSelect.disabled);
           assertTrue(colorModeSelect.disabled);
+          assertTrue(pageSizeSelect.disabled);
           assertTrue(resolutionSelect.disabled);
           assertTrue(scanButton.disabled);
           assertEquals('Scanning...', statusText.textContent.trim());
@@ -304,6 +320,7 @@ suite('ScanningAppTest', () => {
           assertFalse(scanningApp.$$('#sourceSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#fileTypeSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#colorModeSelect').$$('select').disabled);
+          assertFalse(scanningApp.$$('#pageSizeSelect').$$('select').disabled);
           assertFalse(
               scanningApp.$$('#resolutionSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#scanButton').disabled);
@@ -555,6 +572,74 @@ suite('ColorModeSelectTest', () => {
 
     colorModeArr = colorModeArr.concat([ColorMode.GRAYSCALE]);
     colorModeSelect.colorModes = colorModeArr;
+    flush();
+
+    // Verify the dropdown is enabled when there's more than one option.
+    assertEquals(2, select.length);
+    assertFalse(select.disabled);
+  });
+});
+
+suite('PageSizeSelectTest', () => {
+  /** @type {!PageSizeSelectElement} */
+  let pageSizeSelect;
+
+  setup(() => {
+    pageSizeSelect = document.createElement('page-size-select');
+    assertTrue(!!pageSizeSelect);
+    document.body.appendChild(pageSizeSelect);
+  });
+
+  teardown(() => {
+    pageSizeSelect.remove();
+    pageSizeSelect = null;
+  });
+
+  test('initializePageSizeSelect', () => {
+    // Before options are added, the dropdown should be disabled and empty.
+    const select = pageSizeSelect.$$('select');
+    assertTrue(!!select);
+    assertTrue(select.disabled);
+    assertEquals(0, select.length);
+
+    const firstPageSize = PageSize.A4;
+    const secondPageSize = PageSize.Max;
+    pageSizeSelect.pageSizes = [firstPageSize, secondPageSize];
+    flush();
+
+    // Verify that adding more than one page size results in the dropdown
+    // becoming enabled with the correct options.
+    assertFalse(select.disabled);
+    assertEquals(2, select.length);
+    assertEquals(
+        getPageSizeString(firstPageSize), select.options[0].textContent.trim());
+    assertEquals(
+        getPageSizeString(secondPageSize),
+        select.options[1].textContent.trim());
+    assertEquals(firstPageSize.toString(), select.value);
+
+    // Selecting a different option should update the selected value.
+    select.value = secondPageSize.toString();
+    select.dispatchEvent(new CustomEvent('change'));
+    flush();
+
+    assertEquals(secondPageSize.toString(), pageSizeSelect.selectedPageSize);
+  });
+
+  test('pageSizeSelectDisabled', () => {
+    const select = pageSizeSelect.$$('select');
+    assertTrue(!!select);
+
+    let pageSizeArr = [PageSize.Letter];
+    pageSizeSelect.pageSizes = pageSizeArr;
+    flush();
+
+    // Verify the dropdown is disabled when there's only one option.
+    assertEquals(1, select.length);
+    assertTrue(select.disabled);
+
+    pageSizeArr = pageSizeArr.concat([PageSize.A4]);
+    pageSizeSelect.pageSizes = pageSizeArr;
     flush();
 
     // Verify the dropdown is enabled when there's more than one option.
