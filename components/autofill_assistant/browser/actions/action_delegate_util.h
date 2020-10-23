@@ -68,11 +68,13 @@ void SendKeyboardInput(const ActionDelegate* delegate,
                        const Selector& selector,
                        const std::vector<UChar32> codepoints,
                        int delay_in_millis,
+                       bool use_focus,
                        base::OnceCallback<void(const ClientStatus&)> callback);
 void PerformSendKeyboardInput(
     const ActionDelegate* delegate,
     const std::vector<UChar32> codepoints,
     int delay_in_millis,
+    bool use_focus,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 

@@ -259,6 +259,11 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
+  // Focus the current |element|.
+  virtual void FocusField(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
+
   // Sets the keyboard focus to |element| and inputs the specified codepoints.
   // Returns the result through |callback|.
   virtual void SendKeyboardInput(

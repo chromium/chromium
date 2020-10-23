@@ -618,6 +618,12 @@ void ScriptExecutor::SelectFieldValue(
   delegate_->GetWebController()->SelectFieldValue(element, std::move(callback));
 }
 
+void ScriptExecutor::FocusField(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  delegate_->GetWebController()->FocusField(element, std::move(callback));
+}
+
 void ScriptExecutor::SendKeyboardInput(
     const std::vector<UChar32>& codepoints,
     int key_press_delay_in_millisecond,

@@ -205,6 +205,10 @@ class MockActionDelegate : public ActionDelegate {
                void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
+  MOCK_METHOD2(FocusField,
+               void(const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+
   void SendKeyboardInput(
       const std::vector<UChar32>& codepoints,
       int delay_in_millisecond,

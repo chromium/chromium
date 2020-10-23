@@ -202,6 +202,9 @@ class ScriptExecutor : public ActionDelegate,
   void SelectFieldValue(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
+  void FocusField(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void SendKeyboardInput(
       const std::vector<UChar32>& codepoints,
       int key_press_delay_in_millisecond,

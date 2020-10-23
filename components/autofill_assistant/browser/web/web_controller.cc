@@ -127,6 +127,9 @@ const char* const kGetElementAttributeScript =
 // Javascript code to select the current value.
 const char* const kSelectFieldValueScript = "function() { this.select(); }";
 
+// Javascript code to focus a field.
+const char* const kFocusFieldScript = "function() { this.focus(); }";
+
 // Javascript code to set the 'value' attribute of a node and then fire a
 // "change" event to trigger any listeners.
 const char* const kSetValueAttributeScript =
@@ -1167,6 +1170,25 @@ void WebController::SendKeyboardInput(
       base::BindOnce(&DecorateWebControllerStatus,
                      WebControllerErrorInfoProto::SEND_KEYBOARD_INPUT,
                      std::move(callback)));
+}
+
+void WebController::FocusField(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
+      element, std::move(callback));
+
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id)
+          .SetFunctionDeclaration(std::string(kFocusFieldScript))
+          .Build(),
+      element.node_frame_id,
+      base::BindOnce(&WebController::OnJavaScriptResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&DecorateWebControllerStatus,
+                                    WebControllerErrorInfoProto::FOCUS_FIELD,
+                                    std::move(wrapped_callback))));
 }
 
 void WebController::DispatchKeyboardTextDownEvent(

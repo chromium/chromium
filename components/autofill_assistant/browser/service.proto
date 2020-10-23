@@ -438,13 +438,17 @@ enum KeyboardValueFillStrategy {
   // Send a `node.value = "<value>"` JS command.
   SET_VALUE = 1;
 
-  // Send a `node.value = ""` JS command to clear the field, then send single
-  // key strokes.
+  // Send a `node.value = ""` JS command to clear the field, then click the
+  // field to focus it and send single key strokes.
   SIMULATE_KEY_PRESSES = 2;
 
   // Send a `node.select()` JS command to select the current field value, then
   // send single key strokes overwriting the current value.
   SIMULATE_KEY_PRESSES_SELECT_VALUE = 3;
+
+  // Send a `node.value = ""` JS command to clear the field, then send a
+  // `node.focus()` JS command to focus the field and send single key strokes.
+  SIMULATE_KEY_PRESSES_FOCUS = 4;
 }
 
 // Note: On multiple matches, the first one will be selected.
@@ -814,6 +818,9 @@ message WebControllerErrorInfoProto {
 
     // Get the tag of an element.
     GET_ELEMENT_TAG = 14;
+
+    // Set active focus on a field.
+    FOCUS_FIELD = 15;
   }
 
   // The web-action that failed. This is usually a step in an execution chain

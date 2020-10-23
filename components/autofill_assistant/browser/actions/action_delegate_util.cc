@@ -184,33 +184,41 @@ void SendKeyboardInput(const ActionDelegate* delegate,
                        const Selector& selector,
                        const std::vector<UChar32> codepoints,
                        int delay_in_millis,
+                       bool use_focus,
                        base::OnceCallback<void(const ClientStatus&)> done) {
-  FindElementAndPerformImpl(delegate, selector,
-                            base::BindOnce(&PerformSendKeyboardInput, delegate,
-                                           codepoints, delay_in_millis),
-                            std::move(done));
+  FindElementAndPerformImpl(
+      delegate, selector,
+      base::BindOnce(&PerformSendKeyboardInput, delegate, codepoints,
+                     delay_in_millis, use_focus),
+      std::move(done));
 }
 void PerformSendKeyboardInput(
     const ActionDelegate* delegate,
     const std::vector<UChar32> codepoints,
     int delay_in_millis,
+    bool use_focus,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
 #ifdef NDEBUG
-  VLOG(3) << __func__;
+  VLOG(3) << __func__ << " focus: " << use_focus;
 #else
-  DVLOG(3) << __func__;
+  DVLOG(3) << __func__ << " focus: " << use_focus;
 #endif
 
   auto actions = std::make_unique<ElementActionVector>();
-  actions->emplace_back(
-      base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
-                     delegate->GetWeakPtr()));
-  actions->emplace_back(
-      base::BindOnce(&ActionDelegate::ScrollIntoView, delegate->GetWeakPtr()));
-  actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
-                                       delegate->GetWeakPtr(),
-                                       ClickType::CLICK));
+  if (use_focus) {
+    actions->emplace_back(
+        base::BindOnce(&ActionDelegate::FocusField, delegate->GetWeakPtr()));
+  } else {
+    actions->emplace_back(
+        base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
+                       delegate->GetWeakPtr()));
+    actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollIntoView,
+                                         delegate->GetWeakPtr()));
+    actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
+                                         delegate->GetWeakPtr(),
+                                         ClickType::CLICK));
+  }
   actions->emplace_back(base::BindOnce(&ActionDelegate::SendKeyboardInput,
                                        delegate->GetWeakPtr(), codepoints,
                                        delay_in_millis));
@@ -246,7 +254,8 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
   auto actions = std::make_unique<ElementActionVector>();
   if (value.empty()) {
     actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
-                                         delegate->GetWeakPtr(), ""));
+                                         delegate->GetWeakPtr(),
+                                         std::string()));
   } else {
     switch (fill_strategy) {
       case UNSPECIFIED_KEYBAORD_STRATEGY:
@@ -256,7 +265,8 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
         break;
       case SIMULATE_KEY_PRESSES:
         actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
-                                             delegate->GetWeakPtr(), ""));
+                                             delegate->GetWeakPtr(),
+                                             std::string()));
         actions->emplace_back(
             base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
                            delegate->GetWeakPtr()));
@@ -275,6 +285,16 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
         // fails in WebControllerBrowserTest.GetAndSetFieldValue. Fixing this
         // might fix b/148001624 as well.
         actions->emplace_back(base::BindOnce(&ActionDelegate::SelectFieldValue,
+                                             delegate->GetWeakPtr()));
+        actions->emplace_back(base::BindOnce(
+            &ActionDelegate::SendKeyboardInput, delegate->GetWeakPtr(),
+            UTF8ToUnicode(value), key_press_delay_in_millisecond));
+        break;
+      case SIMULATE_KEY_PRESSES_FOCUS:
+        actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
+                                             delegate->GetWeakPtr(),
+                                             std::string()));
+        actions->emplace_back(base::BindOnce(&ActionDelegate::FocusField,
                                              delegate->GetWeakPtr()));
         actions->emplace_back(base::BindOnce(
             &ActionDelegate::SendKeyboardInput, delegate->GetWeakPtr(),

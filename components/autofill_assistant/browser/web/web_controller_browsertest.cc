@@ -621,10 +621,11 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
         return;
       case SIMULATE_KEY_PRESSES:
         web_controller_->SetValueAttribute(
-            element, /* value= */ "",
+            element, /* value= */ std::string(),
             base::BindOnce(
                 &WebControllerBrowserTest::OnSetValueAttributeForSetFieldValue,
-                base::Unretained(this), value, element, std::move(callback)));
+                base::Unretained(this), value, false, element,
+                std::move(callback)));
         return;
       case SIMULATE_KEY_PRESSES_SELECT_VALUE:
         web_controller_->SelectFieldValue(
@@ -633,6 +634,14 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                 &WebControllerBrowserTest::OnSelectFieldValueForSetFieldValue,
                 base::Unretained(this), value, element, std::move(callback)));
         return;
+      case SIMULATE_KEY_PRESSES_FOCUS:
+        web_controller_->SetValueAttribute(
+            element, /* value= */ std::string(),
+            base::BindOnce(
+                &WebControllerBrowserTest::OnSetValueAttributeForSetFieldValue,
+                base::Unretained(this), value, true, element,
+                std::move(callback)));
+        return;
       case UNSPECIFIED_KEYBAORD_STRATEGY:
         std::move(callback).Run(ClientStatus(INVALID_ACTION));
     }
@@ -640,6 +649,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   void OnSetValueAttributeForSetFieldValue(
       const std::string& value,
+      bool use_js_focus,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status) {
@@ -648,7 +658,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       return;
     }
     PerformSendKeyboardInput(UTF8ToUnicode(value), /* delay_in_milli= */ 0,
-                             element, std::move(callback));
+                             use_js_focus, element, std::move(callback));
   }
 
   void OnSelectFieldValueForSetFieldValue(
@@ -667,7 +677,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   ClientStatus SendKeyboardInput(const Selector& selector,
                                  const std::vector<UChar32>& codepoints,
-                                 int delay_in_milli) {
+                                 int delay_in_milli,
+                                 bool use_js_focus) {
     base::RunLoop run_loop;
     ClientStatus result;
 
@@ -675,7 +686,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
         selector, /* strict_mode= */ true,
         base::BindOnce(
             &WebControllerBrowserTest::FindSendKeyboardInputElementCallback,
-            base::Unretained(this), codepoints, delay_in_milli,
+            base::Unretained(this), codepoints, delay_in_milli, use_js_focus,
             run_loop.QuitClosure(), &result));
 
     run_loop.Run();
@@ -684,12 +695,13 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   ClientStatus SendKeyboardInput(const Selector& selector,
                                  const std::vector<UChar32>& codepoints) {
-    return SendKeyboardInput(selector, codepoints, -1);
+    return SendKeyboardInput(selector, codepoints, -1, false);
   }
 
   void FindSendKeyboardInputElementCallback(
       const std::vector<UChar32>& codepoints,
       int delay_in_milli,
+      bool use_js_focus,
       base::OnceClosure done_callback,
       ClientStatus* result_output,
       const ClientStatus& element_status,
@@ -697,7 +709,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
     ASSERT_TRUE(element_result != nullptr);
     PerformSendKeyboardInput(
-        codepoints, delay_in_milli, *element_result,
+        codepoints, delay_in_milli, use_js_focus, *element_result,
         base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
                        base::Unretained(this), std::move(element_result),
                        std::move(done_callback), result_output));
@@ -706,17 +718,28 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
   void PerformSendKeyboardInput(
       const std::vector<UChar32>& codepoints,
       int delay_in_milli,
+      bool use_js_focus,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) {
+    if (use_js_focus) {
+      web_controller_->FocusField(
+          element,
+          base::BindOnce(
+              &WebControllerBrowserTest::OnFieldFocussedForSendKeyboardInput,
+              base::Unretained(this), codepoints, delay_in_milli, element,
+              std::move(callback)));
+      return;
+    }
+
     PerformClickOrTap(
         ClickType::CLICK, element,
         base::BindOnce(
-            &WebControllerBrowserTest::OnClickOrTapForSendKeyboardInput,
+            &WebControllerBrowserTest::OnFieldFocussedForSendKeyboardInput,
             base::Unretained(this), codepoints, delay_in_milli, element,
             std::move(callback)));
   }
 
-  void OnClickOrTapForSendKeyboardInput(
+  void OnFieldFocussedForSendKeyboardInput(
       const std::vector<UChar32>& codepoints,
       int delay_in_milli,
       const ElementFinder::Result& element,
@@ -1717,6 +1740,19 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetAndSetFieldValue) {
   GetFieldsValue(selectors, expected_values);
 
   selectors.clear();
+  a_selector = Selector({"#input5"});
+  selectors.emplace_back(a_selector);
+  expected_values.clear();
+  expected_values.emplace_back("helloworld5");
+  GetFieldsValue(selectors, expected_values);
+  EXPECT_EQ(ACTION_APPLIED,
+            SetFieldValue(a_selector, "new value", SIMULATE_KEY_PRESSES_FOCUS)
+                .proto_status());
+  expected_values.clear();
+  expected_values.emplace_back("new value");
+  GetFieldsValue(selectors, expected_values);
+
+  selectors.clear();
   a_selector = Selector({"#invalid_selector"});
   selectors.emplace_back(a_selector);
   expected_values.clear();
@@ -1749,7 +1785,13 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendKeyboardInput) {
   selectors.emplace_back(a_selector);
   EXPECT_EQ(ACTION_APPLIED,
             SendKeyboardInput(a_selector, input).proto_status());
-  GetFieldsValue(selectors, {expected_output});
+  Selector b_selector({"#input7"});
+  selectors.emplace_back(b_selector);
+  EXPECT_EQ(ACTION_APPLIED,
+            SendKeyboardInput(b_selector, input, /* delay_in_milli= */ -1,
+                              /* use_js_focus= */ true)
+                .proto_status());
+  GetFieldsValue(selectors, {expected_output, expected_output});
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
@@ -1778,7 +1820,8 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   Selector a_selector({"#input_js_event_with_timeout"});
   selectors.emplace_back(a_selector);
   EXPECT_EQ(ACTION_APPLIED,
-            SendKeyboardInput(a_selector, input, /*delay_in_milli*/ 100)
+            SendKeyboardInput(a_selector, input, /* delay_in_milli= */ 100,
+                              /* use_js_focus= */ false)
                 .proto_status());
   GetFieldsValue(selectors, {expected_output});
 }

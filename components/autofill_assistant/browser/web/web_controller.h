@@ -179,6 +179,11 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  // Focus the current |element|.
+  virtual void FocusField(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   // Sets the keyboard focus to |element| and inputs |codepoints|, one
   // character at a time. Key presses will have a delay of |delay_in_milli|
   // between them.

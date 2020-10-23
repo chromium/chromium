@@ -133,6 +133,27 @@ public class AutofillAssistantInputActionIntegrationTest {
         list.add((ActionProto) ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Keystrokes with Select")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+        SelectorProto element_keystrokes_focus =
+                (SelectorProto) SelectorProto.newBuilder()
+                        .addFilters(Filter.newBuilder().setCssSelector("#input4"))
+                        .build();
+        list.add(
+                (ActionProto) ActionProto.newBuilder()
+                        .setSetFormValue(
+                                SetFormFieldValueProto.newBuilder()
+                                        .setElement(element_keystrokes_focus)
+                                        .addValue(KeyPress.newBuilder().setText("Keystrokes Focus"))
+                                        .setFillStrategy(
+                                                KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES))
+                        .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Keystrokes with Focus")
                                             .addChoices(Choice.newBuilder()))
                          .build());
 
@@ -147,6 +168,7 @@ public class AutofillAssistantInputActionIntegrationTest {
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("helloworld1"));
         assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
         assertThat(getElementValue(mTestRule.getWebContents(), "input3"), is("helloworld3"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "input4"), is("helloworld4"));
 
         runScript(script);
 
@@ -160,6 +182,10 @@ public class AutofillAssistantInputActionIntegrationTest {
 
         waitUntilViewMatchesCondition(withText("Keystrokes with Select"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "input3"), is("Keystrokes Select"));
+        onView(withText("Continue")).perform(click());
+
+        waitUntilViewMatchesCondition(withText("Keystrokes with Focus"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "input4"), is("Keystrokes Focus"));
     }
 
     @Test

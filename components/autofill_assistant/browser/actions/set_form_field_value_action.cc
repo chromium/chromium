@@ -20,7 +20,8 @@ namespace {
 
 bool IsSimulatingKeyPresses(KeyboardValueFillStrategy fill_strategy) {
   return fill_strategy == SIMULATE_KEY_PRESSES ||
-         fill_strategy == SIMULATE_KEY_PRESSES_SELECT_VALUE;
+         fill_strategy == SIMULATE_KEY_PRESSES_SELECT_VALUE ||
+         fill_strategy == SIMULATE_KEY_PRESSES_FOCUS;
 }
 
 }  // namespace
@@ -196,13 +197,15 @@ void SetFormFieldValueAction::SetFieldValueSequentially(
   }
 
   int delay_in_millisecond = proto_.set_form_value().delay_in_millisecond();
+  auto fill_strategy = proto_.set_form_value().fill_strategy();
   auto next_field_callback =
       base::BindOnce(&SetFormFieldValueAction::SetFieldValueSequentially,
                      weak_ptr_factory_.GetWeakPtr(), field_index + 1);
   const auto& field_input = field_inputs_[field_index];
   if (field_input.keyboard_input) {
     action_delegate_util::PerformSendKeyboardInput(
-        delegate_, *field_input.keyboard_input, delay_in_millisecond, *element_,
+        delegate_, *field_input.keyboard_input, delay_in_millisecond,
+        fill_strategy == SIMULATE_KEY_PRESSES_FOCUS, *element_,
         std::move(next_field_callback));
   } else if (field_input.password_type != PasswordValueType::NOT_SET) {
     switch (field_input.password_type) {
