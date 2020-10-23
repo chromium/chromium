@@ -33,6 +33,7 @@ namespace {
 struct SPDChromeVoice {
   std::string name;
   std::string module;
+  std::string language;
 };
 
 using PlatformVoices = std::map<std::string, SPDChromeVoice>;
@@ -264,6 +265,7 @@ void TtsPlatformImplBackgroundWorker::InitializeVoices(PlatformVoices* voices) {
       SPDChromeVoice spd_data;
       spd_data.name = spd_voice->name;
       spd_data.module = module;
+      spd_data.language = spd_voice->language;
       std::string key;
       key.append(spd_data.name);
       key.append(" ");
@@ -488,6 +490,7 @@ void TtsPlatformImplLinux::GetVoices(std::vector<VoiceData>* out_voices) {
     VoiceData& voice = out_voices->back();
     voice.native = true;
     voice.name = it->first;
+    voice.lang = it->second.language;
     voice.events.insert(TTS_EVENT_START);
     voice.events.insert(TTS_EVENT_END);
     voice.events.insert(TTS_EVENT_CANCELLED);
