@@ -211,13 +211,12 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   const GURL& last_url = navigation_handle()->GetURL();
   LookalikeUrlMatchType last_match_type;
   GURL last_suggested_url;
-  // If first_url == last_url, then don't check a second time. This saves time,
-  // and avoids clouding metrics.
+  // If first_url and last_url share a hostname, then don't check a second time.
+  // This saves time, and avoids clouding metrics.
   bool last_is_lookalike =
-      first_url != last_url &&
+      first_url.host() != last_url.host() &&
       IsLookalikeUrl(last_url, engaged_sites, &last_match_type,
                      &last_suggested_url);
-
 
   // If the first URL is a lookalike, but we ended up on the suggested site
   // anyway, don't warn.
@@ -290,11 +289,11 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
     return false;
   }
 
-  const DomainInfo navigated_domain = GetDomainInfo(url);
-  // Empty domain_and_registry happens on private domains.
-  if (navigated_domain.domain_and_registry.empty() ||
-      IsTopDomain(navigated_domain)) {
-    return content::NavigationThrottle::PROCEED;
+  // Don't warn on non-public domains.
+  if (net::HostStringIsLocalhost(url.host()) ||
+      net::IsHostnameNonUnique(url.host()) ||
+      GetETLDPlusOne(url.host()).empty()) {
+    return false;
   }
 
   // Fetch the component allowlist.
@@ -305,12 +304,6 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
     return false;
   }
 
-  // If the URL is in the component allowlist, don't show any warning.
-  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
-          proto, url.GetWithEmptyPath())) {
-    return false;
-  }
-
   // If the URL is in the local temporary allowlist, don't show any warning.
   if (ReputationService::Get(profile_)->IsIgnored(url)) {
     return false;
@@ -318,6 +311,18 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
 
   // If the host is allowlisted by policy, don't show any warning.
   if (IsAllowedByEnterprisePolicy(profile_->GetPrefs(), url)) {
+    return false;
+  }
+
+  // If the URL is in the component allowlist, don't show any warning.
+  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
+          proto, url.GetWithEmptyPath())) {
+    return false;
+  }
+
+  // GetDomainInfo() is expensive, so do possible early-abort checks first.
+  const DomainInfo navigated_domain = GetDomainInfo(url);
+  if (IsTopDomain(navigated_domain)) {
     return false;
   }
 
