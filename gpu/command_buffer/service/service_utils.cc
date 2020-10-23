@@ -163,6 +163,8 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
   gpu_preferences.enable_dawn_backend_validation =
       command_line->HasSwitch(switches::kEnableDawnBackendValidation);
+  gpu_preferences.disable_dawn_robustness =
+      command_line->HasSwitch(switches::kDisableDawnRobustness);
   gpu_preferences.gr_context_type = ParseGrContextType();
   gpu_preferences.use_vulkan = ParseVulkanImplementationName(command_line);
   gpu_preferences.disable_vulkan_surface =

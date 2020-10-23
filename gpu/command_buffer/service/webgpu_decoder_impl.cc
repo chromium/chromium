@@ -570,6 +570,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unique_ptr<dawn_native::Instance> dawn_instance_;
   std::vector<dawn_native::Adapter> dawn_adapters_;
 
+  bool disable_dawn_robustness_;
+
   DISALLOW_COPY_AND_ASSIGN(WebGPUDecoderImpl);
 };
 
@@ -612,7 +614,8 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
               memory_tracker)),
       dawn_platform_(new DawnPlatform()),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
-      dawn_instance_(new dawn_native::Instance()) {
+      dawn_instance_(new dawn_native::Instance()),
+      disable_dawn_robustness_(gpu_preferences.disable_dawn_robustness) {
   dawn_instance_->SetPlatform(dawn_platform_.get());
   dawn_instance_->EnableBackendValidation(
       gpu_preferences.enable_dawn_backend_validation);
@@ -655,6 +658,10 @@ error::Error WebGPUDecoderImpl::InitDawnDeviceAndSetWireServer(
 
   if (request_device_properties.timestampQuery) {
     device_descriptor.requiredExtensions.push_back("timestamp_query");
+  }
+
+  if (disable_dawn_robustness_) {
+    device_descriptor.forceEnabledToggles.push_back("disable_robustness");
   }
 
   WGPUDevice wgpu_device =

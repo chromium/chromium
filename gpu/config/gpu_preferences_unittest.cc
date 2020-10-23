@@ -80,6 +80,7 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enable_webgpu, right.enable_webgpu);
   EXPECT_EQ(left.enable_dawn_backend_validation,
             right.enable_dawn_backend_validation);
+  EXPECT_EQ(left.disable_dawn_robustness, right.disable_dawn_robustness);
   EXPECT_EQ(left.enable_gpu_blocked_time_metric,
             right.enable_gpu_blocked_time_metric);
   EXPECT_EQ(left.enable_perf_data_collection,

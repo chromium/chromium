@@ -46,6 +46,9 @@ const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
 // Enable validation layers in Dawn backends.
 const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";
 
+// Enable the toggle Toggle::DisableRobustness when creating Dawn device.
+const char kDisableDawnRobustness[] = "disable-dawn-robustness";
+
 // Increases the priority (to REALTIME_AUDIO) of gpu process and compositor
 // thread.
 // This is only to be used for perf tests on macOS for more reliable values.
