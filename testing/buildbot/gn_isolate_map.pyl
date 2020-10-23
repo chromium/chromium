@@ -116,41 +116,6 @@
     "label": "//third_party/angle:angle_apks",
     "type": "additional_compile_target",
   },
-  "angle_deqp_egl_tests": {
-    "args": [],
-    "label": "//third_party/angle/src/tests:angle_deqp_egl_tests",
-    "type": "windowed_test_launcher",
-  },
-  "angle_deqp_gles2_tests": {
-    "args": [],
-    "label": "//third_party/angle/src/tests:angle_deqp_gles2_tests",
-    "type": "windowed_test_launcher",
-  },
-  "angle_deqp_gles31_tests": {
-    "args": [],
-    "label": "//third_party/angle/src/tests:angle_deqp_gles31_tests",
-    "type": "windowed_test_launcher",
-  },
-  "angle_deqp_gles3_tests": {
-    "args": [],
-    "label": "//third_party/angle/src/tests:angle_deqp_gles3_tests",
-    "type": "windowed_test_launcher",
-  },
-  "angle_deqp_khr_gles2_tests": {
-    "args": [],
-    "label": "//third_party/angle/src/tests:angle_deqp_khr_gles2_tests",
-    "type": "windowed_test_launcher",
-  },
-  "angle_deqp_khr_gles3_tests": {
-    "args": [],
-    "label": "//third_party/angle/src/tests:angle_deqp_khr_gles3_tests",
-    "type": "windowed_test_launcher",
-  },
-  "angle_deqp_khr_gles31_tests": {
-    "args": [],
-    "label": "//third_party/angle/src/tests:angle_deqp_khr_gles31_tests",
-    "type": "windowed_test_launcher",
-  },
   "angle_end2end_tests": {
     "args": [],
     "label": "//third_party/angle/src/tests:angle_end2end_tests",

@@ -4102,63 +4102,88 @@
     },
 
     'swangle_gtests': {
-      'angle_deqp_egl_tests': {
+      'standalone_angle_deqp_egl_tests': {
         'args': [
-          '--deqp-egl-display-type=angle-swiftshader',
-          '--test-launcher-batch-limit=512',
-          '--test-launcher-retry-limit=0',
+          'standalone_angle_deqp_egl_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
         ],
-      },
-      'angle_deqp_gles2_tests': {
-        'args': [
-          '--deqp-egl-display-type=angle-swiftshader',
-          '--test-launcher-batch-limit=512',
-          '--test-launcher-retry-limit=0',
+        'linux_args': [
+          '--xvfb',
         ],
-        'swarming': {
-          'shards': 2,
-        },
+        'use_isolated_scripts_api': True,
       },
-      'angle_deqp_gles31_tests': {
+      'standalone_angle_deqp_gles2_tests': {
         'args': [
-          '--deqp-egl-display-type=angle-swiftshader',
-          '--test-launcher-batch-limit=512',
-          '--test-launcher-retry-limit=0',
+          'standalone_angle_deqp_gles2_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+      'standalone_angle_deqp_gles31_tests': {
+        'args': [
+          'standalone_angle_deqp_gles31_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'swarming': {
           'shards': 3,
         },
+        'use_isolated_scripts_api': True,
       },
-      'angle_deqp_gles3_tests': {
+      'standalone_angle_deqp_gles3_tests': {
         'args': [
-          '--deqp-egl-display-type=angle-swiftshader',
-          '--test-launcher-batch-limit=512',
-          '--test-launcher-retry-limit=0',
+          'standalone_angle_deqp_gles3_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
+        ],
+        'linux_args': [
+          '--xvfb',
         ],
         'swarming': {
-          'shards': 6,
+          'shards': 4,
         },
+        'use_isolated_scripts_api': True,
       },
-      'angle_deqp_khr_gles2_tests': {
+      'standalone_angle_deqp_khr_gles2_tests': {
         'args': [
-          '--deqp-egl-display-type=angle-swiftshader',
-          '--test-launcher-batch-limit=512',
-          '--test-launcher-retry-limit=0',
+          'standalone_angle_deqp_khr_gles2_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
       },
-      'angle_deqp_khr_gles31_tests': {
+      'standalone_angle_deqp_khr_gles31_tests': {
         'args': [
-          '--deqp-egl-display-type=angle-swiftshader',
-          '--test-launcher-batch-limit=512',
-          '--test-launcher-retry-limit=0',
+          'standalone_angle_deqp_khr_gles31_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
       },
-      'angle_deqp_khr_gles3_tests': {
+      'standalone_angle_deqp_khr_gles3_tests': {
         'args': [
-          '--deqp-egl-display-type=angle-swiftshader',
-          '--test-launcher-batch-limit=512',
-          '--test-launcher-retry-limit=0',
+          'standalone_angle_deqp_khr_gles3_tests',
+          '--use-angle=swiftshader',
+          '--bot-mode',
         ],
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
       },
       'standalone_angle_end2end_tests': {
         'args': [
