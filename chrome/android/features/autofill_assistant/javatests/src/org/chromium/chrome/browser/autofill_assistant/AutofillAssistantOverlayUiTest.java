@@ -26,6 +26,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -38,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayImage;
@@ -197,7 +199,10 @@ public class AutofillAssistantOverlayUiTest {
     /** Scrolls a touchable area into view and then taps it. */
     @Test
     @MediumTest
-    public void testSimpleScrollPartialOverlay() throws Exception {
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.M,
+            message = "Flaky on Lollipop https://crbug.com/1141889")
+    public void
+    testSimpleScrollPartialOverlay() throws Exception {
         AssistantOverlayModel model = new AssistantOverlayModel();
         AssistantOverlayCoordinator coordinator = createCoordinator(model);
 
