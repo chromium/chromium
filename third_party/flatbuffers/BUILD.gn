@@ -11,10 +11,14 @@ config("flatbuffers_config") {
 
 # The part of FlatBuffers that Chrome is interested in.
 source_set("flatbuffers") {
-  sources = [
+  public = [
     "src/include/flatbuffers/base.h",
     "src/include/flatbuffers/flatbuffers.h",
     "src/include/flatbuffers/stl_emulation.h",
+
+    # Required for tflite.
+    "src/include/flatbuffers/flexbuffers.h",
+    "src/include/flatbuffers/util.h",
   ]
 
   if (is_win) {
@@ -41,6 +45,8 @@ source_set("compiler_files") {
     "src/grpc/src/compiler/java_generator.h",
     "src/grpc/src/compiler/python_generator.cc",
     "src/grpc/src/compiler/schema_interface.h",
+    "src/grpc/src/compiler/swift_generator.cc",
+    "src/grpc/src/compiler/swift_generator.h",
     "src/include/flatbuffers/code_generators.h",
     "src/include/flatbuffers/flatbuffers.h",
     "src/include/flatbuffers/flatc.h",
@@ -70,6 +76,7 @@ source_set("compiler_files") {
     "src/src/idl_gen_php.cpp",
     "src/src/idl_gen_python.cpp",
     "src/src/idl_gen_rust.cpp",
+    "src/src/idl_gen_swift.cpp",
     "src/src/idl_gen_text.cpp",
     "src/src/idl_parser.cpp",
     "src/src/reflection.cpp",
@@ -103,6 +110,38 @@ flatbuffer("flatbuffers_samplebuffer") {
   flatc_include_dirs = [ "src/tests/include_test" ]
 }
 
+# This combines sources, "flatbuffers" and "flatbuffers_test", specified in the
+# public github repo required to build the unittests. This must be separate
+# from ":compiler_files".
+source_set("flatbuffers_test_files") {
+  include_dirs = [ "src/grpc" ]
+  sources = [
+    "src/include/flatbuffers/base.h",
+    "src/include/flatbuffers/code_generators.h",
+    "src/include/flatbuffers/flatbuffers.h",
+    "src/include/flatbuffers/flexbuffers.h",
+    "src/include/flatbuffers/grpc.h",
+    "src/include/flatbuffers/hash.h",
+    "src/include/flatbuffers/idl.h",
+    "src/include/flatbuffers/minireflect.h",
+    "src/include/flatbuffers/reflection.h",
+    "src/include/flatbuffers/reflection_generated.h",
+    "src/include/flatbuffers/registry.h",
+    "src/include/flatbuffers/stl_emulation.h",
+    "src/include/flatbuffers/util.h",
+    "src/src/code_generators.cpp",
+    "src/src/idl_gen_fbs.cpp",
+    "src/src/idl_gen_text.cpp",
+    "src/src/idl_parser.cpp",
+    "src/src/reflection.cpp",
+    "src/src/util.cpp",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [ ":flatbuffers" ]
+}
+
 test("flatbuffers_unittests") {
   sources = [
     "src/tests/native_type_test_impl.cpp",
@@ -111,9 +150,9 @@ test("flatbuffers_unittests") {
     "src/tests/test_builder.cpp",
   ]
   deps = [
-    ":compiler_files",
     ":flatbuffers",
     ":flatbuffers_samplebuffer",
+    ":flatbuffers_test_files",
   ]
   data = [
     "src/tests/",
