@@ -30,11 +30,10 @@ const char* const kDummyCandidates[] = {
 
 }  // namespace
 
-class CandidateViewTest : public views::ViewsTestBase,
-                          public views::ButtonListener {
+class CandidateViewTest : public views::ViewsTestBase {
  public:
-  CandidateViewTest() : widget_(nullptr), last_pressed_(nullptr) {}
-  ~CandidateViewTest() override {}
+  CandidateViewTest() = default;
+  ~CandidateViewTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -48,8 +47,8 @@ class CandidateViewTest : public views::ViewsTestBase,
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
     for (size_t i = 0; i < base::size(kDummyCandidates); ++i) {
-      CandidateView* candidate =
-          new CandidateView(this, ui::CandidateWindow::VERTICAL);
+      CandidateView* candidate = new CandidateView(
+          views::Button::PressedCallback(), ui::CandidateWindow::VERTICAL);
       ui::CandidateWindow::Entry entry;
       entry.value = base::UTF8ToUTF16(kDummyCandidates[i]);
       candidate->SetEntry(entry);
@@ -91,30 +90,12 @@ class CandidateViewTest : public views::ViewsTestBase,
     return (it == children.cend()) ? -1 : std::distance(children.cbegin(), it);
   }
 
-  int GetLastPressedIndexAndReset() {
-    const auto& children = container_->children();
-    const auto it =
-        std::find(children.cbegin(), children.cend(), last_pressed_);
-    if (it != children.cend()) {
-      last_pressed_ = nullptr;
-      return std::distance(children.cbegin(), it);
-    }
-
-    DCHECK(!last_pressed_);
-    return -1;
-  }
-
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
  private:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    last_pressed_ = sender;
-  }
-
-  views::Widget* widget_;
-  views::View* container_;
+  views::Widget* widget_ = nullptr;
+  views::View* container_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-  views::View* last_pressed_;
 
   DISALLOW_COPY_AND_ASSIGN(CandidateViewTest);
 };
@@ -145,10 +126,13 @@ TEST_F(CandidateViewTest, MouseHovers) {
 }
 
 TEST_F(CandidateViewTest, MouseClick) {
-  event_generator()->MoveMouseTo(
-      GetCandidateAt(1)->GetBoundsInScreen().CenterPoint());
+  bool clicked = false;
+  CandidateView* view = GetCandidateAt(1);
+  view->SetCallback(
+      base::BindRepeating([](bool* clicked) { *clicked = true; }, &clicked));
+  event_generator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator()->ClickLeftButton();
-  EXPECT_EQ(1, GetLastPressedIndexAndReset());
+  EXPECT_TRUE(clicked);
 }
 
 TEST_F(CandidateViewTest, ClickAndMove) {
@@ -157,6 +141,10 @@ TEST_F(CandidateViewTest, ClickAndMove) {
   EXPECT_EQ(1u, GetHighlightedCount());
   EXPECT_EQ(0, GetHighlightedIndex());
 
+  bool clicked = false;
+  CandidateView* view = GetCandidateAt(1);
+  view->SetCallback(
+      base::BindRepeating([](bool* clicked) { *clicked = true; }, &clicked));
   event_generator()->MoveMouseTo(
       GetCandidateAt(2)->GetBoundsInScreen().CenterPoint());
   event_generator()->PressLeftButton();
@@ -164,8 +152,7 @@ TEST_F(CandidateViewTest, ClickAndMove) {
   EXPECT_EQ(2, GetHighlightedIndex());
 
   // Highlight follows the drag.
-  event_generator()->MoveMouseTo(
-      GetCandidateAt(1)->GetBoundsInScreen().CenterPoint());
+  event_generator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(1u, GetHighlightedCount());
   EXPECT_EQ(1, GetHighlightedIndex());
 
@@ -174,13 +161,13 @@ TEST_F(CandidateViewTest, ClickAndMove) {
   EXPECT_EQ(1u, GetHighlightedCount());
   EXPECT_EQ(0, GetHighlightedIndex());
 
-  event_generator()->MoveMouseTo(
-      GetCandidateAt(1)->GetBoundsInScreen().CenterPoint());
+  event_generator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(1u, GetHighlightedCount());
   EXPECT_EQ(1, GetHighlightedIndex());
 
+  EXPECT_FALSE(clicked);
   event_generator()->ReleaseLeftButton();
-  EXPECT_EQ(1, GetLastPressedIndexAndReset());
+  EXPECT_TRUE(clicked);
 }
 
 }  // namespace ime

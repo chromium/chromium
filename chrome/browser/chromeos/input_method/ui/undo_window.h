@@ -14,8 +14,7 @@ namespace ui {
 namespace ime {
 
 // Pop up UI for users to undo an autocorrected word.
-class UI_CHROMEOS_EXPORT UndoWindow : public views::BubbleDialogDelegateView,
-                                      public views::ButtonListener {
+class UI_CHROMEOS_EXPORT UndoWindow : public views::BubbleDialogDelegateView {
  public:
   explicit UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate);
   ~UndoWindow() override;
@@ -39,14 +38,10 @@ class UI_CHROMEOS_EXPORT UndoWindow : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   const char* GetClassName() const override;
 
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  void AddUndoButton();
+  void UndoButtonPressed();
 
   AssistiveDelegate* delegate_;
   views::LabelButton* undo_button_;
-  views::Button* button_pressed_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UndoWindow);
 };

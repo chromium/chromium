@@ -11,7 +11,6 @@
 #include "ui/base/ime/candidate_window.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 
 namespace ui {
 namespace ime {
@@ -21,8 +20,7 @@ class InformationTextArea;
 
 // CandidateWindowView is the main container of the candidate window UI.
 class UI_CHROMEOS_EXPORT CandidateWindowView
-    : public views::BubbleDialogDelegateView,
-      public views::ButtonListener {
+    : public views::BubbleDialogDelegateView {
  public:
   // The object can be monitored by the observer.
   class Observer {
@@ -78,15 +76,14 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   // views::BubbleDialogDelegateView:
   const char* GetClassName() const override;
 
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   void SelectCandidateAt(int index_in_page);
   void UpdateVisibility();
 
   // Initializes the candidate views if needed.
   void MaybeInitializeCandidateViews(
       const ui::CandidateWindow& candidate_window);
+
+  void CandidateViewPressed(int index);
 
   // The candidate window data model.
   ui::CandidateWindow candidate_window_;
@@ -104,7 +101,7 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   views::View* candidate_area_;
 
   // The candidate views are used for rendering candidates.
-  std::vector<std::unique_ptr<CandidateView>> candidate_views_;
+  std::vector<CandidateView*> candidate_views_;
 
   // Current columns size in |candidate_area_|.
   gfx::Size previous_shortcut_column_size_;

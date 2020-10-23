@@ -37,8 +37,7 @@ class StubBubbleModelDelegate;
 // bar. Location bar is shown in read only mode, because this view is designed
 // to be used for sign in to captive portal on login screen (when Browser
 // isn't running).
-class SimpleWebViewDialog : public views::ButtonListener,
-                            public views::View,
+class SimpleWebViewDialog : public views::View,
                             public LocationBarView::Delegate,
                             public ChromeLocationBarModelDelegate,
                             public CommandUpdaterDelegate,
@@ -53,9 +52,6 @@ class SimpleWebViewDialog : public views::ButtonListener,
 
   // Inits view. Should be attached to a Widget before call.
   void Init();
-
-  // Implements views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Implements content::PageNavigator:
   content::WebContents* OpenURL(const content::OpenURLParams& params) override;

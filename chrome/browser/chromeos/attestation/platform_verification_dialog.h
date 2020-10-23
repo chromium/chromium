@@ -22,7 +22,6 @@ namespace attestation {
 
 // A tab-modal dialog UI to ask the user for PlatformVerificationFlow.
 class PlatformVerificationDialog : public views::DialogDelegateView,
-                                   public views::ButtonListener,
                                    public content::WebContentsObserver {
  public:
   enum ConsentResponse {
@@ -50,16 +49,14 @@ class PlatformVerificationDialog : public views::DialogDelegateView,
                              const base::string16& domain,
                              ConsentCallback callback);
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  void ButtonPressed();
+
   base::string16 domain_;
   ConsentCallback callback_;
-  views::ImageButton* learn_more_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformVerificationDialog);
 };

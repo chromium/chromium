@@ -19,7 +19,7 @@ namespace ime {
 // CandidateView renderes a row of a candidate.
 class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
  public:
-  CandidateView(views::ButtonListener* listener,
+  CandidateView(PressedCallback callback,
                 ui::CandidateWindow::Orientation orientation);
   ~CandidateView() override {}
 

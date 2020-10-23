@@ -84,22 +84,6 @@ SuggestionWindowView::CreateNonClientFrameView(views::Widget* widget) {
   return frame;
 }
 
-// TODO(crbug/1099116): Add test for ButtonPressed.
-void SuggestionWindowView::ButtonPressed(views::Button* sender,
-                                         const ui::Event& event) {
-  DCHECK(sender);
-  AssistiveWindowButton button;
-  if (sender->parent() == candidate_area_) {
-    button.id = ui::ime::ButtonId::kSuggestion;
-    button.index = candidate_area_->GetIndexOf(sender);
-  } else {
-    DCHECK_EQ(learn_more_button_, sender);
-    button.id = ui::ime::ButtonId::kLearnMore;
-    button.window_type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
-  }
-  delegate_->AssistiveWindowButtonClicked(button);
-}
-
 void SuggestionWindowView::Show(const SuggestionDetails& details) {
   ResizeCandidateArea(1);
   auto* const candidate =
@@ -201,7 +185,13 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
       base::BindRepeating(on_setting_link_clicked, delegate_));
   setting_link_->SetVisible(false);
 
-  learn_more_button_ = AddChildView(std::make_unique<views::ImageButton>(this));
+  learn_more_button_ =
+      AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
+          &AssistiveDelegate::AssistiveWindowButtonClicked,
+          base::Unretained(delegate_),
+          AssistiveWindowButton{
+              .id = ui::ime::ButtonId::kLearnMore,
+              .window_type = ui::ime::AssistiveWindowType::kEmojiSuggestion})));
   learn_more_button_->SetImageHorizontalAlignment(
       views::ImageButton::ALIGN_CENTER);
   learn_more_button_->SetImageVerticalAlignment(
@@ -230,9 +220,13 @@ void SuggestionWindowView::ResizeCandidateArea(size_t size) {
         candidate_area_->RemoveChildViewT(candidates.back()).get());
   }
 
-  while (candidates.size() < size) {
-    auto* const candidate =
-        candidate_area_->AddChildView(std::make_unique<SuggestionView>(this));
+  for (size_t index = candidates.size(); index < size; ++index) {
+    auto* const candidate = candidate_area_->AddChildView(
+        std::make_unique<SuggestionView>(base::BindRepeating(
+            &AssistiveDelegate::AssistiveWindowButtonClicked,
+            base::Unretained(delegate_),
+            AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
+                                  .index = index})));
     auto subscription = candidate->AddStateChangedCallback(base::BindRepeating(
         [](SuggestionWindowView* window, SuggestionView* button) {
           window->SetCandidateHighlighted(button, ShouldHighlight(*button));

@@ -42,7 +42,7 @@ constexpr SkColor kButtonHighlightColor =
 // SuggestionView renders a suggestion.
 class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
  public:
-  explicit SuggestionView(views::ButtonListener* listener);
+  explicit SuggestionView(PressedCallback callback);
   ~SuggestionView() override;
 
   void SetView(const SuggestionDetails& details);

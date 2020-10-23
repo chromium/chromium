@@ -167,20 +167,22 @@ void SimpleWebViewDialog::Init() {
   SetBackground(views::CreateSolidBackground(kDialogColor));
 
   // Back/Forward buttons.
-  auto back = std::make_unique<views::ImageButton>(this);
+  auto back = std::make_unique<views::ImageButton>(base::BindRepeating(
+      [](CommandUpdater* updater) { updater->ExecuteCommand(IDC_BACK); },
+      command_updater_.get()));
   back->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                                  ui::EF_MIDDLE_MOUSE_BUTTON);
-  back->set_tag(IDC_BACK);
   back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
   back->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
   back->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back->SetID(VIEW_ID_BACK_BUTTON);
   back_ = back.get();
 
-  auto forward = std::make_unique<views::ImageButton>(this);
+  auto forward = std::make_unique<views::ImageButton>(base::BindRepeating(
+      [](CommandUpdater* updater) { updater->ExecuteCommand(IDC_FORWARD); },
+      command_updater_.get()));
   forward->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                                     ui::EF_MIDDLE_MOUSE_BUTTON);
-  forward->set_tag(IDC_FORWARD);
   forward->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
   forward->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
   forward->SetID(VIEW_ID_FORWARD_BUTTON);
@@ -195,7 +197,6 @@ void SimpleWebViewDialog::Init() {
   auto reload = std::make_unique<ReloadButton>(command_updater_.get());
   reload->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                                    ui::EF_MIDDLE_MOUSE_BUTTON);
-  reload->set_tag(IDC_RELOAD);
   reload->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
   reload->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
   reload->SetID(VIEW_ID_RELOAD_BUTTON);
@@ -245,11 +246,6 @@ void SimpleWebViewDialog::Init() {
   layout->set_minimum_size(bounds.size());
 
   Layout();
-}
-
-void SimpleWebViewDialog::ButtonPressed(views::Button* sender,
-                                        const ui::Event& event) {
-  command_updater_->ExecuteCommand(sender->tag());
 }
 
 content::WebContents* SimpleWebViewDialog::OpenURL(

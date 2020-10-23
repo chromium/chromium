@@ -35,12 +35,11 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
-  AddUndoButton();
-}
 
-void UndoWindow::AddUndoButton() {
   undo_button_ = AddChildView(std::make_unique<views::LabelButton>(
-      this, base::UTF8ToUTF16(kUndoButtonText)));
+      base::BindRepeating(&UndoWindow::UndoButtonPressed,
+                          base::Unretained(this)),
+      base::UTF8ToUTF16(kUndoButtonText)));
   undo_button_->SetImageLabelSpacing(
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL));
@@ -96,23 +95,19 @@ void UndoWindow::SetButtonHighlighted(const AssistiveWindowButton& button,
                   : nullptr);
 }
 
-void UndoWindow::ButtonPressed(views::Button* sender, const ui::Event& event) {
-  button_pressed_ = sender;
-  if (sender == undo_button_) {
-    AssistiveWindowButton button;
-    button.id = ButtonId::kUndo;
-    button.window_type = AssistiveWindowType::kUndoWindow;
-    SetButtonHighlighted(button, true);
-    delegate_->AssistiveWindowButtonClicked(button);
-  }
-}
-
 views::Button* UndoWindow::GetUndoButtonForTesting() {
   return undo_button_;
 }
 
 const char* UndoWindow::GetClassName() const {
   return "UndoWindow";
+}
+
+void UndoWindow::UndoButtonPressed() {
+  const AssistiveWindowButton button = {
+      .id = ButtonId::kUndo, .window_type = AssistiveWindowType::kUndoWindow};
+  SetButtonHighlighted(button, true);
+  delegate_->AssistiveWindowButtonClicked(button);
 }
 
 }  // namespace ime

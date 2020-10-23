@@ -128,9 +128,9 @@ std::unique_ptr<views::Label> CreateAnnotationLabel(
 
 }  // namespace
 
-CandidateView::CandidateView(views::ButtonListener* listener,
+CandidateView::CandidateView(PressedCallback callback,
                              ui::CandidateWindow::Orientation orientation)
-    : views::Button(listener), orientation_(orientation) {
+    : views::Button(std::move(callback)), orientation_(orientation) {
   SetBorder(views::CreateEmptyBorder(1, 1, 1, 1));
 
   const ui::NativeTheme& theme = *GetNativeTheme();

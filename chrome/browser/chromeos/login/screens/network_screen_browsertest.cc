@@ -38,11 +38,6 @@ using views::Button;
 
 namespace chromeos {
 
-class DummyButtonListener : public views::ButtonListener {
- public:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {}
-};
-
 class NetworkScreenTest : public InProcessBrowserTest {
  public:
   NetworkScreenTest() = default;

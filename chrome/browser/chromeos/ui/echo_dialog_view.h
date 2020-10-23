@@ -11,7 +11,6 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
-class ImageButton;
 class View;
 }  // namespace views
 
@@ -28,8 +27,7 @@ class EchoDialogListener;
 // being redeemed. The dialog is shown to get an user consent. If the echo
 // extension is not allowed by policy to redeem offers, the dialog informs user
 // about this.
-class EchoDialogView : public views::DialogDelegateView,
-                       public views::ButtonListener {
+class EchoDialogView : public views::DialogDelegateView {
  public:
   struct Params {
     bool echo_enabled = false;
@@ -52,7 +50,8 @@ class EchoDialogView : public views::DialogDelegateView,
   // url. Service name should be underlined in the dialog, and hovering over its
   // label should display tooltip containing |origin|.
   // The dialog will have both OK and Cancel buttons.
-  void InitForEnabledEcho(const base::string16& service_name, const base::string16& origin);
+  void InitForEnabledEcho(const base::string16& service_name,
+                          const base::string16& origin);
 
   // Initializes dialog layout that will be shown when echo extension is not
   // allowed to redeem offers. The dialog will be showing a message that the
@@ -60,15 +59,9 @@ class EchoDialogView : public views::DialogDelegateView,
   // The dialog will have only Cancel button.
   void InitForDisabledEcho();
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // Sets the border and label view.
   void SetBorderAndLabel(std::unique_ptr<views::View> label,
                          const gfx::FontList& label_font_list);
-
-  EchoDialogListener* listener_ = nullptr;
-  views::ImageButton* learn_more_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(EchoDialogView);
 };

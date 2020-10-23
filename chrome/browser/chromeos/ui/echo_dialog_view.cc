@@ -20,28 +20,18 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
-
-std::unique_ptr<views::ImageButton> CreateLearnMoreButton(
-    views::ButtonListener* listener) {
-  auto learn_more_button = views::CreateVectorImageButtonWithNativeTheme(
-      listener, vector_icons::kHelpOutlineIcon);
-  learn_more_button->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
-  learn_more_button->SetFocusForPlatform();
-  return learn_more_button;
-}
-
-}  // namespace
-
 namespace chromeos {
 
 EchoDialogView::EchoDialogView(EchoDialogListener* listener,
-                               const EchoDialogView::Params& params)
-    : listener_(listener) {
-  DCHECK(listener_);
-  learn_more_button_ =
-      DialogDelegate::SetExtraView(CreateLearnMoreButton(this));
+                               const EchoDialogView::Params& params) {
+  auto* learn_more_button = DialogDelegate::SetExtraView(
+      views::CreateVectorImageButtonWithNativeTheme(
+          base::BindRepeating(&EchoDialogListener::OnMoreInfoLinkClicked,
+                              base::Unretained(listener)),
+          vector_icons::kHelpOutlineIcon));
+  learn_more_button->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
+  learn_more_button->SetFocusForPlatform();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ECHO);
 
   if (params.echo_enabled) {
@@ -63,9 +53,9 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
   }
 
   DialogDelegate::SetAcceptCallback(base::BindOnce(
-      &EchoDialogListener::OnAccept, base::Unretained(listener_)));
+      &EchoDialogListener::OnAccept, base::Unretained(listener)));
   DialogDelegate::SetCancelCallback(base::BindOnce(
-      &EchoDialogListener::OnCancel, base::Unretained(listener_)));
+      &EchoDialogListener::OnCancel, base::Unretained(listener)));
 
   DialogDelegate::SetShowTitle(false);
   DialogDelegate::SetShowCloseButton(false);
@@ -114,12 +104,6 @@ void EchoDialogView::InitForDisabledEcho() {
   // grab the font list before std::move(label) or it'll be nullptr
   gfx::FontList font_list = label->font_list();
   SetBorderAndLabel(std::move(label), font_list);
-}
-
-void EchoDialogView::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
-  DCHECK(sender == learn_more_button_);
-  listener_->OnMoreInfoLinkClicked();
 }
 
 void EchoDialogView::SetBorderAndLabel(std::unique_ptr<views::View> label,
