@@ -513,14 +513,6 @@ class Driver(object):
         if self._port.get_option('enable_leak_detection'):
             cmd.append('--enable-leak-detection')
 
-        # Run tests with the new SameSite cookie behavior by default.
-        # By appending the features to --enable-features, they will be enabled if
-        # they are not also explicitly disabled (as base::FeatureList disables a
-        # feature that appears in both --disable-features and --enable-features).
-        cmd.append(
-            '--enable-features=SameSiteByDefaultCookies,CookiesWithoutSameSiteMustBeSecure'
-        )
-
         cmd.extend(per_test_args)
         cmd = coalesce_repeated_switches(cmd)
         cmd.append('-')
