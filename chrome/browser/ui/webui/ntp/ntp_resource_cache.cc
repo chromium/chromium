@@ -601,6 +601,8 @@ void NTPResourceCache::CreateNewTabCSS() {
   // Colors.
   substitutions["colorBackground"] =
       color_utils::SkColorToRgbaString(color_background);
+  substitutions["colorLink"] = color_utils::SkColorToRgbString(
+      GetThemeColor(tp, ThemeProperties::COLOR_NTP_LINK));
   substitutions["backgroundBarDetached"] = GetNewTabBackgroundCSS(tp, false);
   substitutions["backgroundBarAttached"] = GetNewTabBackgroundCSS(tp, true);
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);

@@ -20,6 +20,11 @@ body {
   overflow: auto;
 }
 
+[is='action-link'],
+[is='action-link']:active {
+  color: rgb($i18n{colorLink});
+}
+
 #attribution {
   color: $i18n{colorTextLight};
   display: $i18n{displayAttribution};
