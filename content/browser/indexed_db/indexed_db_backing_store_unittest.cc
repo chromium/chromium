@@ -894,6 +894,68 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, PutGetConsistency) {
   task_environment_.RunUntilIdle();
 }
 
+// http://crbug.com/1131151
+// Validate that recovery journal cleanup during a transaction does
+// not delete blobs that were just written.
+TEST_P(IndexedDBBackingStoreTestWithExternalObjects, BlobWriteCleanup) {
+  const std::vector<IndexedDBKey> keys = {
+      IndexedDBKey(ASCIIToUTF16("key0")), IndexedDBKey(ASCIIToUTF16("key1")),
+      IndexedDBKey(ASCIIToUTF16("key2")), IndexedDBKey(ASCIIToUTF16("key3"))};
+
+  const int64_t database_id = 1;
+  const int64_t object_store_id = 1;
+
+  external_objects().clear();
+  for (size_t j = 0; j < 4; ++j) {
+    std::string type = "type " + base::NumberToString(j);
+    external_objects().push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
+  }
+
+  std::vector<IndexedDBValue> values = {
+      IndexedDBValue("value0", {external_objects()[0]}),
+      IndexedDBValue("value1", {external_objects()[1]}),
+      IndexedDBValue("value2", {external_objects()[2]}),
+      IndexedDBValue("value3", {external_objects()[3]}),
+  };
+  ASSERT_GE(keys.size(), values.size());
+
+  // Validate that cleaning up after writing blobs does not delete those
+  // blobs.
+  backing_store()->SetExecuteJournalCleaningOnNoTransactionsForTesting();
+
+  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction1 =
+      std::make_unique<IndexedDBBackingStore::Transaction>(
+          backing_store()->AsWeakPtr(),
+          blink::mojom::IDBTransactionDurability::Relaxed,
+          blink::mojom::IDBTransactionMode::ReadWrite);
+  transaction1->Begin(CreateDummyLock());
+  IndexedDBBackingStore::RecordIdentifier record;
+  for (size_t i = 0; i < values.size(); ++i) {
+    EXPECT_TRUE(backing_store()
+                    ->PutRecord(transaction1.get(), database_id,
+                                object_store_id, keys[i], &values[i], &record)
+                    .ok());
+  }
+
+  // Start committing transaction1.
+  bool succeeded = false;
+  EXPECT_TRUE(
+      transaction1->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(CheckBlobWrites());
+
+  // Finish committing transaction1.
+  EXPECT_TRUE(succeeded);
+  EXPECT_TRUE(transaction1->CommitPhaseTwo().ok());
+
+  // Verify lack of blob removals.
+  ASSERT_EQ(0UL, backing_store()->removals().size());
+
+  // Clean up on the IDB sequence.
+  transaction1.reset();
+  task_environment_.RunUntilIdle();
+}
+
 TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
   const std::vector<IndexedDBKey> keys = {
       IndexedDBKey(ASCIIToUTF16("key0")), IndexedDBKey(ASCIIToUTF16("key1")),

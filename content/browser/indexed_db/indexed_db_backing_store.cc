@@ -86,6 +86,23 @@ using indexed_db::PutString;
 using indexed_db::PutVarInt;
 using indexed_db::ReportOpenStatus;
 
+// An RAII helper to ensure that "DidCommitTransaction" is called
+// during this class's destruction.
+class AutoDidCommitTransaction {
+ public:
+  explicit AutoDidCommitTransaction(IndexedDBBackingStore* backing_store)
+      : backing_store_(backing_store) {
+    DCHECK(backing_store_);
+  }
+  ~AutoDidCommitTransaction() { backing_store_->DidCommitTransaction(); }
+
+  AutoDidCommitTransaction(const AutoDidCommitTransaction&) = delete;
+  AutoDidCommitTransaction operator=(const AutoDidCommitTransaction&) = delete;
+
+ private:
+  IndexedDBBackingStore* backing_store_;
+};
+
 namespace {
 
 FilePath GetBlobDirectoryName(const FilePath& path_base, int64_t database_id) {
@@ -3151,7 +3168,14 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
   DCHECK(committing_);
   committing_ = false;
 
-  backing_store_->DidCommitTransaction();
+  // DidCommitTransaction must be called during CommitPhaseTwo,
+  // as it decrements the number of active transactions that were
+  // incremented from CommitPhaseOne.  However, it also potentially cleans up
+  // the recovery blob journal, and so needs to be done after the newly
+  // written blobs have been removed from the recovery journal further below.
+  // As there are early outs in this function, use an RAII helper here.
+  AutoDidCommitTransaction run_did_commit_transaction_on_return(
+      backing_store_.get());
 
   BlobJournalType recovery_journal, active_journal, saved_recovery_journal,
       inactive_blobs;

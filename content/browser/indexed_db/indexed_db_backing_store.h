@@ -51,6 +51,7 @@ struct IndexedDBDatabaseMetadata;
 }  // namespace blink
 
 namespace content {
+class AutoDidCommitTransaction;
 class IndexedDBActiveBlobRegistry;
 class LevelDBWriteBatch;
 class TransactionalLevelDBDatabase;
@@ -500,6 +501,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   int NumAggregatedJournalCleaningRequestsForTesting() const {
     return num_aggregated_journal_cleaning_requests_;
   }
+  void SetExecuteJournalCleaningOnNoTransactionsForTesting() {
+    execute_journal_cleaning_on_no_txns_ = true;
+  }
 #endif
 
   // Stops the journal_cleaning_timer_ and runs its pending task.
@@ -558,6 +562,8 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   void CleanRecoveryJournalIgnoreReturn();
 
  private:
+  friend class AutoDidCommitTransaction;
+
   leveldb::Status FindKeyInIndex(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
