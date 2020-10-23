@@ -66,9 +66,11 @@ struct VideoCaptureImpl::BufferContext
     : public base::RefCountedThreadSafe<BufferContext> {
  public:
   BufferContext(media::mojom::blink::VideoBufferHandlePtr buffer_handle,
+                media::GpuVideoAcceleratorFactories* gpu_factories,
                 scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
       : buffer_type_(buffer_handle->which()),
-        media_task_runner_(media_task_runner) {
+        gpu_factories_(gpu_factories),
+        media_task_runner_(std::move(media_task_runner)) {
     switch (buffer_type_) {
       case VideoFrameBufferHandleType::SHARED_BUFFER_HANDLE:
         InitializeFromSharedMemory(
@@ -89,6 +91,7 @@ struct VideoCaptureImpl::BufferContext
         // On macOS, an IOSurfaces passed as a GpuMemoryBufferHandle can be
         // used by both hardware and software paths.
         // https://crbug.com/1125879
+        CHECK(gpu_factories_);
         CHECK(media_task_runner_);
 #endif
         InitializeFromGpuMemoryBufferHandle(
@@ -120,31 +123,20 @@ struct VideoCaptureImpl::BufferContext
   // the VideoFrame can access the data either through mailboxes (e.g. display)
   // or through the DMA-buf FDs (e.g. video encoder).
   static void BindBufferToTextureOnMediaThread(
-      media::GpuVideoAcceleratorFactories* gpu_factories,
       scoped_refptr<BufferContext> buffer_context,
       media::mojom::blink::VideoFrameInfoPtr info,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       scoped_refptr<media::VideoFrame> frame,
       base::OnceCallback<void(media::mojom::blink::VideoFrameInfoPtr,
                               scoped_refptr<media::VideoFrame>,
-                              scoped_refptr<BufferContext>)> on_texture_bound,
-      base::OnceCallback<void()> on_gpu_context_lost) {
-    DCHECK(gpu_factories);
+                              scoped_refptr<BufferContext>)> on_texture_bound) {
     DCHECK(buffer_context->media_task_runner_->BelongsToCurrentThread());
+    DCHECK(buffer_context->gpu_factories_);
     DCHECK_EQ(info->pixel_format, media::PIXEL_FORMAT_NV12);
-
-    bool should_recreate_shared_image = false;
-    if (gpu_factories != buffer_context->gpu_factories_) {
-      DVLOG(1) << "GPU context changed; re-creating SharedImage objects";
-      buffer_context->gpu_factories_ = gpu_factories;
-      should_recreate_shared_image = true;
-    }
 
     // Create GPU texture and bind GpuMemoryBuffer to the texture.
     auto* sii = buffer_context->gpu_factories_->SharedImageInterface();
     if (!sii) {
-      DVLOG(1) << "GPU context lost";
-      std::move(on_gpu_context_lost).Run();
       std::move(on_texture_bound)
           .Run(std::move(info), std::move(frame), std::move(buffer_context));
       return;
@@ -158,8 +150,7 @@ struct VideoCaptureImpl::BufferContext
     unsigned texture_target =
         buffer_context->gpu_factories_->ImageTextureTarget(
             gpu_memory_buffer->GetFormat());
-    if (should_recreate_shared_image ||
-        buffer_context->gmb_resources_->mailbox.IsZero()) {
+    if (buffer_context->gmb_resources_->mailbox.IsZero()) {
       uint32_t usage =
           gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
           gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
@@ -309,17 +300,13 @@ struct VideoCaptureImpl::ClientInfo {
   VideoCaptureDeliverFrameCB deliver_frame_cb;
 };
 
-VideoCaptureImpl::VideoCaptureImpl(
-    media::VideoCaptureSessionId session_id,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+VideoCaptureImpl::VideoCaptureImpl(media::VideoCaptureSessionId session_id)
     : device_id_(session_id),
       session_id_(session_id),
       video_capture_host_for_testing_(nullptr),
       state_(blink::VIDEO_CAPTURE_STATE_STOPPED),
-      main_task_runner_(std::move(main_task_runner)),
       gpu_memory_buffer_support_(new gpu::GpuMemoryBufferSupport()) {
   CHECK(!session_id.is_empty());
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
   DETACH_FROM_THREAD(io_thread_checker_);
 
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
@@ -328,25 +315,6 @@ VideoCaptureImpl::VideoCaptureImpl(
   gpu_factories_ = Platform::Current()->GetGpuFactories();
   if (gpu_factories_) {
     media_task_runner_ = gpu_factories_->GetTaskRunner();
-  }
-}
-
-void VideoCaptureImpl::OnGpuContextLost(
-    base::WeakPtr<VideoCaptureImpl> video_capture_impl) {
-  // Called on the main task runner.
-  auto* gpu_factories = Platform::Current()->GetGpuFactories();
-  Platform::Current()->GetIOTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoCaptureImpl::SetGpuFactoriesHandleOnIOTaskRunner,
-                     video_capture_impl, gpu_factories));
-}
-
-void VideoCaptureImpl::SetGpuFactoriesHandleOnIOTaskRunner(
-    media::GpuVideoAcceleratorFactories* gpu_factories) {
-  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
-  if (gpu_factories != gpu_factories_) {
-    LOG(ERROR) << "GPU factories handle changed; assuming GPU context lost";
-    gpu_factories_ = gpu_factories;
   }
 }
 
@@ -537,8 +505,9 @@ void VideoCaptureImpl::OnNewBuffer(
 
   const bool inserted =
       client_buffers_
-          .emplace(buffer_id, new BufferContext(std::move(buffer_handle),
-                                                media_task_runner_))
+          .emplace(buffer_id,
+                   new BufferContext(std::move(buffer_handle), gpu_factories_,
+                                     media_task_runner_))
           .second;
   DCHECK(inserted);
 }
@@ -703,15 +672,11 @@ void VideoCaptureImpl::OnBufferReady(
       media_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &BufferContext::BindBufferToTextureOnMediaThread, gpu_factories_,
+              &BufferContext::BindBufferToTextureOnMediaThread,
               std::move(buffer_context), std::move(info), std::move(gmb), frame,
               media::BindToCurrentLoop(base::BindOnce(
                   &VideoCaptureImpl::OnVideoFrameReady,
-                  weak_factory_.GetWeakPtr(), buffer_id, reference_time)),
-              media::BindToLoop(
-                  main_task_runner_,
-                  base::BindOnce(&VideoCaptureImpl::OnGpuContextLost,
-                                 weak_factory_.GetWeakPtr()))));
+                  weak_factory_.GetWeakPtr(), buffer_id, reference_time))));
       return;
     }
   }
