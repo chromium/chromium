@@ -9028,6 +9028,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="11" label="Aborted because there was no surface"/>
 </enum>
 
+<enum name="CanvasRenderingAPI">
+  <int value="0" label="2d"/>
+  <int value="1" label="webgl"/>
+  <int value="2" label="webgl2"/>
+  <int value="3" label="bitmaprenderer"/>
+  <int value="4" label="webgpu"/>
+</enum>
+
 <enum name="CanvasResourceProviderType">
   <int value="0" label="Texture"/>
   <int value="1" label="Bitmap"/>

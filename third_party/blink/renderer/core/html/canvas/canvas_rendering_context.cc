@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation_frame/worker_animation_frame_provider.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
@@ -122,6 +123,22 @@ void CanvasRenderingContext::DidProcessTask(
   FinalizeFrame();
   if (Host())
     Host()->PostFinalizeFrame();
+}
+
+void CanvasRenderingContext::RecordUKMCanvasRenderingAPI(
+    CanvasRenderingAPI canvasRenderingAPI) {
+  DCHECK(Host());
+  const auto& ukm_params = Host()->GetUkmParameters();
+  if (Host()->IsOffscreenCanvas()) {
+    ukm::builders::ClientRenderingAPI(ukm_params.source_id)
+        .SetOffscreenCanvas_RenderingContext(
+            static_cast<int>(canvasRenderingAPI))
+        .Record(ukm_params.ukm_recorder);
+  } else {
+    ukm::builders::ClientRenderingAPI(ukm_params.source_id)
+        .SetCanvas_RenderingContext(static_cast<int>(canvasRenderingAPI))
+        .Record(ukm_params.ukm_recorder);
+  }
 }
 
 CanvasRenderingContext::ContextType CanvasRenderingContext::ContextTypeFromId(

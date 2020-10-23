@@ -78,6 +78,18 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
     kMaxValue = kContextTypeUnknown,
   };
 
+  // Correspond to CanvasRenderingAPI defined in
+  // tools/metrics/histograms/enums.xml
+  enum CanvasRenderingAPI {
+    k2D = 0,
+    kWebgl = 1,
+    kWebgl2 = 2,
+    kBitmaprenderer = 3,
+    kWebgpu = 4,
+  };
+
+  void RecordUKMCanvasRenderingAPI(CanvasRenderingAPI canvasRenderingAPI);
+
   static ContextType ContextTypeFromId(const String& id);
   static ContextType ResolveContextTypeAliases(ContextType);
 

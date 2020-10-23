@@ -107,6 +107,9 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   bool IsOffscreenCanvas() const override;
 
   const UkmParameters GetUkmParameters() { return ukm_params_; }
+  void SetUkmRecorderForTesting(ukm::UkmRecorder* test_ukm_recorder) {
+    ukm_params_.ukm_recorder = test_ukm_recorder;
+  }
 
  protected:
   ~CanvasRenderingContextHost() override {}

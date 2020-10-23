@@ -674,6 +674,7 @@ blink_core_tests_html = [
   "anchor_element_metrics_test.cc",
   "canvas/canvas_async_blob_creator_test.cc",
   "canvas/canvas_font_cache_test.cc",
+  "canvas/canvas_rendering_api_ukm_metrics_test.cc",
   "canvas/html_canvas_element_test.cc",
   "canvas/image_data_test.cc",
   "custom/custom_element_definition_test.cc",

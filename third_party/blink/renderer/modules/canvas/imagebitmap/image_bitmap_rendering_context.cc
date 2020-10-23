@@ -58,7 +58,12 @@ ImageBitmap* ImageBitmapRenderingContext::TransferToImageBitmap(ScriptState*) {
 CanvasRenderingContext* ImageBitmapRenderingContext::Factory::Create(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs) {
-  return MakeGarbageCollected<ImageBitmapRenderingContext>(host, attrs);
+  CanvasRenderingContext* rendering_context =
+      MakeGarbageCollected<ImageBitmapRenderingContext>(host, attrs);
+  DCHECK(rendering_context);
+  rendering_context->RecordUKMCanvasRenderingAPI(
+      CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer);
+  return rendering_context;
 }
 
 }  // namespace blink

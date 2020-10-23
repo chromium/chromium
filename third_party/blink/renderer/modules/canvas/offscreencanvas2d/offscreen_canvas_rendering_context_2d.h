@@ -34,11 +34,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
     CanvasRenderingContext* Create(
         CanvasRenderingContextHost* host,
-        const CanvasContextCreationAttributesCore& attrs) override {
-      DCHECK(host->IsOffscreenCanvas());
-      return MakeGarbageCollected<OffscreenCanvasRenderingContext2D>(
-          static_cast<OffscreenCanvas*>(host), attrs);
-    }
+        const CanvasContextCreationAttributesCore& attrs) override;
 
     CanvasRenderingContext::ContextType GetContextType() const override {
       return CanvasRenderingContext::kContext2D;

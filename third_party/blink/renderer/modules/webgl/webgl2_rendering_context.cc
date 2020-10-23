@@ -107,7 +107,8 @@ CanvasRenderingContext* WebGL2RenderingContext::Factory::Create(
 
   rendering_context->InitializeNewContext();
   rendering_context->RegisterContextExtensions();
-
+  rendering_context->RecordUKMCanvasRenderingAPI(
+      CanvasRenderingContext::CanvasRenderingAPI::kWebgl2);
   return rendering_context;
 }
 

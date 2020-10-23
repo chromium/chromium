@@ -1,4 +1,7 @@
 specific_include_rules = {
+    "canvas_rendering_context.cc": [
+        "+services/metrics/public/cpp/ukm_builders.h",
+    ],
     "trust_token_attribute_parsing_test.cc": [
         "+services/network/trust_tokens/test",
     ],
