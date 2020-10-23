@@ -48,13 +48,13 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   LayoutObject* FirstChild() const {
     NOT_DESTROYED();
-    DCHECK_EQ(Children(), VirtualChildren());
-    return Children()->FirstChild();
+    DCHECK_EQ(&content_.Children(), VirtualChildren());
+    return content_.Children().FirstChild();
   }
   LayoutObject* LastChild() const {
     NOT_DESTROYED();
-    DCHECK_EQ(Children(), VirtualChildren());
-    return Children()->LastChild();
+    DCHECK_EQ(&content_.Children(), VirtualChildren());
+    return content_.Children().LastChild();
   }
 
   bool IsLayoutSizeChanged() const {
@@ -123,22 +123,13 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   }
   LayoutRect ComputeContentsVisualOverflow() const;
 
-  const LayoutObjectChildList* Children() const {
-    NOT_DESTROYED();
-    return &content_.Children();
-  }
-  LayoutObjectChildList* Children() {
-    NOT_DESTROYED();
-    return &content_.Children();
-  }
-
   LayoutObjectChildList* VirtualChildren() override {
     NOT_DESTROYED();
-    return Children();
+    return &content_.Children();
   }
   const LayoutObjectChildList* VirtualChildren() const override {
     NOT_DESTROYED();
-    return Children();
+    return &content_.Children();
   }
 
   bool IsOfType(LayoutObjectType type) const override {

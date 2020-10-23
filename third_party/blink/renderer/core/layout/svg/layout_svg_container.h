@@ -43,13 +43,13 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
 
   LayoutObject* FirstChild() const {
     NOT_DESTROYED();
-    DCHECK_EQ(Children(), VirtualChildren());
-    return Children()->FirstChild();
+    DCHECK_EQ(&content_.Children(), VirtualChildren());
+    return content_.Children().FirstChild();
   }
   LayoutObject* LastChild() const {
     NOT_DESTROYED();
-    DCHECK_EQ(Children(), VirtualChildren());
-    return Children()->LastChild();
+    DCHECK_EQ(&content_.Children(), VirtualChildren());
+    return content_.Children().LastChild();
   }
 
   void Paint(const PaintInfo&) const override;
@@ -82,11 +82,11 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
  protected:
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();
-    return Children();
+    return &content_.Children();
   }
   const LayoutObjectChildList* VirtualChildren() const final {
     NOT_DESTROYED();
-    return Children();
+    return &content_.Children();
   }
   SVGContentContainer& Content() { return content_; }
 
@@ -119,15 +119,6 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   void DescendantIsolationRequirementsChanged(DescendantIsolationState) final;
 
  private:
-  const LayoutObjectChildList* Children() const {
-    NOT_DESTROYED();
-    return &content_.Children();
-  }
-  LayoutObjectChildList* Children() {
-    NOT_DESTROYED();
-    return &content_.Children();
-  }
-
   SVGContentContainer content_;
   // TODO(fs): Some of this state can move to the "child list" object.
   FloatRect object_bounding_box_;
