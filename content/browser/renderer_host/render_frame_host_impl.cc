@@ -9657,9 +9657,6 @@ void RenderFrameHostImpl::OnCookiesAccessed(
 }
 
 void RenderFrameHostImpl::CheckSandboxFlags() {
-  if (is_mhtml_document_)
-    return;
-
   if (!active_sandbox_flags_control_)
     return;
 

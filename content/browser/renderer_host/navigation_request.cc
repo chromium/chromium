@@ -5044,8 +5044,16 @@ void NavigationRequest::ComputeSandboxFlagsToCommit() {
     }
   }
 
-  // TODO(arthursonzogni): Add the MHTML sandbox flags here. This should
-  // replicate DocumentLoader::CalculateSandboxFlags.
+  // The URL of a document loaded from a MHTML archive is controlled by the
+  // Content-Location header. This can be set to an arbitrary URL. This is
+  // potentially dangerous. For this reason we force the document to be
+  // sandboxed, providing exceptions only for creating new windows. This
+  // includes disallowing javascript and using an opaque origin.
+  if (IsLoadedFromMhtmlArchive()) {
+    *sandbox_flags_to_commit_ |= ~network::mojom::WebSandboxFlags::kPopups &
+                                 ~network::mojom::WebSandboxFlags::
+                                     kPropagatesToAuxiliaryBrowsingContexts;
+  }
 }
 
 void NavigationRequest::CheckStateTransition(NavigationState state) const {
