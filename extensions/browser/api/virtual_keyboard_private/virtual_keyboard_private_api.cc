@@ -161,7 +161,7 @@ VirtualKeyboardPrivateSetContainerBehaviorFunction::Run() {
 
 void VirtualKeyboardPrivateSetContainerBehaviorFunction::OnSetContainerBehavior(
     bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 ExtensionFunction::ResponseAction

@@ -209,7 +209,7 @@ ExtensionFunction::ResponseAction SerialUpdateFunction::Run() {
 }
 
 void SerialUpdateFunction::OnUpdated(bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 SerialDisconnectFunction::SerialDisconnectFunction() = default;
@@ -230,7 +230,7 @@ ExtensionFunction::ResponseAction SerialDisconnectFunction::Run() {
 
 void SerialDisconnectFunction::OnCloseComplete(int connection_id) {
   RemoveSerialConnection(connection_id);
-  Respond(OneArgument(std::make_unique<base::Value>(true)));
+  Respond(OneArgument(base::Value(true)));
 }
 
 SerialSendFunction::SerialSendFunction() = default;
@@ -280,7 +280,7 @@ ExtensionFunction::ResponseAction SerialFlushFunction::Run() {
 }
 
 void SerialFlushFunction::OnFlushed() {
-  Respond(OneArgument(std::make_unique<base::Value>(true)));
+  Respond(OneArgument(base::Value(true)));
 }
 
 SerialSetPausedFunction::SerialSetPausedFunction() = default;
@@ -408,7 +408,7 @@ ExtensionFunction::ResponseAction SerialSetControlSignalsFunction::Run() {
 }
 
 void SerialSetControlSignalsFunction::OnSetControlSignals(bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 SerialSetBreakFunction::SerialSetBreakFunction() = default;
@@ -432,7 +432,7 @@ ExtensionFunction::ResponseAction SerialSetBreakFunction::Run() {
 }
 
 void SerialSetBreakFunction::OnSetBreak(bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 SerialClearBreakFunction::SerialClearBreakFunction() = default;
@@ -456,7 +456,7 @@ ExtensionFunction::ResponseAction SerialClearBreakFunction::Run() {
 }
 
 void SerialClearBreakFunction::OnClearBreak(bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 }  // namespace api

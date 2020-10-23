@@ -338,7 +338,7 @@ void WebViewInternalCaptureVisibleRegionFunction::OnCaptureSuccess(
     return;
   }
 
-  Respond(OneArgument(std::make_unique<base::Value>(std::move(base64_result))));
+  Respond(OneArgument(base::Value(std::move(base64_result))));
 }
 
 void WebViewInternalCaptureVisibleRegionFunction::OnCaptureFailure(
@@ -647,7 +647,7 @@ ExtensionFunction::ResponseAction WebViewInternalGetZoomFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   double zoom_factor = guest_->GetZoom();
-  return RespondNow(OneArgument(std::make_unique<base::Value>(zoom_factor)));
+  return RespondNow(OneArgument(base::Value(zoom_factor)));
 }
 
 WebViewInternalSetZoomModeFunction::WebViewInternalSetZoomModeFunction() {
@@ -706,8 +706,8 @@ ExtensionFunction::ResponseAction WebViewInternalGetZoomModeFunction::Run() {
       NOTREACHED();
   }
 
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(web_view_internal::ToString(zoom_mode))));
+  return RespondNow(
+      OneArgument(base::Value(web_view_internal::ToString(zoom_mode))));
 }
 
 WebViewInternalFindFunction::WebViewInternalFindFunction() {
@@ -815,7 +815,7 @@ ExtensionFunction::ResponseAction WebViewInternalGoFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   bool successful = guest_->Go(params->relative_index);
-  return RespondNow(OneArgument(std::make_unique<base::Value>(successful)));
+  return RespondNow(OneArgument(base::Value(successful)));
 }
 
 WebViewInternalReloadFunction::WebViewInternalReloadFunction() {
@@ -869,8 +869,8 @@ ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(result !=
                               WebViewPermissionHelper::SET_PERMISSION_INVALID);
 
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
-      result == WebViewPermissionHelper::SET_PERMISSION_ALLOWED)));
+  return RespondNow(OneArgument(
+      base::Value(result == WebViewPermissionHelper::SET_PERMISSION_ALLOWED)));
 }
 
 WebViewInternalOverrideUserAgentFunction::
@@ -925,8 +925,7 @@ ExtensionFunction::ResponseAction WebViewInternalIsAudioMutedFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   content::WebContents* web_contents = guest_->web_contents();
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(web_contents->IsAudioMuted())));
+  return RespondNow(OneArgument(base::Value(web_contents->IsAudioMuted())));
 }
 
 WebViewInternalGetAudioStateFunction::WebViewInternalGetAudioStateFunction() {}
@@ -939,8 +938,8 @@ ExtensionFunction::ResponseAction WebViewInternalGetAudioStateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   content::WebContents* web_contents = guest_->web_contents();
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(web_contents->IsCurrentlyAudible())));
+  return RespondNow(
+      OneArgument(base::Value(web_contents->IsCurrentlyAudible())));
 }
 
 WebViewInternalTerminateFunction::WebViewInternalTerminateFunction() {
@@ -990,8 +989,8 @@ WebViewInternalIsSpatialNavigationEnabledFunction::Run() {
       web_view_internal::IsSpatialNavigationEnabled::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  return RespondNow(OneArgument(
-      std::make_unique<base::Value>(guest_->IsSpatialNavigationEnabled())));
+  return RespondNow(
+      OneArgument(base::Value(guest_->IsSpatialNavigationEnabled())));
 }
 
 // Parses the |dataToRemove| argument to generate the remove mask. Sets

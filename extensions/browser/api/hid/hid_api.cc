@@ -109,7 +109,7 @@ ExtensionFunction::ResponseAction HidGetUserSelectedDevicesFunction::Run() {
 
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents || !user_gesture()) {
-    return RespondNow(OneArgument(std::make_unique<base::ListValue>()));
+    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
   }
 
   bool multiple = false;

@@ -174,7 +174,7 @@ void NetworkingPrivateGetPropertiesFunction::Result(
   }
   FilterProperties(&result.value(), PropertiesType::GET, extension(),
                    source_context_type(), source_url());
-  Respond(OneArgument(base::Value::ToUniquePtrValue(std::move(*result))));
+  Respond(OneArgument(std::move(*result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -210,7 +210,7 @@ void NetworkingPrivateGetManagedPropertiesFunction::Result(
   }
   FilterProperties(&result.value(), PropertiesType::GET, extension(),
                    source_context_type(), source_url());
-  Respond(OneArgument(base::Value::ToUniquePtrValue(std::move(*result))));
+  Respond(OneArgument(std::move(*result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

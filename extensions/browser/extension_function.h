@@ -134,8 +134,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     virtual bool Apply() = 0;
 
    protected:
-    void SetFunctionResults(ExtensionFunction* function,
-                            std::unique_ptr<base::ListValue> results);
+    void SetFunctionResults(ExtensionFunction* function, base::Value results);
     void SetFunctionError(ExtensionFunction* function, std::string error);
   };
   typedef std::unique_ptr<ResponseValueObject> ResponseValue;
@@ -367,6 +366,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Success, no arguments to pass to caller.
   ResponseValue NoArguments();
   // Success, a single argument |arg| to pass to caller.
+  ResponseValue OneArgument(base::Value arg);
+  // Deprecated form of OneArgument() above.
   ResponseValue OneArgument(std::unique_ptr<base::Value> arg);
   // Success, two arguments |arg1| and |arg2| to pass to caller.
   // Note that use of this function may imply you

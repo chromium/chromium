@@ -328,8 +328,7 @@ SystemDisplayShowNativeTouchCalibrationFunction::Run() {
 
 void SystemDisplayShowNativeTouchCalibrationFunction::OnCalibrationComplete(
     base::Optional<std::string> error) {
-  Respond(error ? Error(*error)
-                : OneArgument(std::make_unique<base::Value>(true)));
+  Respond(error ? Error(*error) : OneArgument(base::Value(true)));
 }
 
 ExtensionFunction::ResponseAction

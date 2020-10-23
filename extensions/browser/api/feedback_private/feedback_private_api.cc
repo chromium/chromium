@@ -212,7 +212,7 @@ ExtensionFunction::ResponseAction FeedbackPrivateGetStringsFunction::Run() {
 ExtensionFunction::ResponseAction FeedbackPrivateGetUserEmailFunction::Run() {
   FeedbackPrivateDelegate* feedback_private_delegate =
       ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
+  return RespondNow(OneArgument(base::Value(
       feedback_private_delegate->GetSignedInUserEmail(browser_context()))));
 }
 

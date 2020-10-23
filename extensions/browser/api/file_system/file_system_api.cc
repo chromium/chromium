@@ -246,8 +246,7 @@ ExtensionFunction::ResponseAction FileSystemGetDisplayPathFunction::Run() {
   }
 
   file_path = path_util::PrettifyPath(file_path);
-  return RespondNow(
-      OneArgument(std::make_unique<base::Value>(file_path.value())));
+  return RespondNow(OneArgument(base::Value(file_path.value())));
 }
 
 FileSystemEntryFunction::FileSystemEntryFunction()
@@ -377,7 +376,7 @@ ExtensionFunction::ResponseAction FileSystemIsWritableEntryFunction::Run() {
   bool is_writable =
       policy->CanReadWriteFileSystem(source_process_id(), filesystem_id);
 
-  return RespondNow(OneArgument(std::make_unique<base::Value>(is_writable)));
+  return RespondNow(OneArgument(base::Value(is_writable)));
 }
 
 void FileSystemChooseEntryFunction::ShowPicker(
@@ -890,7 +889,7 @@ ExtensionFunction::ResponseAction FileSystemIsRestorableFunction::Run() {
       delegate->GetSavedFilesService(browser_context());
   DCHECK(saved_files_service);
 
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
+  return RespondNow(OneArgument(base::Value(
       saved_files_service->IsRegistered(extension_->id(), entry_id))));
 }
 

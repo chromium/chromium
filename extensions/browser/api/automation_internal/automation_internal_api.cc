@@ -651,7 +651,7 @@ void AutomationInternalQuerySelectorFunction::OnResponse(
     return;
   }
 
-  Respond(OneArgument(std::make_unique<base::Value>(result_acc_obj_id)));
+  Respond(OneArgument(base::Value(result_acc_obj_id)));
 }
 
 }  // namespace extensions

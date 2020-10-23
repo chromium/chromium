@@ -661,7 +661,7 @@ void RuntimeRequestUpdateCheckFunction::CheckComplete(
                          std::move(details)));
   } else {
     // HMM(kalman): Why does !success not imply Error()?
-    Respond(OneArgument(std::make_unique<base::Value>(result.response)));
+    Respond(OneArgument(base::Value(result.response)));
   }
 }
 

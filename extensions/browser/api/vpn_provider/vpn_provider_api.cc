@@ -162,7 +162,7 @@ void VpnThreadExtensionFunction::SignalCallCompletionSuccess() {
 
 void VpnThreadExtensionFunction::SignalCallCompletionSuccessWithId(
     const std::string& configuration_id) {
-  Respond(OneArgument(std::make_unique<base::Value>(configuration_id)));
+  Respond(OneArgument(base::Value(configuration_id)));
 }
 
 void VpnThreadExtensionFunction::SignalCallCompletionSuccessWithWarning(

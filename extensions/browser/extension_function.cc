@@ -196,15 +196,14 @@ void ReceivedBadMessage(T* bad_message_sender,
 class ArgumentListResponseValue
     : public ExtensionFunction::ResponseValueObject {
  public:
-  ArgumentListResponseValue(ExtensionFunction* function,
-                            std::unique_ptr<base::ListValue> result) {
+  ArgumentListResponseValue(ExtensionFunction* function, base::Value result) {
     SetFunctionResults(function, std::move(result));
     // It would be nice to DCHECK(error.empty()) but some legacy extension
     // function implementations... I'm looking at chrome.input.ime... do this
     // for some reason.
   }
 
-  ~ArgumentListResponseValue() override {}
+  ~ArgumentListResponseValue() override = default;
 
   bool Apply() override { return true; }
 };
@@ -212,13 +211,13 @@ class ArgumentListResponseValue
 class ErrorWithArgumentsResponseValue : public ArgumentListResponseValue {
  public:
   ErrorWithArgumentsResponseValue(ExtensionFunction* function,
-                                  std::unique_ptr<base::ListValue> result,
+                                  base::Value result,
                                   const std::string& error)
       : ArgumentListResponseValue(function, std::move(result)) {
     SetFunctionError(function, error);
   }
 
-  ~ErrorWithArgumentsResponseValue() override {}
+  ~ErrorWithArgumentsResponseValue() override = default;
 
   bool Apply() override { return false; }
 };
@@ -325,10 +324,11 @@ void UserGestureForTests::DecrementCount() {
 
 void ExtensionFunction::ResponseValueObject::SetFunctionResults(
     ExtensionFunction* function,
-    std::unique_ptr<base::ListValue> results) {
+    base::Value results) {
   DCHECK(!function->results_) << "Function " << function->name_
                               << "already has results set.";
-  function->results_ = std::move(results);
+  function->results_ =
+      base::ListValue::From(base::Value::ToUniquePtrValue(std::move(results)));
 }
 
 void ExtensionFunction::ResponseValueObject::SetFunctionError(
@@ -524,29 +524,41 @@ void ExtensionFunction::OnServiceWorkerAck() {
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::NoArguments() {
-  return ResponseValue(
-      new ArgumentListResponseValue(this, std::make_unique<base::ListValue>()));
+  return ResponseValue(new ArgumentListResponseValue(
+      this, base::Value(base::Value::Type::LIST)));
+}
+
+ExtensionFunction::ResponseValue ExtensionFunction::OneArgument(
+    base::Value arg) {
+  base::Value args(base::Value::Type::LIST);
+  args.Append(std::move(arg));
+  return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::OneArgument(
     std::unique_ptr<base::Value> arg) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(std::move(arg));
-  return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
+  base::Value new_arg;
+  if (arg)
+    new_arg = base::Value::FromUniquePtrValue(std::move(arg));
+  return OneArgument(std::move(new_arg));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
     std::unique_ptr<base::Value> arg1,
     std::unique_ptr<base::Value> arg2) {
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(std::move(arg1));
-  args->Append(std::move(arg2));
+  base::Value args(base::Value::Type::LIST);
+  args.Append(base::Value::FromUniquePtrValue(std::move(arg1)));
+  args.Append(base::Value::FromUniquePtrValue(std::move(arg2)));
   return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
     std::unique_ptr<base::ListValue> args) {
-  return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
+  base::Value new_args;
+  if (args)
+    new_args = base::Value::FromUniquePtrValue(std::move(args));
+  return ResponseValue(
+      new ArgumentListResponseValue(this, std::move(new_args)));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::Error(std::string error) {
@@ -580,8 +592,11 @@ ExtensionFunction::ResponseValue ExtensionFunction::Error(
 ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
     std::unique_ptr<base::ListValue> args,
     const std::string& error) {
+  base::Value new_args;
+  if (args)
+    new_args = base::Value::FromUniquePtrValue(std::move(args));
   return ResponseValue(
-      new ErrorWithArgumentsResponseValue(this, std::move(args), error));
+      new ErrorWithArgumentsResponseValue(this, std::move(new_args), error));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::BadMessage() {

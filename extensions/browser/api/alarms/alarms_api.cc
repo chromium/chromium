@@ -181,7 +181,7 @@ ExtensionFunction::ResponseAction AlarmsClearFunction::Run() {
 }
 
 void AlarmsClearFunction::Callback(const std::string& name, bool success) {
-  Respond(OneArgument(std::make_unique<base::Value>(success)));
+  Respond(OneArgument(base::Value(success)));
 }
 
 ExtensionFunction::ResponseAction AlarmsClearAllFunction::Run() {
@@ -194,7 +194,7 @@ ExtensionFunction::ResponseAction AlarmsClearAllFunction::Run() {
 }
 
 void AlarmsClearAllFunction::Callback() {
-  Respond(OneArgument(std::make_unique<base::Value>(true)));
+  Respond(OneArgument(base::Value(true)));
 }
 
 }  // namespace extensions

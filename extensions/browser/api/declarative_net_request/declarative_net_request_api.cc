@@ -463,8 +463,8 @@ DeclarativeNetRequestGetAvailableStaticRuleCountFunction::Run() {
     available_static_rule_count = static_rule_limit - enabled_static_rule_count;
     DCHECK_GE(static_rule_limit, available_static_rule_count);
 
-    return RespondNow(OneArgument(std::make_unique<base::Value>(
-        static_cast<int>(available_static_rule_count))));
+    return RespondNow(OneArgument(
+        base::Value(static_cast<int>(available_static_rule_count))));
   }
 
   const declarative_net_request::GlobalRulesTracker& global_rules_tracker =
@@ -484,8 +484,8 @@ DeclarativeNetRequestGetAvailableStaticRuleCountFunction::Run() {
   // Ensure conversion to int below doesn't underflow.
   DCHECK_LE(available_static_rule_count,
             static_cast<size_t>(std::numeric_limits<int>::max()));
-  return RespondNow(OneArgument(std::make_unique<base::Value>(
-      static_cast<int>(available_static_rule_count))));
+  return RespondNow(
+      OneArgument(base::Value(static_cast<int>(available_static_rule_count))));
 }
 
 }  // namespace extensions
