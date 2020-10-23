@@ -23,12 +23,12 @@ base::StringPiece MojoUtils::GetStringPieceFromMojoHandle(
     base::ReadOnlySharedMemoryMapping* shared_memory) {
   DCHECK(shared_memory);
 
-  base::PlatformFile platform_file;
+  base::ScopedPlatformFile platform_file;
   auto result = mojo::UnwrapPlatformFile(std::move(handle), &platform_file);
   if (result != MOJO_RESULT_OK)
     return base::StringPiece();
 
-  base::File file(platform_file);
+  base::File file(std::move(platform_file));
   size_t file_size = 0;
   {
     // TODO(b/146119375): Remove blocking operation from production code.
@@ -69,8 +69,7 @@ mojo::ScopedHandle MojoUtils::CreateReadOnlySharedMemoryMojoHandle(
   base::subtle::PlatformSharedMemoryRegion platform_region =
       base::ReadOnlySharedMemoryRegion::TakeHandleForSerialization(
           std::move(shm.region));
-  return mojo::WrapPlatformFile(
-      platform_region.PassPlatformHandle().fd.release());
+  return mojo::WrapPlatformFile(platform_region.PassPlatformHandle().fd);
 }
 
 }  // namespace chromeos

@@ -22,14 +22,14 @@ void DeletePrintDocument(const base::FilePath& file_path) {
 }
 
 base::FilePath SavePrintDocument(mojo::ScopedHandle scoped_handle) {
-  base::PlatformFile platform_file = base::kInvalidPlatformFile;
+  base::ScopedPlatformFile platform_file;
   if (mojo::UnwrapPlatformFile(std::move(scoped_handle), &platform_file) !=
       MOJO_RESULT_OK) {
     PLOG(ERROR) << "UnwrapPlatformFile failed.";
     return base::FilePath();
   }
 
-  base::File src_file(platform_file);
+  base::File src_file(std::move(platform_file));
   if (!src_file.IsValid()) {
     PLOG(ERROR) << "Source file is invalid.";
     return base::FilePath();

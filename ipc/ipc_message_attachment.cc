@@ -61,7 +61,7 @@ mojo::ScopedHandle MessageAttachment::TakeMojoHandle() {
         DPLOG(WARNING) << "Failed to dup FD to transmit.";
         return mojo::ScopedHandle();
       }
-      return mojo::WrapPlatformFile(file.release());
+      return mojo::WrapPlatformFile(std::move(file));
     }
 #endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
@@ -94,8 +94,8 @@ mojo::ScopedHandle MessageAttachment::TakeMojoHandle() {
     }
 #elif defined(OS_WIN)
     case Type::WIN_HANDLE:
-      return mojo::WrapPlatformFile(
-          static_cast<internal::HandleAttachmentWin*>(this)->Take());
+      return mojo::WrapPlatformFile(base::win::ScopedHandle(
+          static_cast<internal::HandleAttachmentWin*>(this)->Take()));
 #endif
     default:
       break;

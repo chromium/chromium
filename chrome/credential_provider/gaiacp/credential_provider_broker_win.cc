@@ -7,9 +7,11 @@
 #define INITGUID
 
 // clang-format off
+#include <windows.h>
 #include <hidclass.h>
 #include <hidsdi.h>
 #include <hidpi.h>
+#include <setupapi.h>
 // clang-format on
 
 #include "base/memory/free_deleter.h"

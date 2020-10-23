@@ -5,6 +5,8 @@
 #ifndef GPU_IPC_COMMON_LUID_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_LUID_MOJOM_TRAITS_H_
 
+#include <windows.h>
+
 #include "gpu/ipc/common/luid.mojom-shared.h"
 
 namespace mojo {

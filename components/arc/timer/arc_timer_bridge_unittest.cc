@@ -38,7 +38,7 @@ namespace {
 // Converts a system file descriptor to a mojo handle that can be sent to the
 // host.
 mojo::ScopedHandle WrapPlatformFd(base::ScopedFD scoped_fd) {
-  mojo::ScopedHandle handle = mojo::WrapPlatformFile(scoped_fd.release());
+  mojo::ScopedHandle handle = mojo::WrapPlatformFile(std::move(scoped_fd));
   if (!handle.is_valid()) {
     LOG(ERROR) << "Failed to wrap platform handle";
     return mojo::ScopedHandle();

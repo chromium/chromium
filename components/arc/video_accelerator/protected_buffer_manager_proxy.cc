@@ -28,7 +28,7 @@ void GpuArcProtectedBufferManagerProxy::GetProtectedSharedMemoryFromHandle(
       std::move(unwrapped_fd));
   // This ScopedFDPair dance is chromeos-specific.
   base::subtle::ScopedFDPair fd_pair = region.PassPlatformHandle();
-  std::move(callback).Run(mojo::WrapPlatformFile(fd_pair.fd.release()));
+  std::move(callback).Run(mojo::WrapPlatformFile(std::move(fd_pair.fd)));
 }
 
 }  // namespace arc

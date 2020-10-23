@@ -40,13 +40,12 @@ void OnStartTimer(mojom::TimerHost::StartTimerCallback callback, bool result) {
 
 // Unwraps a mojo handle to a file descriptor on the system.
 base::ScopedFD UnwrapScopedHandle(mojo::ScopedHandle handle) {
-  base::PlatformFile platform_file;
+  base::ScopedPlatformFile platform_file;
   if (mojo::UnwrapPlatformFile(std::move(handle), &platform_file) !=
       MOJO_RESULT_OK) {
     LOG(ERROR) << "Failed to unwrap mojo handle";
-    return base::ScopedFD();
   }
-  return base::ScopedFD(platform_file);
+  return platform_file;
 }
 
 // Returns true iff |arc_timer_requests| contains duplicate clock id values.

@@ -7,8 +7,6 @@
 
 #include "chrome/credential_provider/gaiacp/mojom/gaia_credential_provider_win_hid.mojom.h"
 
-#include <setupapi.h>
-
 #include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 

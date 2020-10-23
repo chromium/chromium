@@ -4,6 +4,8 @@
 
 #include "chrome/chrome_cleaner/mojom/typemaps/windows_handle_mojom_traits.h"
 
+#include <windows.h>
+
 namespace mojo {
 
 using chrome_cleaner::mojom::PredefinedHandle;

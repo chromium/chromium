@@ -127,9 +127,9 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
     uint32_t output_buffer_size,
     EncodeWithFDCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::PlatformFile input_fd;
-  base::PlatformFile exif_fd;
-  base::PlatformFile output_fd;
+  base::ScopedPlatformFile input_fd;
+  base::ScopedPlatformFile exif_fd;
+  base::ScopedPlatformFile output_fd;
   MojoResult result;
 
   if (coded_size_width <= 0 || coded_size_height <= 0) {
@@ -166,13 +166,13 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
   base::UnsafeSharedMemoryRegion input_region =
       base::UnsafeSharedMemoryRegion::Deserialize(
           base::subtle::PlatformSharedMemoryRegion::Take(
-              base::ScopedFD(input_fd),
+              std::move(input_fd),
               base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
               input_buffer_size, base::UnguessableToken::Create()));
 
   base::subtle::PlatformSharedMemoryRegion output_shm_region =
       base::subtle::PlatformSharedMemoryRegion::Take(
-          base::ScopedFD(output_fd),
+          std::move(output_fd),
           base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
           output_buffer_size, base::UnguessableToken::Create());
 
@@ -182,8 +182,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
   if (exif_buffer_size > 0) {
     base::subtle::PlatformSharedMemoryRegion exif_shm_region =
         base::subtle::PlatformSharedMemoryRegion::Take(
-            base::subtle::ScopedFDPair(base::ScopedFD(exif_fd),
-                                       base::ScopedFD()),
+            base::subtle::ScopedFDPair(std::move(exif_fd), base::ScopedFD()),
             base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
             exif_buffer_size, base::UnguessableToken::Create());
     exif_buffer = std::make_unique<media::BitstreamBuffer>(
@@ -261,7 +260,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     return;
   }
 
-  base::PlatformFile exif_fd;
+  base::ScopedPlatformFile exif_fd;
   auto result = mojo::UnwrapPlatformFile(std::move(exif_handle), &exif_fd);
   if (result != MOJO_RESULT_OK) {
     std::move(callback).Run(
@@ -289,8 +288,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithDmaBuf(
     // the encode task process from both Chrome OS and Chrome side.
     base::subtle::PlatformSharedMemoryRegion exif_shm_region =
         base::subtle::PlatformSharedMemoryRegion::Take(
-            base::subtle::ScopedFDPair(base::ScopedFD(exif_fd),
-                                       base::ScopedFD()),
+            base::subtle::ScopedFDPair(std::move(exif_fd), base::ScopedFD()),
             base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
             exif_buffer_size, base::UnguessableToken::Create());
     exif_buffer = std::make_unique<media::BitstreamBuffer>(

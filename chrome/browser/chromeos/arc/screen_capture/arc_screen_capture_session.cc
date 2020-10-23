@@ -198,7 +198,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   handle.type = gfx::NATIVE_PIXMAP;
   // Dummy modifier.
   handle.native_pixmap_handle.modifier = 0;
-  base::PlatformFile platform_file;
+  base::ScopedPlatformFile platform_file;
   MojoResult mojo_result =
       mojo::UnwrapPlatformFile(std::move(graphics_buffer), &platform_file);
   if (mojo_result != MOJO_RESULT_OK) {
@@ -208,7 +208,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   }
   handle.native_pixmap_handle.planes.emplace_back(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
-      base::ScopedFD(platform_file));
+      std::move(platform_file));
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
           client_native_pixmap_factory_.get(), std::move(handle), size_,

@@ -14,19 +14,20 @@ namespace mojo {
 
 namespace {
 
-uint64_t PlatformHandleValueFromPlatformFile(base::PlatformFile file) {
+uint64_t ReleasePlatformHandleValueFromPlatformFile(
+    base::ScopedPlatformFile file) {
 #if defined(OS_WIN)
-  return reinterpret_cast<uint64_t>(file);
+  return reinterpret_cast<uint64_t>(file.Take());
 #else
-  return static_cast<uint64_t>(file);
+  return static_cast<uint64_t>(file.release());
 #endif
 }
 
-base::PlatformFile PlatformFileFromPlatformHandleValue(uint64_t value) {
+base::ScopedPlatformFile PlatformFileFromPlatformHandleValue(uint64_t value) {
 #if defined(OS_WIN)
-  return reinterpret_cast<base::PlatformFile>(value);
+  return base::ScopedPlatformFile(reinterpret_cast<base::PlatformFile>(value));
 #else
-  return static_cast<base::PlatformFile>(value);
+  return base::ScopedPlatformFile(static_cast<base::PlatformFile>(value));
 #endif
 }
 
@@ -198,12 +199,12 @@ PlatformHandle UnwrapPlatformHandle(ScopedHandle handle) {
   return PlatformHandle::FromMojoPlatformHandle(&platform_handle);
 }
 
-// Wraps a PlatformFile as a Mojo handle. Takes ownership of the file object.
-ScopedHandle WrapPlatformFile(base::PlatformFile platform_file) {
+ScopedHandle WrapPlatformFile(base::ScopedPlatformFile platform_file) {
   MojoPlatformHandle platform_handle;
   platform_handle.struct_size = sizeof(MojoPlatformHandle);
   platform_handle.type = kPlatformFileHandleType;
-  platform_handle.value = PlatformHandleValueFromPlatformFile(platform_file);
+  platform_handle.value =
+      ReleasePlatformHandleValueFromPlatformFile(std::move(platform_file));
 
   MojoHandle mojo_handle;
   MojoResult result =
@@ -213,7 +214,8 @@ ScopedHandle WrapPlatformFile(base::PlatformFile platform_file) {
   return ScopedHandle(Handle(mojo_handle));
 }
 
-MojoResult UnwrapPlatformFile(ScopedHandle handle, base::PlatformFile* file) {
+MojoResult UnwrapPlatformFile(ScopedHandle handle,
+                              base::ScopedPlatformFile* file) {
   MojoPlatformHandle platform_handle;
   platform_handle.struct_size = sizeof(MojoPlatformHandle);
   MojoResult result = MojoUnwrapPlatformHandle(handle.release().value(),
@@ -222,7 +224,7 @@ MojoResult UnwrapPlatformFile(ScopedHandle handle, base::PlatformFile* file) {
     return result;
 
   if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_INVALID) {
-    *file = base::kInvalidPlatformFile;
+    *file = base::ScopedPlatformFile();
   } else {
     CHECK_EQ(platform_handle.type, kPlatformFileHandleType);
     *file = PlatformFileFromPlatformHandleValue(platform_handle.value);

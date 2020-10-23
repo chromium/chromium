@@ -375,7 +375,7 @@ void ArcTracingBridge::StartTracing(const std::string& config,
   }
 
   tracing_instance->StartTracing(
-      selected_categories, mojo::WrapPlatformFile(write_fd.release()),
+      selected_categories, mojo::WrapPlatformFile(std::move(write_fd)),
       base::BindOnce(&ArcTracingBridge::OnArcTracingStarted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 

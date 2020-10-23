@@ -21,15 +21,12 @@ base::ScopedFD UnwrapFdFromMojoHandle(mojo::ScopedHandle handle) {
     return base::ScopedFD();
   }
 
-  base::PlatformFile platform_file;
+  base::ScopedPlatformFile platform_file;
   MojoResult mojo_result =
       mojo::UnwrapPlatformFile(std::move(handle), &platform_file);
-  if (mojo_result != MOJO_RESULT_OK) {
+  if (mojo_result != MOJO_RESULT_OK)
     VLOGF(1) << "UnwrapPlatformFile failed: " << mojo_result;
-    return base::ScopedFD();
-  }
-
-  return base::ScopedFD(platform_file);
+  return platform_file;
 }
 
 std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds) {
