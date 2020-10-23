@@ -1962,7 +1962,10 @@ const LayoutBlock* LayoutBlock::EnclosingFirstLineStyleBlock() const {
         !parent_block->BehavesLikeBlockContainer())
       break;
     auto* parent_layout_block = DynamicTo<LayoutBlock>(parent_block);
-    if (parent_layout_block->FirstChild() != first_line_block)
+    const LayoutObject* first_child = parent_layout_block->FirstChild();
+    while (first_child->IsFloatingOrOutOfFlowPositioned())
+      first_child = first_child->NextSibling();
+    if (first_child != first_line_block)
       break;
     first_line_block = parent_layout_block;
   }

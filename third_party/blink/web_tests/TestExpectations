@@ -5371,8 +5371,6 @@ crbug.com/974675 http/tests/devtools/sources/debugger-frameworks/frameworks-jque
 # Sheriff 2019-06-26
 crbug.com/978966 [ Mac ] paint/markers/ellipsis-mixed-text-in-ltr-flow-with-markers.html [ Pass Failure ]
 
-crbug.com/979253 external/wpt/css/css-pseudo/first-line-with-out-of-flow.html [ Failure ]
-
 # Sheriff 2019-06-27
 crbug.com/979243 [ Mac ] editing/selection/inline-closest-leaf-child.html [ Pass Failure ]
 crbug.com/979336 [ Mac ] fast/dynamic/anonymous-block-orphaned-lines.html [ Pass Failure ]

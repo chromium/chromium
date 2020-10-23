@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#first-line-pseudo">
 <link rel="match" href="first-line-with-out-of-flow-ref.html">
-<title>CSS Test: ::first-line with out of flow</title>
+<title>CSS Test: ::first-line with out of flow and nested div</title>
 <style>
   #block::first-line { color: green; }
 </style>
@@ -13,7 +13,7 @@
     <div style="float: right"><br></div>
     <div style="color: blue">
       <div>
-        <span><span>This text should be green.</span></span><br>
+        <div style="position: absolute"></div><span>This text <div style="position: absolute"></div></span><span>should be green.</span><br>
         This text should be blue.
       </div>
     </div>
