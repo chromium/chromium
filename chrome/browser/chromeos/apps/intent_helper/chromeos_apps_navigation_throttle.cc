@@ -109,7 +109,7 @@ void ChromeOsAppsNavigationThrottle::OnIntentPickerClosed(
       break;
     case apps::PickerEntryType::kWeb:
     case apps::PickerEntryType::kDevice:
-    case apps::PickerEntryType::kMacNative:
+    case apps::PickerEntryType::kMacOs:
       break;
   }
 
@@ -174,7 +174,7 @@ ChromeOsAppsNavigationThrottle::GetDestinationPlatform(
     case PickerAction::OBSOLETE_JUST_ONCE_PRESSED:
     case PickerAction::INVALID:
     case PickerAction::DEVICE_PRESSED:
-    case PickerAction::MAC_NATIVE_APP_PRESSED:
+    case PickerAction::MAC_OS_APP_PRESSED:
       break;
   }
   return apps::AppsNavigationThrottle::GetDestinationPlatform(

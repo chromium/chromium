@@ -33,7 +33,7 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
   }
   app_icon.size = NSMakeSize(16, 16);
 
-  return IntentPickerAppInfo(PickerEntryType::kMacNative, gfx::Image(app_icon),
+  return IntentPickerAppInfo(PickerEntryType::kMacOs, gfx::Image(app_icon),
                              base::SysNSStringToUTF8([app_url path]),
                              base::SysNSStringToUTF8(app_name));
 }
@@ -121,7 +121,7 @@ void MacAppsNavigationThrottle::OnIntentPickerClosed(
     PickerEntryType entry_type,
     apps::IntentPickerCloseReason close_reason,
     bool should_persist) {
-  if (entry_type == PickerEntryType::kMacNative) {
+  if (entry_type == PickerEntryType::kMacOs) {
     if (close_reason == apps::IntentPickerCloseReason::OPEN_APP) {
       [[NSWorkspace sharedWorkspace]
                       openURLs:@[ net::NSURLWithGURL(url) ]

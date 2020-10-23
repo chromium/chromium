@@ -167,7 +167,7 @@ void AppsNavigationThrottle::OnIntentPickerClosed(
       break;
     case PickerEntryType::kArc:
     case PickerEntryType::kDevice:
-    case PickerEntryType::kMacNative:
+    case PickerEntryType::kMacOs:
       NOTREACHED();
   }
 }
@@ -279,8 +279,8 @@ AppsNavigationThrottle::Platform AppsNavigationThrottle::GetDestinationPlatform(
       return Platform::ARC;
     case PickerAction::PWA_APP_PRESSED:
       return Platform::PWA;
-    case PickerAction::MAC_NATIVE_APP_PRESSED:
-      return Platform::MAC_NATIVE;
+    case PickerAction::MAC_OS_APP_PRESSED:
+      return Platform::MAC_OS;
     case PickerAction::ERROR_BEFORE_PICKER:
     case PickerAction::ERROR_AFTER_PICKER:
     case PickerAction::DIALOG_DEACTIVATED:
@@ -328,8 +328,8 @@ AppsNavigationThrottle::PickerAction AppsNavigationThrottle::GetPickerAction(
           return PickerAction::PWA_APP_PRESSED;
         case PickerEntryType::kDevice:
           return PickerAction::DEVICE_PRESSED;
-        case PickerEntryType::kMacNative:
-          return PickerAction::MAC_NATIVE_APP_PRESSED;
+        case PickerEntryType::kMacOs:
+          return PickerAction::MAC_OS_APP_PRESSED;
       }
   }
 
@@ -387,7 +387,7 @@ bool AppsNavigationThrottle::ContainsOnlyPwasAndMacApps(
   return std::all_of(apps.begin(), apps.end(),
                      [](const apps::IntentPickerAppInfo& app_info) {
                        return app_info.type == PickerEntryType::kWeb ||
-                              app_info.type == PickerEntryType::kMacNative;
+                              app_info.type == PickerEntryType::kMacOs;
                      });
 }
 

@@ -121,8 +121,8 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
     ERROR_BEFORE_PICKER = 10,
     INVALID = 11,
     DEVICE_PRESSED = 12,
-    MAC_NATIVE_APP_PRESSED = 13,
-    kMaxValue = MAC_NATIVE_APP_PRESSED,
+    MAC_OS_APP_PRESSED = 13,
+    kMaxValue = MAC_OS_APP_PRESSED,
   };
 
   // As for PickerAction, these define the buckets for an UMA histogram, so this
@@ -134,8 +134,8 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
     CHROME = 1,
     PWA = 2,
     DEVICE = 3,
-    MAC_NATIVE = 4,
-    kMaxValue = MAC_NATIVE,
+    MAC_OS = 4,
+    kMaxValue = MAC_OS,
   };
 
   // TODO(ajlinker): move these two functions below to IntentHandlingMetrics.
