@@ -98,8 +98,8 @@ void LoadBookmarks(const base::FilePath& path,
       BookmarkCodec codec;
       base::TimeTicks start_time = base::TimeTicks::Now();
       codec.Decode(*root, details->bb_node(), details->other_folder_node(),
-                   details->mobile_folder_node(), &max_node_id,
-                   &sync_metadata_str);
+                   details->mobile_folder_node(), details->chrome_cart_node(),
+                   &max_node_id, &sync_metadata_str);
       details->set_sync_metadata_str(std::move(sync_metadata_str));
       details->set_max_id(std::max(max_node_id, details->max_id()));
       details->set_computed_checksum(codec.computed_checksum());

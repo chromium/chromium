@@ -116,6 +116,12 @@ class BookmarkModel : public BookmarkUndoProvider,
     return mobile_node_;
   }
 
+  // Returns the 'chrome cart' node. This is NULL until loaded.
+  const BookmarkNode* chrome_cart_node() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return chrome_cart_node_;
+  }
+
   bool is_root_node(const BookmarkNode* node) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return node == root_;
@@ -182,6 +188,9 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   // Returns the set of nodes with the |url|.
   void GetNodesByURL(const GURL& url, std::vector<const BookmarkNode*>* nodes);
+
+  // Returns the nodes that store information of chrome carts.
+  void GetChromeCartNodes(std::vector<const BookmarkNode*>& nodes);
 
   // Returns the most recently added user node for the |url|; urls from any
   // nodes that are not editable by the user are never returned by this call.
@@ -392,6 +401,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   BookmarkPermanentNode* bookmark_bar_node_ = nullptr;
   BookmarkPermanentNode* other_node_ = nullptr;
   BookmarkPermanentNode* mobile_node_ = nullptr;
+  BookmarkPermanentNode* chrome_cart_node_ = nullptr;
 
   // The maximum ID assigned to the bookmark nodes in the model.
   int64_t next_node_id_ = 1;

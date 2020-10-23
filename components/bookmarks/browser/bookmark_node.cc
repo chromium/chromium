@@ -41,6 +41,8 @@ const char BookmarkNode::kMobileBookmarksNodeGuid[] =
     "00000000-0000-4000-a000-000000000004";
 const char BookmarkNode::kManagedNodeGuid[] =
     "00000000-0000-4000-a000-000000000005";
+const char BookmarkNode::kChromeCartNodeGuid[] =
+    "00000000-0000-4000-a000-000000000006";
 
 BookmarkNode::BookmarkNode(int64_t id, const std::string& guid, const GURL& url)
     : BookmarkNode(id, guid, url, url.is_empty() ? FOLDER : URL, false) {}
@@ -153,6 +155,11 @@ BookmarkPermanentNode::CreateManagedBookmarks(int64_t id) {
 BookmarkPermanentNode::~BookmarkPermanentNode() = default;
 
 bool BookmarkPermanentNode::IsVisible() const {
+#if defined(OFFICIAL_BUILD)
+  if (type() == bookmarks::BookmarkNode::CHROME_CART) {
+    return false;
+  }
+#endif
   return visible_when_empty_ || !children().empty();
 }
 
@@ -186,6 +193,15 @@ BookmarkPermanentNode::CreateMobileBookmarks(int64_t id,
   return base::WrapUnique(new BookmarkPermanentNode(
       id, MOBILE, kMobileBookmarksNodeGuid,
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_MOBILE_FOLDER_NAME),
+      visible_when_empty));
+}
+
+std::unique_ptr<BookmarkPermanentNode>
+BookmarkPermanentNode::CreateChromeCartBookmarks(int64_t id,
+                                                 bool visible_when_empty) {
+  // base::WrapUnique() used because the constructor is private.
+  return base::WrapUnique(new BookmarkPermanentNode(
+      id, CHROME_CART, kChromeCartNodeGuid, base::ASCIIToUTF16("Chrome cart"),
       visible_when_empty));
 }
 

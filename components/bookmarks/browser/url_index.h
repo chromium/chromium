@@ -62,6 +62,9 @@ class UrlIndex : public HistoryBookmarkModel {
 
   void GetNodesByUrl(const GURL& url, std::vector<const BookmarkNode*>* nodes);
 
+  // Returns the nodes that store information of chrome carts.
+  void GetChromeCartNodes(std::vector<const BookmarkNode*>& nodes);
+
   // Returns true if there is at least one bookmark.
   bool HasBookmarks() const;
 

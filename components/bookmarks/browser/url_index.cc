@@ -65,6 +65,16 @@ void UrlIndex::GetNodesByUrl(const GURL& url,
   }
 }
 
+void UrlIndex::GetChromeCartNodes(std::vector<const BookmarkNode*>& nodes) {
+  base::AutoLock url_lock(url_lock_);
+  for (const BookmarkNode* node : nodes_ordered_by_url_set_) {
+    std::string chrome_cart_flag;
+    node->GetMetaInfo("is_cart", &chrome_cart_flag);
+    if (chrome_cart_flag == "true")
+      nodes.push_back(node);
+  }
+}
+
 bool UrlIndex::HasBookmarks() const {
   base::AutoLock url_lock(url_lock_);
   return !nodes_ordered_by_url_set_.empty();

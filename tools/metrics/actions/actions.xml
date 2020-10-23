@@ -4846,6 +4846,33 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Commerce.AddToCart">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>The user added products to the shopping cart.</description>
+</action>
+
+<action name="Commerce.Purchase">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>The user purchased products.</description>
+</action>
+
+<action name="Commerce.VisitCart">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>The user visited a shopping cart page.</description>
+</action>
+
+<action name="Commerce.VisitCheckout">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <description>
+    The user visited a checkout page. Note that this is before the actual
+    purchase transaction.
+  </description>
+</action>
+
 <action name="ConfirmNotToOrderSpringCharger">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

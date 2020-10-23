@@ -48,10 +48,12 @@
       file="icons/mail.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_UPLOAD_SVG" file="icons/upload.svg"
       type="BINDATA" />
+  <include name="IDR_NEW_TAB_PAGE_CART_SVG" file="icons/cart_fallback.svg"
+    type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_INFO_SVG" file="icons/info.svg"
       type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_CARDS_SVG" file="icons/cards.svg"
-      type="BINDATA" />
+    type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML"
       file="new_tab_page.html" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_SHARED_VARS_CSS"
@@ -70,6 +72,9 @@
       file="one_google_bar_api.js" type="BINDATA" compress="false" />
   <include name="IDR_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_PROXY_JS"
       file="promo_browser_command_proxy.js" type="BINDATA" compress="false" />
+  <include name="IDR_NEW_TAB_PAGE_CHROME_CART_MOJO_LITE_JS"
+      file="${root_gen_dir}/chrome/browser/ui/webui/chrome_cart/chrome_cart.mojom-lite.js"
+      use_base_dir="false" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_MODULES_SHOPPING_TASKS_SHOPPING_TASKS_MOJO_LITE_JS"
       file="${root_gen_dir}/chrome/browser/search/shopping_tasks/shopping_tasks.mojom-lite.js"
       use_base_dir="false" type="BINDATA" />

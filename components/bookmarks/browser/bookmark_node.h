@@ -29,13 +29,7 @@ class BookmarkModel;
 // id and type. BookmarkNodes are returned from BookmarkModel.
 class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
  public:
-  enum Type {
-    URL,
-    FOLDER,
-    BOOKMARK_BAR,
-    OTHER_NODE,
-    MOBILE
-  };
+  enum Type { URL, FOLDER, BOOKMARK_BAR, OTHER_NODE, MOBILE, CHROME_CART };
 
   enum FaviconState {
     INVALID_FAVICON,
@@ -50,6 +44,7 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   static const char kOtherBookmarksNodeGuid[];
   static const char kMobileBookmarksNodeGuid[];
   static const char kManagedNodeGuid[];
+  static const char kChromeCartNodeGuid[];
 
   // Creates a new node with |id|, |guid| and |url|.
   BookmarkNode(int64_t id, const std::string& guid, const GURL& url);
@@ -236,6 +231,9 @@ class BookmarkPermanentNode : public BookmarkNode {
       int64_t id,
       bool visible_when_empty);
   static std::unique_ptr<BookmarkPermanentNode> CreateMobileBookmarks(
+      int64_t id,
+      bool visible_when_empty);
+  static std::unique_ptr<BookmarkPermanentNode> CreateChromeCartBookmarks(
       int64_t id,
       bool visible_when_empty);
 

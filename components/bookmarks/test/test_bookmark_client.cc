@@ -70,6 +70,7 @@ bool TestBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
       return true;
     case bookmarks::BookmarkNode::FOLDER:
     case bookmarks::BookmarkNode::MOBILE:
+    case bookmarks::BookmarkNode::CHROME_CART:
       return false;
   }
 

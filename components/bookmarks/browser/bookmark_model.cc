@@ -18,7 +18,9 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
 #include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -121,7 +123,6 @@ void AddGuidsToIndexRecursive(const BookmarkNode* node,
     AddGuidsToIndexRecursive(node->children()[i - 1].get(), guid_index);
 }
 #endif  // DCHECK_IS_ON()
-
 }  // namespace
 
 // BookmarkModel --------------------------------------------------------------
@@ -546,6 +547,14 @@ void BookmarkModel::GetNodesByURL(const GURL& url,
     url_index_->GetNodesByUrl(url, nodes);
 }
 
+void BookmarkModel::GetChromeCartNodes(
+    std::vector<const BookmarkNode*>& nodes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (url_index_)
+    url_index_->GetChromeCartNodes(nodes);
+}
+
 const BookmarkNode* BookmarkModel::GetMostRecentlyAddedUserNodeForURL(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -826,6 +835,7 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   bookmark_bar_node_ = details->bb_node();
   other_node_ = details->other_folder_node();
   mobile_node_ = details->mobile_folder_node();
+  chrome_cart_node_ = details->chrome_cart_node();
 
 #if DCHECK_IS_ON()
   AddGuidsToIndexRecursive(root_, &guid_index_);

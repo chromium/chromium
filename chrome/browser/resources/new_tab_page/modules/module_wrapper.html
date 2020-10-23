@@ -3,16 +3,15 @@
     background-color: var(--ntp-background-override-color);
     border: solid var(--ntp-border-color) 1px;
     border-radius: 5px;
-    box-sizing: border-box;
     display: block;
-    overflow: hidden;
   }
 
   #header {
     align-items: center;
+    border-bottom: 1px solid var(--ntp-border-color);
     display: flex;
     height: 22px;
-    margin: 16px;
+    padding: 16px;
   }
 
   #title {
@@ -24,32 +23,45 @@
     flex-grow: 1;
   }
 
-  #infoButton {
-    --cr-icon-image: url(./icons/info.svg);
+  #name,
+  #dot {
+    color: var(--cr-secondary-text-color);
+    white-space: pre;
   }
 
-  #dismissButton {
-    --cr-icon-button-margin-start: 4px;
+  #headerSpacer {
+    flex-grow: 1;
+  }
+
+  #toggleButton {
+    --cr-icon-image: url(chrome://resources/images/icon_expand_less.svg);
+  }
+
+  :host([collapsed_]) #toggleButton {
+    --cr-icon-image: url(chrome://resources/images/icon_expand_more.svg);
   }
 
   #moduleElement {
-    align-items: center;
     display: flex;
-    justify-content: center;
+    overflow: hidden;
+  }
+
+  #cart {
+    filter: opacity(50%);
+    height: 18px;
+    width: 18px;
+  }
+
+  :host([collapsed_]) #dot,
+  :host([collapsed_]) #moduleElement {
+    display: none;
   }
 </style>
 <div id="header">
   <span id="title">[[descriptor.title]]</span>
   <div id="headerSpacer"></div>
-  <template is="dom-if" if="[[descriptor.actions.info]]">
-    <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"
-        on-click="onInfoButtonClick_">
-    </cr-icon-button>
-  </template>
-  <template is="dom-if" if="[[descriptor.actions.dismiss]]">
-    <cr-icon-button id="dismissButton" title="$i18n{moduleDismissButtonTitle}"
-        class="icon-clear" on-click="onDismissButtonClick_">
-    </cr-icon-button>
-  </template>
+  <!-- TODO(crbug.com/1124089): Add title attribute. -->
+  <cr-icon-button id="toggleButton" on-click="onToggleButtonClick_">
+  </cr-icon-button>
 </div>
 <div id="moduleElement"></div>

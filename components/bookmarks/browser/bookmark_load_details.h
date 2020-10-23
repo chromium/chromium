@@ -42,6 +42,7 @@ class BookmarkLoadDetails {
   BookmarkPermanentNode* bb_node() { return bb_node_; }
   BookmarkPermanentNode* mobile_folder_node() { return mobile_folder_node_; }
   BookmarkPermanentNode* other_folder_node() { return other_folder_node_; }
+  BookmarkPermanentNode* chrome_cart_node() { return chrome_cart_node_; }
 
   TitledUrlIndex* index() { return index_.get(); }
   std::unique_ptr<TitledUrlIndex> owned_index() { return std::move(index_); }
@@ -96,6 +97,7 @@ class BookmarkLoadDetails {
   BookmarkPermanentNode* bb_node_ = nullptr;
   BookmarkPermanentNode* other_folder_node_ = nullptr;
   BookmarkPermanentNode* mobile_folder_node_ = nullptr;
+  BookmarkPermanentNode* chrome_cart_node_ = nullptr;
   LoadManagedNodeCallback load_managed_node_callback_;
   std::unique_ptr<TitledUrlIndex> index_;
   BookmarkNode::MetaInfoMap model_meta_info_map_;

@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/strings/grit/components_strings.h"
@@ -31,6 +32,7 @@ const char BookmarkCodec::kRootFolderNameKey[] = "bookmark_bar";
 const char BookmarkCodec::kOtherBookmarkFolderNameKey[] = "other";
 // The value is left as 'synced' for historical reasons.
 const char BookmarkCodec::kMobileBookmarkFolderNameKey[] = "synced";
+const char BookmarkCodec::kChromeCartBookmarkFolderNameKey[] = "cart";
 const char BookmarkCodec::kVersionKey[] = "version";
 const char BookmarkCodec::kChecksumKey[] = "checksum";
 const char BookmarkCodec::kIdKey[] = "id";
@@ -61,14 +63,15 @@ std::unique_ptr<base::Value> BookmarkCodec::Encode(
     BookmarkModel* model,
     const std::string& sync_metadata_str) {
   return Encode(model->bookmark_bar_node(), model->other_node(),
-                model->mobile_node(), model->root_node()->GetMetaInfoMap(),
-                sync_metadata_str);
+                model->mobile_node(), model->chrome_cart_node(),
+                model->root_node()->GetMetaInfoMap(), sync_metadata_str);
 }
 
 std::unique_ptr<base::Value> BookmarkCodec::Encode(
     const BookmarkNode* bookmark_bar_node,
     const BookmarkNode* other_folder_node,
     const BookmarkNode* mobile_folder_node,
+    const BookmarkNode* chrome_cart_node,
     const BookmarkNode::MetaInfoMap* model_meta_info_map,
     const std::string& sync_metadata_str) {
   ids_reassigned_ = false;
@@ -78,6 +81,7 @@ std::unique_ptr<base::Value> BookmarkCodec::Encode(
   roots->Set(kRootFolderNameKey, EncodeNode(bookmark_bar_node));
   roots->Set(kOtherBookmarkFolderNameKey, EncodeNode(other_folder_node));
   roots->Set(kMobileBookmarkFolderNameKey, EncodeNode(mobile_folder_node));
+  roots->Set(kChromeCartBookmarkFolderNameKey, EncodeNode(chrome_cart_node));
   if (model_meta_info_map)
     roots->Set(kMetaInfo, EncodeMetaInfo(*model_meta_info_map));
   auto main = std::make_unique<base::DictionaryValue>();
@@ -101,12 +105,15 @@ bool BookmarkCodec::Decode(const base::Value& value,
                            BookmarkNode* bb_node,
                            BookmarkNode* other_folder_node,
                            BookmarkNode* mobile_folder_node,
+                           BookmarkNode* chrome_cart_node,
                            int64_t* max_id,
                            std::string* sync_metadata_str) {
   ids_.clear();
-  guids_ = {BookmarkNode::kRootNodeGuid, BookmarkNode::kBookmarkBarNodeGuid,
+  guids_ = {BookmarkNode::kRootNodeGuid,
+            BookmarkNode::kBookmarkBarNodeGuid,
             BookmarkNode::kOtherBookmarksNodeGuid,
             BookmarkNode::kMobileBookmarksNodeGuid,
+            BookmarkNode::kChromeCartNodeGuid,
             BookmarkNode::kManagedNodeGuid};
   ids_reassigned_ = false;
   guids_reassigned_ = false;
@@ -115,12 +122,13 @@ bool BookmarkCodec::Decode(const base::Value& value,
   stored_checksum_.clear();
   InitializeChecksum();
   bool success = DecodeHelper(bb_node, other_folder_node, mobile_folder_node,
-                              value, sync_metadata_str);
+                              chrome_cart_node, value, sync_metadata_str);
   FinalizeChecksum();
   // If either the checksums differ or some IDs were missing/not unique,
   // reassign IDs.
   if (!ids_valid_ || computed_checksum() != stored_checksum())
-    ReassignIDs(bb_node, other_folder_node, mobile_folder_node);
+    ReassignIDs(bb_node, other_folder_node, mobile_folder_node,
+                chrome_cart_node);
   *max_id = maximum_id_ + 1;
   return success;
 }
@@ -171,6 +179,7 @@ std::unique_ptr<base::Value> BookmarkCodec::EncodeMetaInfo(
 bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
                                  BookmarkNode* other_folder_node,
                                  BookmarkNode* mobile_folder_node,
+                                 BookmarkNode* chrome_cart_node,
                                  const base::Value& value,
                                  std::string* sync_metadata_str) {
   const base::DictionaryValue* d_value = nullptr;
@@ -228,6 +237,17 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
       ReassignIDsHelper(mobile_folder_node);
   }
 
+  const base::Value* chrome_cart_folder_value;
+  const base::DictionaryValue* chrome_cart_folder_d_value = nullptr;
+  if (roots_d_value->Get(kChromeCartBookmarkFolderNameKey,
+                         &chrome_cart_folder_value) &&
+      chrome_cart_folder_value->GetAsDictionary(&chrome_cart_folder_d_value)) {
+    DecodeNode(*chrome_cart_folder_d_value, nullptr, chrome_cart_node);
+  } else {
+    if (ids_valid_)
+      ReassignIDsHelper(chrome_cart_node);
+  }
+
   if (!DecodeMetaInfo(*roots_d_value, &model_meta_info_map_))
     return false;
 
@@ -244,6 +264,7 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_OTHER_FOLDER_NAME));
   mobile_folder_node->SetTitle(
         l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_MOBILE_FOLDER_NAME));
+  chrome_cart_node->SetTitle(base::ASCIIToUTF16("Chrome cart"));
 
   return true;
 }
@@ -454,11 +475,13 @@ void BookmarkCodec::DecodeMetaInfoHelper(
 
 void BookmarkCodec::ReassignIDs(BookmarkNode* bb_node,
                                 BookmarkNode* other_node,
-                                BookmarkNode* mobile_node) {
+                                BookmarkNode* mobile_node,
+                                BookmarkNode* chrome_cart_node) {
   maximum_id_ = 0;
   ReassignIDsHelper(bb_node);
   ReassignIDsHelper(other_node);
   ReassignIDsHelper(mobile_node);
+  ReassignIDsHelper(chrome_cart_node);
   ids_reassigned_ = true;
 }
 

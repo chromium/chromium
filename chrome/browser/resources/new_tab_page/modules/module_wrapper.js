@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,6 +27,13 @@ class ModuleWrapperElement extends PolymerElement {
       descriptor: {
         observer: 'onDescriptorChange_',
         type: Object,
+      },
+
+      /** @private {boolean} */
+      collapsed_: {
+        reflectToAttribute: true,
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -80,6 +89,12 @@ class ModuleWrapperElement extends PolymerElement {
     if (this.descriptor.actions.restore) {
       this.descriptor.actions.restore();
     }
+  }
+
+  /** @private */
+  onToggleButtonClick_() {
+    // TODO(crbug.com/1124089): Persist collapse state to user prefs.
+    this.collapsed_ = !this.collapsed_;
   }
 }
 

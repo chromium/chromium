@@ -32,7 +32,7 @@ js_type_check("closure_compile") {
     "modules:module_descriptor",
     "modules:module_registry",
     "modules:modules",
-    "modules/dummy:foo_proxy",
+    "modules/dummy:chrome_cart_proxy",
   ]
 }
 
@@ -333,11 +333,13 @@ if (optimize_webui) {
       "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js",
       "chrome://resources/mojo/url/mojom/origin.mojom-lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
+      "chrome_cart.mojom-lite.js",
       "new_tab_page.mojom-lite.js",
       "omnibox.mojom-lite.js",
       "promo_browser_command.mojom-lite.js",
       "modules/shopping_tasks/shopping_tasks.mojom-lite.js",
       "foo.mojom-lite.js",
+      "chrome_cart.mojom-lite.js",
     ]
   }
 }

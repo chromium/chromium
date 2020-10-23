@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ModuleDescriptor} from '../module_descriptor.js';
-import {FooProxy} from './foo_proxy.js';
+import {ChromeCartProxy} from './chrome_cart_proxy.js';
 
 /**
  * @fileoverview A dummy module, which serves as an example and a helper to
@@ -28,7 +28,7 @@ class DummyModuleElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Array<!foo.mojom.FooDataItem>} */
+      /** @type {!Array<!chromeCart.mojom.ChromeCartDataItem>} */
       tiles: Array,
     };
   }
@@ -40,8 +40,29 @@ class DummyModuleElement extends PolymerElement {
 
   /** @private */
   async initializeData_() {
-    const tileData = await FooProxy.getInstance().handler.getData();
+    const tileData = await ChromeCartProxy.getInstance().handler.getData();
     this.tiles = tileData.data;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getFaviconUrl_(url) {
+    const faviconUrl = new URL('chrome://favicon2/');
+    faviconUrl.searchParams.set('size', '24');
+    faviconUrl.searchParams.set('scale_factor', '1x');
+    faviconUrl.searchParams.set('show_fallback_monogram', '');
+    faviconUrl.searchParams.set('page_url', url);
+    return faviconUrl.href;
+  }
+
+  shouldShowFallback_(length) {
+    return length === 0;
+  }
+
+  getImagesToShow_(imageUrls) {
+    return imageUrls.slice(0, 3);
   }
 }
 
@@ -49,16 +70,8 @@ customElements.define(DummyModuleElement.is, DummyModuleElement);
 
 /** @type {!ModuleDescriptor} */
 export const dummyDescriptor = new ModuleDescriptor(
-    /*id=*/ 'dummy',
-    /*heightPx=*/ 260, () => Promise.resolve({
+    /*id=*/ 'chromeCart',
+    /*heightPx=*/ 180, () => Promise.resolve({
       element: new DummyModuleElement(),
-      title: loadTimeData.getString('modulesDummyTitle'),
-    }));
-
-/** @type {!ModuleDescriptor} */
-export const dummyDescriptor2 = new ModuleDescriptor(
-    /*id=*/ 'dummy2',
-    /*heightPx=*/ 260, () => Promise.resolve({
-      element: new DummyModuleElement(),
-      title: loadTimeData.getString('modulesDummy2Title'),
+      title: "Your carts",
     }));
