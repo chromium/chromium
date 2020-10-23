@@ -37,7 +37,7 @@
   const pageDebuggerId = (await dp.Debugger.enable()).result.debuggerId;
   await dp.Debugger.setAsyncCallStackDepth({maxDepth: 32});
   await dp.Network.enable();
-  testRunner.log(await dp.Network.setAttachDebugHeader({enabled: true}), 'enable debug header: ');
+  testRunner.log(await dp.Network.setAttachDebugStack({enabled: true}), 'enable debug header: ');
 
   const code = `
       debugger;

@@ -204,7 +204,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   protocol::Response disable() override;
   protocol::Response setExtraHTTPHeaders(
       std::unique_ptr<protocol::Network::Headers>) override;
-  protocol::Response setAttachDebugHeader(bool enabled) override;
+  protocol::Response setAttachDebugStack(bool enabled) override;
   void getResponseBody(const String& request_id,
                        std::unique_ptr<GetResponseBodyCallback>) override;
   protocol::Response searchInResponseBody(
@@ -294,7 +294,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   InspectorAgentState::Boolean bypass_service_worker_;
   InspectorAgentState::BooleanMap blocked_urls_;
   InspectorAgentState::StringMap extra_request_headers_;
-  InspectorAgentState::Boolean debug_header_enabled_;
+  InspectorAgentState::Boolean attach_debug_stack_enabled_;
   InspectorAgentState::Integer total_buffer_size_;
   InspectorAgentState::Integer resource_buffer_size_;
   InspectorAgentState::Integer max_post_data_size_;

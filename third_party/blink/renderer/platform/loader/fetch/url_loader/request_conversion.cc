@@ -339,6 +339,10 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
     dest->devtools_request_id = src.GetDevToolsId().value().Ascii();
   }
 
+  if (src.GetDevToolsStackId().has_value()) {
+    dest->devtools_stack_id = src.GetDevToolsStackId().value().Ascii();
+  }
+
   if (src.IsSignedExchangePrefetchCacheEnabled()) {
     DCHECK_EQ(src.GetRequestContext(),
               mojom::blink::RequestContextType::PREFETCH);

@@ -1522,11 +1522,7 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
   event_init->setIsReload(params->request->is_reload);
 
   mojom::blink::FetchAPIRequest& fetch_request = *params->request;
-  auto debug_header_it =
-      fetch_request.headers.find(RequestDebugHeaderScope::kHeaderName);
-  auto stack_string = debug_header_it == fetch_request.headers.end()
-                          ? String()
-                          : debug_header_it->value;
+  auto stack_string = fetch_request.devtools_stack_id;
   Request* request = Request::Create(
       ScriptController()->GetScriptState(), std::move(params->request),
       Request::ForServiceWorkerFetchEvent::kTrue);

@@ -196,4 +196,10 @@ struct FetchAPIRequest {
   bool keepalive = false;
   bool is_reload = false;
   bool is_history_navigation = false;
+
+  // A V8 stack id string describing where the request was initiated.
+  // DevTools can use this to display the initiator call stack when debugging
+  // a process that later intercepts the request, e.g., in a service worker
+  // fetch event handler.
+  string? devtools_stack_id;
 };

@@ -1076,19 +1076,18 @@ void InspectorNetworkAgent::PrepareRequest(
   if (bypass_service_worker_.Get())
     request.SetSkipServiceWorker(true);
 
-  if (debug_header_enabled_.Get() &&
-      request.HttpHeaderField(RequestDebugHeaderScope::kHeaderName).IsNull()) {
+  if (attach_debug_stack_enabled_.Get()) {
+    DCHECK(!request.GetDevToolsStackId().has_value());
     ExecutionContext* context = nullptr;
     if (worker_global_scope_) {
       context = worker_global_scope_.Get();
     } else if (loader && loader->GetFrame()) {
       context = loader->GetFrame()->GetDocument()->ExecutingWindow();
     }
-    String header =
-        RequestDebugHeaderScope::CaptureHeaderForCurrentLocation(context);
-    if (!header.IsNull()) {
-      request.SetHttpHeaderField(RequestDebugHeaderScope::kHeaderName,
-                                 AtomicString(header));
+    String stack_id =
+        RequestDebugHeaderScope::CaptureStackIdForCurrentLocation(context);
+    if (!stack_id.IsNull()) {
+      request.SetDevToolsStackId(stack_id);
     }
   }
 }
@@ -1613,10 +1612,10 @@ Response InspectorNetworkAgent::setExtraHTTPHeaders(
   return Response::Success();
 }
 
-Response InspectorNetworkAgent::setAttachDebugHeader(bool enabled) {
+Response InspectorNetworkAgent::setAttachDebugStack(bool enabled) {
   if (enabled && !enabled_.Get())
     return Response::InvalidParams("Domain must be enabled");
-  debug_header_enabled_.Set(enabled);
+  attach_debug_stack_enabled_.Set(enabled);
   return Response::Success();
 }
 
@@ -1955,7 +1954,7 @@ InspectorNetworkAgent::InspectorNetworkAgent(
       bypass_service_worker_(&agent_state_, /*default_value=*/false),
       blocked_urls_(&agent_state_, /*default_value=*/false),
       extra_request_headers_(&agent_state_, /*default_value=*/WTF::String()),
-      debug_header_enabled_(&agent_state_, /*default_value=*/false),
+      attach_debug_stack_enabled_(&agent_state_, /*default_value=*/false),
       total_buffer_size_(&agent_state_,
                          /*default_value=*/kDefaultTotalBufferSize),
       resource_buffer_size_(&agent_state_,

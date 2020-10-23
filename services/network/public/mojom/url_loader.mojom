@@ -371,6 +371,12 @@ struct URLRequest {
   // renderer.
   string? devtools_request_id;
 
+  // A V8 stack id string describing where the request was initiated. DevTools
+  // can use this to display the initiator call stack when debugging a process
+  // that later intercepts the request, e.g., in a service worker fetch event
+  // handler.
+  string? devtools_stack_id;
+
   // True for prefetch requests when SignedExchangePrefetchCacheForNavigations
   // feature is enabled by flags or SignedExchangeSubresourcePrefetch feature is
   // enabled by flags, or OriginTrial. TODO(horo): Remove this when these

@@ -21,7 +21,7 @@ class CORE_EXPORT RequestDebugHeaderScope {
  public:
   static const char kHeaderName[];
 
-  static String CaptureHeaderForCurrentLocation(ExecutionContext*);
+  static String CaptureStackIdForCurrentLocation(ExecutionContext*);
 
   RequestDebugHeaderScope(ExecutionContext*, const String& header);
   ~RequestDebugHeaderScope();

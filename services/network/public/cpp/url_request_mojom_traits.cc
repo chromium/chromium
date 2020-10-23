@@ -202,6 +202,7 @@ bool StructTraits<
       !data.ReadThrottlingProfileId(&out->throttling_profile_id) ||
       !data.ReadFetchWindowId(&out->fetch_window_id) ||
       !data.ReadDevtoolsRequestId(&out->devtools_request_id) ||
+      !data.ReadDevtoolsStackId(&out->devtools_stack_id) ||
       !data.ReadRecursivePrefetchToken(&out->recursive_prefetch_token)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;

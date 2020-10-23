@@ -397,6 +397,17 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetPurposeHeader(const String& value) { purpose_header_ = value; }
   const String& GetPurposeHeader() const { return purpose_header_; }
 
+  // A V8 stack id string describing where the request was initiated. DevTools
+  // can use this to display the initiator call stack when debugging a process
+  // that later intercepts the request, e.g., in a service worker fetch event
+  // handler.
+  const base::Optional<String>& GetDevToolsStackId() const {
+    return devtools_stack_id_;
+  }
+  void SetDevToolsStackId(const base::Optional<String>& devtools_stack_id) {
+    devtools_stack_id_ = devtools_stack_id;
+  }
+
   void SetUkmSourceId(ukm::SourceId ukm_source_id) {
     ukm_source_id_ = ukm_source_id;
   }
@@ -538,6 +549,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   String requested_with_header_;
   String client_data_header_;
   String purpose_header_;
+
+  base::Optional<String> devtools_stack_id_;
 
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 

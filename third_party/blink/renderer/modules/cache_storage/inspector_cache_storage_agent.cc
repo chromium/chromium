@@ -267,7 +267,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
           request->credentials_mode, request->cache_mode,
           request->redirect_mode, request->integrity, request->priority,
           request->fetch_window_id, request->keepalive, request->is_reload,
-          request->is_history_navigation);
+          request->is_history_navigation, request->devtools_stack_id);
       cache_remote_->Match(
           std::move(request), mojom::blink::CacheQueryOptions::New(),
           false /* in_related_fetch_event */, trace_id,

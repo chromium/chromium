@@ -15,12 +15,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 
 namespace blink {
-
 // static
-const char RequestDebugHeaderScope::kHeaderName[] = "X-Debug-Stack-Trace-Id";
-
-// static
-String RequestDebugHeaderScope::CaptureHeaderForCurrentLocation(
+String RequestDebugHeaderScope::CaptureStackIdForCurrentLocation(
     ExecutionContext* context) {
   ThreadDebugger* debugger = nullptr;
   if (auto* scope = DynamicTo<WorkerGlobalScope>(context))

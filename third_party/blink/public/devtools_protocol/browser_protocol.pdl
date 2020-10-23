@@ -5166,10 +5166,10 @@ domain Network
       # Map with extra HTTP headers.
       Headers headers
 
-  # Specifies whether to sned a debug header to all outgoing requests.
-  experimental command setAttachDebugHeader
+  # Specifies whether to attach a page script stack id in requests
+  experimental command setAttachDebugStack
     parameters
-      # Whether to send a debug header.
+      # Whether to attach a page script stack for debugging purpose.
       boolean enabled
 
   # Sets the requests to intercept that match the provided patterns and optionally resource types.

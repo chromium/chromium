@@ -48,6 +48,7 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   output->keepalive = input.keepalive;
   output->is_history_navigation =
       input.transition_type & ui::PAGE_TRANSITION_FORWARD_BACK;
+  output->devtools_stack_id = input.devtools_stack_id;
   return output;
 }
 

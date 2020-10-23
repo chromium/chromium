@@ -116,6 +116,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   net::HttpRequestHeaders custom_proxy_post_cache_headers;
   base::Optional<base::UnguessableToken> fetch_window_id;
   base::Optional<std::string> devtools_request_id;
+  base::Optional<std::string> devtools_stack_id;
   bool is_signed_exchange_prefetch_cache_enabled = false;
   bool obey_origin_policy = false;
   base::Optional<base::UnguessableToken> recursive_prefetch_token;
