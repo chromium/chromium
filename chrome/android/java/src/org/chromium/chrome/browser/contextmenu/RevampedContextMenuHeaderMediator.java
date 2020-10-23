@@ -72,7 +72,6 @@ class RevampedContextMenuHeaderMediator implements View.OnClickListener {
      * @param thumbnail The bitmap received that will be displayed as the header image.
      */
     void onImageThumbnailRetrieved(Bitmap thumbnail) {
-        RecordHistogram.recordBooleanHistogram("ContextMenu.ThumbnailFetched", thumbnail != null);
         if (thumbnail != null) {
             setHeaderImage(getImageWithCheckerBackground(mContext.getResources(), thumbnail), true);
         }

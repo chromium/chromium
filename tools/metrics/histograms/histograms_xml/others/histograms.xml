@@ -2805,6 +2805,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContextMenu.ThumbnailFetched" enum="BooleanSuccess"
     expires_after="2020-06-30">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
