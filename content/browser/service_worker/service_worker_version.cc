@@ -1823,7 +1823,7 @@ void ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker(
 
   if (running_status() == EmbeddedWorkerStatus::STOPPED)
     StartWorkerInternal();
-  DCHECK(timeout_timer_.IsRunning());
+  // Warning: StartWorkerInternal() might have deleted `this` on failure.
 }
 
 void ServiceWorkerVersion::StartWorkerInternal() {
