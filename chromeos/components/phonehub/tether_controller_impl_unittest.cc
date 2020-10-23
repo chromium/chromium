@@ -37,13 +37,16 @@ class FakeObserver : public TetherController::Observer {
   FakeObserver() = default;
   ~FakeObserver() override = default;
 
-  size_t num_calls() const { return num_calls_; }
+  size_t num_status_changes() const { return num_status_changes_; }
+  size_t num_scan_failed() const { return num_scan_failed_; }
 
   // TetherController::Observer:
-  void OnTetherStatusChanged() override { ++num_calls_; }
+  void OnTetherStatusChanged() override { ++num_status_changes_; }
+  void OnAttemptConnectionScanFailed() override { ++num_scan_failed_; }
 
  private:
-  size_t num_calls_ = 0;
+  size_t num_status_changes_ = 0;
+  size_t num_scan_failed_ = 0;
 };
 
 }  // namespace
@@ -202,7 +205,13 @@ class TetherControllerImplTest : public testing::Test {
 
   void Disconnect() { controller_->Disconnect(); }
 
-  size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
+  size_t GetNumObserverStatusChanged() const {
+    return fake_observer_.num_status_changes();
+  }
+
+  size_t GetNumObserverScanFailed() const {
+    return fake_observer_.num_scan_failed();
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -216,7 +225,7 @@ class TetherControllerImplTest : public testing::Test {
 TEST_F(TetherControllerImplTest, ExternalTetherChangesReflectToStatus) {
   EXPECT_EQ(GetStatus(), TetherController::Status::kIneligibleForFeature);
   SetMultideviceSetupFeatureState(FeatureState::kEnabledByUser);
-  EXPECT_EQ(GetNumObserverCalls(), 1U);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 1U);
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
 
   // Tether device and network must be enabled for status changes other than
@@ -224,27 +233,27 @@ TEST_F(TetherControllerImplTest, ExternalTetherChangesReflectToStatus) {
   EnableTetherDevice();
   AddVisibleTetherNetwork();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionAvailable);
-  EXPECT_EQ(GetNumObserverCalls(), 2U);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 2U);
 
   // Starts connecting to tether network.
   SetTetherNetworkStateConnecting();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
-  EXPECT_EQ(GetNumObserverCalls(), 3U);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 3U);
 
   // Connected to tether network.
   SetTetherNetworkStateConnected();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnected);
-  EXPECT_EQ(GetNumObserverCalls(), 4U);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 4U);
 
   // Tether network disconnects on it's own.
   SetTetherNetworkStateDisconnected();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionAvailable);
-  EXPECT_EQ(GetNumObserverCalls(), 5U);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 5U);
 
   // Tether network becomes unavailable.
   RemoveVisibleTetherNetwork();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
-  EXPECT_EQ(GetNumObserverCalls(), 6U);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 6U);
 }
 
 TEST_F(TetherControllerImplTest, AttemptConnectDisconnect) {
@@ -322,7 +331,7 @@ TEST_F(TetherControllerImplTest, AttemptConnectFeatureOffNetworkExists) {
   AddVisibleTetherNetwork();
   SetTetherNetworkStateConnected();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnected);
-  EXPECT_EQ(GetNumObserverCalls(), 3U);
+  EXPECT_EQ(GetNumObserverStatusChanged(), 3U);
 
   // Tether network is lost.
   RemoveVisibleTetherNetwork();
@@ -400,11 +409,13 @@ TEST_F(TetherControllerImplTest, AttemptConnectFeatureOffNoNetwork) {
   // unavailable.
   SetTetherScanState(false);
   EnableTetherDevice();
+  EXPECT_EQ(GetNumObserverScanFailed(), 1U);
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
 
   // Tether starts scanning after connection attempt ended.
   SetTetherScanState(true);
   EnableTetherDevice();
+  EXPECT_EQ(GetNumObserverScanFailed(), 1U);
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
 }
 

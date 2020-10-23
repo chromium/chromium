@@ -15,6 +15,8 @@ class FakeTetherController : public TetherController {
   FakeTetherController();
   ~FakeTetherController() override;
 
+  using TetherController::NotifyAttemptConnectionScanFailed;
+
   void SetStatus(Status status);
 
   // TetherController:

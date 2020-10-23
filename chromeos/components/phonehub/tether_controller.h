@@ -49,6 +49,10 @@ class TetherController {
 
     // Called the status has changed; use GetStatus() to get the new status.
     virtual void OnTetherStatusChanged() = 0;
+
+    // Called when AttemptConnection() is called, a scan for a tether network is
+    // requested, but no tether network was found.
+    virtual void OnAttemptConnectionScanFailed() {}
   };
 
   TetherController(const TetherController&) = delete;
@@ -79,6 +83,7 @@ class TetherController {
   TetherController();
 
   void NotifyStatusChanged();
+  void NotifyAttemptConnectionScanFailed();
 
  private:
   base::ObserverList<Observer> observer_list_;

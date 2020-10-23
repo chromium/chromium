@@ -273,8 +273,10 @@ void TetherControllerImpl::OnGetDeviceStateList(
     break;
   }
 
-  if (!is_tether_device_scanning)
+  if (!is_tether_device_scanning) {
+    NotifyAttemptConnectionScanFailed();
     SetConnectDisconnectStatus(ConnectDisconnectStatus::kIdle);
+  }
 }
 
 void TetherControllerImpl::FetchVisibleTetherNetwork() {
