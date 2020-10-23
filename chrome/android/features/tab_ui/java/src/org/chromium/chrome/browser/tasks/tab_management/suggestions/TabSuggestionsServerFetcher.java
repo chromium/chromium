@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -134,7 +135,12 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
 
     @Override
     public boolean isEnabled() {
-        return isSignedIn() && isServerFetcherFlagEnabled();
+        // TODO(crbug.com/1141722): Currently this Fetcher is only used for grouping suggestion,
+        //  avoid fetching server if the TabGroupsAndroid flag is disabled. We need to move this
+        //  flag checking logic to somewhere if this server fetcher supports suggestions other than
+        //  grouping in the future.
+        return isSignedIn() && isServerFetcherFlagEnabled()
+                && TabUiFeatureUtilities.isTabGroupsAndroidEnabled();
     }
 
     @VisibleForTesting
