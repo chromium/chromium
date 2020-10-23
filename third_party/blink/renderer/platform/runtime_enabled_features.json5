@@ -346,6 +346,7 @@
     },
     {
       name: "CompositeRelativeKeyframes",
+      status: "stable",
     },
     {
       name: "CompositeSVG",

@@ -562,6 +562,8 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        IsNotCandidateForCompositorAnimationTransformDependsOnBoxSize) {
+  ScopedCompositeRelativeKeyframesForTest no_relative_keyframes(false);
+
   // Absolute transforms can be animated on the compositor.
   String transform = "translateX(2px) translateY(2px)";
   StringKeyframe* good_keyframe =

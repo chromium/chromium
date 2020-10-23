@@ -244,7 +244,12 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
         case CSSPropertyID::kScale:
         case CSSPropertyID::kTranslate:
         case CSSPropertyID::kTransform:
-          if (!RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled()) {
+          // TODO(crbug.com/389359): Currently only CSS boxes support
+          // compositing box-size-dependent transform animations. Once such
+          // support is fully working for SVG, this section (and the flag)
+          // should be removed.
+          if (!RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled() ||
+              (layout_object && layout_object->IsSVGChild())) {
             if (keyframe->GetCompositorKeyframeValue() &&
                 To<CompositorKeyframeTransform>(
                     keyframe->GetCompositorKeyframeValue())
@@ -732,12 +737,9 @@ void CompositorAnimations::GetAnimationOnCompositor(
       case CSSPropertyID::kScale:
       case CSSPropertyID::kTranslate:
       case CSSPropertyID::kTransform: {
-        FloatSize box_size;
-        if (RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled()) {
-          box_size = ComputedStyleUtils::ReferenceBoxForTransform(
-                         *target_element.GetLayoutObject())
-                         .Size();
-        }
+        FloatSize box_size = ComputedStyleUtils::ReferenceBoxForTransform(
+                                 *target_element.GetLayoutObject())
+                                 .Size();
         target_property = compositor_target_property::TRANSFORM;
         auto transform_curve =
             std::make_unique<CompositorTransformAnimationCurve>();
