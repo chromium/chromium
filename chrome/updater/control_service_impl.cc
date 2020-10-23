@@ -27,8 +27,7 @@ ControlServiceImpl::ControlServiceImpl(
     scoped_refptr<updater::Configurator> config)
     : config_(config),
       persisted_data_(
-          base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+          base::MakeRefCounted<PersistedData>(config_->GetPrefService())) {}
 
 void ControlServiceImpl::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -44,6 +43,8 @@ void ControlServiceImpl::InitializeUpdateService(base::OnceClosure callback) {
 }
 
 void ControlServiceImpl::MaybeCheckForUpdates(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   const base::Time lastUpdateTime =
       config_->GetPrefService()->GetTime(kPrefUpdateTime);
 
@@ -54,7 +55,8 @@ void ControlServiceImpl::MaybeCheckForUpdates(base::OnceClosure callback) {
           base::TimeDelta::FromSeconds(config_->NextCheckDelay())) {
     VLOG(0) << "Skipping checking for updates:  "
             << timeSinceUpdate.InMinutes();
-    main_task_runner_->PostTask(FROM_HERE, std::move(callback));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(callback));
     return;
   }
 
@@ -79,6 +81,7 @@ void ControlServiceImpl::MaybeCheckForUpdates(base::OnceClosure callback) {
 }
 
 void ControlServiceImpl::UnregisterMissingApps() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& app_id : persisted_data_->GetAppIds()) {
     // Skip if app_id is equal to updater app id.
     if (app_id == kUpdaterAppId)

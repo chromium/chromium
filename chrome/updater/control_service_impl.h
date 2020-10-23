@@ -10,10 +10,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/updater/control_service.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
 namespace updater {
 
 class Configurator;
@@ -45,7 +41,6 @@ class ControlServiceImpl : public ControlService {
 
   scoped_refptr<updater::Configurator> config_;
   scoped_refptr<updater::PersistedData> persisted_data_;
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 };
 
 }  // namespace updater
