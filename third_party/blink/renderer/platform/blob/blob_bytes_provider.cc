@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -186,10 +186,6 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
                                       uint64_t file_offset,
                                       RequestAsFileCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(BooleanHistogram, seek_histogram,
-                                  ("Storage.Blob.RendererFileSeekFailed"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(BooleanHistogram, write_histogram,
-                                  ("Storage.Blob.RendererFileWriteFailed"));
 
   if (!file.IsValid()) {
     std::move(callback).Run(base::nullopt);
@@ -199,7 +195,7 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
   int64_t seek_distance =
       file.Seek(base::File::FROM_BEGIN, SafeCast<int64_t>(file_offset));
   bool seek_failed = seek_distance < 0;
-  seek_histogram.Count(seek_failed);
+  base::UmaHistogramBoolean("Storage.Blob.RendererFileSeekFailed", seek_failed);
   if (seek_failed) {
     std::move(callback).Run(base::nullopt);
     return;
@@ -233,7 +229,8 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
       int actual_written = file.WriteAtCurrentPos(
           data->data() + data_offset + written, writing_size);
       bool write_failed = actual_written < 0;
-      write_histogram.Count(write_failed);
+      base::UmaHistogramBoolean("Storage.Blob.RendererFileWriteFailed",
+                                write_failed);
       if (write_failed) {
         std::move(callback).Run(base::nullopt);
         return;
