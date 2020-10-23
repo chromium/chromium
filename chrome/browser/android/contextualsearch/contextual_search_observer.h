@@ -17,10 +17,15 @@ namespace contextual_search {
 
 class ContextualSearchJsApiHandler;
 
-// Observer for the |web_contents| passed to the constructor, which will be used
-// later on to call contextual_search::CreateContextualSearchJsApiService() at
-// the time of binding the mojo::Receiver<mojom::ContextualSearchJsApiService>
+// Implements and Observer for a Renderer used to attach a JavaScript API for
+// Contextual Search. Observes the |web_contents| passed to the constructor,
+// which will be used later on to call
+// contextual_search::CreateContextualSearchJsApiService() at the time of
+// binding the mojo::Receiver<mojom::ContextualSearchJsApiService>
 // to the implementation of the ContextualSearchJsApiService interface.
+// TODO(donnd): remove this as part of removal of all JS APIs for Contextual
+// Search since their primary need was for translations which are now handled
+// directly within the Bar.
 class ContextualSearchObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ContextualSearchObserver> {

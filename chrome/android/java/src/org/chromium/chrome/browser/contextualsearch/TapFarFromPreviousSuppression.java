@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.contextualsearch;
 import androidx.annotation.Nullable;
 
 /**
- * Implements the policy that a Tap relatively far away from an existing Contextual Search
- * selection should just dismiss our UX.  When a Tap is close by, we assume the user must have
- * missed the original intended target so we reselect based on the new Tap location.
+ * Implements a {@link ContextualSearchHeuristic} that a Tap relatively far away from an existing
+ * Contextual Search selection should just dismiss our UX.  When a Tap is close by, we assume the
+ * user must have missed the original intended target so we reselect based on the new Tap location.
  */
 class TapFarFromPreviousSuppression extends ContextualSearchHeuristic {
     private static final double RETAP_DISTANCE_SQUARED_DP = Math.pow(75, 2);

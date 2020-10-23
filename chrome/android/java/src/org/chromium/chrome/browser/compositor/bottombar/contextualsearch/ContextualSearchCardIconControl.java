@@ -17,7 +17,12 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.ViewResourceInflater;
 
 /**
- * Manages an icon to display for a non-action card returned by the server.
+ * Manages an icon to display in the {@link ContextualSearchBarControl} in a non-action card
+ * returned by the server. A Card is a structured result from the CoCa backend that can
+ * be rendered directly in the Bar. Action cards have associated intents, like dialing
+ * a phone number. This class handles some special cases for the general
+ * {@link ContextualSearchImageControl} that is responsible for any image that is rendered
+ * in the Bar.
  */
 public class ContextualSearchCardIconControl extends ViewResourceInflater {
     // A separator that we expect in the title of a dictionary response.

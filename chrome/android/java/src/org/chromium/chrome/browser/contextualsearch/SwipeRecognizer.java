@@ -15,8 +15,6 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandl
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 
 /**
- * TODO(pedrosimonetti): Confirm with dtrainor@ the proper location for this file.
- *
  * Recognizes directional swipe gestures using supplied {@link MotionEvent}s.
  * The {@EdgeSwipeHandler} callbacks will notify users when a particular gesture
  * has occurred, if the handler supports the particular direction of the swipe.

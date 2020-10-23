@@ -36,6 +36,7 @@ const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 
 }  // namespace
 
+// Unit tests for the native |ContextualSearchDelegate|.
 class ContextualSearchDelegateTest : public testing::Test {
  public:
   ContextualSearchDelegateTest() {}

@@ -14,6 +14,8 @@
 
 // Native portion of a class that helps coordinate user preferences for
 // Contextual Search with Unified Consent.
+// TODO(donnd): Check if this is still needed based on changes to Unified
+// Consent.
 class ContextualSearchPreferenceHelper {
  public:
   ContextualSearchPreferenceHelper(JNIEnv* env, jobject obj);

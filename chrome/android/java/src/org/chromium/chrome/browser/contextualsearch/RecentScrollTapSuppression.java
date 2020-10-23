@@ -8,7 +8,9 @@ import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 
 /**
- * Heuristic for Tap suppression after a recent scroll action.
+ * Provides a {@link ContextualSearchHeuristic} for Tap suppression after a recent scroll action.
+ * When the user taps immediately after a scroll gesture on the base page the tap is probably
+ * accidental, so we feed this signal into the ML model.
  * Handles logging of results seen and activation.
  */
 public class RecentScrollTapSuppression extends ContextualSearchHeuristic {

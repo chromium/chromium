@@ -8,7 +8,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionCon
 
 /**
  * Defines the interface between a {@link ContextualSearchSelectionController} and the code that
- * handles callbacks.
+ * handles callbacks in {@link ContextualSearchManager}.
  */
 interface ContextualSearchSelectionHandler {
     /**

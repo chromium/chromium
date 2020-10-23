@@ -14,6 +14,8 @@
 #include "components/contextual_search/content/browser/contextual_search_js_api_handler.h"
 #include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 
+// TODO(donnd): remove this deprecated class.
+// Used to support the Java class by the same name.
 class SimpleSearchTermResolver {
  public:
   // Constructs a native resolver associated with the Java instance.

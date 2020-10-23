@@ -13,7 +13,7 @@
 #include "url/gurl.h"
 
 // Encapsulates key parts of a Contextual Search Context, including surrounding
-// text.
+// text. This is the native implementation of the Java ContextualSearchContext.
 struct ContextualSearchContext {
  public:
   // Languages used for translation.

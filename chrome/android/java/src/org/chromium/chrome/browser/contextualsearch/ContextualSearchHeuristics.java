@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A set of {@link ContextualSearchHeuristic}s that support experimentation and logging.
+ * A set of {@link ContextualSearchHeuristic}s that support experimentation and logging for Tap
+ * suppression.
  */
 public class ContextualSearchHeuristics {
     protected Set<ContextualSearchHeuristic> mHeuristics;

@@ -16,7 +16,7 @@
 
 // Manages the native extraction and request logic for Contextual Search,
 // and interacts with the Java ContextualSearchManager for UX.
-// Most of the work is done by the associated ContextualSearchDelegate.
+// Most of the work is done by the associated |ContextualSearchDelegate|.
 class ContextualSearchManager
     : public contextual_search::ContextualSearchJsApiHandler {
  public:

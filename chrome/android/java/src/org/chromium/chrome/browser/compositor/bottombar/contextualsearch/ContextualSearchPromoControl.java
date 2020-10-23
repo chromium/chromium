@@ -31,7 +31,8 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /**
- * Controls the Search Promo.
+ * Controls the Contextual Search Opt-in/out privacy Promo that shows within the Panel just below
+ * the Bar for users that have not yet accepted or declined our privacy policy.
  */
 public class ContextualSearchPromoControl extends OverlayPanelInflater {
     /** The interface used to talk to the Panel. */

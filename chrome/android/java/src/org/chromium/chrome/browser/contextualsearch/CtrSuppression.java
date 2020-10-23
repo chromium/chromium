@@ -10,9 +10,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
- * Provides a ContextualSearchHeuristic for CTR Recording, logging, and eventually suppression.
+ * Provides a ContextualSearchHeuristic for click-through rate Recording, logging, and eventually
+ * suppression.
  * Records impressions and CTR when the Bar is dismissed.
- * TODO(donnd): add suppression logic.
  * Logs "impressions" and "CTR" per user in UMA for the previous week and 28-day period.
  * An impression is a view of our UX (the Bar) and CTR is the "click-through rate" (user opens of
  * the Bar).

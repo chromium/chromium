@@ -30,8 +30,8 @@ class SimpleURLLoader;
 class TemplateURLService;
 class ContextualSearchFieldTrial;
 
-// Handles tasks for the ContextualSearchManager in a separable and testable
-// way, without the complication of being connected to a Java object.
+// Handles tasks for the ContextualSearchManager including communicating with
+// the server. This class has no JNI in order to keep it separable and testable.
 class ContextualSearchDelegate
     : public base::SupportsWeakPtr<ContextualSearchDelegate> {
  public:

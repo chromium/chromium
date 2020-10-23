@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.contextualsearch;
 import androidx.annotation.Nullable;
 
 /**
- * Provides an interface for forcing translation on a Contextual Search Request.
+ * Provides an interface for detecting and forcing translation on a Contextual Search Request.
  * When translation is forced, the request has additional parameters that force a one-box for the
  * supplied source and destination languages.
- * Methods support forcing translation on a request from a given source language, or forcing
- * translation on a request using an auto-detection for whether the source and destination are
- * different.
+ * Methods support detecting underlying translation signals and forcing translation on a request
+ * from a given source language, or forcing translation on a request using an auto-detection for
+ * to determine whether the source and destination are different.
  */
 public interface ContextualSearchTranslation {
     /**

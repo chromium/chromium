@@ -28,7 +28,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.WindowAndroid;
 
-/** Manages the activation and gesture listeners for ContextualSearch on a given tab. */
+/** Manages the enabling and disabling and gesture listeners for ContextualSearch on a given Tab. */
 public class ContextualSearchTabHelper
         extends EmptyTabObserver implements NetworkChangeNotifier.ConnectionTypeObserver {
     /** The Tab that this helper tracks. */

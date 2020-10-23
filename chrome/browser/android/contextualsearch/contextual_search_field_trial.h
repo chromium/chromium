@@ -9,7 +9,7 @@
 
 #include "base/values.h"
 
-// This class manages the Contextual Search native field trials.
+// Manages the Contextual Search field trials for native classes.
 class ContextualSearchFieldTrial {
  public:
   ContextualSearchFieldTrial();

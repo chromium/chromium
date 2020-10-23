@@ -18,7 +18,9 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
- * Controls the Search Bar Banner.
+ * Controls the Search Bar Banner, which presents a banner above the Bar.
+ * This can be used for promotional features.
+ * TODO(donnd): consider removal since this is currently unused.
  */
 public class ContextualSearchBarBannerControl extends OverlayPanelInflater {
     /**

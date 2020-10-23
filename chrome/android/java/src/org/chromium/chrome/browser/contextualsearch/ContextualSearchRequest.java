@@ -16,8 +16,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Bundles a Search Request URL with a low-priority version of the URL, helps manage the
- * fall-back when the low-priority version fails, and tracks which one is in use.
+ * Builds a Search Request URL to be used to populate the content of the Bottom Sheet in response
+ * to a particular Contextual Search.
+ * The URL has a low-priority version to help with server overload, and helps manage the
+ * fall-back to normal when that is needed after the low-priority version fails.
+ * The URL building includes triggering of feature one-boxes on the SERP like a translation
+ * One-box or a knowledge panel.
  */
 class ContextualSearchRequest {
     private final boolean mWasPrefetch;

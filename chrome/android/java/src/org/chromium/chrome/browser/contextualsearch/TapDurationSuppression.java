@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.contextualsearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 
 /**
- * Provides a signal for the duration of a Tap being either brief or lengthy.
- * This signal could be used for suppression of taps below some threshold, so we aggregate-log too.
- * We log CTR to UMA for Taps shorter and longer than the threshold.
+ * Provides a {@link ContextualSearchHeuristic} for the duration of a Tap being either brief or
+ * lengthy. This signal could be used for suppression of taps below some threshold, so we
+ * aggregate-log too. We log CTR to UMA for Taps shorter and longer than the threshold.
  */
 class TapDurationSuppression extends ContextualSearchHeuristic {
     private static final int DEFAULT_TAP_DURATION_THRESHOLD_MS = 70;

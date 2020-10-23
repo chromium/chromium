@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.contextualsearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 
 /**
- * Heuristic that allows a second tap near a previous ML-suppressed tap to override suppression.
+ * Provides a {@link ContextualSearchHeuristic} that allows a second tap near a previous
+ * ML-suppressed tap to override suppression.
  */
 class SecondTapMlOverride extends ContextualSearchHeuristic {
     // Tap must be between about 1/4 second and 3 seconds after the previous tap.

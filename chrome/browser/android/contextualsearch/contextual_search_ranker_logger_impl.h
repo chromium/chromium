@@ -28,9 +28,10 @@ enum AssistRankerPrediction {
   ASSIST_RANKER_PREDICTION_SHOW,
 };
 
+// Provides the native portion of the Java class by the same name.
 // Runs Ranker inference and logging through UKM for Ranker model development.
 // This is used to prediction whether a tap gesture will be useful to the user
-// or not.
+// or not and possible suppression.
 class ContextualSearchRankerLoggerImpl {
  public:
   ContextualSearchRankerLoggerImpl(JNIEnv* env, jobject obj);

@@ -17,7 +17,9 @@ import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
- * This class is responsible for all the logging related to Contextual Search.
+ * This class is responsible for all the logging triggered by activity of the
+ * {@link ContextualSearchPanel}. Typically this consists of tracking user activity
+ * logging that to UMA when the interaction ends as the panel is dismissed.
  */
 public class ContextualSearchPanelMetrics {
     // Flags for logging.

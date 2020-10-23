@@ -9,8 +9,9 @@ import android.text.TextUtils;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 
 /**
- * Implements the policy that a Tap relatively far away from the middle of a word should be
- * ignored.  When a Tap is close to the middle of the word tapped it's treated normally.
+ * Implements a {@link ContextualSearchHeuristic} that a Tap relatively far away from the middle of
+ * a word should be ignored.  When a Tap is close to the middle of the word tapped it's treated
+ * normally.
  */
 class TapWordEdgeSuppression extends ContextualSearchHeuristic {
     private static final int INVALID_OFFSET = ContextualSearchContext.INVALID_OFFSET;

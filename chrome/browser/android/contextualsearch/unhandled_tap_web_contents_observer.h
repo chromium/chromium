@@ -16,6 +16,8 @@ typedef base::RepeatingCallback<
 
 // Binds a Mojo unhandled-tap notifier message-handler to the frame host
 // observed by this observer.
+// TODO(donnd): remove this as part of removal of all Tap gesture support
+// after a migration to triggering using Longpress.
 class UnhandledTapWebContentsObserver
     : public content::WebContentsUserData<UnhandledTapWebContentsObserver> {
  public:

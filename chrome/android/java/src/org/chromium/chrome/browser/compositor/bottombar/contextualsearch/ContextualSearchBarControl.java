@@ -23,6 +23,8 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
  * Controls the Search Bar in the Contextual Search Panel.
+ * This class holds instances of its subcomponents such as the main text, caption, icon
+ * and interaction controls such as the close box.
  */
 public class ContextualSearchBarControl {
     /** Full opacity -- fully visible. */

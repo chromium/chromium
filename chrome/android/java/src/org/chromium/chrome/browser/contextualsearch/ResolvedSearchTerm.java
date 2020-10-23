@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Encapsulates the results of a server Resolve request into a single immutable object.
+ * Encapsulates the response from the server to a Resolve request (as a single immutable object).
  */
 public class ResolvedSearchTerm {
     @IntDef({CardTag.CT_NONE, CardTag.CT_OTHER, CardTag.CT_HAS_ENTITY, CardTag.CT_BUSINESS,

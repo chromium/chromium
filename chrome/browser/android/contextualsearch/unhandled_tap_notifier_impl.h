@@ -14,6 +14,9 @@ namespace contextual_search {
 
 // Implements a Mojo service endpoint for the mojo unhandled-tap notifier
 // message.
+// TODO(donnd): remove this as part of removal of all JS APIs for Contextual
+// Search since their primary need was for translations which are now handled
+// directly within the Bar.
 class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
  public:
   // Creates an implementation that will scale tap locations by the given

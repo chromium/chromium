@@ -21,8 +21,8 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
- * Controls the Caption View that is shown at the bottom of the control and used
- * as a dynamic resource.
+ * Controls the Caption View that is shown at the bottom of the {@link ContextualSearchBarControl}
+ * and used as a dynamic resource.
  */
 public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater {
     private static final float ANIMATION_PERCENTAGE_ZERO = 0.f;

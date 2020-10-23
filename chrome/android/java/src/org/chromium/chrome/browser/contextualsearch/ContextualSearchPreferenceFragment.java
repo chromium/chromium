@@ -16,7 +16,8 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
- * Fragment to manage the Contextual Search preference and to explain to the user what it does.
+ * Fragment to manage the Contextual Search preference in Chrome Settings, and to explain to the
+ * user what Contextual Search (aka Touch to Search) actually does.
  */
 public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat {
     private static final String PREF_CONTEXTUAL_SEARCH_SWITCH = "contextual_search_switch";

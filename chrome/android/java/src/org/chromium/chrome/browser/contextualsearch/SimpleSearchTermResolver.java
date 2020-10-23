@@ -15,7 +15,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Provides
+ * Deprecated class to provide an alternate access point to the server's Resolve request
+ * for experimentation purposes.
+ * TODO(donnd): remove this class and its associated native class.
  */
 public class SimpleSearchTermResolver {
     /**

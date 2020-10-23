@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.contextualsearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 
 /**
- * Heuristic for Tap suppression near the top of the content view area.
+ * Provides a {@link ContextualSearchHeuristic} for Tap suppression for any tap near the top of the
+ * content view area.
  * Handles logging of results seen and the condition state.
  */
 public class NearTopTapSuppression extends ContextualSearchHeuristic {

@@ -33,7 +33,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
 /**
- * Controls the Contextual Search Panel.
+ * Controls the Contextual Search Panel, primarily the Bar - the
+ * {@link ContextualSearchBarControl} - and the content area that shows the Search Result.
  */
 public class ContextualSearchPanel extends OverlayPanel {
 

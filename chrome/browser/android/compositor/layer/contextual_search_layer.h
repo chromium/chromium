@@ -26,6 +26,10 @@ class ResourceManager;
 
 namespace android {
 
+// Renders the Contextual Search specific portions of an Overlay Panel.
+// Note that the |OverlayPanelLayer| was shared by the Ephemeral Tab
+// but no longer is.
+// TODO(donnd) cleanup this class hierarchy or remove it altogether.
 class ContextualSearchLayer : public OverlayPanelLayer {
  public:
   static scoped_refptr<ContextualSearchLayer> Create(

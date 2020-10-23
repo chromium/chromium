@@ -29,6 +29,8 @@ import java.util.regex.Pattern;
 
 /**
  * Controls selection gesture interaction for Contextual Search.
+ * Receives low-level events and feeds them to the {@link ContextualSearchManager}
+ * while tracking the selection state.
  */
 public class ContextualSearchSelectionController {
     /**

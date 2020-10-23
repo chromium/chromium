@@ -73,8 +73,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Manager for the Contextual Search feature. This class keeps track of the status of Contextual
+ * Manages the Contextual Search feature. This class keeps track of the status of Contextual
  * Search and coordinates the control with the layout.
+ * This class is driven by {@link ContextualSearchInternalStateController} through the
+ * {@link ContextualSearchInternalStateHandler} interface to advance each stage of processing
+ * events. The events are fed in by {@link ContextualSearchSelectionController} and business
+ * decisions are made in the {@link ContextualSearchPolicy} class. There is a native
+ * class corresponding to this class that communicates with the server through a delegate.
+ * The server interaction is vectored through an interface to allow a stub for testing in
+ * {@Link ContextualSearchNetworkCommunicator}.
+ * The lifetime of this class corresponds to the Activity, and this class creates and owns a
+ * {@link ContextualSearchPanel} with the same lifetime.
  */
 public class ContextualSearchManager
         implements ContextualSearchManagementDelegate, ContextualSearchNetworkCommunicator,

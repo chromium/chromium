@@ -16,7 +16,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
- * Controls the Search Context View that is used as a dynamic resource.
+ * Controls the Search Context View that shows the primary text at the top of the Bar using
+ * two-part styling. Typically this is used to display the selection in black and the following
+ * context in grey text.
+ * This is used as a dynamic resource within the {@link ContextualSearchBarControl}.
  */
 public class ContextualSearchContextControl extends OverlayPanelRepaddingTextView {
     /**

@@ -11,7 +11,9 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
 /**
- * The delegate that provides global management functionality for Contextual Search.
+ * Provides an interface to allow external objects like the {@link ContextualSearchPanel} to drive
+ * specific actions in the {@link ContextualSearchManager} e.g tell it to close or promote the
+ * panel into a separate Tab.
  */
 public interface ContextualSearchManagementDelegate {
 

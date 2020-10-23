@@ -15,6 +15,8 @@
 
 class Profile;
 
+// Provides the native support needed by the Java class by the same name.
+// This coordinates Tab changes with Contextual Search.
 class ContextualSearchTabHelper {
  public:
   ContextualSearchTabHelper(JNIEnv* env, jobject obj, Profile* profile);

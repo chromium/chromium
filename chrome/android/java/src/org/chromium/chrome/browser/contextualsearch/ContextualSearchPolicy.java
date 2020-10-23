@@ -36,7 +36,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * Handles policy decisions for the {@code ContextualSearchManager}.
+ * Handles business decision policy for the {@code ContextualSearchManager}.
  */
 class ContextualSearchPolicy {
     private static final Pattern CONTAINS_WHITESPACE_PATTERN = Pattern.compile("\\s");

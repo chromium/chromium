@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>
  * This class keeps track of the current internal state of the {@code ContextualSearchManager} and
  * helps it to transition between states and return to the idle state when work has been
- * interrupted.
+ * interrupted or complete.
  * <p>
  * Usage: Call {@link #reset(StateChangeReason)} to reset to the {@code IDLE} state, which hides
  * the UI.<br>

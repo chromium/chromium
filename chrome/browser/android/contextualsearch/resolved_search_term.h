@@ -9,6 +9,9 @@
 
 #include "base/macros.h"
 
+// Provides the native support needed for the Java class by the same name,
+// which encapsulates a server response for Contextual Search.
+
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.contextualsearch
 enum QuickActionCategory {

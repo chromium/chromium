@@ -24,6 +24,10 @@ namespace android {
 
 class ContextualSearchLayer;
 
+// A native-side, cc::Layer-based representation of how a Contextual Search
+// scene should be drawn.
+// This class delegates to the ContextualSearchLayer
+// that does the actual rendering of the Contextual Search Bar and content.
 class ContextualSearchSceneLayer : public SceneLayer,
                                    public BitmapFetcherDelegate {
  public:
