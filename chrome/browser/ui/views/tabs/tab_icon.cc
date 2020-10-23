@@ -42,7 +42,8 @@ bool ShouldThemifyFaviconForUrl(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
          url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
          url.host_piece() != chrome::kChromeUIHelpHost &&
-         url.host_piece() != chrome::kChromeUIVersionHost;
+         url.host_piece() != chrome::kChromeUIVersionHost &&
+         url.host_piece() != chrome::kChromeUINetExportHost;
 }
 
 bool NetworkStateIsAnimated(TabNetworkState network_state) {
