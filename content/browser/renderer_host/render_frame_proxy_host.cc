@@ -106,7 +106,7 @@ RenderFrameProxyHost::RenderFrameProxyHost(
       frame_tree_node_(frame_tree_node),
       render_frame_proxy_created_(false),
       render_view_host_(std::move(render_view_host)) {
-  GetProcess()->AddRoute(routing_id_, this);
+  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   CHECK(
       g_routing_id_frame_proxy_map.Get()
           .insert(std::make_pair(
@@ -157,7 +157,7 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
   // destructor. This line can be removed.
   render_view_host_.reset();
 
-  GetProcess()->RemoveRoute(routing_id_);
+  GetAgentSchedulingGroup().RemoveRoute(routing_id_);
   g_routing_id_frame_proxy_map.Get().erase(
       RenderFrameProxyHostID(GetProcess()->GetID(), routing_id_));
   g_token_frame_proxy_map.Get().erase(frame_token_);
