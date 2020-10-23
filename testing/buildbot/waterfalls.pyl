@@ -2820,13 +2820,9 @@
         },
       },
       'win-pixel-tester-rel': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Windows-10-18363',
-            },
-          ],
-        },
+        'mixins': [
+            'win10',
+        ],
         'test_suites': {
           'gtest_tests': 'pixel_browser_tests_gtests',
         }
