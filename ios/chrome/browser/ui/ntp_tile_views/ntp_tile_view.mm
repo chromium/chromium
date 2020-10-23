@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_view.h"
 
+#include "base/feature_list.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -68,6 +70,15 @@ const CGFloat kPreferredMaxWidth = 73;
         @{ @"space" : @(kSpaceIconTitle) });
 
     _imageBackgroundView = backgroundView;
+
+#ifdef __IPHONE_13_4
+    if (@available(iOS 13.4, *)) {
+      if (base::FeatureList::IsEnabled(kPointerSupport)) {
+        [self addInteraction:[[UIPointerInteraction alloc]
+                                 initWithDelegate:self]];
+      }
+    }
+#endif
   }
   return self;
 }
@@ -89,5 +100,31 @@ const CGFloat kPreferredMaxWidth = 73;
     self.titleLabel.font = [self titleLabelFont];
   }
 }
+
+#pragma mark - UIPointerInteractionDelegate
+
+#ifdef __IPHONE_13_4
+
+- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
+                      regionForRequest:(UIPointerRegionRequest*)request
+                         defaultRegion:(UIPointerRegion*)defaultRegion
+    API_AVAILABLE(ios(13.4)) {
+  return defaultRegion;
+}
+
+- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
+                       styleForRegion:(UIPointerRegion*)region
+    API_AVAILABLE(ios(13.4)) {
+  UITargetedPreview* preview =
+      [[UITargetedPreview alloc] initWithView:_imageContainerView];
+  UIPointerHighlightEffect* effect =
+      [UIPointerHighlightEffect effectWithPreview:preview];
+  UIPointerShape* shape =
+      [UIPointerShape shapeWithRoundedRect:_imageContainerView.frame
+                              cornerRadius:8.0];
+  return [UIPointerStyle styleWithEffect:effect shape:shape];
+}
+
+#endif
 
 @end

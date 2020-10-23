@@ -22,6 +22,7 @@ source_set("ntp_tile_views") {
     "resources:ntp_readinglist_icon",
     "resources:ntp_recent_icon",
     "//base",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
