@@ -796,7 +796,11 @@ void ServiceWorkerVersion::AddControllee(
 
 void ServiceWorkerVersion::RemoveControllee(const std::string& client_uuid) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  DCHECK(base::Contains(controllee_map_, client_uuid));
+  // TODO(crbug.com/1015692): Remove this once RemoveControllee() matches with
+  // AddControllee().
+  if (!base::Contains(controllee_map_, client_uuid))
+    return;
+
   controllee_map_.erase(client_uuid);
 
   embedded_worker_->UpdateForegroundPriority();
