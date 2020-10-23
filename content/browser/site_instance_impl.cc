@@ -543,11 +543,8 @@ void SiteInstanceImpl::ReuseCurrentProcessIfPossible(
   // Do not reuse the process if it's not suitable for this SiteInstance. For
   // example, this won't allow reusing a process if it's locked to a site that's
   // different from this SiteInstance's site.
-  if (!current_process->MayReuseHost() ||
-      !RenderProcessHostImpl::IsSuitableHost(
-          current_process, GetIsolationContext(), site_info_)) {
+  if (!RenderProcessHostImpl::MayReuseAndIsSuitable(current_process, this))
     return;
-  }
 
   // TODO(crbug.com/1055779 ): Don't try to reuse process if either of the
   // SiteInstances are cross-origin isolated (uses COOP/COEP).

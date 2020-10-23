@@ -857,12 +857,8 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       // |site_instance|, for example if it was reused by a navigation to a
       // different site, and |site_instance| requires a dedicated process. Do
       // not allow such hosts to be reused.  See https://crbug.com/780661.
-      if (!host->MayReuseHost() ||
-          !RenderProcessHostImpl::IsSuitableHost(
-              host, site_instance->GetIsolationContext(),
-              site_instance->GetSiteInfo())) {
+      if (!RenderProcessHostImpl::MayReuseAndIsSuitable(host, site_instance))
         continue;
-      }
 
       if (host->VisibleClientCount())
         foreground_processes->insert(host);
@@ -1066,9 +1062,7 @@ class UnmatchedServiceWorkerProcessTracker
     // |site_instance|, for example if it was used for a ServiceWorker for a
     // nonexistent extension URL.  See https://crbug.com/782349 and
     // https://crbug.com/780661.
-    if (!host->MayReuseHost() || !RenderProcessHostImpl::IsSuitableHost(
-                                     host, site_instance->GetIsolationContext(),
-                                     site_instance->GetSiteInfo()))
+    if (!RenderProcessHostImpl::MayReuseAndIsSuitable(host, site_instance))
       return nullptr;
 
     site_process_set_.erase(site_process_pair);
@@ -4163,6 +4157,23 @@ bool RenderProcessHostImpl::IsSuitableHost(
 }
 
 // static
+bool RenderProcessHostImpl::MayReuseAndIsSuitable(
+    RenderProcessHost* host,
+    const IsolationContext& isolation_context,
+    const SiteInfo& site_info) {
+  return host->MayReuseHost() &&
+         IsSuitableHost(host, isolation_context, site_info);
+}
+
+// static
+bool RenderProcessHostImpl::MayReuseAndIsSuitable(
+    RenderProcessHost* host,
+    SiteInstanceImpl* site_instance) {
+  return MayReuseAndIsSuitable(host, site_instance->GetIsolationContext(),
+                               site_instance->GetSiteInfo());
+}
+
+// static
 void RenderProcessHost::WarmupSpareRenderProcessHost(
     content::BrowserContext* browser_context) {
   SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
@@ -4233,10 +4244,7 @@ RenderProcessHost* RenderProcessHostImpl::GetExistingProcessHost(
   suitable_renderers.reserve(GetAllHosts().size());
 
   for (iterator iter(AllHostsIterator()); !iter.IsAtEnd(); iter.Advance()) {
-    if (iter.GetCurrentValue()->MayReuseHost() &&
-        RenderProcessHostImpl::IsSuitableHost(
-            iter.GetCurrentValue(), site_instance->GetIsolationContext(),
-            site_instance->GetSiteInfo())) {
+    if (MayReuseAndIsSuitable(iter.GetCurrentValue(), site_instance)) {
       // The spare is always considered before process reuse.
       DCHECK_NE(iter.GetCurrentValue(),
                 SpareRenderProcessHostManager::GetInstance()
@@ -4278,11 +4286,8 @@ RenderProcessHost* RenderProcessHostImpl::GetUnusedProcessHostForServiceWorker(
     // MaybeTakeSpareRenderProcessHost() is called later.
     bool is_spare = (host == spare_process_manager.spare_render_process_host());
 
-    if (!is_spare && iter.GetCurrentValue()->MayReuseHost() &&
-        iter.GetCurrentValue()->IsUnused() &&
-        RenderProcessHostImpl::IsSuitableHost(
-            iter.GetCurrentValue(), site_instance->GetIsolationContext(),
-            site_instance->GetSiteInfo())) {
+    if (!is_spare && host->IsUnused() &&
+        MayReuseAndIsSuitable(host, site_instance)) {
       return host;
     }
     iter.Advance();
@@ -4300,10 +4305,10 @@ RenderProcessHost* RenderProcessHostImpl::GetSoleProcessHostForSite(
 
   // See if we have an existing process with appropriate bindings for this
   // site. If not, the caller should create a new process and register it.
-  // Note that IsSuitableHost expects a SiteInfo rather than the full |url|.
+  // Note that MayReuseAndIsSuitable expects a SiteInfo rather than the full
+  // |url|.
   RenderProcessHost* host = map->FindProcess(site_info);
-  if (host && (!host->MayReuseHost() ||
-               !IsSuitableHost(host, isolation_context, site_info))) {
+  if (host && !MayReuseAndIsSuitable(host, isolation_context, site_info)) {
     // The registered process does not have an appropriate set of bindings for
     // the url.  Remove it from the map so we can register a better one.
     RecordAction(
@@ -4425,13 +4430,11 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   }
 
   // If we found a process to reuse, sanity check that it is suitable for
-  // hosting |site_url|. For example, if |site_url| requires a dedicated
-  // process, we should never pick a process used by, or locked to, a different
-  // site.
-  if (render_process_host &&
-      !RenderProcessHostImpl::IsSuitableHost(
-          render_process_host, site_instance->GetIsolationContext(),
-          site_info)) {
+  // |site_instance|. For example, if the SiteInfo for |site_instance| requires
+  // a dedicated process, we should never pick a process used by, or locked to,
+  // a different site.
+  if (render_process_host && !RenderProcessHostImpl::MayReuseAndIsSuitable(
+                                 render_process_host, site_instance)) {
     base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                    site_info.GetDebugString());
     ChildProcessSecurityPolicyImpl::GetInstance()->LogKilledProcessOriginLock(

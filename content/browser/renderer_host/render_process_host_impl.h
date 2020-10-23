@@ -339,6 +339,16 @@ class CONTENT_EXPORT RenderProcessHostImpl
                              const IsolationContext& isolation_context,
                              const SiteInfo& site_info);
 
+  // Helper function that returns true if |host| returns true for MayReuseHost()
+  // and IsSuitableHost() returns true.
+  static bool MayReuseAndIsSuitable(RenderProcessHost* host,
+                                    const IsolationContext& isolation_context,
+                                    const SiteInfo& site_info);
+  // Same as the method above but uses the IsolationContext and SiteInfo
+  // provided by |site_instance|.
+  static bool MayReuseAndIsSuitable(RenderProcessHost* host,
+                                    SiteInstanceImpl* site_instance);
+
   // Returns an existing RenderProcessHost for |site_info| in
   // |isolation_context|, if one exists.  Otherwise a new RenderProcessHost
   // should be created and registered using RegisterProcessHostForSite(). This
