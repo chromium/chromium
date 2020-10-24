@@ -777,10 +777,10 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
               RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
             base::Optional<LayoutUnit> definite_inline_size;
             if (!child_style.LogicalWidth().IsAuto()) {
-              definite_inline_size =
-                  ResolveMainInlineLength(flex_basis_space, child_style,
-                                          border_padding_in_child_writing_mode,
-                                          MinMaxSizesFunc, length_to_resolve);
+              definite_inline_size = ResolveMainInlineLength(
+                  flex_basis_space, child_style,
+                  border_padding_in_child_writing_mode, MinMaxSizesFunc,
+                  child_style.LogicalWidth());
             }
             intrinsic_block_size =
                 ComputeIntrinsicBlockSizeForAspectRatioElement(
