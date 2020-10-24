@@ -20,10 +20,15 @@
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/button/button_controller.h"
 
 namespace media_router {
+
+namespace {
+constexpr char kLoggerComponent[] = "CastToolbarButton";
+}
 
 // static
 std::unique_ptr<CastToolbarButton> CastToolbarButton::Create(Browser* browser) {
@@ -55,7 +60,8 @@ CastToolbarButton::CastToolbarButton(
       MediaRoutesObserver(media_router),
       browser_(browser),
       profile_(browser_->profile()),
-      context_menu_(std::move(context_menu)) {
+      context_menu_(std::move(context_menu)),
+      logger_(media_router->GetLogger()) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 
@@ -145,27 +151,36 @@ void CastToolbarButton::UpdateIcon() {
   using Severity = media_router::IssueInfo::Severity;
   const auto severity =
       current_issue_ ? current_issue_->severity : Severity::NOTIFICATION;
-  if (severity == Severity::NOTIFICATION && !has_local_display_route_) {
-    UpdateIconsWithStandardColors(vector_icons::kMediaRouterIdleIcon);
-    UpdateLayoutInsetDelta();
-    return;
-  }
+  const gfx::VectorIcon* new_icon = nullptr;
+  SkColor icon_color;
 
-  const gfx::VectorIcon* icon = &vector_icons::kMediaRouterActiveIcon;
-  SkColor icon_color = gfx::kGoogleBlue500;
-  // Highest priority is to indicate whether there's an issue.
-  if (severity == Severity::FATAL) {
-    icon = &vector_icons::kMediaRouterErrorIcon;
+  if (severity == Severity::NOTIFICATION && !has_local_display_route_) {
+    new_icon = &vector_icons::kMediaRouterIdleIcon;
+    icon_color = gfx::kPlaceholderColor;
+  } else if (severity == Severity::FATAL) {
+    new_icon = &vector_icons::kMediaRouterErrorIcon;
     icon_color = GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_AlertSeverityHigh);
   } else if (severity == Severity::WARNING) {
-    icon = &vector_icons::kMediaRouterWarningIcon;
+    new_icon = &vector_icons::kMediaRouterWarningIcon;
     icon_color = GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_AlertSeverityMedium);
+  } else {
+    new_icon = &vector_icons::kMediaRouterActiveIcon;
+    icon_color = gfx::kGoogleBlue500;
   }
 
-  for (auto state : kButtonStates)
-    SetImageModel(state, ui::ImageModel::FromVectorIcon(*icon, icon_color));
+  if (icon_ == new_icon)
+    return;
+
+  icon_ = new_icon;
+  LogIconChange(icon_);
+  if (icon_color == gfx::kPlaceholderColor) {
+    UpdateIconsWithStandardColors(*icon_);
+  } else {
+    for (auto state : kButtonStates)
+      SetImageModel(state, ui::ImageModel::FromVectorIcon(*icon_, icon_color));
+  }
   UpdateLayoutInsetDelta();
 }
 
@@ -191,6 +206,27 @@ void CastToolbarButton::ButtonPressed() {
         MediaRouterDialogOpenOrigin::TOOLBAR);
     MediaRouterMetrics::RecordMediaRouterDialogOrigin(
         MediaRouterDialogOpenOrigin::TOOLBAR);
+  }
+}
+
+void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
+  if (icon_ == &vector_icons::kMediaRouterIdleIcon) {
+    logger_->LogInfo(
+        mojom::LogCategory::kUi, kLoggerComponent,
+        "Cast toolbar icon indicates no active session nor issues.", "", "",
+        "");
+  } else if (icon_ == &vector_icons::kMediaRouterErrorIcon) {
+    logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
+                     "Cast toolbar icon shows a fatal issue.", "", "", "");
+  } else if (icon_ == &vector_icons::kMediaRouterWarningIcon) {
+    logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
+                     "Cast toolbar icon shows a warning issue.", "", "", "");
+  } else if (icon_ == &vector_icons::kMediaRouterActiveIcon) {
+    logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
+                     "Cast toolbar icon is blue, indicating an active session.",
+                     "", "", "");
+  } else {
+    NOTREACHED();
   }
 }
 

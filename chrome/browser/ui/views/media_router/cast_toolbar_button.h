@@ -17,6 +17,7 @@ class Browser;
 namespace media_router {
 
 class MediaRouter;
+class LoggerImpl;
 
 // Cast icon shown in the trusted area of toolbar. Its lifetime is tied to that
 // of its parent ToolbarView. The icon is made visible in following situations:
@@ -69,6 +70,8 @@ class CastToolbarButton : public ToolbarButton,
 
   void ButtonPressed();
 
+  void LogIconChange(const gfx::VectorIcon* icon);
+
   Browser* const browser_;
   Profile* const profile_;
 
@@ -78,6 +81,10 @@ class CastToolbarButton : public ToolbarButton,
   std::unique_ptr<MediaRouterContextualMenu> context_menu_;
 
   bool has_local_display_route_ = false;
+
+  const gfx::VectorIcon* icon_ = nullptr;
+
+  LoggerImpl* const logger_;
 
   DISALLOW_COPY_AND_ASSIGN(CastToolbarButton);
 };

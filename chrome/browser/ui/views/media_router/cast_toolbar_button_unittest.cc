@@ -85,8 +85,12 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     Browser::CreateParams browser_params(profile_.get(), true);
     browser_params.window = window_.get();
     browser_ = std::make_unique<Browser>(browser_params);
-    MediaRouter* media_router =
-        MediaRouterFactory::GetApiForBrowserContext(profile_.get());
+    MockMediaRouter* media_router = static_cast<MockMediaRouter*>(
+        MediaRouterFactory::GetApiForBrowserContext(profile_.get()));
+    logger_ = std::make_unique<LoggerImpl>();
+    ON_CALL(*media_router, GetLogger())
+        .WillByDefault(testing::Return(logger_.get()));
+
     auto context_menu = std::make_unique<MediaRouterContextualMenu>(
         browser_.get(), false, &context_menu_observer_);
 
@@ -131,6 +135,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   CastToolbarButton* button_ = nullptr;  // owned by |widget_|.
   MockContextMenuObserver context_menu_observer_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<LoggerImpl> logger_;
 
   gfx::Image idle_icon_;
   gfx::Image warning_icon_;

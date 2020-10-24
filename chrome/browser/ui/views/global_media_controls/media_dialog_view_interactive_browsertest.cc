@@ -7,6 +7,7 @@
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
@@ -273,6 +274,12 @@ class TestMediaRouter : public media_router::MockMediaRouter {
     return std::make_unique<TestMediaRouter>();
   }
 
+  media_router::LoggerImpl* GetLogger() override {
+    if (!logger_)
+      logger_ = std::make_unique<media_router::LoggerImpl>();
+    return logger_.get();
+  }
+
   void RegisterMediaRoutesObserver(
       media_router::MediaRoutesObserver* observer) override {
     routes_observers_.push_back(observer);
@@ -291,6 +298,7 @@ class TestMediaRouter : public media_router::MockMediaRouter {
 
  private:
   std::vector<media_router::MediaRoutesObserver*> routes_observers_;
+  std::unique_ptr<media_router::LoggerImpl> logger_;
 };
 
 }  // anonymous namespace
