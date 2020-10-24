@@ -32,4 +32,8 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration();
 // Nothing is prefetched if the default match is not prefetchable.
 bool SearchPrefetchOnlyFetchDefaultMatch();
 
+// When a request is inflight, but no longer shows up in the match list, whether
+// the request is canceled or allowed to finish.
+bool SearchPrefetchShouldCancelUneededInflightRequests();
+
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

@@ -53,3 +53,8 @@ bool SearchPrefetchOnlyFetchDefaultMatch() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kSearchPrefetchServicePrefetching, "only_prefetch_default_match", false);
 }
+
+bool SearchPrefetchShouldCancelUneededInflightRequests() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kSearchPrefetchServicePrefetching, "cancel_inflight_unneeded", true);
+}

@@ -130,6 +130,13 @@ SearchPrefetchService::PrefetchRequest::TakePrefetchResponse() {
   return std::move(prefetch_response_container_);
 }
 
+void SearchPrefetchService::PrefetchRequest::CancelPrefetch() {
+  DCHECK_EQ(current_status_, SearchPrefetchStatus::kInFlight);
+  current_status_ = SearchPrefetchStatus::kRequestCancelled;
+
+  simple_loader_.reset();
+}
+
 SearchPrefetchService::SearchPrefetchService(Profile* profile)
     : profile_(profile) {
   DCHECK(!profile_->IsOffTheRecord());
@@ -254,6 +261,43 @@ void SearchPrefetchService::OnResultChanged(
     AutocompleteController* controller) {
   const auto& result = controller->result();
   const auto* default_match = result.default_match();
+
+  // Cancel Unneeded prefetch requests.
+  if (SearchPrefetchShouldCancelUneededInflightRequests()) {
+    auto* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile_);
+    if (!template_url_service)
+      return;
+
+    // Since we limit the number of prefetches in the map, this should be fast
+    // despite the two loops.
+    for (const auto& kv_pair : prefetches_) {
+      const auto& search_terms = kv_pair.first;
+      auto& prefetch_request = kv_pair.second;
+      if (prefetch_request->current_status() !=
+          SearchPrefetchStatus::kInFlight) {
+        continue;
+      }
+      bool should_cancel_request = true;
+      for (const auto& match : result) {
+        base::string16 match_search_terms;
+        template_url_service->GetDefaultSearchProvider()
+            ->ExtractSearchTermsFromURL(
+                match.destination_url,
+                template_url_service->search_terms_data(), &match_search_terms);
+
+        if (search_terms == match_search_terms) {
+          should_cancel_request = false;
+          break;
+        }
+      }
+
+      // Cancel the inflight request and mark it as canceled.
+      if (should_cancel_request) {
+        prefetch_request->CancelPrefetch();
+      }
+    }
+  }
 
   // One arm of the experiment only prefetches the top match when it is default.
   if (SearchPrefetchOnlyFetchDefaultMatch()) {

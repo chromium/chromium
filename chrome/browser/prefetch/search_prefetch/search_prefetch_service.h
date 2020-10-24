@@ -28,6 +28,8 @@ enum class SearchPrefetchStatus {
   kSuccessfullyCompleted = 2,
   // The request hit an error and cannot be served.
   kRequestFailed = 3,
+  // The request was cancelled before completion.
+  kRequestCancelled = 4,
 };
 
 class SearchPrefetchService : public KeyedService {
@@ -73,6 +75,9 @@ class SearchPrefetchService : public KeyedService {
 
     // Starts the network request to prefetch |prefetch_url_|.
     void StartPrefetchRequest(Profile* profile);
+
+    // Cancels the on-going prefetch and marks the status appropriately.
+    void CancelPrefetch();
 
     SearchPrefetchStatus current_status() const { return current_status_; }
 
