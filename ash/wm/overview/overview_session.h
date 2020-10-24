@@ -33,7 +33,6 @@ class PointF;
 
 namespace ui {
 class KeyEvent;
-class ScopedLayerAnimationSettings;
 }  // namespace ui
 
 namespace views {
@@ -56,12 +55,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                                    public ShellObserver,
                                    public SplitViewObserver {
  public:
-  // Callback which fills out the passed settings object. Used by several
-  // functions so different callers can do similar animations with different
-  // settings.
-  using UpdateAnimationSettingsCallback =
-      base::RepeatingCallback<void(ui::ScopedLayerAnimationSettings* settings)>;
-
   using WindowList = std::vector<aura::Window*>;
 
   explicit OverviewSession(OverviewDelegate* delegate);
@@ -203,14 +196,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void SetWindowListNotAnimatedWhenExiting(aura::Window* root_window);
 
   // Shifts and fades the grid in |grid_list_| associated with |location|.
-  // Returns a ui::ScopedLayerAnimationSettings object for the caller to
-  // observe.
-  std::unique_ptr<ui::ScopedLayerAnimationSettings>
-  UpdateGridAtLocationYPositionAndOpacity(
-      int64_t display_id,
-      float new_y,
-      float opacity,
-      UpdateAnimationSettingsCallback callback);
 
   // Updates all the overview items' mask and shadow.
   void UpdateRoundedCornersAndShadow();

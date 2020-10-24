@@ -1305,35 +1305,6 @@ void OverviewGrid::EndNudge() {
   nudge_data_.clear();
 }
 
-std::unique_ptr<ui::ScopedLayerAnimationSettings>
-OverviewGrid::UpdateYPositionAndOpacity(
-    float new_y,
-    float opacity,
-    OverviewSession::UpdateAnimationSettingsCallback callback) {
-  std::unique_ptr<ui::ScopedLayerAnimationSettings> settings_to_observe;
-  if (desks_widget_) {
-    aura::Window* window = desks_widget_->GetNativeWindow();
-    ui::Layer* layer = window->layer();
-    if (!callback.is_null()) {
-      settings_to_observe = std::make_unique<ui::ScopedLayerAnimationSettings>(
-          layer->GetAnimator());
-      callback.Run(settings_to_observe.get());
-    }
-    window->SetTransform(gfx::Transform(1.f, 0.f, 0.f, 1.f, 0.f, -new_y));
-    layer->SetOpacity(opacity);
-  }
-
-  // Translate the window items to |new_y| with the opacity. Observe the
-  // animation of the last item, if any.
-  for (const auto& window_item : window_list_) {
-    auto new_settings =
-        window_item->UpdateYPositionAndOpacity(new_y, opacity, callback);
-    if (new_settings)
-      settings_to_observe = std::move(new_settings);
-  }
-  return settings_to_observe;
-}
-
 aura::Window* OverviewGrid::GetTargetWindowOnLocation(
     const gfx::PointF& location_in_screen,
     OverviewItem* ignored_item) {

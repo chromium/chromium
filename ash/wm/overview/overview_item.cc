@@ -407,16 +407,6 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
             ToStableSizeRoundedRect(GetWindowTargetBoundsWithInsets())),
         new_animation_type, nullptr);
   }
-
-  translation_y_map_.clear();
-  aura::Window::Windows windows = GetWindowsForHomeGesture();
-  for (auto* window : windows) {
-    // Cache the original y translation when setting bounds. They will be
-    // possibly used later when swiping up from the shelf to close overview. Use
-    // the target transform as some windows may still be animating.
-    translation_y_map_[window] =
-        window->layer()->GetTargetTransform().To2dTranslation().y();
-  }
 }
 
 void OverviewItem::SendAccessibleSelectionEvent() {
@@ -603,40 +593,6 @@ void OverviewItem::ScaleUpSelectedItem(OverviewAnimationType animation_type) {
     scaled_bounds.ClampToCenteredSize(new_size);
   }
   SetBounds(scaled_bounds, animation_type);
-}
-
-std::unique_ptr<ui::ScopedLayerAnimationSettings>
-OverviewItem::UpdateYPositionAndOpacity(
-    float new_grid_y,
-    float opacity,
-    OverviewSession::UpdateAnimationSettingsCallback callback) {
-  aura::Window::Windows windows = GetWindowsForHomeGesture();
-  std::unique_ptr<ui::ScopedLayerAnimationSettings> settings_to_observe;
-  for (auto* window : windows) {
-    ui::Layer* layer = window->layer();
-    std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
-    if (!callback.is_null()) {
-      settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
-          layer->GetAnimator());
-      callback.Run(settings.get());
-    }
-    layer->SetOpacity(opacity);
-
-    float initial_y = 0.f;
-    if (translation_y_map_.contains(window))
-      initial_y = translation_y_map_[window];
-
-    // Alter the y-translation. Offset by the window location relative to the
-    // grid.
-    gfx::Transform transform = layer->transform();
-    transform.matrix().setFloat(1, 3, initial_y - new_grid_y);
-    layer->SetTransform(transform);
-
-    if (settings)
-      settings_to_observe = std::move(settings);
-  }
-
-  return settings_to_observe;
 }
 
 void OverviewItem::UpdateItemContentViewForMinimizedWindow() {

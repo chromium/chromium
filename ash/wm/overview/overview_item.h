@@ -11,7 +11,6 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/window_state_observer.h"
-#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -139,15 +138,6 @@ class ASH_EXPORT OverviewItem : public views::ButtonListener,
 
   // Increases the bounds of the dragged item.
   void ScaleUpSelectedItem(OverviewAnimationType animation_type);
-
-  // Translate and fade the window (or minimized widget) and |item_widget_|. It
-  // should remain in the same spot relative to the grids origin, which is given
-  // by |new_grid_y|. Returns the settings object of the layer the caller should
-  // observe.
-  std::unique_ptr<ui::ScopedLayerAnimationSettings> UpdateYPositionAndOpacity(
-      float new_grid_y,
-      float opacity,
-      OverviewSession::UpdateAnimationSettingsCallback callback);
 
   // If the window item represents a minimized window, update its content view.
   void UpdateItemContentViewForMinimizedWindow();
@@ -421,11 +411,6 @@ class ASH_EXPORT OverviewItem : public views::ButtonListener,
   // we transform the window not to |target_bounds_| but to this value, and then
   // apply clipping on the window to |target_bounds_|.
   base::Optional<gfx::Size> unclipped_size_ = base::nullopt;
-
-  // Stores the last translations of the windows affected by |SetBounds|. Used
-  // for ease of calculations when swiping away overview mode using home
-  // launcher gesture.
-  base::flat_map<aura::Window*, float> translation_y_map_;
 
   // The shadow around the overview window. Shadows the original window, not
   // |item_widget_|. Done here instead of on the original window because of the
