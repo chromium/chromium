@@ -171,8 +171,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldSaveImagesOnDisk) {
   // session.
   EXPECT_TRUE(base::PathExists(ambient_image_path));
   auto file_paths = GetFilePathsInDir(ambient_image_path);
-  // Three image files and three attribution files.
-  EXPECT_EQ(file_paths.size(), 6u);
+  // Three image files, three related image files, and three attribution files.
+  EXPECT_EQ(file_paths.size(), 9u);
   for (auto& path : file_paths) {
     // No sub directories.
     EXPECT_FALSE(base::DirectoryExists(path));
@@ -209,8 +209,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
   // session.
   EXPECT_TRUE(base::PathExists(ambient_image_path));
   auto file_paths = GetFilePathsInDir(ambient_image_path);
-  // Three image files and three attribution files.
-  EXPECT_EQ(file_paths.size(), 6u);
+  // Three image files, three related image files, and three attribution files.
+  EXPECT_EQ(file_paths.size(), 9u);
   for (auto& path : file_paths) {
     // No sub directories.
     EXPECT_FALSE(base::DirectoryExists(path));

@@ -123,6 +123,10 @@ base::FilePath GetBackupFilePath(size_t index) {
                                      kPhotoFileExt);
 }
 
+base::FilePath GetRelatedFilePath(const std::string& file_name) {
+  return GetCachePath().Append(file_name + kRelatedPhotoSuffix + kPhotoFileExt);
+}
+
 bool CreateDirIfNotExists(const base::FilePath& path) {
   return base::DirectoryExists(path) || base::CreateDirectory(path);
 }
@@ -600,11 +604,14 @@ void AmbientPhotoController::TryReadPhotoRawData() {
 
   auto photo_data = std::make_unique<std::string>();
   auto photo_details = std::make_unique<std::string>();
+  auto* photo_data_ptr = photo_data.get();
+  auto* photo_details_ptr = photo_details.get();
 
-  auto on_done =
-      base::BindRepeating(&AmbientPhotoController::OnAllPhotoRawDataAvailable,
-                          weak_factory_.GetWeakPtr(),
-                          /*from_downloading=*/false);
+  auto on_done = base::BarrierClosure(
+      /*num_closures=*/2,
+      base::BindOnce(&AmbientPhotoController::OnAllPhotoRawDataAvailable,
+                     weak_factory_.GetWeakPtr(),
+                     /*from_downloading=*/false));
 
   task_runner_->PostTaskAndReply(
       FROM_HERE,
@@ -622,11 +629,30 @@ void AmbientPhotoController::TryReadPhotoRawData() {
               photo_details->clear();
             }
           },
-          file_name, photo_data.get(), photo_details.get()),
+          file_name, photo_data_ptr, photo_details_ptr),
       base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
                      weak_factory_.GetWeakPtr(), /*from_downloading=*/false,
-                     /*is_related_image=*/false, std::move(on_done),
+                     /*is_related_image=*/false, on_done,
                      std::move(photo_details), std::move(photo_data)));
+
+  auto related_photo_data = std::make_unique<std::string>();
+  auto* related_photo_data_ptr = related_photo_data.get();
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](const std::string& file_name, std::string* related_photo_data) {
+            const base::FilePath& file = GetRelatedFilePath(file_name);
+            if (!base::PathExists(file) ||
+                !base::ReadFileToString(file, related_photo_data)) {
+              related_photo_data->clear();
+            }
+          },
+          file_name, related_photo_data_ptr),
+      base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
+                     weak_factory_.GetWeakPtr(), /*from_downloading=*/false,
+                     /*is_related_image=*/true, on_done,
+                     /*details=*/std::make_unique<std::string>(),
+                     std::move(related_photo_data)));
 }
 
 void AmbientPhotoController::OnPhotoRawDataAvailable(
@@ -671,18 +697,32 @@ void AmbientPhotoController::OnAllPhotoRawDataAvailable(bool from_downloading) {
                      weak_factory_.GetWeakPtr(), from_downloading,
                      /*hash=*/base::SHA1HashString(*image_data_)));
 
+  base::Optional<std::string> related_image_data;
+  if (related_image_data_)
+    related_image_data = *related_image_data_;
+
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
           [](const std::string& file_name, bool need_to_save,
-             const std::string& data, const std::string& details) {
+             const std::string& data, const std::string& details,
+             const base::Optional<std::string>& related_data) {
             if (need_to_save) {
               WriteFile(GetCachePath().Append(file_name + kPhotoFileExt), data);
               WriteFile(GetCachePath().Append(file_name + kPhotoDetailsFileExt),
                         details);
+              const base::FilePath& related_data_file =
+                  GetRelatedFilePath(file_name);
+              if (related_data) {
+                WriteFile(related_data_file, *related_data);
+              } else {
+                if (base::PathExists(related_data_file))
+                  base::DeleteFile(related_data_file);
+              }
             }
           },
-          file_name, from_downloading, *image_data_, *image_details_),
+          file_name, from_downloading, *image_data_, *image_details_,
+          std::move(related_image_data)),
       base::BindOnce(&AmbientPhotoController::DecodePhotoRawData,
                      weak_factory_.GetWeakPtr(), from_downloading,
                      /*is_related_image=*/false, on_done,

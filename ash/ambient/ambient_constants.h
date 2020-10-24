@@ -51,6 +51,7 @@ constexpr int kMaxConsecutiveReadPhotoFailures = 3;
 
 constexpr char kPhotoFileExt[] = ".img";
 constexpr char kPhotoDetailsFileExt[] = ".txt";
+constexpr char kRelatedPhotoSuffix[] = "_r";
 
 // Directory name of ambient mode.
 constexpr char kAmbientModeDirectoryName[] = "ambient-mode";
