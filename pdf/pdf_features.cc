@@ -4,6 +4,8 @@
 
 #include "pdf/pdf_features.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace chrome_pdf {
 namespace features {
 
@@ -27,11 +29,11 @@ const base::Feature kPDFViewerUpdate = {"PDFViewerUpdate",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSaveEditedPDFForm = {"SaveEditedPDFForm",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
                                           base::FEATURE_ENABLED_BY_DEFAULT
 #else
                                           base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 };
 
 const base::Feature kTabAcrossPDFAnnotations = {

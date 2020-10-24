@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -30,12 +31,12 @@ class SizeF;
 
 namespace chrome_pdf {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 // Create a flattened PDF document from an existing PDF document.
 // |input_buffer| is the buffer that contains the entire PDF document to be
 // flattened.
 std::vector<uint8_t> CreateFlattenedPdf(base::span<const uint8_t> input_buffer);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 #if defined(OS_WIN)
 // Printing modes - type to convert PDF to for printing. See PDFium's

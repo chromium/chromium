@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/pdf_engine.h"
 
 namespace chrome_pdf {
@@ -21,10 +22,10 @@ class PDFiumEngineExports : public PDFEngineExports {
   ~PDFiumEngineExports() override;
 
 // PDFEngineExports:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   std::vector<uint8_t> CreateFlattenedPdf(
       base::span<const uint8_t> input_buffer) override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 #if defined(OS_WIN)
   bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
                          int page_number,

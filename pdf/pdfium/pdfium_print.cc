@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_read.h"
@@ -271,14 +272,14 @@ PDFiumPrint::PDFiumPrint(PDFiumEngine* engine) : engine_(engine) {}
 
 PDFiumPrint::~PDFiumPrint() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 // static
 std::vector<uint8_t> PDFiumPrint::CreateFlattenedPdf(ScopedFPDFDocument doc) {
   if (!FlattenPrintData(doc.get()))
     return std::vector<uint8_t>();
   return ConvertDocToBuffer(std::move(doc));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 // static
 std::vector<uint32_t> PDFiumPrint::GetPageNumbersFromPrintPageNumberRange(

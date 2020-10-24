@@ -32,6 +32,7 @@ if (enable_pdf) {
     deps = [
       ":internal",
       "//base",
+      "//build:chromeos_buildflags",
       "//ui/gfx/geometry",
     ]
   }
@@ -63,7 +64,10 @@ if (enable_pdf) {
 
     public = [ "pdf_features.h" ]
 
-    deps = [ "//base" ]
+    deps = [
+      "//base",
+      "//build:chromeos_buildflags",
+    ]
   }
 
   source_set("internal") {
@@ -143,6 +147,7 @@ if (enable_pdf) {
       ":ppapi_migration",
       "//base",
       "//base:i18n",
+      "//build:chromeos_buildflags",
       "//gin",
       "//net",
       "//pdf/pdfium/fuzzers",
@@ -232,6 +237,7 @@ if (enable_pdf) {
       ":internal",
       ":ppapi_migration",
       "//base",
+      "//build:chromeos_buildflags",
       "//net",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
