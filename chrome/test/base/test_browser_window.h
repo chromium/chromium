@@ -196,6 +196,7 @@ class TestBrowserWindow : public BrowserWindow {
   void SetCloseCallback(base::OnceClosure close_callback);
 
   void CreateTabSearchBubble() override {}
+  void CloseTabSearchBubble() override {}
 
   FeaturePromoController* GetFeaturePromoController() override;
 

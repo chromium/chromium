@@ -52,8 +52,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, CreateAndClose) {
 
   // Close the tab search bubble widget, the bubble should be cleared from the
   // TabSearchButton.
-  tab_search_button()->bubble_for_testing()->CloseWithReason(
-      views::Widget::ClosedReason::kUnspecified);
+  tab_search_button()->CloseTabSearchBubble();
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
 }
 
@@ -76,8 +75,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, TestBubbleVisible) {
 
   // Close the tab search bubble widget, the bubble should be cleared from the
   // TabSearchButton.
-  tab_search_button()->bubble_for_testing()->CloseWithReason(
-      views::Widget::ClosedReason::kUnspecified);
+  tab_search_button()->CloseTabSearchBubble();
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
 }
 
@@ -104,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, TestBubbleKeyboardShortcut) {
 
   // Close the tab search bubble widget, the bubble should be cleared from the
   // TabSearchButton.
-  tab_search_button()->bubble_for_testing()->CloseWithReason(
-      views::Widget::ClosedReason::kUnspecified);
+  tab_search_button()->CloseTabSearchBubble();
   ASSERT_EQ(nullptr, tab_search_button()->bubble_for_testing());
 }
 #endif

@@ -612,6 +612,8 @@ class BrowserView : public BrowserWindow,
 
   // Create and open the tab search bubble.
   void CreateTabSearchBubble() override;
+  // Closes the tab search bubble if open for the given browser instance.
+  void CloseTabSearchBubble() override;
 
   AccessibilityFocusHighlight* GetAccessibilityFocusHighlightForTesting() {
     return accessibility_focus_highlight_.get();

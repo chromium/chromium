@@ -417,6 +417,7 @@
 
 // Tab Search
 #define IDC_TAB_SEARCH 52500
+#define IDC_TAB_SEARCH_CLOSE 52501
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

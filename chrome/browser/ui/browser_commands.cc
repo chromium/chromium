@@ -1290,6 +1290,10 @@ void ShowTabSearch(Browser* browser) {
   browser->window()->CreateTabSearchBubble();
 }
 
+void CloseTabSearch(Browser* browser) {
+  browser->window()->CloseTabSearchBubble();
+}
+
 bool CanCloseFind(Browser* browser) {
   WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
   if (!current_tab)

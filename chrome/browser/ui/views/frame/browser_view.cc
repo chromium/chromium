@@ -2692,6 +2692,11 @@ void BrowserView::CreateTabSearchBubble() {
   }
 }
 
+void BrowserView::CloseTabSearchBubble() {
+  if (GetTabSearchButton())
+    GetTabSearchButton()->CloseTabSearchBubble();
+}
+
 void BrowserView::RevealTabStripIfNeeded() {
   if (!immersive_mode_controller_->IsEnabled())
     return;

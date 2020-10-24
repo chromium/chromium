@@ -505,6 +505,7 @@ TEST_F(BrowserCommandsTest, ToggleCaretBrowsing) {
 
 TEST_F(BrowserCommandsTest, TabSearchDisabled) {
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_TAB_SEARCH));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_TAB_SEARCH_CLOSE));
 }
 
 TEST_F(BrowserCommandsTest, TabSearchEnabled) {
@@ -513,6 +514,7 @@ TEST_F(BrowserCommandsTest, TabSearchEnabled) {
   auto browser =
       CreateBrowser(profile(), Browser::TYPE_NORMAL, false, window());
   EXPECT_TRUE(chrome::IsCommandEnabled(browser.get(), IDC_TAB_SEARCH));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser.get(), IDC_TAB_SEARCH_CLOSE));
 }
 
 }  // namespace

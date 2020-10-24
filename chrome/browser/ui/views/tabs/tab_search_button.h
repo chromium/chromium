@@ -45,6 +45,7 @@ class TabSearchButton : public NewTabButton,
   // This returns true if the method call results in the creation of a new Tab
   // Search bubble.
   bool ShowTabSearchBubble();
+  void CloseTabSearchBubble();
 
   bool IsBubbleVisible() const;
 

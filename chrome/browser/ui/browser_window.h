@@ -494,6 +494,8 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Create and open the tab search bubble.
   virtual void CreateTabSearchBubble() = 0;
+  // Closes the tab search bubble if open for the given browser instance.
+  virtual void CloseTabSearchBubble() = 0;
 
   // Gets the windows's FeaturePromoController which manages display of
   // in-product help.

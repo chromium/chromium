@@ -387,6 +387,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_TAB_SEARCH:
       ShowTabSearch(browser_);
       break;
+    case IDC_TAB_SEARCH_CLOSE:
+      CloseTabSearch(browser_);
+      break;
 
       // Window management commands
     case IDC_NEW_WINDOW:
@@ -1060,10 +1063,13 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_OTHER_TABS,
                                         normal_window);
 
-  command_updater_.UpdateCommandEnabled(
-      IDC_TAB_SEARCH, base::FeatureList::IsEnabled(features::kTabSearch) &&
-                          browser_->is_type_normal() &&
-                          !browser_->profile()->IsIncognitoProfile());
+  const bool enable_tab_search_commands =
+      base::FeatureList::IsEnabled(features::kTabSearch) &&
+      browser_->is_type_normal() && !browser_->profile()->IsIncognitoProfile();
+  command_updater_.UpdateCommandEnabled(IDC_TAB_SEARCH,
+                                        enable_tab_search_commands);
+  command_updater_.UpdateCommandEnabled(IDC_TAB_SEARCH_CLOSE,
+                                        enable_tab_search_commands);
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();

@@ -72,6 +72,11 @@ bool TabSearchButton::ShowTabSearchBubble() {
   return true;
 }
 
+void TabSearchButton::CloseTabSearchBubble() {
+  if (bubble_)
+    bubble_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+}
+
 bool TabSearchButton::IsBubbleVisible() const {
   return bubble_ && bubble_->IsVisible();
 }
