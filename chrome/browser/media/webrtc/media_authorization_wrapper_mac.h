@@ -15,6 +15,8 @@ class MediaAuthorizationWrapper {
  public:
   virtual ~MediaAuthorizationWrapper() {}
 
+  // NB: NSInteger is used rather than AVAuthorizationStatus; when macOS 10.14
+  // is the minimum requirement for Chromium, switch types.
   virtual NSInteger AuthorizationStatusForMediaType(NSString* media_type) = 0;
   virtual void RequestAccessForMediaType(NSString* media_type,
                                          base::RepeatingClosure callback,

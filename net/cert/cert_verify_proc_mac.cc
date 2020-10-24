@@ -47,14 +47,6 @@
 
 using base::ScopedCFTypeRef;
 
-extern "C" {
-// Declared in <Security/SecTrust.h>, available in 10.14.2+
-// TODO(mattm): Remove this weak_import once chromium compiles against the
-// macOS 10.14 SDK.
-OSStatus SecTrustSetSignedCertificateTimestamps(SecTrustRef, CFArrayRef)
-    __attribute__((weak_import));
-}  // extern "C"
-
 namespace net {
 
 namespace {

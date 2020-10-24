@@ -17,12 +17,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 
-// Mac OS X 10.6 SDK defines check() macro that interferes with our check()
-// method
-#ifdef check
-#undef check
-#endif
-
 namespace blink {
 
 class FontFaceCache;

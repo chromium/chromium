@@ -1,18 +1,6 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// Authorization functions and types are available on 10.14+.
-// To avoid availability compile errors, use performSelector invocation of
-// functions, NSInteger instead of AVAuthorizationStatus, and NSString* instead
-// of AVMediaType.
-// The AVAuthorizationStatus enum is defined as follows (10.14 SDK):
-// AVAuthorizationStatusNotDetermined = 0,
-// AVAuthorizationStatusRestricted    = 1,
-// AVAuthorizationStatusDenied        = 2,
-// AVAuthorizationStatusAuthorized    = 3,
-// TODO(grunell): Call functions directly and use AVAuthorizationStatus once
-// we use the 10.14 SDK.
 
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 
@@ -55,41 +43,24 @@ class MediaAuthorizationWrapperImpl : public MediaAuthorizationWrapper {
   MediaAuthorizationWrapperImpl() = default;
   ~MediaAuthorizationWrapperImpl() final = default;
 
-  NSInteger AuthorizationStatusForMediaType(NSString* media_type) final {
+  NSInteger AuthorizationStatusForMediaType(AVMediaType media_type) final {
     if (@available(macOS 10.14, *)) {
-      Class target = [AVCaptureDevice class];
-      SEL selector = @selector(authorizationStatusForMediaType:);
-      NSInteger auth_status = 0;
-      if ([target respondsToSelector:selector]) {
-        auth_status =
-            (NSInteger)[target performSelector:selector withObject:media_type];
-      } else {
-        DLOG(WARNING)
-            << "authorizationStatusForMediaType could not be executed";
-      }
-      return auth_status;
+      return [AVCaptureDevice authorizationStatusForMediaType:media_type];
+    } else {
+      NOTREACHED();
+      return 0;
     }
-
-    NOTREACHED();
-    return 0;
   }
 
-  void RequestAccessForMediaType(NSString* media_type,
+  void RequestAccessForMediaType(AVMediaType media_type,
                                  base::RepeatingClosure callback,
                                  const base::TaskTraits& traits) final {
     if (@available(macOS 10.14, *)) {
-      Class target = [AVCaptureDevice class];
-      SEL selector = @selector(requestAccessForMediaType:completionHandler:);
-      if ([target respondsToSelector:selector]) {
-        [target performSelector:selector
-                     withObject:media_type
-                     withObject:^(BOOL granted) {
-                       base::PostTask(FROM_HERE, traits, std::move(callback));
-                     }];
-      } else {
-        DLOG(WARNING) << "requestAccessForMediaType could not be executed";
-        base::PostTask(FROM_HERE, traits, std::move(callback));
-      }
+      [AVCaptureDevice
+          requestAccessForMediaType:media_type
+                  completionHandler:^(BOOL granted) {
+                    base::PostTask(FROM_HERE, traits, std::move(callback));
+                  }];
     } else {
       NOTREACHED();
       base::PostTask(FROM_HERE, traits, std::move(callback));
@@ -109,7 +80,7 @@ MediaAuthorizationWrapper& GetMediaAuthorizationWrapper() {
   return *media_authorization_wrapper;
 }
 
-NSInteger MediaAuthorizationStatus(NSString* media_type) {
+NSInteger MediaAuthorizationStatus(AVMediaType media_type) {
   if (@available(macOS 10.14, *)) {
     return GetMediaAuthorizationWrapper().AuthorizationStatusForMediaType(
         media_type);
@@ -119,20 +90,20 @@ NSInteger MediaAuthorizationStatus(NSString* media_type) {
   return 0;
 }
 
-SystemPermission CheckSystemMediaCapturePermission(NSString* media_type) {
+SystemPermission CheckSystemMediaCapturePermission(AVMediaType media_type) {
   if (UsingFakeMediaDevices())
     return SystemPermission::kAllowed;
 
   if (@available(macOS 10.14, *)) {
     NSInteger auth_status = MediaAuthorizationStatus(media_type);
     switch (auth_status) {
-      case 0:
+      case AVAuthorizationStatusNotDetermined:
         return SystemPermission::kNotDetermined;
-      case 1:
+      case AVAuthorizationStatusRestricted:
         return SystemPermission::kRestricted;
-      case 2:
+      case AVAuthorizationStatusDenied:
         return SystemPermission::kDenied;
-      case 3:
+      case AVAuthorizationStatusAuthorized:
         return SystemPermission::kAllowed;
       default:
         NOTREACHED();
@@ -146,7 +117,7 @@ SystemPermission CheckSystemMediaCapturePermission(NSString* media_type) {
 
 // Use RepeatingCallback since it must be copyable for use in the block. It's
 // only called once though.
-void RequestSystemMediaCapturePermission(NSString* media_type,
+void RequestSystemMediaCapturePermission(AVMediaType media_type,
                                          base::RepeatingClosure callback,
                                          const base::TaskTraits& traits) {
   if (UsingFakeMediaDevices()) {

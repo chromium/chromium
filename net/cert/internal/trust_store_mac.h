@@ -92,11 +92,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // Creates a TrustStoreMac which will find anchors that are trusted for
   // |policy_oid|. For list of possible policy values, see:
   // https://developer.apple.com/reference/security/1667150-certificate_key_and_trust_servic/1670151-standard_policies_for_specific_c?language=objc
-  // TODO(mattm): policy oids are actually CFStrings, but the constants are
-  // defined as CFTypeRef in older SDK versions. Change |policy_oid| type to
-  // const CFStringRef when Chromium switches to building against the 10.11 SDK
-  // (or newer).
-  explicit TrustStoreMac(CFTypeRef policy_oid);
+  explicit TrustStoreMac(CFStringRef policy_oid);
   ~TrustStoreMac() override;
 
   // Returns true if the given certificate is present in the system trust
