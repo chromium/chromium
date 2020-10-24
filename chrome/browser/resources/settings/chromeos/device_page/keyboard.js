@@ -188,7 +188,7 @@ cr.define('settings', function() {
         id = '#showLanguagesInput';
       } else {
         path = settings.routes.OS_LANGUAGES_DETAILS.path;
-        id = '#showLanguageDetails';
+        id = '#showLanguagesDetails';
       }
 
       this.focusConfig.set(path, () => {
