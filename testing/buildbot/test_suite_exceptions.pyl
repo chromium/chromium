@@ -1668,6 +1668,11 @@
       },
     },
   },
+  'maps_tests': {
+    'remove_from': [
+      'Fuchsia x64' # https://crbug.com/1058255
+    ],
+  },
   'media_unittests': {
     'modifications': {
       'android-inverse-fieldtrials-pie-x86-fyi-rel': {
