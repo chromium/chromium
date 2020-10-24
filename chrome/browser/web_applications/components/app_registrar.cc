@@ -24,6 +24,10 @@ AppRegistrar::~AppRegistrar() {
     observer.OnAppRegistrarDestroyed();
 }
 
+void AppRegistrar::SetSubsystems(OsIntegrationManager* os_integration_manager) {
+  os_integration_manager_ = os_integration_manager;
+}
+
 bool AppRegistrar::IsLocallyInstalled(const GURL& start_url) const {
   return IsLocallyInstalled(GenerateAppIdFromURL(start_url));
 }

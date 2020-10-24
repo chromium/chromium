@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/test/test_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
@@ -156,12 +155,9 @@ class WebAppInstallManagerTest : public WebAppTest {
     install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
         profile(), icon_manager_.get(), /*legacy_finalizer=*/nullptr);
 
-    os_integration_manager_ = std::make_unique<TestOsIntegrationManager>(
-        profile(), /*app_shortcut_manager=*/nullptr,
-        /*file_handler_manager=*/nullptr);
-
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
-    install_manager_->SetSubsystems(&registrar(), os_integration_manager_.get(),
+    install_manager_->SetSubsystems(&registrar(),
+                                    &controller().os_integration_manager(),
                                     install_finalizer_.get());
 
     auto test_url_loader = std::make_unique<TestWebAppUrlLoader>();
@@ -173,13 +169,8 @@ class WebAppInstallManagerTest : public WebAppTest {
 
     install_finalizer_->SetSubsystems(
         &registrar(), ui_manager_.get(),
-        &test_registry_controller_->sync_bridge());
-
-    // TODO(https://crbug.com/1108611) we should use a single
-    // TestOsIntegrationManager
-    WebAppProviderBase::GetProviderBase(profile())
-        ->os_integration_manager()
-        .SuppressOsHooksForTesting();
+        &test_registry_controller_->sync_bridge(),
+        &test_registry_controller_->os_integration_manager());
   }
 
   void TearDown() override {
@@ -189,9 +180,6 @@ class WebAppInstallManagerTest : public WebAppTest {
 
   WebAppRegistrar& registrar() { return controller().registrar(); }
   WebAppInstallManager& install_manager() { return *install_manager_; }
-  TestOsIntegrationManager& os_integration_manager() {
-    return *os_integration_manager_;
-  }
   WebAppInstallFinalizer& finalizer() { return *install_finalizer_; }
   WebAppIconManager& icon_manager() { return *icon_manager_; }
   TestWebAppUrlLoader& url_loader() { return *test_url_loader_; }
@@ -449,7 +437,6 @@ class WebAppInstallManagerTest : public WebAppTest {
     // The reverse order of creation:
     ui_manager_.reset();
     install_manager_.reset();
-    os_integration_manager_.reset();
     install_finalizer_.reset();
     icon_manager_.reset();
     test_registry_controller_.reset();
@@ -463,7 +450,6 @@ class WebAppInstallManagerTest : public WebAppTest {
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
 
-  std::unique_ptr<TestOsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<TestWebAppUiManager> ui_manager_;

@@ -81,8 +81,8 @@ class WebAppMigrationUserDisplayModeCleanUpBrowserTest
 IN_PROC_BROWSER_TEST_F(WebAppMigrationUserDisplayModeCleanUpBrowserTest,
                        PRE_PRE_CleanUp) {
   // Clean up must be disabled for this stage.
-  ASSERT_FALSE(WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(profile(),
-                                                                     nullptr));
+  ASSERT_FALSE(WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(
+      profile(), nullptr, /*os_integration_manager=*/nullptr));
 
   InstallFinalizer& web_app_finalizer = provider().install_finalizer();
   InstallFinalizer* bookmark_app_finalizer =
@@ -163,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationUserDisplayModeCleanUpBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppMigrationUserDisplayModeCleanUpBrowserTest,
                        CleanUp) {
   // Check that clean up is not needed anymore.
-  EXPECT_FALSE(WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(profile(),
-                                                                     nullptr));
+  EXPECT_FALSE(WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(
+      profile(), nullptr, /*os_integration_manager=*/nullptr));
 }
 
 }  // namespace web_app

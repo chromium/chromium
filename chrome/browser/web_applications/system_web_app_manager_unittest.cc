@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/test/test_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_pending_app_manager_impl.h"
 #include "chrome/browser/web_applications/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
@@ -194,41 +193,35 @@ class SystemWebAppManagerTest : public WebAppTest {
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     test_pending_app_manager_impl_ =
         std::make_unique<TestPendingAppManagerImpl>(profile());
-    test_os_integration_manager_ = std::make_unique<TestOsIntegrationManager>(
-        profile(), /*app_shortcut_manager=*/nullptr,
-        /*file_handler_manager=*/nullptr);
     test_system_web_app_manager_ =
         std::make_unique<TestSystemWebAppManager>(profile());
     test_ui_manager_ = std::make_unique<TestWebAppUiManager>();
 
     install_finalizer().SetSubsystems(&controller().registrar(), &ui_manager(),
-                                      &controller().sync_bridge());
+                                      &controller().sync_bridge(),
+                                      &controller().os_integration_manager());
 
     install_manager().SetUrlLoaderForTesting(
         std::make_unique<TestWebAppUrlLoader>());
     install_manager().SetSubsystems(&controller().registrar(),
-                                    &os_integration_manager(),
+                                    &controller().os_integration_manager(),
                                     &install_finalizer());
 
     auto url_loader = std::make_unique<TestWebAppUrlLoader>();
     url_loader_ = url_loader.get();
     pending_app_manager().SetUrlLoaderForTesting(std::move(url_loader));
     pending_app_manager().SetSubsystems(
-        &controller().registrar(), &os_integration_manager(), &ui_manager(),
-        &install_finalizer(), &install_manager());
+        &controller().registrar(), &controller().os_integration_manager(),
+        &ui_manager(), &install_finalizer(), &install_manager());
 
     system_web_app_manager().SetSubsystems(
         &pending_app_manager(), &controller().registrar(),
-        &controller().sync_bridge(), &ui_manager(), &os_integration_manager());
+        &controller().sync_bridge(), &ui_manager(),
+        &controller().os_integration_manager());
 
     install_manager().Start();
     install_finalizer().Start();
 
-    // TODO(https://crbug.com/1108611) we should use a single
-    // TestOsIntegrationManager
-    WebAppProviderBase::GetProviderBase(profile())
-        ->os_integration_manager()
-        .SuppressOsHooksForTesting();
   }
 
   void TearDown() override {
@@ -240,7 +233,6 @@ class SystemWebAppManagerTest : public WebAppTest {
     // The reverse order of creation:
     test_ui_manager_.reset();
     test_system_web_app_manager_.reset();
-    test_os_integration_manager_.reset();
     test_pending_app_manager_impl_.reset();
     install_manager_.reset();
     install_finalizer_.reset();
@@ -278,10 +270,6 @@ class SystemWebAppManagerTest : public WebAppTest {
   }
 
   TestWebAppUiManager& ui_manager() { return *test_ui_manager_; }
-
-  TestOsIntegrationManager& os_integration_manager() {
-    return *test_os_integration_manager_;
-  }
 
   TestWebAppUrlLoader& url_loader() { return *url_loader_; }
 
@@ -373,7 +361,6 @@ class SystemWebAppManagerTest : public WebAppTest {
   std::unique_ptr<TestPendingAppManagerImpl> test_pending_app_manager_impl_;
   std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
   std::unique_ptr<TestWebAppUiManager> test_ui_manager_;
-  std::unique_ptr<TestOsIntegrationManager> test_os_integration_manager_;
   TestWebAppUrlLoader* url_loader_ = nullptr;
   std::unique_ptr<TestDataRetrieverFactory> test_data_retriever_factory_;
 

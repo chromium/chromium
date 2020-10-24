@@ -18,11 +18,13 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_registrar.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/test/test_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -165,10 +167,16 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
     registry_controller_ =
         std::make_unique<web_app::TestAppRegistryController>(profile());
     ui_manager_ = std::make_unique<web_app::TestWebAppUiManager>();
+    os_integration_manager_ =
+        std::make_unique<web_app::TestOsIntegrationManager>(
+            profile(), /*shortcut_manager=*/nullptr,
+            /*file_handler_manager=*/nullptr);
 
     finalizer_ = std::make_unique<BookmarkAppInstallFinalizer>(profile());
     finalizer_->SetSubsystems(registrar_.get(), ui_manager_.get(),
-                              registry_controller_.get());
+                              registry_controller_.get(),
+                              os_integration_manager_.get());
+    registrar_->SetSubsystems(os_integration_manager_.get());
   }
 
   web_app::AppId InstallExternalApp(const GURL& start_url) {
@@ -217,7 +225,7 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<web_app::TestAppRegistryController> registry_controller_;
   std::unique_ptr<web_app::TestWebAppUiManager> ui_manager_;
   std::unique_ptr<BookmarkAppInstallFinalizer> finalizer_;
-
+  std::unique_ptr<web_app::TestOsIntegrationManager> os_integration_manager_;
 };
 
 TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallButExtensionIsDisabled) {

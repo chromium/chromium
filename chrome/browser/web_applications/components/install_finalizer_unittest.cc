@@ -56,8 +56,10 @@ class InstallFinalizerUnitTest : public WebAppTest {
     finalizer_ = std::make_unique<WebAppInstallFinalizer>(
         profile(), icon_manager_.get(), /*legacy_finalizer=*/nullptr);
 
-    finalizer_->SetSubsystems(&registrar(), ui_manager_.get(),
-                              &test_registry_controller_->sync_bridge());
+    finalizer_->SetSubsystems(
+        &registrar(), ui_manager_.get(),
+        &test_registry_controller_->sync_bridge(),
+        &test_registry_controller_->os_integration_manager());
     test_registry_controller_->Init();
     finalizer_->Start();
   }

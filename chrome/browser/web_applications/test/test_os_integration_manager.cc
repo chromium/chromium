@@ -76,20 +76,21 @@ void TestOsIntegrationManager::UninstallOsHooks(
     const AppId& app_id,
     const OsHooksResults& os_hooks,
     UninstallOsHooksCallback callback) {
-  NOTIMPLEMENTED();
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), os_hooks));
 }
 
 void TestOsIntegrationManager::UninstallAllOsHooks(
     const AppId& app_id,
     UninstallOsHooksCallback callback) {
-  NOTIMPLEMENTED();
+  OsHooksResults os_hooks_results{true};
+  UninstallOsHooks(app_id, os_hooks_results, std::move(callback));
 }
 
 void TestOsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     const WebApplicationInfo& web_app_info) {
-  NOTIMPLEMENTED();
 }
 
 void TestOsIntegrationManager::SetFileHandlerManager(

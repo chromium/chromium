@@ -205,7 +205,8 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
       std::make_unique<extensions::BookmarkAppInstallFinalizer>(profile);
   legacy_finalizer->SetSubsystems(/*registrar=*/nullptr,
                                   /*ui_manager=*/nullptr,
-                                  /*registry_controller=*/nullptr);
+                                  /*registry_controller=*/nullptr,
+                                  /*os_integration_manager=*/nullptr);
 
   auto icon_manager = std::make_unique<WebAppIconManager>(
       profile, *registrar, std::make_unique<FileUtilsWrapper>());
@@ -220,10 +221,11 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
       profile, std::move(shortcut_manager), std::move(file_handler_manager));
 
   migration_manager_ = std::make_unique<WebAppMigrationManager>(
-      profile, database_factory_.get(), icon_manager.get());
+      profile, database_factory_.get(), icon_manager.get(),
+      os_integration_manager_.get());
   migration_user_display_mode_clean_up_ =
-      WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(profile,
-                                                            sync_bridge.get());
+      WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(
+          profile, sync_bridge.get(), os_integration_manager_.get());
 
   // Upcast to unified subsystem types:
   registrar_ = std::move(registrar);
@@ -258,7 +260,8 @@ void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
   install_finalizer_->SetSubsystems(registrar_.get(), ui_manager_.get(),
-                                    registry_controller_.get());
+                                    registry_controller_.get(),
+                                    os_integration_manager_.get());
   install_manager_->SetSubsystems(registrar_.get(),
                                   os_integration_manager_.get(),
                                   install_finalizer_.get());
@@ -276,6 +279,8 @@ void WebAppProvider::ConnectSubsystems() {
   ui_manager_->SetSubsystems(registry_controller_.get());
   os_integration_manager_->SetSubsystems(registrar_.get(), ui_manager_.get(),
                                          icon_manager_.get());
+  registrar_->SetSubsystems(os_integration_manager_.get());
+  registry_controller_->SetSubsystems(os_integration_manager_.get());
 
   connected_ = true;
 }

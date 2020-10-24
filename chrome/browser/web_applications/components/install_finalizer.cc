@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 
@@ -44,10 +45,12 @@ void InstallFinalizer::UninstallExternalWebAppByUrl(
 void InstallFinalizer::SetSubsystems(
     AppRegistrar* registrar,
     WebAppUiManager* ui_manager,
-    AppRegistryController* registry_controller) {
+    AppRegistryController* registry_controller,
+    OsIntegrationManager* os_integration_manager) {
   registrar_ = registrar;
   ui_manager_ = ui_manager;
   registry_controller_ = registry_controller;
+  os_integration_manager_ = os_integration_manager;
 }
 
 bool InstallFinalizer::CanReparentTab(const AppId& app_id,

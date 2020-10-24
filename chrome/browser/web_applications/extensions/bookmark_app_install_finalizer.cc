@@ -320,9 +320,8 @@ void BookmarkAppInstallFinalizer::OnExtensionUpdated(
   }
 
   if (!is_legacy_finalizer()) {
-    web_app::WebAppProviderBase::GetProviderBase(profile_)
-        ->os_integration_manager()
-        .UpdateOsHooks(extension->id(), old_name, web_app_info);
+    os_integration_manager().UpdateOsHooks(extension->id(), old_name,
+                                           web_app_info);
     registrar().NotifyWebAppManifestUpdated(extension->id(), old_name);
   }
   std::move(callback).Run(extension->id(),

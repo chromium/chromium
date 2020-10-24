@@ -534,9 +534,7 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
   // still registered at this stage.
   for (const AppId& app_id : update_local_data->apps_to_delete) {
     registrar_->NotifyWebAppUninstalled(app_id);
-    WebAppProviderBase::GetProviderBase(profile())
-        ->os_integration_manager()
-        .UninstallAllOsHooks(app_id, base::DoNothing());
+    os_integration_manager().UninstallAllOsHooks(app_id, base::DoNothing());
   }
 
   std::vector<WebApp*> apps_to_install;

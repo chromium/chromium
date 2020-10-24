@@ -38,7 +38,8 @@ void WebAppMigrationUserDisplayModeCleanUp::RegisterProfilePrefs(
 std::unique_ptr<WebAppMigrationUserDisplayModeCleanUp>
 WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(
     Profile* profile,
-    WebAppSyncBridge* sync_bridge) {
+    WebAppSyncBridge* sync_bridge,
+    OsIntegrationManager* os_integration_manager) {
   DCHECK(base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions));
 
   if (g_disabled_for_testing)
@@ -56,8 +57,8 @@ WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(
     return nullptr;
   }
 
-  return std::make_unique<WebAppMigrationUserDisplayModeCleanUp>(profile,
-                                                                 sync_bridge);
+  return std::make_unique<WebAppMigrationUserDisplayModeCleanUp>(
+      profile, sync_bridge, os_integration_manager);
 }
 
 void WebAppMigrationUserDisplayModeCleanUp::DisableForTesting() {
@@ -75,11 +76,14 @@ void WebAppMigrationUserDisplayModeCleanUp::SetCompletedCallbackForTesting(
 
 WebAppMigrationUserDisplayModeCleanUp::WebAppMigrationUserDisplayModeCleanUp(
     Profile* profile,
-    WebAppSyncBridge* sync_bridge)
+    WebAppSyncBridge* sync_bridge,
+    OsIntegrationManager* os_integration_manager)
     : profile_(profile),
       sync_bridge_(sync_bridge),
       bookmark_app_registrar_(profile),
-      bookmark_app_registry_controller_(profile, &bookmark_app_registrar_) {}
+      bookmark_app_registry_controller_(profile, &bookmark_app_registrar_) {
+  bookmark_app_registrar_.SetSubsystems(os_integration_manager);
+}
 
 WebAppMigrationUserDisplayModeCleanUp::
     ~WebAppMigrationUserDisplayModeCleanUp() = default;

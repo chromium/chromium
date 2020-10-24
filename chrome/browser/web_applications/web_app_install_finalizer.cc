@@ -329,9 +329,7 @@ void WebAppInstallFinalizer::Shutdown() {
 void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
                                              UninstallWebAppCallback callback) {
   registrar().NotifyWebAppUninstalled(app_id);
-  WebAppProviderBase::GetProviderBase(profile_)
-      ->os_integration_manager()
-      .UninstallAllOsHooks(app_id, base::DoNothing());
+  os_integration_manager().UninstallAllOsHooks(app_id, base::DoNothing());
 
   ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
   update->DeleteApp(app_id);
@@ -467,9 +465,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  WebAppProviderBase::GetProviderBase(profile_)
-      ->os_integration_manager()
-      .UpdateOsHooks(app_id, old_name, web_app_info);
+  os_integration_manager().UpdateOsHooks(app_id, old_name, web_app_info);
 
   registrar().NotifyWebAppManifestUpdated(app_id, old_name);
   std::move(callback).Run(app_id, InstallResultCode::kSuccessAlreadyInstalled);

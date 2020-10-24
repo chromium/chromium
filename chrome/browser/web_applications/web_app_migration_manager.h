@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_icon_manager.h"
@@ -35,7 +36,8 @@ class WebAppMigrationManager {
  public:
   WebAppMigrationManager(Profile* profile,
                          AbstractWebAppDatabaseFactory* database_factory,
-                         WebAppIconManager* web_app_icon_manager);
+                         WebAppIconManager* web_app_icon_manager,
+                         OsIntegrationManager* os_integration_manager);
   WebAppMigrationManager(const WebAppMigrationManager&) = delete;
   WebAppMigrationManager& operator=(const WebAppMigrationManager&) = delete;
   ~WebAppMigrationManager();

@@ -27,6 +27,7 @@ enum class InstallResultCode;
 class AppRegistrar;
 class AppRegistryController;
 class WebAppUiManager;
+class OsIntegrationManager;
 
 // An abstract finalizer for the installation process, represents the last step.
 // Takes WebApplicationInfo as input, writes data to disk (e.g icons, shortcuts)
@@ -102,7 +103,8 @@ class InstallFinalizer {
 
   void SetSubsystems(AppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
-                     AppRegistryController* registry_controller);
+                     AppRegistryController* registry_controller,
+                     OsIntegrationManager* os_integration_manager);
 
   virtual ~InstallFinalizer() = default;
 
@@ -112,6 +114,9 @@ class InstallFinalizer {
 
   WebAppUiManager& ui_manager() const { return *ui_manager_; }
   AppRegistryController& registry_controller() { return *registry_controller_; }
+  OsIntegrationManager& os_integration_manager() {
+    return *os_integration_manager_;
+  }
 
  private:
   // If these pointers are nullptr then this is legacy install finalizer
@@ -119,6 +124,7 @@ class InstallFinalizer {
   AppRegistrar* registrar_ = nullptr;
   AppRegistryController* registry_controller_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 };
 
 }  // namespace web_app

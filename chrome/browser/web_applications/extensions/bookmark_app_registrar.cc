@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/manifest_handlers/app_display_mode_info.h"
@@ -79,9 +78,8 @@ void BookmarkAppRegistrar::OnExtensionUninstalled(
     bookmark_app_being_observed_ = extension;
 
     NotifyWebAppUninstalled(extension->id());
-    web_app::WebAppProviderBase::GetProviderBase(profile())
-        ->os_integration_manager()
-        .UninstallAllOsHooks(extension->id(), base::DoNothing());
+    os_integration_manager().UninstallAllOsHooks(extension->id(),
+                                                  base::DoNothing());
 
     bookmark_app_being_observed_ = nullptr;
   }
@@ -102,9 +100,8 @@ void BookmarkAppRegistrar::OnExtensionUnloaded(
   // can cleanup any state outside the profile dir (e.g., registry settings).
   if (reason == UnloadedExtensionReason::PROFILE_SHUTDOWN) {
     NotifyWebAppProfileWillBeDeleted(extension->id());
-    web_app::WebAppProviderBase::GetProviderBase(profile())
-        ->os_integration_manager()
-        .UninstallAllOsHooks(extension->id(), base::DoNothing());
+    os_integration_manager().UninstallAllOsHooks(extension->id(),
+                                                  base::DoNothing());
   }
 
   bookmark_app_being_observed_ = nullptr;

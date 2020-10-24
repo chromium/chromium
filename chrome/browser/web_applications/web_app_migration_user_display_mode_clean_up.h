@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_registrar.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_registry_controller.h"
 #include "components/sync/driver/sync_service.h"
@@ -57,14 +58,17 @@ class WebAppMigrationUserDisplayModeCleanUp final
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   static std::unique_ptr<WebAppMigrationUserDisplayModeCleanUp> CreateIfNeeded(
       Profile* profile,
-      WebAppSyncBridge* sync_bridge);
+      WebAppSyncBridge* sync_bridge,
+      OsIntegrationManager* os_integration_manager);
 
   static void DisableForTesting();
   static void SkipWaitForSyncForTesting();
   static void SetCompletedCallbackForTesting(base::OnceClosure callback);
 
-  WebAppMigrationUserDisplayModeCleanUp(Profile* profile,
-                                        WebAppSyncBridge* sync_bridge);
+  WebAppMigrationUserDisplayModeCleanUp(
+      Profile* profile,
+      WebAppSyncBridge* sync_bridge,
+      OsIntegrationManager* os_integration_manager);
   WebAppMigrationUserDisplayModeCleanUp(
       const WebAppMigrationUserDisplayModeCleanUp&) = delete;
   WebAppMigrationUserDisplayModeCleanUp& operator=(

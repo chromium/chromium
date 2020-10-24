@@ -36,7 +36,8 @@ namespace web_app {
 WebAppMigrationManager::WebAppMigrationManager(
     Profile* profile,
     AbstractWebAppDatabaseFactory* database_factory,
-    WebAppIconManager* web_app_icon_manager)
+    WebAppIconManager* web_app_icon_manager,
+    OsIntegrationManager* os_integration_manager)
     : bookmark_app_registrar_(profile),
       bookmark_app_registry_controller_(profile, &bookmark_app_registrar_),
       bookmark_app_icon_manager_(profile),
@@ -48,6 +49,7 @@ WebAppMigrationManager::WebAppMigrationManager(
       base::BindRepeating(&WebAppMigrationManager::ReportDatabaseError,
                           base::Unretained(this)));
   bookmark_app_file_handler_manager_.SetSubsystems(&bookmark_app_registrar_);
+  bookmark_app_registrar_.SetSubsystems(os_integration_manager);
 }
 
 WebAppMigrationManager::~WebAppMigrationManager() = default;

@@ -6,7 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -23,9 +25,16 @@ void TestWebAppRegistryController::SetUp(Profile* profile) {
   database_factory_ = std::make_unique<TestWebAppDatabaseFactory>();
   mutable_registrar_ = std::make_unique<WebAppRegistrarMutable>(profile);
 
+  os_integration_manager_ = std::make_unique<TestOsIntegrationManager>(
+      profile, /*app_shortcut_manager=*/nullptr,
+      /*file_handler_manager=*/nullptr);
+
+  mutable_registrar_->SetSubsystems(os_integration_manager_.get());
+
   sync_bridge_ = std::make_unique<WebAppSyncBridge>(
       profile, database_factory_.get(), mutable_registrar_.get(), this,
       mock_processor_.CreateForwardingProcessor());
+  sync_bridge_->SetSubsystems(os_integration_manager_.get());
 
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));
@@ -156,6 +165,7 @@ void TestWebAppRegistryController::DestroySubsystems() {
   mutable_registrar_.reset();
   sync_bridge_.reset();
   database_factory_.reset();
+  os_integration_manager_.reset();
 }
 
 }  // namespace web_app
