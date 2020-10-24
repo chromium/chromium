@@ -44,4 +44,6 @@ source_set("mocks") {
     "//services/video_capture/public/mojom",
     "//testing/gmock",
   ]
+
+  deps = [ "//build:chromeos_buildflags" ]
 }

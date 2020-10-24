@@ -30,15 +30,16 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "device/udev_linux/udev_watcher.h"
 #include "services/device/hid/hid_connection_linux.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "base/system/sys_info.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 namespace device {
 
@@ -354,7 +355,7 @@ void HidServiceLinux::Connect(const std::string& device_guid,
   }
   scoped_refptr<HidDeviceInfo> device_info = map_entry->second;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Adapt |callback| to a repeating callback because the implementation below
   // requires separate callbacks for success and error. Only one will be called.
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
@@ -373,10 +374,10 @@ void HidServiceLinux::Connect(const std::string& device_guid,
   blocking_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&HidServiceLinux::OpenOnBlockingThread,
                                 std::move(params)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 
 // static
 void HidServiceLinux::OnPathOpenComplete(std::unique_ptr<ConnectParams> params,
@@ -433,7 +434,7 @@ void HidServiceLinux::OpenOnBlockingThread(
                                                   std::move(params)));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 // static
 void HidServiceLinux::FinishOpen(std::unique_ptr<ConnectParams> params) {

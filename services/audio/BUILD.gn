@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 source_set("audio") {
@@ -64,6 +65,7 @@ source_set("audio") {
   deps = [
     ":testing_api_support",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
   ]
 
   public_deps = [
@@ -151,6 +153,7 @@ source_set("tests") {
   deps = [
     ":audio",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//media:test_support",
     "//services/audio/public/cpp",
     "//services/audio/public/cpp:test_support",
@@ -159,7 +162,7 @@ source_set("tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos || is_chromecast) {
+  if (is_ash || is_chromecast) {
     sources += [
       "public/cpp/sounds/audio_stream_handler_unittest.cc",
       "public/cpp/sounds/sounds_manager_unittest.cc",

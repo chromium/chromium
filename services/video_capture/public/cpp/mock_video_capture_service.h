@@ -4,6 +4,7 @@
 
 #ifndef SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_VIDEO_CAPTURE_SERVICE_H_
 #define SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_VIDEO_CAPTURE_SERVICE_H_
+#include "build/chromeos_buildflags.h"
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -25,7 +26,7 @@ class MockVideoCaptureService
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void InjectGpuDependencies(
       mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
           accelerator_factory) override;

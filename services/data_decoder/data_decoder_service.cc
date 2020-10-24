@@ -11,6 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/web_package/web_bundle_parser_factory.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -20,9 +21,9 @@
 #include "services/data_decoder/web_bundler.h"
 #include "services/data_decoder/xml_parser.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "services/data_decoder/ble_scan_parser_impl.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 #if !defined(OS_IOS)
 #include "services/data_decoder/image_decoder_impl.h"

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/system/sys_info.h"
 #include "base/version.h"
+#include "build/chromeos_buildflags.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
@@ -18,7 +19,7 @@ namespace {
 
 using mojom::SensorType;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 // ChromeOS kernel version, when axes were changed to XYZ. Before 3.18,
 // they were YXZ.
 const char kChangedAxisKernelVersion[] = "3.18.0";
@@ -48,7 +49,7 @@ void MaybeCheckKernelVersionAndAssignFileNames(
     const std::vector<std::string>& file_names_y,
     const std::vector<std::string>& file_names_z,
     SensorPathsLinux* data) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   const base::Version checked_kernel_version(kChangedAxisKernelVersion);
   DCHECK(checked_kernel_version.IsValid());
   const base::Version current_version(base::SysInfo::OperatingSystemVersion());
@@ -76,7 +77,7 @@ void InitAccelerometerSensorData(SensorPathsLinux* data) {
   std::vector<std::string> file_names_z{"in_accel_z_base_raw",
                                         "in_accel_z_raw"};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   data->sensor_scale_name = "in_accel_base_scale";
   data->sensor_frequency_file_name = "in_accel_base_sampling_frequency";
   data->apply_scaling_func = base::BindRepeating(
@@ -112,7 +113,7 @@ void InitGyroscopeSensorData(SensorPathsLinux* data) {
                                         "in_anglvel_y_raw"};
   std::vector<std::string> file_names_z{"in_anglvel_z_base_raw",
                                         "in_anglvel_z_raw"};
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   data->sensor_scale_name = "in_anglvel_base_scale";
   data->sensor_frequency_file_name = "in_anglvel_base_frequency";
   data->apply_scaling_func = base::BindRepeating(

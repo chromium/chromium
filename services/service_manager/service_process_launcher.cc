@@ -27,6 +27,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/core.h"
@@ -247,7 +248,7 @@ base::ProcessId ServiceProcessLauncher::ProcessState::LaunchInBackground(
     return base::kNullProcessId;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Always log instead of DVLOG because knowing which pid maps to which
   // service is vital for interpreting crashes after-the-fact and Chrome OS
   // devices generally run release builds, even in development.

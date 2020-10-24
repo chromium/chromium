@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -25,6 +26,7 @@ source_set("hid") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//device/base",
     "//services/device/public/cpp/hid",
@@ -43,7 +45,7 @@ source_set("hid") {
     deps += [ "//device/udev_linux" ]
   }
 
-  if (is_chromeos) {
+  if (is_ash) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
 

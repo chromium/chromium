@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 source_set("mojo") {
   sources = [
     "device_impl.cc",
@@ -13,6 +15,7 @@ source_set("mojo") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/device/public/cpp/usb",
@@ -21,7 +24,7 @@ source_set("mojo") {
     "//services/device/usb",
   ]
 
-  if (is_chromeos) {
+  if (is_ash) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
 }

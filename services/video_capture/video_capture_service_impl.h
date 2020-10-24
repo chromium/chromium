@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -16,10 +17,10 @@
 #include "services/video_capture/public/mojom/device_factory.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 namespace video_capture {
 
@@ -34,13 +35,13 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   ~VideoCaptureServiceImpl() override;
 
   // mojom::VideoCaptureService implementation.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void InjectGpuDependencies(mojo::PendingRemote<mojom::AcceleratorFactory>
                                  accelerator_factory) override;
   void ConnectToCameraAppDeviceBridge(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge> receiver)
       override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
   void ConnectToDeviceFactory(
       mojo::PendingReceiver<mojom::DeviceFactory> receiver) override;
   void ConnectToVideoSourceProvider(
@@ -63,10 +64,10 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   std::unique_ptr<VideoSourceProviderImpl> video_source_provider_;
   std::unique_ptr<GpuDependenciesContext> gpu_dependencies_context_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Bridge for Chrome OS camera app and camera devices.
   std::unique_ptr<media::CameraAppDeviceBridgeImpl> camera_app_device_bridge_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 

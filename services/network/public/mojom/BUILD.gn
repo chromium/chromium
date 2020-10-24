@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
@@ -513,11 +514,11 @@ mojom("mojom") {
 
   # This is only needed on desktop linux, but the defines make this difficult
   # because IS_CHROMECAST is not available in build/build_config.h.
-  if (is_linux && !is_chromeos) {
+  if (is_linux || is_lacros) {
     enabled_features += [ "needs_crypt_config" ]
   }
 
-  if (is_android || is_chromeos) {
+  if (is_android || is_ash) {
     enabled_features += [ "network_change_notifier_in_browser" ]
   }
 

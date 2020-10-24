@@ -17,18 +17,19 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_handle_usbfs.h"
 #include "services/device/usb/usb_service.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
 namespace {
 constexpr uint32_t kAllInterfacesMask = ~0U;
 }  // namespace
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 namespace device {
 
@@ -39,7 +40,7 @@ UsbDeviceLinux::UsbDeviceLinux(const std::string& device_path,
 
 UsbDeviceLinux::~UsbDeviceLinux() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 
 void UsbDeviceLinux::CheckUsbAccess(ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -47,12 +48,12 @@ void UsbDeviceLinux::CheckUsbAccess(ResultCallback callback) {
                                                            std::move(callback));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 void UsbDeviceLinux::Open(OpenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // create the pipe used as a lifetime to re-attach the original kernel driver
   // to the USB device in permission_broker.
   base::ScopedFD read_end, write_end;
@@ -77,10 +78,10 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
       base::BindOnce(&UsbDeviceLinux::OpenOnBlockingThread, this,
                      std::move(callback), base::ThreadTaskRunnerHandle::Get(),
                      blocking_task_runner));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 
 void UsbDeviceLinux::OnOpenRequestComplete(OpenCallback callback,
                                            base::ScopedFD lifeline_fd,
@@ -121,7 +122,7 @@ void UsbDeviceLinux::OpenOnBlockingThread(
   }
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 void UsbDeviceLinux::Opened(
     base::ScopedFD fd,

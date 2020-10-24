@@ -45,6 +45,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/testing_pref_service.h"
@@ -153,9 +154,9 @@
 #include "net/reporting/reporting_test_util.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "services/network/mock_mojo_dhcp_wpad_url_client.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 namespace network {
 
@@ -1927,7 +1928,7 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
   EXPECT_FALSE(result.has_value());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 base::Optional<net::AuthCredentials> GetProxyAuthCredentials(
     NetworkContext* network_context,
     const net::ProxyServer& proxy_server,
@@ -2727,11 +2728,11 @@ TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
   context_params->proxy_config_client_receiver =
       config_client.BindNewPipeAndPassReceiver();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
@@ -2824,11 +2825,11 @@ TEST_F(NetworkContextTest, PacQuickCheck) {
   // unsupported platforms, we'd simply ignore the PAC quick check input and
   // default to false.
   mojom::NetworkContextParamsPtr context_params = CreateContextParams();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
   context_params->proxy_resolver_factory =
       MockMojoProxyResolverFactory::Create();
   std::unique_ptr<NetworkContext> network_context =
@@ -2842,11 +2843,11 @@ TEST_F(NetworkContextTest, PacQuickCheck) {
 
   // Explicitly enable.
   context_params = CreateContextParams();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
   context_params->proxy_resolver_factory =
       MockMojoProxyResolverFactory::Create();
   context_params->pac_quick_check_enabled = true;
@@ -2860,11 +2861,11 @@ TEST_F(NetworkContextTest, PacQuickCheck) {
 
   // Explicitly disable.
   context_params = CreateContextParams();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
   context_params->proxy_resolver_factory =
       MockMojoProxyResolverFactory::Create();
   context_params->pac_quick_check_enabled = false;
@@ -5066,11 +5067,11 @@ TEST_F(NetworkContextTest, ProxyErrorClientNotifiedOfPacError) {
       mojom::NetworkContextParams::New();
   context_params->proxy_error_client = proxy_error_client.CreateRemote();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   context_params->dhcp_wpad_url_client =
       network::MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(
           std::string());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   // The PAC URL doesn't matter, since the test is configured to use a
   // mock ProxyResolverFactory which doesn't actually evaluate it. It just

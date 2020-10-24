@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/geolocation/geolocation_provider.h"
@@ -45,7 +46,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "services/device/media_transfer_protocol/mtp_device_manager.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
 #endif
@@ -165,7 +166,7 @@ class DeviceService : public mojom::DeviceService {
       mojo::PendingReceiver<mojom::HidManager> receiver) override;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void BindBluetoothSystemFactory(
       mojo::PendingReceiver<mojom::BluetoothSystemFactory> receiver) override;
   void BindMtpManager(
@@ -243,7 +244,7 @@ class DeviceService : public mojom::DeviceService {
   scoped_refptr<base::SequencedTaskRunner> serial_port_manager_task_runner_;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   std::unique_ptr<MtpDeviceManager> mtp_device_manager_;
 #endif
 

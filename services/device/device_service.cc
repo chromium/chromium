@@ -183,7 +183,7 @@ DeviceService::DeviceService(
 #endif
 
 DeviceService::~DeviceService() {
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_ASH)
   // NOTE: We don't call this on Chrome OS due to https://crbug.com/856771, as
   // Shutdown() implicitly depends on DBusThreadManager, which may already be
   // destroyed by the time DeviceService is destroyed. Fortunately on Chrome OS
@@ -255,7 +255,7 @@ void DeviceService::BindHidManager(
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void DeviceService::BindBluetoothSystemFactory(
     mojo::PendingReceiver<mojom::BluetoothSystemFactory> receiver) {
   BluetoothSystemFactory::CreateFactory(std::move(receiver));

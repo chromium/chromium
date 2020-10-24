@@ -14,6 +14,7 @@
 #include "base/test/power_monitor_test_base.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/audio_focus_request.h"
 #include "services/media_session/media_session_service.h"
@@ -194,7 +195,7 @@ class AudioFocusManagerTest
   }
 
   bool IsEnforcementEnabled() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     // Enforcement is enabled by default on Chrome OS.
     if (GetParam() == mojom::EnforcementMode::kDefault)
       return true;

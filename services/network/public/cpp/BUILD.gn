@@ -141,6 +141,7 @@ component("cpp") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//ipc",
     "//services/proxy_resolver/public/mojom",

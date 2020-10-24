@@ -30,6 +30,7 @@ source_set("gpu") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//gpu",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
@@ -56,6 +57,7 @@ source_set("tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",

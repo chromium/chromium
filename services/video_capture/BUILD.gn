@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 source_set("lib") {
@@ -52,9 +53,12 @@ source_set("lib") {
     "//services/viz/public/cpp/gpu",
   ]
 
-  deps = [ "//media/capture:capture_switches" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//media/capture:capture_switches",
+  ]
 
-  if (is_chromeos) {
+  if (is_ash) {
     public_deps += [ "//media/capture/video/chromeos/mojom:cros_camera" ]
   }
 }
@@ -89,6 +93,7 @@ source_set("tests") {
   deps = [
     ":lib",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//media/capture:test_support",
     "//media/capture/mojom:video_capture",
     "//services/video_capture/public/cpp:mocks",

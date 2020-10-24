@@ -18,6 +18,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/serial/buffer.h"
 
@@ -40,7 +41,7 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   virtual void Open(const mojom::SerialConnectionOptions& options,
                     OpenCompleteCallback callback);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Signals that the port has been opened.
   void OnPathOpened(
       scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
@@ -55,7 +56,7 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // Reports the open error from the permission broker.
   void ReportPathOpenError(const std::string& error_name,
                            const std::string& error_message);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   // Performs an async Read operation. Behavior is undefined if this is called
   // while a Read is already pending. Otherwise, the Done or DoneWithError

@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"
 #include "services/device/generic_sensor/linux/sensor_device_manager.h"
@@ -579,7 +580,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
 
   SensorReadingSharedBuffer* buffer =
       static_cast<SensorReadingSharedBuffer*>(mapping.get());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   double scaling = base::kMeanGravityDouble / kAccelerometerScalingValue;
   EXPECT_THAT(buffer->reading.accel.x,
               RoundAccelerometerValue(scaling * sensor_values[0]));
@@ -619,7 +620,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckLinearAcceleration) {
   mojo::ScopedSharedBufferMapping mapping = handle->MapAtOffset(
       sizeof(SensorReadingSharedBuffer),
       SensorReadingSharedBuffer::GetOffset(SensorType::LINEAR_ACCELERATION));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // CrOS has a different axes plane and scale, see crbug.com/501184.
   double sensor_values[3] = {0, 0, 1};
 #else
@@ -689,7 +690,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckGyroscopeReadingConversion) {
 
   SensorReadingSharedBuffer* buffer =
       static_cast<SensorReadingSharedBuffer*>(mapping.get());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   double scaling =
       gfx::DegToRad(base::kMeanGravityDouble) / kGyroscopeScalingValue;
   EXPECT_THAT(buffer->reading.gyro.x,

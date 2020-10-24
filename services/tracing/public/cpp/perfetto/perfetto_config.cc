@@ -14,6 +14,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 
@@ -88,7 +89,7 @@ void AddDataSourceConfigs(
     }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     if (source_names.empty() ||
         source_names.count(tracing::mojom::kArcTraceDataSourceName) == 1) {
       AddDataSourceConfig(perfetto_config,

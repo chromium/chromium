@@ -38,6 +38,7 @@ source_set("tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//net",
     "//net:test_support",
     "//services/cert_verifier/cert_net_url_loader:cert_net_url_loader",

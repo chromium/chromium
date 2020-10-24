@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -42,11 +43,11 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
     return gpu_memory_buffer_manager_.get();
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_receiver);

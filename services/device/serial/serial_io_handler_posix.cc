@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -296,7 +297,7 @@ bool SerialIoHandlerPosix::ConfigurePortImpl() {
 }
 
 bool SerialIoHandlerPosix::PostOpen() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // The Chrome OS permission broker does not open devices in async mode.
   return base::SetNonBlocking(file().GetPlatformFile());
 #else

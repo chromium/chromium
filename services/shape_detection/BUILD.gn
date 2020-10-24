@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 source_set("lib") {
@@ -47,7 +48,7 @@ source_set("lib") {
       "text_detection_impl_win.cc",
       "text_detection_impl_win.h",
     ]
-  } else if (is_chromeos && is_chrome_branded) {
+  } else if (is_ash && is_chrome_branded) {
     sources += [
       "barcode_detection_impl_barhopper.cc",
       "barcode_detection_impl_barhopper.h",
@@ -71,12 +72,13 @@ source_set("lib") {
 
   deps = [
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
 
-  if (is_chromeos && is_chrome_branded) {
+  if (is_ash && is_chrome_branded) {
     deps += [ "//third_party/barhopper:barhopper" ]
   }
 
@@ -150,7 +152,7 @@ source_set("tests") {
     ]
   }
 
-  if (is_chromeos && is_chrome_branded) {
+  if (is_ash && is_chrome_branded) {
     sources += [ "barcode_detection_impl_barhopper_unittest.cc" ]
   }
 

@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/features.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/nqe/network_quality_estimator_params.h"
@@ -84,7 +85,7 @@ NetworkQualityEstimatorManager::NetworkQualityEstimatorManager(
           network_quality_estimator_params),
       net_log);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Get network id asynchronously to workaround https://crbug.com/821607 where
   // AddressTrackerLinux stucks with a recv() call and blocks IO thread.
   // TODO(https://crbug.com/821607): Remove after the bug is resolved.

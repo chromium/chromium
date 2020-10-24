@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 source_set("hid") {
@@ -31,7 +32,7 @@ source_set("hid") {
     "//services/service_manager/public/cpp",
   ]
 
-  if (is_chromeos) {
+  if (is_ash) {
     sources += [
       "fake_input_service_linux.cc",
       "fake_input_service_linux.h",

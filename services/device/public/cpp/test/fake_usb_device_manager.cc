@@ -10,6 +10,7 @@
 
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device.h"
 #include "services/device/public/cpp/test/mock_usb_mojo_device.h"
@@ -81,7 +82,7 @@ void FakeUsbDeviceManager::RefreshDeviceInfo(
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void FakeUsbDeviceManager::CheckAccess(const std::string& guid,
                                        CheckAccessCallback callback) {
   std::move(callback).Run(true);
@@ -96,7 +97,7 @@ void FakeUsbDeviceManager::OpenFileDescriptor(
       base::FilePath(FILE_PATH_LITERAL("/dev/null")),
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 void FakeUsbDeviceManager::SetClient(
     mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client) {

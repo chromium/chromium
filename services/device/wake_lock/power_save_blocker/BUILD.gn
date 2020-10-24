@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
@@ -34,7 +35,7 @@ source_set("power_save_blocker") {
     sources += [ "power_save_blocker_android.cc" ]
     deps += [ ":jni_headers" ]
     public_deps += [ "//ui/android" ]
-  } else if (is_chromeos) {
+  } else if (is_ash) {
     sources += [ "power_save_blocker_chromeos.cc" ]
     deps += [
       "//chromeos/dbus/power",

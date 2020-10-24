@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -186,7 +187,7 @@ TEST_F(NetworkServiceTest, AuthDefaultParams) {
 
 #if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
   ASSERT_TRUE(GetNegotiateFactory(&network_context));
-#if defined(OS_POSIX) && !defined(OS_CHROMEOS)
+#if defined(OS_POSIX) && !BUILDFLAG(IS_ASH)
   EXPECT_EQ("",
             GetNegotiateFactory(&network_context)->GetLibraryNameForTesting());
 #endif

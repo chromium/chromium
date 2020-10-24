@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -175,7 +176,7 @@ std::vector<std::string> ParseSecureOriginAllowlistFromCmdline() {
 
   std::vector<std::string> origin_patterns =
       ParseSecureOriginAllowlist(origins_str);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // For Crostini, we allow access to the default VM/container as a secure
   // origin via the hostname penguin.linux.test. We are required to use a
   // wildcard for the prefix because we do not know what the port number is.

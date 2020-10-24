@@ -48,6 +48,7 @@ source_set("generic_sensor") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//device/base/synchronization",
     "//services/device/public/cpp:device_features",
     "//ui/gfx/geometry:geometry",

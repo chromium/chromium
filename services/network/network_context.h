@@ -23,6 +23,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -57,7 +58,7 @@
 #include "services/network/socket_factory.h"
 #include "services/network/url_request_context_owner.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "crypto/scoped_nss_types.h"
 #endif
 
@@ -244,7 +245,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                             mojom::NetworkConditionsPtr conditions) override;
   void SetAcceptLanguage(const std::string& new_accept_language) override;
   void SetEnableReferrers(bool enable_referrers) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override;
 #endif
@@ -408,7 +409,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,
       LookupServerBasicAuthCredentialsCallback callback) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void LookupProxyAuthCredentials(
       const net::ProxyServer& proxy_server,
       const std::string& auth_scheme,
@@ -546,7 +547,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   void OnCertVerifyForSignedExchangeComplete(int cert_verify_id, int result);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void TrustAnchorUsed();
 #endif
 
@@ -673,7 +674,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   bool is_sct_auditing_enabled_ = false;
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   CertVerifierWithTrustAnchors* cert_verifier_with_trust_anchors_ = nullptr;
 #endif
 

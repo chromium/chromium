@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "services/device/usb/usb_device.h"
 
 namespace base {
@@ -28,7 +29,7 @@ struct UsbDeviceDescriptor;
 class UsbDeviceLinux : public UsbDevice {
  public:
 // UsbDevice implementation:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void CheckUsbAccess(ResultCallback callback) override;
 #endif  // OS_CHROMEOS
   void Open(OpenCallback callback) override;
@@ -51,7 +52,7 @@ class UsbDeviceLinux : public UsbDevice {
   ~UsbDeviceLinux() override;
 
  private:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void OnOpenRequestComplete(OpenCallback callback,
                              base::ScopedFD fd,
                              base::ScopedFD lifeline_fd);
@@ -63,7 +64,7 @@ class UsbDeviceLinux : public UsbDevice {
       OpenCallback callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
   void Opened(base::ScopedFD fd,
               base::ScopedFD lifeline_fd,
               OpenCallback callback,

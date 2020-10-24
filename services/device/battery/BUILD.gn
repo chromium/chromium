@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -29,7 +30,7 @@ if (!is_android) {
       "//mojo/public/cpp/bindings",
     ]
 
-    if (is_chromeos) {
+    if (is_ash) {
       configs += [ "//build/config/linux/dbus" ]
       deps += [
         "//chromeos/dbus/power",

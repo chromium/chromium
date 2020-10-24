@@ -11,6 +11,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
@@ -57,7 +58,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
     return gpu_io_task_runner_;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void InjectGpuDependencies(
       mojo::PendingRemote<mojom::AcceleratorFactory> accelerator_factory_info) {
     DCHECK(gpu_io_task_runner_->RunsTasksInCurrentSequence());
@@ -73,7 +74,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
       return;
     accelerator_factory_->CreateJpegDecodeAccelerator(std::move(receiver));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
  private:
   // Task runner for operating |accelerator_factory_| and
@@ -84,9 +85,9 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
   // operated on.
   scoped_refptr<base::SequencedTaskRunner> gpu_io_task_runner_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   mojo::Remote<mojom::AcceleratorFactory> accelerator_factory_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   base::WeakPtrFactory<GpuDependenciesContext> weak_factory_for_gpu_io_thread_{
       this};
@@ -102,7 +103,7 @@ VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
   factory_receivers_.Clear();
   device_factory_.reset();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   camera_app_device_bridge_.reset();
 #endif  // defined (OS_CHROMEOS)
 
@@ -112,7 +113,7 @@ VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void VideoCaptureServiceImpl::InjectGpuDependencies(
     mojo::PendingRemote<mojom::AcceleratorFactory> accelerator_factory) {
   LazyInitializeGpuDependenciesContext();
@@ -127,7 +128,7 @@ void VideoCaptureServiceImpl::ConnectToCameraAppDeviceBridge(
   DCHECK(camera_app_device_bridge_);
   camera_app_device_bridge_->BindReceiver(std::move(receiver));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 void VideoCaptureServiceImpl::ConnectToDeviceFactory(
     mojo::PendingReceiver<mojom::DeviceFactory> receiver) {
@@ -168,7 +169,7 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
   // The task runner passed to CreateFactory is used for things that need to
   // happen on a "UI thread equivalent", e.g. obtaining screen rotation on
   // Chrome OS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   camera_app_device_bridge_ =
       std::make_unique<media::CameraAppDeviceBridgeImpl>();
   std::unique_ptr<media::VideoCaptureDeviceFactory> media_device_factory =
@@ -179,12 +180,12 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
 #else
   std::unique_ptr<media::VideoCaptureDeviceFactory> media_device_factory =
       media::CreateVideoCaptureDeviceFactory(ui_task_runner_);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
       std::move(media_device_factory));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
       std::make_unique<DeviceFactoryMediaToMojoAdapter>(
           std::move(video_capture_system),
@@ -196,7 +197,7 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
   device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
       std::make_unique<DeviceFactoryMediaToMojoAdapter>(
           std::move(video_capture_system)));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 }
 
 void VideoCaptureServiceImpl::LazyInitializeVideoSourceProvider() {

@@ -5,6 +5,7 @@
 #include "services/media_session/public/cpp/features.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace media_session {
 namespace features {
@@ -25,7 +26,7 @@ const base::Feature kMediaSessionService {
 // have audio focus at any one time.
 const base::Feature kAudioFocusEnforcement {
   "AudioFocusEnforcement",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -36,7 +37,7 @@ const base::Feature kAudioFocusEnforcement {
 // share audio focus at the same time provided that they have the same group id.
 const base::Feature kAudioFocusSessionGrouping {
   "AudioFocusSessionGrouping",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

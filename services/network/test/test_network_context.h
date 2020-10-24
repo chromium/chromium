@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_list.h"
@@ -109,7 +110,7 @@ class TestNetworkContext : public mojom::NetworkContext {
                             mojom::NetworkConditionsPtr conditions) override {}
   void SetAcceptLanguage(const std::string& new_accept_language) override {}
   void SetEnableReferrers(bool enable_referrers) override {}
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override {}
 #endif
@@ -265,7 +266,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,
       LookupServerBasicAuthCredentialsCallback callback) override {}
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void LookupProxyAuthCredentials(
       const net::ProxyServer& proxy_server,
       const std::string& auth_scheme,

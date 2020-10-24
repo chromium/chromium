@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
@@ -55,7 +56,7 @@ mojom("mojom") {
     "//ui/latency/mojom",
   ]
 
-  if (is_chromeos) {
+  if (is_ash) {
     public_deps += [ "//components/chromeos_camera/common" ]
   }
 

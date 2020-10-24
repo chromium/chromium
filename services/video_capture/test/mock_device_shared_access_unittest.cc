@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/mock_device.h"
 #include "media/capture/video/mock_device_factory.h"
@@ -50,14 +51,14 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
 
     auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
         std::move(mock_device_factory));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     service_device_factory_ = std::make_unique<DeviceFactoryMediaToMojoAdapter>(
         std::move(video_capture_system), base::DoNothing(),
         base::ThreadTaskRunnerHandle::Get());
 #else
     service_device_factory_ = std::make_unique<DeviceFactoryMediaToMojoAdapter>(
         std::move(video_capture_system));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
     source_provider_ = std::make_unique<VideoSourceProviderImpl>(
         service_device_factory_.get(), base::DoNothing());
 

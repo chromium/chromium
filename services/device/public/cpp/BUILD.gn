@@ -62,6 +62,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/device:lib",

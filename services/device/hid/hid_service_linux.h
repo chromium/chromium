@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "services/device/hid/hid_device_info.h"
 #include "services/device/hid/hid_service.h"
 
@@ -35,7 +36,7 @@ class HidServiceLinux : public HidService {
 // opening a device. Because this operation crosses multiple threads these
 // functions are static and the necessary parameters are passed as a single
 // struct.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   static void OnPathOpenComplete(std::unique_ptr<ConnectParams> params,
                                  base::ScopedFD fd);
   static void OnPathOpenError(const std::string& device_path,

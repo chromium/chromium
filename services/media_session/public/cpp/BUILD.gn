@@ -52,6 +52,7 @@ component("cpp") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//services/media_session/public/mojom",
     "//skia",
     "//ui/gfx/geometry",
