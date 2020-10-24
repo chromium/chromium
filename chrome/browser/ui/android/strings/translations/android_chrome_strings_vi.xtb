@@ -273,6 +273,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2979025552038692506">Thẻ ẩn danh được chọn</translation>
 <translation id="2987620471460279764">Văn bản được chia sẻ từ thiết bị khác</translation>
 <translation id="2989523299700148168">Đã truy cập gần đây</translation>
+<translation id="2992473221983447149">Nội dung mô tả hình ảnh</translation>
 <translation id="2996291259634659425">Tạo cụm mật khẩu</translation>
 <translation id="2996809686854298943">Cần có URL</translation>
 <translation id="3006881078666935414">Không có dữ liệu sử dụng</translation>
@@ -285,6 +286,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
 <translation id="3089395242580810162">Mở trong thẻ ẩn danh</translation>
+<translation id="3098745985164956033">Một số hình ảnh được gửi đến Google để cải thiện nội dung mô tả cho bạn</translation>
 <translation id="3114507951000454849">Đọc tin tức hôm nay <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Thông báo</translation>
 <translation id="3137521801621304719">Thoát chế độ ẩn danh</translation>
@@ -775,6 +777,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6545017243486555795">Xóa tất cả dữ liệu</translation>
 <translation id="6560414384669816528">Tìm kiếm với Sogou</translation>
 <translation id="656065428026159829">Xem thêm</translation>
+<translation id="6565959834589222080">Dùng mạng Wi-Fi khi có sẵn</translation>
 <translation id="6566259936974865419">Chrome đã tiết kiệm <ph name="GIGABYTES" /> GB cho bạn</translation>
 <translation id="6573096386450695060">Luôn cho phép</translation>
 <translation id="6573431926118603307">Các thẻ bạn đã mở trong Chrome trên thiết bị khác sẽ xuất hiện tại đây.</translation>
@@ -1086,6 +1089,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8788968922598763114">Mở lại thẻ đóng sau cùng</translation>
 <translation id="8798449543960971550">Đọc</translation>
 <translation id="8812260976093120287">Trên một số trang web, bạn có thể thanh toán bằng các ứng dụng thanh toán được hỗ trợ bên trên trên thiết bị của bạn.</translation>
+<translation id="881688628773363275">Không xem được nội dung trên thẻ Xem trước.</translation>
 <translation id="8820817407110198400">Dấu trang</translation>
 <translation id="883806473910249246">Đã xảy ra lỗi khi tải nội dung xuống.</translation>
 <translation id="8840953339110955557">Trang này có thể khác với phiên bản trực tuyến.</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Üksust <ph name="CONTENT_TYPE" /> ei saa jagada</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> vahetati üksuse <ph name="SECOND_ITEM_TITLE" /> vastu</translation>
 <translation id="1498028757988366001">Olete seda varem otsinud. Päringu „<ph name="QUERY" />” kustutamisel ajaloost eemaldatakse see teie kontolt jäädavalt kõigis teie seadmetes.</translation>
+<translation id="1510238584712386396">Käivitaja</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minut ja }other{# minutit ja }}</translation>
 <translation id="1643823602425662293">Märguanne</translation>
 <translation id="169515659049020177">Tõstuklahv</translation>

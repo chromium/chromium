@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> 항목과 <ph name="SECOND_ITEM_TITLE" /> 항목의 위치를 서로 바꿈</translation>
 <translation id="1498028757988366001">이전에 검색한 내용입니다. 기록에서 '<ph name="QUERY" />'을(를) 삭제하면 계정과 연결된 모든 기기에서 완전히 삭제됩니다.</translation>
+<translation id="1510238584712386396">런처</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1분 }other{#분 }}</translation>
 <translation id="1643823602425662293">알림</translation>
 <translation id="169515659049020177">Shift</translation>

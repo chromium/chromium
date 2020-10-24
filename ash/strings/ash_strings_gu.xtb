@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">ડેસ્કનું નામ બદલીને <ph name="DESK_NAME" /> કરવામાં આવ્યું હતું</translation>
 <translation id="2050339315714019657">પોર્ટ્રેટ</translation>
 <translation id="2067602449040652523">કીબોર્ડનું તેજ</translation>
-<translation id="2074759828767813253">તાજેતરના સ્ક્રીનશૉટ અને ડાઉનલોડ</translation>
 <translation id="2083190527011054446">ગુડ નાઇટ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
 <translation id="2126242104232412123">નવું ડેસ્ક</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">એકથી વધુ સાઇન ઇનને બંધ કરવામાં આવેલ છે</translation>
 <translation id="2582112259361606227">અપડેટ કરવા માટે ફરી શરૂ કરો</translation>
 <translation id="2595239820337756193">5,000 કિલોમીટર એટલે કેટલા માઇલ?</translation>
+<translation id="2596078834055697711">વિંડો સ્ક્રીનશૉટ લો</translation>
 <translation id="2617342710774726426">SIM કાર્ડ લૉક કરેલ છે</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="2640255526076764619">પાછલી ડેસ્ક પર સ્વિચ કરવા માટેનો ટચપૅડ સંકેત બદલાયો છે. પાછલી ડેસ્ક પર સ્વિચ કરવા માટે ચાર આંગળી વડે ડાબી તરફ સ્વાઇપ કરો.</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">VPN સેટિંગ</translation>
 <translation id="4217571870635786043">ડિક્ટેશન</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4261870227682513959">નોટિફિકેશન સેટિંગ બતાવો. નોટિફિકેશન બંધ છે</translation>
 <translation id="4267383818855338811">કોઈ વર્ચ્યુઅલ મશીન તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે</translation>
 <translation id="4269883910223712419">આ ઉપકરણના વ્યવસ્થાપકની ક્ષમતા:</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">ઘેરી થીમ બંધ છે</translation>
 <translation id="4623167406982293031">એકાઉન્ટ ચકાસો</translation>
 <translation id="4628757576491864469">ડિવાઇસ</translation>
+<translation id="4642092649622328492">આંશિક સ્ક્રીનશૉટ લો</translation>
 <translation id="4659419629803378708">ChromeVox સક્ષમ કર્યું</translation>
 <translation id="4665114317261903604">'ખલેલ પાડશો નહીં'ને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />, નવા ફોન સાથે કનેક્ટ થયું</translation>
 <translation id="5035389544768382859">ડિસ્પ્લેની ગોઠવણને કન્ફર્મ કરો</translation>
 <translation id="5083553833479578423">આસિસ્ટંટની વધુ સુવિધાઓને અનલૉક કરો.</translation>
-<translation id="5114495209940374989">સ્ક્રીનશૉટ</translation>
 <translation id="5136175204352732067">અલગ કીબોર્ડ કનેક્ટ કર્યું</translation>
 <translation id="5168181903108465623">Cast ઉપકરણો ઉપલબ્ધ</translation>
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">નિષ્ક્રિય ડેસ્કટૉપ.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">પૂર્ણસ્ક્રીન કૅપ્ચર કરવા માટે સ્ક્રીન પર ગમે ત્યાં ક્લિક કરો</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5920710855273935292">માઇક્રોફોન મ્યૂટ કરેલો છે.</translation>
 <translation id="594179686076170922">તમારા ફોનને કનેક્ટ કરી રહ્યાં છીએ…</translation>
@@ -753,7 +753,6 @@
 <translation id="8563862697512465947">સૂચના સેટિંગ્સ</translation>
 <translation id="857201607579416096">મેનૂને સ્ક્રીનની નીચેના જમણા ખૂણામાં ખસેડ્યું.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">પૂર્ણસ્ક્રીન કૅપ્ચર કરવા માટે સ્ક્રીન પર ગમે ત્યાં ટૅપ કરો</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> સાથે કનેક્ટ થયા</translation>
 <translation id="8631727435199967028">ઍક્સેસિબિલિટી સેટિંગ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>

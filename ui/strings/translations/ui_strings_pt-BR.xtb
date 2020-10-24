@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Falha no compartilhamento de <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" /> realizada</translation>
 <translation id="1498028757988366001">Você já pesquisou isso. Se você excluir "<ph name="QUERY" />" do seu histórico, essa consulta será permanentemente removida da sua conta em todos os seus dispositivos.</translation>
+<translation id="1510238584712386396">Iniciador</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{Um minuto e }one{# minutos e }other{# minutos e }}</translation>
 <translation id="1643823602425662293">Notificação</translation>
 <translation id="169515659049020177">Shift</translation>

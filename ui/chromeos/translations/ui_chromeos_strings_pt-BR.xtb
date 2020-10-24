@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Teclado americano</translation>
 <translation id="2534155362429831547">Itens excluídos: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">Os conteúdos da pasta são somente leitura. Algumas atividades estão indisponíveis.</translation>
 <translation id="2542049655219295786">Tabela do Google</translation>
 <translation id="2547921442987553570">Adicionar à extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Internacional: Estados Unidos</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Saiba mais</translation>
 <translation id="4527800702232535228">Esta pasta está sendo compartilhada com o Parallels Desktop</translation>
 <translation id="4552678318981539154">Comprar mais espaço</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> excluído</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Arquivo <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Mais...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Janela de feedback do Arquivos</translation>
 <translation id="6358884629796491903">Dragão</translation>
 <translation id="637062427944097960">Este arquivo está aberto em uma área de trabalho diferente. Mude para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para visualizá-lo.</translation>
+<translation id="6394388407447716302">Somente leitura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> itens</translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="642282551015776456">Este não é um nome válido para arquivos ou pastas.</translation>

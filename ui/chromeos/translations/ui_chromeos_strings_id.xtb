@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Keyboard AS</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> item dihapus</translation>
+<translation id="2541377937973966830">Konten dalam folder ini bersifat hanya baca. Beberapa aktivitas tidak didukung.</translation>
 <translation id="2542049655219295786">Tabel Google</translation>
 <translation id="2547921442987553570">Tambahkan ke <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Internasional AS</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Detail</translation>
 <translation id="4527800702232535228">Folder ini dibagikan ke Parallels Desktop</translation>
 <translation id="4552678318981539154">Beli penyimpanan lagi</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> dihapus</translation>
 <translation id="4559767610552730302">Efek Bokeh</translation>
 <translation id="4572815280350369984">File <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Lainnya...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Jendela masukan file</translation>
 <translation id="6358884629796491903">Naga</translation>
 <translation id="637062427944097960">File ini dibuka pada desktop yang berbeda. Pindahkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihatnya.</translation>
+<translation id="6394388407447716302">Hanya baca</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="642282551015776456">Nama ini tidak dapat digunakan sebagai nama file atau folder</translation>

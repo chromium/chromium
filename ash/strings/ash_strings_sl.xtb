@@ -117,7 +117,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2049240716062114887">Ime pisalne mize je bilo spremenjeno v <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pokončno</translation>
 <translation id="2067602449040652523">Svetlost tipkovnice</translation>
-<translation id="2074759828767813253">Nedavni posnetki zaslona in prenosi</translation>
 <translation id="2083190527011054446">Lahko noč, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Ni povezave z omrežjem</translation>
 <translation id="2126242104232412123">Nova delovna miza</translation>
@@ -169,6 +168,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2575685495496069081">Prijava z več računi je onemogočena</translation>
 <translation id="2582112259361606227">Znova zaženite za posodobitev</translation>
 <translation id="2595239820337756193">5 km v miljah</translation>
+<translation id="2596078834055697711">Ustvarjanje posnetka okna</translation>
 <translation id="2617342710774726426">Kartica SIM je zaklenjena</translation>
 <translation id="2621713457727696555">Varno</translation>
 <translation id="2640255526076764619">Poteza na sledilni ploščici za preklop na prejšnjo pisalno mizo je spremenjena. Povlecite s štirimi prsti v levo, če želite preklopiti na prejšnjo pisalno mizo.</translation>
@@ -329,6 +329,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4215497585250573029">Nastavitve VPN-ja</translation>
 <translation id="4217571870635786043">Narek</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4261870227682513959">Prikaz nastavitev obvestil. Obvestila so izklopljena.</translation>
 <translation id="4267383818855338811">Navidezni računalnik uporablja kamero.</translation>
 <translation id="4269883910223712419">Skrbniku te naprave je omogočeno to:</translation>
@@ -376,6 +377,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4596144739579517758">Temna tema je izklopljena</translation>
 <translation id="4623167406982293031">Preveri račun</translation>
 <translation id="4628757576491864469">Naprave</translation>
+<translation id="4642092649622328492">Ustvarjanje delnega posnetka zaslona</translation>
 <translation id="4659419629803378708">Omogočen je ChromeVox</translation>
 <translation id="4665114317261903604">Preklop načina »ne moti«. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
@@ -423,7 +425,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5035236842988137213">Naprava <ph name="DEVICE_NAME" /> je povezana z novim telefonom</translation>
 <translation id="5035389544768382859">Potrditev konfiguracije zaslona</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
-<translation id="5114495209940374989">Posnetki zaslona</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
 <translation id="5168181903108465623">Naprave za predvajanje so na voljo</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
@@ -492,7 +493,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">Neaktivna pisalna miza.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Kliknite kjer koli za posnetek celotnega zaslona.</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5920710855273935292">Zvok mikrofona je izklopljen.</translation>
 <translation id="594179686076170922">Vzpostavljanje povezave s telefonom …</translation>
@@ -753,7 +753,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8563862697512465947">Nastavitve obvestil</translation>
 <translation id="857201607579416096">Meni je bil premaknjen v spodnji desni kot zaslona.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Dotaknite se kjer koli za posnetek celotnega zaslona.</translation>
 <translation id="8627191004499078455">Vzpostavljena povezava z napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Nastavitve funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>

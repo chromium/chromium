@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Clavier américain</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> éléments supprimés</translation>
+<translation id="2541377937973966830">Le contenu de ce dossier est en lecture seule. Certaines opérations ne sont pas possibles.</translation>
 <translation id="2542049655219295786">Tableau Google</translation>
 <translation id="2547921442987553570">Ajouter à <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">États-Unis international</translation>
@@ -191,7 +192,7 @@
 <translation id="3064388234319122767">Translittération (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Fichiers Windows</translation>
 <translation id="3078461028045006476">Partager avec <ph name="EXTENSION_NAME" /></translation>
-<translation id="3083975830683400843">appareils Chromebit</translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">Clavier britannique</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">OK</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4527800702232535228">Ce dossier est partagé avec Parallels Desktop</translation>
 <translation id="4552678318981539154">Acheter de l'espace de stockage supplémentaire</translation>
+<translation id="4559318885353833501">"<ph name="FILE_NAME" />" a bien été supprimé</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Fichier <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Autres...</translation>
@@ -346,7 +348,7 @@
 <translation id="4804827417948292437">Avocat</translation>
 <translation id="4823651846660089135">Appareil en lecture seule</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> éléments sélectionnés</translation>
-<translation id="4843566743023903107">ordinateurs Chromebase</translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">Allemand (Belgique)</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="485316830061041779">Allemand</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Fenêtre de commentaires sur les fichiers</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="637062427944097960">Ce fichier est ouvert sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour l'afficher.</translation>
+<translation id="6394388407447716302">Lecture seule</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> éléments</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="642282551015776456">Ce nom ne peut pas être utilisé comme nom de fichier ni de dossier.</translation>

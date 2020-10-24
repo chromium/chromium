@@ -448,6 +448,7 @@
 <translation id="1509281256533087115">Отримувати доступ до будь-якого пристрою <ph name="DEVICE_NAME_AND_VENDOR" /> через USB</translation>
 <translation id="1509960214886564027">Функції на багатьох сайтах можуть не працювати</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
+<translation id="151070646350206700">Сайти не можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="1510785804673676069">Якщо ви використовуєте проксі-сервер, перевірте його налаштування
         чи зверніться до адміністратора мережі, щоб переконатися, що
         проксі-сервер працює. Якщо ви вважаєте, що використовувати
@@ -934,6 +935,7 @@
 <translation id="205560151218727633">Логотип Google Асистент</translation>
 <translation id="2058456167109518507">Виявлено пристрій</translation>
 <translation id="2059913712424898428">Часовий пояс</translation>
+<translation id="2060375639911876205">Видалити профіль eSIM-карти</translation>
 <translation id="2065405795449409761">Веб-переглядачем Chrome керує автоматична пробна програма.</translation>
 <translation id="2071393345806050157">Немає локального файлу журналу.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Натисніть, щоб установити розширення}one{Натисніть, щоб установити ці розширення}few{Натисніть, щоб установити ці розширення}many{Натисніть, щоб установити ці розширення}other{Натисніть, щоб установити ці розширення}}</translation>
@@ -1884,7 +1886,6 @@
 <translation id="3165371858310906303">Запитувати, коли сайт хоче дізнатися, чи ви присутні</translation>
 <translation id="3165390001037658081">Деякі оператори можуть блокувати цю функцію.</translation>
 <translation id="316652501498554287">Облікові записи G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Можна також пропустити вхід і <ph name="LINK_START" />працювати в режимі "Гість"<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Мова сторінки:</translation>
 <translation id="3179982752812949580">Шрифт тексту</translation>
@@ -2027,7 +2028,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}one{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}few{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}many{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}other{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3364986687961713424">Від вашого адміністратора: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Використовуйте Ctrl або Alt</translation>
-<translation id="3367047597842238025">Налаштуйте <ph name="DEVICE_TYPE" /> на свій смак і відкривайте всі дивовижні можливості у вас під рукою.</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369067987974711168">Показати більше дій для цього порту</translation>
 <translation id="3369624026883419694">-...</translation>
@@ -2350,7 +2350,6 @@
 <translation id="3713047097299026954">На цьому ключі безпеки немає даних для входу</translation>
 <translation id="3714195043138862580">Цей демо-пристрій деініціалізовано.</translation>
 <translation id="3714633008798122362">веб-календар</translation>
-<translation id="3715954932774762075">Додатки та веб-сайти, які підтримують кілька мов, використовуватимуть першу доступну мову зі списку. Ці параметри синхронізуються з налаштуваннями веб-переглядача. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Головна сторінка</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ви й Google</translation>
@@ -2488,7 +2487,6 @@
 <translation id="3856800405688283469">Виберіть часовий пояс</translation>
 <translation id="3857807444929313943">Підніміть і знову торкніться</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронізацію призупинено</translation>
-<translation id="3861386850461794863">Мови для додатків і веб-сайтів</translation>
 <translation id="3861638017150647085">Ім'я користувача "<ph name="USERNAME" />" недоступне</translation>
 <translation id="3862693525629180217">Підтвердити через вбудований датчик</translation>
 <translation id="3862788408946266506">Додаток з атрибутом маніфесту "kiosk_only" потрібно встановлювати в режимі термінала ОС Chrome</translation>
@@ -2732,6 +2730,7 @@
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="413193092008917129">Послідовності дій для діагностики мережі</translation>
 <translation id="4132183752438206707">Шукайте додатки в Google Play</translation>
+<translation id="4132364317545104286">Перейменувати профіль eSIM-карти</translation>
 <translation id="4133076602192971179">Щоб змінити пароль, відкрийте додаток</translation>
 <translation id="4136203100490971508">Нічний екран вимкнеться автоматично на світанку</translation>
 <translation id="41365691917097717">Якщо продовжити, буде ввімкнено налагодження ADB для створення й тестування додатків для Android. Зауважте, що цією дією ви дозволяєте встановлювати додатки для Android, які не були перевірені Google. Щоб вимкнути цю функцію, доведеться скинути налаштування.</translation>
@@ -3245,6 +3244,7 @@
 <translation id="4778644898150334464">Ввести інший пароль</translation>
 <translation id="4779083564647765204">Збільшити</translation>
 <translation id="4779136857077979611">Оніґірі</translation>
+<translation id="4779766576531456629">Перейменувати мобільну мережу eSIM-карти</translation>
 <translation id="4780321648949301421">Зберегти сторінку як...</translation>
 <translation id="4785719467058219317">Ви використовуєте ключ безпеки, не зареєстрований на цьому веб-сайті</translation>
 <translation id="4788092183367008521">Перевірте з’єднання з мережею та повторіть спробу.</translation>
@@ -3688,6 +3688,7 @@
 <translation id="5324780743567488672">Автоматично визначати часовий пояс на основі ваших геоданих</translation>
 <translation id="5327248766486351172">Назва</translation>
 <translation id="5327570636534774768">Пристрій зареєстровано в іншому домені. Перед налаштуванням демо-режиму деініціалізуйте пристрій у цьому домені.</translation>
+<translation id="5327912693242073631">Функції, яким потрібні сповіщення, не працюватимуть</translation>
 <translation id="532943162177641444">Торкніться сповіщення на пристрої <ph name="PHONE_NAME" />, щоб налаштувати для нього мобільну точку доступу.</translation>
 <translation id="5329858601952122676">&amp;Видалити</translation>
 <translation id="5331069282670671859">У вас немає сертифікатів цієї категорії</translation>
@@ -3739,6 +3740,7 @@
 <translation id="5390112241331447203">Включити файл system_logs.txt, який надіслано у звітах про відгуки.</translation>
 <translation id="5390677308841849479">Темно-червоний і оранжевий</translation>
 <translation id="5390743329570580756">Надіслати</translation>
+<translation id="5392192690789334093">Дозволено надсилати сповіщення</translation>
 <translation id="5397794290049113714">Ви</translation>
 <translation id="5398497406011404839">Сховані закладки</translation>
 <translation id="5398572795982417028">Сторінка поза діапазоном, максимальна кількість сторінок: <ph name="MAXIMUM_PAGE" /></translation>
@@ -3794,7 +3796,6 @@
 <translation id="5457991019809708398">Увімкнено, немає роумінгу</translation>
 <translation id="5458214261780477893">Дворак</translation>
 <translation id="5458998536542739734">Нотатки на заблокованому екрані</translation>
-<translation id="546322474339998983">Використовують веб-переглядач Chrome і панель запуску <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Ввести</translation>
 <translation id="5463275305984126951">Індекс <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Меню, яке містить сховані закладки</translation>
@@ -3920,7 +3921,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Завантаження додатків…</translation>
 <translation id="5592595402373377407">Ще недостатньо даних.</translation>
-<translation id="5593357315997824387">Синхронізувати мої файли</translation>
 <translation id="5595485650161345191">Редагувати адресу</translation>
 <translation id="5595727715083333657">Розмір вашого контейнера не можна змінювати. Щоб змінити обсяг пам'яті, що попередньо виділена для Linux (бета), створіть резервну копію, а потім відновіть її в новому контейнері.</translation>
 <translation id="5596627076506792578">Інші опції</translation>
@@ -4043,6 +4043,7 @@
 <translation id="5739235828260127894">Очікується підтвердження. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Дуже великий</translation>
 <translation id="5740328398383587084">Передавання поблизу</translation>
+<translation id="5740820643029013514">Використовувати тихий режим для сповіщень (рекомендовано)</translation>
 <translation id="574104302965107104">Дзеркалювання дисплея</translation>
 <translation id="574209121243317957">Тон</translation>
 <translation id="5746169159649715125">Зберегти у форматі PDF</translation>
@@ -4262,6 +4263,7 @@
 <translation id="6002210667729577411">Перенести групу в нове вікно</translation>
 <translation id="6002452033851752583">Пароль видалено з облікового запису Google</translation>
 <translation id="6002458620803359783">Рекомендовані голоси</translation>
+<translation id="6003143259071779217">Видалити мобільну мережу eSIM-карти</translation>
 <translation id="6006484371116297560">Класична</translation>
 <translation id="6007240208646052708">Голосовий пошук недоступний вашою мовою.</translation>
 <translation id="6009781704028455063">Вбудований датчик</translation>
@@ -4530,6 +4532,7 @@
 <translation id="6308937455967653460">Зберегти посиланн&amp;я як...</translation>
 <translation id="6309443618838462258">Адміністратор не дозволяє використовувати цей метод введення</translation>
 <translation id="6309510305002439352">Мікрофон вимкнено</translation>
+<translation id="6310472381159916879">Видалити профіль</translation>
 <translation id="6311220991371174222">Не вдається запустити Chrome, оскільки сталася помилка під час відкривання профілю. Спробуйте перезапустити Chrome.</translation>
 <translation id="6312403991423642364">Невідома помилка мережі</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Перевірку безпеки виконано 1 день тому}one{Перевірку безпеки виконано {NUM_DAYS} день тому}few{Перевірку безпеки виконано {NUM_DAYS} дні тому}many{Перевірку безпеки виконано {NUM_DAYS} днів тому}other{Перевірку безпеки виконано {NUM_DAYS} дня тому}}</translation>
@@ -4719,6 +4722,7 @@
 <translation id="6532663472409656417">Зареєстровано підприємством</translation>
 <translation id="6535331821390304775">Завжди дозволяти сайту <ph name="ORIGIN" /> відкривати посилання цього типу у зв'язаному додатку</translation>
 <translation id="6537613839935722475">Назва може містити літери, цифри та дефіси (-)</translation>
+<translation id="6537880577641744343">Командир</translation>
 <translation id="6538635548667167211">Поточне налаштування використання трафіку: "Трафік"</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Примітка.<ph name="END_BOLD" /> Вмикайте, лише якщо ви знаєте, що робите, або вас попросили це зробити, оскільки збір даних може знизити ефективність.</translation>
 <translation id="6541638731489116978">Цьому сайту заборонено доступ до датчиків руху.</translation>
@@ -5850,6 +5854,7 @@
 <translation id="7855678561139483478">Перемістити вкладку в нове вікно</translation>
 <translation id="7857117644404132472">Додати виняток</translation>
 <translation id="7857949311770343000">Це сторінка нової вкладки, яку ви очікували?</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">З грудня ця опція не підтримуватиметься. Зверніться до адміністратора.</translation>
 <translation id="786073089922909430">Сервіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Завантаження</translation>
@@ -6162,7 +6167,6 @@
 <translation id="8218847192766059983">Додайте мови або змініть порядок у списку. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Зазвичай ви блокуєте сповіщення. Натисніть тут, щоб дозволити сайту показувати їх.</translation>
 <translation id="8225265270453771718">Поділитися вікном додатка</translation>
-<translation id="8225753906568652947">Скористатися пропозиціями</translation>
 <translation id="8226222018808695353">Заборонено</translation>
 <translation id="8226619461731305576">Черга</translation>
 <translation id="8226628635270268143">Вибрати улюблені фотографії й альбоми</translation>
@@ -6173,6 +6177,7 @@
 <translation id="8236917170563564587">Натомість поділитися цією вкладкою</translation>
 <translation id="8237647586961940482">Темно-рожевий і червоний</translation>
 <translation id="8239032431519548577">Підприємство зареєстровано</translation>
+<translation id="8239932336306009582">Заборонено надсилати сповіщення</translation>
 <translation id="8241040075392580210">Хмаринка</translation>
 <translation id="8241806945692107836">Визначення конфігурації пристрою…</translation>
 <translation id="8241868517363889229">Читати й змінювати закладки</translation>
@@ -6302,6 +6307,7 @@
 <translation id="8386091599636877289">Правило не знайдено.</translation>
 <translation id="8386903983509584791">Сканування завершено</translation>
 <translation id="8387361103813440603">Заборонено переглядати дані про ваше місцезнаходження</translation>
+<translation id="8389264703141926739">Блокувати сповіщення</translation>
 <translation id="8389416080014625855">Створити QR-код для цієї сторінки</translation>
 <translation id="8389492867173948260">Дозволити розширенню переглядати й змінювати ваші дані на веб-сайтах, які ви відвідуєте:</translation>
 <translation id="8390449457866780408">Сервер не доступний.</translation>
@@ -6323,7 +6329,6 @@
 <translation id="8417548266957501132">Пароль батьків</translation>
 <translation id="8418445294933751433">&amp;Показати як вкладку</translation>
 <translation id="8419098111404128271">Результати пошуку для запиту "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Вітаємо на пристрої <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Редагувати словникові статті</translation>
 <translation id="8421361468937925547">Живі субтитри (лише англійською)</translation>
 <translation id="8422787418163030046">Немає лотка</translation>
@@ -6512,6 +6517,7 @@
 <translation id="8645354835496065562">Дозволяти доступ до датчиків</translation>
 <translation id="8645920082661222035">Передбачає небезпечні події та повідомляє про них ще до того, як вони відбудуться</translation>
 <translation id="8646209145740351125">Вимкнути синхронізацію</translation>
+<translation id="864637694230589560">Зазвичай сайти надсилають сповіщення, щоб повідомити про важливі новини або повідомлення в чаті</translation>
 <translation id="8647834505253004544">Недійсна веб-адреса</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> або <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Температура кольору нічного екрана</translation>

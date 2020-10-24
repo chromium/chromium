@@ -421,6 +421,11 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Pola URL memiliki format yang sama dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />', yang didokumentasikan di https://www.chromium.org/administrators/url-blacklist-filter-format.
       </translation>
 <translation id="1645793986494086629">Skema:</translation>
+<translation id="1647558381546345298">Jika kebijakan disetel, ukuran cache yang digunakan <ph name="PRODUCT_NAME" /> untuk menyimpan file media yang di-cache pada disk akan dikonfigurasi, terlepas apakah pengguna menentukan tanda --media-cache-size. Nilai yang ditentukan dalam kebijakan ini bukanlah batas mutlak, melainkan saran untuk sistem penyimpanan dalam cache. Setiap nilai yang kurang dari beberapa megabyte akan dibulatkan ke atas.
+
+      Jika nilai kebijakan disetel ke 0, ukuran cache default akan digunakan dan pengguna tidak dapat mengubahnya.
+
+      Jika kebijakan tidak disetel, ukuran cache default akan digunakan dan pengguna dapat mengubahnya dengan tanda --media-cache-size.</translation>
 <translation id="1648816843164517573">Daftar nama yang akan melewati pemeriksaan kebijakan HSTS</translation>
 <translation id="1654087023995670109">Terapkan mode tamu browser</translation>
 <translation id="1655229863189977773">Setel ukuran cache disk dalam bita</translation>
@@ -1337,6 +1342,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan tidak disetel (atau disetel ke URL yang tidak valid), <ph name="PRODUCT_NAME" /> tidak akan menggunakannya sebagai sumber aturan untuk beralih browser.
 
       Catatan: Kebijakan ini mengarah ke file XML dalam format yang sama seperti kebijakan <ph name="IEEM_SITELIST_POLICY" /> <ph name="IE_PRODUCT_NAME" />. Kebijakan ini akan memuat aturan dari file XML, tanpa membagikan aturan tersebut ke <ph name="IE_PRODUCT_NAME" />. Baca selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /> <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2949765875529121431">Menyetel kebijakan akan menentukan daftar hostname yang dikecualikan dari pemeriksaan kebijakan HSTS yang dapat mengupgrade permintaan dari HTTP ke HTTPS. Hanya hostname berlabel tunggal yang diizinkan dalam kebijakan ini. Hostname harus dikanonikalisasi: Semua IDN harus dikonversi ke format berlabel A, dan semua huruf ASCII harus berupa huruf kecil. Kebijakan ini hanya berlaku untuk hostname spesifik yang telah ditentukan, bukan subdomain dari hostname tersebut.</translation>
 <translation id="2952347049958405264">Pembatasan:</translation>
 <translation id="2957047180944828740">Menentukan apakah akan mengizinkan situs yang tidak aman untuk membuat permintaan ke endpoint jaringan yang lebih pribadi</translation>
 <translation id="2957506574938329824">Jangan izinkan situs apa pun meminta akses ke perangkat Bluetooth melalui API Bluetooth Web</translation>
@@ -1445,6 +1451,9 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Terlepas dari apakah kebijakan ini disetel atau tidak, dan bagaimana kebijakan ini disetel, setelan pengoptimalan WPAD tidak dapat diubah oleh pengguna.</translation>
 <translation id="3072045631333522102">Tirai layar untuk digunakan pada layar masuk dalam mode eceran</translation>
+<translation id="3072788420987305247">Jika kebijakan disetel ke Aktif atau tidak disetel, kontrol media akan ditampilkan di layar kunci ketika pengguna mengunci perangkat saat media sedang diputar.
+
+      Jika kebijakan disetel ke Nonaktif, kontrol media akan diaktifkan dan layar kunci akan dinonaktifkan.</translation>
 <translation id="3072847235228302527">Menyetel Persyaratan Layanan untuk akun lokal perangkat</translation>
 <translation id="3086995894968271156">Mengonfigurasi Penerima Cast di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Mengisi daya baterai untuk perangkat yang terutama terhubung ke sumber daya eksternal.</translation>
@@ -1527,6 +1536,11 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
         * 4, firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> akan diupdate setelah pendaftaran, sebelum pengguna login.
 
       Jika kebijakan tidak disetel, update firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> tidak akan tersedia.</translation>
+<translation id="3235677869770186098">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu di layar login. Setiap item dalam daftar memerlukan kolom "devices" dan "urls" agar kebijakan menjadi valid. Setiap item di kolom "devices" dapat memiliki kolom "vendor_id" dan "product_id". Jika kolom "vendor_id" tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom "product_id" tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom "product_id" tanpa kolom "vendor_id" menjadi tidak valid.
+
+      Model izin USB menggunakan URL peminta dan sematan untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta dapat berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom urls dapat memiliki hingga dua string URL yang dipisahkan dengan koma untuk menentukan URL peminta dan URL sematan masing-masing. Jika hanya ada satu URL yang ditentukan, akses ke perangkat USB yang sesuai akan diberikan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematannya. URL harus valid. Jika tidak, kebijakan akan diabaikan.
+
+      Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua situs (tidak ada akses otomatis).</translation>
 <translation id="3236046242843493070">Pola URL untuk memungkinkan pemasangan skrip pengguna, aplikasi, dan ekstensi dari</translation>
 <translation id="3240609035816615922">Kebijakan akses konfigurasi untuk printer.</translation>
 <translation id="324062325008698789">Mengonfigurasi daftar printer</translation>
@@ -2187,6 +2201,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4157003184375321727">Laporkan versi OS dan firmware</translation>
 <translation id="4157594634940419685">Izinkan akses ke printer CUPS native</translation>
 <translation id="4160962198980004898">Sumber alamat MAC perangkat saat dipasang di dok</translation>
+<translation id="4166174702671320480">Jika kebijakan disetel ke Aktif, kebijakan yang berasal dari grup atom yang tidak membagikan sumbernya dengan prioritas tertinggi grup akan diabaikan.
+
+      Jika kebijakan disetel ke Nonaktif, tidak akan ada kebijakan yang diabaikan karena sumbernya. Kebijakan hanya akan diabaikan jika bertentangan, dan kebijakan tersebut tidak memiliki prioritas tertinggi.
+
+      Jika kebijakan ini disetel dari sumber cloud, kebijakan tidak akan dapat menargetkan pengguna tertentu.</translation>
 <translation id="4169692397912242417">Mengaktifkan fitur aksesibilitas masukan lisan di layar login.
 
           Jika kebijakan ini ditetapkan ke true, masukan lisan akan selalu diaktifkan di layar login.
@@ -2704,14 +2723,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika ditetapkan ke true, nama model CPU, arsitektur, dan kecepatan maksimum jam akan
       dilaporkan untuk setiap CPU.</translation>
 <translation id="5124368997194894978">Aktifkan booting pada tegangan AC (arus bolak-balik)</translation>
-<translation id="513798533865657610">Fitur kirim otomatis PIN akan mengubah cara memasukkan PIN di Chrome OS.
-          Fitur ini akan menampilkan UI khusus yang dengan jelas memperlihatkan kepada pengguna berapa
-          digit yang diperlukan untuk PIN mereka,
-          bukan menampilkan kolom teks yang sama dengan yang digunakan untuk masukan sandi. Sebagai konsekuensi, panjang PIN pengguna
-          akan disimpan di luar data pengguna yang dienkripsi.
-
-          Jika kebijakan ini disetel ke salah (false), pengguna tidak akan memiliki opsi untuk mengaktifkan
-          fitur tersebut di halaman Setelan.</translation>
 <translation id="5141670636904227950">Menyetel jenis lup default yang diaktifkan di layar masuk</translation>
 <translation id="5142301680741828703">Selalu mengurai pola URL berikut di <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Kebijakan ini mengontrol apakah informasi yang dapat digunakan untuk mengidentifikasi pengguna akan dilaporkan atau tidak, misalnya login OS, login Profil <ph name="PRODUCT_NAME" />, nama Profil <ph name="PRODUCT_NAME" />, jalur Profil <ph name="PRODUCT_NAME" />, dan jalur eksekusi <ph name="PRODUCT_NAME" />.
@@ -3398,6 +3409,9 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="5951418260805607969">Menampilkan notifikasi saat ruang penyimpanan hampir penuh</translation>
 <translation id="5961137303188584693">Alamat MAC NIC bawaan perangkat</translation>
 <translation id="5966615072639944554">Ekstensi yang diizinkan untuk menggunakan API pengesahan jarak jauh</translation>
+<translation id="5975765799383881158">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mengirimkan masukan ke Google melalui Menu &gt; Bantuan &gt; Laporkan Masalah atau kombinasi tombol.
+
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mengirimkan masukan ke Google.</translation>
 <translation id="5997543603646547632">Menggunakan 24 jam sebagai default</translation>
 <translation id="5997846976342452720">Menentukan apakah pencari plugin harus dinonaktifkan (tidak digunakan lagi)</translation>
 <translation id="5998198091336830580">Kebijakan ini merupakan bagian dari grup atom berikut (hanya kebijakan dari sumber tertinggi yang ada di grup yang akan diterapkan) :</translation>
@@ -4000,6 +4014,11 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan disetel ke Nonaktif, pesan error akan ditampilkan.</translation>
 <translation id="6821268164692776674">Tujuan <ph name="CLOUD_PRINT_NAME" /> dan 'Simpan ke Google Drive'</translation>
+<translation id="682408981080798691">Jika kebijakan disetel ke Aktif atau tidak disetel, Integritas Kode Perender akan diaktifkan.
+
+      Menyetel kebijakan ke Nonaktif akan merugikan keamanan dan stabilitas <ph name="PRODUCT_NAME" /> karena kode yang tidak dikenal dan berpotensi berbahaya dapat dimuat dalam proses perender <ph name="PRODUCT_NAME" />. Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses perender <ph name="PRODUCT_NAME" />.
+
+      Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="6833023569065717572">Jika kebijakan disetel ke Benar (True), layar login perangkat akan menggunakan format waktu 24 jam.
 
       Jika kebijakan disetel ke Salah (False), layar login perangkat akan menggunakan format waktu 12 jam.

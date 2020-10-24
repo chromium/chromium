@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">„<ph name="FIRST_ITEM_TITLE" />“ sukeistas su „<ph name="SECOND_ITEM_TITLE" />“</translation>
 <translation id="1498028757988366001">Jau anksčiau to ieškojote. Ištrynę „<ph name="QUERY" />“ iš istorijos, visam laikui ją pašalinsite iš savo paskyros visuose įrenginiuose.</translation>
+<translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minutė ir }one{# minutė ir }few{# minutės ir }many{# minutės ir }other{# minučių ir }}</translation>
 <translation id="1643823602425662293">Pranešimas</translation>
 <translation id="169515659049020177">Antrojo lygio klavišas</translation>

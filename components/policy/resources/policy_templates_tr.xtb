@@ -2680,14 +2680,6 @@ politikayı geçersiz kılamaz.
       Politika false (yanlış) değerine ayarlanırsa veya ayarlanmadan bırakılırsa bilgiler raporlanmaz.
       True (doğru) olarak ayarlanırsa Her CPU için CPU model adı, mimarisi ve maksimum saat hızı raporlanır.</translation>
 <translation id="5124368997194894978">AC'de (alternatif akım) başlat özeliğini etkinleştir</translation>
-<translation id="513798533865657610">PIN kodu otomatik gönderme özelliği Chrome OS'te PIN kodların girilme biçimini değiştirir.
-          Şifre girmek için kullanılan aynı metin alanı yerine, bu 
-          özellik kullanıcıya PIN kodu için kaç
-          hanenin gerekli olduğunu gösteren özel bir kullanıcı arayüzü gösterir. Sonuç olarak da kullanıcının PIN kodunun uzunluğu
-          kullanıcının şifrelenmiş verilerinin dışında depolanır.
-
-          Bu politika false (yanlış) değerine ayarlandığında kullanıcı,
-          özelliği Ayarlar sayfasından etkinleştiremez.</translation>
 <translation id="5141670636904227950">Giriş ekranında varsayılan ekran büyüteci türünü etkin olarak ayarla</translation>
 <translation id="5142301680741828703"><ph name="PRODUCT_FRAME_NAME" /> içinde aşağıdaki URL kalıplarını her zaman oluştur</translation>
 <translation id="514870861066611127">Bu politika; OS giriş bilgileri, <ph name="PRODUCT_NAME" /> Profil giriş bilgileri, <ph name="PRODUCT_NAME" /> Profil adı, <ph name="PRODUCT_NAME" /> Profil yolu ve <ph name="PRODUCT_NAME" /> yürütülebilir dosya yolu gibi kullanıcıları tanımlamak için kullanılabilecek bilgilerin bildirilip bildirilmeyeceğini kontrol eder.

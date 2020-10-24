@@ -117,7 +117,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2049240716062114887">Emri i tryezës u ndryshua në "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
 <translation id="2067602449040652523">Ndriçimi i tastierës</translation>
-<translation id="2074759828767813253">Pamjet e fundit të ekranit dhe shkarkimet</translation>
 <translation id="2083190527011054446">Natën e mirë <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
@@ -169,6 +168,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2575685495496069081">Identifikimi i shumëfishtë është çaktivizuar.</translation>
 <translation id="2582112259361606227">Rinise për të kryer përditësimin</translation>
 <translation id="2595239820337756193">Sa milje janë 5 km</translation>
+<translation id="2596078834055697711">Nxirr një pamje ekrani për dritaren</translation>
 <translation id="2617342710774726426">Karta SIM është e kyçur</translation>
 <translation id="2621713457727696555">I siguruar</translation>
 <translation id="2640255526076764619">Është ndryshuar gjesti i bllokut me prekje për të kaluar te tavolina e mëparshme e punës. Rrëshqit shpejt majtas me katër gishta për të kaluar te tavolina e mëparshme e punës.</translation>
@@ -329,6 +329,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4215497585250573029">Cilësimet e VPN-së</translation>
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="4261870227682513959">Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive</translation>
 <translation id="4267383818855338811">Një pajisje virtuale po përdor kamerën tënde</translation>
 <translation id="4269883910223712419">Administratori i kësaj pajisjeje ka aftësinë që:</translation>
@@ -376,6 +377,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4623167406982293031">Verifiko llogarinë</translation>
 <translation id="4628757576491864469">Pajisjet</translation>
+<translation id="4642092649622328492">Nxirr një pamje të pjesshme të ekranit</translation>
 <translation id="4659419629803378708">ChromeVox është aktivizuar</translation>
 <translation id="4665114317261903604">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
@@ -423,7 +425,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> u lidh me një telefon të ri</translation>
 <translation id="5035389544768382859">Konfirmo konfigurimin e ekranit</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
-<translation id="5114495209940374989">Pamjet e ekranit</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
@@ -492,7 +493,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Tavolinë pune joaktive.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofoni është i çaktivizuar.</translation>
 <translation id="594179686076170922">Po lidhet me telefonin tënd...</translation>
@@ -753,7 +753,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8563862697512465947">Cilësimet e njoftimeve</translation>
 <translation id="857201607579416096">Menyja u zhvendos në këndin poshtë djathtas të ekranit.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Trokit diku për të regjistruar ekranin e plotë</translation>
 <translation id="8627191004499078455">I lidhur me <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Cilësimet e qasshmërisë</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>

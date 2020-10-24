@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Nije moguće dijeliti <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Stavka <ph name="FIRST_ITEM_TITLE" /> zamijenjena je stavkom <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">To ste već tražili. Brisanjem upita "<ph name="QUERY" />" iz povijesti trajno ćete ga ukloniti sa svojeg računa na svim svojim uređajima.</translation>
+<translation id="1510238584712386396">Pokretač</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuta i }one{# minuta i }few{# minute i }other{# minuta i }}</translation>
 <translation id="1643823602425662293">Obavijest</translation>
 <translation id="169515659049020177">Shift</translation>

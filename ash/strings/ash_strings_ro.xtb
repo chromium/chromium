@@ -117,7 +117,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Luminozitatea tastaturii</translation>
-<translation id="2074759828767813253">Capturi de ecran și descărcări recente</translation>
 <translation id="2083190527011054446">Bună seara, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
 <translation id="2126242104232412123">Desktop nou</translation>
@@ -169,6 +168,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2575685495496069081">Conectarea multiplă a fost dezactivată</translation>
 <translation id="2582112259361606227">Repornește pentru a actualiza</translation>
 <translation id="2595239820337756193">5 km în mile</translation>
+<translation id="2596078834055697711">Realizează o captură de ecran a ferestrei</translation>
 <translation id="2617342710774726426">Cardul SIM este blocat</translation>
 <translation id="2621713457727696555">Securizată</translation>
 <translation id="2640255526076764619">Gestul pe touchpad pentru comutarea la desktopul anterior s-a modificat. Glisează spre stânga cu patru degete pentru a comuta la desktopul anterior.</translation>
@@ -329,6 +329,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4215497585250573029">Setări VPN</translation>
 <translation id="4217571870635786043">Dictare</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4261870227682513959">Afișează setările pentru notificări. Notificările sunt dezactivate</translation>
 <translation id="4267383818855338811">O mașină virtuală folosește camera foto</translation>
 <translation id="4269883910223712419">Administratorul acestui dispozitiv poate:</translation>
@@ -376,6 +377,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4596144739579517758">Tema întunecată este dezactivată</translation>
 <translation id="4623167406982293031">Confirmă contul</translation>
 <translation id="4628757576491864469">Dispozitive</translation>
+<translation id="4642092649622328492">Realizează o captură de ecran parțială</translation>
 <translation id="4659419629803378708">ChromeVox este activat</translation>
 <translation id="4665114317261903604">Comută Nu deranja. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
@@ -423,7 +425,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> conectat la un telefon nou</translation>
 <translation id="5035389544768382859">Confirmă configurația afișajului</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
-<translation id="5114495209940374989">Capturi de ecran</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
@@ -492,7 +493,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">Desktop inactiv.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Dă clic oriunde pentru a captura ecranul complet</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">Microfonul este dezactivat.</translation>
 <translation id="594179686076170922">Se conectează la telefon…</translation>
@@ -753,7 +753,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8563862697512465947">Setări de notificare</translation>
 <translation id="857201607579416096">Meniul a fost mutat în colțul din dreapta jos al ecranului.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Atinge oriunde pentru a captura ecranul complet</translation>
 <translation id="8627191004499078455">Conectat la <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Setări de accesibilitate</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>

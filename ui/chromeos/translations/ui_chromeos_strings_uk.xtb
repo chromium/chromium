@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Американська розкладка</translation>
 <translation id="2534155362429831547">Видалено елементів: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">Вміст цієї папки можна лише переглядати. Деякі дії не підтримуються.</translation>
 <translation id="2542049655219295786">Таблиця Google</translation>
 <translation id="2547921442987553570">Додати в <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Міжнародна (США)</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Деталі</translation>
 <translation id="4527800702232535228">Додаток Parallels Desktop має доступ до цієї папки</translation>
 <translation id="4552678318981539154">Придбати більше об’єму пам’яті</translation>
+<translation id="4559318885353833501">Файл "<ph name="FILE_NAME" />" видалено</translation>
 <translation id="4559767610552730302">Боке</translation>
 <translation id="4572815280350369984">Файл <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Інші...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Вікно відгуку про файли</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="637062427944097960">Цей файл відкрито на іншому робочому столі. Перейдіть до <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), щоб переглянути його.</translation>
+<translation id="6394388407447716302">Лише перегляд</translation>
 <translation id="6395575651121294044">Елементів: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="642282551015776456">Не може використовуватися як ім’я файлу чи назва папки</translation>

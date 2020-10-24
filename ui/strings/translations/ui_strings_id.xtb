@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Tidak dapat membagikan <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ditukar dengan <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Anda menelusuri ini sebelumnya. Menghapus "<ph name="QUERY" />" dari histori akan menghapusnya secara permanen dari akun Anda di semua perangkat.</translation>
+<translation id="1510238584712386396">Peluncur</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 menit dan }other{# menit dan }}</translation>
 <translation id="1643823602425662293">Notifikasi</translation>
 <translation id="169515659049020177">Shift</translation>

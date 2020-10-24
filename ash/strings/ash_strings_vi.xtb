@@ -117,7 +117,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2049240716062114887">Đã đổi tên không gian làm việc thành <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
 <translation id="2067602449040652523">Độ sáng bàn phím</translation>
-<translation id="2074759828767813253">Ảnh chụp màn hình và tệp đã tải xuống gần đây</translation>
 <translation id="2083190527011054446">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Chưa kết nối với mạng</translation>
 <translation id="2126242104232412123">Không gian làm việc mới</translation>
@@ -169,6 +168,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2575685495496069081">Đã tắt tính năng đăng nhập nhiều tài khoản</translation>
 <translation id="2582112259361606227">Khởi động lại để cập nhật</translation>
 <translation id="2595239820337756193">5.000 dặm</translation>
+<translation id="2596078834055697711">Chụp ảnh màn hình cửa sổ</translation>
 <translation id="2617342710774726426">Thẻ SIM bị khóa</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
 <translation id="2640255526076764619">Cử chỉ chuyển sang không gian làm việc trước bằng bàn di chuột đã thay đổi. Hãy vuốt sang trái bằng 4 ngón tay để chuyển sang không gian làm việc trước.</translation>
@@ -329,6 +329,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4215497585250573029">Cài đặt mạng riêng ảo (VPN)</translation>
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4261870227682513959">Hiển thị các tùy chọn cài đặt thông báo. Thông báo hiện đang tắt</translation>
 <translation id="4267383818855338811">Một máy ảo đang sử dụng máy ảnh của bạn</translation>
 <translation id="4269883910223712419">Quản trị viên của thiết bị này có thể:</translation>
@@ -376,6 +377,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4596144739579517758">Giao diện tối đang tắt</translation>
 <translation id="4623167406982293031">Xác minh tài khoản</translation>
 <translation id="4628757576491864469">Thiết bị</translation>
+<translation id="4642092649622328492">Chụp ảnh một phần màn hình</translation>
 <translation id="4659419629803378708">Đã bật ChromeVox</translation>
 <translation id="4665114317261903604">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
@@ -423,7 +425,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5035236842988137213">Đã kết nối <ph name="DEVICE_NAME" /> với một điện thoại mới</translation>
 <translation id="5035389544768382859">Xác nhận cấu hình của màn hình</translation>
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
-<translation id="5114495209940374989">Ảnh chụp màn hình</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
 <translation id="5168181903108465623">Có thiết bị truyền</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
@@ -492,7 +493,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Không gian làm việc không hoạt động.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Nhấp vào bất cứ đâu để chụp toàn màn hình</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5920710855273935292">Micrô đang tắt.</translation>
 <translation id="594179686076170922">Đang kết nối với điện thoại của bạn...</translation>
@@ -753,7 +753,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8563862697512465947">Cài đặt Thông báo</translation>
 <translation id="857201607579416096">Đã di chuyển trình đơn vào góc dưới cùng bên phải màn hình.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Nhấn vào bất cứ đâu để chụp toàn màn hình</translation>
 <translation id="8627191004499078455">Đã kết nối với <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Cài đặt hỗ trợ tiếp cận</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>

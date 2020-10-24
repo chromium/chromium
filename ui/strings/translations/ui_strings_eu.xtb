@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Ezin da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> elementuarekin trukatu da <ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Dagoeneko bilatu duzu hori. Kendu egiten baduzu "<ph name="QUERY" />" historiatik, betiko kenduko da kontutik, gailu guztietan.</translation>
+<translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minutu eta }other{# minutu eta }}</translation>
 <translation id="1643823602425662293">Jakinarazpena</translation>
 <translation id="169515659049020177">Maius</translation>

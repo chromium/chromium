@@ -117,7 +117,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2049240716062114887">Jina la eneokazi limebadilishwa kuwa <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Wima</translation>
 <translation id="2067602449040652523">Ung'avu wa kibodi</translation>
-<translation id="2074759828767813253">Picha za skrini na vipakuliwa vya hivi majuzi</translation>
 <translation id="2083190527011054446">Usiku mwema <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Haijaunganishwa kwenye mtandao</translation>
 <translation id="2126242104232412123">Sehemu mpya ya kufanyia kazi</translation>
@@ -169,6 +168,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2575685495496069081">Umezima uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja</translation>
 <translation id="2582112259361606227">Zima kisha uwashe ili usasishe</translation>
 <translation id="2595239820337756193">Kilomita tano kwa maili</translation>
+<translation id="2596078834055697711">Piga picha ya skrini ya dirisha</translation>
 <translation id="2617342710774726426">SIM kadi imefungwa</translation>
 <translation id="2621713457727696555">Unalindwa</translation>
 <translation id="2640255526076764619">Ishara ya padi ya kugusa inayotumiwa kwenda kwenye eneokazi lililotangulia imebadilika. Telezesha vidole vinne kushoto ili uende kwenye eneokazi lililotangulia.</translation>
@@ -329,6 +329,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4215497585250573029">Mipangilio ya VPN</translation>
 <translation id="4217571870635786043">Kuandika kwa kutamka</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Picha ya skrini</translation>
 <translation id="4261870227682513959">Onyesha mipangilio ya arifa. Umezima arifa</translation>
 <translation id="4267383818855338811">Mashine pepe inatumia kamera yako</translation>
 <translation id="4269883910223712419">Msimamizi wa kifaa hiki ana uwezo wa:</translation>
@@ -376,6 +377,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4596144739579517758">Mandhari meusi yamezimwa</translation>
 <translation id="4623167406982293031">Thibitisha akaunti</translation>
 <translation id="4628757576491864469">Vifaa</translation>
+<translation id="4642092649622328492">Piga picha ya sehemu ya skrini</translation>
 <translation id="4659419629803378708">ChromeVox imewashwa</translation>
 <translation id="4665114317261903604">Washa/zima 'Usinisumbue'. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
@@ -423,7 +425,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> imeunganishwa kwenye simu mpya</translation>
 <translation id="5035389544768382859">Thibitisha Mipangilio ya Skrini</translation>
 <translation id="5083553833479578423">Fungua vipengele zaidi vya programu yako ya Mratibu.</translation>
-<translation id="5114495209940374989">Picha za skrini</translation>
 <translation id="5136175204352732067">Kibodi tofauti imeunganishwa</translation>
 <translation id="5168181903108465623">Vifaa vinavyorusha maudhui vinapatikana</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
@@ -492,7 +493,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Eneokazi halitumiki.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Bofya popote ili unase skrini nzima</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5920710855273935292">Umezima maikrofoni.</translation>
 <translation id="594179686076170922">Inaunganisha simu yako...</translation>
@@ -754,7 +754,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8563862697512465947">Mipangilio ya Arifa</translation>
 <translation id="857201607579416096">Menyu imehamishiwa kwenye kona ya chini kulia mwa skrini.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Gusa popote ili unase skrini nzima</translation>
 <translation id="8627191004499078455">Imeunganishwa kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Mipangilio ya Ufikivu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>

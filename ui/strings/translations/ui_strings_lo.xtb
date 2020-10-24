@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">ບໍ່ສາມາດແບ່ງປັນ <ph name="CONTENT_TYPE" /> ໄດ້</translation>
 <translation id="1487931858675166540">ສະຫຼັບ <ph name="FIRST_ITEM_TITLE" /> ກັບ <ph name="SECOND_ITEM_TITLE" /> ແລ້ວ</translation>
 <translation id="1498028757988366001">ທ່ານໄດ້ຊອກຫາສິ່ງນີ້ມາກ່ອນແລ້ວ. ການລຶບ "<ph name="QUERY" />" ອອກຈາກປະຫວັດຂອທ່ານຈະລຶບມັນອອກຈາກບັນຊີຂອງທ່ານຢ່າງຖາວອນໃນທົ່ວທຸກອຸປະກອນຂອງທ່ານ.</translation>
+<translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 ນາ​ທີ​ ແລະ }other{# ນາ​ທີ ​ແລະ }}</translation>
 <translation id="1643823602425662293">ການແຈ້ງເຕືອນ</translation>
 <translation id="169515659049020177">Shift</translation>

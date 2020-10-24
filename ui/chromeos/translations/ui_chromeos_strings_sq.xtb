@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Tastiera amerikane</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> artikuj të fshirë</translation>
+<translation id="2541377937973966830">Përmbajtjet e kësaj dosjeje janë vetëm për lexim. Disa aktivitete nuk mbështeten.</translation>
 <translation id="2542049655219295786">Tabela e Google</translation>
 <translation id="2547921442987553570">Shto te <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Amerikane ndërkombëtare</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Detajet</translation>
 <translation id="4527800702232535228">Kjo dosje është ndarë me Parallels Desktop</translation>
 <translation id="4552678318981539154">Bli më shumë hapësirë ruajtëse</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> u fshi</translation>
 <translation id="4559767610552730302">Efekti i turbullimit</translation>
 <translation id="4572815280350369984">Skedar <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Më shumë...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Dritarja e komenteve për skedarët</translation>
 <translation id="6358884629796491903">Dragua</translation>
 <translation id="637062427944097960">Ky skedar u hap në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
+<translation id="6394388407447716302">Vetëm për lexim</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> artikuj</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="642282551015776456">Ky emër nuk mund të përdoret si emër skedari ose dosjeje</translation>

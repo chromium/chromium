@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> va <ph name="SECOND_ITEM_TITLE" /> almashtirildi</translation>
 <translation id="1498028757988366001">Buni oldin qidirgan edingiz. Qidiruv tarixidan “<ph name="QUERY" />” oʻchirib tashlanganda u barcha . qurilmalaringizdagi hisobingizdan butunlay olib tashlanadi.</translation>
+<translation id="1510238584712386396">Ishga tushirish paneli</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 daqiqa va }other{# daqiqa va }}</translation>
 <translation id="1643823602425662293">Bildirishnoma</translation>
 <translation id="169515659049020177">Shift</translation>

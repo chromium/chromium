@@ -1886,7 +1886,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3165371858310906303">Traži odobrenje kada web lokacija želi informacije o prisutnosti</translation>
 <translation id="3165390001037658081">Neki operateri mogu blokirati ovu funkciju.</translation>
 <translation id="316652501498554287">Računi za G Suite for Education</translation>
-<translation id="3169472444629675720">Otkrijte</translation>
 <translation id="3170072451822350649">Također možete preskočiti prijavu i <ph name="LINK_START" />pretraživati kao gost<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Jezik stranice:</translation>
 <translation id="3179982752812949580">Font teksta</translation>
@@ -2029,7 +2028,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> dijeli <ph name="ATTACHMENTS" /> s vama.}one{<ph name="DEVICE_NAME" /> dijeli <ph name="ATTACHMENTS" /> s vama.}few{<ph name="DEVICE_NAME" /> dijeli <ph name="ATTACHMENTS" />s vama.}other{<ph name="DEVICE_NAME" /> dijeli <ph name="ATTACHMENTS" /> s vama.}}</translation>
 <translation id="3364986687961713424">Od vašeg administratora: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Koristite Ctrl ili Alt</translation>
-<translation id="3367047597842238025">Postavite uređaj <ph name="DEVICE_TYPE" /> baš kako želite i otkrijte sve izvrsne mogućnosti nadohvat ruke.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369067987974711168">Prikaz više radnji za ovaj priključak</translation>
 <translation id="3369624026883419694">Rješavanje problema s host računarom...</translation>
@@ -2352,7 +2350,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3713047097299026954">Na ovom sigurnosnom ključu nisu pohranjeni podaci za prijavu</translation>
 <translation id="3714195043138862580">Ovom uređaju za demonstraciju je opozvan pristup.</translation>
 <translation id="3714633008798122362">web kalendar</translation>
-<translation id="3715954932774762075">Aplikacije i web lokacije, koje su dostupne na više jezika, će koristiti prvi podržani jezik s liste. Ove postavke se sinhroniziraju s postavkama preglednika. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Početna stranica</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Vi i Google</translation>
@@ -2490,7 +2487,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3856800405688283469">Izbor vremenske zone</translation>
 <translation id="3857807444929313943">Podignite i ponovo dodirnite</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sinhroniziranje je pauzirano</translation>
-<translation id="3861386850461794863">Jezici za aplikacije i web lokacije</translation>
 <translation id="3861638017150647085">Korisničko ime "<ph name="USERNAME" />" nije dostupno</translation>
 <translation id="3862693525629180217">Potvrdi koristeći ugrađeni senzor</translation>
 <translation id="3862788408946266506">Aplikacija s atributom deklaracije "kiosk_only" se mora instalirati u načinu rada kioska Chrome OS-a</translation>
@@ -3800,7 +3796,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="5457991019809708398">Uključeno, nije u romingu</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Bilješke zaključanog ekrana</translation>
-<translation id="546322474339998983">Koriste ga Chrome preglednik i pokretač uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Otvori</translation>
 <translation id="5463275305984126951">Indeks lokacije <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Meni koji sadrži sakrivene oznake</translation>
@@ -3926,7 +3921,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Učitavanje aplikacija...</translation>
 <translation id="5592595402373377407">Još nije dostupno dovoljno podataka.</translation>
-<translation id="5593357315997824387">Sinhroniziraj moje fajlove</translation>
 <translation id="5595485650161345191">Uredite adresu</translation>
 <translation id="5595727715083333657">Vaš spremnik ne podržava promjenu veličine. Da podesite količinu prostora koja je prethodno dodijeljena Linuxu (Beta), napravite sigurnosnu kopiju, a zatim je vratite u novi spremnik.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -6173,7 +6167,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8218847192766059983">Dodajte jezike ili preuredite listu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Obično blokirate obavještenja. Da dozvolite ovoj web lokaciji da vas obavještava, kliknite ovdje.</translation>
 <translation id="8225265270453771718">Dijelite prozor aplikacije</translation>
-<translation id="8225753906568652947">Iskoristite ponude</translation>
 <translation id="8226222018808695353">Zabranjeno</translation>
 <translation id="8226619461731305576">Red čekanja</translation>
 <translation id="8226628635270268143">Odaberite omiljene fotografije i albume</translation>
@@ -6336,7 +6329,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8417548266957501132">Lozinka roditelja</translation>
 <translation id="8418445294933751433">&amp;Prikaži kao karticu</translation>
 <translation id="8419098111404128271">Rezultati pretraživanja za "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Dobro došli u <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Uredi unose rječnika</translation>
 <translation id="8421361468937925547">Automatski titlovi (samo engleski)</translation>
 <translation id="8422787418163030046">Nedostaje ladica</translation>

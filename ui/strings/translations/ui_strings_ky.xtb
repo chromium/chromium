@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> менен бөлүшүү мүмкүн эмес</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> <ph name="SECOND_ITEM_TITLE" /> менен алмаштырылды</translation>
 <translation id="1498028757988366001">Муну буга чейин издегенсиз. "<ph name="QUERY" />" таржымалыңыздан өчүрүлсө, ал бардык түзмөктөрүңүздөгү аккаунтуңуздан биротоло өчүрүлөт.</translation>
+<translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 мүнөт жана }other{# мүнөт жана }}</translation>
 <translation id="1643823602425662293">Эскертме</translation>
 <translation id="169515659049020177">Shift</translation>

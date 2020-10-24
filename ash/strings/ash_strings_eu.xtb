@@ -117,7 +117,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2049240716062114887"><ph name="DESK_NAME" /> izena jarri zaio lan-eremuari</translation>
 <translation id="2050339315714019657">Bertikala</translation>
 <translation id="2067602449040652523">Teklatuaren distira</translation>
-<translation id="2074759828767813253">Azken pantaila-argazkiak eta deskargak</translation>
 <translation id="2083190527011054446">Gabon, <ph name="GIVEN_NAME" />:</translation>
 <translation id="209965399369889474">Ez zaude sarera konektatuta</translation>
 <translation id="2126242104232412123">Lan-eremu berria</translation>
@@ -169,6 +168,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2575685495496069081">Desgaitu egin da saio-hasiera anitza</translation>
 <translation id="2582112259361606227">Eguneratzeko, berrabiarazi</translation>
 <translation id="2595239820337756193">Zenbat da 5 km miliatan</translation>
+<translation id="2596078834055697711">Atera leihoaren pantaila-argazkia</translation>
 <translation id="2617342710774726426">Blokeatuta dago SIM txartela</translation>
 <translation id="2621713457727696555">Babestuta</translation>
 <translation id="2640255526076764619">Aldatu egin da aurreko lan-eremura itzultzeko ukipen-paneleko keinua. Aurreko lan-eremura itzultzeko, pasatu lau hatz ezkerrera.</translation>
@@ -330,6 +330,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4215497585250573029">VPN ezarpenak</translation>
 <translation id="4217571870635786043">Diktaketa</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Pantaila-argazkia</translation>
 <translation id="4261870227682513959">Erakutsi jakinarazpen-ezarpenak. Desaktibatuta daude jakinarazpenak.</translation>
 <translation id="4267383818855338811">Makina birtual bat kamera erabiltzen ari da</translation>
 <translation id="4269883910223712419">Gailuaren administratzaileak honako hauek egin ditzake:</translation>
@@ -377,6 +378,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4596144739579517758">Desaktibatuta dago gai iluna.</translation>
 <translation id="4623167406982293031">Egiaztatu kontua</translation>
 <translation id="4628757576491864469">Gailuak</translation>
+<translation id="4642092649622328492">Atera eremu baten pantaila-argazkia</translation>
 <translation id="4659419629803378708">Gaitu da ChromeVox</translation>
 <translation id="4665114317261903604">Gaitu/Desgaitu ez molestatzeko modua. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desblokeatu gailua gurasoen kodearekin</translation>
@@ -424,7 +426,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> beste telefono batekin konektatu da</translation>
 <translation id="5035389544768382859">Berretsi pantailaren konfigurazioa</translation>
 <translation id="5083553833479578423">Lortu Laguntzailea eginbidearen aukera gehiago.</translation>
-<translation id="5114495209940374989">Pantaila-argazkiak</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
 <translation id="5168181903108465623">Igorpen-gailuak erabilgarri</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
@@ -493,7 +494,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5901316534475909376">Maius + Ihes</translation>
 <translation id="5909862606227538307">Lan-eremu inaktiboa.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Egin klik edonon pantaila osoaren argazkia ateratzeko</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5920710855273935292">Mikrofonoa desaktibatuta dago.</translation>
 <translation id="594179686076170922">Telefonora konektatzen…</translation>
@@ -754,7 +754,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8563862697512465947">Jakinarazpen-ezarpenak</translation>
 <translation id="857201607579416096">Pantailaren beheko eskuineko izkinara eraman da menua.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Sakatu pantailako edozein puntu pantaila osoaren argazkia ateratzeko</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> gailura konektatuta</translation>
 <translation id="8631727435199967028">Erabilerraztasun-ezarpenak</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>

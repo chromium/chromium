@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Tastatură S.U.A.</translation>
 <translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">Conținutul acestui dosar este numai în citire. Unele acțiuni nu sunt acceptate.</translation>
 <translation id="2542049655219295786">Tabel Google</translation>
 <translation id="2547921442987553570">Adaugă la <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">S.U.A. internațională</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Detalii</translation>
 <translation id="4527800702232535228">Parallels Desktop are acces la acest dosar</translation>
 <translation id="4552678318981539154">Cumpărați mai mult spațiu de stocare</translation>
+<translation id="4559318885353833501">S-a șters <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Fișier <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Mai multe...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Fereastra cu feedback pentru fișiere</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="637062427944097960">Acest fișier a fost deschis pe alt desktop. Pentru a-l vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
+<translation id="6394388407447716302">Numai în citire</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elemente</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="642282551015776456">Acest nume nu poate fi folosit ca nume de fișier sau de dosar</translation>

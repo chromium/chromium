@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Delingen af <ph name="CONTENT_TYPE" /> mislykkedes</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> blev udskiftet med <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Du har tidligere søgt efter dette. Hvis du sletter "<ph name="QUERY" />" fra din historik, fjernes den permanent på fra din konto på alle dine enheder.</translation>
+<translation id="1510238584712386396">Appliste</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minut og }one{# minutter og }other{# minutter og }}</translation>
 <translation id="1643823602425662293">Notifikation</translation>
 <translation id="169515659049020177">Shift</translation>

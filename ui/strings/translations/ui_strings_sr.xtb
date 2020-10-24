@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Није успело дељење: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Ставка <ph name="FIRST_ITEM_TITLE" /> је замењена ставком <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Ово сте већ тражили раније. Ако избришете „<ph name="QUERY" />“ из историје, трајно ћете га уклонити са налога на свим уређајима.</translation>
+<translation id="1510238584712386396">Покретач</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минут и }one{# минут и }few{# минута и }other{# минута и }}</translation>
 <translation id="1643823602425662293">Обавештење</translation>
 <translation id="169515659049020177">Shift</translation>

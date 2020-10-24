@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">चयनित गुप्त टैब</translation>
 <translation id="2987620471460279764">दूसरी साइटों से शेयर किया गया टेक्स्ट</translation>
 <translation id="2989523299700148168">हाल ही में देखे गए</translation>
+<translation id="2992473221983447149">इमेज के बारे में जानकारी</translation>
 <translation id="2996291259634659425">'पासफ़्रेज़' बनाएं</translation>
 <translation id="2996809686854298943">URL ज़रूरी है</translation>
 <translation id="3006881078666935414">कोई उपयोग डेटा नहीं</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}one{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
 <translation id="3089395242580810162">गुप्त टैब में खोलें</translation>
+<translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
 <translation id="3123734510202723619">एलान</translation>
 <translation id="3137521801621304719">गुप्त मोड छोड़ें</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">सभी डेटा साफ़ करें</translation>
 <translation id="6560414384669816528">Sogou से खोजें</translation>
 <translation id="656065428026159829">ज़्यादा देखें</translation>
+<translation id="6565959834589222080">उपलब्ध होने पर वाई-फ़ाई का इस्तेमाल किया जाता है</translation>
 <translation id="6566259936974865419">Chrome ने आपके <ph name="GIGABYTES" /> जीबी की बचत की</translation>
 <translation id="6573096386450695060">हमेशा मंज़ूरी दें</translation>
 <translation id="6573431926118603307">  अपने अन्य डिवाइस पर खोले गए टैब यहां दिखाई देंगे.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">अभी बंद किया हुआ टैब खोलें</translation>
 <translation id="8798449543960971550">पढ़ा गया</translation>
 <translation id="8812260976093120287">कुछ वेबसाइटों पर, आप ऊपर समर्थित भुगतान ऐप्लिकेशन के ज़रिए अपने डिवाइस पर भुगतान कर सकते हैं.</translation>
+<translation id="881688628773363275">टैब कॉन्टेंट की झलक देखी नहीं जा सकती.</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="883806473910249246">सामग्री डाउनलोड करते समय कोई गड़बड़ी हुई.</translation>
 <translation id="8840953339110955557">यह पेज ऑनलाइन वर्शन से अलग हो सकता है.</translation>

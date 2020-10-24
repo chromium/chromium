@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">「<ph name="FIRST_ITEM_TITLE" />」已替換為「<ph name="SECOND_ITEM_TITLE" />」</translation>
 <translation id="1498028757988366001">你過去曾搜尋這個項目。如果將「<ph name="QUERY" />」從搜尋記錄中刪除，該項目將從你所有裝置上的帳戶記錄中永久移除。</translation>
+<translation id="1510238584712386396">啟動器</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 分鐘 }other{# 分鐘 }}</translation>
 <translation id="1643823602425662293">通知</translation>
 <translation id="169515659049020177">Shift</translation>

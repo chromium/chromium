@@ -1883,7 +1883,6 @@
 <translation id="3165371858310906303">ഒരു സൈറ്റിന് നിങ്ങളുടെ സാന്നിധ്യം അറിയണമെന്നുള്ളപ്പോൾ ചോദിക്കുക</translation>
 <translation id="3165390001037658081">ചില സേവനദായകർ ഈ ഫീച്ചർ ബ്ലോക്കുചെയ്‌തേക്കും.</translation>
 <translation id="316652501498554287">വിദ്യാഭ്യാസത്തിനുള്ള G Suite അക്കൗണ്ടുകൾ</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യുന്നത് ഒഴിവാക്കി <ph name="LINK_START" />അതിഥിയായി ബ്രൗസ് ചെയ്യാനുമാകും<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">പേജ് ഭാഷ:</translation>
 <translation id="3179982752812949580">ടെക്‌സ്‌റ്റ് ഫോണ്ട്</translation>
@@ -2026,7 +2025,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> നിങ്ങളുമായി <ph name="ATTACHMENTS" /> പങ്കിടുന്നു.}other{<ph name="DEVICE_NAME" /> നിങ്ങളുമായി <ph name="ATTACHMENTS" /> പങ്കിടുന്നു.}}</translation>
 <translation id="3364986687961713424">നിങ്ങളുടെ അഡ്‌മിനിൽ നിന്ന്: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl അല്ലെങ്കിൽ Alt ഉപയോഗിക്കുക</translation>
-<translation id="3367047597842238025">നിങ്ങൾ ആഗ്രഹിക്കുന്നപോലെ <ph name="DEVICE_TYPE" /> സജ്ജീകരിക്കൂ, നിങ്ങളുടെ വിരൽത്തുമ്പിലുള്ള, അതിശയിപ്പിക്കുന്ന എല്ലാ കഴിവുകളും കണ്ടെത്തൂ.</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
 <translation id="3369067987974711168">ഈ പോർട്ടിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ കാണിക്കുക</translation>
 <translation id="3369624026883419694">റിസോള്‍വിംഗ് ഹോസ്റ്റ്...</translation>
@@ -2349,7 +2347,6 @@
 <translation id="3713047097299026954">ഈ സുരക്ഷാ കീയിൽ സൈൻ ഇൻ ഡാറ്റയൊന്നുമില്ല</translation>
 <translation id="3714195043138862580">ഈ ഡെമോ ഉപകരണം ഡീപ്രൊവിഷൻ ചെയ്‌ത നിലയിലാക്കിയിരിക്കുന്നു.</translation>
 <translation id="3714633008798122362">വെബ് കലണ്ടർ</translation>
-<translation id="3715954932774762075">ഒന്നിലധികം ഭാഷകൾ ലഭ്യമായ ആപ്പുകളും വെബ്‌സൈറ്റുകളും ഈ ലിസ്‌റ്റിലുള്ള, പിന്തുണയ്‌ക്കുന്ന ആദ്യത്തെ ഭാഷ ഉപയോഗിക്കും. ഈ മുൻഗണനകൾ നിങ്ങളുടെ ബ്രൗസർ ക്രമീകരണവുമായി സമന്വയിപ്പിക്കുന്നു. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">ഹോംപേജ്</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">നിങ്ങളും Google-ഉം</translation>
@@ -2487,7 +2484,6 @@
 <translation id="3856800405688283469">സമയ മേഖല തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3857807444929313943">വിരൽ ഉയർത്തി, വീണ്ടും സ്‌പർശിക്കുക</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: സമന്വയം താൽക്കാലികമായി നിർത്തി</translation>
-<translation id="3861386850461794863">ആപ്പുകൾക്കും വെബ്‌സൈറ്റുകൾക്കുമുള്ള ഭാഷകൾ</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" എന്ന ഉപയോക്തൃനാമം ലഭ്യമല്ല</translation>
 <translation id="3862693525629180217">കമ്പ്യൂട്ടറിൽ അടങ്ങിയ സെൻസർ വഴി പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="3862788408946266506">Chrome OS കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
@@ -3796,7 +3792,6 @@
 <translation id="5457991019809708398">ഓണാണ്, റോമിംഗിൽ അല്ല</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">ലോക്ക് സ്‌ക്രീൻ കുറിപ്പുകൾ</translation>
-<translation id="546322474339998983">Chrome ബ്രൗസറും <ph name="DEVICE_TYPE" /> ലോഞ്ചറും ഉപയോഗിക്കുന്നത്</translation>
 <translation id="5463231940765244860">നൽകുക</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> ന്റെ സൂചിക</translation>
 <translation id="5463856536939868464">മെനുവില്‍‌ മറച്ച ബുക്ക്‌മാര്‍‌ക്കുകള്‍‌ അടങ്ങിയിരിക്കുന്നു</translation>
@@ -3922,7 +3917,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ആപ്പുകൾ ലോഡുചെയ്യുന്നു...</translation>
 <translation id="5592595402373377407">ഇതുവരെയും മതിയായ ഡാറ്റ ലഭ്യമല്ല.</translation>
-<translation id="5593357315997824387">എന്റെ ഫയലുകൾ സമന്വയിപ്പിക്കുക</translation>
 <translation id="5595485650161345191">വിലാസം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5595727715083333657">വലുപ്പം മാറ്റുന്നതിനെ നിങ്ങളുടെ കണ്ടെയ്‌നർ പിന്തുണയ്‌ക്കുന്നില്ല. Linux-ന് (ബീറ്റ) മുൻകൂട്ടി അനുവദിച്ചിട്ടുള്ള ഇടത്തിന്റെ അളവ് ക്രമീകരിക്കാൻ, ബാക്കപ്പ് ചെയ്‌ത ശേഷം ഒരു പുതിയ കണ്ടെയ്‌നറിലേക്ക് പുനഃസ്ഥാപിക്കുക.</translation>
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
@@ -6171,7 +6165,6 @@
 <translation id="8218847192766059983">ഭാഷകൾ ചേർക്കുകയോ ലിസ്റ്റ് പുനഃക്രമീകരിക്കുകയോ ചെയ്യുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">നിങ്ങൾ സാധാരണയായി അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്യാറുണ്ട്. നിങ്ങൾക്ക് അറിയിപ്പ് അയയ്ക്കുന്നതിന് ഈ സൈറ്റിനെ അനുവദിക്കാൻ, ഇവിടെ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="8225265270453771718">ഒരു ആപ്പ് വിൻഡോ പങ്കിടുക</translation>
-<translation id="8225753906568652947">നിങ്ങളുടെ ഓഫറുകൾ റിഡീം ചെയ്യുക</translation>
 <translation id="8226222018808695353">നിരോധിക്കപ്പെട്ടത്</translation>
 <translation id="8226619461731305576">ക്യൂവിൽ</translation>
 <translation id="8226628635270268143">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഫോട്ടോകളും ആൽബങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
@@ -6334,7 +6327,6 @@
 <translation id="8417548266957501132">രക്ഷിതാവിന്റെ പാസ്‌വേഡ്</translation>
 <translation id="8418445294933751433">&amp;ടാബായി കാണിക്കുക</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' എന്നതിനുള്ള തിരയൽ ഫലം</translation>
-<translation id="8419368276599091549">നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ലേക്ക് സ്വാഗതം!</translation>
 <translation id="8420308167132684745">നിഘണ്ടു എൻട്രികൾ എഡിറ്റ് ചെയ്യൽ</translation>
 <translation id="8421361468937925547">തത്സമയ ക്യാപ്ഷൻ (ഇംഗ്ലീഷ് മാത്രം)</translation>
 <translation id="8422787418163030046">ട്രേ കാണുന്നില്ല</translation>

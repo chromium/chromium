@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> è stato scambiato con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Hai eseguito questa ricerca in precedenza. Se elimini "<ph name="QUERY" />" dalla cronologia, la query verrà rimossa in modo permanente dal tuo account su tutti i tuoi dispositivi.</translation>
+<translation id="1510238584712386396">Avvio app</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto e }other{# minuti e }}</translation>
 <translation id="1643823602425662293">Notifica</translation>
 <translation id="169515659049020177">Maiusc</translation>

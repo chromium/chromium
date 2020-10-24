@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Americká klávesnice</translation>
 <translation id="2534155362429831547">Byly smazány položky (celkem <ph name="NUMBER_OF_ITEMS" />)</translation>
+<translation id="2541377937973966830">Obsah této složky je pouze ke čtení. Některé aktivity nejsou podporovány.</translation>
 <translation id="2542049655219295786">Tabulka Google</translation>
 <translation id="2547921442987553570">Přidat do rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Americká klávesnice (mezinárodní)</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4527800702232535228">Tato složka je sdílena s nástrojem Parallels Desktop</translation>
 <translation id="4552678318981539154">Koupit větší úložiště</translation>
+<translation id="4559318885353833501">Soubor <ph name="FILE_NAME" /> byl smazán</translation>
 <translation id="4559767610552730302">Rozostření</translation>
 <translation id="4572815280350369984">Soubor <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Další...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Okno zpětné vazby k souborům</translation>
 <translation id="6358884629796491903">Drak</translation>
 <translation id="637062427944097960">Tento soubor je otevřen na jiné ploše. Chcete-li jej zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
+<translation id="6394388407447716302">Pouze pro čtení</translation>
 <translation id="6395575651121294044">Počet položek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
 <translation id="642282551015776456">Tento název nelze použít k pojmenování souboru ani složky.</translation>

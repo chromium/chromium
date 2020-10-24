@@ -1885,7 +1885,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3165371858310906303">Chiedi conferma quando un sito vuole sapere quando sei presente</translation>
 <translation id="3165390001037658081">La funzione potrebbe essere bloccata da alcuni operatori.</translation>
 <translation id="316652501498554287">Account G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Puoi anche saltare l'accesso e <ph name="LINK_START" />navigare come ospite<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Lingua della pagina:</translation>
 <translation id="3179982752812949580">Carattere testo</translation>
@@ -2028,7 +2027,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3361421571228286637">{COUNT,plural, =1{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}other{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}}</translation>
 <translation id="3364986687961713424">Dal tuo amministratore: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Usa il tasto CTRL o ALT</translation>
-<translation id="3367047597842238025">Configura il tuo <ph name="DEVICE_TYPE" /> secondo le tue preferenze e scopri tutte le incredibili funzionalità a portata di mano.</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3369067987974711168">Mostra altre azioni per questa porta</translation>
 <translation id="3369624026883419694">Risoluzione host in corso...</translation>
@@ -2351,7 +2349,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3713047097299026954">Nessun dato di accesso memorizzato sul token di sicurezza</translation>
 <translation id="3714195043138862580">Lo stato del dispositivo per le demo è stato impostato su "Deprovisioning effettuato".</translation>
 <translation id="3714633008798122362">Calendario web</translation>
-<translation id="3715954932774762075">I siti web e le app che sono disponibili in più lingue utilizzeranno la prima lingua supportata in questo elenco. Queste preferenze sono sincronizzate con le impostazioni del browser. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Home page</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu e Google</translation>
@@ -2489,7 +2486,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3856800405688283469">Seleziona il fuso orario</translation>
 <translation id="3857807444929313943">Solleva, quindi tocca di nuovo</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sincronizzazione in pausa</translation>
-<translation id="3861386850461794863">Lingue per app e siti web</translation>
 <translation id="3861638017150647085">Il nome utente "<ph name="USERNAME" />" non è disponibile</translation>
 <translation id="3862693525629180217">Verifica tramite sensore integrato</translation>
 <translation id="3862788408946266506">L'app con l'attributo del file manifest "kiosk_only" deve essere installata in modalità kiosk di Chrome OS</translation>
@@ -3799,7 +3795,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5457991019809708398">Attivo, non in roaming</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Note sulla schermata di blocco</translation>
-<translation id="546322474339998983">Usato dal browser Chrome e da Avvio app di <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Inserisci</translation>
 <translation id="5463275305984126951">Indice di <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Menu contenente i Preferiti nascosti</translation>
@@ -3925,7 +3920,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Caricamento app...</translation>
 <translation id="5592595402373377407">Dati disponibili insufficienti.</translation>
-<translation id="5593357315997824387">Sincronizza i miei file</translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
 <translation id="5595727715083333657">Il tuo contenitore non supporta il ridimensionamento. Per modificare la quantità di spazio preassegnata a Linux (beta), effettua il backup e il ripristino in un nuovo contenitore.</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
@@ -6171,7 +6165,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8218847192766059983">Aggiungi lingue o cambia l'ordine dell'elenco. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Di solito blocchi le notifiche. Per ricevere notifiche da questo sito, fai clic qui.</translation>
 <translation id="8225265270453771718">Condividi una finestra dell'applicazione</translation>
-<translation id="8225753906568652947">Utilizza le tue offerte</translation>
 <translation id="8226222018808695353">Vietato</translation>
 <translation id="8226619461731305576">Coda</translation>
 <translation id="8226628635270268143">Scegli le tue foto e i tuoi album preferiti</translation>
@@ -6334,7 +6327,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8417548266957501132">Password genitore</translation>
 <translation id="8418445294933751433">&amp;Mostra come scheda</translation>
 <translation id="8419098111404128271">Risultati di ricerca per "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Ti diamo il benvenuto sul tuo <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Modifica voci dizionario</translation>
 <translation id="8421361468937925547">Sottotitoli in tempo reale (solo in inglese)</translation>
 <translation id="8422787418163030046">Vassoio mancante</translation>

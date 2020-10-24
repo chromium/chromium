@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">JAV klaviatūra</translation>
 <translation id="2534155362429831547">Ištrinta elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">Šio aplanko turinys skirtas tik skaityti. Tam tikra veikla nepalaikoma.</translation>
 <translation id="2542049655219295786">„Google“ lentelė</translation>
 <translation id="2547921442987553570">Pridėti prie „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="255937426064304553">JAV tarptautinė</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Išsami informacija</translation>
 <translation id="4527800702232535228">Šis aplankas bendrinamas su „Parallels Desktop“</translation>
 <translation id="4552678318981539154">Įsigyti daugiau atminties</translation>
+<translation id="4559318885353833501">„<ph name="FILE_NAME" />“ ištrinta</translation>
 <translation id="4559767610552730302">„Bokeh“ efektas</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> failas</translation>
 <translation id="457386861538956877">Daugiau...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Failų atsiliepimų langas</translation>
 <translation id="6358884629796491903">Drakonas</translation>
 <translation id="637062427944097960">Šis failas atidarytas kitame darbalaukyje. Perkelkite failus <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), kad peržiūrėtumėte juos.</translation>
+<translation id="6394388407447716302">Tik skaitoma</translation>
 <translation id="6395575651121294044">Elementų: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Išeiti iš viso ekrano režimo</translation>
 <translation id="642282551015776456">Šio pavadinimo negalima naudoti kaip aplanko pavadinimo</translation>

@@ -117,7 +117,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2049240716062114887">Työpöydän nimeksi muutettiin <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2067602449040652523">Näppäimistön kirkkaus</translation>
-<translation id="2074759828767813253">Viimeaikaiset kuvakaappaukset ja lataukset</translation>
 <translation id="2083190527011054446">Hyvää yötä <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Ei verkkoyhteyttä</translation>
 <translation id="2126242104232412123">Uusi työpöytä</translation>
@@ -169,6 +168,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2575685495496069081">Useille tileille kirjautuminen on poistettu käytöstä</translation>
 <translation id="2582112259361606227">Päivitä käynnistämällä uudelleen</translation>
 <translation id="2595239820337756193">5 km maileina</translation>
+<translation id="2596078834055697711">Ota kuvakaappaus</translation>
 <translation id="2617342710774726426">SIM-kortti on lukittu.</translation>
 <translation id="2621713457727696555">Suojattu</translation>
 <translation id="2640255526076764619">Kosketuslevyele, jolla siirrytään edelliseen työpöytään, on muuttunut. Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella.</translation>
@@ -329,6 +329,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4215497585250573029">VPN-asetukset</translation>
 <translation id="4217571870635786043">Sanelu</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Kuvakaappaus</translation>
 <translation id="4261870227682513959">Näytä ilmoitusasetukset. Ilmoitukset ovat pois päältä</translation>
 <translation id="4267383818855338811">Virtuaalikone käyttää kameraa</translation>
 <translation id="4269883910223712419">Tämän laitteen ylläpitäjä voi</translation>
@@ -376,6 +377,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4596144739579517758">Tumma teema on pois päältä</translation>
 <translation id="4623167406982293031">Vahvista tili</translation>
 <translation id="4628757576491864469">Laitteet</translation>
+<translation id="4642092649622328492">Ota osittainen kuvakaappaus</translation>
 <translation id="4659419629803378708">ChromeVox käytössä</translation>
 <translation id="4665114317261903604">Älä häiritse ‑tila päälle tai pois. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
@@ -423,7 +425,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yhdistetty uuteen puhelimeen</translation>
 <translation id="5035389544768382859">Vahvista näytön määritykset</translation>
 <translation id="5083553833479578423">Käytä lisää Assistantin ominaisuuksia.</translation>
-<translation id="5114495209940374989">Kuvakaappaukset</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
 <translation id="5168181903108465623">Cast-laitteita käytettävissä</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
@@ -492,7 +493,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Työpöytä ei aktiivinen</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Ota koko ruudun kuvakaappaus klikkaamalla minne tahansa</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5920710855273935292">Mikrofoni on mykistetty.</translation>
 <translation id="594179686076170922">Yhdistetään puhelimeen…</translation>
@@ -755,7 +755,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8563862697512465947">Ilmoitusasetukset</translation>
 <translation id="857201607579416096">Valikko siirretty näytön oikeaan alanurkkaan</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Ota kuvakaappaus koko ruudusta koskettamalla minne tahansa</translation>
 <translation id="8627191004499078455">Yhdistetty: <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Esteettömyysasetukset</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>

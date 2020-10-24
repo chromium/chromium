@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">영어(미국식) 키보드</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />개 항목 삭제함</translation>
+<translation id="2541377937973966830">이 폴더의 콘텐츠는 읽기 전용입니다. 일부 활동이 지원되지 않습니다.</translation>
 <translation id="2542049655219295786">Google 표</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />에 추가</translation>
 <translation id="255937426064304553">영어(미국 국제)</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">세부정보</translation>
 <translation id="4527800702232535228">Parallels Desktop과 공유된 폴더</translation>
 <translation id="4552678318981539154">추가 저장용량 구입</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> 파일이 삭제됨</translation>
 <translation id="4559767610552730302">흐리게 처리</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 파일</translation>
 <translation id="457386861538956877">더보기...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">파일 의견 창</translation>
 <translation id="6358884629796491903">용</translation>
 <translation id="637062427944097960">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
+<translation id="6394388407447716302">읽기 전용</translation>
 <translation id="6395575651121294044">항목 <ph name="NUMBER_OF_FILES" />개</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="642282551015776456">폴더 이름의 파일으로 사용할 수 없는 이름입니다.</translation>

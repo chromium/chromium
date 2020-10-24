@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">ရွေးချယ်ထားသည့် ကိုယ်ဖျောက်တဘ်</translation>
 <translation id="2987620471460279764">အခြားစက်ပစ္စည်းမှ မျှဝေထားသော စာတို</translation>
 <translation id="2989523299700148168">လောလောလတ်လတ် ကြည့်ရှုခဲ့သော ဆိုက်များ</translation>
+<translation id="2992473221983447149">ပုံရှင်းလင်းချက်များ</translation>
 <translation id="2996291259634659425">စကားဝှက်ဖန်တီးပါ</translation>
 <translation id="2996809686854298943">URL လိုအပ်သည်။</translation>
 <translation id="3006881078666935414">ဒေတာအသုံးပြုမှု မရနိုင်ပါ</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{လိပ်စာ <ph name="BOOKMARKS_COUNT_ONE" /> ခု}other{လိပ်စာ <ph name="BOOKMARKS_COUNT_MANY" /> ခု}}</translation>
 <translation id="3062802207422175757">Chrome ရှိ သင်စိတ်ဝင်စားသော ဆောင်းပါးများ</translation>
 <translation id="3089395242580810162">ရုပ်ဖျက်တဘ်တွင် ဖွင့်ရန်</translation>
+<translation id="3098745985164956033">သင့်အတွက် ရှင်းလင်းချက်များ ပိုကောင်းမွန်စေရန် ပုံအချို့ကို Google သို့ ပို့သည်</translation>
 <translation id="3114507951000454849">ယနေ့သတင်းများကို ဖတ်ရန် <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ကြေညာချက်များ</translation>
 <translation id="3137521801621304719">ရုပ်ဖျက် မုဒ်ကို စွန့်ခွာရန်</translation>
@@ -774,6 +776,7 @@
 <translation id="6545017243486555795">ဒေတာများအားလုံးကိုရှင်းလင်းရန်</translation>
 <translation id="6560414384669816528">Sogou ဖြင့် ရှာဖွေပါ</translation>
 <translation id="656065428026159829">နောက်ထပ်ကြည့်ရန်</translation>
+<translation id="6565959834589222080">Wi-Fi ကို ရနိုင်သည့်အခါ အသုံးပြုသည်</translation>
 <translation id="6566259936974865419">Chrome သည် သင့်အတွက် <ph name="GIGABYTES" /> ဂစ်ဂါဘိုက် ချွေတာပေးထားပါသည်</translation>
 <translation id="6573096386450695060">အမြဲခွင့်ပြုရန်</translation>
 <translation id="6573431926118603307">အခြားစက်ပစ္စည်းများပေါ်ရှိ Chrome တွင်ဖွင့်ထားသော တဘ်များသည် ဤနေရာတွင် ပေါ်လာပါမည်။</translation>
@@ -1085,6 +1088,7 @@
 <translation id="8788968922598763114">နောက်ဆုံးပိတ်လိုက်သည့် တဘ်ကို ပြန်ဖွင့်ရန်</translation>
 <translation id="8798449543960971550">ဖတ်ပြီးသည်များ</translation>
 <translation id="8812260976093120287">အချို့သော ဝဘ်ဆိုက်များတွင် သင်၏စက်ပစ္စည်းပေါ်ရှိ အထက်ပါပံ့ပိုးထားသည့် ငွေပေးချေမှုအက်ပ်များဖြင့် ပေးချေနိုင်ပါသည်။</translation>
+<translation id="881688628773363275">အစမ်းကြည့်ရှုသည့်တဘ် အကြောင်းအရာကို ကြည့်၍မရပါ။</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="883806473910249246">အကြောင်းအရာကို ဒေါင်းလုဒ်လုပ်ရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="8840953339110955557">ဤဝဘ်ဆိုက်သည် အွန်လိုင်းဗားရှင်းနှင့် ကွဲပြားနိုင်ပါသည်။</translation>

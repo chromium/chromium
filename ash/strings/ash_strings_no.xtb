@@ -117,7 +117,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2049240716062114887">Skrivebordsnavnet ble endret til <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Lysstyrke på tastaturet</translation>
-<translation id="2074759828767813253">Nylige skjermdumper og nedlastinger</translation>
 <translation id="2083190527011054446">God natt, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Ikke koblet til nettverket</translation>
 <translation id="2126242104232412123">Nytt skrivebord</translation>
@@ -169,6 +168,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2575685495496069081">Multipålogging er slått av</translation>
 <translation id="2582112259361606227">Start på nytt for å oppdatere</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
+<translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
 <translation id="2617342710774726426">SIM-kortet er låst</translation>
 <translation id="2621713457727696555">Sikret</translation>
 <translation id="2640255526076764619">Styreflatebevegelsen for å bytte til forrige skrivebord er endret. Sveip til venstre med fire fingre for å bytte til forrige skrivebord.</translation>
@@ -329,6 +329,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4215497585250573029">VPN-innstillinger</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Skjermdump</translation>
 <translation id="4261870227682513959">Vis innstillinger for varsler. Varsler er av</translation>
 <translation id="4267383818855338811">En virtuell maskin bruker kameraet ditt</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
@@ -376,6 +377,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4596144739579517758">Mørkt tema er av</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
 <translation id="4628757576491864469">Enheter</translation>
+<translation id="4642092649622328492">Ta en delvis skjermdump</translation>
 <translation id="4659419629803378708">ChromeVox er slått på</translation>
 <translation id="4665114317261903604">Slå av/på Ikke forstyrr. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
@@ -423,7 +425,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> koblet til en ny telefon</translation>
 <translation id="5035389544768382859">Bekreft skjermkonfigurasjon</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
-<translation id="5114495209940374989">Skjermdumper</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
 <translation id="5168181903108465623">Cast-enheter er tilgjengelige</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
@@ -492,7 +493,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Inaktivt skrivebord.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Klikk hvor som helst for å ta bilde i fullskjerm</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Lyden for mikrofonen er kuttet.</translation>
 <translation id="594179686076170922">Kobler til telefonen din …</translation>
@@ -753,7 +753,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8563862697512465947">Varslingsinnstillinger</translation>
 <translation id="857201607579416096">Menyen ble flyttet til nedre høyre hjørne av skjermen.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
 <translation id="8627191004499078455">Koblet til <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Tilgjengelighetsinnstillinger</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>

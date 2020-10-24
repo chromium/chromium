@@ -117,7 +117,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2049240716062114887">Nazwa biurka została zmieniona na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
-<translation id="2074759828767813253">Ostatnie zrzuty ekranu i pobrane pliki</translation>
 <translation id="2083190527011054446">Dobranoc <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
 <translation id="2126242104232412123">Nowe biurko</translation>
@@ -169,6 +168,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2575685495496069081">Wielokrotne logowanie jest wyłączone</translation>
 <translation id="2582112259361606227">Uruchom ponownie, by zaktualizować</translation>
 <translation id="2595239820337756193">Przelicz 5 km na mile</translation>
+<translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
 <translation id="2621713457727696555">Zabezpieczona</translation>
 <translation id="2640255526076764619">Zmienił się gest na touchpadzie służący do przełączania się na poprzednie biurko. Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo.</translation>
@@ -329,6 +329,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4215497585250573029">Ustawienia sieci VPN</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4261870227682513959">Pokaż ustawienia powiadomień. Powiadomienia są wyłączone.</translation>
 <translation id="4267383818855338811">Maszyna wirtualna używa kamery</translation>
 <translation id="4269883910223712419">Administrator tego urządzenia może:</translation>
@@ -376,6 +377,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4596144739579517758">Tryb ciemny jest wyłączony</translation>
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
 <translation id="4628757576491864469">Urządzenia</translation>
+<translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
 <translation id="4659419629803378708">Włączono ChromeVox</translation>
 <translation id="4665114317261903604">Włącz lub wyłącz tryb Nie przeszkadzać. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
@@ -423,7 +425,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5035236842988137213">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone z nowym telefonem</translation>
 <translation id="5035389544768382859">Potwierdź konfigurację wyświetlacza</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
-<translation id="5114495209940374989">Zrzuty ekranu</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
@@ -492,7 +493,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Biurko nieaktywne.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5920710855273935292">Mikrofon jest wyciszony.</translation>
 <translation id="594179686076170922">Łączę z Twoim telefonem…</translation>
@@ -753,7 +753,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8563862697512465947">Ustawienia powiadomień</translation>
 <translation id="857201607579416096">Menu zostało przeniesione w prawy dolny róg ekranu.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="8627191004499078455">Połączono z urządzeniem <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Ustawienia ułatwień dostępu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>

@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">የዴስክ ስም ወደ <ph name="DESK_NAME" /> ተለውጧል</translation>
 <translation id="2050339315714019657">በቁመት</translation>
 <translation id="2067602449040652523">የቁልፍ ሰሌዳ ብሩህነት</translation>
-<translation id="2074759828767813253">የቅርብ ጊዜ ቅጽበታዊ ገጽ እይታዎች እና ማውረዶች</translation>
 <translation id="2083190527011054446">ደህና አመሹ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="209965399369889474">ከአውታረ መረብ ጋር አልተገናኘም</translation>
 <translation id="2126242104232412123">አዲስ ዴስክ</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">በበርካታ መለያ መግባት ነቅቷል</translation>
 <translation id="2582112259361606227">ለማዘመን ዳግም ያስነሱ</translation>
 <translation id="2595239820337756193">5 ሺሕ በማይሎች</translation>
+<translation id="2596078834055697711">የመስኮት ቅጽበታዊ ገጽ እይታን ያንሱ</translation>
 <translation id="2617342710774726426">ሲም ካርድ ተዘግቷል</translation>
 <translation id="2621713457727696555">ደህንነቱ ተጠብቋል</translation>
 <translation id="2640255526076764619">ወደ ቀዳሚው ዴስክ ለመቀየር የመዳሰሻ ሰሌዳ ምልክቱ ተለውጧል። ወደ ቀዳሚው ዴስክ ለመቀየር በአራት ጣቶች ወደ ግራ ያንሸራትቱ።</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">የቪፒኤን ቅንብሮች</translation>
 <translation id="4217571870635786043">በቃል ማስጻፍ</translation>
 <translation id="4239069858505860023">ጂፒአርኤስ</translation>
+<translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>
 <translation id="4261870227682513959">የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ጠፍተዋል</translation>
 <translation id="4267383818855338811">ምናባዊ ማሽን ካሜራዎን እየተጠቀመ ነው</translation>
 <translation id="4269883910223712419">የዚህ መሣሪያ የሚከተሉትን የማድረግ ችሎታ አለው፦</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">ጠቆር ያለ ገጽታ ጠፍቷል</translation>
 <translation id="4623167406982293031">መለያን ያረጋግጡ</translation>
 <translation id="4628757576491864469">መሣሪያዎች</translation>
+<translation id="4642092649622328492">ከፊል ቅጽበታዊ ገጽ ዕይታን ያንሱ</translation>
 <translation id="4659419629803378708">ChromeVox ነቅቷል</translation>
 <translation id="4665114317261903604">አትረብሽ የሚለውን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">በወላጅ ኮድ መሣሪያን ክፈት</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ከአዲስ ስልክ ጋር ተገናኝቷል</translation>
 <translation id="5035389544768382859">የማሳያ ውቅረትን ያረጋግጡ</translation>
 <translation id="5083553833479578423">ተጨማሪ የረዳት ባህሪያትን ያስከፍቱ።</translation>
-<translation id="5114495209940374989">ቅጽበታዊ ገጽ እይታዎች</translation>
 <translation id="5136175204352732067">የተለየ የቁልፍ ሰሌዳ ተገናኝቷል</translation>
 <translation id="5168181903108465623">የCast መሣሪያዎች ይገኛሉ</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">የቦዘነ ዴስክ።</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">ሙሉ ማያ ገጽ ለመቅረጽ በማንኛውም ቦታ ላይ ጠቅ ያድርጉ</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5920710855273935292">የማይክሮፎን ድምጽ ተዘግቷል።</translation>
 <translation id="594179686076170922">ወደ ስልክዎ በማገናኘት ላይ...</translation>
@@ -753,7 +753,6 @@
 <translation id="8563862697512465947">የማስታወቂያ ቅንብሮች </translation>
 <translation id="857201607579416096">ምናሌ ወደ የማያ ገጹ የታችኛው ቀኝ ጥግ ተወስዷል።</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">ሙሉ ማያ ገጽ ለማንሳት በማንኛውም ቦታ መታ ያድርጉ</translation>
 <translation id="8627191004499078455">ከ<ph name="DEVICE_NAME" /> ጋር ተገናኝቷል</translation>
 <translation id="8631727435199967028">የተደራሽነት ቅንብሮች</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በአስተዳዳሪዎ የሚቀናበር</translation>

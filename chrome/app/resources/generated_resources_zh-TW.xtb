@@ -448,6 +448,7 @@
 <translation id="1509281256533087115">透過 USB 存取任何 <ph name="DEVICE_NAME_AND_VENDOR" /></translation>
 <translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
 <translation id="1510238584712386396">啟動器</translation>
+<translation id="151070646350206700">網站無法要求傳送通知，以免對你造成干擾</translation>
 <translation id="1510785804673676069">如果你使用 Proxy 伺服器，請檢查你的 Proxy 設定或
     與網路管理員聯絡，確認 Proxy 伺服器是否運作正
     常。如果你不是使用 Proxy 伺服器，請調整你的
@@ -934,6 +935,7 @@
 <translation id="205560151218727633">Google 助理標誌</translation>
 <translation id="2058456167109518507">偵測到裝置</translation>
 <translation id="2059913712424898428">時區</translation>
+<translation id="2060375639911876205">移除 eSIM 卡設定檔</translation>
 <translation id="2065405795449409761">Chrome 目前受到自動測試軟體控制。</translation>
 <translation id="2071393345806050157">沒有本機記錄檔案。</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{按一下即可安裝擴充功能}other{按一下即可安裝這些擴充功能}}</translation>
@@ -1883,7 +1885,6 @@
 <translation id="3165371858310906303">網站必須先詢問你，才能知道你是否正在使用裝置</translation>
 <translation id="3165390001037658081">部分電信業者可能會封鎖這項功能。</translation>
 <translation id="316652501498554287">G Suite 教育版帳戶</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">你也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
 <translation id="3177909033752230686">網頁語言：</translation>
 <translation id="3179982752812949580">文字字型</translation>
@@ -2026,7 +2027,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}}</translation>
 <translation id="3364986687961713424">來自系統管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">請擇一使用 Ctrl 或 Alt 鍵</translation>
-<translation id="3367047597842238025">依你的需求設定 <ph name="DEVICE_TYPE" />；只要動動手指即可探索各種實用功能。</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369067987974711168">顯示這個通訊埠的更多動作</translation>
 <translation id="3369624026883419694">正在解析主機...</translation>
@@ -2349,7 +2349,6 @@
 <translation id="3713047097299026954">此安全金鑰未儲存任何登入資料</translation>
 <translation id="3714195043138862580">這個示範裝置已設為取消佈建狀態。</translation>
 <translation id="3714633008798122362">網路日曆</translation>
-<translation id="3715954932774762075">支援多種語言的應用程式和網站會使用這個清單上第一個支援的語言。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">你與 Google</translation>
@@ -2487,7 +2486,6 @@
 <translation id="3856800405688283469">選取時區</translation>
 <translation id="3857807444929313943">移開手指，然後再次輕觸感應器</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />：已暫停同步處理</translation>
-<translation id="3861386850461794863">應用程式和網站的語言</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
 <translation id="3862693525629180217">透過內建感應器進行驗證</translation>
 <translation id="3862788408946266506">含有「kiosk_only」資訊清單屬性的應用程式只能在 Chrome 作業系統 Kiosk 模式中安裝</translation>
@@ -2730,6 +2728,7 @@
 <translation id="4131410914670010031">黑白</translation>
 <translation id="413193092008917129">日常網路診斷項目</translation>
 <translation id="4132183752438206707">在 Google Play 商店中尋找應用程式</translation>
+<translation id="4132364317545104286">重新命名 eSIM 卡設定檔</translation>
 <translation id="4133076602192971179">開啟應用程式以變更密碼</translation>
 <translation id="4136203100490971508">夜燈功能將於日出時自動關閉</translation>
 <translation id="41365691917097717">如果繼續，系統將啟用 ADB 偵錯功能建立及測試 Android 應用程式。請注意，這項操作會允許你安裝未經 Google 驗證的 Android 應用程式，而且必須將裝置恢復原廠設定才能停用。</translation>
@@ -3243,6 +3242,7 @@
 <translation id="4778644898150334464">使用其他密碼</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4779136857077979611">飯糰</translation>
+<translation id="4779766576531456629">重新命名 eSIM 卡的行動網路</translation>
 <translation id="4780321648949301421">另存網頁...</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="4788092183367008521">請檢查你的網路連線，然後再試一次。</translation>
@@ -3686,6 +3686,7 @@
 <translation id="5324780743567488672">自動使用您的位置資訊設定時區</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5327570636534774768">這個裝置的標記狀態是由其他網域管理。請先從該網域取消佈建裝置，再設定示範模式。</translation>
+<translation id="5327912693242073631">需要傳送通知的功能將無法運作</translation>
 <translation id="532943162177641444">在 <ph name="PHONE_NAME" /> 上輕觸通知，即可設定可供這個裝置使用的可攜式無線基地台。</translation>
 <translation id="5329858601952122676">刪除(&amp;D)</translation>
 <translation id="5331069282670671859">你沒有這個類別的憑證</translation>
@@ -3737,6 +3738,7 @@
 <translation id="5390112241331447203">納入透過使用狀況報告所傳送的 system_logs.txt 檔案。</translation>
 <translation id="5390677308841849479">深紅色與橘色</translation>
 <translation id="5390743329570580756">傳送連線類型</translation>
+<translation id="5392192690789334093">允許傳送通知</translation>
 <translation id="5397794290049113714">你</translation>
 <translation id="5398497406011404839">隱藏的書籤</translation>
 <translation id="5398572795982417028">參照的網頁超出範圍限制 (<ph name="MAXIMUM_PAGE" />)</translation>
@@ -3792,7 +3794,6 @@
 <translation id="5457991019809708398">已啟用，未使用漫遊服務</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">螢幕鎖定時的記事設定</translation>
-<translation id="546322474339998983">由 Chrome 瀏覽器和 <ph name="DEVICE_TYPE" /> 啟動器使用</translation>
 <translation id="5463231940765244860">輸入</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
 <translation id="5463856536939868464">選單包含隱藏的書籤</translation>
@@ -3918,7 +3919,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在載入應用程式...</translation>
 <translation id="5592595402373377407">目前還沒有足夠的資料。</translation>
-<translation id="5593357315997824387">同步處理我的檔案</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5595727715083333657">無法調整容器大小。如要調整預先分配給 Linux (Beta 版) 的空間量，請先備份容器，然後再復原為新容器。</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -4041,6 +4041,7 @@
 <translation id="5739235828260127894">等待驗證中。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">非常大</translation>
 <translation id="5740328398383587084">鄰近分享</translation>
+<translation id="5740820643029013514">使用低擾式通知 (建議)</translation>
 <translation id="574104302965107104">螢幕鏡像</translation>
 <translation id="574209121243317957">音調</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
@@ -4260,6 +4261,7 @@
 <translation id="6002210667729577411">將群組移到新視窗</translation>
 <translation id="6002452033851752583">已從你的 Google 帳戶中刪除密碼</translation>
 <translation id="6002458620803359783">聲音偏好</translation>
+<translation id="6003143259071779217">移除 eSIM 卡的行動網路</translation>
 <translation id="6006484371116297560">傳統版</translation>
 <translation id="6007240208646052708">無法使用你的語言進行語音搜尋。</translation>
 <translation id="6009781704028455063">內建感應器</translation>
@@ -4528,6 +4530,7 @@
 <translation id="6308937455967653460">另存連結為(&amp;K)...</translation>
 <translation id="6309443618838462258">系統管理員不允許這個輸入法</translation>
 <translation id="6309510305002439352">麥克風已關閉</translation>
+<translation id="6310472381159916879">移除設定檔</translation>
 <translation id="6311220991371174222">開啟你的設定檔時發生錯誤，因此無法啟動 Chrome，請嘗試重新啟動。</translation>
 <translation id="6312403991423642364">不明的網路錯誤</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前已執行安全檢查}other{{NUM_DAYS} 天前已執行安全檢查}}</translation>
@@ -4717,6 +4720,7 @@
 <translation id="6532663472409656417">已註冊企業</translation>
 <translation id="6535331821390304775">一律允許 <ph name="ORIGIN" /> 使用相關聯的應用程式開啟這類連結</translation>
 <translation id="6537613839935722475">名稱可以包含字母、數字和連字號 (-)</translation>
+<translation id="6537880577641744343">指令工具</translation>
 <translation id="6538635548667167211">目前的數據用量設定是使用行動數據</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非你瞭解這項功能的用途或是收到相關指示，否則請不要啟用這項功能，因為收集資料可能會導致系統效能降低。</translation>
 <translation id="6541638731489116978">這個網站無法存取你的動作感應器。</translation>
@@ -5848,6 +5852,7 @@
 <translation id="7855678561139483478">將分頁移到新視窗</translation>
 <translation id="7857117644404132472">新增例外狀況</translation>
 <translation id="7857949311770343000">這是你想要的新分頁嗎？</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">12 月之後，系統將不再支援這個選項。請與你的管理員聯絡。</translation>
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
@@ -6159,7 +6164,6 @@
 <translation id="8218847192766059983">新增語言或重新排列清單。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">你通常會封鎖通知。如要允許這個網站傳送通知給你，請按這裡。</translation>
 <translation id="8225265270453771718">分享應用程式視窗</translation>
-<translation id="8225753906568652947">兌換優惠</translation>
 <translation id="8226222018808695353">已禁止</translation>
 <translation id="8226619461731305576">佇列</translation>
 <translation id="8226628635270268143">選擇你最喜愛的相片和相簿</translation>
@@ -6170,6 +6174,7 @@
 <translation id="8236917170563564587">改為分享這個分頁</translation>
 <translation id="8237647586961940482">深粉紅色與紅色</translation>
 <translation id="8239032431519548577">企業註冊完成</translation>
+<translation id="8239932336306009582">不允許傳送通知</translation>
 <translation id="8241040075392580210">晴時多雲</translation>
 <translation id="8241806945692107836">正在確定裝置設定...</translation>
 <translation id="8241868517363889229">讀取及變更你的書籤</translation>
@@ -6299,6 +6304,7 @@
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8386903983509584791">掃描完成</translation>
 <translation id="8387361103813440603">不得查看你的位置資訊</translation>
+<translation id="8389264703141926739">封鎖通知</translation>
 <translation id="8389416080014625855">為這個頁面建立 QR 圖碼</translation>
 <translation id="8389492867173948260">允許這個擴充功能讀取及變更你在造訪過的網站留下的所有資料：</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
@@ -6320,7 +6326,6 @@
 <translation id="8417548266957501132">家長帳戶密碼</translation>
 <translation id="8418445294933751433">顯示為分頁(&amp;S)</translation>
 <translation id="8419098111404128271">「<ph name="SEARCH_TEXT" />」的搜尋結果</translation>
-<translation id="8419368276599091549">歡迎使用你的 <ph name="DEVICE_TYPE" />！</translation>
 <translation id="8420308167132684745">編輯字典條目</translation>
 <translation id="8421361468937925547">即時字幕 (僅支援英文)</translation>
 <translation id="8422787418163030046">缺少紙匣</translation>
@@ -6509,6 +6514,7 @@
 <translation id="8645354835496065562">繼續允許存取感應器</translation>
 <translation id="8645920082661222035">可預測不安全事件，並在這類事件發生前顯示警告訊息</translation>
 <translation id="8646209145740351125">停用同步功能</translation>
+<translation id="864637694230589560">網站通常會傳送通知，讓你掌握最新消息或留意即時通訊訊息</translation>
 <translation id="8647834505253004544">網址無效</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" />或<ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">夜燈模式色溫</translation>

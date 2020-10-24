@@ -117,7 +117,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2049240716062114887">Der Name des Desktops wurde zu "<ph name="DESK_NAME" />" geändert</translation>
 <translation id="2050339315714019657">Hochformat</translation>
 <translation id="2067602449040652523">Tastaturhelligkeit</translation>
-<translation id="2074759828767813253">Neueste Screenshots und Downloads</translation>
 <translation id="2083190527011054446">Gute Nacht <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Keine Netzwerkverbindung</translation>
 <translation id="2126242104232412123">Neuer Desktop</translation>
@@ -169,6 +168,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2575685495496069081">Mehrfachanmeldung wurde deaktiviert</translation>
 <translation id="2582112259361606227">Zum Aktualisieren neu starten</translation>
 <translation id="2595239820337756193">5 km in Meilen</translation>
+<translation id="2596078834055697711">Screenshot von Fenster erstellen</translation>
 <translation id="2617342710774726426">SIM-Karte ist gesperrt</translation>
 <translation id="2621713457727696555">Gesichert</translation>
 <translation id="2640255526076764619">Die Touchpad-Geste, um zum vorherigen Desktop zu wechseln, wurde geändert. Wischen Sie dazu jetzt mit vier Fingern nach links.</translation>
@@ -329,6 +329,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4215497585250573029">VPN-Einstellungen</translation>
 <translation id="4217571870635786043">Spracheingabe</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4261870227682513959">Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind deaktiviert.</translation>
 <translation id="4267383818855338811">Eine virtuelle Maschine verwendet Ihre Kamera</translation>
 <translation id="4269883910223712419">Der Administrator dieses Geräts kann Folgendes tun:</translation>
@@ -376,6 +377,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4596144739579517758">Dunkles Design ist deaktiviert</translation>
 <translation id="4623167406982293031">Konto bestätigen</translation>
 <translation id="4628757576491864469">Geräte</translation>
+<translation id="4642092649622328492">Screenshot eines Bildschirmausschnitts erstellen</translation>
 <translation id="4659419629803378708">ChromeVox aktiviert</translation>
 <translation id="4665114317261903604">"Bitte nicht stören" an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Gerät mit Elterncode entsperren</translation>
@@ -423,7 +425,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ist mit einem neuen Smartphone verbunden</translation>
 <translation id="5035389544768382859">Displaykonfiguration bestätigen</translation>
 <translation id="5083553833479578423">Möchten Sie weitere Assistant-Funktionen freischalten?</translation>
-<translation id="5114495209940374989">Screenshots</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
 <translation id="5168181903108465623">Übertragungsgeräte verfügbar</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
@@ -492,7 +493,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5901316534475909376">Umschalttaste + Esc</translation>
 <translation id="5909862606227538307">Inaktiver Desktop.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Auf eine beliebige Stelle klicken, um den ganzen Bildschirm aufzunehmen</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5920710855273935292">Mikrofon ist stummgeschaltet.</translation>
 <translation id="594179686076170922">Verbindung zum Smartphone wird hergestellt…</translation>
@@ -753,7 +753,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8563862697512465947">Benachrichtigungseinstellungen</translation>
 <translation id="857201607579416096">Menü wurde nach rechts unten auf dem Bildschirm verschoben.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Auf eine beliebige Stelle tippen, um den ganzen Bildschirm aufzunehmen</translation>
 <translation id="8627191004499078455">Verbunden mit <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Einstellungen für Bedienungshilfen</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von Ihrem Administrator verwaltet</translation>

@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">ଡେସ୍କ ନାମକୁ <ph name="DESK_NAME" />ରେ ବଦଳା ଯାଇଥିଲା</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
 <translation id="2067602449040652523">କୀ'ବୋର୍ଡ ଉଜ୍ଜ୍ଵଳତା</translation>
-<translation id="2074759828767813253">ବର୍ତ୍ତମାନର ସ୍କ୍ରିନସଟ୍ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
 <translation id="2083190527011054446">ଶୁଭ ରାତ୍ରି <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ନେଟ୍‌ୱାର୍କ ସହିତ ସଂଯୁକ୍ତ ହୋଇ ନାହିଁ</translation>
 <translation id="2126242104232412123">ନୂଆ ଡେସ୍କ</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">ଏକାଧିକ ସାଇନ୍‌ ଇନ୍‌ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="2582112259361606227">ଅପ୍‍‍ଡେଟ୍ କରିବା ପାଇଁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2595239820337756193">5K ମାଇଲରେ</translation>
+<translation id="2596078834055697711">ୱିଣ୍ଡୋ ସ୍କ୍ରିନ୍‌ସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="2617342710774726426">SIM କାର୍ଡ ଲକ୍‍ ହୋଇଯାଇଛି।</translation>
 <translation id="2621713457727696555">ସୁରକ୍ଷିତ</translation>
 <translation id="2640255526076764619">ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଟଚପ୍ୟାଡ୍ ଜେଶ୍ଚର୍ ବଦଳି ଯାଇଛି। ପୂର୍ବବର୍ତ୍ତୀ ଡେସ୍କକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଚାରି ଆଙ୍ଗୁଠିରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ।</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">VPN ସେଟିଂସ୍</translation>
 <translation id="4217571870635786043">ଶ୍ରୁତଲିଖନ</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
 <translation id="4261870227682513959">ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍ ଦେଖାନ୍ତୁ। ବିଜ୍ଞପ୍ତି ବନ୍ଦ ଅଛି</translation>
 <translation id="4267383818855338811">ଏକ ଭର୍ଚୁଆଲ୍ ମେସିନ୍ ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="4269883910223712419">ଏହା କରିବାକୁ ଏହି ଡିଭାଇସ୍‌ର ବ୍ୟବସ୍ଥାପକଙ୍କ କ୍ଷମତା ରହିଛି:</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">ଗାଢ଼ ଥିମ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="4623167406982293031">ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4628757576491864469">ଡିଭାଇସ୍</translation>
+<translation id="4642092649622328492">ଆଶିଂକ ସ୍କ୍ରିନ୍‌ସଟ୍‍ ନିଅନ୍ତୁ</translation>
 <translation id="4659419629803378708">ChromeVox ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4665114317261903604">'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ' ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">ମାତାପିତାଙ୍କ କୋଡ୍‌ରେ ଡିଭାଇସ୍ ଅନଲକ୍ କରନ୍ତୁ</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ଏକ ନୂଆ ଫୋନ୍ ସହ ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="5035389544768382859">ଡିସପ୍ଲେ କନଫିଗରେସନ୍ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="5083553833479578423">ଆହୁରି ଆସିଷ୍ଟାଣ୍ଟ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
-<translation id="5114495209940374989">ସ୍କ୍ରିନସଟଗୁଡ଼ିକ</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">ନିଷ୍କ୍ରିୟ ଡେସ୍କ।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5920710855273935292">ମାଇକ୍ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
 <translation id="594179686076170922">ଆପଣଙ୍କ ଫୋନ୍ ସହ ସଂଯୋଗ କରାଯାଉଛି…</translation>
@@ -753,7 +753,6 @@
 <translation id="8563862697512465947">ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍</translation>
 <translation id="857201607579416096">ସ୍କ୍ରିନର ନିମ୍ନ-ଡାହାଣ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ସହିତ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="8631727435199967028">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>

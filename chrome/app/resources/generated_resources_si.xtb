@@ -1883,7 +1883,6 @@
 <translation id="3165371858310906303">ඔබ සිටින විට වෙබ් අඩවියකට දැන ගැනීමට අවශ්‍ය විට විමසන්න</translation>
 <translation id="3165390001037658081">සමහර වාහකයන් මෙම විශේෂාංගය අවහිර කළ හැකිය.</translation>
 <translation id="316652501498554287">G Suite for Education ගිණුම්</translation>
-<translation id="3169472444629675720">අනාවරණය</translation>
 <translation id="3170072451822350649">ඔබට ප්‍රවිෂ්ට වීම මඟහැර <ph name="LINK_START" />ආගන්තුකයෙකු ලෙස ගවේෂණය<ph name="LINK_END" /> කිරීමට ද හැකියාව ඇත.</translation>
 <translation id="3177909033752230686">පිටුවේ භාෂාව:</translation>
 <translation id="3179982752812949580">පාඨ අකුරු වර්ගය</translation>
@@ -2026,7 +2025,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ඔබ සමඟ <ph name="ATTACHMENTS" /> බෙදා ගනියි.}one{<ph name="DEVICE_NAME" /> ඔබ සමඟ <ph name="ATTACHMENTS" /> බෙදා ගනියි.}other{<ph name="DEVICE_NAME" /> ඔබ සමඟ <ph name="ATTACHMENTS" /> බෙදා ගනියි.}}</translation>
 <translation id="3364986687961713424">ඔබේ පරිපාලක වෙතින්: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl හෝ Alt භාවිතා කරන්න</translation>
-<translation id="3367047597842238025">ඔබට අවශ්‍ය ආකාරයට ඔබගේ <ph name="DEVICE_TYPE" /> පිහිටුවා, ඔබගේ ඇඟිලි තුඩු මත විස්මය දනවන හැකියාවන් සොයාගන්න.</translation>
 <translation id="3368922792935385530">සම්බන්ධ කළ</translation>
 <translation id="3369067987974711168">මෙම තොට සඳහා තවත් ක්‍රියා පෙන්වන්න</translation>
 <translation id="3369624026883419694">සත්කාරක විසඳමින්...</translation>
@@ -2349,7 +2347,6 @@
 <translation id="3713047097299026954">මෙම ආරක්‍ෂක යතුරට කිසියම් පුරන දත්ත නැත</translation>
 <translation id="3714195043138862580">මෙම ආදර්ශන උපාංගය අහෝසි කිරීමේ තත්ත්‍වයක තබා ඇත.</translation>
 <translation id="3714633008798122362">ජාල දිනදසුන</translation>
-<translation id="3715954932774762075">බහු භාෂාවලින් ලබා ගත හැකි යෙදුම් සහ වෙබ් අඩවි මෙම ලැයිස්තුවෙන් පළමු සහාය දක්වන භාෂාව භාවිත කරනු ඇත. මෙම මනාප ඔබගේ බ්‍රව්සර සැකසීම් සමඟ සමමුහුර්ත කර ඇත. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">මුල්පිටුව</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ඔබ සහ Google</translation>
@@ -2488,7 +2485,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3856800405688283469">වේලා කලාපය තෝරන්න</translation>
 <translation id="3857807444929313943">ඔසවා, පසුව නැවත ස්පර්ශ කරන්න</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: සමමුහුර්ත කිරීම විරාම කරන ලදී</translation>
-<translation id="3861386850461794863">යෙදුම් සහ වෙබ් අඩවි සඳහා භාෂා</translation>
 <translation id="3861638017150647085">පරිශීලක නාමය "<ph name="USERNAME" />" නොලැබේ</translation>
 <translation id="3862693525629180217">ආවේණික සංවේදකය හරහා තහවුරු කරන්න</translation>
 <translation id="3862788408946266506">'kiosk_only' මැනිෆෙස්ට් උපලක්ෂණය සහිත යෙදුම Chrome OS කියෝස්ක් ප්‍රකාරයේ ස්ථාපනය කළ යුතුය</translation>
@@ -3798,7 +3794,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5457991019809708398">සක්‍රීයයි, සැරිසැරීම නැත</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">අගුළු තිර සටහන්</translation>
-<translation id="546322474339998983">Chrome බ්‍රවුසරය සහ <ph name="DEVICE_TYPE" /> දියත්කරණය විසින් භාවිත කෙරේ</translation>
 <translation id="5463231940765244860">ඇතුළත් කරන්න</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> දර්ශකය</translation>
 <translation id="5463856536939868464">මෙනුව සතුව සැඟවුනු පොත්සලකුණු ඇත</translation>
@@ -3924,7 +3919,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">යෙදුම් පූරණය වේ...</translation>
 <translation id="5592595402373377407">තවම ප්‍රමාණවත් දත්ත නොමැත.</translation>
-<translation id="5593357315997824387">මාගේ ගොනු සමමුහුර්ත කරන්න</translation>
 <translation id="5595485650161345191">ලිපිනය සංස්කරණය</translation>
 <translation id="5595727715083333657">ඔබේ බඳුන ප්‍රතිප්‍රමාණ කිරීමට සහය නොදක්වයි. ලිනක්ස් (බීටා) වෙත කලින් වෙන් කරන ලද ඉඩ ප්‍රමාණය ගැළපීමට, උපස්ථ කර පසුව නව බඳුනකට ප්‍රතිසාධන කරන්න.</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
@@ -6168,7 +6162,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8218847192766059983">භාෂා එක් කරන්න හෝ ලැයිස්තුව යළි පෙළගස්වන්න. <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">ඔබ සාමාන්‍යයෙන් දැනුම් දීම් අවහිර කරයි. මෙම වෙබ් අඩවියට ඔබට දැනුම්දීමට ඉඩ දීමට, මෙහි ක්ලික් කරන්න.</translation>
 <translation id="8225265270453771718">යෙදුම් කවුළුවක් බෙදා ගන්න</translation>
-<translation id="8225753906568652947">ඔබගේ පිරිනැමීම් මුදාහරින්න</translation>
 <translation id="8226222018808695353">තහනම් කර ඇත</translation>
 <translation id="8226619461731305576">පෝලිම</translation>
 <translation id="8226628635270268143">ඔබේ ප්‍රියතම ඡායාරූප සහ ඇල්බම තෝරන්න</translation>
@@ -6331,7 +6324,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8417548266957501132">මාපිය මුරපදය</translation>
 <translation id="8418445294933751433">ටැබයක් ලෙස පෙන්වන්න</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' සඳහා සෙවීම් ප්‍රතිඵල</translation>
-<translation id="8419368276599091549">ඔබව <ph name="DEVICE_TYPE" /> වෙත සාදරයෙන් පිළිගන්නවා!</translation>
 <translation id="8420308167132684745">ශබ්ද කෝෂ ඇතුළත් කිරීම් සංස්කරණය කරන්න</translation>
 <translation id="8421361468937925547">සජීවී සිරස්තල (ඉංග්‍රීසි පමණි)</translation>
 <translation id="8422787418163030046">තැටිය අස්ථානගතව ඇත</translation>

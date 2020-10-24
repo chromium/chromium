@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">선택된 시크릿 탭</translation>
 <translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
 <translation id="2989523299700148168">최근 방문</translation>
+<translation id="2992473221983447149">이미지 설명</translation>
 <translation id="2996291259634659425">암호 만들기</translation>
 <translation id="2996809686854298943">URL이 필요합니다.</translation>
 <translation id="3006881078666935414">사용 데이터 없음</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
 <translation id="3089395242580810162">시크릿 탭에서 열기</translation>
+<translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">공지사항</translation>
 <translation id="3137521801621304719">시크릿 모드 나가기</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">모든 데이터 삭제</translation>
 <translation id="6560414384669816528">Sogou로 검색</translation>
 <translation id="656065428026159829">더보기</translation>
+<translation id="6565959834589222080">가능한 경우 Wi-Fi가 사용됨</translation>
 <translation id="6566259936974865419">Chrome을 통해 <ph name="GIGABYTES" />GB를 절약했습니다.</translation>
 <translation id="6573096386450695060">항상 허용</translation>
 <translation id="6573431926118603307">다른 기기의 Chrome에서 연 탭이 여기에 표시됩니다.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">마지막으로 닫은 탭 다시 열기</translation>
 <translation id="8798449543960971550">읽음</translation>
 <translation id="8812260976093120287">일부 웹사이트에서는 위의 결제 앱을 사용하여 내 기기에서 결제할 수 있습니다.</translation>
+<translation id="881688628773363275">미리보기 탭 콘텐츠를 볼 수 없습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>
 <translation id="883806473910249246">콘텐츠를 다운로드하는 중에 오류가 발생했습니다.</translation>
 <translation id="8840953339110955557">이 페이지는 온라인 버전과 다를 수 있습니다.</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> paylaşılamıyor</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" /> ile değiştirildi</translation>
 <translation id="1498028757988366001">Bunu daha önce aradınız. "<ph name="QUERY" />" sorgusunu geçmişinizden sildiğinizde bu sorgu tüm cihazlarınızda hesabınızdan kalıcı olarak kaldırılır.</translation>
+<translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 dakika ve }other{# dakika ve }}</translation>
 <translation id="1643823602425662293">Bildirim</translation>
 <translation id="169515659049020177">ÜstKrktr</translation>

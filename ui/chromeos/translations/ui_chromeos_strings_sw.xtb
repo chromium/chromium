@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Kibodi ya Kimarekani</translation>
 <translation id="2534155362429831547">Umefuta vipengee <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">Maudhui ya folda hii ni ya kusoma tu. Baadhi ya shughuli haziwezi kutekelezwa.</translation>
 <translation id="2542049655219295786">Jedwali la Google</translation>
 <translation id="2547921442987553570">Ongeza kwenye <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Kiingereza cha Marekani cha Kimataifa</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Maelezo</translation>
 <translation id="4527800702232535228">Umeshiriki folda hii na Parallels Desktop</translation>
 <translation id="4552678318981539154">Nunua hifadhi zaidi</translation>
+<translation id="4559318885353833501">Umefuta <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Faili ya <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Zaidi...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Dirisha la maoni ya faili</translation>
 <translation id="6358884629796491903">Joka</translation>
 <translation id="637062427944097960">Faili hii ilifunguka kwenye eneo-kazi tofauti. Sogea kwenye <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) ili uione.</translation>
+<translation id="6394388407447716302">Kusoma tu</translation>
 <translation id="6395575651121294044">Faili <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Ondoka kwenye Skrini nzima</translation>
 <translation id="642282551015776456">Jina hili halifai kutumiwe kama faili ya jina la folda</translation>

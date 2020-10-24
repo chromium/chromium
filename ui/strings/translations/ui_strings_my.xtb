@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍ မရပါ</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ကို <ph name="SECOND_ITEM_TITLE" /> ဖြင့် လှဲလှယ်ထားသည်</translation>
 <translation id="1498028757988366001">ဤအရာကို ယခင်က ရှာဖွေဖူးသည်။ "<ph name="QUERY" />" အား သင့်မှတ်တမ်းမှ ဖျက်ခြင်းက စက်ပစ္စည်းအားလုံးရှိ သင်၏အကောင့်မှ ၎င်းကို အပြီးဖယ်ရှားလိုက်ပါမည်။</translation>
+<translation id="1510238584712386396">Launcher</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{၁ မိနစ်နှင့် }other{# မိနစ်နှင့် }}</translation>
 <translation id="1643823602425662293">အကြောင်းကြားချက်</translation>
 <translation id="169515659049020177">Shift ကီး</translation>

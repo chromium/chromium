@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">ডেস্কের নাম পরিবর্তন করে <ph name="DESK_NAME" /> রাখা হয়েছে</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2067602449040652523">কীবোর্ডের উজ্জ্বলতা</translation>
-<translation id="2074759828767813253">সাম্প্রতিক স্ক্রিনশট ও ডাউনলোড</translation>
 <translation id="2083190527011054446">শুভরাত্রি <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">কোনও নেটওয়ার্কে কানেক্ট করা নেই</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">একাধিক সাইন-ইন বিকল্প বন্ধ করা হয়েছে</translation>
 <translation id="2582112259361606227">আপডেট করার জন্য রিস্টার্ট করুন</translation>
 <translation id="2595239820337756193">মাইলের হিসেবে ৫ হাজার</translation>
+<translation id="2596078834055697711">উইন্ডো স্ক্রিনশট নিন</translation>
 <translation id="2617342710774726426">সিম কার্ড লক করা আছে</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
 <translation id="2640255526076764619">পূর্ববর্তী ডেস্কে পাল্টানোর টাচপ্যাড জেসচার পরিবর্তন করা হয়েছে। পূর্ববর্তী ডেস্কে পাল্টাতে চার আঙুল ব্যবহার করে বাঁদিকে সোয়াইপ করুন।</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">ভিপিএন সেটিংস</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="4261870227682513959">বিজ্ঞপ্তি সেটিংস দেখান। বিজ্ঞপ্তি বন্ধ আছে</translation>
 <translation id="4267383818855338811">কোনও ভার্চুয়াল মেশিন আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="4269883910223712419">এই ডিভাইসের প্রশাসক এগুলি করতে পারেন:</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">ডার্ক থিম বন্ধ আছে</translation>
 <translation id="4623167406982293031">অ্যাকাউন্ট যাচাই করুন</translation>
 <translation id="4628757576491864469">ডিভাইস</translation>
+<translation id="4642092649622328492">আংশিক স্ক্রিনশট নিন</translation>
 <translation id="4659419629803378708">ChromeVox সক্ষম করা আছে</translation>
 <translation id="4665114317261903604">'বিরক্ত করবে না' মোড টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">অভিভাবকীয় কোড দিয়ে ডিভাইস আনলক করুন</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />টি নতুন ফোনে কানেক্ট করা হয়েছে</translation>
 <translation id="5035389544768382859">ডিসপ্লে কনফিগারেশন কনফার্ম করুন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
-<translation id="5114495209940374989">স্ক্রিনশট</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">ডেস্কটি অ্যাক্টিভ নেই</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">পুরো স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5920710855273935292">মাইক্রোফোন মিউট করা আছে।</translation>
 <translation id="594179686076170922">আপনার ফোনের সাথে কানেক্ট করা হচ্ছে...</translation>
@@ -754,7 +754,6 @@
 <translation id="8563862697512465947">বিজ্ঞপ্তি সেটিংস</translation>
 <translation id="857201607579416096">স্ক্রিনের নিচে ডানদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">পুরো স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ট্যাপ করুন</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />-এর সাথে কানেক্ট হয়েছে</translation>
 <translation id="8631727435199967028">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>

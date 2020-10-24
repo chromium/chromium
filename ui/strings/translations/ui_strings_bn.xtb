@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />-কে <ph name="SECOND_ITEM_TITLE" /> দিয়ে পাল্টানো হয়েছে</translation>
 <translation id="1498028757988366001">আপনি এটি আগেও সার্চ করেছেন। ইতিহাস থেকে "<ph name="QUERY" />" সরিয়ে দিলে, আপনার সব ডিভাইসের অ্যাকাউন্ট থেকে সেটি স্থায়ীভাবে মুছে যাবে।</translation>
+<translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{১ মিনিট এবং }one{# মিনিট এবং }other{# মিনিট এবং }}</translation>
 <translation id="1643823602425662293">বিজ্ঞপ্তি</translation>
 <translation id="169515659049020177">Shift</translation>

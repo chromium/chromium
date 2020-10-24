@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">டெஸ்க் பெயர் <ph name="DESK_NAME" /> என மாற்றப்பட்டது</translation>
 <translation id="2050339315714019657">செங்குத்து நிலை</translation>
 <translation id="2067602449040652523">விசைப்பலகை ஒளிர்வு</translation>
-<translation id="2074759828767813253">சமீபத்திய ஸ்கிரீன்ஷாட்டுகளும் பதிவிறக்கங்களும்</translation>
 <translation id="2083190527011054446">இரவு வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">நெட்வொர்க்குடன் இணைக்கப்படவில்லை</translation>
 <translation id="2126242104232412123">புதிய டெஸ்க்</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">பல உள்முழைவு முடக்கப்பட்டுள்ளது</translation>
 <translation id="2582112259361606227">புதுப்பிக்க, மீண்டும் தொடங்குக</translation>
 <translation id="2595239820337756193">5 கிமீ எத்தனை மைல்?</translation>
+<translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
 <translation id="2617342710774726426">சிம் கார்டு பூட்டப்பட்டுள்ளது</translation>
 <translation id="2621713457727696555">பாதுகாக்கப்பட்ட வைஃபை நெட்வொர்க்</translation>
 <translation id="2640255526076764619">முந்தைய டெஸ்க்கிற்கு மாறுவதற்கான டச்பேட் சைகை மாறியுள்ளது. முந்தைய டெஸ்க்கிற்கு மாற நான்கு விரல்களால் இடதுபுறமாக ஸ்வைப் செய்யவும்.</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">VPN அமைப்புகள்</translation>
 <translation id="4217571870635786043">சொல்வதை எழுதுவது</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="4261870227682513959">அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். அறிவிப்புகள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="4267383818855338811">ஒரு விர்ச்சுவல் மெஷின் உங்கள் கேமராவைப் பயன்படுத்துகிறது</translation>
 <translation id="4269883910223712419">இந்தச் சாதனத்தின் நிர்வாகி இவற்றைச் செய்ய முடியும்:</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">டார்க் தீம் முடக்கப்பட்டுள்ளது</translation>
 <translation id="4623167406982293031">கணக்கைச் சரிபார்க்கவும்</translation>
 <translation id="4628757576491864469">சாதனங்கள்</translation>
+<translation id="4642092649622328492">பகுதியளவு ஸ்கிரீன்ஷாட்டை எடுக்கும்</translation>
 <translation id="4659419629803378708">ChromeVox இயக்கப்பட்டது</translation>
 <translation id="4665114317261903604">'தொந்தரவு செய்ய வேண்டாம்' அம்சத்தை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">பெற்றோர் குறியீட்டின் மூலம் சாதனத்தை திறத்தல்</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ஒரு புதிய ஃபோனுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="5035389544768382859">திரை உள்ளமைவை உறுதிசெய்யுங்கள்</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
-<translation id="5114495209940374989">ஸ்கிரீன்ஷாட்டுகள்</translation>
 <translation id="5136175204352732067">வேறொரு விசைப்பலகை இணைக்கப்பட்டது</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
 <translation id="5170568018924773124">கோப்புறையில் காண்பி</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">செயலில் இல்லாத டெஸ்க்.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">முழுத்திரையைப் படமெடுக்க எங்கு வேண்டுமானாலும் கிளிக் செய்யவும்</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5920710855273935292">மைக் ஒலியடக்கப்பட்டுள்ளது.</translation>
 <translation id="594179686076170922">உங்கள் ஃபோனுடன் இணைக்கிறது...</translation>
@@ -753,7 +753,6 @@
 <translation id="8563862697512465947">அறிவிப்பு  அமைப்புகள்</translation>
 <translation id="857201607579416096">திரையின் கீழ் வலது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">முழுத்திரையைப் படமெடுக்க எங்கு வேண்டுமானாலும் தட்டவும்</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> உடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="8631727435199967028">அணுகல்தன்மை அமைப்புகள்</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>

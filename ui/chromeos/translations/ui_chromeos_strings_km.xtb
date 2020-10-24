@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ក្តារចុចអាមេរិក</translation>
 <translation id="2534155362429831547">បានលុបធាតុ <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">ខ្លឹមសារនៃថតនេះគឺសម្រាប់​តែអានប៉ុណ្ណោះ។ មិនអាច​ប្រើសកម្មភាព​មួយចំនួន​បានទេ។</translation>
 <translation id="2542049655219295786">តារាង Google</translation>
 <translation id="2547921442987553570">បន្ថែមទៅ <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US អន្តរជាតិ</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">ព័ត៌មានលំអិត</translation>
 <translation id="4527800702232535228">ថតនេះត្រូវបាន​ចែករំលែកជាមួយ Parallels Desktop</translation>
 <translation id="4552678318981539154">ទិន្នន័យចន្លោះផ្ទុ</translation>
+<translation id="4559318885353833501">បានលុប <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">ឯកសារ <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">ច្រើនទៀត...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">វិនដូមតិកែលម្អ​របស់ឯកសារ</translation>
 <translation id="6358884629796491903">នាគ</translation>
 <translation id="637062427944097960">៝ឯកសារនេះបានបើកនៅលើដេស៍ថបផ្សេង។ ផ្លាស់ទីទៅ <ph name="USER_NAME" /> <ph name="MAIL_ADDRESS" /> ដើម្បីមើលវា។</translation>
+<translation id="6394388407447716302">បានតែអានប៉ុណ្ណោះ</translation>
 <translation id="6395575651121294044">ធាតុ <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="642282551015776456">ឈ្មោះនេះមិនគួរប្រើជាឯកសារនៃឈ្មោះថតឯកសារទេ</translation>

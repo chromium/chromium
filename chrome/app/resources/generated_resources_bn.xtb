@@ -1883,7 +1883,6 @@
 <translation id="3165371858310906303">আপনি কখন ডিভাইস ব্যবহার করছেন সেটি কোনও সাইট জানতে চাইলে অনুমতি নিতে বলুন</translation>
 <translation id="3165390001037658081">কিছু পরিষেবা প্রদানকারী এই বৈশিষ্ট্যকে অবরুদ্ধ করতে পারে।</translation>
 <translation id="316652501498554287">G Suite for Education অ্যাকাউন্ট</translation>
-<translation id="3169472444629675720">আবিষ্কার করুন</translation>
 <translation id="3170072451822350649">এছাড়াও আপনি সাইন-ইন এড়িয়ে যেতে ও <ph name="LINK_START" />অতিথি হিসাবে ব্রাউজ<ph name="LINK_END" /> করতে পারেন৷</translation>
 <translation id="3177909033752230686">পৃষ্ঠার ভাষা:</translation>
 <translation id="3179982752812949580">টেক্সটের ফন্ট</translation>
@@ -2026,7 +2025,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> আপনার সাথে <ph name="ATTACHMENTS" /> শেয়ার করতে চাইছে।}one{<ph name="DEVICE_NAME" /> আপনার সাথে <ph name="ATTACHMENTS" /> শেয়ার করতে চাইছে।}other{<ph name="DEVICE_NAME" /> আপনার সাথে <ph name="ATTACHMENTS" /> শেয়ার করতে চাইছে।}}</translation>
 <translation id="3364986687961713424">আপনার অ্যাডমিনিস্ট্রেটরের মেসেজ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl অথবা Alt ব্যবহার করুন</translation>
-<translation id="3367047597842238025">আপনার পছন্দ অনুযায়ী <ph name="DEVICE_TYPE" /> সেট-আপ করুন এবং অসাধারণ সমস্ত বৈশিষ্ট্য উপভোগ করুন।</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3369067987974711168">এই পোর্টের জন্য আরও অ্যাকশন দেখুন</translation>
 <translation id="3369624026883419694">হোস্ট স্থির করা হচ্ছে...</translation>
@@ -2349,7 +2347,6 @@
 <translation id="3713047097299026954">এই নিরাপত্তা কীয়ে কোনও সাইন-ইন ডেটা নেই</translation>
 <translation id="3714195043138862580">এই ডেমো ডিভাইসটির অধিকার বাতিল করা হয়েছে।</translation>
 <translation id="3714633008798122362">ওয়েব ক্যালেন্ডার</translation>
-<translation id="3715954932774762075">যেসব অ্যাপ ও ওয়েবসাইট একাধিক ভাষায় উপলভ্য রয়েছে সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। আপনার ব্রাউজার সেটিংসের সাথে এই পছন্দগুলি সিঙ্ক করা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">হোমপেজ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">আপনি এবং Google</translation>
@@ -2487,7 +2484,6 @@
 <translation id="3856800405688283469">সময় অঞ্চল বেছে নিন</translation>
 <translation id="3857807444929313943">আঙ্গুল লিফ্ট করে আবার টাচ করুন</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: সিঙ্ক থামানো হয়েছে</translation>
-<translation id="3861386850461794863">অ্যাপ ও ওয়েবসাইটের ভাষা</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" ইউজারনেমটি পাওয়া যাচ্ছে না</translation>
 <translation id="3862693525629180217">বিল্ট-ইন সেন্সর দ্বারা যাচাই করুন</translation>
 <translation id="3862788408946266506">'Kiosk_only' ম্যানিফেস্ট অ্যাট্রিবিউটের সাথে অ্যাপকে অবশ্যই Chrome OS কিয়স্ক মোডে ইনস্টল করতে হবে</translation>
@@ -3792,7 +3788,6 @@
 <translation id="5457991019809708398">চালু আছে, রোমিংয়ে নেই</translation>
 <translation id="5458214261780477893">ডিভোরাক</translation>
 <translation id="5458998536542739734">লক স্ক্রিন নোট</translation>
-<translation id="546322474339998983">Chrome ব্রাউজার এবং <ph name="DEVICE_TYPE" /> লঞ্চার এটি ব্যবহার করে</translation>
 <translation id="5463231940765244860">লিখুন</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />-এর সূচী</translation>
 <translation id="5463856536939868464">গোপন বুকমার্কগুলি সমন্বিত মেনু</translation>
@@ -3918,7 +3913,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">অ্যাপ্লিকেশানগুলি লোড হচ্ছে...</translation>
 <translation id="5592595402373377407">এখনও যথেষ্ট ডেটা উপলব্ধ নেই৷</translation>
-<translation id="5593357315997824387">আমার ফাইল সিঙ্ক করুন</translation>
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="5595727715083333657">আপনার কন্টেনার রিসাইজ করা যায় না। Linux (Beta)-তে আগে থেকে বরাদ্দ করা জায়গার পরিমাণ অ্যাডজাস্ট করতে, ব্যাক-আপ নিয়ে নতুন কন্টেনারে ফিরিয়ে আনুন।</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
@@ -6160,7 +6154,6 @@
 <translation id="8218847192766059983">ভাষা যোগ করুন বা তালিকাটি আবার সাজান। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">আপনি সাধারণত বিজ্ঞপ্তি ব্লক করেন। এই সাইট থেকে বিজ্ঞপ্তি পেতে, এখানে ক্লিক করুন।</translation>
 <translation id="8225265270453771718">একটি অ্যাপ্লিকেশনের উইন্ডো শেয়ার করুন</translation>
-<translation id="8225753906568652947">আপনার অফার রিডিম করুন</translation>
 <translation id="8226222018808695353">নিষিদ্ধ</translation>
 <translation id="8226619461731305576">অপেক্ষমাণ</translation>
 <translation id="8226628635270268143">আপনার পছন্দের ফটো ও অ্যালবাম বাছুন</translation>
@@ -6321,7 +6314,6 @@
 <translation id="8417548266957501132">অভিভাবকের পাসওয়ার্ড</translation>
 <translation id="8418445294933751433">ট্যাব রূপে &amp;দেখান</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' এর সার্চ ফলাফল</translation>
-<translation id="8419368276599091549">আপনার <ph name="DEVICE_TYPE" /> এ স্বাগতম!</translation>
 <translation id="8420308167132684745">অভিধানের এন্ট্রিগুলি এডিট করুন</translation>
 <translation id="8421361468937925547">লাইভ ক্যাপশন (শুধু ইংরেজি)</translation>
 <translation id="8422787418163030046">ট্রে লাগানো নেই</translation>

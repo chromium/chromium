@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">美式鍵盤</translation>
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
+<translation id="2541377937973966830">這個資料夾的內容為唯讀檔案，因此不支援部分活動。</translation>
 <translation id="2542049655219295786">Google 表格</translation>
 <translation id="2547921442987553570">加入「<ph name="EXTENSION_NAME" />」中</translation>
 <translation id="255937426064304553">美國國際</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">詳細資訊</translation>
 <translation id="4527800702232535228">已與 Parallls Desktop 共用這個資料夾</translation>
 <translation id="4552678318981539154">購買更多儲存空間</translation>
+<translation id="4559318885353833501">已刪除「<ph name="FILE_NAME" />」</translation>
 <translation id="4559767610552730302">散景</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 檔案</translation>
 <translation id="457386861538956877">更多…</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">檔案狀態視窗</translation>
 <translation id="6358884629796491903">龍</translation>
 <translation id="637062427944097960">這個檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
+<translation id="6394388407447716302">唯讀</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個項目</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="642282551015776456">無法使用這個名稱做為檔案名稱或資料夾名稱</translation>

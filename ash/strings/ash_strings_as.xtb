@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">ডেস্কৰ নাম <ph name="DESK_NAME" />লৈ সলনি কৰা হৈছে</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
 <translation id="2067602449040652523">কীব’ৰ্ডৰ উজ্জ্বলতা</translation>
-<translation id="2074759828767813253">শেহতীয়া স্ক্ৰীনশ্বট আৰু ডাউনল’ড</translation>
 <translation id="2083190527011054446">শুভৰাত্ৰি <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">নেটৱৰ্কৰ সৈতে সংযুক্ত হৈ নাই</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">একাধিক প্ৰ’ফাইলত ছাইন ইন কৰাৰ সুবিধা অক্ষম কৰা হৈছে।</translation>
 <translation id="2582112259361606227">আপডে’ট কৰিবলৈ ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="2595239820337756193">৫ হাজাৰ মাইল</translation>
+<translation id="2596078834055697711">ৱিণ্ড’ৰ স্ক্রীণশ্বট লওক</translation>
 <translation id="2617342710774726426">ছিম কাৰ্ড লক কৰা হৈছে</translation>
 <translation id="2621713457727696555">সুৰক্ষিত</translation>
 <translation id="2640255526076764619">পূৰ্বৱৰ্তী ডেস্কখনলৈ সলনি কৰাৰ.টাচ্চপেডৰ আঙুলিৰ স্পৰ্শৰে নিৰ্দেশটো সলনি হৈছে। পূৰ্বৱৰ্তী ডেস্কখনলৈ সলনি কৰিবলৈ চাৰিটা আঙুলিৰে বাওঁফালে ছোৱাইপ কৰক।</translation>
@@ -328,6 +328,7 @@
 <translation id="4215497585250573029">ভিপিএনৰ ছেটিংসমূহ</translation>
 <translation id="4217571870635786043">শ্ৰুতলিপি</translation>
 <translation id="4239069858505860023">জিপিআৰএছ</translation>
+<translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
 <translation id="4261870227682513959">জাননীৰ ছেটিং দেখুৱাওক। জাননী অফ আছে</translation>
 <translation id="4267383818855338811">এটা ভাৰ্ছুৱেল মেচিনে আপোনাৰ কেমেৰাটো ব্যৱহাৰ কৰি আছে</translation>
 <translation id="4269883910223712419">এই ডিভাইচটোৰ প্ৰশাসকে এইকেইটা কাৰ্য কৰিব পাৰে:</translation>
@@ -375,6 +376,7 @@
 <translation id="4596144739579517758">গাঢ় ৰঙৰ ম’ড অফ আছে</translation>
 <translation id="4623167406982293031">একাউণ্টটোৰ সত্যাপন কৰক</translation>
 <translation id="4628757576491864469">ডিভাইচ</translation>
+<translation id="4642092649622328492">আংশিক স্ক্ৰীণশ্বট লওক</translation>
 <translation id="4659419629803378708">ChromeVox সক্ষম কৰা হ’ল</translation>
 <translation id="4665114317261903604">অসুবিধা নিদিব ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">অভিভাৱকৰ প্ৰৱেশ ক'ডৰ সহায়ত ডিভাইচ আনলক কৰক</translation>
@@ -422,7 +424,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />ক এটা নতুন ডিভাইচত সংযোগ কৰা হ'ল</translation>
 <translation id="5035389544768382859">ডিছপ্লে’ৰ কনফিগাৰেশ্বন নিশ্চিত কৰক</translation>
 <translation id="5083553833479578423">Assistantৰ অন্যান্য সুবিধাসমূহ ব্যৱহাৰ কৰক।</translation>
-<translation id="5114495209940374989">স্ক্ৰীনশ্বট</translation>
 <translation id="5136175204352732067">বিভিন্ন কীব’র্ড সংযোগ কৰা হৈছে</translation>
 <translation id="5168181903108465623">কাষ্ট কৰিব পৰা ডিভাইচ উপলব্ধ</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
@@ -491,7 +492,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">নিষ্ক্ৰিয় ডেস্ক।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">পূৰ্ণস্ক্ৰীন কেপচাৰ কৰিবলৈ যিকোনো ঠাইতে ক্লিক কৰক</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5920710855273935292">মাইক মিউট কৰা আছে।</translation>
 <translation id="594179686076170922">আপোনাৰ ফ’নটোৰ সৈতে সংযোগ কৰি থকা হৈছে…</translation>
@@ -749,7 +749,6 @@
 <translation id="8563862697512465947">জাননীৰ ছেটিংসমূহ</translation>
 <translation id="857201607579416096">স্ক্ৰীনখনৰ তলৰ সোঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">পূৰ্ণস্ক্ৰীন কেপচাৰ কৰিবলৈ যিকোনো ঠাইত টিপক</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />ৰ সৈতে সংযোজিত</translation>
 <translation id="8631727435199967028">সাধ্য সুবিধাৰ ছেটিংসমূহ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>

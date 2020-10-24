@@ -117,7 +117,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
-<translation id="2074759828767813253">Recent screenshots and downloads</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Not connected to network</translation>
 <translation id="2126242104232412123">New desk</translation>
@@ -169,6 +168,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2575685495496069081">Multiple sign-in has been disabled</translation>
 <translation id="2582112259361606227">Restart to update</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
+<translation id="2596078834055697711">Take window screenshot</translation>
 <translation id="2617342710774726426">SIM card is locked</translation>
 <translation id="2621713457727696555">Secured</translation>
 <translation id="2640255526076764619">The touchpad gesture to switch to the previous desk has changed. Swipe left with four fingers to switch to the previous desk.</translation>
@@ -329,6 +329,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4215497585250573029">VPN settings</translation>
 <translation id="4217571870635786043">Dictation</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4261870227682513959">Show notification settings. Notifications are off</translation>
 <translation id="4267383818855338811">A virtual machine is using your camera</translation>
 <translation id="4269883910223712419">The admin of this device has the ability to:</translation>
@@ -376,6 +377,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4623167406982293031">Verify account</translation>
 <translation id="4628757576491864469">Devices</translation>
+<translation id="4642092649622328492">Take partial screenshot</translation>
 <translation id="4659419629803378708">ChromeVox enabled</translation>
 <translation id="4665114317261903604">Toggle Do Not Disturb. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Unlock device with parent code</translation>
@@ -423,7 +425,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> connected to a new phone</translation>
 <translation id="5035389544768382859">Confirm display configuration</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
-<translation id="5114495209940374989">Screenshots</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
 <translation id="5170568018924773124">Show in folder</translation>
@@ -492,7 +493,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Inactive desk.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Click anywhere to capture fullscreen</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">Mic is muted.</translation>
 <translation id="594179686076170922">Connecting to your phone...</translation>
@@ -753,7 +753,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="8563862697512465947">Notification Settings</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Tap anywhere to capture fullscreen</translation>
 <translation id="8627191004499078455">Connected to <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Accessibility settings</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>

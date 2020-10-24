@@ -1884,7 +1884,6 @@
 <translation id="3165371858310906303">ఒక సైట్ మీ ఉనికిని తెలుసుకోవాలనుకున్నప్పుడు అనుమతి అడగాలి</translation>
 <translation id="3165390001037658081">కొన్ని క్యారియర్‌లు ఈ లక్షణాన్ని బ్లాక్ చేయవచ్చు.</translation>
 <translation id="316652501498554287">'విద్య కోసం G Suite' ఖాతాలు</translation>
-<translation id="3169472444629675720">కనుగొను</translation>
 <translation id="3170072451822350649">మీరు సైన్ ఇన్ చేయడాన్ని కూడా దాట వేయవచ్చు. <ph name="LINK_START" />అతిథిగా బ్రౌజ్ చేయవచ్చు<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">పేజీ భాష:</translation>
 <translation id="3179982752812949580">వచన ఫాంట్</translation>
@@ -2027,7 +2026,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> మీతో <ph name="ATTACHMENTS" />ని షేర్ చేస్తోంది.}other{<ph name="DEVICE_NAME" /> మీతో <ph name="ATTACHMENTS" />ని షేర్ చేస్తోంది.}}</translation>
 <translation id="3364986687961713424">మీ నిర్వాహకుడి నుండి: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl లేదా Altను ఉపయోగించండి</translation>
-<translation id="3367047597842238025">మీ <ph name="DEVICE_TYPE" />ను మీకు నచ్చిన విధంగా సెటప్ చేసుకొని కోరుకున్న నైపుణ్యాలను క్షణాలలో చేజిక్కించుకోవచ్చు</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369067987974711168">ఈ పోర్ట్ కోసం మరిన్ని చర్యలను చూపించు</translation>
 <translation id="3369624026883419694">హోస్ట్‌ను పరిష్కరిస్తోంది...</translation>
@@ -2350,7 +2348,6 @@
 <translation id="3713047097299026954">ఈ 'సెక్యూరిటీ కీ'లో ఎటువంటి సైన్-ఇన్ డేటా లేదు</translation>
 <translation id="3714195043138862580">ఈ డెమో పరికరం కేటాయింపు తీసివేత స్థితిలో ఉంచబడింది.</translation>
 <translation id="3714633008798122362">వెబ్ క్యాలెండర్</translation>
-<translation id="3715954932774762075">అనేక భాషలలో అందుబాటులో ఉన్న యాప్‌లు, వెబ్‌సైట్‌లు ఈ లిస్ట్‌లోని మొదటి సపోర్ట్ చేసే భాషను ఉపయోగించుకుంటాయి. ఈ ప్రాధాన్యతలు మీ బ్రౌజర్ సెట్టింగ్‌లతో సింక్ చేయబడతాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">హోమ్‌పేజీ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">మీరు మరియు Google</translation>
@@ -2488,7 +2485,6 @@
 <translation id="3856800405688283469">సమయ మండలిని ఎంచుకోండి</translation>
 <translation id="3857807444929313943">పైకి ఎత్తి, మళ్లీ తాకండి</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: సమకాలీకరణ పాజ్ అయింది</translation>
-<translation id="3861386850461794863">యాప్‌లు, వెబ్‌సైట్‌ల కోసం భాషలు</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" యూజర్‌నేమ్ అందుబాటులో లేదు</translation>
 <translation id="3862693525629180217">అంతర్నిర్మిత సెన్సార్ ద్వారా ధృవీకరించు</translation>
 <translation id="3862788408946266506">'kiosk_only' మానిఫెస్ట్ ఫీచర్ ఉన్న యాప్‌ను తప్పనిసరిగా Chrome OS కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
@@ -3794,7 +3790,6 @@
 <translation id="5457991019809708398">ఆన్, రోమింగ్‌లో లేదు</translation>
 <translation id="5458214261780477893">వోరాక్</translation>
 <translation id="5458998536542739734">లాక్ స్క్రీన్ గమనికలు</translation>
-<translation id="546322474339998983">Chrome బ్రౌజర్, <ph name="DEVICE_TYPE" /> లాంచర్ ఉపయోగిస్తాయి</translation>
 <translation id="5463231940765244860">నమోదు చేయండి</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> యొక్క సూచిక</translation>
 <translation id="5463856536939868464">దాచిపెట్టిన బుక్‌మార్క్‌లు ఉన్న మెను</translation>
@@ -3920,7 +3915,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">అనువర్తనాలను లోడ్ చేస్తోంది...</translation>
 <translation id="5592595402373377407">ఇంకా తగినంత డేటా అందుబాటులో లేదు.</translation>
-<translation id="5593357315997824387">నా ఫైల్‌లను సమకాలీకరించు</translation>
 <translation id="5595485650161345191">చిరునామాను సవరించు</translation>
 <translation id="5595727715083333657">మీ కంటైనర్ పరిమాణాన్ని మార్చడానికి సపోర్ట్ చేయదు. Linux (బీటా)కు ముందుగానే కేటాయించిన ఖాళీని సర్దుబాటు చేయడానికి, బ్యాకప్ చేసి, ఆపై కొత్త కంటైనర్‌లో రీస్టోర్ చేయండి.</translation>
 <translation id="5596627076506792578">మరిన్ని ఎంపికలు</translation>
@@ -6158,7 +6152,6 @@
 <translation id="8218847192766059983">భాషలను జోడించండి లేదా జాబితా క్రమాన్ని మళ్లీ మార్చండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">మీరు సాధారణంగా నోటిఫికేషన్‌లను బ్లాక్ చేస్తుంటారు. ఈ సైట్ నుండి నోటిఫికేషన్‌లను పొందాలంటే, ఇక్కడ క్లిక్ చేయండి.</translation>
 <translation id="8225265270453771718">అప్లికేషన్ విండోను షేర్ చేయండి</translation>
-<translation id="8225753906568652947">మీ ఆఫర్‌లను రీడీమ్ చేయండి</translation>
 <translation id="8226222018808695353">నిషేధించబడింది</translation>
 <translation id="8226619461731305576">క్రమ వరుస</translation>
 <translation id="8226628635270268143">మీకు ఇష్టమైన ఫోటోలు, ఆల్బమ్‌లను ఎంచుకోండి</translation>
@@ -6319,7 +6312,6 @@
 <translation id="8417548266957501132">తల్లి/తండ్రి పాస్‌వర్డ్‌</translation>
 <translation id="8418445294933751433">&amp;ట్యాబ్ లాగా చూపండి</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' కోసం శోధన ఫలితాలు</translation>
-<translation id="8419368276599091549">మీ <ph name="DEVICE_TYPE" />కు స్వాగతం!</translation>
 <translation id="8420308167132684745">నిఘంటువు నమోదులను ఎడిట్ చేయండి</translation>
 <translation id="8421361468937925547">లైవ్ క్యాప్షన్ (ఇంగ్లీష్‌లో మాత్రమే)</translation>
 <translation id="8422787418163030046">ట్రే అందుబాటులో లేదు</translation>

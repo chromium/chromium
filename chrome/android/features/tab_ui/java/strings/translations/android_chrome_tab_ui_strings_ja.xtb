@@ -39,7 +39,7 @@
 <translation id="6856809498882026482">複数選択モードを非表示にします</translation>
 <translation id="7151209024774799310">グループからタブを削除</translation>
 <translation id="7204204600596740190">複数選択モード</translation>
-<translation id="753732157349120914">タブ切り替えモード</translation>
+<translation id="753732157349120914">タブ切り替え機能</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
 <translation id="7792771145871471484">提案を確認します。</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをグループ化する}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをグループ化する}}</translation>

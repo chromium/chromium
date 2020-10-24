@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> се замени со <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Го пребарувавте ова порано. Ако го избришете „<ph name="QUERY" />“ од историјата, трајно ќе се отстрани од вашата сметка на сите уреди.</translation>
+<translation id="1510238584712386396">Стартер</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минута и }one{# минута и }other{# минути и }}</translation>
 <translation id="1643823602425662293">Известување</translation>
 <translation id="169515659049020177">Shift</translation>

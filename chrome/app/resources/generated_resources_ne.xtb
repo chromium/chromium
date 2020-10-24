@@ -1881,7 +1881,6 @@
 <translation id="3165371858310906303">साइटले म कहिले यन्त्र प्रयोग गर्छु भन्ने कुरा थाहा पाउन खोज्दा मलाई सोधियोस्</translation>
 <translation id="3165390001037658081">केही सेवा प्रदायकहरूले यो विशेषतामाथि रोक लगाउन सक्छन्</translation>
 <translation id="316652501498554287">G Suite for Education खाताहरू</translation>
-<translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
 <translation id="3170072451822350649">तपाइँले साइन इन गर्न पनि छाड्न सक्नुहुन्छ र <ph name="LINK_START" />पाहनुाको रूपाम ब्राउज गर्न सक्नुहुन्छ<ph name="LINK_END" />।</translation>
 <translation id="3177909033752230686">पृष्ठको भाषा:</translation>
 <translation id="3179982752812949580">पाठको फन्ट</translation>
@@ -2024,7 +2023,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ले तपाईंसँग <ph name="ATTACHMENTS" /> सेयर गर्ने प्रयास गर्दै छ।}other{<ph name="DEVICE_NAME" /> ले तपाईंसँग <ph name="ATTACHMENTS" /> सेयर गर्ने प्रयास गर्दै छ।}}</translation>
 <translation id="3364986687961713424">तपाईंका प्रशासकको सन्देश: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl वा Alt मध्ये कुनै एक प्रयोग गर्नुहोस्</translation>
-<translation id="3367047597842238025">आफूले चाहे जसरी नै आफ्नो <ph name="DEVICE_TYPE" /> सेटअप गर्नुहोस् र आफ्नो पहुँच क्षेत्रभित्रै सबै राम्रा राम्रा क्षमताहरू प्राप्त गर्नुहोस्।</translation>
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369067987974711168">यो पोर्टका हकमा गर्न सकिने थप कारबाहीहरू देखाउनुहोस्</translation>
 <translation id="3369624026883419694">होस्ट समाधान गर्दै...</translation>
@@ -2347,7 +2345,6 @@
 <translation id="3713047097299026954">यो सुरक्षा साँचोमा साइन इन गर्न चाहिने कुनै पनि डेटा छैन</translation>
 <translation id="3714195043138862580">यो डेमो यन्त्रलाई प्रयोगबाट हटाइएको छ।</translation>
 <translation id="3714633008798122362">वेब पात्रो</translation>
-<translation id="3715954932774762075">एकभन्दा बढी भाषामा उपलब्ध एप र वेबसाइटहरूले यो सूचीको प्रयोग गर्न मिल्ने पहिलो भाषा प्रयोग गर्ने छन्। यी प्राथमिकताहरू तपाईंको ब्राउजरका सेटिङसँग सिंक गरिन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">होमपेज</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तपाईं र Google</translation>
@@ -2485,7 +2482,6 @@
 <translation id="3856800405688283469">समय क्षेत्र चयन गर्नुहोस्</translation>
 <translation id="3857807444929313943">औँला उठाई फेरि छुनुहोस्</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: सिंक गर्ने कार्य पज गरियो</translation>
-<translation id="3861386850461794863">एप तथा वेबसाइटका भाषाहरू</translation>
 <translation id="3861638017150647085">प्रयोगकर्ताको नाम "<ph name="USERNAME" />" उपलब्ध छैन</translation>
 <translation id="3862693525629180217">अन्तर्निर्मित सेन्सरद्वारा पुष्टि गर्नुहोस्</translation>
 <translation id="3862788408946266506">'Kiosk_only" नामक म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS को किओस्क मोडमा स्थापना गर्नु पर्छ</translation>
@@ -3790,7 +3786,6 @@
 <translation id="5457991019809708398">सक्रिय, रोमिङमा छैन</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">लक स्क्रिनसम्बन्धी टिपोटहरू</translation>
-<translation id="546322474339998983">Chrome ब्राउजर र <ph name="DEVICE_TYPE" /> लन्चरले प्रयोग गरेको</translation>
 <translation id="5463231940765244860">प्रविष्टि गर्नुहोस्</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> को सूचकाङ्क</translation>
 <translation id="5463856536939868464">लुकेका बुकमार्क समावेश गरिएका मेनु</translation>
@@ -3916,7 +3911,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">एपहरू लोड गर्दै...</translation>
 <translation id="5592595402373377407">अझै पर्याप्त डाटा उपलब्ध छैन।</translation>
-<translation id="5593357315997824387">मेरा फाइलहरू सिंक गर्नुहोस्</translation>
 <translation id="5595485650161345191">ठेगाना सम्पादन गर्नुहोस्</translation>
 <translation id="5595727715083333657">तपाईंको कन्टेनरको आकार बदल्न मिल्दैन। Linux (बिटा) लाई पहिले नै छुट्याइएको खाली ठाउँको मात्रा समायोजन गर्न यो खाली ठाउँ ब्याक अप गर्नुहोस् र त्यसपछि यसलाई नयाँ कन्टेनरमा पुनर्स्थापना गर्नुहोस्।</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
@@ -6156,7 +6150,6 @@
 <translation id="8218847192766059983">भाषाहरू थप्नुहोस् वा सूचीको क्रम मिलाउनुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">तपाईं सामान्यतया सूचनाहरूमाथि रोक लगाउनुहुन्छ। यो साइटलाई तपाईंलाई सूचना पठाउन अनुमति दिन यहाँ क्लिक गर्नुहोस्।</translation>
 <translation id="8225265270453771718">अनुप्रयोगसम्बन्धी विन्डो सेयर गर्नुहोस्</translation>
-<translation id="8225753906568652947">आफ्ना योजनाहरू प्रयोग गर्नुहोस्</translation>
 <translation id="8226222018808695353">निषेध गरिएको</translation>
 <translation id="8226619461731305576">लाइन</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
@@ -6317,7 +6310,6 @@
 <translation id="8417548266957501132">अभिभावकको पासवर्ड</translation>
 <translation id="8418445294933751433">&amp;ट्याबको रूपमा देखाउनुहोस्</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' सम्बन्धी खोजका परिणामहरू</translation>
-<translation id="8419368276599091549">तपाईंको <ph name="DEVICE_TYPE" /> मा स्वागत छ!</translation>
 <translation id="8420308167132684745">शब्दकोशका प्रविष्टिहरू सम्पादन गर्नुहोस्</translation>
 <translation id="8421361468937925547">लाइभ क्याप्सन (अङ्ग्रेजी भाषामा मात्र)</translation>
 <translation id="8422787418163030046">ट्रे छैन</translation>

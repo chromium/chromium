@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> を共有できません</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> と <ph name="SECOND_ITEM_TITLE" /> が置き換わりました</translation>
 <translation id="1498028757988366001">このキーワードは以前に検索したことがあります。「<ph name="QUERY" />」を履歴から削除すると、アカウントから完全に（つまりすべてのデバイスから）削除されます。</translation>
+<translation id="1510238584712386396">ランチャー</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 分 }other{# 分 }}</translation>
 <translation id="1643823602425662293">通知</translation>
 <translation id="169515659049020177">Shift</translation>

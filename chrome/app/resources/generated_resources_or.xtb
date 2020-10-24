@@ -447,6 +447,7 @@
 <translation id="1509281256533087115">USB ମାଧ୍ୟମରେ ଯେକୌଣସି <ph name="DEVICE_NAME_AND_VENDOR" /> ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
 <translation id="1509960214886564027">କିଛି ସାଇଟରେ ଫିଚରଗୁଡ଼ିକ ଠିକ୍ ଭାବେ କାମ କରିନପାରେ</translation>
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
+<translation id="151070646350206700">ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତି ପଠାଇବାକୁ ପଚାରି ବାଧା ସୃଷ୍ଟି କରିପାରିବ ନାହିଁ</translation>
 <translation id="1510785804673676069">ଯଦି ଆପଣ ଏକ ପ୍ରକ୍ସି ସର୍ଭର୍ ବ୍ୟବହାର କରୁଛନ୍ତି, ତେବେ ନିଜର ପ୍ରକ୍ସି ସେଟିଂସ୍ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା ପ୍ରକ୍ସି ସର୍ଭର କାର୍ଯ୍ୟକ୍ଷମ ଅଛି କି ନାହିଁ ତାହା ଯାଞ୍ଚ କରିବାକୁ ନିଜର ନେଟ୍‌ୱାର୍କ ବ୍ୟବସ୍ଥାପକଙ୍କ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ। ଯଦି ଏକ ପ୍ରକ୍ସି ସର୍ଭର ବ୍ୟବହାର କରିବାକୁ ଆପଣ ଉଚିତ ମନେକରୁନାହାନ୍ତି, ତେବେ ନିଜର <ph name="LINK_START" />ପ୍ରକ୍ସି ସେଟିଂସ୍<ph name="LINK_END" />କୁ ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="1511997356770098059">କୌଣସି ସାଇନ୍-ଇନ୍ ଡାଟା ଏହି ସୁରକ୍ଷା କୀ ଷ୍ଟୋର୍ କରିପାରିବ ନାହିଁ</translation>
 <translation id="1512210426710821809">ଏହାକୁ ପୂର୍ବବତ୍ କରିବାର ଏକମାତ୍ର ଉପାୟ ହେଉଛି <ph name="IDS_SHORT_PRODUCT_OS_NAME" />କୁ ରିଇନ୍‌ଷ୍ଟଲ୍ କରିବା</translation>
@@ -928,6 +929,7 @@
 <translation id="205560151218727633">Google ଆସିଷ୍ଟାଣ୍ଟ ଲୋଗୋ</translation>
 <translation id="2058456167109518507">ଡିଭାଇସ୍ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="2059913712424898428">ସମୟ କ୍ଷେତ୍ର</translation>
+<translation id="2060375639911876205">eSIM ପ୍ରୋଫାଇଲକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="2065405795449409761">Chrome ସ୍ୱୟଂଚାଳିତ ପରୀକ୍ଷଣ ସଫ୍ଟୱେର୍ ଦ୍ୱାରା ନିୟନ୍ତ୍ରିତ ହେଉଛି।</translation>
 <translation id="2071393345806050157">କୌଣସି ସ୍ଥାନୀୟ ଲଗ୍‌ ଫାଇଲ୍‌ ନାହିଁ।</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ଏକ୍ସଟେନସନ ଇନଷ୍ଟଲ୍ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ}other{ଏହି ଏକ୍ସଟେନସନଗୁଡ଼ିକ ଇନଷ୍ଟଲ୍ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ}}</translation>
@@ -1877,7 +1879,6 @@
 <translation id="3165371858310906303">ଆପଣ କେତେବେଳେ ସକ୍ରିୟ ହୁଅନ୍ତି ତାହା କୌଣସି ସାଇଟ୍ ଜାଣିବାକୁ ଚାହିଁଲେ ପଚାରନ୍ତୁ</translation>
 <translation id="3165390001037658081">କିଛି ବାହକ ଏହି ବୈଶିଷ୍ଟ୍ୟକୁ ବ୍ଲକ୍ କରିପାରନ୍ତି।</translation>
 <translation id="316652501498554287">G Suite for Education ଆକାଉଣ୍ଟଗୁଡ଼ିକ</translation>
-<translation id="3169472444629675720">ଖୋଜି ପାଆନ୍ତୁ</translation>
 <translation id="3170072451822350649">ଆପଣ ହୁଏତ ସାଇନ୍ ଇନ୍‌କୁ ଛାଡ଼ିପାରିବେ ଏବଂ <ph name="LINK_START" />ଅତିଥି ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ<ph name="LINK_END" />।</translation>
 <translation id="3177909033752230686">ପୃଷ୍ଠାର ଭାଷା:</translation>
 <translation id="3179982752812949580">ଟେକ୍ସଟ୍ ଫଣ୍ଟ</translation>
@@ -2020,7 +2021,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ଆପଣଙ୍କ ସହ <ph name="ATTACHMENTS" /> ସେୟାର୍ କରୁଛି।}other{<ph name="DEVICE_NAME" /> ଆପଣଙ୍କ ସହ <ph name="ATTACHMENTS" /> ସେୟାର୍ କରୁଛି।}}</translation>
 <translation id="3364986687961713424">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଠାରୁ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl କିମ୍ବା Alt ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="3367047597842238025">ଆପଣ ଯେପରି ଚାହାଁନ୍ତି, ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ସେଟ୍ କରନ୍ତୁ ଏବଂ ସମସ୍ତ ଆଶ୍ଚର୍ଯ୍ୟଜନକ ଦକ୍ଷତା ସହଜରେ ଆବିଷ୍କାର କରନ୍ତୁ।</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369067987974711168">ଏହି ପୋର୍ଟ ପାଇଁ ଅଧିକ କାର୍ଯ୍ୟ ଦେଖାନ୍ତୁ</translation>
 <translation id="3369624026883419694">ପ୍ରାୟୋଜକ ସ୍ଥିର କରୁଛି...</translation>
@@ -2343,7 +2343,6 @@
 <translation id="3713047097299026954">ଏହି ସୁରକ୍ଷା କୀ’ରେ କୌଣସି ସାଇନ୍-ଇନ୍ ଡାଟା ଷ୍ଟୋର୍ ହୋଇନାହିଁ</translation>
 <translation id="3714195043138862580">ଏହି ଡେମୋ ଡିଭାଇସ୍‌ଟିକୁ ଏକ ଅବ୍ୟବସ୍ଥିତ ସ୍ଥିତିରେ ରଖାଯାଇଛି।</translation>
 <translation id="3714633008798122362">ୱେବ୍ କ୍ୟାଲେଣ୍ଡର୍</translation>
-<translation id="3715954932774762075">ଏକାଧିକ ଭାଷାରେ ଉପଲବ୍ଧ ଆପ୍ ଏବଂ ୱେବସାଇଟଗୁଡ଼ିକ ଏହି ତାଲିକାରୁ ପ୍ରଥମ ସମର୍ଥିତ ଭାଷାକୁ ବ୍ୟବହାର କରିବ। ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ସେଟିଂସ୍ ସହିତ ଏହି ପସନ୍ଦଗୁଡ଼ିକୁ ସିଙ୍କ୍ କରାଯାଇଛି। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">ମୂଳ ପୃଷ୍ଠା</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ଆପଣ ଏବଂ Google</translation>
@@ -2481,7 +2480,6 @@
 <translation id="3856800405688283469">ଟାଇମ୍‌ ଜୋନ୍ ବାଛନ୍ତୁ</translation>
 <translation id="3857807444929313943">ଆଙ୍ଗୁଠି ଉଠାଇ ପୁଣି ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: ସିଙ୍କ ବିରତ ହୋଇଛି</translation>
-<translation id="3861386850461794863">ଆପ୍ ଏବଂ ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="3861638017150647085">ଉପଯୋଗକର୍ତ୍ତାନାମ "<ph name="USERNAME" />" ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3862693525629180217">ବିଲ୍ଟ-ଇନ୍ ସେନ୍ସର୍ ମାଧ୍ୟମରେ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3862788408946266506">Chrome OS କିଓସ୍କୋ ମୋଡ୍‌ରେ 'kiosk_only' ମାନିଫେଷ୍ଟ ବିଶେଷତାକୁ ନିଶ୍ଚିତରୂପେ ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ଉଚିତ୍‍</translation>
@@ -2724,6 +2722,7 @@
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="413193092008917129">ନେଟୱାର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ ରୁଟିନ୍</translation>
 <translation id="4132183752438206707">Google Play Storeରେ ଆପଗୁଡ଼ିକୁ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
+<translation id="4132364317545104286">eSIM ପ୍ରୋଫାଇଲକୁ ଆଉ ଗୋଟିଏ ନାମ ଦିଅନ୍ତୁ</translation>
 <translation id="4133076602192971179">ଆପଣଙ୍କ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରିବାକୁ ଆପଟି ଖୋଲନ୍ତୁ</translation>
 <translation id="4136203100490971508">ସୂର୍ଯ୍ୟୋଦୟ ସମୟରେ ନାଇଟ୍‍ ଲାଇଟ୍‍ ସ୍ୱଚାଳିତ ଭାବେ ବନ୍ଦ ହୋଇଯିବ</translation>
 <translation id="41365691917097717">ଜାରି ରଖିବା ଦ୍ୱାରା ADB ଡିବଗିଂକୁ Android ଆପ୍‌ଗୁଡ଼ିକ ତିଆରି କରିବା ଏବଂ ପରୀକ୍ଷା କରିବା ପାଇଁ ସକ୍ଷମ କରିବ। ଧ୍ୟାନ ଦିଅନ୍ତୁ ଯେ ଏହି କାର୍ଯ୍ୟ Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇନଥିବା Android ଆପ୍ସର ଇନ୍‍ଷ୍ଟଲେସନ୍‍କୁ ଅନୁମତି ଦିଏ ଏବଂ ଅକ୍ଷମ କରିବା ପାଇଁ ଏକ ଫ୍ୟାକ୍ଟୋରୀ ରିସେଟ୍ ଆବଶ୍ୟକ କରେ।</translation>
@@ -3237,6 +3236,7 @@
 <translation id="4778644898150334464">ଅନ୍ୟ ଏକ ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4779083564647765204">ଜୁମ୍</translation>
 <translation id="4779136857077979611">ଓନିଗିରି</translation>
+<translation id="4779766576531456629">eSIM ସେଲ୍ୟୁଲାର୍ ନେଟୱାର୍କକୁ ଆଉ ଗୋଟିଏ ନାମ ଦିଅନ୍ତୁ</translation>
 <translation id="4780321648949301421">ଏହିପରି ଭାବେ ପୃଷ୍ଠାଟିକୁ ସେଭ୍ କରନ୍ତୁ...</translation>
 <translation id="4785719467058219317">ଆପଣ ଏପରି ଏକ କୀ ବ୍ୟବହାର କରୁଛନ୍ତି, ଯାହାକୁ ଏହି ୱେବସାଇଟ୍‌ରେ ପଞ୍ଜୀକୃତ କରାଯାଇ ନାହିଁ</translation>
 <translation id="4788092183367008521">ଦୟାକରି ଆପଣଙ୍କ ନେଟ୍‍ୱର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -3680,6 +3680,7 @@
 <translation id="5324780743567488672">ଆପଣଙ୍କର ଲୋକେସନ୍‌ ବ୍ୟବହାର କରି ସ୍ୱଚାଳିତ ଭାବେ ସମୟ କ୍ଷେତ୍ର ସେଟ୍‌ କରନ୍ତୁ</translation>
 <translation id="5327248766486351172">ନାମ</translation>
 <translation id="5327570636534774768">ଏହି ଡିଭାଇସ୍‌, ଏକ ଅଲଗା ଡୋମେନ୍‌ ଚରଫରୁ ପରିଚାଳିତ ହେବା ପାଇଁ ଚିହ୍ନଟ କରାଯାଇଛି। ଡେମୋ ମୋଡ୍‌କୁ ସେଟ୍‌ ଅପ୍‍ କରିବା ପୂର୍ବରୁ ଡିଭାଇସ୍‌କୁ ସେହି ଡୋମେନ୍‌ର ବ୍ୟବହାରରୁ ବାହାର କରନ୍ତୁ ।</translation>
+<translation id="5327912693242073631">ବିଜ୍ଞପ୍ତି ଆବଶ୍ୟକ କରୁଥିବା ଫିଚରଗୁଡ଼ିକ କାମ କରିବ ନାହିଁ</translation>
 <translation id="532943162177641444">ମୋବାଇଲ୍‌ ହଟ୍‌ସ୍ପଟ୍‍ ସେଟ୍‍ ଅପ୍‌ କରିବାକୁ ଯାହା ଏହି ଡିଭାଇସ୍‌ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଇପାରିବ, ଆପଣଙ୍କର <ph name="PHONE_NAME" />ର ବିଜ୍ଞପ୍ତିରେ ଟାପ୍‌ କରନ୍ତୁ।</translation>
 <translation id="5329858601952122676">&amp;ବିଲୋପ</translation>
 <translation id="5331069282670671859">ଆପଣଙ୍କ ପାଖରେ ଏହି ବର୍ଗ ପାଇଁ କୌଣସି ସାର୍ଟିଫିକେଟ୍ ନାହିଁ</translation>
@@ -3731,6 +3732,7 @@
 <translation id="5390112241331447203">ମତାମତ ରିପୋର୍ଟଗୁଡ଼ିକରେ ପଠାଯାଇଥିବା system_logs.txt ଫାଇଲ୍ ସାମିଲ କରନ୍ତୁ।</translation>
 <translation id="5390677308841849479">ଗାଢ଼ ଲାଲ ଓ କମଳା</translation>
 <translation id="5390743329570580756">ଏହା ପାଇଁ ପଠାନ୍ତୁ</translation>
+<translation id="5392192690789334093">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5397794290049113714">ଆପଣ</translation>
 <translation id="5398497406011404839">ଲୁକ୍କାୟିତ ବୁକମାର୍କଗୁଡ଼ିକ</translation>
 <translation id="5398572795982417028">ସୀମା ବାହାର ପୃଷ୍ଠାର ସନ୍ଦର୍ଭ, ସୀମା <ph name="MAXIMUM_PAGE" /> ଅଟେ</translation>
@@ -3786,7 +3788,6 @@
 <translation id="5457991019809708398">ଚାଲୁ ଅଛି, ରୋମିଂରେ ନାହିଁ</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">ଲକ୍ ସ୍କ୍ରିନ୍ ପାଇଁ ଟିପ୍ପଣୀ</translation>
-<translation id="546322474339998983">Chrome ବ୍ରାଉଜର୍ ଏବଂ <ph name="DEVICE_TYPE" /> ଲଞ୍ଚର୍ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଏ</translation>
 <translation id="5463231940765244860">ଲେଖନ୍ତୁ</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> ର ସୂଚୀପତ୍ର</translation>
 <translation id="5463856536939868464">ମେନୁରେ ଲୁଚାଯାଇଥିବା ବୁକ୍‌ମାର୍କଗୁଡ଼ିକ ଅଛି</translation>
@@ -3912,7 +3913,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ଆପ୍ସ ଲୋଡ୍‌ ହେଉଛି...</translation>
 <translation id="5592595402373377407">ଏପର୍ଯ୍ୟନ୍ତ ସୁଦ୍ଧା ପର୍ଯ୍ୟାପ୍ତ ଡାଟା ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="5593357315997824387">ମୋର ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="5595485650161345191">ଠିକଣା ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="5595727715083333657">ଆପଣଙ୍କ କଣ୍ଟେନର୍ ଆକାର ପରିବର୍ତ୍ତନ ସୁବିଧାକୁ ସମର୍ଥନ କରେ ନାହିଁ। Linux (ବିଟା) ନିମନ୍ତେ ପୂର୍ବରୁ-ଆବଣ୍ଟନ କରାଯାଇଥିବା ସ୍ଥାନର ପରିମାଣକୁ ଆଡଜଷ୍ଟ କରିବା ପାଇଁ ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ ଏବଂ ତାପରେ ଏକ ନୂଆ କଣ୍ଟେନରରେ ଏହାକୁ ରିଷ୍ଟୋର୍ କରନ୍ତୁ।</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
@@ -4035,6 +4035,7 @@
 <translation id="5739235828260127894">ଯାଞ୍ଚକରଣ ପାଇଁ ଅପେକ୍ଷାରତ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">ବହୁତ ବଡ଼</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
+<translation id="5740820643029013514">ନୀରବ ମେସେଜିଂ ବ୍ୟବହାର କରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="574104302965107104">ଡିସପ୍ଲେ ମିରରିଂ</translation>
 <translation id="574209121243317957">ସ୍ୱରର ଉଚ୍ଚତା</translation>
 <translation id="5746169159649715125">PDF ଭାବରେ ସେଭ୍‍ କରନ୍ତୁ</translation>
@@ -4254,6 +4255,7 @@
 <translation id="6002210667729577411">ନୂଆ ୱିଣ୍ଡୋକୁ ଗୋଷ୍ଠୀ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="6002452033851752583">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ପାସୱାର୍ଡକୁ ଡିଲିଟ୍ କରିଦିଆଯାଇଛି</translation>
 <translation id="6002458620803359783">ଅଗ୍ରାଧିକାର ଭିତ୍ତିରେ ଦିଆଯାଇଥିବା ଭଏସ୍‌</translation>
+<translation id="6003143259071779217">eSIM ସେଲ୍ୟୁଲାର୍ ନେଟୱାର୍କକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6006484371116297560">କ୍ଲାସିକ୍</translation>
 <translation id="6007240208646052708">ଆପଣଙ୍କ ଭାଷାରେ ଭଏସ୍ ସନ୍ଧାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="6009781704028455063">ବିଲ୍ଟ-ଇନ୍ ସେନ୍ସର୍</translation>
@@ -4522,6 +4524,7 @@
 <translation id="6308937455967653460">ଲି&amp;ଙ୍କ ଏହିଭାବେ ସଞ୍ଚୟ କରନ୍ତୁ...</translation>
 <translation id="6309443618838462258">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହି ଇନପୁଟ୍ ପଦ୍ଧତିକୁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ</translation>
 <translation id="6309510305002439352">ମାଇକ୍ରୋଫୋନ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="6310472381159916879">ପ୍ରୋଫାଇଲକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6311220991371174222">Chrome ଆରମ୍ଭ କରିପାରିବେ ନାହିଁ କାରଣ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‌ ଖୋଲିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି। Chrome ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6312403991423642364">ଅଜଣା ନେଟ୍‌ୱର୍କ ତ୍ରୁଟି</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{ସୁରକ୍ଷା ଯାଞ୍ଚ 1 ଦିନ ପୂର୍ବେ ଚାଲିଥିଲା}other{ସୁରକ୍ଷା ଯାଞ୍ଚ {NUM_DAYS} ଦିନ ପୂର୍ବେ ଚାଲିଥିଲା}}</translation>
@@ -4712,6 +4715,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6532663472409656417">ଏଣ୍ଟରପ୍ରାଇଜ୍ ପଞ୍ଜିକରଣ କରାଯାଇଛି</translation>
 <translation id="6535331821390304775">ସମ୍ବନ୍ଧିତ ଆପରେ ଏହି ପ୍ରକାର ଲିଙ୍କଗୁଡ଼ିକ ଖୋଲିବାକୁ <ph name="ORIGIN" />କୁ ସର୍ବଦା ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="6537613839935722475">ନାମରେ ଅକ୍ଷର, ସଂଖ୍ଯା ଏବଂ ହାଇଫେନ୍ (-) ବ୍ୟବହାର କରାଯାଇପାରେ</translation>
+<translation id="6537880577641744343">କମାଣ୍ଡର୍</translation>
 <translation id="6538635548667167211">ଡାଟା ବ୍ୟବହାରର ବର୍ତ୍ତମାନ ସେଟିଂ "ଡାଟା"ରେ ସେଟ୍ ହୋଇଛି</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />ଟିପ୍ପଣୀ:<ph name="END_BOLD" /> ଯଦି ଆପଣ ଜାଣିଛନ୍ତି ଯେ ଆପଣ କ'ଣ କରୁଛନ୍ତି କିମ୍ବା ଆପଣଙ୍କୁ ଏପରି କରିବାକୁ କୁହାଯାଇଛି, କାରଣ ଡାଟାର ସଂଗ୍ରହ କାର୍ଯ୍ୟଦକ୍ଷତାକୁ କମାଇପାରେ।</translation>
 <translation id="6541638731489116978">ଏହି ସାଇଟ୍‍କୁ ଆପଣଙ୍କ ମୋସନ୍ ସେନ୍‌ସର୍ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
@@ -5844,6 +5848,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7855678561139483478">ଟାବ୍‍କୁ ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="7857117644404132472">ବ୍ୟତିକ୍ରମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7857949311770343000">ଏହା କ'ଣ ଆପଣ ପ୍ରତ୍ୟାଶିତ କରୁଥିବା ନୂଆ ଟାବ୍ ପୃଷ୍ଠା ଅଟେ?</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">ଡିସେମ୍ବର ପରେ ଏହି ବିକଳ୍ପ ସମର୍ଥିତ ହେବ ନାହିଁ। ଆପଣଙ୍କ ଆଡମିନଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="786073089922909430">ସେବା: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ଡାଉନଲୋଡସମୂହ</translation>
@@ -6153,7 +6158,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8218847192766059983">ଭାଷାଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ କିମ୍ବା ତାଲିକାକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତି। ଏହି ସାଇଟ୍‌କୁ ଆପଣଙ୍କୁ ସୂଚିତ କରିବା ସୁବିଧା ଦେବା ପାଇଁ, ଏଠାରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="8225265270453771718">ଏକ ଆପ୍ଲିକେସନ୍ ୱିଣ୍ଡୋ ସେୟାର୍ କରନ୍ତୁ</translation>
-<translation id="8225753906568652947">ନିଜ ଅଫର୍‌ଗୁଡ଼ିକୁ ରିଡିମ୍‌ କରନ୍ତୁ</translation>
 <translation id="8226222018808695353">ନିଷିଦ୍ଧ</translation>
 <translation id="8226619461731305576">ଧାଡ଼ି</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
@@ -6164,6 +6168,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8236917170563564587">ଏହା ପରିବର୍ତ୍ତେ ଏହି ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="8237647586961940482">ଗାଢ଼ ଗୋଲାପି ଓ ଲାଲ</translation>
 <translation id="8239032431519548577">ଏଣ୍ଟରପ୍ରାଇଜ୍ ପଞ୍ଜିକରଣ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
+<translation id="8239932336306009582">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="8241040075392580210">ଛାୟାପ୍ରଦ</translation>
 <translation id="8241806945692107836">ଡିଭାଇସ୍ କନଫିଗ୍‌ରେସନ୍ ନିର୍ଦ୍ଧାରଣ କରାଯାଉଛି...</translation>
 <translation id="8241868517363889229">ନିଜର ବୁକ୍‌ମାର୍କଗୁଡ଼ିକୁ ପଢ଼ନ୍ତୁ ଓ ବଦଳାନ୍ତୁ</translation>
@@ -6293,6 +6298,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8386091599636877289">ନୀତି ମିଳିଲା ନାହିଁ।</translation>
 <translation id="8386903983509584791">ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହେଲା</translation>
 <translation id="8387361103813440603">ଆପଣଙ୍କ ଲୋକେସନ୍ ଦେଖିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
+<translation id="8389264703141926739">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="8389416080014625855">ଏହି ପୃଷ୍ଠା ପାଇଁ QR କୋଡ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8389492867173948260">ୱେବ୍‌ସାଇଟ୍‌ରେ ଆପଣ ଦେଖିଥିବା ସମସ୍ତ ଡାଟାକୁ ପଢିବା ଏବଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅନୁମତି ଦିଅନ୍ତୁ:</translation>
 <translation id="8390449457866780408">ସର୍ଭର୍‌ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -6314,7 +6320,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8417548266957501132">ବାପାମାଙ୍କ ପାସୱାର୍ଡ</translation>
 <translation id="8418445294933751433">&amp;ଟ୍ୟାବ୍ ଭାବେ ଦେଖାନ୍ତୁ</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' ପାଇଁ ସନ୍ଧାନ ଫଳାଫଳ</translation>
-<translation id="8419368276599091549">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />କୁ ସ୍ୱାଗତ!</translation>
 <translation id="8420308167132684745">ଶବ୍ଦକୋଷ ଏଣ୍ଟ୍ରିଗୁଡ଼ିକୁ ସମ୍ପାଦନ କରନ୍ତୁ</translation>
 <translation id="8421361468937925547">ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ (କେବଳ ଇଂରାଜୀ)</translation>
 <translation id="8422787418163030046">ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>
@@ -6503,6 +6508,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8645354835496065562">ସେନ୍ସର୍ ଆକ୍‌ସେସ୍ କରିବାର ଅନୁମତି ଦେବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="8645920082661222035">ବିପଦଜନକ ଘଟଣାଗୁଡ଼ିକ ଘଟିବା ପୂର୍ବରୁ ସେଗୁଡ଼ିକର ପୂର୍ବାନୁମାନ କରି ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ</translation>
 <translation id="8646209145740351125">ସିଙ୍କ୍ ଅକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="864637694230589560">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ତାଜା ସମାଚାର ବା ଚାଟ୍ ମେସେଜଗୁଡ଼ିକ ବିଷୟରେ ଆପଣଙ୍କୁ ଜଣାଇବା ପାଇଁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଏ</translation>
 <translation id="8647834505253004544">ଏକ ବୈଧ ୱେବ୍‌ସାଇଟ୍ ଠିକଣା ନୁହେଁ</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> କିମ୍ବା <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">ନାଇଟ୍ ଲାଇଟ୍ ରଙ୍ଗ ତାପମାତ୍ରା</translation>

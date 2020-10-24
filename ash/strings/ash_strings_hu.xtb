@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">Az asztal neve a következőre változott: <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Álló</translation>
 <translation id="2067602449040652523">Billentyűzet világossága</translation>
-<translation id="2074759828767813253">Legutóbbi képernyőképek és letöltések</translation>
 <translation id="2083190527011054446">Jó éjszakát, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Nincs hálózati kapcsolat</translation>
 <translation id="2126242104232412123">Új asztal</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">A többfiókos bejelentkezés le van tiltva</translation>
 <translation id="2582112259361606227">Újraindítás és frissítés</translation>
 <translation id="2595239820337756193">5000 mérföld</translation>
+<translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
 <translation id="2617342710774726426">A SIM-kártya zárolva van</translation>
 <translation id="2621713457727696555">Biztonságos</translation>
 <translation id="2640255526076764619">Az érintőpadon az előző asztalra váltáshoz használt kézmozdulat megváltozott. Csúztasson balra négy ujjal az előző asztalra váltáshoz.</translation>
@@ -330,6 +330,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4215497585250573029">VPN-beállítások</translation>
 <translation id="4217571870635786043">Diktálás</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4261870227682513959">Az értesítési beállítások megjelenítése. Az értesítések ki vannak kapcsolva</translation>
 <translation id="4267383818855338811">Egy virtuális gép használja az Ön kameráját</translation>
 <translation id="4269883910223712419">Az eszköz rendszergazdája a következőket végezheti el:</translation>
@@ -377,6 +378,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4596144739579517758">Sötét téma kikapcsolva.</translation>
 <translation id="4623167406982293031">Fiók ellenőrzése</translation>
 <translation id="4628757576491864469">Eszközök</translation>
+<translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
 <translation id="4659419629803378708">ChromeVox bekapcsolva</translation>
 <translation id="4665114317261903604">A Ne zavarjanak funkció ki- vagy bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Zárolás feloldása szülői kóddal</translation>
@@ -424,7 +426,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5035236842988137213">A(z) <ph name="DEVICE_NAME" /> új telefonhoz csatlakozott</translation>
 <translation id="5035389544768382859">Képernyő-beállítás megerősítése</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
-<translation id="5114495209940374989">Képernyőképek</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
 <translation id="5168181903108465623">Cast-eszközök állnak rendelkezésre</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
@@ -493,7 +494,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Inaktív asztal.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Kattintson bárhová a teljes képernyő rögzítéséhez</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5920710855273935292">A mikrofon le van némítva.</translation>
 <translation id="594179686076170922">Kapcsolódás a telefonhoz…</translation>
@@ -754,7 +754,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8563862697512465947">Értesítési beállítások</translation>
 <translation id="857201607579416096">A menü a képernyő jobb alsó sarkába került.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Koppintson bárhova a teljes képernyő rögzítéséhez</translation>
 <translation id="8627191004499078455">Csatlakozva a(z) <ph name="DEVICE_NAME" /> eszközhöz</translation>
 <translation id="8631727435199967028">Kisegítő lehetőségek beállításai</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>

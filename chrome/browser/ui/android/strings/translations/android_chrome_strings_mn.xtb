@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">Сонгосон нууцлалын чихтэй хуудас</translation>
 <translation id="2987620471460279764">Өөр төхөөрөмжөөс хуваалцсан текст</translation>
 <translation id="2989523299700148168">Саяхан хандсан</translation>
+<translation id="2992473221983447149">Зургийн тайлбар</translation>
 <translation id="2996291259634659425">Нэвтрэх үг үүсгэх</translation>
 <translation id="2996809686854298943">URL шаардлагатай</translation>
 <translation id="3006881078666935414">Хэрэглээний дата алга</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> хавчуурга}other{<ph name="BOOKMARKS_COUNT_MANY" /> хавчуурга}}</translation>
 <translation id="3062802207422175757">Таны сонирхолтой холбоотой Chrome дээрх нийтлэлүүд</translation>
 <translation id="3089395242580810162">Нууцлалтай таб дээр нээх</translation>
+<translation id="3098745985164956033">Танд зориулан тайлбарыг сайжруулахын тулд зарим зургийг Google-д илгээдэг.</translation>
 <translation id="3114507951000454849">Өнөөдрийн мэдээг уншаарай <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Зарлал</translation>
 <translation id="3137521801621304719">Нууцлалын горимыг орхих</translation>
@@ -774,6 +776,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6545017243486555795">Бүх өгөгдлийг устгах</translation>
 <translation id="6560414384669816528">Sogou-р хайх</translation>
 <translation id="656065428026159829">Дэлгэрэнгүй үзэх</translation>
+<translation id="6565959834589222080">Wi-Fi-г боломжтой үед ашигладаг</translation>
 <translation id="6566259936974865419">Chrome <ph name="GIGABYTES" /> гигабайтыг хэмнэсэн</translation>
 <translation id="6573096386450695060">Байнга зөвшөөрөх</translation>
 <translation id="6573431926118603307">Таны бусад төхөөрөмжөөрөө Chrome-д нээсэн чихтэй хуудас энд харагдах болно.</translation>
@@ -1085,6 +1088,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8788968922598763114">Сүүлд хаасан чихтэй хуудсыг дахин нээх</translation>
 <translation id="8798449543960971550">Унших</translation>
 <translation id="8812260976093120287">Зарим веб хуудаст та төлбөр хийхдээ таны төхөөрөмжид дэмжсэн дээрх төлбөрийн аппыг ашиглах боломжтой.</translation>
+<translation id="881688628773363275">Урьдчилан үзэх табын контентыг үзэх боломжгүй.</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>
 <translation id="883806473910249246">Агуулгыг татаж байх үед алдаа гарлаа.</translation>
 <translation id="8840953339110955557">Энэ хуудас онлайн хувилбараас өөр байж болзошгүй.</translation>

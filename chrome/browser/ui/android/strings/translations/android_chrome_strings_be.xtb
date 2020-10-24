@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">Выбраная ўкладка інкогніта</translation>
 <translation id="2987620471460279764">Тэкст, абагулены з іншай прылады</translation>
 <translation id="2989523299700148168">Нядаўнія</translation>
+<translation id="2992473221983447149">Апісанні відарысаў</translation>
 <translation id="2996291259634659425">Стварыць фразу-пароль</translation>
 <translation id="2996809686854298943">Патрабуецца URL-адрас</translation>
 <translation id="3006881078666935414">Няма даных аб выкарыстанні</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладак}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}}</translation>
 <translation id="3062802207422175757">Цікавыя для вас артыкулы ў Chrome</translation>
 <translation id="3089395242580810162">Адкрыць ва ўкладцы інкогніта</translation>
+<translation id="3098745985164956033">Некаторыя відарысы адпраўляюцца ў Google, каб палепшыць іх апісанне</translation>
 <translation id="3114507951000454849">Чытайце сённяшнія навіны <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Апавяшчэнні</translation>
 <translation id="3137521801621304719">Выйсці з рэжыму інкогніта</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">Ачысціць усе даныя</translation>
 <translation id="6560414384669816528">Пошук праз Sogou</translation>
 <translation id="656065428026159829">Яшчэ</translation>
+<translation id="6565959834589222080">Калі сетка Wi-Fi даступная, будзе выкарыстоўвацца яна</translation>
 <translation id="6566259936974865419">Chrome сэканоміў вам <ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6573096386450695060">Заўсёды дазваляць</translation>
 <translation id="6573431926118603307">Тут з'явяцца ўкладкі, адкрытыя вамі ў браўзеры Chrome на іншых прыладах.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">Адкрыць апошнюю закрытую ўкладку</translation>
 <translation id="8798449543960971550">Прачытана</translation>
 <translation id="8812260976093120287">На некаторых вэб-сайтах можна плаціць з дапамогай указаных вышэй плацежных праграм, усталяваных на прыладзе.</translation>
+<translation id="881688628773363275">Не ўдаецца паказаць змесціва ўкладкі перадпрагляду.</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="883806473910249246">Адбылася памылка падчас спампоўвання змесціва.</translation>
 <translation id="8840953339110955557">Гэта старонка можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>

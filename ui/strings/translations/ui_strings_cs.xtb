@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1487931858675166540">Položka <ph name="FIRST_ITEM_TITLE" /> byla prohozená s položkou <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Toto jste v minulosti vyhledávali. Když dotaz „<ph name="QUERY" />“ vymažete z historie, bude trvale odstraněn z vašeho účtu na všech zařízeních.</translation>
+<translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuta a  }few{# minuty a  }many{# minuty a  }other{# minut a  }}</translation>
 <translation id="1643823602425662293">Oznámení</translation>
 <translation id="169515659049020177">Shift</translation>

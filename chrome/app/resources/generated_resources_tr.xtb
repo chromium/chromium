@@ -1884,7 +1884,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3165371858310906303">Bir site, etkin olduğumu bilmek istediğinde sor</translation>
 <translation id="3165390001037658081">Bazı operatörler bu özelliği engelleyebilir.</translation>
 <translation id="316652501498554287">Eğitim için G Suite hesapları</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Ayrıca, oturum açmayı atlayabilir ve <ph name="LINK_START" />misafir olarak göz atabilirsiniz<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Sayfanın Dili:</translation>
 <translation id="3179982752812949580">Metin yazı tipi</translation>
@@ -2027,7 +2026,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> sizinle <ph name="ATTACHMENTS" /> paylaşıyor.}other{<ph name="DEVICE_NAME" /> sizinle <ph name="ATTACHMENTS" /> paylaşıyor.}}</translation>
 <translation id="3364986687961713424">Yöneticinizden: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl veya Alt tuşlarından birini kullanın</translation>
-<translation id="3367047597842238025"><ph name="DEVICE_TYPE" /> cihazınızı istediğiniz gibi kurun ve parmaklarınızın ucundaki harika yeteneklerin tamamını keşfedin.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369067987974711168">Bu bağlantı noktası için daha fazla işlem göster</translation>
 <translation id="3369624026883419694">Ana bilgisayar çözümleniyor...</translation>
@@ -2350,7 +2348,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3713047097299026954">Bu güvenlik anahtarında depolanan herhangi bir oturum açma verisi yok</translation>
 <translation id="3714195043138862580">Bu demo cihaz, temel hazırlığı kaldırılmış durumuna getirildi.</translation>
 <translation id="3714633008798122362">web takvimi</translation>
-<translation id="3715954932774762075">Birden fazla dilde sunulan uygulama ve web siteleri bu listedeki ilk desteklenen dili kullanır. Bu tercihler, tarayıcı ayarlarınızla senkronize edilir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Ana sayfa</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Siz ve Google</translation>
@@ -2488,7 +2485,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3856800405688283469">Saat dilimi seçin</translation>
 <translation id="3857807444929313943">Kaldırın, tekrar dokunun</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Senkronizasyon duraklatıldı</translation>
-<translation id="3861386850461794863">Uygulama ve web sitesi dilleri</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" kullanıcı adı kullanılamıyor</translation>
 <translation id="3862693525629180217">Yerleşik sensör kullanarak doğrula</translation>
 <translation id="3862788408946266506">"kiosk_only" manifest özelliğine sahip uygulamalar ChromeOS kiosk modunda yüklenmelidir</translation>
@@ -3794,7 +3790,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5457991019809708398">Açık, dolaşımda değil</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Kilit ekranı notları</translation>
-<translation id="546322474339998983">Chrome tarayıcı ve <ph name="DEVICE_TYPE" /> Başlatıcı tarafından kullanılıyor</translation>
 <translation id="5463231940765244860">Gir</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> dizini</translation>
 <translation id="5463856536939868464">Gizlenmiş yer işaretlerini içeren menü</translation>
@@ -3920,7 +3915,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Uygulamalar yükleniyor...</translation>
 <translation id="5592595402373377407">Henüz yeterli veri yok.</translation>
-<translation id="5593357315997824387">Dosyalarımı senkronize et</translation>
 <translation id="5595485650161345191">Adresi düzenle</translation>
 <translation id="5595727715083333657">Kapsayıcınız yeniden boyutlandırılmayı desteklemiyor. Linux'a (Beta) önceden ayrılan yer miktarını düzenlemek için yedekleme yapın, ardından yeni bir kapsayıcıya geri yükleyin.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
@@ -6162,7 +6156,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8218847192766059983">Dil ekleyin veya listeyi yeniden sıralayın <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için burayı tıklayın.</translation>
 <translation id="8225265270453771718">Uygulama penceresi paylaşın</translation>
-<translation id="8225753906568652947">Tekliflerinizi kullanın</translation>
 <translation id="8226222018808695353">Yasak</translation>
 <translation id="8226619461731305576">Sıra</translation>
 <translation id="8226628635270268143">En beğendiğiniz fotoğraf ve albümleri seçin</translation>
@@ -6323,7 +6316,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8417548266957501132">Ebeveyn şifresi</translation>
 <translation id="8418445294933751433">&amp;Sekme olarak göster</translation>
 <translation id="8419098111404128271">"<ph name="SEARCH_TEXT" />" için arama sonuçları</translation>
-<translation id="8419368276599091549"><ph name="DEVICE_TYPE" /> cihazınıza hoş geldiniz!</translation>
 <translation id="8420308167132684745">Sözlük girişlerini düzenle</translation>
 <translation id="8421361468937925547">Canlı Altyazı (yalnızca İngilizce)</translation>
 <translation id="8422787418163030046">Tepsi yok</translation>

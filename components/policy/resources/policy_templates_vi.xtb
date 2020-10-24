@@ -422,6 +422,11 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Các mẫu URL có cùng định dạng với chính sách "<ph name="URL_BLOCKLIST_POLICY_NAME" />" được nêu tại https://www.chromium.org/administrators/url-blacklist-filter-format.
       </translation>
 <translation id="1645793986494086629">Lược đồ:</translation>
+<translation id="1647558381546345298">Việc đặt chính sách này sẽ định cấu hình kích thước bộ nhớ đệm mà <ph name="PRODUCT_NAME" /> dùng để lưu trữ tệp nội dung nghe nhìn được lưu vào bộ nhớ đệm trên ổ đĩa, cho dù người dùng có chỉ định cờ --media-cache-size hay không. Giá trị được chỉ định trong chính sách này không phải là một giới hạn bắt buộc mà là gợi ý dành cho hệ thống lưu vào bộ nhớ đệm. Mọi giá trị dưới vài megabyte sẽ được làm tròn lên.
+
+      Khi bạn đặt giá trị của chính sách này thành 0, kích thước bộ nhớ đệm mặc định sẽ được sử dụng và người dùng không thay đổi được kích thước này.
+
+      Nếu bạn không đặt chính sách này, kích thước bộ nhớ đệm mặc định sẽ được sử dụng và người dùng có thể thay đổi kích thước này bằng cờ --media-cache-size.</translation>
 <translation id="1648816843164517573">Danh sách các tên sẽ bỏ qua quy trình kiểm tra chính sách Bảo mật truyền tải nghiêm ngặt HTTP (HSTS)</translation>
 <translation id="1654087023995670109">Thực thi chế độ khách trên trình duyệt</translation>
 <translation id="1655229863189977773">Đặt kích thước bộ nhớ đệm của đĩa theo byte</translation>
@@ -1337,6 +1342,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Nếu bạn không đặt chính sách này (hoặc đặt thành một URL không hợp lệ), thì <ph name="PRODUCT_NAME" /> sẽ không dùng chính sách này làm nguồn của các quy tắc chuyển đổi trình duyệt.
 
       Lưu ý: Chính sách này trỏ tới một tệp XML có cùng định dạng với chính sách <ph name="IEEM_SITELIST_POLICY" /> của <ph name="IE_PRODUCT_NAME" />. URL này sẽ tải các quy tắc từ một tệp XML nhưng không chia sẻ những quy tắc đó với <ph name="IE_PRODUCT_NAME" />. Hãy đọc thêm về chính sách <ph name="IEEM_SITELIST_POLICY" /> của <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2949765875529121431">Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định danh sách tên máy chủ không phải thực hiện quy trình kiểm tra chính sách Bảo mật truyền tải nghiêm ngặt HTTP (HSTS) để nâng cấp yêu cầu từ http lên https. Chính sách này chỉ cho phép tên máy chủ một nhãn. Cần phải chuẩn hóa tên máy chủ: Mọi IDN phải được chuyển đổi sang định dạng nhãn A và tất cả chữ cái ASCII phải là chữ thường. Chính sách này chỉ áp dụng cho các tên máy chủ cụ thể đã chỉ định, chứ không áp dụng cho miền con của các tên máy chủ đó.</translation>
 <translation id="2952347049958405264">Hạn chế:</translation>
 <translation id="2957047180944828740">Chỉ định xem có cho phép các trang web không an toàn gửi yêu cầu đến các thiết bị đầu cuối trên mạng riêng hay không</translation>
 <translation id="2957506574938329824">Không cho phép bất kỳ trang web nào yêu cầu quyền truy cập vào thiết bị Bluetooth qua API Web Bluetooth</translation>
@@ -1444,6 +1450,9 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
       Bất kể bạn có đặt chính sách này hay không hoặc cách bạn đặt chính sách này, người dùng cũng không thể thay đổi cài đặt tối ưu hóa WPAD.</translation>
 <translation id="3072045631333522102">Trình bảo vệ màn hình được sử dụng trên màn hình đăng nhập ở chế độ bán lẻ</translation>
+<translation id="3072788420987305247">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì màn hình khóa sẽ hiển thị các nút điều khiển nội dung nghe nhìn nếu người dùng khóa thiết bị khi nội dung đó đang phát.
+
+      Nút điều khiển nội dung nghe nhìn trên màn hình khóa sẽ tắt nếu bạn đặt chính sách này thành Tắt.</translation>
 <translation id="3072847235228302527">Đặt Điều khoản dịch vụ cho một tài khoản cục bộ trên thiết bị</translation>
 <translation id="3086995894968271156">Định cấu hình Bộ thu Google Cast trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Sạc pin cho những thiết bị chủ yếu kết nối với nguồn điện bên ngoài.</translation>
@@ -1526,6 +1535,11 @@ Khi chính sách này được đặt thành false hoặc không được địn
         * 4, chương trình cơ sở <ph name="TPM_FIRMWARE_UPDATE_TPM" /> sẽ cập nhật sau khi đăng ký và trước khi người dùng đăng nhập.
 
       Nếu bạn không đặt chính sách này thì sẽ không có bản cập nhật chương trình cơ sở <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
+<translation id="3235677869770186098">Nếu đặt chính sách này, bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web được hệ thống tự động cấp quyền truy cập vào thiết bị USB bằng mã sản phẩm và mã nhà cung cấp đã cho trên màn hình đăng nhập. Mỗi mục trên danh sách này phải có cả trường "devices" lẫn trường "urls" thì chính sách này mới hợp lệ. Mỗi mục trong trường "devices" có thể chứa trường "vendor_id" và "product_id". Nếu bạn bỏ qua trường "vendor_id", một chính sách áp dụng cho mọi thiết bị sẽ được tạo. Nếu bạn bỏ qua trường "product_id", một chính sách áp dụng cho mọi thiết bị có mã nhà cung cấp đã cho sẽ được tạo. Nếu có trường "product_id" mà không có trường "vendor_id", thì chính sách sẽ không hợp lệ.
+
+      Mô hình quản lý quyền của USB sử dụng URL yêu cầu và URL nhúng để cấp cho URL yêu cầu quyền truy cập vào thiết bị USB. URL yêu cầu có thể khác với URL nhúng khi trang web yêu cầu được tải trong một iframe. Do đó, các trường urls có thể chứa tối đa 2 chuỗi URL được phân tách bằng dấu phẩy để chỉ định URL yêu cầu và URL nhúng một cách tương ứng. Nếu chỉ có duy nhất một URL được chỉ định, thì hệ thống sẽ cấp quyền truy cập vào các thiết bị USB tương ứng khi URL của trang web yêu cầu khớp với URL này, bất kể trạng thái nhúng là gì. Các URL phải hợp lệ. Nếu không, chính sách sẽ bị bỏ qua.
+
+      Nếu bạn không đặt chính sách này, một giá trị mặc định chung sẽ được dùng cho tất cả trang web (không có quyền truy cập tự động).</translation>
 <translation id="3236046242843493070">Mẫu URL để cho phép cài đặt tiện ích, ứng dụng và tập lệnh người dùng từ</translation>
 <translation id="3240609035816615922">Chính sách truy cập vào cấu hình máy in.</translation>
 <translation id="324062325008698789">Định cấu hình danh sách máy in</translation>
@@ -2186,6 +2200,11 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4157003184375321727">Báo cáo phiên bản hệ điều hành và chương trình cơ sở</translation>
 <translation id="4157594634940419685">Cho phép truy cập vào các máy in gốc sử dụng hệ thống in Unix chung (CUPS)</translation>
 <translation id="4160962198980004898">Nguồn địa chỉ MAC của thiết bị khi được gắn vào đế sạc</translation>
+<translation id="4166174702671320480">Nếu bạn đặt chính sách này thành Bật, các chính sách không có chung nguồn với các chính sách có độ ưu tiên cao nhất trong một nhóm không thể phân chia sẽ bị bỏ qua.
+
+      Nếu bạn đặt chính sách này thành Tắt, sẽ không có chính sách nào bị bỏ qua do vấn đề liên quan đến nguồn nữa. Các chính sách sẽ chỉ bị bỏ qua nếu có xung đột và chính sách này không có mức độ ưu tiên cao nhất.
+
+      Nếu bạn đặt chính sách này từ một nguồn trên đám mây, thì chính sách sẽ không thể nhắm đến một người dùng cụ thể.</translation>
 <translation id="4169692397912242417">Bật tính năng hỗ trợ tiếp cận về phản hồi bằng giọng nói trên màn hình đăng nhập.
 
           Nếu bạn đặt chính sách này thành true, thì tính năng phản hồi bằng giọng nói sẽ luôn bật trên màn hình đăng nhập.
@@ -2708,14 +2727,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thành true, thì tên kiểu máy, cấu trúc và tốc độ xung nhịp tối đa của mỗi CPU sẽ
       được báo cáo.</translation>
 <translation id="5124368997194894978">Bật tính năng khởi động trên AC (dòng điện xoay chiều)</translation>
-<translation id="513798533865657610">Tính năng tự động gửi mã PIN thay đổi cách nhập mã PIN trên Chrome OS.
-          Thay vì hiển thị cùng một trường văn bản dùng để nhập mật khẩu, tính năng này
-          hiển thị một giao diện người dùng đặc biệt để cho người dùng biết rõ cần bao nhiêu
-          chữ số cho mã PIN. Do đó, độ dài mã PIN của người dùng
-          sẽ được lưu trữ bên ngoài dữ liệu được mã hóa của người dùng.
-
-          Nếu bạn đặt chính sách thành này false, thì người dùng sẽ không có tùy chọn bật
-          tính năng này trên trang Cài đặt.</translation>
 <translation id="5141670636904227950">Đặt loại kính lúp màn hình mặc định được bật trên màn hình đăng nhập</translation>
 <translation id="5142301680741828703">Luôn hiển thị các mẫu URL sau đây trong <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Chính sách này kiểm soát xem có báo cáo thông tin dùng để nhận dạng người dùng, chẳng hạn như thông tin đăng nhập trên hệ điều hành, thông tin đăng nhập hồ sơ trên <ph name="PRODUCT_NAME" />, tên hồ sơ trên <ph name="PRODUCT_NAME" />, đường dẫn hồ sơ trên <ph name="PRODUCT_NAME" /> và đường dẫn thực thi trên <ph name="PRODUCT_NAME" /> hay không.
@@ -3403,6 +3414,9 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="5951418260805607969">Hiển thị thông báo khi dung lượng ổ đĩa sắp hết</translation>
 <translation id="5961137303188584693">Địa chỉ MAC trên NIC tích hợp của thiết bị</translation>
 <translation id="5966615072639944554">Tiện ích được phép sử dụng API chứng thực từ xa</translation>
+<translation id="5975765799383881158">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng có thể gửi ý kiến phản hồi cho Google thông qua Trình đơn &gt; Trợ giúp &gt; Báo cáo vấn đề hoặc tổ hợp phím.
+
+      Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể gửi ý kiến phản hồi cho Google.</translation>
 <translation id="5997543603646547632">Sử dụng đồng hồ 24 giờ theo mặc định</translation>
 <translation id="5997846976342452720">Chỉ định xem có nên tắt trình tìm kiếm plugin hay không (không được dùng nữa)</translation>
 <translation id="5998198091336830580">Chính sách này thuộc nhóm không thể phân chia sau đây (chỉ áp dụng các chính sách thuộc nguồn có mức ưu tiên cao nhất trong nhóm):</translation>
@@ -4005,6 +4019,11 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn đặt chính sách này thành Tắt, một thông báo lỗi sẽ hiện ra.</translation>
 <translation id="6821268164692776674">Đích <ph name="CLOUD_PRINT_NAME" /> và 'Lưu vào Google Drive'</translation>
+<translation id="682408981080798691">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì tính năng Tính toàn vẹn của mã trình kết xuất sẽ được bật.
+
+      Khi bạn đặt chính sách này thành Tắt, tính bảo mật và độ ổn định của <ph name="PRODUCT_NAME" /> sẽ bị ảnh hưởng vì mã không xác định và có khả năng gây hại có thể được phép tải trong các quá trình xử lý kết xuất của <ph name="PRODUCT_NAME" />. Bạn chỉ nên tắt chính sách này nếu gặp vấn đề về khả năng tương thích với phần mềm bên thứ ba. Phần mềm này phải chạy trong các quá trình xử lý kết xuất của <ph name="PRODUCT_NAME" />.
+
+      Lưu ý: Hãy đọc thêm về Chính sách giảm thiểu quy trình (https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="6833023569065717572">Khi bạn đặt chính sách này thành Bật, màn hình đăng nhập của thiết bị sẽ dùng định dạng đồng hồ 24 giờ.
 
       Khi bạn đặt chính sách này thành Tắt, màn hình đăng nhập của thiết bị sẽ dùng định dạng đồng hồ 12 giờ.

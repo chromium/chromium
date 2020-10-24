@@ -1884,7 +1884,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3165371858310906303">Sayt faolligingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat oladi</translation>
 <translation id="3165390001037658081">Ba’zi aloqa kompaniyalari bu xususiyatni bloklagan bo‘lishi mumkin.</translation>
 <translation id="316652501498554287">G Suite for Education hisoblari</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Bu amalni o‘tkazib yuborish va <ph name="LINK_START" />mehmon seansini<ph name="LINK_END" /> boshlash mumkin.</translation>
 <translation id="3177909033752230686">Sahifa tili:</translation>
 <translation id="3179982752812949580">Matn shrifti</translation>
@@ -2027,7 +2026,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> sizga <ph name="ATTACHMENTS" /> yubormoqda.}other{<ph name="DEVICE_NAME" /> sizga <ph name="ATTACHMENTS" /> yubormoqda.}}</translation>
 <translation id="3364986687961713424">Administratordan: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl yoki Alt tugmasini bosing</translation>
-<translation id="3367047597842238025"><ph name="DEVICE_TYPE" /> qurilmasini o‘z didingizda sozlang va qo‘lingiz ostidagi ajoyib imkoniyatlar bilan tanishing.</translation>
 <translation id="3368922792935385530">Ulangan</translation>
 <translation id="3369067987974711168">Bu port uchun boshqa amallar</translation>
 <translation id="3369624026883419694">Host aniqlanmoqda...</translation>
@@ -2350,7 +2348,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3713047097299026954">Bu elektron kalitda hech qanday kirish maʼlumotlari saqlanmagan</translation>
 <translation id="3714195043138862580">Bu demo qurilma qaydnomadan olib tashlandi.</translation>
 <translation id="3714633008798122362">veb-taqvim</translation>
-<translation id="3715954932774762075">Bir nechta tilda ishlaydigan ilova va saytlar shu roʻyxatdagi birinchi mos tilni ishlatadi. Bu parametrlar brauzeringiz sozlamalari bilan sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Bosh sahifa</translation>
 <translation id="372062398998492895">CUPS printerlar</translation>
 <translation id="3721119614952978349">Siz va Google</translation>
@@ -2488,7 +2485,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3856800405688283469">Vaqt mintaqasini tanlang</translation>
 <translation id="3857807444929313943">Barmoqni oling va qaytadan tekkizing</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinxronizatsiya to‘xtatilgan</translation>
-<translation id="3861386850461794863">Ilova va saytlardagi tillar</translation>
 <translation id="3861638017150647085">“<ph name="USERNAME" />” nomi band</translation>
 <translation id="3862693525629180217">Ichki o‘rnatilgan sensor orqali tasdiqlash</translation>
 <translation id="3862788408946266506">Manifest faylida “kiosk_only” atributi mavjud ilovalarni Chrome OS‘da faqatgina kiosk rejimida o‘rnatish mumkin</translation>
@@ -3798,7 +3794,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5457991019809708398">Yoniq, lekin faol emas</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Ekran qulfi qaydlari</translation>
-<translation id="546322474339998983">Chrome brauzeri va <ph name="DEVICE_TYPE" /> launcherida ishlatiladi</translation>
 <translation id="5463231940765244860">Enter</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> tarkibi</translation>
 <translation id="5463856536939868464">Yashirin xatcho‘plari mavjud menyu</translation>
@@ -3924,7 +3919,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Ilovalar yuklanmoqda…</translation>
 <translation id="5592595402373377407">Ma’lumotlar yetarli emas.</translation>
-<translation id="5593357315997824387">Fayllaringizni sinxronlang</translation>
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
 <translation id="5595727715083333657">Bu konteyner hajmini oʻzgartirish imkonsiz. Diskdagi Linux (beta) uchun oldindan ajratilgan joyni kengaytirish uchun konteynerni zaxiralang va keyin yangi konteynerda tiklang.</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
@@ -6169,7 +6163,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8218847192766059983">Tillar kiritish yoki roʻyxatni qayta tartiblash. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Odatda bildirishnomalarni bloklaysiz. Bu saytga ruxsat berish uchun bu yerga bosing.</translation>
 <translation id="8225265270453771718">Ilova oynasini namoyish qilish</translation>
-<translation id="8225753906568652947">Takliflardan foydalaning</translation>
 <translation id="8226222018808695353">Taqiqlangan</translation>
 <translation id="8226619461731305576">Navbat</translation>
 <translation id="8226628635270268143">Sevimli suratlar va albomlaringizni tanlang</translation>
@@ -6332,7 +6325,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8417548266957501132">Ota-ona paroli</translation>
 <translation id="8418445294933751433">&amp;Ichki oyna sifatida ko‘rsatish</translation>
 <translation id="8419098111404128271">“<ph name="SEARCH_TEXT" />” uchun qidiruv natijalari</translation>
-<translation id="8419368276599091549"><ph name="DEVICE_TYPE" /> qurilmasiga xush kelibsiz!</translation>
 <translation id="8420308167132684745">Lugʻat yozuvlarini tahrirlash</translation>
 <translation id="8421361468937925547">Jonli izoh (faqat ingliz tilida)</translation>
 <translation id="8422787418163030046">Tarnov joyida emas</translation>

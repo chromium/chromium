@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Kan <ph name="CONTENT_TYPE" /> niet delen</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> is verwisseld met <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Je hebt hier eerder naar gezocht. Als je '<ph name="QUERY" />' uit je geschiedenis verwijdert, wordt deze zoekopdracht definitief op al je apparaten uit je account verwijderd.</translation>
+<translation id="1510238584712386396">Launcher</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuut en }other{# minuten en }}</translation>
 <translation id="1643823602425662293">Melding</translation>
 <translation id="169515659049020177">Shift</translation>

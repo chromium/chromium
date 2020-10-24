@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> u ndërrua me <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Ke kërkuar për këtë më parë. Fshirja e "<ph name="QUERY" />" nga historiku yt do ta heqë atë përgjithmonë nga llogaria jote në të gjitha pajisjet e tua.</translation>
+<translation id="1510238584712386396">Nisësi</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minutë dhe }other{# minuta dhe }}</translation>
 <translation id="1643823602425662293">Njoftimi</translation>
 <translation id="169515659049020177">Shift</translation>

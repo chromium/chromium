@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">選択したシークレット タブ</translation>
 <translation id="2987620471460279764">他のデバイスからテキストが共有されました</translation>
 <translation id="2989523299700148168">最近のアクセス</translation>
+<translation id="2992473221983447149">画像の説明</translation>
 <translation id="2996291259634659425">パスフレーズの作成</translation>
 <translation id="2996809686854298943">URLが必要です</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個のブックマーク}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個のブックマーク}}</translation>
 <translation id="3062802207422175757">Chrome の履歴に基づくおすすめの記事を表示します</translation>
 <translation id="3089395242580810162">シークレット タブで開く</translation>
+<translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">お知らせ</translation>
 <translation id="3137521801621304719">シークレット モードを終了</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">すべてのデータを削除</translation>
 <translation id="6560414384669816528">Sogou で検索します</translation>
 <translation id="656065428026159829">もっと見る</translation>
+<translation id="6565959834589222080">可能な場合は Wi-Fi を使用します</translation>
 <translation id="6566259936974865419">Chrome で <ph name="GIGABYTES" /> GB の容量を節約しました</translation>
 <translation id="6573096386450695060">常に許可</translation>
 <translation id="6573431926118603307">他のデバイスの Chrome で開いているタブがここに表示されます。</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">最後に閉じたタブを開く</translation>
 <translation id="8798449543960971550">既読</translation>
 <translation id="8812260976093120287">一部のウェブサイトでは、デバイスでサポートされている上記のお支払いアプリを使って支払いができます。</translation>
+<translation id="881688628773363275">タブのコンテンツのプレビューを表示できません。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="883806473910249246">コンテンツのダウンロード中にエラーが発生しました。</translation>
 <translation id="8840953339110955557">このページはオンライン版とは異なる可能性があります。</translation>

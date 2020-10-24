@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> і <ph name="SECOND_ITEM_TITLE" /> памяняліся месцамі</translation>
 <translation id="1498028757988366001">Вы шукалі гэта раней. Калі выдаліць запыт "<ph name="QUERY" />" з гісторыі, ён будзе незваротна выдалены з вашага ўліковага запісу на ўсіх прыладах.</translation>
+<translation id="1510238584712386396">Панэль запуску</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 хвіліна і }one{# хвіліна і }few{# хвіліны і }many{# хвілін і }other{# хвіліны і }}</translation>
 <translation id="1643823602425662293">Апавяшчэнне</translation>
 <translation id="169515659049020177">Shift</translation>

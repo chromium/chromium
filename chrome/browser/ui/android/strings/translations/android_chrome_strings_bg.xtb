@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
+<translation id="2992473221983447149">Описания на изображенията</translation>
 <translation id="2996291259634659425">Създаване на пропуск</translation>
 <translation id="2996809686854298943">Изисква се URL адрес</translation>
 <translation id="3006881078666935414">Няма данни за използването</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
 <translation id="3089395242580810162">Отваряне в раздел „инкогнито“</translation>
+<translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Съобщения</translation>
 <translation id="3137521801621304719">Напускане на режима „инкогнито“</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">Изчистване на всички данни</translation>
 <translation id="6560414384669816528">Търсене със Sogou</translation>
 <translation id="656065428026159829">Вижте още</translation>
+<translation id="6565959834589222080">Wi-Fi се използва, когато е налице</translation>
 <translation id="6566259936974865419">Chrome ви спести <ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6573096386450695060">Разрешаване винаги</translation>
 <translation id="6573431926118603307">Тук ще се показват разделите, които сте отворили в Chrome на другите си устройства.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">Повторно отваряне на последно затворения раздел</translation>
 <translation id="8798449543960971550">Прочетени</translation>
 <translation id="8812260976093120287">На някои уебсайтове можете да извършвате плащания чрез посочените по-горе поддържани приложения за плащане на устройството ви.</translation>
+<translation id="881688628773363275">Не е възможна визуализация на съдържанието на раздела.</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="883806473910249246">При изтеглянето на съдържанието възникна грешка.</translation>
 <translation id="8840953339110955557">Тази страница може да се различава от онлайн версията.</translation>

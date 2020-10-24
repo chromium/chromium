@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ን ማጋራት አይቻልም</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ከ<ph name="SECOND_ITEM_TITLE" /> ጋር ተቀያይሯል</translation>
 <translation id="1498028757988366001">እርስዎ ይህን ከዚህ በፊት ፍለጋ አድርገውለታል። «<ph name="QUERY" />»ን ከታሪክዎ መሰረዝ በሁሉም መሣሪያዎችዎ ላይ እስከመጨረሻው ከመለያዎ ያስወግደዋል።</translation>
+<translation id="1510238584712386396">ማስጀመሪያ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 ደቂቃ እና }one{# ደቂቃዎች እና }other{# ደቂቃዎች እና }}</translation>
 <translation id="1643823602425662293">ማሳወቂያ</translation>
 <translation id="169515659049020177">Shift</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> lecserélve erre: <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Korábban már rákeresett erre. Ha törli a(z) <ph name="QUERY" /> lekérdezést az előzmények közül, azzal véglegesen eltávolítja fiókjából minden eszközén.</translation>
+<translation id="1510238584712386396">Indító</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 perc és }other{# perc és }}</translation>
 <translation id="1643823602425662293">Értesítés</translation>
 <translation id="169515659049020177">Shift</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> sa nedá zdieľať</translation>
 <translation id="1487931858675166540">Položka <ph name="FIRST_ITEM_TITLE" /> bola vymenená za <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Toto ste už vyhľadávali. Odstránením dopytu <ph name="QUERY" /> z histórie ho natrvalo vymažete zo svojho účtu vo všetkých zariadeniach.</translation>
+<translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minúta a }few{# minúty a }many{# minúty a }other{# minút a }}</translation>
 <translation id="1643823602425662293">Upozornenie</translation>
 <translation id="169515659049020177">Shift</translation>

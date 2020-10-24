@@ -1886,7 +1886,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3165371858310906303">Spyrja þegar vefsvæði vill vita af því þegar þú ert á staðnum</translation>
 <translation id="3165390001037658081">Sum símafyrirtæki gætu lokað á þennan eiginleika.</translation>
 <translation id="316652501498554287">Reikningar G Suite fyrir skóla</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Þú getur líka sleppt því að skrá þig inn og verið <ph name="LINK_START" />gestanotandi<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Tungumál síðu:</translation>
 <translation id="3179982752812949580">Leturgerð texta</translation>
@@ -2029,7 +2028,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deilir <ph name="ATTACHMENTS" /> með þér.}one{<ph name="DEVICE_NAME" /> deilir <ph name="ATTACHMENTS" /> með þér.}other{<ph name="DEVICE_NAME" /> deilir <ph name="ATTACHMENTS" /> með þér.}}</translation>
 <translation id="3364986687961713424">Frá kerfisstjóra: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Notaðu annaðhvort Ctrl eða Alt</translation>
-<translation id="3367047597842238025">Settu <ph name="DEVICE_TYPE" /> upp eins og þú vilt og uppgötvaðu alla þá frábæru möguleika sem eru í seilingarfjarlægð.</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369067987974711168">Sýna fleiri aðgerðir fyrir þessa gátt</translation>
 <translation id="3369624026883419694">Leysir úr hýsli...</translation>
@@ -2352,7 +2350,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3713047097299026954">Engin innskráningargögn eru á þessum öryggislykli</translation>
 <translation id="3714195043138862580">Þetta sýniseintak hefur verið sett í óúthlutaða stöðu.</translation>
 <translation id="3714633008798122362">vefdagatal</translation>
-<translation id="3715954932774762075">Forrit og vefsvæði sem eru í boði á mörgum tungumálum munu nota fyrsta studda tungumálið á listanum. Þessar kjörstillingar eru samstilltar vafrastillingunum. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Heimasíða</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Þú og Google</translation>
@@ -2490,7 +2487,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3856800405688283469">Veldu tímabelti</translation>
 <translation id="3857807444929313943">Lyftu upp og snertu aftur með fingrinum</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Samstilling stöðvuð</translation>
-<translation id="3861386850461794863">Tungumál forrita og vefsvæða</translation>
 <translation id="3861638017150647085">Notandanafnið „<ph name="USERNAME" />“ er ekki laust</translation>
 <translation id="3862693525629180217">Staðfesta með innbyggðum skynjara</translation>
 <translation id="3862788408946266506">Forrit með upplýsingaskráreigindina „kiosk_only“ verður að vera uppsett í sjálfsalastillingu Chrome OS</translation>
@@ -3800,7 +3796,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5457991019809708398">Kveikt, ekki í reiki</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Glósur á lásskjá</translation>
-<translation id="546322474339998983">Notað af Chrome vafranum og ræsiforriti <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Slá inn</translation>
 <translation id="5463275305984126951">Yfirlit yfir <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Valmynd með földum bókamerkjum</translation>
@@ -3926,7 +3921,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Hleður forrit...</translation>
 <translation id="5592595402373377407">Ekki næg gögn komin enn.</translation>
-<translation id="5593357315997824387">Samstilltu skrárnar þínar</translation>
 <translation id="5595485650161345191">Breyta heimilisfangi</translation>
 <translation id="5595727715083333657">Ekki er hægt að breyta stærð rammans. Til að breyta því hve miklu geymslurými er forúthlutað á Linux (tilraunaútgáfu) skaltu taka öryggisafrit af því og síðan endurheimta það inn í nýjan ramma.</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
@@ -6172,7 +6166,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8218847192766059983">Bæta við tungumálum eða endurraða lista. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Þú lokar yfirleitt á tilkynningar. Ef þú vilt leyfa þessu vefsvæði að birta þér tilkynningar skaltu smella hér.</translation>
 <translation id="8225265270453771718">Deila forritaglugga</translation>
-<translation id="8225753906568652947">Innleystu tilboðin þín</translation>
 <translation id="8226222018808695353">Bannað</translation>
 <translation id="8226619461731305576">Setja í biðröð</translation>
 <translation id="8226628635270268143">Veldu uppáhaldsmyndir og -möppur</translation>
@@ -6335,7 +6328,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8417548266957501132">Aðgangsorð foreldris</translation>
 <translation id="8418445294933751433">&amp;Sýna sem flipa</translation>
 <translation id="8419098111404128271">Leitarniðurstöður fyrir „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="8419368276599091549">Velkomin(n) í <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Breyta orðabókarfærslum</translation>
 <translation id="8421361468937925547">Skjátextar í rauntíma (aðeins á ensku)</translation>
 <translation id="8422787418163030046">Bakki er ekki til staðar</translation>

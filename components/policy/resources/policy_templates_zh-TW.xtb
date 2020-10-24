@@ -402,6 +402,11 @@
       網址模式的格式必須符合 https://www.chromium.org/administrators/url-blacklist-filter-format 中的「<ph name="URL_BLOCKLIST_POLICY_NAME" />」政策規定。
       </translation>
 <translation id="1645793986494086629">架構：</translation>
+<translation id="1647558381546345298">設定這項政策後，無論使用者是否指定 --media-cache-size 旗標，<ph name="PRODUCT_NAME" /> 都會使用你設定的快取大小，在磁碟上儲存快取媒體檔案。這項政策所指定的值並非不可變動的界線，而是提供給快取系統的建議值。MB 以下的值會進位為 MB。
+
+      如果將這項政策的值設為 0，系統會使用預設的快取大小，且使用者無法變更設定。
+
+      如果未設定這項政策，系統會使用預設的快取大小，而使用者可以透過 --media-cache-size 旗標變更這項設定。</translation>
 <translation id="1648816843164517573">可略過 HTTP 嚴格傳輸安全性政策檢查的名稱清單</translation>
 <translation id="1654087023995670109">強制執行瀏覽器訪客模式</translation>
 <translation id="1655229863189977773">設定磁碟快取大小 (以位元組為單位)</translation>
@@ -1298,6 +1303,7 @@
       如果未設定 (或設為無效網址)，<ph name="PRODUCT_NAME" /> 不會使用這項政策做為切換瀏覽器的規則來源。
 
       注意：這項政策指向和 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策採用相同格式的 XML 檔案。因此，系統會從 XML 檔案載入規則，但不會與 <ph name="IE_PRODUCT_NAME" /> 共用這些規則。如要進一步瞭解 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策，請前往 https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
+<translation id="2949765875529121431">你可以透過這項政策，指定從 HTTP 嚴格傳輸安全性政策檢查作業中排除的主機名稱清單，該檢查可將要求從 HTTP 升級至 HTTPS。這項政策只允許單一標籤主機名稱。主機名稱必須標準化：任何 IDN 都必須轉換為單一標籤格式，且所有 ASCII 字母都必須使用小寫。這項政策只適用於指定的主機名稱，不適用於指定主機名稱的子網域。</translation>
 <translation id="2952347049958405264">限制：</translation>
 <translation id="2957047180944828740">指定是否允許不安全網站向更私密的網站端點傳送要求</translation>
 <translation id="2957506574938329824">不允許任何網站透過 Web Bluetooth API 要求存取藍牙裝置</translation>
@@ -1406,6 +1412,9 @@
 
       無論系統是否設定這項政策或這項政策的設定方式為何，使用者一律無法變更 WPAD 最佳化設定。</translation>
 <translation id="3072045631333522102">在零售模式下登入畫面所使用的螢幕保護程式</translation>
+<translation id="3072788420987305247">將這項政策設為啟用或不設定時，如果使用者在媒體播放時鎖定裝置，系統會在螢幕鎖定畫面上顯示媒體控制項。
+
+      如果將這項政策設為停用，系統會關閉螢幕鎖定畫面上的媒體控制項。</translation>
 <translation id="3072847235228302527">為裝置本機帳戶設定《服務條款》</translation>
 <translation id="3086995894968271156">設定「<ph name="PRODUCT_NAME" />」的 Cast 接收器</translation>
 <translation id="3091832372132789233">對主要連線至外部電源的裝置進行充電。</translation>
@@ -1487,6 +1496,11 @@
         * 如果設為 4，系統將在裝置完成註冊後，於使用者登入前更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。
 
       如果未設定這項政策，則系統無法更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。</translation>
+<translation id="3235677869770186098">你可以透過這項政策設定網址模式清單，指定哪些網站會自動取得權限，能夠存取具備登入畫面中所指定廠商和產品 ID 的 USB 裝置。清單中的每個項目都必須包含「devices」和「urls」欄位，這項政策才會生效。「devices」欄位中的每個項目皆可包含「vendor_id」和「product_id」欄位。如果略過「vendor_id」欄位，系統建立的政策將涵蓋所有裝置。如果略過「product_id」欄位，系統建立的政策將涵蓋所有具備指定廠商 ID 的裝置。要是政策包含「product_id」欄位，但缺少「vendor_id」欄位，將無法生效。
+
+      USB 權限模型會使用要求網址和嵌入網址，授予要求網址存取 USB 裝置的權限。如果要求網站是透過 iframe 載入，要求網址可能會與嵌入網址有所不同。因此，「urls」欄位最多可包含兩個網址字串 (以半形逗號分隔)，以分別指定要求網址和嵌入網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。網址必須是有效網址，否則系統會忽略這項政策。
+
+      如果不設定這項政策，所有網站都將使用全域預設值 (不會自動取得存取權)。</translation>
 <translation id="3236046242843493070">允許安裝擴充功能、應用程式和使用者指令碼的來源網址模式清單</translation>
 <translation id="3240609035816615922">印表機設定存取權政策。</translation>
 <translation id="324062325008698789">設定印表機清單。</translation>
@@ -2134,6 +2148,11 @@
 <translation id="4157003184375321727">回報作業系統和韌體版本</translation>
 <translation id="4157594634940419685">允許存取原生 CUPS 印表機</translation>
 <translation id="4160962198980004898">裝置插入座架時的 MAC 位址來源</translation>
+<translation id="4166174702671320480">如果將這項政策設為啟用，只要政策來自不可部分完成的群組，而且來源與該群組中最高優先權項目不同，即會遭到忽略。
+
+      如果將這項政策設為停用，政策就不會因為來源而遭到忽略。政策只會在發生衝突或沒有最高優先權的情況下遭到忽略。
+
+      如果透過雲端來源設定這項政策，就不能將特定使用者設為政策目標。</translation>
 <translation id="4169692397912242417">在登入畫面上啟用互動朗讀無障礙功能。
 
           如果將這項政策設為 True，系統將一律在登入畫面上啟用互動朗讀功能。
@@ -2620,7 +2639,7 @@
       注意：系統也可以透過 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策將元素加入這份清單。</translation>
 <translation id="5065753964276395784">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
-       如果設定這項政策，<ph name="PRODUCT_NAME" /> 會略過此清單所含主機的 Proxy。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 時，這項政策才會生效。
+       如果設定這項政策，<ph name="PRODUCT_NAME" /> 會略過此處所列主機的 Proxy。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 時，這項政策才會生效。
 
        如果你選擇了透過任何其他模式設定 Proxy 政策，請勿設定這項政策。
 
@@ -2656,9 +2675,6 @@
       如果將這項政策設為 False 或不予設定，系統將不會回報這項資訊。
       如果設為 True，則系統會回報每個 CPU 的型號名稱、架構和最高時脈速度。</translation>
 <translation id="5124368997194894978">啟用「連接 AC (交流電) 電源時啟動」功能</translation>
-<translation id="513798533865657610">PIN 碼自動提交功能可變更在 Chrome 作業系統中輸入 PIN 碼的方式。
-          這項功能會顯示特別的 UI，向使用者清楚呈現其 PIN 碼所需的位數，而不會顯示用於輸入密碼的相同文字欄位。因此，系統會在使用者的加密資料之外儲存使用者的 PIN 碼長度。
-          如果將這項政策設為 False，使用者將無法在「設定」頁面上啟用這項功能。</translation>
 <translation id="5141670636904227950">設定啟用的螢幕放大鏡在登入畫面的預設類型</translation>
 <translation id="5142301680741828703">一律算繪下列 <ph name="PRODUCT_FRAME_NAME" /> 中的網址模式</translation>
 <translation id="514870861066611127">這項政策可控管系統是否要回報能用於辨識使用者身分的資訊，例如 OS 登入資訊、<ph name="PRODUCT_NAME" /> 設定檔登入資訊、<ph name="PRODUCT_NAME" /> 設定檔名稱、<ph name="PRODUCT_NAME" /> 設定檔路徑和 <ph name="PRODUCT_NAME" /> 執行檔路徑。
@@ -3336,6 +3352,9 @@
 <translation id="5951418260805607969">當磁碟空間不足時顯示通知</translation>
 <translation id="5961137303188584693">裝置內建的 NIC MAC 位址</translation>
 <translation id="5966615072639944554">允許擴充功能使用 Remote Attestation API</translation>
+<translation id="5975765799383881158">如果將這項政策設為啟用或不設定，使用者可以將意見回饋傳送給 Google，方法是依序按一下「選單」圖示 &gt; [說明] &gt; [回報問題]，或是按下按鍵組合。
+
+      如果將這項政策設為停用，使用者將無法向 Google 傳送意見回饋。</translation>
 <translation id="5997543603646547632">預設使用 24 小時制時鐘</translation>
 <translation id="5997846976342452720">指定是否要停用外掛程式尋找工具 (已淘汰)</translation>
 <translation id="5998198091336830580">這項政策屬於下列不可部分完成的群組 (系統僅會套用群組中最高優先來源所設定的政策)：</translation>
@@ -3932,6 +3951,11 @@
 
       如果將這項政策設為停用，系統會改為顯示錯誤訊息。</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />與「儲存至 Google 雲端硬碟」的目的地</translation>
+<translation id="682408981080798691">如果將這項政策設為啟用或不設定，系統會啟用轉譯器程式碼完整性功能。
+
+      將這項政策設為停用會對 <ph name="PRODUCT_NAME" /> 的安全性和穩定性造成負面影響，因為這樣一來，<ph name="PRODUCT_NAME" /> 會允許轉譯器程序載入可能具有惡意的未知程式碼。建議只有必須在 <ph name="PRODUCT_NAME" /> 的轉譯器程序中執行的第三方軟體發生相容性問題時，才停用這項政策。
+
+      注意：如要進一步瞭解程序寬鬆檢查機制政策，請前往 https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="6833023569065717572">如果將這項政策設為 True，裝置登入畫面將使用 24 小時制的時鐘格式。
 
       如果將這項政策設為 False，裝置登入畫面將使用 12 小時制的時鐘格式。

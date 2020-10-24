@@ -117,7 +117,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2049240716062114887">Nama desktop diubah menjadi <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2067602449040652523">Kecerahan keyboard</translation>
-<translation id="2074759828767813253">Screenshot dan download terbaru</translation>
 <translation id="2083190527011054446">Selamat malam <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Tidak terhubung ke jaringan</translation>
 <translation id="2126242104232412123">Desktop baru</translation>
@@ -169,6 +168,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2575685495496069081">Fitur login multipel telah dinonaktifkan</translation>
 <translation id="2582112259361606227">Nyalakan ulang untuk mengupdate</translation>
 <translation id="2595239820337756193">Lima kilometer dalam mil</translation>
+<translation id="2596078834055697711">Mengambil screenshot jendela</translation>
 <translation id="2617342710774726426">Kartu SIM terkunci</translation>
 <translation id="2621713457727696555">Aman</translation>
 <translation id="2640255526076764619">Gestur touchpad untuk beralih ke desktop sebelumnya telah diubah. Geser ke kiri dengan empat jari untuk beralih ke desktop sebelumnya.</translation>
@@ -329,6 +329,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4215497585250573029">Setelan VPN</translation>
 <translation id="4217571870635786043">Dikte</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4261870227682513959">Tampilkan setelan notifikasi. Notifikasi nonaktif.</translation>
 <translation id="4267383818855338811">Mesin virtual sedang menggunakan kamera Anda</translation>
 <translation id="4269883910223712419">Admin perangkat ini memiliki kemampuan untuk:</translation>
@@ -376,6 +377,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4596144739579517758">Tema gelap nonaktif</translation>
 <translation id="4623167406982293031">Verifikasi akun</translation>
 <translation id="4628757576491864469">Perangkat</translation>
+<translation id="4642092649622328492">Mengambil screenshot sebagian</translation>
 <translation id="4659419629803378708">ChromeVox diaktifkan</translation>
 <translation id="4665114317261903604">Alihkan mode Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
@@ -423,7 +425,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> terhubung ke ponsel baru</translation>
 <translation id="5035389544768382859">Konfirmasi Konfigurasi Layar</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
-<translation id="5114495209940374989">Screenshot</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
 <translation id="5168181903108465623">Perangkat transmisi tersedia</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
@@ -492,7 +493,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Desktop tidak aktif.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Klik di mana saja untuk menangkap gambar dalam layar penuh</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5920710855273935292">Mikrofon dibisukan.</translation>
 <translation id="594179686076170922">Menghubungkan ke ponsel Anda ...</translation>
@@ -753,7 +753,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8563862697512465947">Setelan Notifikasi</translation>
 <translation id="857201607579416096">Menu dipindahkan ke pojok kanan bawah layar.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Ketuk di mana saja untuk menangkap gambar dalam layar penuh</translation>
 <translation id="8627191004499078455">Tersambung ke <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Setelan Aksesibilitas</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>

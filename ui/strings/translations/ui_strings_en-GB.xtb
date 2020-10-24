@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Can't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> swapped with <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">You searched for this before. Deleting '<ph name="QUERY" />' from your history will permanently remove it from your account across all your devices.</translation>
+<translation id="1510238584712386396">Launcher</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minute and }other{# minutes and }}</translation>
 <translation id="1643823602425662293">Notification</translation>
 <translation id="169515659049020177">Shift</translation>

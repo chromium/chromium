@@ -422,6 +422,11 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Los patrones de URL deben tener un formato conforme a lo especificado en la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentada en https://www.chromium.org/administrators/url-blacklist-filter-format.
       </translation>
 <translation id="1645793986494086629">Esquema:</translation>
+<translation id="1647558381546345298">Si estableces la política, se configurará el tamaño del almacenamiento en caché que use <ph name="PRODUCT_NAME" /> para guardar en el disco los archivos multimedia almacenados en caché, independientemente de que los usuarios hayan especificado o no la marca --media-cache-size. El valor especificado en esta política no establece un límite estricto, sino una sugerencia para el sistema de almacenamiento en caché. Se redondearán hacia arriba los valores que estén apenas unos megabytes por debajo.
+
+      Si estableces la política en 0, se utilizará el tamaño predeterminado de almacenamiento en caché. Los usuarios no podrán cambiarlo.
+
+      Si no estableces la política, se utilizará el tamaño predeterminado de almacenamiento en caché, y los usuarios podrán cambiarlo con la marca --media-cache-size.</translation>
 <translation id="1648816843164517573">Lista de nombres que omitirán la revisión de la política de HSTS</translation>
 <translation id="1654087023995670109">Aplica el modo de invitado en el navegador</translation>
 <translation id="1655229863189977773">Establecer el tamaño del caché de disco en bytes</translation>
@@ -1331,6 +1336,7 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
       Si no la estableces (o determinas una URL no válida), <ph name="PRODUCT_NAME" /> no utilizará la política como fuente de reglas para cambiar de navegador.
 
       Nota: Esta política redirecciona a un archivo XML en el mismo formato que la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" />. De esta manera, se cargan reglas de un archivo XML sin la necesidad de compartirlas con <ph name="IE_PRODUCT_NAME" />. Obtén más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2949765875529121431">Si estableces la política, se especificará una lista de nombres de host que están exentos de la revisión de la política de HSTS que podrían actualizar solicitudes de HTTP a HTTPS. En esta política, solo se permiten nombres de host con una sola etiqueta. Los nombres de host deben estar canonicalizados: debe convertirse cualquier IDN a su formato de etiqueta A y todas las letras en formato ASCII deben estar en minúscula. Esta política solo se aplica a los nombres de host específicos de la lista; no se aplica a los subdominios de estos nombres.</translation>
 <translation id="2952347049958405264">Restricciones:</translation>
 <translation id="2957047180944828740">Especifica si se permite que los sitios web no seguros envíen solicitudes a extremos de red más privados</translation>
 <translation id="2957506574938329824">No permitir que ningún sitio solicite acceso a dispositivos Bluetooth mediante la API de Bluetooth web</translation>
@@ -1439,6 +1445,9 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
 
       Independientemente de si se establece esta política o de cómo se configura, los usuarios no pueden cambiar la configuración de optimización de WPAD.</translation>
 <translation id="3072045631333522102">Protector de pantalla que se utilizará en la pantalla de inicio de sesión del modo de venta</translation>
+<translation id="3072788420987305247">Si habilitas la política o no la estableces, se mostrarán los controles multimedia en la pantalla de bloqueo cuando los usuarios bloqueen el dispositivo y se esté reproduciendo contenido multimedia.
+
+      Si la inhabilitas, se desactivarán los controles multimedia en la pantalla de bloqueo.</translation>
 <translation id="3072847235228302527">Establecer las Condiciones del Servicio para la cuenta local del dispositivo</translation>
 <translation id="3086995894968271156">Configura Cast Receiver en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Cargar la batería para dispositivos que están principalmente conectados a una fuente de alimentación externa</translation>
@@ -1522,6 +1531,11 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
         * 4, se actualizará el firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> después de la inscripción, antes de que el usuario acceda.
 
       Si no estableces la política, no estará disponible la actualización del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
+<translation id="3235677869770186098">Si estableces la política, podrás definir una lista de los patrones de URL que indiquen los sitios a los cuales se les otorga permiso automáticamente para acceder a un dispositivo USB con los ID del producto y del proveedor especificados en la pantalla de acceso. Para que la política sea válida, cada elemento de la lista debe tener los campos "devices" y "urls". Cada elemento del campo "devices" puede tener los campos "vendor_id" y "product_id". Si omites el campo "vendor_id", se creará una política que funcione con cualquier dispositivo. Si omites el campo "product_id", se creará una política que funcione con cualquier dispositivo que tenga el ID de proveedor especificado. Las políticas que tengan el campo "product_id", pero que no tengan el campo "vendor_id" no serán válidas.
+
+      El modelo de permisos de USB utiliza las URL de incorporación y solicitud para permitir que la URL de solicitud acceda al dispositivo USB. Esa URL puede no ser la misma que la de incorporación cuando se carga el sitio que solicita permiso en un iframe. Por lo tanto, el campo de las URL puede incluir hasta 2 strings separadas por coma para especificar las URL de incorporación y solicitud respectivamente. Si solo se especifica una URL, se otorgará el acceso a los dispositivos USB correspondientes cuando la URL del sitio que lo solicita coincida con esta URL más allá del estado de incorporación. Las URL deben ser válidas; de lo contrario, se ignorará la política.
+
+      Si no estableces la política, se usará el valor predeterminado general para todos los sitios (sin acceso automático).</translation>
 <translation id="3236046242843493070">Patrones de URL desde los que se pueden instalar secuencias de comandos de usuario, aplicaciones y extensiones</translation>
 <translation id="3240609035816615922">Política de acceso para la configuración de las impresoras</translation>
 <translation id="324062325008698789">Configura una lista de impresoras</translation>
@@ -2178,6 +2192,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4157003184375321727">Informar la versión de firmware y SO.</translation>
 <translation id="4157594634940419685">Permitir el acceso a las impresoras de CUPS nativas</translation>
 <translation id="4160962198980004898">Fuente de la dirección MAC del dispositivo cuando está conectado</translation>
+<translation id="4166174702671320480">Si habilitas la política, se ignorarán las políticas procedentes de un grupo atómico que no comparten el origen con la prioridad más alta de ese grupo.
+
+      Si la inhabilitas, no se ignorarán las políticas debido a su origen. Solo se ignorarán las políticas en caso de conflicto y si la política no tiene la prioridad más alta.
+
+      Si se establece esta política desde un origen de nube, no podrá orientarse a un usuario específico.</translation>
 <translation id="4169692397912242417">Habilita la función de accesibilidad de comentarios por voz en la pantalla de acceso.
 
           Si se establece la política como verdadera, los comentarios por voz estarán siempre habilitados en la pantalla de acceso.
@@ -2695,14 +2714,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si se establece la política como falsa o no se establece, no se enviará la información.
       Si se establece como verdadera, se informará el nombre de modelo, la arquitectura y la frecuencia máxima de cada CPU.</translation>
 <translation id="5124368997194894978">Habilitar el inicio mediante CA (corriente alterna)</translation>
-<translation id="513798533865657610">La función de envío automático de PIN cambia la manera en la que se ingresan los PIN en el Sistema operativo Chrome.
-          En lugar de mostrar el mismo campo de texto que se utiliza para ingresar contraseñas, esta
-          función mostrará una IU especial que le indicará al usuario con claridad la cantidad de
-          dígitos necesarios para el PIN. Como resultado, la longitud del PIN del usuario
-          se almacenará por fuera de los datos encriptados del usuario.
-
-          Si estableces esta política como falsa, los usuarios no podrán habilitar
-          la función en la página Configuración.</translation>
 <translation id="5141670636904227950">Establece el tipo de lupa predeterminado habilitado en la pantalla de acceso.</translation>
 <translation id="5142301680741828703">Siempre procesar los siguientes patrones de URL en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Esta política controla el envío de los datos que permiten identificar a los usuarios, como el acceso al SO, el acceso al perfil de <ph name="PRODUCT_NAME" />, el nombre de perfil de <ph name="PRODUCT_NAME" />, la ruta de acceso al perfil de <ph name="PRODUCT_NAME" /> y la ruta ejecutable de <ph name="PRODUCT_NAME" />.
@@ -3383,6 +3394,9 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="5951418260805607969">Muestra una notificación cuando hay poco espacio en el disco</translation>
 <translation id="5961137303188584693">Dirección MAC para el NIC integrado del dispositivo</translation>
 <translation id="5966615072639944554">Extensiones que tienen permitido utilizar la API de atestación remota</translation>
+<translation id="5975765799383881158">Si habilitas la política o no la estableces, los usuarios podrán enviar comentarios a Google desde Menú &gt; Ayuda &gt; Informar un problema o la combinación de teclas correspondiente.
+
+      Si inhabilitas la política, los usuarios no podrán enviar los comentarios a Google.</translation>
 <translation id="5997543603646547632">Utilizar reloj con formato de 24 horas de forma predeterminada</translation>
 <translation id="5997846976342452720">Indicar si el buscador de complementos se debe inhabilitar (obsoleto)</translation>
 <translation id="5998198091336830580">Esta política es parte del siguiente grupo atómico (solo se aplican las políticas que provengan de la fuente de mayor prioridad del grupo):</translation>
@@ -3985,6 +3999,11 @@ Si desactivas la política o no la estableces, el servicio enviará a los usuari
 
       Si inhabilitas la política, se mostrará un mensaje de error en lugar de la solicitud de configuración de red.</translation>
 <translation id="6821268164692776674">Destinos <ph name="CLOUD_PRINT_NAME" /> y "Guardar en Google Drive"</translation>
+<translation id="682408981080798691">Si habilitas la política o no la estableces, se activará la integridad del código del renderizador.
+
+      Si la inhabilitas, se reducirá la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se permitirá cargar código desconocido y potencialmente hostil en los procesos del renderizador de <ph name="PRODUCT_NAME" />. Desactiva la política solo si hay problemas de compatibilidad con software de terceros que deba ejecutarse en los procesos del renderizador de <ph name="PRODUCT_NAME" />.
+
+      Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="6833023569065717572">Si estableces la política como verdadera, el reloj de la pantalla de acceso del dispositivo tendrá el formato de 24 horas.
 
       Si la estableces como falsa, el reloj tendrá el formato de 12 horas.

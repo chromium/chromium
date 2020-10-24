@@ -273,6 +273,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2979025552038692506">Vybraná anonymní karta</translation>
 <translation id="2987620471460279764">Text sdílený z jiného zařízení</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
+<translation id="2992473221983447149">Popisy obrázků</translation>
 <translation id="2996291259634659425">Vytvoření heslové fráze</translation>
 <translation id="2996809686854298943">Je požadována adresa URL</translation>
 <translation id="3006881078666935414">Žádné údaje o využití</translation>
@@ -285,6 +286,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> záložka}few{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}many{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}other{<ph name="BOOKMARKS_COUNT_MANY" /> záložek}}</translation>
 <translation id="3062802207422175757">Články o vašich zájmech v Chromu</translation>
 <translation id="3089395242580810162">Otevřít na anonymní kartě</translation>
+<translation id="3098745985164956033">Za účelem zlepšení popisů se některé obrázky odesílají do Googlu</translation>
 <translation id="3114507951000454849">Přečtěte si dnešní zprávy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Oznámení</translation>
 <translation id="3137521801621304719">Ukončit anonymní režim</translation>
@@ -775,6 +777,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6545017243486555795">Vymazat všechna data</translation>
 <translation id="6560414384669816528">Vyhledávat pomocí Sogou</translation>
 <translation id="656065428026159829">Zobrazit další</translation>
+<translation id="6565959834589222080">Použije se síť Wi-Fi, když bude dostupná</translation>
 <translation id="6566259936974865419">Chrome vám ušetřil <ph name="GIGABYTES" /> GB</translation>
 <translation id="6573096386450695060">Vždy povolit</translation>
 <translation id="6573431926118603307">Zde se objeví karty, které jste otevřeli v Chromu ve svých ostatních zařízeních.</translation>
@@ -1086,6 +1089,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8788968922598763114">Znovu otevřít naposledy zavřenou kartu</translation>
 <translation id="8798449543960971550">Čtení</translation>
 <translation id="8812260976093120287">Na některých webech můžete platit pomocí výše uvedených podporovaných platebních aplikací v zařízení.</translation>
+<translation id="881688628773363275">Obsah karty náhledu nelze zobrazit.</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="883806473910249246">Při stahování obsahu došlo k chybě.</translation>
 <translation id="8840953339110955557">Tato stránka se může od online verze lišit.</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Не удается отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Вы поменяли местами объекты "<ph name="FIRST_ITEM_TITLE" />" и "<ph name="SECOND_ITEM_TITLE" />"</translation>
 <translation id="1498028757988366001">Вы уже искали эту информацию. Если вы удалите запрос "<ph name="QUERY" />" из истории, он будет навсегда скрыт на всех ваших устройствах, где выполнен вход в аккаунт.</translation>
+<translation id="1510238584712386396">Панель запуска</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минута }one{# минута }few{# минуты }many{# минут }other{# минуты }}</translation>
 <translation id="1643823602425662293">Уведомление</translation>
 <translation id="169515659049020177">Shift</translation>

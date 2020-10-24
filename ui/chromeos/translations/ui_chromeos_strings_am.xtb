@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">የአሜሪካ ቁልፍ ሰሌዳ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተሰርዟል</translation>
+<translation id="2541377937973966830">የዚህ አቃፊ ይዘቶች ተነባቢ-ብቻ ናቸው። አንዳንድ እንቅስቃሴዎች አይደገፉም።</translation>
 <translation id="2542049655219295786">Google ሠንጠረዥ</translation>
 <translation id="2547921442987553570">ወደ <ph name="EXTENSION_NAME" /> አክል</translation>
 <translation id="255937426064304553">አሜሪካ ዓለምአቀፍ</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">ዝርዝሮች</translation>
 <translation id="4527800702232535228">ይህ አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
 <translation id="4552678318981539154">ተጨማሪ ማከማቻ ይግዙ</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> ተሰርዟል</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ፋይል</translation>
 <translation id="457386861538956877">ተጨማሪ...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">የፋይሎች ግብረመልስ መስኮት</translation>
 <translation id="6358884629796491903">ድራጎን</translation>
 <translation id="637062427944097960">ይህ ፋይል በሌላ ዴስክቶፕ ላይ ተከፍቷል። እሱን ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
+<translation id="6394388407447716302">ተነባቢ-ብቻ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ንጥሎች</translation>
 <translation id="6398765197997659313">ከሙሉ ማሳያ መስኮት ይውጡ</translation>
 <translation id="642282551015776456">ይህ ስም የፋይል ወይም አቃፊ ስም ሆኖ ሊያገለግል አይችልም።</translation>

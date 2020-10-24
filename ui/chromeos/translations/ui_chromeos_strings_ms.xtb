@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Papan kekunci AS</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> item dipadamkan</translation>
+<translation id="2541377937973966830">Kandungan folder ini bersifat baca sahaja. Sesetengah aktiviti tidak disokong.</translation>
 <translation id="2542049655219295786">Jadual Google</translation>
 <translation id="2547921442987553570">Tambahkan pada <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Antarabangsa AS</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Butiran</translation>
 <translation id="4527800702232535228">Folder ini dikongsi dengan Parallels Desktop</translation>
 <translation id="4552678318981539154">Beli lagi storan</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> dipadamkan</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Fail <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Lagi...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Tetingkap maklum balas fail</translation>
 <translation id="6358884629796491903">Naga</translation>
 <translation id="637062427944097960">Fail ini dibuka pada desktop yang berbeza. Alihkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihat fail.</translation>
+<translation id="6394388407447716302">Baca sahaja</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
 <translation id="6398765197997659313">Keluar daripada skrin penuh</translation>
 <translation id="642282551015776456">Nama ini tidak boleh digunakan sebagai nama fail atau folder</translation>

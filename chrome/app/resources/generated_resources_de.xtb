@@ -17,6 +17,7 @@
 <translation id="1012794136286421601">Ihre Dateien aus Google Docs, Google Tabellen, Google Präsentationen und Google Zeichnungen werden synchronisiert. Öffnen Sie die Google Drive App, um online oder offline auf die Dateien zuzugreifen.</translation>
 <translation id="1012876632442809908">USB-C-Gerät (Port vorne)</translation>
 <translation id="1013707859758800957">Ein Plug-in ohne Sandbox wird auf dieser Seite ausgeführt.</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">Ordnernamen bearbeiten</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{Letzter Tag für die Aktualisierung von <ph name="DEVICE_TYPE" />}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen aktualisieren}}</translation>
 <translation id="1016566241875885511">Zusätzliche Informationen (optional)</translation>
@@ -1879,7 +1880,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3165371858310906303">Nachfragen, wenn eine Website wissen möchte, ob ich anwesend bin</translation>
 <translation id="3165390001037658081">Einige Mobilfunkanbieter blockieren diese Funktion möglicherweise.</translation>
 <translation id="316652501498554287">G Suite for Education-Konten</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Sie können die Anmeldung auch überspringen und <ph name="LINK_START" />als Gast surfen<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Sprache der Seite:</translation>
 <translation id="3179982752812949580">Schriftart für Text</translation>
@@ -2022,7 +2022,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> teilt <ph name="ATTACHMENTS" /> mit Ihnen.}other{<ph name="DEVICE_NAME" /> teilt <ph name="ATTACHMENTS" /> mit Ihnen.}}</translation>
 <translation id="3364986687961713424">Von Ihrem Administrator: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Verwenden Sie entweder Strg oder Alt</translation>
-<translation id="3367047597842238025">Hier können Sie Ihr <ph name="DEVICE_TYPE" /> nach Ihren Wünschen einrichten und alle großartigen Funktionen entdecken.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369067987974711168">Mehr Aktionen für diesen Port anzeigen</translation>
 <translation id="3369624026883419694">Host auflösen...</translation>
@@ -2345,7 +2344,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3713047097299026954">Auf diesem Sicherheitsschlüssel sind keine Anmeldedaten gespeichert</translation>
 <translation id="3714195043138862580">Die Bereitstellung dieses Demogeräts wurde aufgehoben.</translation>
 <translation id="3714633008798122362">Web-Kalender</translation>
-<translation id="3715954932774762075">Apps und Websites, die in mehreren Sprachen verfügbar sind, verwenden die erste unterstützte Sprache auf dieser Liste. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Startseite</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google und ich</translation>
@@ -2483,7 +2481,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3856800405688283469">Zeitzone auswählen</translation>
 <translation id="3857807444929313943">Anheben und erneut berühren</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Synchronisierung pausiert</translation>
-<translation id="3861386850461794863">Sprachen für Apps und Websites</translation>
 <translation id="3861638017150647085">Der Nutzername "<ph name="USERNAME" />" ist nicht verfügbar</translation>
 <translation id="3862693525629180217">Über integrierten Sensor bestätigen</translation>
 <translation id="3862788408946266506">App mit Manifest-Attribut "kiosk_only" muss im Chrome OS-Kioskmodus installiert werden</translation>
@@ -3789,7 +3786,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5457991019809708398">An, kein Roaming</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notizen auf Sperrbildschirm</translation>
-<translation id="546322474339998983">Wird vom Chrome-Browser und <ph name="DEVICE_TYPE" /> Launcher verwendet</translation>
 <translation id="5463231940765244860">Eingabe</translation>
 <translation id="5463275305984126951">Index von <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Menü enthält ausgeblendete Lesezeichen</translation>
@@ -3915,7 +3911,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Apps werden geladen...</translation>
 <translation id="5592595402373377407">Noch nicht genügend Daten vorhanden</translation>
-<translation id="5593357315997824387">Meine Dateien synchronisieren</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="5595727715083333657">Ihr Container unterstützt keine Größenanpassung. Wenn Sie den Speicherplatz anpassen möchten, der Linux (Beta) zugewiesen wurde, machen Sie einen Back-up und stellen Sie ihn in einem neuen Container wieder her.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
@@ -6156,7 +6151,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8218847192766059983">Sie können Sprachen hinzufügen oder die Liste neu anordnen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Normalerweise blockieren Sie Benachrichtigungen. Klicken Sie hier, wenn Sie von dieser Website Benachrichtigungen erhalten möchten.</translation>
 <translation id="8225265270453771718">Anwendungsfenster freigeben</translation>
-<translation id="8225753906568652947">Meine Angebote einlösen</translation>
 <translation id="8226222018808695353">Unzulässig</translation>
 <translation id="8226619461731305576">Warteschlange</translation>
 <translation id="8226628635270268143">Hier können Sie Ihre bevorzugten Fotos und Alben auswählen</translation>
@@ -6317,7 +6311,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8417548266957501132">Elternpasswort</translation>
 <translation id="8418445294933751433">Al&amp;s Tab anzeigen</translation>
 <translation id="8419098111404128271">Suchergebnisse für "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Willkommen bei Ihrem <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Wörterbucheinträge bearbeiten</translation>
 <translation id="8421361468937925547">Automatische Untertitel (nur auf Englisch)</translation>
 <translation id="8422787418163030046">Fach fehlt</translation>

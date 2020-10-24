@@ -2704,14 +2704,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio viene impostato su false o non viene impostato, le informazioni non vengono segnalate.
       Se viene impostato su true, per ogni CPU vengono segnalate informazioni quali nome del modello, architettura e velocità di clock massima.</translation>
 <translation id="5124368997194894978">Attiva avvio tramite CA (corrente alternata)</translation>
-<translation id="513798533865657610">La funzionalità di invio automatico del PIN modifica il modo in cui i PIN vengono inseriti in Chrome OS.
-          Invece di mostrare lo stesso campo di testo utilizzato per l'inserimento della password, questa
-          funzionalità mostra un'interfaccia utente speciale che indica chiaramente all'utente da quante
-          cifre è composto il PIN. Di conseguenza, la lunghezza del PIN dell'utente
-          viene memorizzata al di fuori dei dati criptati dell'utente.
-
-          Se il criterio viene impostato su false, gli utenti non hanno la possibilità di attivare
-          la funzionalità nella pagina Impostazioni.</translation>
 <translation id="5141670636904227950">Impostazione tipo di ingrandimento dello schermo predefinito attivato nella schermata di accesso</translation>
 <translation id="5142301680741828703">Visualizza sempre i seguenti schemi di URL in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Questo criterio consente di stabilire se segnalare o meno le informazioni che possono essere utilizzate per identificare gli utenti, ad esempio i dati di accesso al sistema operativo, i dati di accesso del profilo <ph name="PRODUCT_NAME" />, il nome del profilo <ph name="PRODUCT_NAME" />, il percorso del profilo <ph name="PRODUCT_NAME" /> e il percorso eseguibile di <ph name="PRODUCT_NAME" />.

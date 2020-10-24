@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">ਚੁਣੀ ਗਈ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="2987620471460279764">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਲਿਖਤ</translation>
 <translation id="2989523299700148168">ਹਾਲੀਆ ਵੇਖੇ ਗਏ</translation>
+<translation id="2992473221983447149">ਚਿੱਤਰ ਦੇ ਵਰਣਨ</translation>
 <translation id="2996291259634659425">ਪਾਸਫਰੇਜ਼ ਬਣਾਓ</translation>
 <translation id="2996809686854298943">URL ਲੁੜੀਂਦਾ</translation>
 <translation id="3006881078666935414">ਕੋਈ ਵਰਤੋਂ  ਡਾਟਾ  ਨਹੀਂ</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ਬੁੱਕਮਾਰਕ}one{<ph name="BOOKMARKS_COUNT_MANY" /> ਬੁੱਕਮਾਰਕ}other{<ph name="BOOKMARKS_COUNT_MANY" /> ਬੁੱਕਮਾਰਕ}}</translation>
 <translation id="3062802207422175757">Chrome 'ਤੇ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਲੇਖ</translation>
 <translation id="3089395242580810162">ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
+<translation id="3098745985164956033">ਤੁਹਾਡੇ ਲਈ ਵਰਣਨ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਕੁਝ ਚਿੱਤਰਾਂ ਨੂੰ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="3114507951000454849">ਅੱਜ ਦੀਆਂ ਖਬਰਾਂ ਪੜ੍ਹੋ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ਘੋਸ਼ਣਾਵਾਂ</translation>
 <translation id="3137521801621304719">ਗੁਮਨਾਮ ਮੋਡ ਛੱਡੋ</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">ਸਾਰਾ  ਡਾਟਾ  ਸਾਫ਼ ਕਰੋ</translation>
 <translation id="6560414384669816528">Sogou ਨਾਲ ਖੋਜੋ</translation>
 <translation id="656065428026159829">ਹੋਰ ਦੇਖੋ</translation>
+<translation id="6565959834589222080">ਉਪਲਬਧ ਹੋਣ 'ਤੇ ਵਾਈ-ਫਾਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="6566259936974865419">Chrome ਨੇ ਤੁਹਾਡੀ <ph name="GIGABYTES" /> GB ਦੀ ਬਚਤ ਕੀਤੀ ਹੈ</translation>
 <translation id="6573096386450695060">ਹਮੇਸ਼ਾਂ ਰੀਡਾਇਰੈਕਟ ਕਰਨ ਦਿਓ</translation>
 <translation id="6573431926118603307">ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ Chrome ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੀਆਂ ਗਈਆਂ ਟੈਬਾਂ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੀਆਂ।</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">ਆਖਰੀ ਬੰਦ ਕੀਤੀ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="8798449543960971550">ਪੜ੍ਹ ਲਿਆ</translation>
 <translation id="8812260976093120287">ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ, ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਉਪਰੋਕਤ ਸਮਰਥਿਤ ਭੁਗਤਾਨ ਐਪਾਂ ਨਾਲ ਭੁਗਤਾਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="881688628773363275">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਦੀ ਸਮੱਗਰੀ ਦੇਖਣਯੋਗ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883806473910249246">ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨ ਸਮੇਂ ਕੋਈ ਗੜਬੜ ਹੋਈ।</translation>
 <translation id="8840953339110955557">ਇਹ ਪੰਨਾ ਆਨਲਾਈਨ ਵਰਜਨ ਤੋਂ ਵੱਖਰਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>

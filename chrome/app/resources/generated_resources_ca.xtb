@@ -1885,7 +1885,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3165371858310906303">Pregunta'm quan un lloc web vulgui saber quan estic present</translation>
 <translation id="3165390001037658081">Alguns operadors de telefonia mòbil poden bloquejar aquesta funció.</translation>
 <translation id="316652501498554287">Comptes de G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">També podeu <ph name="LINK_START" />navegar com a convidat<ph name="LINK_END" /> sense iniciar sessió.</translation>
 <translation id="3177909033752230686">Idioma de la pàgina:</translation>
 <translation id="3179982752812949580">Tipus de lletra del text</translation>
@@ -2028,7 +2027,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> està compartint <ph name="ATTACHMENTS" /> amb tu.}other{<ph name="DEVICE_NAME" /> està compartint <ph name="ATTACHMENTS" /> amb tu.}}</translation>
 <translation id="3364986687961713424">De part de l'administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Utilitza Ctrl o Alt</translation>
-<translation id="3367047597842238025">Configura <ph name="DEVICE_TYPE" /> al teu gust i descobreix les increïbles funcions que tens al teu abast.</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369067987974711168">Mostra més accions per a aquest port</translation>
 <translation id="3369624026883419694">Resolent l'amfitrió...</translation>
@@ -2351,7 +2349,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3713047097299026954">Aquesta clau de seguretat no té dades d'inici de sessió</translation>
 <translation id="3714195043138862580">Aquest dispositiu de demostració s'ha donat de baixa.</translation>
 <translation id="3714633008798122362">calendari web</translation>
-<translation id="3715954932774762075">Les aplicacions i els llocs web que estan disponibles en diversos idiomes utilitzaran el primer idioma admès d'aquesta llista. Aquestes preferències se sincronitzen amb la configuració del navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Pàgina d'inici</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu i Google</translation>
@@ -2489,7 +2486,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3856800405688283469">Selecciona la zona horària</translation>
 <translation id="3857807444929313943">Aixeca el dit i toca de nou</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: la sincronització s'ha posat en pausa</translation>
-<translation id="3861386850461794863">Idiomes per a aplicacions i llocs web</translation>
 <translation id="3861638017150647085">El nom d'usuari "<ph name="USERNAME" />" no està disponible</translation>
 <translation id="3862693525629180217">Verifica la teva identitat amb un sensor integrat</translation>
 <translation id="3862788408946266506">L'aplicació amb l'atribut del fitxer de manifest "kiosk_only" s'ha d'instal·lar en mode quiosc a Chrome OS</translation>
@@ -3799,7 +3795,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5457991019809708398">Activat, sense itinerància</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notes a la pantalla de bloqueig</translation>
-<translation id="546322474339998983">S'utilitza al navegador Chrome i al menú d'aplicacions del dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Introdueix</translation>
 <translation id="5463275305984126951">Índex de <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Menú amb adreces d'interès amagades</translation>
@@ -3925,7 +3920,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">S'estan carregant les aplicacions...</translation>
 <translation id="5592595402373377407">Encara no hi ha prou dades disponibles.</translation>
-<translation id="5593357315997824387">Sincronitza els meus fitxers</translation>
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="5595727715083333657">El teu contenidor no admet el canvi de mida. Per ajustar la quantitat d'espai que s'assigna prèviament a Linux (versió beta), crea una còpia de seguretat i, a continuació, fes la restauració en un contenidor nou.</translation>
 <translation id="5596627076506792578">Més opcions</translation>
@@ -6172,7 +6166,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8218847192766059983">Afegeix idiomes o torna a ordenar la llista. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic aquí.</translation>
 <translation id="8225265270453771718">Comparteix la finestra d'una aplicació</translation>
-<translation id="8225753906568652947">Bescanvia les teves ofertes</translation>
 <translation id="8226222018808695353">Prohibit</translation>
 <translation id="8226619461731305576">Cua</translation>
 <translation id="8226628635270268143">Tria les teves fotos i els teus àlbums preferits</translation>
@@ -6336,7 +6329,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8417548266957501132">Contrasenya del pare o de la mare</translation>
 <translation id="8418445294933751433">&amp;Mostra com a pestanya</translation>
 <translation id="8419098111404128271">Resultats de la cerca per a "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Et donem la benvinguda al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8420308167132684745">Edita les entrades del diccionari</translation>
 <translation id="8421361468937925547">Subtítols instantanis (només en anglès)</translation>
 <translation id="8422787418163030046">No es troba la safata</translation>

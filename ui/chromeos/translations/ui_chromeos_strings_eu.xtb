@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">AEBko teklatua</translation>
 <translation id="2534155362429831547">Ezabatu dira <ph name="NUMBER_OF_ITEMS" /> elementu</translation>
+<translation id="2541377937973966830">Karpeta honetako edukia irakurtzeko soilik da. Jarduera batzuk ez dira onartzen.</translation>
 <translation id="2542049655219295786">Google taula</translation>
 <translation id="2547921442987553570">Gehitu <ph name="EXTENSION_NAME" /> luzapenean</translation>
 <translation id="255937426064304553">AEBko nazioarteko teklatu-diseinua</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4527800702232535228">Parallels Desktop aplikazioarekin partekatuta dago karpeta hau</translation>
 <translation id="4552678318981539154">Erosi memoria gehiago</translation>
+<translation id="4559318885353833501">Ezabatu da <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Bokeh efektua</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fitxategia</translation>
 <translation id="457386861538956877">Gehiago…</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Fitxategiei buruzko oharren leihoa</translation>
 <translation id="6358884629796491903">Dragoia</translation>
 <translation id="637062427944097960">Fitxategi hau beste mahaigain batean ireki da. Ikusteko, joan <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) kontura.</translation>
+<translation id="6394388407447716302">Irakurtzeko soilik</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementu</translation>
 <translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
 <translation id="642282551015776456">Izena ezin da erabili fitxategi- edo karpeta-izen gisa</translation>

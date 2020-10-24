@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">தேர்ந்தெடுத்த மறைநிலைத் தாவல்</translation>
 <translation id="2987620471460279764">பிற சாதனத்திலிருந்து உரை பகிரப்பட்டது</translation>
 <translation id="2989523299700148168">சமீபத்தில் பார்த்தவை</translation>
+<translation id="2992473221983447149">பட விளக்கங்கள்</translation>
 <translation id="2996291259634659425">கடவுச்சொற்றொடரை உருவாக்கு</translation>
 <translation id="2996809686854298943">URL தேவை</translation>
 <translation id="3006881078666935414">பயன்பாட்டுத் தரவு இல்லை</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> புக்மார்க்}other{<ph name="BOOKMARKS_COUNT_MANY" /> புக்மார்க்குகள்}}</translation>
 <translation id="3062802207422175757">உங்களுக்குப் பிடித்த கட்டுரைகளை Chromeமில் படிக்கலாம்</translation>
 <translation id="3089395242580810162">மறைநிலை தாவலில் திற</translation>
+<translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="3114507951000454849">இன்றைய செய்திகளைப் படியுங்கள் <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">அறிவிப்புகள்</translation>
 <translation id="3137521801621304719">மறைநிலையிலிருந்து வெளியேறு</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">எல்லா தரவையும் அழி</translation>
 <translation id="6560414384669816528">Sogou மூலம் தேடுக</translation>
 <translation id="656065428026159829">மேலும் காட்டு</translation>
+<translation id="6565959834589222080">வைஃபை இணைப்பு கிடைக்கும்போது பயன்படுத்தப்படும்</translation>
 <translation id="6566259936974865419">Chrome உங்களின் <ph name="GIGABYTES" /> ஜி.பை. அளவைச் சேமித்தது</translation>
 <translation id="6573096386450695060">எப்போதும் அனுமதி</translation>
 <translation id="6573431926118603307">உங்கள் பிற சாதனங்களில் பயன்படுத்திய Chrome இல் திறந்த தாவல்கள் இங்கே தோன்றும்.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">கடைசியாக மூடிய தாவலைத் திறக்கும்</translation>
 <translation id="8798449543960971550">படித்தவை</translation>
 <translation id="8812260976093120287">உங்கள் சாதனத்தில் ஆதரிக்கப்படும் கட்டணம் செலுத்துவதற்கான பயன்பாடுகளைப் (மேலே குறிப்பிட்டவை) பயன்படுத்தி, சில இணையதளங்களின் மூலம் பணம் செலுத்தலாம்.</translation>
+<translation id="881688628773363275">தாவல் உள்ளடக்கத்தின் மாதிரிக்காட்சியைப் பார்க்க முடியாது.</translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="883806473910249246">உள்ளடக்கத்தைப் பதிவிறக்கும் போது பிழை ஏற்பட்டது.</translation>
 <translation id="8840953339110955557">ஆன்லைன் பதிப்பிலிருந்து இந்தப் பக்கம் வேறுபடலாம்.</translation>

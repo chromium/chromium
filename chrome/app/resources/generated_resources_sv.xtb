@@ -1886,7 +1886,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3165371858310906303">Fråga när en webbplats vill registrera om du är närvarande</translation>
 <translation id="3165390001037658081">Vissa operatörer kanske blockerar den här funktionen.</translation>
 <translation id="316652501498554287">G Suite for Education-konton</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Du kan även hoppa över inloggningen och <ph name="LINK_START" />surfa som gäst<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Sidans språk:</translation>
 <translation id="3179982752812949580">Textens teckensnitt</translation>
@@ -2029,7 +2028,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> delar <ph name="ATTACHMENTS" /> med dig.}other{<ph name="DEVICE_NAME" /> delar <ph name="ATTACHMENTS" /> med dig.}}</translation>
 <translation id="3364986687961713424">Från administratören: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Använd Ctrl eller Alt</translation>
-<translation id="3367047597842238025">Konfigurera din <ph name="DEVICE_TYPE" /> precis som du vill ha den och upptäck alla fantastiska funktioner som du alltid har till hands.</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369067987974711168">Visa fler åtgärder för den här porten</translation>
 <translation id="3369624026883419694">Tolkar värden...</translation>
@@ -2352,7 +2350,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3713047097299026954">Det finns inga inloggningsuppgifter på den här säkerhetsnyckeln</translation>
 <translation id="3714195043138862580">Demoenheten har avregistrerats.</translation>
 <translation id="3714633008798122362">webbkalender</translation>
-<translation id="3715954932774762075">Det första språk som stöds i den här listan kommer att användas i appar och webbplatser är tillgängliga på flera språk. Dessa inställningar synkroniseras med inställningarna för webbläsaren. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Startsida</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Du och Google</translation>
@@ -2490,7 +2487,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3856800405688283469">Välj tidszon</translation>
 <translation id="3857807444929313943">Lyft och tryck sedan igen</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Synkroniseringen har pausats</translation>
-<translation id="3861386850461794863">Språk för appar och webbplatser</translation>
 <translation id="3861638017150647085">Användarnamnet <ph name="USERNAME" /> är inte tillgängligt</translation>
 <translation id="3862693525629180217">Verifiera via inbyggd sensor</translation>
 <translation id="3862788408946266506">En app med manifestattributet kiosk_only måste installeras i kioskläget i Chrome OS</translation>
@@ -3800,7 +3796,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5457991019809708398">På, utan roaming</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Anteckningar på låsskärmen</translation>
-<translation id="546322474339998983">Används i Chrome-webbläsaren och <ph name="DEVICE_TYPE" />-översikten</translation>
 <translation id="5463231940765244860">Ange</translation>
 <translation id="5463275305984126951">Index till <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Menyn innehåller dolda bokmärken</translation>
@@ -3926,7 +3921,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Läser in appar …</translation>
 <translation id="5592595402373377407">Det finns inte tillräckligt mycket data ännu.</translation>
-<translation id="5593357315997824387">Synkronisera mina filer</translation>
 <translation id="5595485650161345191">Redigera adress</translation>
 <translation id="5595727715083333657">Det går inte att ändra storlek på den här behållaren. Om du vill justera hur mycket utrymme som ska förhandstilldelas Linux (beta) säkerhetskopierar du behållaren och återställer den till en ny behållare.</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
@@ -6173,7 +6167,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8218847192766059983">Lägg till språk eller ändra ordning på listan. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Du blockerar aviseringar. Klicka här om du vill tillåta aviseringar från webbplatsen.</translation>
 <translation id="8225265270453771718">Dela ett appfönster</translation>
-<translation id="8225753906568652947">Lös in erbjudanden</translation>
 <translation id="8226222018808695353">Förbjuden</translation>
 <translation id="8226619461731305576">Utskriftskö</translation>
 <translation id="8226628635270268143">Välj favoritfoton och favoritalbum</translation>
@@ -6336,7 +6329,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8417548266957501132">Förälderns lösenord</translation>
 <translation id="8418445294933751433">&amp;Visa som flik</translation>
 <translation id="8419098111404128271">Sökresultat för ”<ph name="SEARCH_TEXT" />”</translation>
-<translation id="8419368276599091549">Välkommen till <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Redigera poster i ordlista</translation>
 <translation id="8421361468937925547">Live Caption (endast engelska)</translation>
 <translation id="8422787418163030046">Fack saknas</translation>

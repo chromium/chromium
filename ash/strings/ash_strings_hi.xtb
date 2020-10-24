@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">डेस्क का नाम बदलकर <ph name="DESK_NAME" /> कर दिया गया है</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2067602449040652523">कीबोर्ड की रोशनी</translation>
-<translation id="2074759828767813253">हाल ही के स्क्रीनशॉट और डाउनलोड की गई फ़ाइलें</translation>
 <translation id="2083190527011054446">गुड नाइट <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्क से जुड़ा हुआ नहीं है</translation>
 <translation id="2126242104232412123">नया डेस्क</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">एक से ज़्यादा 'साइन इन' को बंद कर दिया गया है</translation>
 <translation id="2582112259361606227">अपडेट करने के लिए रीस्टार्ट करें</translation>
 <translation id="2595239820337756193">5 हज़ार कितने मील होता है</translation>
+<translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक है</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="2640255526076764619">पिछले डेस्क पर स्विच करने के लिए, टचपैड के जेस्चर (हाव-भाव) में बदलाव हुआ है. पिछले डेस्क पर स्विच करने के लिए, चार उंगलियों से बाईं ओर स्वाइप करें.</translation>
@@ -330,6 +330,7 @@
 <translation id="4215497585250573029">वीपीएन की सेटिंग</translation>
 <translation id="4217571870635786043">लिखवाना</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4261870227682513959">सूचना सेटिंग दिखाएं. सूचनाएं बंद हैं</translation>
 <translation id="4267383818855338811">कोई वर्चुअल मशीन आपके कैमरे का इस्तेमाल कर रही है</translation>
 <translation id="4269883910223712419">इस डिवाइस के एडमिन ये काम कर सकते हैं:</translation>
@@ -377,6 +378,7 @@
 <translation id="4596144739579517758">गहरे रंग वाली थीम बंद है</translation>
 <translation id="4623167406982293031">खाते की पुष्टि करें</translation>
 <translation id="4628757576491864469">डिवाइस</translation>
+<translation id="4642092649622328492">आंशिक स्क्रीनशॉट लें</translation>
 <translation id="4659419629803378708">ChromeVox सक्षम है</translation>
 <translation id="4665114317261903604">'परेशान न करें' को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">माता-पिता के कोड से डिवाइस अनलॉक करें</translation>
@@ -424,7 +426,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> एक नए फ़ोन से कनेक्ट हो गया है</translation>
 <translation id="5035389544768382859">डिसप्ले के कॉन्फ़िगरेशन की पुष्टि करें</translation>
 <translation id="5083553833479578423">Assistant की और भी सुविधाओं के बारे में जानें.</translation>
-<translation id="5114495209940374989">स्क्रीनशॉट</translation>
 <translation id="5136175204352732067">अलग कीबोर्ड कनेक्ट किया गया</translation>
 <translation id="5168181903108465623">कास्ट डिवाइस उपलब्ध हैं</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
@@ -493,7 +494,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">यह डेस्क इस्तेमाल में नहीं है.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">फ़ुलस्क्रीन कैप्चर करने के लिए कहीं पर भी क्लिक करें</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5920710855273935292">माइक म्यूट है.</translation>
 <translation id="594179686076170922">आपके फ़ोन से कनेक्ट हो रहा है…</translation>
@@ -754,7 +754,6 @@
 <translation id="8563862697512465947">सूचना सेटिंग</translation>
 <translation id="857201607579416096">मेन्यू, स्क्रीन के सबसे नीचे दाएं कोने में चला गया है.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">फ़ुलस्क्रीन को कैप्चर करने के लिए कहीं भी टैप करें</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> से कनेक्ट है</translation>
 <translation id="8631727435199967028">सुलभता सेटिंग</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>

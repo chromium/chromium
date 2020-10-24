@@ -273,6 +273,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2979025552038692506">Valgt inkognitofane</translation>
 <translation id="2987620471460279764">Tekst, der er delt fra en anden enhed</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
+<translation id="2992473221983447149">Billedbeskrivelser</translation>
 <translation id="2996291259634659425">Opret adgangssætning</translation>
 <translation id="2996809686854298943">En webadresse er påkrævet</translation>
 <translation id="3006881078666935414">Ingen brugsdata</translation>
@@ -285,6 +286,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bogmærke}one{<ph name="BOOKMARKS_COUNT_MANY" />bogmærke}other{<ph name="BOOKMARKS_COUNT_MANY" />bogmærker}}</translation>
 <translation id="3062802207422175757">Artikler om dine interesser i Chrome</translation>
 <translation id="3089395242580810162">Åbn på inkognitofane</translation>
+<translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
 <translation id="3114507951000454849">Læs dagens nyheder <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Meddelelser</translation>
 <translation id="3137521801621304719">Deaktiver inkognitotilstand</translation>
@@ -775,6 +777,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6545017243486555795">Ryd alle data</translation>
 <translation id="6560414384669816528">Søg via Sogou</translation>
 <translation id="656065428026159829">Se mere</translation>
+<translation id="6565959834589222080">Wi-Fi anvendes, når det er tilgængeligt</translation>
 <translation id="6566259936974865419">Chrome har sparet dig <ph name="GIGABYTES" /> GB</translation>
 <translation id="6573096386450695060">Tillad altid</translation>
 <translation id="6573431926118603307">Faner, du har åbnet i Chrome på dine andre enheder, vises her.</translation>
@@ -1086,6 +1089,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8788968922598763114">Åbn den senest lukkede fane igen</translation>
 <translation id="8798449543960971550">Læst</translation>
 <translation id="8812260976093120287">På nogle websites kan du betale med ovenstående understøttede betalingsapps på din enhed.</translation>
+<translation id="881688628773363275">Indholdet på fanen Forhåndsvisning kan ikke vises.</translation>
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="883806473910249246">Der opstod en fejl under download af indholdet.</translation>
 <translation id="8840953339110955557">Denne side kan afvige fra onlineversionen.</translation>

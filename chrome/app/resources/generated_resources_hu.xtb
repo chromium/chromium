@@ -1886,7 +1886,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3165371858310906303">Kérdezzen rá, amikor egy webhely tudni szeretné, hogy Ön mikor van jelen</translation>
 <translation id="3165390001037658081">Egyes szolgáltatók letilthatják ezt a funkciót.</translation>
 <translation id="316652501498554287">G Suite for Education-fiókok</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Ki is hagyhatja a bejelentkezést, és <ph name="LINK_START" />böngészhet vendégként<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Az oldal nyelve</translation>
 <translation id="3179982752812949580">Szöveg betűtípusa</translation>
@@ -2029,7 +2028,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" /> Önnel való megosztására készül.}other{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" /> Önnel való megosztására készül.}}</translation>
 <translation id="3364986687961713424">A rendszergazdától: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Vagy a Ctrl vagy az Alt billentyűt használja</translation>
-<translation id="3367047597842238025">Állítsa be kedve szerint <ph name="DEVICE_TYPE" /> eszközét, és fedezze fel a karnyújtásra lévő lenyűgöző képességeit.</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369067987974711168">A porttal kapcsolatos további műveletek megjelenítése</translation>
 <translation id="3369624026883419694">Szerver azonosítása folyamatban...</translation>
@@ -2352,7 +2350,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3713047097299026954">Ezen a biztonsági hardverkulcson nincsenek bejelentkezési adatok</translation>
 <translation id="3714195043138862580">Ez a demó módú eszköz leválasztott állapotba került.</translation>
 <translation id="3714633008798122362">internetes naptár</translation>
-<translation id="3715954932774762075">A több nyelven is rendelkezésre álló alkalmazások és webhelyek az ezen a listán szereplő első támogatott nyelvet használják majd. Ezeket a preferenciákat a rendszer szinkronizálja a böngésző beállításaival. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="3719826155360621982">Kezdőlap</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ön és a Google</translation>
@@ -2490,7 +2487,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3856800405688283469">Időzóna kiválasztása</translation>
 <translation id="3857807444929313943">Emelje fel, majd érintse újra</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: a szinkronizálás szünetel</translation>
-<translation id="3861386850461794863">Az alkalmazásokban és a webhelyeken beállított nyelvek</translation>
 <translation id="3861638017150647085">A(z) „<ph name="USERNAME" />” felhasználónév nem áll rendelkezésre</translation>
 <translation id="3862693525629180217">Igazolás beépített érzékelő révén</translation>
 <translation id="3862788408946266506">A „kiosk_only” jegyzékattribútummal rendelkező alkalmazást kioszk módban kell telepíteni a Chrome OS rendszeren</translation>
@@ -3800,7 +3796,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5457991019809708398">Bekapcsolva, roaming nélkül</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">A lezárási képernyőn megjelenő jegyzetek</translation>
-<translation id="546322474339998983">A Chrome böngésző és a(z) <ph name="DEVICE_TYPE" /> indítója használja</translation>
 <translation id="5463231940765244860">PIN-kód megadása</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> indexe</translation>
 <translation id="5463856536939868464">Rejtett könyvjelzőket tartalmazó menü</translation>
@@ -3926,7 +3921,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Alkalmazások betöltése…</translation>
 <translation id="5592595402373377407">Még nem áll rendelkezésre elég adat.</translation>
-<translation id="5593357315997824387">Saját fájlok szinkronizálása</translation>
 <translation id="5595485650161345191">Cím szerkesztése</translation>
 <translation id="5595727715083333657">A tároló nem támogatja az átméretezést. Ha módosítaná a Linux (Béta) számára rendelkezésre álló területet, készítsen biztonsági másolatot az adatokról, majd állítsa vissza őket új tárolóban.</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
@@ -6174,7 +6168,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8218847192766059983">Hozzáadhat nyelveket, és átrendezheti a listát. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8221491193165283816">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson ide.</translation>
 <translation id="8225265270453771718">Alkalmazásablak megosztása</translation>
-<translation id="8225753906568652947">Ajánlatok beváltása</translation>
 <translation id="8226222018808695353">Tiltott</translation>
 <translation id="8226619461731305576">Nyomtatólista</translation>
 <translation id="8226628635270268143">Kedvenc fotók és albumok kiválasztása</translation>
@@ -6337,7 +6330,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8417548266957501132">Szülői jelszó</translation>
 <translation id="8418445294933751433">&amp;Megjelenítés lapként</translation>
 <translation id="8419098111404128271">Keresési találatok a következőre: <ph name="SEARCH_TEXT" /></translation>
-<translation id="8419368276599091549">A(z) <ph name="DEVICE_TYPE" /> üdvözli!</translation>
 <translation id="8420308167132684745">Szótár címszavainak szerkesztése</translation>
 <translation id="8421361468937925547">Élő feliratozás (csak angol nyelven)</translation>
 <translation id="8422787418163030046">Hiányzó tálca</translation>

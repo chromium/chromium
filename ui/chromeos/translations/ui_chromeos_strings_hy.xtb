@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ԱՄՆ ստեղնաշար</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> տարր ջնջվեց</translation>
+<translation id="2541377937973966830">Այս պանակի բովանդակությունը հասանելի է միայն կարդալու համար։ Որոշ գործողություններ չեն աջակցվում։</translation>
 <translation id="2542049655219295786">Google աղյուսակ</translation>
 <translation id="2547921442987553570">Ավելացնել <ph name="EXTENSION_NAME" />-ում</translation>
 <translation id="255937426064304553">ԱՄՆ (միջազգային)</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Մանրամասներ</translation>
 <translation id="4527800702232535228">Այս պանակը հասանելի է Parallels Desktop-ին</translation>
 <translation id="4552678318981539154">Գնեք լրացուցիչ պահեստ</translation>
+<translation id="4559318885353833501">«<ph name="FILE_NAME" />» ֆայլը ջնջվեց</translation>
 <translation id="4559767610552730302">Բոկե</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ֆայլ</translation>
 <translation id="457386861538956877">Ավելին…</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Ֆայլերի մասին տեղեկությունների պատուհան</translation>
 <translation id="6358884629796491903">Վիշապ</translation>
 <translation id="637062427944097960">Այս ֆայլը բացված է այլ աշխատասեղանի վրա: Այն դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
+<translation id="6394388407447716302">Միայն կարդալու</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> տարր</translation>
 <translation id="6398765197997659313">Ելնել լիաէկրան ռեժիմից</translation>
 <translation id="642282551015776456">Այս անունը չի կարող լինել ֆայլի կամ պանակի անուն</translation>

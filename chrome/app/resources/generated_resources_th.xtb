@@ -448,6 +448,7 @@
 <translation id="1509281256533087115">เข้าถึง <ph name="DEVICE_NAME_AND_VENDOR" /> ใดก็ได้ผ่าน USB</translation>
 <translation id="1509960214886564027">ฟีเจอร์ในหลายเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
+<translation id="151070646350206700">เว็บไซต์จะไม่สามารถรบกวนคุณด้วยการขอส่งการแจ้งเตือน</translation>
 <translation id="1510785804673676069">หากคุณใช้พร็อกซีเซิร์ฟเวอร์ ให้ตรวจสอบการตั้งค่าพร็อกซี หรือ
     ติดต่อผู้ดูแลระบบเครือข่ายเพื่อตรวจสอบว่าพร็อกซี
     เซิร์ฟเวอร์ทำงานอยู่ หากคุณคิดว่าคุณไม่ได้ใช้
@@ -934,6 +935,7 @@
 <translation id="205560151218727633">โลโก้ Google Assistant</translation>
 <translation id="2058456167109518507">อุปกรณ์ที่ตรวจพบ</translation>
 <translation id="2059913712424898428">เขตเวลา</translation>
+<translation id="2060375639911876205">นำโปรไฟล์ eSIM ออก</translation>
 <translation id="2065405795449409761">ซอฟต์แวร์ทดสอบอัตโนมัติกำลังควบคุม Chrome อยู่</translation>
 <translation id="2071393345806050157">ไม่มีไฟล์บันทึกในเครื่อง</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{คลิกเพื่อติดตั้งส่วนขยาย}other{คลิกเพื่อติดตั้งส่วนขยายเหล่านี้}}</translation>
@@ -1884,7 +1886,6 @@
 <translation id="3165371858310906303">ถามเมื่อเว็บไซต์ต้องการทราบเมื่อคุณใช้งานอยู่</translation>
 <translation id="3165390001037658081">ผู้ให้บริการบางรายอาจบล็อกฟีเจอร์นี้</translation>
 <translation id="316652501498554287">บัญชี G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">คุณสามารถข้ามการลงชื่อเข้าใช้และ<ph name="LINK_START" />เรียกดูในฐานะผู้เยี่ยมชม<ph name="LINK_END" />ได้ด้วย</translation>
 <translation id="3177909033752230686">ภาษาหน้าเว็บ:</translation>
 <translation id="3179982752812949580">แบบอักษรของข้อความ</translation>
@@ -2027,7 +2028,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> กำลังแชร์ <ph name="ATTACHMENTS" />กับคุณ}other{<ph name="DEVICE_NAME" /> กำลังแชร์ <ph name="ATTACHMENTS" />กับคุณ}}</translation>
 <translation id="3364986687961713424">จากผู้ดูแลระบบ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">ใช้ Ctrl หรือ Alt อย่างใดอย่างหนึ่ง</translation>
-<translation id="3367047597842238025">ตั้งค่า <ph name="DEVICE_TYPE" /> ได้ตามต้องการและสำรวจความสามารถอันน่าทึ่งทั้งหมดได้ง่ายๆ</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369067987974711168">แสดงการทำงานเพิ่มเติมสำหรับพอร์ตนี้</translation>
 <translation id="3369624026883419694">กำลังแปลงโฮสต์...</translation>
@@ -2350,7 +2350,6 @@
 <translation id="3713047097299026954">คีย์ความปลอดภัยนี้ไม่มีข้อมูลการลงชื่อเข้าใช้ใดๆ</translation>
 <translation id="3714195043138862580">อุปกรณ์สาธิตนี้ได้รับการกำหนดไว้ให้อยู่ในสถานะยกเลิกการจัดสรร</translation>
 <translation id="3714633008798122362">ปฏิทินเว็บ</translation>
-<translation id="3715954932774762075">แอปและเว็บไซต์ที่มีหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ระบบจะซิงค์ค่ากำหนดเหล่านี้กับการตั้งค่าเบราว์เซอร์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">หน้าแรก</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">คุณและ Google</translation>
@@ -2488,7 +2487,6 @@
 <translation id="3856800405688283469">เลือกเขตเวลา</translation>
 <translation id="3857807444929313943">ยกนิ้วขึ้นแล้วแตะอีกครั้ง</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: การซิงค์หยุดชั่วคราว</translation>
-<translation id="3861386850461794863">ภาษาสำหรับแอปและเว็บไซต์</translation>
 <translation id="3861638017150647085">ใช้ชื่อผู้ใช้ "<ph name="USERNAME" />" ไม่ได้</translation>
 <translation id="3862693525629180217">ยืนยันผ่านเซ็นเซอร์ในเครื่อง</translation>
 <translation id="3862788408946266506">ต้องติดตั้งแอปที่มีแอตทริบิวต์ไฟล์ Manifest ที่ชื่อ "kiosk_only" ในโหมดคีออสก์ของ Chrome OS</translation>
@@ -2732,6 +2730,7 @@
 <translation id="4131410914670010031">ขาวดำ</translation>
 <translation id="413193092008917129">กิจวัตรการวินิจฉัยเครือข่าย</translation>
 <translation id="4132183752438206707">ค้นหาและดาวน์โหลดแอปบน Google Play Store</translation>
+<translation id="4132364317545104286">เปลี่ยนชื่อโปรไฟล์ eSIM</translation>
 <translation id="4133076602192971179">เปิดแอปเพื่อเปลี่ยนรหัสผ่าน</translation>
 <translation id="4136203100490971508">แสงตอนกลางคืนจะปิดโดยอัตโนมัติเมื่อพระอาทิตย์ขึ้น</translation>
 <translation id="41365691917097717">การดำเนินการต่อจะเป็นการเปิดใช้การแก้ไขข้อบกพร่อง ADB ของการสร้างและทดสอบแอป Android โปรดทราบว่าการดำเนินการนี้จะอนุญาตให้ติดตั้งแอป Android ที่ยังไม่ได้รับการยืนยันจาก Google และต้องรีเซ็ตเป็นค่าเริ่มต้นเพื่อปิดใช้</translation>
@@ -3245,6 +3244,7 @@
 <translation id="4778644898150334464">ใช้รหัสผ่านอื่น</translation>
 <translation id="4779083564647765204">ซูม</translation>
 <translation id="4779136857077979611">ข้าวปั้น</translation>
+<translation id="4779766576531456629">เปลี่ยนชื่อเครือข่ายมือถือของ eSIM</translation>
 <translation id="4780321648949301421">บันทึกหน้าเป็น...</translation>
 <translation id="4785719467058219317">คุณกำลังใช้คีย์ความปลอดภัยที่ไม่ได้ลงทะเบียนกับเว็บไซต์นี้</translation>
 <translation id="4788092183367008521">โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง</translation>
@@ -3688,6 +3688,7 @@
 <translation id="5324780743567488672">ตั้งค่าเขตเวลาโดยอัตโนมัติโดยใช้ตำแหน่งของคุณ</translation>
 <translation id="5327248766486351172">ชื่อ</translation>
 <translation id="5327570636534774768">อุปกรณ์มีเครื่องหมายกำกับว่าได้รับการจัดการโดยโดเมนอื่น โปรดยกเลิกการจัดสรรอุปกรณ์จากโดเมนนั้นก่อนที่จะตั้งค่าโหมดสาธิต</translation>
+<translation id="5327912693242073631">ฟีเจอร์ที่ต้องใช้การแจ้งเตือนจะไม่ทำงาน</translation>
 <translation id="532943162177641444">แตะการแจ้งเตือนใน <ph name="PHONE_NAME" /> เพื่อตั้งค่าฮอตสปอตเคลื่อนที่ที่อุปกรณ์นี้ใช้ได้</translation>
 <translation id="5329858601952122676">&amp;ลบ</translation>
 <translation id="5331069282670671859">คุณไม่มีใบรับรองในหมวดหมู่นี้</translation>
@@ -3739,6 +3740,7 @@
 <translation id="5390112241331447203">รวมไฟล์ system_logs.txt ที่ส่งในรายงานความคิดเห็น</translation>
 <translation id="5390677308841849479">สีแดงเข้มและสีส้ม</translation>
 <translation id="5390743329570580756">ส่งสำหรับ</translation>
+<translation id="5392192690789334093">อนุญาตให้ส่งการแจ้งเตือนได้</translation>
 <translation id="5397794290049113714">คุณ</translation>
 <translation id="5398497406011404839">บุ๊กมาร์กที่ซ่อนอยู่</translation>
 <translation id="5398572795982417028">การอ้างอิงหน้าอยู่นอกขอบเขต จำกัดไว้ที่ <ph name="MAXIMUM_PAGE" /> หน้า</translation>
@@ -3794,7 +3796,6 @@
 <translation id="5457991019809708398">เปิด ไม่ได้โรมมิ่ง</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">โน้ตในหน้าจอล็อก</translation>
-<translation id="546322474339998983">ใช้โดยเบราว์เซอร์ Chrome และ Launcher ของ <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">ป้อน</translation>
 <translation id="5463275305984126951">ดัชนีของ <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">เมนูมีบุ๊กมาร์กซ่อนอยู่</translation>
@@ -3920,7 +3921,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">กำลังโหลดแอป...</translation>
 <translation id="5592595402373377407">ยังไม่มีข้อมูลเพียงพอ</translation>
-<translation id="5593357315997824387">ซิงค์ไฟล์</translation>
 <translation id="5595485650161345191">แก้ไขที่อยู่</translation>
 <translation id="5595727715083333657">คอนเทนเนอร์ไม่รองรับการปรับขนาด หากต้องการปรับพื้นที่ว่างที่จัดสรรล่วงหน้าสำหรับ Linux (เบต้า) ให้สำรองข้อมูลแล้วคืนค่าในคอนเทนเนอร์ใหม่</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
@@ -4043,6 +4043,7 @@
 <translation id="5739235828260127894">กำลังรอการยืนยัน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">ใหญ่มาก</translation>
 <translation id="5740328398383587084">การแชร์ใกล้เคียง</translation>
+<translation id="5740820643029013514">ใช้การแสดงข้อความที่ไม่มีการแจ้งเตือน (แนะนำ)</translation>
 <translation id="574104302965107104">การมิเรอร์จอแสดงผล</translation>
 <translation id="574209121243317957">ระดับเสียงสูงต่ำ</translation>
 <translation id="5746169159649715125">บันทึกเป็น PDF</translation>
@@ -4262,6 +4263,7 @@
 <translation id="6002210667729577411">ย้ายกลุ่มไปยังหน้าต่างใหม่</translation>
 <translation id="6002452033851752583">ลบรหัสผ่านจากบัญชี Google ของคุณแล้ว</translation>
 <translation id="6002458620803359783">เสียงที่ต้องการ</translation>
+<translation id="6003143259071779217">นำเครือข่ายมือถือของ eSIM ออก</translation>
 <translation id="6006484371116297560">คลาสสิก</translation>
 <translation id="6007240208646052708">ภาษาของคุณไม่มีการค้นหาด้วยเสียง</translation>
 <translation id="6009781704028455063">เซ็นเซอร์ในเครื่อง</translation>
@@ -4530,6 +4532,7 @@
 <translation id="6308937455967653460">บันทึก&amp;ลิงก์เป็น...</translation>
 <translation id="6309443618838462258">ผู้ดูแลระบบไม่อนุญาตให้ป้อนข้อมูลด้วยวิธีนี้</translation>
 <translation id="6309510305002439352">ปิดไมโครโฟนอยู่</translation>
+<translation id="6310472381159916879">นำโปรไฟล์ออก</translation>
 <translation id="6311220991371174222">ไม่สามารถเริ่ม Chrome ได้เนื่องจากเกิดข้อผิดพลาดขณะเปิดโปรไฟล์ ลองเริ่มต้น Chrome ใหม่</translation>
 <translation id="6312403991423642364">ข้อผิดพลาดเครือข่ายที่ไม่รู้จัก</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{เรียกใช้การตรวจสอบความปลอดภัยเมื่อ 1 วันที่ผ่านมา}other{เรียกใช้การตรวจสอบความปลอดภัยเมื่อ {NUM_DAYS} วันที่ผ่านมา}}</translation>
@@ -4719,6 +4722,7 @@
 <translation id="6532663472409656417">องค์กรที่ลงทะเบียน</translation>
 <translation id="6535331821390304775">อนุญาตให้ <ph name="ORIGIN" /> เปิดลิงก์ประเภทนี้ในแอปที่เชื่อมโยงทุกครั้ง</translation>
 <translation id="6537613839935722475">ชื่อมีตัวอักษร ตัวเลข และขีดกลาง (-) ได้</translation>
+<translation id="6537880577641744343">Commander</translation>
 <translation id="6538635548667167211">การตั้งค่าการใช้อินเทอร์เน็ตในปัจจุบันคือ "อินเทอร์เน็ตมือถือ"</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />หมายเหตุ:<ph name="END_BOLD" /> เปิดใช้งานเฉพาะเมื่อคุณทราบว่าคุณกำลังทำอะไรอยู่ หรือเมื่อคุณถูกร้องขอให้ทำเช่นนั้นเท่านั้น เนื่องจากคอลเล็กชันข้อมูลอาจลดประสิทธิภาพในการปฏิบัติงาน</translation>
 <translation id="6541638731489116978">เว็บไซต์นี้ถูกบล็อกไม่ให้เข้าถึงเซ็นเซอร์ตรวจจับความเคลื่อนไหว</translation>
@@ -5850,6 +5854,7 @@
 <translation id="7855678561139483478">ย้ายแท็บไปที่หน้าต่างใหม่</translation>
 <translation id="7857117644404132472">เพิ่มข้อยกเว้น</translation>
 <translation id="7857949311770343000">นี่คือหน้าแท็บใหม่ที่คุณคาดไว้ใช่ไหม</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">ระบบจะไม่รองรับตัวเลือกนี้อีกต่อไปหลังจากเดือนธันวาคม โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="786073089922909430">บริการ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ดาวน์โหลด</translation>
@@ -6162,7 +6167,6 @@
 <translation id="8218847192766059983">เพิ่มภาษาหรือจัดเรียงรายการใหม่ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">คุณมักจะบล็อกการแจ้งเตือน หากต้องการให้เว็บไซต์ส่งการแจ้งเตือน ให้คลิกที่นี่</translation>
 <translation id="8225265270453771718">แชร์หน้าต่างแอปพลิเคชัน</translation>
-<translation id="8225753906568652947">แลกข้อเสนอพิเศษ</translation>
 <translation id="8226222018808695353">ต้องห้าม</translation>
 <translation id="8226619461731305576">คิว</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
@@ -6173,6 +6177,7 @@
 <translation id="8236917170563564587">แชร์แท็บนี้แทน</translation>
 <translation id="8237647586961940482">สีชมพูเข้มและสีแดง</translation>
 <translation id="8239032431519548577">ลงทะเบียนองค์กรเสร็จสมบูรณ์</translation>
+<translation id="8239932336306009582">ไม่อนุญาตให้ส่งการแจ้งเตือน</translation>
 <translation id="8241040075392580210">เชดดี้</translation>
 <translation id="8241806945692107836">กำลังกำหนดการกำหนดค่าอุปกรณ์...</translation>
 <translation id="8241868517363889229">อ่านและเปลี่ยนแปลงบุ๊กมาร์กของคุณ</translation>
@@ -6302,6 +6307,7 @@
 <translation id="8386091599636877289">ไม่พบนโยบาย</translation>
 <translation id="8386903983509584791">สแกนเสร็จแล้ว</translation>
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
+<translation id="8389264703141926739">บล็อกการแจ้งเตือน</translation>
 <translation id="8389416080014625855">สร้างคิวอาร์โค้ดสำหรับหน้านี้</translation>
 <translation id="8389492867173948260">อนุญาตให้ส่วนขยายนี้อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดในเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="8390449457866780408">เซิร์ฟเวอร์ไม่พร้อมใช้งาน</translation>
@@ -6323,7 +6329,6 @@
 <translation id="8417548266957501132">รหัสผ่านสำหรับผู้ปกครอง</translation>
 <translation id="8418445294933751433">แ&amp;สดงเป็นแถบ</translation>
 <translation id="8419098111404128271">ผลการค้นหาของ "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">ยินดีต้อนรับสู่ <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">แก้ไขรายการในพจนานุกรม</translation>
 <translation id="8421361468937925547">คำบรรยายสด (ภาษาอังกฤษเท่านั้น)</translation>
 <translation id="8422787418163030046">ไม่มีถาด</translation>
@@ -6512,6 +6517,7 @@
 <translation id="8645354835496065562">อนุญาตการเข้าถึงเซ็นเซอร์ต่อไป</translation>
 <translation id="8645920082661222035">คาดการณ์และเตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>
 <translation id="8646209145740351125">ปิดใช้การซิงค์</translation>
+<translation id="864637694230589560">เว็บไซต์มักจะส่งการแจ้งเตือนเพื่อแจ้งให้คุณทราบเกี่ยวกับข่าวด่วนหรือข้อความแชท</translation>
 <translation id="8647834505253004544">ไม่ใช่ที่อยู่เว็บที่ถูกต้อง</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> หรือ <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">อุณหภูมิสีของแสงตอนกลางคืน</translation>

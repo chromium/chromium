@@ -448,6 +448,7 @@
 <translation id="1509281256533087115">Acceder a cualquier <ph name="DEVICE_NAME_AND_VENDOR" /> a través de USB</translation>
 <translation id="1509960214886564027">Es posible que las funciones de muchos sitios web no funcionen correctamente.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
+<translation id="151070646350206700">Los sitios web no pueden interrumpirte para preguntarte si quieres que te envíen notificaciones</translation>
 <translation id="1510785804673676069">Si utilizas un servidor proxy, comprueba la configuración de
     proxy o ponte en contacto con el administrador de red para
     comprobar si funciona el servidor proxy. Si crees que no debes
@@ -934,6 +935,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="205560151218727633">Logotipo del Asistente de Google</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
 <translation id="2059913712424898428">Zona horaria</translation>
+<translation id="2060375639911876205">Quitar perfil de eSIM</translation>
 <translation id="2065405795449409761">Un software automatizado de pruebas está controlando Chrome.</translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Haz clic para instalar la extensión}other{Haz clic para instalar las extensiones}}</translation>
@@ -1884,7 +1886,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3165371858310906303">Preguntar cuando un sitio web quiera saber si estás presente</translation>
 <translation id="3165390001037658081">Es posible que algunos operadores bloqueen esta función.</translation>
 <translation id="316652501498554287">Cuentas de G Suite para Centros Educativos</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">También puedes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sin iniciar sesión.</translation>
 <translation id="3177909033752230686">Idioma de la página:</translation>
 <translation id="3179982752812949580">Fuente del texto</translation>
@@ -2027,7 +2028,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> quiere compartir <ph name="ATTACHMENTS" /> contigo.}other{<ph name="DEVICE_NAME" /> quiere compartir <ph name="ATTACHMENTS" /> contigo.}}</translation>
 <translation id="3364986687961713424">De tu administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Usa Ctrl o Alt</translation>
-<translation id="3367047597842238025">Configura tu <ph name="DEVICE_TYPE" /> a tu gusto y descubre sus increíbles funciones.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369067987974711168">Mostrar más acciones para este puerto</translation>
 <translation id="3369624026883419694">Resolviendo host...</translation>
@@ -2350,7 +2350,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3713047097299026954">Esta llave de seguridad no contiene datos de inicio de sesión</translation>
 <translation id="3714195043138862580">Este dispositivo de demostración se ha situado en un estado de baja.</translation>
 <translation id="3714633008798122362">calendario web</translation>
-<translation id="3715954932774762075">Los sitios web y aplicaciones que estén disponibles en varios idiomas usarán el primer idioma admitido de esta lista. Estas preferencias se sincronizan con los ajustes de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Página principal</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google y tú</translation>
@@ -2488,7 +2487,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3856800405688283469">Seleccionar zona horaria</translation>
 <translation id="3857807444929313943">Levanta el dedo y toca de nuevo</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sincronización en pausa</translation>
-<translation id="3861386850461794863">Idiomas de aplicaciones y sitios web</translation>
 <translation id="3861638017150647085">El nombre de usuario "<ph name="USERNAME" />" no está disponible</translation>
 <translation id="3862693525629180217">Verificar mediante sensor integrado</translation>
 <translation id="3862788408946266506">La aplicación con el atributo del archivo de manifiesto "kiosk_only" se debe instalar en el modo kiosco de Chrome OS</translation>
@@ -2731,6 +2729,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="413193092008917129">Rutinas de diagnóstico de redes</translation>
 <translation id="4132183752438206707">Buscar aplicaciones en Google Play Store</translation>
+<translation id="4132364317545104286">Cambiar nombre del perfil de eSIM</translation>
 <translation id="4133076602192971179">Abre la aplicación para cambiar la contraseña</translation>
 <translation id="4136203100490971508">La luz nocturna se desactivará automáticamente al amanecer</translation>
 <translation id="41365691917097717">Si continúas, se habilitará la depuración adb para crear y probar aplicaciones Android. Ten en cuenta que esta acción permitirá la instalación de aplicaciones Android que no hayan sido verificadas por Google y para inhabilitarlas es necesario restablecer la configuración de fábrica.</translation>
@@ -3244,6 +3243,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4778644898150334464">Usar otra contraseña</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
+<translation id="4779766576531456629">Cambiar nombre de la red móvil de eSIM</translation>
 <translation id="4780321648949301421">Guardar página como...</translation>
 <translation id="4785719467058219317">Estás usando una llave de seguridad que no se ha registrado en este sitio web</translation>
 <translation id="4788092183367008521">Revisa tu conexión de red y vuelve a intentarlo.</translation>
@@ -3687,6 +3687,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5324780743567488672">Establecer la zona horaria de forma automática según tu ubicación</translation>
 <translation id="5327248766486351172">Nombre</translation>
 <translation id="5327570636534774768">El dispositivo está marcado para que lo gestione un dominio diferente. Dalo de baja de ese dominio antes de configurar el modo de demostración.</translation>
+<translation id="5327912693242073631">Las funciones que requieran notificaciones no se podrán utilizar</translation>
 <translation id="532943162177641444">Toca la notificación en el <ph name="PHONE_NAME" /> para configurar el punto de acceso móvil que este dispositivo puede usar.</translation>
 <translation id="5329858601952122676">&amp;Suprimir</translation>
 <translation id="5331069282670671859">No tienes certificados en esta categoría</translation>
@@ -3738,6 +3739,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5390112241331447203">Incluye el archivo system_logs.txt enviado en los informes de comentarios.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5390743329570580756">Enviar para</translation>
+<translation id="5392192690789334093">Puede enviar notificaciones</translation>
 <translation id="5397794290049113714">Tú</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">La referencia de página está fuera de los límites admitidos, el límite es <ph name="MAXIMUM_PAGE" /></translation>
@@ -3793,7 +3795,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5457991019809708398">Activado, sin itinerancia</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notas en la pantalla de bloqueo</translation>
-<translation id="546322474339998983">Se usa en el navegador Chrome y en el menú de aplicaciones de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Introducir</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Menú con marcadores ocultos</translation>
@@ -3919,7 +3920,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Cargando aplicaciones...</translation>
 <translation id="5592595402373377407">Todavía no hay suficientes datos disponibles.</translation>
-<translation id="5593357315997824387">Sincronizar mis archivos</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="5595727715083333657">Tu contenedor no puede cambiar de tamaño. Si quieres ajustar la cantidad de espacio asignado previamente a Linux (beta), crea una copia de seguridad y restáurala en un nuevo contenedor.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
@@ -4042,6 +4042,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5739235828260127894">Esperando verificación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" />.</translation>
 <translation id="5739458112391494395">Muy grande</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>
+<translation id="5740820643029013514">Silenciar notificaciones (recomendado)</translation>
 <translation id="574104302965107104">Proyección de pantalla</translation>
 <translation id="574209121243317957">Tono</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
@@ -4261,6 +4262,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6002210667729577411">Mover grupo a una nueva ventana</translation>
 <translation id="6002452033851752583">Contraseña eliminada de tu cuenta de Google</translation>
 <translation id="6002458620803359783">Voces preferidas</translation>
+<translation id="6003143259071779217">Quitar red móvil de eSIM</translation>
 <translation id="6006484371116297560">Clásico</translation>
 <translation id="6007240208646052708">La búsqueda por voz no está disponible en tu idioma.</translation>
 <translation id="6009781704028455063">Sensor integrado</translation>
@@ -4529,6 +4531,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6308937455967653460">Guardar &amp;enlace como...</translation>
 <translation id="6309443618838462258">Tu administrador no permite este método de introducción de texto</translation>
 <translation id="6309510305002439352">Micrófono desactivado</translation>
+<translation id="6310472381159916879">Quitar perfil</translation>
 <translation id="6311220991371174222">No se puede iniciar Chrome porque se ha producido un error al abrir el perfil. Prueba a reiniciar el navegador.</translation>
 <translation id="6312403991423642364">Error desconocido de red</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{La comprobación de seguridad se realizó hace 1 día}other{La comprobación de seguridad se realizó hace {NUM_DAYS} días}}</translation>
@@ -4718,6 +4721,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6532663472409656417">Registrado en la empresa</translation>
 <translation id="6535331821390304775">Permitir siempre que <ph name="ORIGIN" /> abra este tipo de enlaces en la aplicación asociada</translation>
 <translation id="6537613839935722475">El nombre puede contener letras, números y guiones (-).</translation>
+<translation id="6537880577641744343">Commander</translation>
 <translation id="6538635548667167211">La configuración actual de uso de datos es Datos</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Habilita esta opción solo si tienes conciencia de los efectos de esta acción o si se te ha pedido que lo hagas, ya que la recogida de datos puede reducir el rendimiento.</translation>
 <translation id="6541638731489116978">Este sitio web no tiene permiso para acceder a los sensores de movimiento.</translation>
@@ -5849,6 +5853,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7855678561139483478">Mover pestaña a ventana nueva</translation>
 <translation id="7857117644404132472">Añadir excepción</translation>
 <translation id="7857949311770343000">¿Es esta la página Nueva pestaña que esperabas?</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">Esta opción no será compatible después de diciembre. Ponte en contacto con tu administrador.</translation>
 <translation id="786073089922909430">Servicio: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descargas</translation>
@@ -6161,7 +6166,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8218847192766059983">Añade o reordena idiomas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Normalmente bloqueas todas las notificaciones. Si quieres permitir que este sitio web te muestre notificaciones, haz clic aquí.</translation>
 <translation id="8225265270453771718">Compartir una ventana de aplicación</translation>
-<translation id="8225753906568652947">Canjear tus ofertas</translation>
 <translation id="8226222018808695353">Prohibido</translation>
 <translation id="8226619461731305576">Cola</translation>
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
@@ -6172,6 +6176,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8236917170563564587">Compartir esta pestaña</translation>
 <translation id="8237647586961940482">Rosa oscuro y rojo</translation>
 <translation id="8239032431519548577">Registro de empresa completo</translation>
+<translation id="8239932336306009582">No puede enviar notificaciones</translation>
 <translation id="8241040075392580210">Nublado</translation>
 <translation id="8241806945692107836">Determinando la configuración del dispositivo...</translation>
 <translation id="8241868517363889229">Leer y modificar tus marcadores</translation>
@@ -6301,6 +6306,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8386091599636877289">No se ha encontrado la política.</translation>
 <translation id="8386903983509584791">Búsqueda completada</translation>
 <translation id="8387361103813440603">No puede ver tu ubicación</translation>
+<translation id="8389264703141926739">Bloquear notificaciones</translation>
 <translation id="8389416080014625855">Crear un código QR para esta página</translation>
 <translation id="8389492867173948260">Permitir que esta extensión lea y cambie todos los datos de los sitios web que visites:</translation>
 <translation id="8390449457866780408">Servidor no disponible</translation>
@@ -6322,7 +6328,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8417548266957501132">Contraseña parental</translation>
 <translation id="8418445294933751433">Mo&amp;strar como pestaña</translation>
 <translation id="8419098111404128271">Resultados de búsqueda de "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Te damos la bienvenida a tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8420308167132684745">Editar entradas de diccionario</translation>
 <translation id="8421361468937925547">Subtítulos automáticos (solo en inglés)</translation>
 <translation id="8422787418163030046">Falta la bandeja</translation>
@@ -6511,6 +6516,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8645354835496065562">Seguir permitiendo el acceso a los sensores</translation>
 <translation id="8645920082661222035">Predice y te advierte de eventos peligrosos antes de que se produzcan</translation>
 <translation id="8646209145740351125">Inhabilitar sincronización</translation>
+<translation id="864637694230589560">Los sitios web suelen enviar notificaciones; por ejemplo, para informarte sobre las últimas noticias o comunicarte que has recibido un mensaje de chat.</translation>
 <translation id="8647834505253004544">La dirección web no es válida</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> o <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Temperatura del color de la luz nocturna</translation>

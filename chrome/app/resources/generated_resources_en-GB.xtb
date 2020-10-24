@@ -1886,7 +1886,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3165371858310906303">Ask when a site wants to know when you're present</translation>
 <translation id="3165390001037658081">Some operators might block this feature.</translation>
 <translation id="316652501498554287">G Suite for Education accounts</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Page language:</translation>
 <translation id="3179982752812949580">Text font</translation>
@@ -2029,7 +2028,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}other{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}}</translation>
 <translation id="3364986687961713424">From your administrator: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Use either Ctrl or Alt</translation>
-<translation id="3367047597842238025">Set up your <ph name="DEVICE_TYPE" /> just as you want it and discover all the amazing capabilities at your fingertips.</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369067987974711168">Show more actions for this port</translation>
 <translation id="3369624026883419694">Resolving host...</translation>
@@ -2352,7 +2350,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3713047097299026954">This security key does not have any sign-in data</translation>
 <translation id="3714195043138862580">This demo device has been placed into a deprovisioned state.</translation>
 <translation id="3714633008798122362">web calendar</translation>
-<translation id="3715954932774762075">Apps and websites that are available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Homepage</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">You and Google</translation>
@@ -2490,7 +2487,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3856800405688283469">Select Time Zone</translation>
 <translation id="3857807444929313943">Lift, then touch again</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sync paused</translation>
-<translation id="3861386850461794863">Languages for apps and websites</translation>
 <translation id="3861638017150647085">Username '<ph name="USERNAME" />' is not available</translation>
 <translation id="3862693525629180217">Verify via built-in sensor</translation>
 <translation id="3862788408946266506">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
@@ -3800,7 +3796,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5457991019809708398">On, not roaming</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Lock screen notes</translation>
-<translation id="546322474339998983">Used by Chrome browser and <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="5463231940765244860">Enter</translation>
 <translation id="5463275305984126951">Index of <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Menu containing hidden bookmarks</translation>
@@ -3926,7 +3921,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Loading apps...</translation>
 <translation id="5592595402373377407">Not enough data available yet.</translation>
-<translation id="5593357315997824387">Sync my files</translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="5595727715083333657">Your container doesn't support being resized. To adjust the amount of space that is pre-allocated to Linux (beta), back up and then restore into a new container.</translation>
 <translation id="5596627076506792578">More options</translation>
@@ -6173,7 +6167,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8218847192766059983">Add languages or reorder list. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
 <translation id="8225265270453771718">Share an application window</translation>
-<translation id="8225753906568652947">Redeem your offers</translation>
 <translation id="8226222018808695353">Forbidden</translation>
 <translation id="8226619461731305576">Queue</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
@@ -6336,7 +6329,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8417548266957501132">Parent password</translation>
 <translation id="8418445294933751433">&amp;Show as tab</translation>
 <translation id="8419098111404128271">Search results for '<ph name="SEARCH_TEXT" />'</translation>
-<translation id="8419368276599091549">Welcome to your <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Edit dictionary entries</translation>
 <translation id="8421361468937925547">Live Caption (English only)</translation>
 <translation id="8422787418163030046">Tray is missing</translation>

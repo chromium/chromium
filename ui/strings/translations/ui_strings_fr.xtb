@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Élément <ph name="FIRST_ITEM_TITLE" /> remplacé par <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Vous avez effectué cette recherche précédemment. Si vous supprimez "<ph name="QUERY" />" de votre historique, cette entrée n'apparaîtra plus dans votre compte sur aucun de vos appareils.</translation>
+<translation id="1510238584712386396">Lanceur d'applications</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minute et  }one{# minute et  }other{# minutes et  }}</translation>
 <translation id="1643823602425662293">Notification</translation>
 <translation id="169515659049020177">Maj</translation>

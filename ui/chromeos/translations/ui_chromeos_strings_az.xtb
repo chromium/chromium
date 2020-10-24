@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ABŞ klaviaturası</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> element silindi</translation>
+<translation id="2541377937973966830">Bu qovluğun məzmunları yalnız oxunandır. Bəzi fəaliyyətlər dəstəklənmir.</translation>
 <translation id="2542049655219295786">Google cədvəl</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> atırmasına əlavə edin</translation>
 <translation id="255937426064304553">ABŞ Beynəlxalq</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Detallar</translation>
 <translation id="4527800702232535228">Bu qovluq Parallels Desktop ilə paylaşılır</translation>
 <translation id="4552678318981539154">Əlavə yaddaş ehtiyatı alın</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> silindi</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> faylı</translation>
 <translation id="457386861538956877">Digər...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Fayllar üçün rəy pəncərəsi</translation>
 <translation id="6358884629796491903">Əjdaha</translation>
 <translation id="637062427944097960">Bu fayl başqa masaüstündə açıldı. Ona baxmaq üçün <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) köçürün.</translation>
+<translation id="6394388407447716302">Yalnız oxunan</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> element</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="642282551015776456">Bu ad qovluq adının faylı kimi istifadə edilə bilməz</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Заміна: "<ph name="FIRST_ITEM_TITLE" />" на "<ph name="SECOND_ITEM_TITLE" />"</translation>
 <translation id="1498028757988366001">Ви раніше це шукали. Якщо видалити запит "<ph name="QUERY" />" з історії, він назавжди зникне з вашого облікового запису на всіх пристроях.</translation>
+<translation id="1510238584712386396">Панель запуску</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 хвилина та }one{# хвилина та }few{# хвилини та }many{# хвилин і }other{# хвилини та }}</translation>
 <translation id="1643823602425662293">Сповіщення</translation>
 <translation id="169515659049020177">Shift</translation>

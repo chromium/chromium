@@ -423,6 +423,11 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Les formats d'URL sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur la page https://www.chromium.org/administrators/url-blacklist-filter-format.
       </translation>
 <translation id="1645793986494086629">Schéma :</translation>
+<translation id="1647558381546345298">Cette règle permet de définir la taille du cache utilisé par <ph name="PRODUCT_NAME" /> pour stocker les fichiers multimédias mis en cache sur le disque, que l'utilisateur ait spécifié ou non l'indicateur "--media-cache-size". La valeur définie dans cette règle ne constitue pas une limite absolue. Il s'agit plutôt d'une suggestion pour le système de mise en cache. Toute valeur inférieure à quelques mégaoctets est arrondie.
+
+      Si vous définissez la règle sur "0", la taille de cache par défaut est utilisée et les utilisateurs ne peuvent pas la modifier.
+
+      Si cette règle n'est pas définie, la taille de cache par défaut est utilisée. Toutefois, les utilisateurs peuvent la modifier avec l'indicateur "--media-cache-size".</translation>
 <translation id="1648816843164517573">Liste des noms qui seront exemptés de la vérification de la règle HSTS</translation>
 <translation id="1654087023995670109">Activer le mode Invité du navigateur</translation>
 <translation id="1655229863189977773">Définir la taille du cache du disque en octets</translation>
@@ -1343,6 +1348,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle n'est pas configurée ou qu'elle est définie sur une URL non valide, <ph name="PRODUCT_NAME" /> n'utilise pas cette règle comme source d'instructions pour changer de navigateur.
 
       Remarque : Cette règle renvoie vers un fichier XML au même format que celui de la règle <ph name="IEEM_SITELIST_POLICY" /> d'<ph name="IE_PRODUCT_NAME" />. Les instructions sont ainsi chargées à partir d'un fichier XML, sans être partagées avec <ph name="IE_PRODUCT_NAME" />. Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'<ph name="IE_PRODUCT_NAME" />, consultez la page https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
+<translation id="2949765875529121431">Cette règle permet de spécifier une liste de noms d'hôte exemptés de la vérification de la règle HSTS susceptible de remplacer les requêtes HTTP par des requêtes HTTPS. Seuls les noms d'hôte sans extension sont autorisés dans cette règle. Les noms d'hôte doivent être indiqués sous forme canonique : tous les noms de domaine internationalisés (IDN) doivent être convertis dans leur format d'étiquette A, et toutes les lettres ASCII doivent être en minuscules. Cette règle ne s'applique qu'aux noms d'hôte spécifiques indiqués. Elle ne s'applique pas à leurs sous-domaines.</translation>
 <translation id="2952347049958405264">Restrictions :</translation>
 <translation id="2957047180944828740">Permet de spécifier si les sites Web non sécurisés sont autorisés à envoyer des requêtes à des points de terminaison plus privés du réseau</translation>
 <translation id="2957506574938329824">Interdire à tous les sites de demander l'accès à des appareils Bluetooth via l'API Web Bluetooth</translation>
@@ -1451,6 +1457,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Quelle que soit la définition de cette règle, les utilisateurs n'ont pas la possibilité de modifier le paramètre d'optimisation WPAD.</translation>
 <translation id="3072045631333522102">Economiseur d'écran à utiliser sur l'écran de connexion en mode Point de vente</translation>
+<translation id="3072788420987305247">Si cette règle est activée ou qu'elle n'est pas configurée, les commandes multimédias s'affichent à l'écran si les utilisateurs verrouillent l'appareil en cours de lecture.
+
+      Si elle est désactivée, les commandes multimédias ne s'affichent pas sur l'écran de verrouillage.</translation>
 <translation id="3072847235228302527">Définir les conditions d'utilisation d'un compte local de l'appareil</translation>
 <translation id="3086995894968271156">Configurer le récepteur Cast dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Recharge de la batterie des appareils connectés principalement à une source d'alimentation externe.</translation>
@@ -1533,6 +1542,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
         * 4, le micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" /> est mis à jour après l'inscription, avant que l'utilisateur se connecte.
 
       Si cette règle n'est pas configurée, la mise à jour du micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" /> n'est pas disponible.</translation>
+<translation id="3235677869770186098">Cette règle permet d'établir la liste des formats d'URL pour lesquels les sites sont automatiquement autorisés à se connecter à un périphérique USB à l'aide des identifiants du produit et du fournisseur indiqués sur l'écran de connexion. Pour que la règle soit valide, chaque élément de la liste doit contenir un champ "devices" et un champ "urls". Chaque élément du champ "devices" peut contenir à son tour un champ "vendor_id" et un champ "product_id". Si vous ne renseignez pas le champ "vendor_id", la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ "product_id", la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ "product_id", mais pas de champ "vendor_id", n'est pas valide.
+
+      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "urls" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule afin d'indiquer l'URL de requête et l'URL d'intégration, respectivement. Si une seule URL est spécifiée, l'accès aux périphériques USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL ne sont pas valides, la règle est ignorée.
+
+      Si cette règle n'est pas définie, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
 <translation id="3236046242843493070">Formats d'URL à partir desquelles autoriser les sources d'installation des extensions, des applications et des scripts d'utilisateur</translation>
 <translation id="3240609035816615922">Règle d'accès à la configuration des imprimantes.</translation>
 <translation id="324062325008698789">Configurer une liste d'imprimantes</translation>
@@ -2187,6 +2201,11 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4157003184375321727">Indiquer la version du système d'exploitation et du micrologiciel</translation>
 <translation id="4157594634940419685">Autoriser l'accès à des imprimantes CUPS en natif</translation>
 <translation id="4160962198980004898">Source de l'adresse MAC de l'appareil lorsqu'il est connecté à une station d'accueil</translation>
+<translation id="4166174702671320480">Si cette règle est activée, les règles associées à un groupe atomique qui ne sont pas issues de la source ayant la plus haute priorité dans le groupe sont ignorées.
+
+      Si elle est désactivée, aucune règle n'est ignorée en raison de sa source. Les règles ne sont ignorées que s'il existe un conflit et que celles-ci n'ont pas la plus haute priorité.
+
+      Si cette règle est définie à partir d'une source cloud, elle ne peut pas cibler un utilisateur en particulier.</translation>
 <translation id="4169692397912242417">Permet d'activer la fonctionnalité d'accessibilité de commentaires audio sur l'écran de connexion.
 
           Si cette règle est définie sur "True", les commentaires audio sont toujours activés sur l'écran de connexion.
@@ -2704,10 +2723,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
       Si elle est définie sur "True", le modèle de chaque processeur ainsi que son architecture et la cadence maximale de son horloge sont transmis.</translation>
 <translation id="5124368997194894978">Activer le démarrage au branchement de l'alimentation CA (courant alternatif)</translation>
-<translation id="513798533865657610">La fonctionnalité d'envoi automatique du code PIN modifie la façon dont celui-ci est saisi dans Chrome OS.
-          Au lieu d'afficher le champ de texte utilisé pour la saisie du mot de passe, cette fonctionnalité présente une interface utilisateur spéciale qui indique clairement à l'utilisateur le nombre de chiffres à saisir pour son code PIN. De ce fait, la longueur du code PIN de l'utilisateur est stockée en dehors des données chiffrées de l'utilisateur.
-
-          Si cette règle est définie sur "False", aucun utilisateur ne peut activer la fonctionnalité sur la page des paramètres.</translation>
 <translation id="5141670636904227950">Activer la loupe plein écran sur l'écran de connexion</translation>
 <translation id="5142301680741828703">Toujours rendre les formats d'URL suivants dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Cette règle détermine si les informations exploitables à des fins d'identification des utilisateurs, telles que la connexion au système d'exploitation, la connexion au profil <ph name="PRODUCT_NAME" />, le nom du profil <ph name="PRODUCT_NAME" />, le chemin d'accès au profil <ph name="PRODUCT_NAME" /> et le chemin d'accès exécutable <ph name="PRODUCT_NAME" />, doivent être enregistrées.
@@ -3397,6 +3412,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5951418260805607969">Afficher une notification lorsque l'espace disque est faible</translation>
 <translation id="5961137303188584693">Adresse MAC de la carte d'interface réseau intégrée de l'appareil</translation>
 <translation id="5966615072639944554">Extensions autorisées à utiliser l'API d'attestation à distance</translation>
+<translation id="5975765799383881158">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent envoyer des commentaires à Google en sélectionnant Menu &gt; Aide &gt; Signaler un problème, ou via un raccourci clavier.
+
+      Si elle est désactivée, les utilisateurs ne peuvent pas envoyer de commentaires à Google.</translation>
 <translation id="5997543603646547632">Utiliser le format d'horloge 24 h par défaut</translation>
 <translation id="5997846976342452720">Indiquer si l'outil de recherche de plug-ins doit être désactivé (obsolète)</translation>
 <translation id="5998198091336830580">Cette règle fait partie du groupe atomique suivant (seules les règles issues de la source ayant la plus haute priorité dans le groupe sont appliquées) :</translation>
@@ -3994,6 +4012,11 @@ Si vous sélectionnez les options suivantes :
 
       Si cette règle est désactivée, un message d'erreur s'affiche à la place.</translation>
 <translation id="6821268164692776674">Destinations <ph name="CLOUD_PRINT_NAME" /> et "Enregistrer dans Google Drive"</translation>
+<translation id="682408981080798691">Si cette règle est activée ou qu'elle n'est pas configurée, la règle d'intégrité du code du moteur de rendu est activée.
+
+      Si elle est désactivée, cela aura une incidence sur la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement dangereux pourront être chargés dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec le logiciel tiers qui doit s'exécuter dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />.
+
+      Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles concernant la protection des processus.</translation>
 <translation id="6833023569065717572">Si cette règle est définie sur "True", le format 24 heures est utilisé sur l'écran de connexion de l'appareil.
 
       Si elle est définie sur "False", c'est le format 12 heures qui est utilisé.

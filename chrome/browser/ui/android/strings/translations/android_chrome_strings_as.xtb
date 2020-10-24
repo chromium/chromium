@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">বাছনি কৰা ইনকগনিট’ টেব</translation>
 <translation id="2987620471460279764">অন্য ডিভাইচৰ পৰা শ্বেয়াৰ কৰা পাঠ</translation>
 <translation id="2989523299700148168">শেহতীয়াকৈ চোৱা</translation>
+<translation id="2992473221983447149">প্ৰতিচ্ছবিৰ বিৱৰণ</translation>
 <translation id="2996291259634659425">পাছফ্ৰেজ সৃষ্টি কৰক</translation>
 <translation id="2996809686854298943">URL আৱশ্যক</translation>
 <translation id="3006881078666935414">ব্যৱহাৰৰ কোনো ডেটা নাই</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টা বুকমাৰ্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}}</translation>
 <translation id="3062802207422175757">Chromeত আপোনাৰ আগ্ৰহৰ বিষয়বস্তু সম্পৰ্কীয় প্ৰবন্ধসমূহ</translation>
 <translation id="3089395242580810162">ইনক'গনিট' টেবত খোলক</translation>
+<translation id="3098745985164956033">আপোনাৰ বাবে বিৱৰণ উন্নত কৰিবলৈ Googleলৈ কিছুমান প্ৰতিচ্ছবি পঠিওৱা হয়</translation>
 <translation id="3114507951000454849">আজিৰ বাতৰি পঢ়ক <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ঘোষণাসমূহ</translation>
 <translation id="3137521801621304719">ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হওক</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">সকলো ডেটা মচক</translation>
 <translation id="6560414384669816528">Sogouৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="656065428026159829">অধিক চাওক</translation>
+<translation id="6565959834589222080">উপলব্ধ হ’লে ৱাই-ফাই ব্যৱহাৰ কৰা হয়</translation>
 <translation id="6566259936974865419">Chromeএ আপোনাৰ <ph name="GIGABYTES" /> জিবি ডেটা ৰাহি কৰিছে</translation>
 <translation id="6573096386450695060">চিৰদিনৰ বাবে অনুমতি দিয়ক</translation>
 <translation id="6573431926118603307">আপুনি নিজৰ অন্য ডিভাইচসমূহৰ Chromeত খোলা টেবসমূহ ইয়াত প্ৰদর্শিত হ'ব।</translation>
@@ -1083,6 +1086,7 @@
 <translation id="8788968922598763114">অন্তিমবাৰ খোলা টেবটো পুনৰ খোলক</translation>
 <translation id="8798449543960971550">পঢ়ক</translation>
 <translation id="8812260976093120287">কিছুমান ৱেবছাইটত আপোনাৰ ডিভাইচত থকা ওপৰত উল্লেখ কৰা সমৰ্থিত পৰিশোধ এপ্‌ ব্যৱহাৰ কৰি পৰিশোধ কৰিব পাৰিব।</translation>
+<translation id="881688628773363275">পূৰ্বদৰ্শন টেবত থকা সমল চাব নোৱাৰি।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883806473910249246">সমল ডাউনল’ড কৰি থকাৰ সময়ত আসোঁৱাহৰ সৃষ্টি হ’ল৷</translation>
 <translation id="8840953339110955557">এই পৃষ্ঠাটো অনলাইন সংস্কৰণতকৈ বেলেগ হ’ব পাৰে।</translation>

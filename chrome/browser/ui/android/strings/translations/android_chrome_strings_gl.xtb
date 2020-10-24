@@ -273,6 +273,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2979025552038692506">Pestana do modo de incógnito seleccionada</translation>
 <translation id="2987620471460279764">O texto compartiuse desde outro dispositivo</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
+<translation id="2992473221983447149">Descricións de imaxes</translation>
 <translation id="2996291259634659425">Crear contrasinal</translation>
 <translation id="2996809686854298943">O URL é obrigatorio</translation>
 <translation id="3006881078666935414">Non hai datos de uso</translation>
@@ -285,6 +286,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artigos sobre os teus intereses en Chrome</translation>
 <translation id="3089395242580810162">Abrir en pestana de incógnito</translation>
+<translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Avisos</translation>
 <translation id="3137521801621304719">Sae do modo de incógnito</translation>
@@ -775,6 +777,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6545017243486555795">Borrar todos os datos</translation>
 <translation id="6560414384669816528">Buscar con Sogou</translation>
 <translation id="656065428026159829">Ver máis</translation>
+<translation id="6565959834589222080">Úsase a conexión wifi cando está dispoñible</translation>
 <translation id="6566259936974865419">Chrome permitiuche aforrar <ph name="GIGABYTES" /> GB</translation>
 <translation id="6573096386450695060">Permitir sempre</translation>
 <translation id="6573431926118603307">Aquí aparecerán as pestanas que abrises en Chrome noutros dispositivos.</translation>
@@ -1086,6 +1089,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8788968922598763114">Volver abrir a última pestana que se pechou</translation>
 <translation id="8798449543960971550">Lido</translation>
 <translation id="8812260976093120287">Nalgúns sitios web, podes pagar no teu dispositivo coas aplicacións de pago compatibles mencionadas anteriormente.</translation>
+<translation id="881688628773363275">A vista previa do contido da pestana non está dispoñible.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="883806473910249246">Produciuse un erro ao descargar o contido.</translation>
 <translation id="8840953339110955557">Esta páxina pode ser diferente da versión en liña.</translation>

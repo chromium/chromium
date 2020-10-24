@@ -1092,6 +1092,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Ist die Richtlinie nicht konfiguriert, werden der Liste keine Websites hinzugefügt.
 
       Hinweis: Dieser Liste können auch über die Richtlinien "<ph name="USE_IE_SITELIST_POLICY_NAME" />" und "<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />" Elemente hinzugefügt werden.</translation>
+<translation id="2640898752536996430">Nutzer abmelden</translation>
 <translation id="264093234299818170">Alle Drucker außer den in der Sperrliste aufgeführten werden angezeigt.</translation>
 <translation id="264252574246191885">Nicht gelistet</translation>
 <translation id="2647069081229792812">Bearbeitung von Lesezeichen aktivieren oder deaktivieren</translation>
@@ -1423,6 +1424,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3072847235228302527">Nutzungsbedingungen für ein lokales Gerätekonto festlegen</translation>
 <translation id="3086995894968271156">Konfigurieren von Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Lädt den Akku von Geräten auf, die vorwiegend an eine externe Stromquelle angeschlossen werden.</translation>
+<translation id="309416443108680956">Legt fest, was passiert, wenn ein Nutzer der sich über ein Sicherheitstoken (z. B. mit einer Smartcard) authentifiziert hat, dieses Token während einer Sitzung entfernt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Es geschieht gar nichts. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Der Bildschirm ist gesperrt, bis der Nutzer noch einmal eine Authentifizierung durchführt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Die Sitzung wird beendet und der Nutzer abgemeldet. Ist die Richtlinie nicht festgelegt, ist standardmäßig <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> ausgewählt.</translation>
 <translation id="3096595567015595053">Liste der aktivierten Plug-ins</translation>
 <translation id="3101501961102569744">Auswählen, wie Proxyserver-Einstellungen angegeben werden</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
@@ -1848,6 +1850,7 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Wenn Sie diese Richtlinie konfigurieren, können Nutzer den Typ ihrer Startseite in <ph name="PRODUCT_NAME" /> nicht ändern. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer auswählen, ob die "Neuer Tab"-Seite als Startseite verwendet werden soll.
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
+<translation id="3695706037816556327">Aktion bei der Entfernung von Sicherheitstoken (z. B. Smartcard) für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3701121231485832347">Legt die Einstellungen für mit <ph name="MS_AD_NAME" /> verwaltete <ph name="PRODUCT_OS_NAME" />-Geräte fest.</translation>
 <translation id="3702518095257671450">Remote-Attestierung</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutzen Sie das mehrzeilige Textfeld unten.</translation>
@@ -1884,6 +1887,7 @@ Falls die Richtlinie auf "false" gesetzt wird, werden Wakelock-Anfragen ignorier
 
       Sind diese Richtlinien nicht konfiguriert, so können Nutzer ihre eigenen Proxy-Einstellungen wählen.</translation>
 <translation id="3758249152301468420">Entwickler-Tools deaktivieren</translation>
+<translation id="3760231600118073732">Aktuelle Sitzung sperren.</translation>
 <translation id="3765260570442823273">Dauer der Warnmeldung zur Abmeldung bei Inaktivität</translation>
 <translation id="377044054160169374">Zwingende Maßnahmen bei irreführenden Inhalten</translation>
 <translation id="3780152581321609624">Nicht-Standard-Port in Kerberos-SPN einschließen</translation>
@@ -2676,10 +2680,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
       Wird die Richtlinie auf "false" gesetzt oder nicht konfiguriert, werden keine Informationen ausgegeben.
       Wenn sie auf "true" gesetzt wird, werden der Modellname, die Architektur und die maximale Taktung aller CPUs ausgegeben.</translation>
 <translation id="5124368997194894978">Starten bei anliegender Netzspannung aktivieren</translation>
-<translation id="513798533865657610">Durch die Funktion zur automatischen Eingabe von PINs ändert sich die PIN-Eingabe in Chrome OS.
-          Statt das Textfeld anzuzeigen, das auch für die Eingabe des Passworts verwendet wird, zeigt diese Funktion eine spezielle UI, an der Nutzer erkennen, wie viele Ziffern für die PIN benötigt werden. In der Folge wird die Länge der jeweiligen PIN außerhalb der verschlüsselten Nutzerdaten gespeichert.
-
-          Ist diese Richtlinie auf "False" gesetzt, können Nutzer diese Funktion nicht in den Einstellungen aktivieren.</translation>
 <translation id="5141670636904227950">Standardtyp für die Lupe festlegen, die auf der Anmeldeseite aktiviert ist</translation>
 <translation id="5142301680741828703">Folgende URL-Muster immer in <ph name="PRODUCT_FRAME_NAME" /> darstellen</translation>
 <translation id="514870861066611127">Mit dieser Richtlinie wird festgelegt, ob personenbezogene Daten gesendet werden, zum Beispiel die Anmeldedaten für das Betriebssystem oder das <ph name="PRODUCT_NAME" />-Profil, der <ph name="PRODUCT_NAME" />-Profilname, der <ph name="PRODUCT_NAME" />-Profilpfad und der ausführbare Pfad für <ph name="PRODUCT_NAME" />.
@@ -3882,6 +3882,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6672070613706645316">Nutzern erlauben, den Hintergrund auf der "Neuer Tab"-Seite anzupassen</translation>
 <translation id="6672630473862787247">Aktiviert die passive Authentifizierung für reguläre, Inkognito- und Gastsitzungen.</translation>
 <translation id="6685903773201985073">Aktiviert die passive Authentifizierung für Gast- und reguläre Sitzungen.</translation>
+<translation id="6689343802305995925">Keine Aktion passiert.</translation>
 <translation id="6689792153960219308">Hardwarestatus senden</translation>
 <translation id="6690425645391461516">DNS-Abfangprüfungen deaktivieren; „Meinten Sie: http://intranetsite/“-Infoleisten erlauben.</translation>
 <translation id="6698632841807204978">Schwarz-Weiß-Druck aktivieren</translation>
@@ -4151,6 +4152,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 
       Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nach dem Wechsel zu einem alternativen Browser, selbst wenn es der letzte Tab war. Dadurch wird <ph name="PRODUCT_NAME" /> vollständig beendet.</translation>
 <translation id="7019805045859631636">Schnell</translation>
+<translation id="7026351325994257733">Erlauben, dass WLAN-Konfigurationen auf allen <ph name="PRODUCT_OS_NAME" />-Geräten und einem verbundenen Android-Smartphone synchronisiert werden.</translation>
 <translation id="7027785306666625591">Hiermit wird die Energieverwaltung in <ph name="PRODUCT_OS_NAME" /> konfiguriert.
 
       Mit diesen Richtlinien können Sie festlegen, wie <ph name="PRODUCT_OS_NAME" /> sich verhalten soll, wenn der Nutzer für einen bestimmten Zeitraum inaktiv ist.</translation>
@@ -4521,6 +4523,13 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 
       – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
+<translation id="7476621944304431784">Wenn diese Einstellung aktiviert ist, können Nutzer WLAN-Konfigurationen zwischen <ph name="PRODUCT_OS_NAME" />-Gerät(en) und einem verbundenen Android-Smartphone synchronisieren. Damit die WLAN-Konfigurationen synchronisiert werden können, muss diese Funktion durch die Nutzer eingerichtet und explizit freigeschaltet werden.
+
+      Ist diese Einstellung deaktiviert, können Nutzer die WLAN-Konfigurationen nicht synchronisieren.
+
+      Für diese Funktion muss der Datentyp „<ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />“ in der Chrome-Synchronisierung aktiviert sein. Wenn „<ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />“ in der Richtlinie „<ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" />“ deaktiviert ist oder die Chrome-Synchronisierung in der Richtlinie „<ph name="SYNC_DISABLED_POLICY_NAME" />“ deaktiviert ist, ist diese Funktion nicht aktiviert.
+
+      Ist diese Richtlinie nicht konfiguriert, kann die Funktion nicht standardmäßig von verwalteten Nutzern verwendet werden.</translation>
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
 <translation id="7477239290070847560">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele</translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
@@ -5735,6 +5744,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="9152473318295429890">Kontextbezogene Vorschläge ähnlicher Webseiten aktivieren</translation>
 <translation id="9153446010242995516">Es wird ein Rollback durchgeführt und die Zielversion beibehalten, falls die Version des Betriebssystems neuer ist als die der Zielversion. Es wird nach Möglichkeit versucht, die Einstellungen auf Geräteebene (einschließlich der Anmeldedaten für das Netzwerk) während des Prozesses zu erhalten. Das Rollback wird jedoch mit einem vollständigen Powerwash durchgeführt, auch wenn das Wiederherstellen von Daten nicht möglich ist, weil rückwärtsinkompatible Änderungen vorliegen oder die Zielversion dies nicht unterstützt.
 Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älteren Clients bedeutet dieser Wert, dass das Rollback deaktiviert ist.</translation>
+<translation id="9155218447258425310">Dauer der Benachrichtigung über die Entfernung der Smartcard für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Wenn die Richtlinie konfiguriert ist, können Nutzer nur eine der in dieser Richtlinie angegebenen Sprachen zur Liste der bevorzugten Sprachen hinzufügen.
 
       Wenn sie nicht konfiguriert oder eine leere Liste festgelegt ist, können Nutzer Sprachen nach Belieben angeben.

@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Teclado estadounidense</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementos eliminados</translation>
+<translation id="2541377937973966830">O contido deste cartafol é só de lectura. Non se admiten algunhas actividades.</translation>
 <translation id="2542049655219295786">Táboa de Google</translation>
 <translation id="2547921442987553570">Engadir a <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Internacional de EUA</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Detalles</translation>
 <translation id="4527800702232535228">Este cartafol compártese con Parallels Desktop</translation>
 <translation id="4552678318981539154">Comprar máis almacenamento</translation>
+<translation id="4559318885353833501">Eliminouse <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Ficheiro <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Máis...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Ventá de información sobre a aplicación Ficheiros</translation>
 <translation id="6358884629796491903">Dragón</translation>
 <translation id="637062427944097960">Este ficheiro abriuse nun ordenador diferente. Diríxete a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para velo.</translation>
+<translation id="6394388407447716302">Só lectura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementos</translation>
 <translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
 <translation id="642282551015776456">Non se pode utilizar este nome como nome de ficheiro de cartafol</translation>

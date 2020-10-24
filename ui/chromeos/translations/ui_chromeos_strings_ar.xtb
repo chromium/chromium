@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">لوحة المفاتيح الأمريكية</translation>
 <translation id="2534155362429831547">تم حذف <ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
+<translation id="2541377937973966830">محتوى هذا الملف للقراءة فقط. وبعض النشاطات غير متاحة فيه.</translation>
 <translation id="2542049655219295786">‏جدول من Google</translation>
 <translation id="2547921442987553570">إضافة إلى <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">الأمريكية الدولية</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">التفاصيل</translation>
 <translation id="4527800702232535228">‏تمّت مشاركة هذا المجلد مع نظام Parallels Desktop.</translation>
 <translation id="4552678318981539154">شراء المزيد من مساحة التخزين</translation>
+<translation id="4559318885353833501">تم حذف <ph name="FILE_NAME" />.</translation>
 <translation id="4559767610552730302">‏تأثير Bokeh</translation>
 <translation id="4572815280350369984">ملف <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">المزيد...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">نافذة التعليقات على الملفات</translation>
 <translation id="6358884629796491903">تنين</translation>
 <translation id="637062427944097960">تم فتح هذا الملف على جهاز سطح مكتب آخر. يمكنك الانتقال إلى <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) للاطلاع عليه.</translation>
+<translation id="6394388407447716302">للقراءة فقط</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> من العناصر</translation>
 <translation id="6398765197997659313">إنهاء وضع ملء الشاشة</translation>
 <translation id="642282551015776456">لا يمكن استخدام هذا الاسم كملف باسم مجلد</translation>

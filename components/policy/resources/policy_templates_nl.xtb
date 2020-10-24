@@ -412,6 +412,11 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       De URL-patronen hebben dezelfde indeling als het beleid '<ph name="URL_BLOCKLIST_POLICY_NAME" />', dat wordt beschreven op https://www.chromium.org/administrators/url-blacklist-filter-format.
       </translation>
 <translation id="1645793986494086629">Schema:</translation>
+<translation id="1647558381546345298">Als je het beleid instelt, wordt de cachegrootte ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om gecachte mediabestanden op de schijf op te slaan, ongeacht of de gebruiker de markering --media-cache-size heeft opgegeven. De waarde die in dit beleid wordt opgegeven, is geen harde grens maar een suggestie voor het cachesysteem. Een waarde die lager is dan een paar megabytes wordt naar boven afgerond.
+
+      Als je de waarde van dit beleid instelt op 0, wordt de standaard cachegrootte gebruikt, maar kunnen gebruikers deze niet wijzigen.
+
+      Als je dit beleid niet instelt, wordt de standaardgrootte gebruikt en kunnen gebruikers deze wijzigen met de markering --media-cache-size.</translation>
 <translation id="1648816843164517573">Lijst met namen die de controle van het HSTS-beleid overslaan</translation>
 <translation id="1654087023995670109">Gastmodus voor browser afdwingen</translation>
 <translation id="1655229863189977773">Grootte van schijfcache in bytes instellen</translation>
@@ -1314,6 +1319,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als je dit beleid niet instelt (of instelt op een ongeldige URL), gebruikt <ph name="PRODUCT_NAME" /> dit beleid niet als een bron van regels die overschakeling naar een andere browser regelen.
 
       Opmerking: Dit beleid verwijst naar een XML-bestand met dezelfde indeling als het beleid <ph name="IEEM_SITELIST_POLICY" /> van <ph name="IE_PRODUCT_NAME" />. Hiermee worden regels vanuit een XML-bestand geladen, zonder dat deze regels worden gedeeld met <ph name="IE_PRODUCT_NAME" />. Bekijk meer informatie over het beleid <ph name="IEEM_SITELIST_POLICY" /> van <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2949765875529121431">Als je het beleid instelt, geef je een lijst met hostnamen op die worden overgeslagen als het HSTS-beleid wordt gecontroleerd dat verzoeken kan upgraden van HTTP naar HTTPS. In dit beleid zijn alleen hostnamen met 1 label toegestaan. Hostnamen moeten een canonieke URL hebben. Eventuele IDN's moeten worden omgezet naar de A-labelindeling en alle ASCII-letters moeten kleine letters zijn. Dit beleid is alleen van toepassing op de vermelde specifieke hostnamen en niet op de subdomeinen van die namen.</translation>
 <translation id="2952347049958405264">Beperkingen:</translation>
 <translation id="2957047180944828740">Hiermee geef je aan of niet-beveiligde websites verzoeken mogen sturen naar meer-privé netwerkeindpunten</translation>
 <translation id="2957506574938329824">Niet toestaan dat sites toegang tot Bluetooth-apparaten vragen via de Web Bluetooth API</translation>
@@ -1422,6 +1428,9 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
 
       Onafhankelijk van of en hoe dit beleid is ingesteld, kan de instelling voor WPAD-optimalisatie niet worden gewijzigd door gebruikers.</translation>
 <translation id="3072045631333522102">Screensaver voor gebruik in het inlogvenster in de winkelmodus</translation>
+<translation id="3072788420987305247">Als je het beleid inschakelt of niet instelt, worden mediabedieningsopties op het vergrendelscherm weergegeven als gebruikers het apparaat vergrendelen terwijl er media wordt afgespeeld.
+
+      Als je het beleid uitschakelt, wordt mediabediening op het vergrendelscherm uitgeschakeld.</translation>
 <translation id="3072847235228302527">De Servicevoorwaarden instellen voor een apparaat-lokaal account</translation>
 <translation id="3086995894968271156">De Cast-receiver instellen in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Batterijen opladen van apparaten die ook zijn aangesloten op een externe voedingsbron.</translation>
@@ -1504,6 +1513,11 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
         * 4, wordt <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware geüpdatet nadat het apparaat is geregistreerd, voordat de gebruiker inlogt.
 
       Als je het beleid niet instelt, zijn <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware-updates niet beschikbaar.</translation>
+<translation id="3235677869770186098">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven met de sites die op het inlogscherm automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk item in de lijst een veld voor devices (apparaten) en een veld voor urls (URL's) bevat. Elk item in het veld voor apparaten kan een veld voor vendor_id (leveranciers-ID) en een veld voor product_id (product-ID) hebben. Als je het veld vendor_id weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat. Als je het veld product_id weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat met de opgegeven leveranciers-ID. Een beleid dat het veld product_id heeft zonder het veld vendor_id is ongeldig.
+
+      Het USB-rechtenmodel gebruikt de aanvragende URL en de insluitings-URL om de aanvragende URL toegang te geven tot het USB-apparaat. Als de aanvragende site in een iframe wordt geladen, kan de aanvragende URL anders zijn dan de insluitings-URL. Daarom kan het veld voor URL's maximaal 2 door een komma gescheiden tekenreeksen bevatten om aanvragende URL en de insluitings-URL op te geven. Als er slechts 1 URL wordt opgegeven, wordt toegang tot de bijbehorende USB-apparaten gegeven als de URL van de aanvragende site overeenkomt met deze URL, ongeacht de insluitingsstatus. De URL's moeten geldig zijn, anders wordt het beleid genegeerd.
+
+      Als je het beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites (geen automatische toegang).</translation>
 <translation id="3236046242843493070">URL-patronen om de installatie van extensies, apps en gebruikersscripts toe te staan vanaf</translation>
 <translation id="3240609035816615922">Toegangsbeleid voor printerconfiguratie.</translation>
 <translation id="324062325008698789">Hiermee wordt een lijst met printers geconfigureerd</translation>
@@ -2157,6 +2171,11 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="4157003184375321727">Besturingssysteem- en firmwareversie rapporteren</translation>
 <translation id="4157594634940419685">Toegang verlenen aan systeemeigen CUPS-printers</translation>
 <translation id="4160962198980004898">Bron van MAC-adres van apparaat wanneer het is gedockt</translation>
+<translation id="4166174702671320480">Als je het beleid inschakelt, worden beleidsregels van een atomische groep genegeerd die niet dezelfde bron met de hoogste prioriteit van die groep hebben.
+
+      Als je het beleid uitschakelt, worden er geen beleidsregels genegeerd vanwege de bron. Beleidsregels worden alleen genegeerd als er een conflict is en het beleid niet de hoogste prioriteit heeft.
+
+      Als je dit beleid instelt vanuit een cloudbron, kan het geen specifieke gebruiker targeten.</translation>
 <translation id="4169692397912242417">De toegankelijkheidsfunctie voor gesproken feedback op het inlogscherm inschakelen.
 
           Als dit beleid is ingesteld op True, is gesproken feedback altijd ingeschakeld op het inlogscherm.
@@ -2675,10 +2694,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als het beleid is ingesteld op True, worden de CPU, naam, architectuur en maximale kloksnelheid
       voor elke CPU gerapporteerd.</translation>
 <translation id="5124368997194894978">Opstarten bij netstroom (wisselstroom) inschakelen</translation>
-<translation id="513798533865657610">Met de functie voor het automatisch indienen van pincodes kun je wijzigen hoe pincodes worden ingevoerd in Chrome OS.
-          Met deze functie wordt een speciale UI weergegeven die gebruikers duidelijk laat zien hoeveel tekens er voor hun pincode zijn vereist in plaats van de weergave van hetzelfde tekstveld dat voor het invoeren van wachtwoorden wordt gebruikt. Hierdoor wordt de lengte van de pincode van de gebruiker buiten de versleutelde gegevens van die gebruiker opgeslagen.
-
-          Als dit beleid is ingesteld op False, krijgen gebruikers niet de optie om deze functie in te schakelen op de pagina Instellingen.</translation>
 <translation id="5141670636904227950">Het standaardtype van vergrootglas instellen dat op het inlogscherm is ingeschakeld</translation>
 <translation id="5142301680741828703">De volgende URL-patronen altijd verwerken in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Met dit beleid wordt bepaald of er informatie moet worden gerapporteerd die kan worden gebruikt om gebruikers te identificeren, zoals de OS-inloggegevens, de inloggegevens voor het <ph name="PRODUCT_NAME" />-profiel, de profielnaam voor <ph name="PRODUCT_NAME" />, het profielpad voor <ph name="PRODUCT_NAME" /> en het uitvoerbare pad voor <ph name="PRODUCT_NAME" />.
@@ -3365,6 +3380,9 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgeschakeld (door het b
 <translation id="5951418260805607969">Melding weergeven bij weinig schrijfruimte</translation>
 <translation id="5961137303188584693">MAC-adres van ingebouwde NIC van apparaat</translation>
 <translation id="5966615072639944554">Extensies die toestemming hebben de API voor externe bevestiging te gebruiken</translation>
+<translation id="5975765799383881158">Als je het beleid inschakelt of niet instelt, kunnen gebruikers feedback naar Google sturen via Menu &gt; Hulp &gt; Een probleem melden of via een toetscombinatie.
+
+      Als je het beleid uitschakelt, kunnen gebruikers geen feedback naar Google sturen.</translation>
 <translation id="5997543603646547632">Klok met 24-uursnotatie standaard gebruiken</translation>
 <translation id="5997846976342452720">Aangeven of de plug-inzoeker moet worden uitgeschakeld (beëindigd)</translation>
 <translation id="5998198091336830580">Dit beleid maakt deel uit van de volgende atomische groep (alleen beleidsregels van de bron met de hoogste prioriteit in de groep worden toegepast):</translation>
@@ -3963,6 +3981,11 @@ Als je ervoor kiest het volgende te gebruiken:
 
       Als je het beleid uitschakelt, wordt in plaats daarvan een foutmelding weergegeven.</translation>
 <translation id="6821268164692776674">De bestemmingen <ph name="CLOUD_PRINT_NAME" /> en 'Opslaan in Google Drive'</translation>
+<translation id="682408981080798691">Als je dit beleid inschakelt of niet instelt, is Code-integriteit van weergaveprogramma ingeschakeld.
+
+      Als je dit beleid uitschakelt, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" /> omdat onbekende en potentieel schadelijke code kan worden geladen in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" />. Schakel het beleid alleen uit als er compatibiliteitsproblemen zijn met software van derden die in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" /> moeten worden uitgevoerd.
+
+      Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="6833023569065717572">Als je het beleid instelt op True, krijgt het inlogscherm van een apparaat de 24-uurs kloknotatie.
 
       Als je het beleid instelt op False, krijgt het inlogscherm van een apparaat de 12-uurs kloknotatie.

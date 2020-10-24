@@ -1883,7 +1883,6 @@
 <translation id="3165371858310906303">وقتی سایتی می‌خواهد از وضعیت حضور شما مطلع شود سؤال شود</translation>
 <translation id="3165390001037658081">برخی شرکت‌های مخابراتی ممکن است این قابلیت را مسدود کنند.</translation>
 <translation id="316652501498554287">‏حساب‌های G Suite for Education</translation>
-<translation id="3169472444629675720">کشف کردن</translation>
 <translation id="3170072451822350649">همچنین می‌توانید از ورود به سیستم صرف‌نظر کرده، <ph name="LINK_START" />به عنوان مهمان مرور کنید<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">زبان صفحه:</translation>
 <translation id="3179982752812949580">قلم نوشتار</translation>
@@ -2026,7 +2025,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}one{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}other{<ph name="DEVICE_NAME" /> درحال هم‌رسانی <ph name="ATTACHMENTS" /> با شما است.}}</translation>
 <translation id="3364986687961713424">ازطرف سرپرست: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏یا از Ctrl استفاده کنید یا از Alt</translation>
-<translation id="3367047597842238025">دستگاه <ph name="DEVICE_TYPE" /> خود را درست همان‌طور که می‌خواهید تنظیم کنید و همه قابلیت‌های شگفت‌انگیزش را به‌سادگی کشف کنید.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369067987974711168">نمایش کنش‌های بیشتر برای این درگاه</translation>
 <translation id="3369624026883419694">در حال تحلیل میزبان...</translation>
@@ -2349,7 +2347,6 @@
 <translation id="3713047097299026954">این کلید امنیتی هیچ داده ورود به سیستمی ندارد</translation>
 <translation id="3714195043138862580">این دستگاه نمایشی در وضعیت لغو مجوز دسترسی قرار داده شده است.</translation>
 <translation id="3714633008798122362">تقویم وب</translation>
-<translation id="3715954932774762075">برنامه‌ها و وب‌سایت‌هایی که به چند زبان دردسترس هستند، از اولین زبان پشتیبانی‌شده در این فهرست استفاده خواهند کرد. این اولویت‌ها با تنظیمات مرورگرتان همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">صفحه اصلی</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏شما و Google</translation>
@@ -2487,7 +2484,6 @@
 <translation id="3856800405688283469">انتخاب منطقه زمانی</translation>
 <translation id="3857807444929313943">بردارید و سپس دوباره لمس کنید</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: همگام‌سازی موقتاً متوقف شد</translation>
-<translation id="3861386850461794863">زبان‌های برنامه‌ها و وب‌سایت‌ها</translation>
 <translation id="3861638017150647085">نام کاربری «<ph name="USERNAME" />» در دسترس نیست</translation>
 <translation id="3862693525629180217">به‌تأیید رساندن ازطریق حسگر داخلی</translation>
 <translation id="3862788408946266506">‏برنامه‌ای با ویژگی مانیفست «kiosk_only» باید در حالت کیوسک Chrome OS نصب شود</translation>
@@ -3797,7 +3793,6 @@
 <translation id="5457991019809708398">روشن، بدون فراگردی</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">یادداشت‌‌های روی صفحه درحالت قفل</translation>
-<translation id="546322474339998983">‏در مرورگر Chrome و راه‌انداز <ph name="DEVICE_TYPE" /> استفاده سده‌اند</translation>
 <translation id="5463231940765244860">وارد کنید</translation>
 <translation id="5463275305984126951">شاخص <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">منوی دارای نشانک‌های مخفی</translation>
@@ -3923,7 +3918,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">درحال بار کردن برنامه...</translation>
 <translation id="5592595402373377407">هنوز داده کافی در دسترس نیست.</translation>
-<translation id="5593357315997824387">همگام‌سازی فایل‌های من</translation>
 <translation id="5595485650161345191">ویرایش آدرس</translation>
 <translation id="5595727715083333657">‏محتوی شما از تغییر اندازه پشتیبانی نمی‌کند. برای تنظیم مقدار فضایی که ازقبل به Linux (بتا) اختصاص می‌یابد، پشتیبان‌گیری کنید و سپس در محتوی جدیدی بازیابی کنید.</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
@@ -5091,7 +5085,7 @@
 <translation id="6979044105893951891">راه‌اندازی و خروج از جلسه‌های مهمان مدیریت‌شده</translation>
 <translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
-<translation id="6981982820502123353">قابلیت دسترسی</translation>
+<translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="6983507711977005608">قطع اتصال شبکه «اشتراک‌گذاری اینترنت فوری»</translation>
 <translation id="6983783921975806247">‏OID ثبت شده</translation>
 <translation id="6984299437918708277">تصویری انتخاب کنید تا برای حساب شما در صفحه ورود به سیستم نشان داده شود</translation>
@@ -6170,7 +6164,6 @@
 <translation id="8218847192766059983">زبان اضافه کنید یا ترتیب فهرست را تغییر دهید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان بفرستد، اینجا را کلیک کنید.</translation>
 <translation id="8225265270453771718">هم‌رسانی پنجره برنامه</translation>
-<translation id="8225753906568652947">استفاده از پیشنهادها</translation>
 <translation id="8226222018808695353">ممنوع</translation>
 <translation id="8226619461731305576">صف</translation>
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
@@ -6333,7 +6326,6 @@
 <translation id="8417548266957501132">گذرواژه ولی</translation>
 <translation id="8418445294933751433">&amp;نمایش به‌صورت برگه</translation>
 <translation id="8419098111404128271">نتایج جستجو برای «<ph name="SEARCH_TEXT" />»</translation>
-<translation id="8419368276599091549">به <ph name="DEVICE_TYPE" /> خوش آمدید!</translation>
 <translation id="8420308167132684745">ویرایش ورودی‌های واژه‌نامه</translation>
 <translation id="8421361468937925547">زیرنویس ناشنوایان زنده (فقط انگلیسی)</translation>
 <translation id="8422787418163030046">سینی موجود نیست</translation>

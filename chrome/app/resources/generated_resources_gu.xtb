@@ -1880,7 +1880,6 @@
 <translation id="3165371858310906303">જ્યારે સાઇટને જાણવું હોય કે તમે ક્યારે હાજર છો ત્યારે પૂછો</translation>
 <translation id="3165390001037658081">કેટલાક કૅરિઅર આ સુવિધાને અવરોધિત કરી શકે છે.</translation>
 <translation id="316652501498554287">G Suite for Education એકાઉન્ટ</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">તમે સાઇન ઇન કરવાનું છોડી અને <ph name="LINK_START" />અતિથિ તરીકે બ્રાઉઝ<ph name="LINK_END" /> પણ કરી શકો છો.</translation>
 <translation id="3177909033752230686">પૃષ્ઠ ભાષા:</translation>
 <translation id="3179982752812949580">ટેક્સ્ટ ફોન્ટ</translation>
@@ -2023,7 +2022,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> તમારી સાથે <ph name="ATTACHMENTS" /> શેર કરી રહ્યું છે.}one{<ph name="DEVICE_NAME" /> તમારી સાથે <ph name="ATTACHMENTS" /> શેર કરી રહ્યું છે.}other{<ph name="DEVICE_NAME" /> તમારી સાથે <ph name="ATTACHMENTS" /> શેર કરી રહ્યું છે.}}</translation>
 <translation id="3364986687961713424">તમારા વ્યવસ્થાપક તરફથી: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl અથવા Altનો ઉપયોગ કરો</translation>
-<translation id="3367047597842238025">તમારી ઇચ્છાનુસાર તમારા <ph name="DEVICE_TYPE" />ને સેટ અપ કરો અને તમારી આંગળીના ટેરવે બધી અદ્ભૂત ક્ષમતાઓ મેળવો.</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369067987974711168">આ પોર્ટ માટે વધુ ક્રિયાઓ બતાવો</translation>
 <translation id="3369624026883419694">હોસ્ટને રીસોલ્વ કરી રહ્યું છે...</translation>
@@ -2346,7 +2344,6 @@
 <translation id="3713047097299026954">આ સુરક્ષા કીમાં કોઈ સાઇન ઇન ડેટા સ્ટોર કરેલો નથી</translation>
 <translation id="3714195043138862580">આ ડેમો મોડ જોગવાઈ દૂર કરી સ્થિતિમાં મૂકવામાં આવી છે.</translation>
 <translation id="3714633008798122362">વેબ કેલેન્ડર</translation>
-<translation id="3715954932774762075">એકથી વધારે ભાષાઓમાં ઉપલબ્ધ ઍપ અને વેબસાઇટ આ સૂચિમાંની પહેલી સપોર્ટેડ ભાષાનો ઉપયોગ કરશે. આ પસંદગીઓને તમારા બ્રાઉઝર સેટિંગ સાથે સિંક કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">હોમપેજ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">તમે અને Google</translation>
@@ -2484,7 +2481,6 @@
 <translation id="3856800405688283469">સમયઝોન પસંદ કરો</translation>
 <translation id="3857807444929313943">ઉપાડો, પછી ફરી સ્પર્શ કરો</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: સિંક થોભાવ્યું</translation>
-<translation id="3861386850461794863">ઍપ અને વેબસાઇટ માટેની ભાષાઓ</translation>
 <translation id="3861638017150647085">વપરાશકર્તાનું "<ph name="USERNAME" />" નામ ઉપલબ્ધ નથી</translation>
 <translation id="3862693525629180217">બિલ્ટ-ઇન સેન્સર મારફતે ચકાસો</translation>
 <translation id="3862788408946266506">'Kiosk_only' મેનિફેસ્ટ વિશેષતાવાળી ઍપ Chrome OS કિઓસ્ક મોડમાં ઇન્સ્ટૉલ કરેલી હોવી જરૂરી છે</translation>
@@ -3790,7 +3786,6 @@
 <translation id="5457991019809708398">ચાલુ, રોમિંગમાં નથી</translation>
 <translation id="5458214261780477893">ડ્વોરેક</translation>
 <translation id="5458998536542739734">લૉક સ્ક્રીન માટેની નોંધો</translation>
-<translation id="546322474339998983">Chrome બ્રાઉઝર અને <ph name="DEVICE_TYPE" /> લૉન્ચર દ્વારા ઉપયોગ થાય છે.</translation>
 <translation id="5463231940765244860">દાખલ કરો</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />ની અનુક્રમણિકા</translation>
 <translation id="5463856536939868464">મેનૂમાં છુપાયેલા બુકમાર્ક્સ છે</translation>
@@ -3916,7 +3911,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ઍપ્લિકેશનો લોડ કરી રહ્યું છે...</translation>
 <translation id="5592595402373377407">હજુ સુધી પર્યાપ્ત ડેટા ઉપલબ્ધ નથી.</translation>
-<translation id="5593357315997824387">મારી ફાઇલો સિંક કરો</translation>
 <translation id="5595485650161345191">ઍડ્રેસમાં ફેરફાર કરો</translation>
 <translation id="5595727715083333657">તમારા કન્ટેનરનું કદ બદલવાની સુવિધા ઉપલબ્ધ નથી. Linux (બીટા) માટે અગાઉથી ફાળવેલી સ્પેસ ગોઠવવા માટે, બૅકઅપ લો અને ત્યાર બાદ નવા કન્ટેનરમાં રિસ્ટોર કરો.</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
@@ -6154,7 +6148,6 @@ USB ડિવાઇસ</translation>
 <translation id="8218847192766059983">ભાષાઓ ઉમેરો અથવા સૂચિને પુનઃક્રમાંકિત કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">તમે સામાન્ય રીતે નોટિફિકેશનને બ્લૉક કરો છો. આ સાઇટને તમને નોટિફિકેશન આપવાની મંજૂરી આપવા માટે, અહીં ક્લિક કરો.</translation>
 <translation id="8225265270453771718">ઍપ્લિકેશન વિંડો શેર કરો</translation>
-<translation id="8225753906568652947">તમારી ઑફરો રિડિમ કરો</translation>
 <translation id="8226222018808695353">પ્રતિબંધિત</translation>
 <translation id="8226619461731305576">કતારમાં</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>
@@ -6315,7 +6308,6 @@ USB ડિવાઇસ</translation>
 <translation id="8417548266957501132">માતાપિતાનો પાસવર્ડ</translation>
 <translation id="8418445294933751433">ટૅબ તરીકે &amp;બતાવો</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' માટે શોધ પરિણામ</translation>
-<translation id="8419368276599091549">તમારા <ph name="DEVICE_TYPE" /> પર સ્વાગત છે!</translation>
 <translation id="8420308167132684745">શબ્દકોશમાં ઉમેરેલા શબ્દોમાં ફેરફાર કરો</translation>
 <translation id="8421361468937925547">લાઇવ કૅપ્શન (માત્ર અંગ્રેજીમાં)</translation>
 <translation id="8422787418163030046">ટ્રે ખૂટે છે</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />: nie udało się udostępnić</translation>
 <translation id="1487931858675166540">Element <ph name="FIRST_ITEM_TITLE" /> został zastąpiony elementem <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Z Twojej historii wyszukiwania. Jeśli usuniesz zapytanie „<ph name="QUERY" />” z historii, zostanie ono trwale usunięte z Twojego konta na wszystkich urządzeniach.</translation>
+<translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuta i }few{# minuty i }many{# minut i }other{# minuty i }}</translation>
 <translation id="1643823602425662293">Powiadomienie</translation>
 <translation id="169515659049020177">Shift</translation>

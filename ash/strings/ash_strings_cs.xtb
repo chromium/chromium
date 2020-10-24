@@ -117,7 +117,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2049240716062114887">Název plochy byl změněn na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
-<translation id="2074759828767813253">Nedávné snímky obrazovky a stažené soubory</translation>
 <translation id="2083190527011054446">Dobrou noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
@@ -169,6 +168,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2575685495496069081">Vícenásobné přihlášení je zakázáno.</translation>
 <translation id="2582112259361606227">Restartovat a aktualizovat</translation>
 <translation id="2595239820337756193">5 km v mílích</translation>
+<translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2617342710774726426">SIM karta je uzamčena</translation>
 <translation id="2621713457727696555">Zabezpečeno</translation>
 <translation id="2640255526076764619">Gesto touchpadu k přepnutí na předchozí plochu se změnilo. Na předchozí plochu přejdete přejetím čtyřmi prsty doleva.</translation>
@@ -329,6 +329,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4215497585250573029">Nastavení sítě VPN</translation>
 <translation id="4217571870635786043">Diktování</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="4261870227682513959">Zobrazit nastavení oznámení. Oznámení jsou vypnutá</translation>
 <translation id="4267383818855338811">Virtuální počítač používá vaši kameru</translation>
 <translation id="4269883910223712419">Administrátor zařízení má následující možnosti:</translation>
@@ -376,6 +377,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4596144739579517758">Tmavý motiv je vypnutý</translation>
 <translation id="4623167406982293031">Ověřit účet</translation>
 <translation id="4628757576491864469">Zařízení</translation>
+<translation id="4642092649622328492">Pořídit částečný snímek obrazovky</translation>
 <translation id="4659419629803378708">Funkce ChromeVox je zapnutá</translation>
 <translation id="4665114317261903604">Přepnout možnost Nerušit. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
@@ -423,7 +425,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5035236842988137213">Zařízení <ph name="DEVICE_NAME" /> je připojeno k novému telefonu</translation>
 <translation id="5035389544768382859">Potvrzení konfigurace monitoru</translation>
 <translation id="5083553833479578423">Odemkněte další funkce Asistenta.</translation>
-<translation id="5114495209940374989">Snímky obrazovky</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
 <translation id="5168181903108465623">Dostupná zařízení pro streamování obsahu</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
@@ -492,7 +493,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Neaktivní plocha.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> <ph name="MAIL" /></translation>
-<translation id="5915278665499293471">Snímek celé obrazovky pořídíte klepnutím kamkoliv</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5920710855273935292">Mikrofon je ztlumen.</translation>
 <translation id="594179686076170922">Připojování k telefonu…</translation>
@@ -753,7 +753,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8563862697512465947">Nastavení oznámení</translation>
 <translation id="857201607579416096">Nabídka byla přesunuta do pravého dolního rohu obrazovky.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Klepnutím kamkoliv pořídíte snímek celé obrazovky</translation>
 <translation id="8627191004499078455">Připojeno k zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Nastavení usnadnění přístupu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>

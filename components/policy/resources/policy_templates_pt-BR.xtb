@@ -408,6 +408,11 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Os padrões de URL têm o mesmo formato que a política <ph name="URL_BLOCKLIST_POLICY_NAME" />, documentada em https://www.chromium.org/administrators/url-blacklist-filter-format (link em inglês).
       </translation>
 <translation id="1645793986494086629">Esquema:</translation>
+<translation id="1647558381546345298">Definir a política configura o tamanho do cache usado pelo <ph name="PRODUCT_NAME" /> para armazenar arquivos de mídia em cache no disco, independentemente de o usuário ter especificado ou não a sinalização "--media-cache-size". O valor especificado na política não é um limite rígido, mas sim uma sugestão para o sistema de armazenamento em cache. Valores abaixo de alguns megabytes serão arredondados para cima.
+
+      Se o valor da política for definido como "0", o tamanho de cache padrão será usado e o usuário não poderá mudá-lo.
+
+      Se a política não for definida, o tamanho de cache padrão será usado e o usuário poderá mudá-lo com a sinalização "--media-cache-size".</translation>
 <translation id="1648816843164517573">Lista de nomes que contornarão a verificação de política HSTS</translation>
 <translation id="1654087023995670109">Aplicar o modo visitante do navegador</translation>
 <translation id="1655229863189977773">Define o tamanho do cache de disco em bytes</translation>
@@ -1320,6 +1325,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se ela não for definida ou for definida como um URL inválido, o <ph name="PRODUCT_NAME" /> não a usará como fonte de regras para uma troca de navegador.
 
       Observação: esta política aponta para um arquivo XML no mesmo formato que a política <ph name="IEEM_SITELIST_POLICY" /> do <ph name="IE_PRODUCT_NAME" />. As regras são carregadas de um arquivo XML e não são compartilhadas com o <ph name="IE_PRODUCT_NAME" />. Leia mais sobre a política <ph name="IEEM_SITELIST_POLICY" /> do <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2949765875529121431">Definir a política especifica uma lista de nomes do host isentos da verificação da política HSTS que faria o upgrade de solicitações http para https. Apenas nomes de host de etiqueta única são permitidos nesta política. Nomes de host precisam ser canonizados. Todos os IDNs precisam ser convertidos no formato de etiqueta A, e todas as letras ASCII precisam ser minúsculas. Essa política se aplica exclusivamente aos nomes do host especificados, e não aos subdomínios desses nomes.</translation>
 <translation id="2952347049958405264">Restrições:</translation>
 <translation id="2957047180944828740">Especifica se sites não seguros podem fazer solicitações para endpoints de uma rede mais privada</translation>
 <translation id="2957506574938329824">Não permite que nenhum site solicite acesso a dispositivos Bluetooth por meio da API Web Bluetooth</translation>
@@ -1428,6 +1434,9 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Independentemente de se ou como esta política está definida, a configuração de otimização de WPAD não pode ser alterada pelos usuários.</translation>
 <translation id="3072045631333522102">Protetor de tela a ser utilizado na tela de login no modo de varejo</translation>
+<translation id="3072788420987305247">Se a política for definida como "Ativada" ou não for definida, os controles de mídia serão exibidos na tela de bloqueio se o usuário bloquear o dispositivo durante a reprodução de mídia.
+
+      Se a política for definida como "Desativada", os controles de mídia não serão exibidos na tela de bloqueio.</translation>
 <translation id="3072847235228302527">Definir os Termos de Serviço para uma conta local do dispositivo</translation>
 <translation id="3086995894968271156">Configura a política Cast Receiver no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Carregar a bateria de dispositivos que ficam a maior parte do tempo conectados a uma fonte de energia externa.</translation>
@@ -1510,6 +1519,11 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
         * 4, o firmware do <ph name="TPM_FIRMWARE_UPDATE_TPM" /> será atualizado após a inscrição e antes de o usuário fazer login.
 
       Deixar a política sem definição tornará indisponíveis as atualizações de firmware do <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
+<translation id="3235677869770186098">Definir a política permite que você crie uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados. Cada item da lista precisa ter um campo "devices" e "urls" para que a política seja válida. Cada item no campo "devices" pode ter um campo "vendor_id" e "product_id". A omissão do campo "vendor_id" criará uma política válida para qualquer dispositivo. A omissão do campo "product_id" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "product_id" que não tiver um campo "vendor_id" será inválida.
+
+      O modelo de permissão de USB usa o URL solicitante e o de incorporação para permitir que o URL solicitante acesse o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante está carregado em um iframe. Portanto, o campo "urls" pode conter até duas strings delimitadas por vírgula para especificar o URL solicitante e o de incorporação, respectivamente. Se apenas um URL for especificado, o acesso aos dispositivos USB correspondentes será concedido quando o URL do site solicitante coincidir com esse URL, independentemente do status de incorporação. Os URLs precisam ser válidos. Caso contrário, a política será ignorada.
+
+      Se a política não for definida, o valor padrão global será usado para todos os sites (sem acesso automático).</translation>
 <translation id="3236046242843493070">Padrões de URL para permitir instalação de extensões, aplicativos e scripts do usuário a partir de</translation>
 <translation id="3240609035816615922">Política de acesso à configuração de impressoras.</translation>
 <translation id="324062325008698789">Configura uma lista de impressoras</translation>
@@ -2162,6 +2176,11 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="4157003184375321727">Informar a versão do sistema operacional e do firmware</translation>
 <translation id="4157594634940419685">Permitir acesso a impressoras CUPS nativas</translation>
 <translation id="4160962198980004898">Fonte de endereço MAC do dispositivo quando encaixado na base</translation>
+<translation id="4166174702671320480">Se a política for definida como "Ativada", as políticas vindas de um grupo atômico que não compartilha a origem com a maior prioridade do grupo serão ignoradas.
+
+      Se a política for definida como "Desativada", nenhuma política será ignorada por causa da origem. As políticas serão ignoradas apenas se houver um conflito e a política não tiver a maior prioridade.
+
+      Se a política for definida de uma origem na nuvem, ela não poderá ser destinada a um usuário específico.</translation>
 <translation id="4169692397912242417">Ativar o recurso de acessibilidade de feedback falado na tela de login.
 
           Se esta política for definida como verdadeira, o feedback falado sempre ficará ativado na tela de login.
@@ -2676,10 +2695,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
       Se for definida como verdadeira, o nome do modelo da CPU, a arquitetura e a velocidade máxima do clock serão informadas para cada CPU.</translation>
 <translation id="5124368997194894978">Ativar inicialização em CA (corrente alternada)</translation>
-<translation id="513798533865657610">O recurso de envio automático do PIN muda a forma como os PINs são inseridos no Chrome OS.
-          Em vez de exibir o mesmo campo de texto usado na entrada de senha, esse recurso apresenta uma IU especial que mostra claramente ao usuário quantos dígitos são necessários para o PIN. Como consequência, o tamanho do PIN do usuário será armazenado fora dos dados criptografados.
-
-          Se a política for definida como falsa, os usuários não poderão ativar o recurso na página de configurações.</translation>
 <translation id="5141670636904227950">Definir o tipo de lupa padrão ativada na tela de login</translation>
 <translation id="5142301680741828703">Sempre renderizar os seguintes padrões de URL no <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Esta política controla a permissão de fornecimento de informações que podem ser usadas para identificar usuários, como o login do SO, o login do perfil do <ph name="PRODUCT_NAME" />, o nome do perfil do <ph name="PRODUCT_NAME" />, o caminho do perfil do <ph name="PRODUCT_NAME" /> e o caminho executável do <ph name="PRODUCT_NAME" />.
@@ -3357,6 +3372,9 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="5951418260805607969">Mostrar uma notificação quando houver pouco espaço em disco</translation>
 <translation id="5961137303188584693">Endereço MAC da placa de rede integrada do dispositivo</translation>
 <translation id="5966615072639944554">Extensões que podem usar a API de declaração remota</translation>
+<translation id="5975765799383881158">Se a política for definida como "Ativada" ou não for definida, os usuários poderão enviar feedback ao Google em "Menu &gt; Ajuda &gt; Informar um problema" ou usando uma combinação de teclas.
+
+      Se a política for definida como "Desativada", os usuários não poderão enviar feedback ao Google.</translation>
 <translation id="5997543603646547632">Usar relógido de 24 horas por padrão</translation>
 <translation id="5997846976342452720">Especifica se o localizador de plug-ins deve ser desativado (uso suspenso)</translation>
 <translation id="5998198091336830580">Esta política faz parte do seguinte grupo atômico (apenas as políticas da fonte de maior prioridade presentes no grupo são aplicadas):</translation>
@@ -3955,6 +3973,11 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       A desativação da política faz com que uma mensagem de erro seja exibida.</translation>
 <translation id="6821268164692776674">Destinos do <ph name="CLOUD_PRINT_NAME" /> e "Salvar no Google Drive"</translation>
+<translation id="682408981080798691">Se a política for definida como "Ativada" ou não for definida, a integridade do código renderizador será ativada.
+
+      Se a política for definida como "Desativada", a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, uma vez que códigos desconhecidos e potencialmente hostis poderão ser carregados nos processos de renderização do <ph name="PRODUCT_NAME" />. Desative a política apenas se softwares de terceiros que precisam ser executados nos processos de renderizador do <ph name="PRODUCT_NAME" /> apresentarem problemas de compatibilidade.
+
+      Observação: leia mais sobre políticas de mitigação de processos ( https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="6833023569065717572">Se a política for definida como verdadeira, a tela de login do dispositivo terá um relógio no formato de 24 horas.
 
       Se a política for definida como falsa, a tela de login do dispositivo terá um relógio no formato de 12 horas.

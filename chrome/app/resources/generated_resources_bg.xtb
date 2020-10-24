@@ -448,6 +448,7 @@
 <translation id="1509281256533087115">Достъп до всяко устройство <ph name="DEVICE_NAME_AND_VENDOR" /> чрез USB</translation>
 <translation id="1509960214886564027">Функциите в много сайтове може да не работят правилно</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
+<translation id="151070646350206700">Сайтовете не могат да ви прекъсват със запитвания дали да изпращат известия</translation>
 <translation id="1510785804673676069">В случай че използвате прокси сървър, проверете настройките му или се свържете със системния си администратор, за да се уверите, че сървърът работи. Ако смятате, че не трябва да ползвате прокси сървър, коригирайте <ph name="LINK_START" />съответните настройки<ph name="LINK_END" />.</translation>
 <translation id="1511997356770098059">В този ключ за сигурност не могат да се съхраняват данни за вход</translation>
 <translation id="1512210426710821809">Единственият начин да отмените това е да инсталирате отново <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
@@ -931,6 +932,7 @@
 <translation id="205560151218727633">Лого на Google Асистент</translation>
 <translation id="2058456167109518507">Открито е устройство</translation>
 <translation id="2059913712424898428">Часова зона</translation>
+<translation id="2060375639911876205">Премахване на потребителския профил на електронната SIM карта</translation>
 <translation id="2065405795449409761">Chrome се контролира от автоматизиран софтуер за тестване.</translation>
 <translation id="2071393345806050157">Няма локален регистрационен файл.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Кликнете, за да го инсталирате}other{Кликнете, за да ги инсталирате}}</translation>
@@ -1881,7 +1883,6 @@
 <translation id="3165371858310906303">Извеждане на запитване, когато сайт иска да знае дали присъствате</translation>
 <translation id="3165390001037658081">Някои оператори може да блокират тази функция.</translation>
 <translation id="316652501498554287">Профили в G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Може също да пропуснете влизането и <ph name="LINK_START" />да сърфирате като гост<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Език на страницата:</translation>
 <translation id="3179982752812949580">Шрифт на текста</translation>
@@ -2024,7 +2025,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> споделя с вас <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> споделя с вас <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3364986687961713424">От администратора ви: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Използвайте или Ctrl, или Alt</translation>
-<translation id="3367047597842238025">Настройте устройството си <ph name="DEVICE_TYPE" /> по свой вкус и открийте всички невероятни функции, до които имате непосредствен достъп.</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3369067987974711168">Показване на още действия за този порт</translation>
 <translation id="3369624026883419694">Получава се разрешение от хоста...</translation>
@@ -2348,7 +2348,6 @@
 <translation id="3713047097299026954">В този ключ за сигурност няма данни за вход</translation>
 <translation id="3714195043138862580">Обезпечаването на това демонстрационно устройство е отменено.</translation>
 <translation id="3714633008798122362">уеб календар</translation>
-<translation id="3715954932774762075">Приложенията и уебсайтовете, които се предлагат на няколко езика, ще използват първия поддържан от този списък. Тези предпочитания се синхронизират с настройките на браузъра. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Начална страница</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
@@ -2487,7 +2486,6 @@
 <translation id="3856800405688283469">Изберете часова зона</translation>
 <translation id="3857807444929313943">Вдигнете пръст и докоснете отново</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронизирането е на пауза</translation>
-<translation id="3861386850461794863">Езици за приложенията и уебсайтовете</translation>
 <translation id="3861638017150647085">Потребителското име „<ph name="USERNAME" />“ е заето</translation>
 <translation id="3862693525629180217">Потвърждаване чрез вградения сензор</translation>
 <translation id="3862788408946266506">Приложенията с атрибут „kiosk_only“ в манифеста трябва да бъдат инсталирани в павилионния режим на Chrome OS</translation>
@@ -2731,6 +2729,7 @@
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="413193092008917129">Процедури за диагностика на мрежата</translation>
 <translation id="4132183752438206707">Ще намерите приложения в Google Play Магазин</translation>
+<translation id="4132364317545104286">Преименуване на потребителския профил на електронната SIM карта</translation>
 <translation id="4133076602192971179">Отворете приложението, за да промените паролата си</translation>
 <translation id="4136203100490971508">Нощното осветление ще се изключи автоматично по изгрев</translation>
 <translation id="41365691917097717">Ако продължите, отстраняването на грешки през ADB ще бъде активирано, за да създавате и тествате приложения за Android. Обърнете внимание, че това действие позволява инсталирането на приложения за Android, които не са удостоверени от Google. За деактивирането на ADB е необходимо да бъдат възстановени фабричните настройки.</translation>
@@ -3244,6 +3243,7 @@
 <translation id="4778644898150334464">Използване на друга парола</translation>
 <translation id="4779083564647765204">Промяна на мащаба</translation>
 <translation id="4779136857077979611">Онигири</translation>
+<translation id="4779766576531456629">Преименуване на мобилната мрежа за електронната SIM карта</translation>
 <translation id="4780321648949301421">Запазване на страницата като...</translation>
 <translation id="4785719467058219317">Използвате ключ за сигурност, който не е регистриран в този уебсайт</translation>
 <translation id="4788092183367008521">Моля, проверете връзката си с мрежата и опитайте отново.</translation>
@@ -3687,6 +3687,7 @@
 <translation id="5324780743567488672">Автоматично задаване на часовата зона въз основа на местоположението ви</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5327570636534774768">Това устройство е маркирано за управление от друг домейн. Отменете обезпечаването му за този домейн, преди да настроите демонстрационния режим.</translation>
+<translation id="5327912693242073631">Функциите, за които са нужни известия, няма да работят</translation>
 <translation id="532943162177641444">Докоснете известието на телефона си <ph name="PHONE_NAME" />, за да настроите мобилната точка за достъп, която да може да се използва от това устройство.</translation>
 <translation id="5329858601952122676">&amp;Изтриване</translation>
 <translation id="5331069282670671859">Нямате сертификати от тази категория</translation>
@@ -3738,6 +3739,7 @@
 <translation id="5390112241331447203">Запазване на файла system_logs.txt, който се изпраща в сигналите с отзиви.</translation>
 <translation id="5390677308841849479">Тъмночервено и оранжево</translation>
 <translation id="5390743329570580756">Изпращане за</translation>
+<translation id="5392192690789334093">Сайтове с разрешение да изпращат известия</translation>
 <translation id="5397794290049113714">Вие</translation>
 <translation id="5398497406011404839">Скрити отметки</translation>
 <translation id="5398572795982417028">Посочената страница е извън обхват. Ограничението е <ph name="MAXIMUM_PAGE" /></translation>
@@ -3793,7 +3795,6 @@
 <translation id="5457991019809708398">Включено, не се използва роуминг</translation>
 <translation id="5458214261780477893">Дворак</translation>
 <translation id="5458998536542739734">Бележки на заключения екран</translation>
-<translation id="546322474339998983">Използва се от браузъра Chrome и стартовия панел на <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Въвеждане</translation>
 <translation id="5463275305984126951">Индекс на <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Менюто съдържа скрити отметки</translation>
@@ -3919,7 +3920,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Приложенията се зареждат...</translation>
 <translation id="5592595402373377407">Още не са налице достатъчно данни.</translation>
-<translation id="5593357315997824387">Синхронизиране на файловете ми</translation>
 <translation id="5595485650161345191">Редактиране на адреса</translation>
 <translation id="5595727715083333657">Контейнерът ви не поддържа преоразмеряване. За да промените обема на пространството, предварително заделено за Linux (бета), създайте резервно копие и след това възстановете в нов контейнер.</translation>
 <translation id="5596627076506792578">Още опции</translation>
@@ -4043,6 +4043,7 @@
 <translation id="5739235828260127894">Чака се потвърждение. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Много голям</translation>
 <translation id="5740328398383587084">Споделяне наблизо</translation>
+<translation id="5740820643029013514">Използване на по-малко натрапчиви съобщения (препоръчително)</translation>
 <translation id="574104302965107104">Дублиране на екрана</translation>
 <translation id="574209121243317957">Височина</translation>
 <translation id="5746169159649715125">Запазване като PDF файл</translation>
@@ -4262,6 +4263,7 @@
 <translation id="6002210667729577411">Преместване на групата в нов прозорец</translation>
 <translation id="6002452033851752583">Паролата бе изтрита от профила ви в Google</translation>
 <translation id="6002458620803359783">Предпочитани гласове</translation>
+<translation id="6003143259071779217">Премахване на мобилната мрежа за електронната SIM карта</translation>
 <translation id="6006484371116297560">Класическа тема</translation>
 <translation id="6007240208646052708">Функцията за гласово търсене не е налице за езика ви.</translation>
 <translation id="6009781704028455063">Вграден сензор</translation>
@@ -4530,6 +4532,7 @@
 <translation id="6308937455967653460">З&amp;апазване на връзката като...</translation>
 <translation id="6309443618838462258">Администраторът ви не допуска този метод на въвеждане</translation>
 <translation id="6309510305002439352">Микрофонът е изключен</translation>
+<translation id="6310472381159916879">Премахване на потребителския профил</translation>
 <translation id="6311220991371174222">Chrome не може да се стартира, защото нещо се обърка при отварянето на потребителския ви профил. Опитайте да рестартирате браузъра.</translation>
 <translation id="6312403991423642364">Неизвестна мрежова грешка</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Проверката на безопасността бе изпълнена преди 1 ден}other{Проверката на безопасността бе изпълнена преди {NUM_DAYS} дни}}</translation>
@@ -4719,6 +4722,7 @@
 <translation id="6532663472409656417">Корпоративно записано</translation>
 <translation id="6535331821390304775">Винаги да се разрешава на <ph name="ORIGIN" /> да отваря връзки от този тип в свързаното приложение</translation>
 <translation id="6537613839935722475">Можете да ползвате букви, цифри и къси тирета (-)</translation>
+<translation id="6537880577641744343">Управление</translation>
 <translation id="6538635548667167211">Текущата настройка за преноса на данни е „Данни“</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Активирайте само ако знаете какви ще са последствията или сте помолени да го направите, тъй като събирането на данни може да намали ефективността.</translation>
 <translation id="6541638731489116978">Достъпът на този сайт до сензорите ви за движение е блокиран.</translation>
@@ -5850,6 +5854,7 @@
 <translation id="7855678561139483478">Преместване на раздела в нов прозорец</translation>
 <translation id="7857117644404132472">Добавяне на изключение</translation>
 <translation id="7857949311770343000">Това очакваният от вас нов раздел ли е?</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">Тази опция няма да се поддържа след декември. Обърнете се към администратора си.</translation>
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Изтегляния</translation>
@@ -6162,7 +6167,6 @@
 <translation id="8218847192766059983">Добавяне на езици или пренареждане на списъка. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Обикновено блокирате известията. Кликнете тук, за да разрешите на този сайт да ви изпраща известия.</translation>
 <translation id="8225265270453771718">Споделяне на прозорец на приложение</translation>
-<translation id="8225753906568652947">Осребряване на офертите</translation>
 <translation id="8226222018808695353">Забранено</translation>
 <translation id="8226619461731305576">Опашка</translation>
 <translation id="8226628635270268143">Изберете любимите си снимки и албуми</translation>
@@ -6173,6 +6177,7 @@
 <translation id="8236917170563564587">Споделяне на този раздел</translation>
 <translation id="8237647586961940482">Тъмнорозово и червено</translation>
 <translation id="8239032431519548577">Корпоративното записване завърши</translation>
+<translation id="8239932336306009582">Сайтове без разрешение да изпращат известия</translation>
 <translation id="8241040075392580210">Бяло облаче</translation>
 <translation id="8241806945692107836">Конфигурацията на устройството се определя...</translation>
 <translation id="8241868517363889229">Четене и промяна на отметките ви</translation>
@@ -6302,6 +6307,7 @@
 <translation id="8386091599636877289">Правилото не е намерено.</translation>
 <translation id="8386903983509584791">Сканирането завърши</translation>
 <translation id="8387361103813440603">Сайтове без разрешение за преглед на местоположението ви</translation>
+<translation id="8389264703141926739">Блокиране на известията</translation>
 <translation id="8389416080014625855">Създаване на код за бърза реакция за тази страница</translation>
 <translation id="8389492867173948260">Разрешаване на това разширение да чете и променя всичките ви данни в посещаваните от вас уебсайтове:</translation>
 <translation id="8390449457866780408">Няма достъп до сървъра.</translation>
@@ -6323,7 +6329,6 @@
 <translation id="8417548266957501132">Парола на родител</translation>
 <translation id="8418445294933751433">&amp;Показване като раздел</translation>
 <translation id="8419098111404128271">Резултати от търсенето на „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="8419368276599091549">Добре дошли в устройството си <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Редактиране на записите в речника</translation>
 <translation id="8421361468937925547">Надписи на живо (само на английски)</translation>
 <translation id="8422787418163030046">Липсваща тава</translation>
@@ -6512,6 +6517,7 @@
 <translation id="8645354835496065562">Достъпът до сензорите да продължи да е разрешен</translation>
 <translation id="8645920082661222035">Предвижда и ви предупреждава за опасни събития, преди да се случат</translation>
 <translation id="8646209145740351125">Деактивиране на синхронизирането</translation>
+<translation id="864637694230589560">Сайтовете обикновено изпращат известия, за да ви уведомяват за извънредни новини или съобщения в чата</translation>
 <translation id="8647834505253004544">Не е валиден уеб адрес</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> или <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Цветна температура за функцията „Нощно осветление“</translation>

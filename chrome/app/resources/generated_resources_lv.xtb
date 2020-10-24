@@ -1886,7 +1886,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3165371858310906303">Vaicāt, ja vietne pieprasa informāciju par jūsu aktivitāti</translation>
 <translation id="3165390001037658081">Daļa mobilo sakaru operatoru var bloķēt šo funkciju.</translation>
 <translation id="316652501498554287">G Suite for Education konti</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Varat arī izlaist pierakstīšanos un <ph name="LINK_START" />veikt pārlūkošanu kā viesis<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Lapas valoda:</translation>
 <translation id="3179982752812949580">Teksta fonts</translation>
@@ -2029,7 +2028,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> kopīgo ar jums saturu (<ph name="ATTACHMENTS" />).}zero{<ph name="DEVICE_NAME" /> kopīgo ar jums saturu (<ph name="ATTACHMENTS" />).}one{<ph name="DEVICE_NAME" /> kopīgo ar jums saturu (<ph name="ATTACHMENTS" />).}other{<ph name="DEVICE_NAME" /> kopīgo ar jums saturu (<ph name="ATTACHMENTS" />).}}</translation>
 <translation id="3364986687961713424">Ziņojums no administratora: “<ph name="ADMIN_MESSAGE" />”</translation>
 <translation id="3365598184818502391">Izmantojiet taustiņu Ctrl vai Alt</translation>
-<translation id="3367047597842238025">Iestatiet <ph name="DEVICE_TYPE" /> ierīci atbilstoši savām vēlmēm un atklājiet visas pieejamās iespējas.</translation>
 <translation id="3368922792935385530">pievienots</translation>
 <translation id="3369067987974711168">Rādīt citas darbības ar šo portu</translation>
 <translation id="3369624026883419694">Risina saimniekdatoru...</translation>
@@ -2352,7 +2350,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3713047097299026954">Šai drošības atslēgai nav saglabātu pierakstīšanās datu</translation>
 <translation id="3714195043138862580">Šai demonstrācijas ierīcei ir atsaukts nodrošinājums.</translation>
 <translation id="3714633008798122362">tīmekļa kalendārs</translation>
-<translation id="3715954932774762075">Lietotnēs un tīmekļa vietnēs, kas ir pieejamas vairākās valodās, tiks izmantota pirmā atbalstītā valoda šī saraksta secībā. Šīs preferences tiek sinhronizētas ar jūsu pārlūkprogrammas iestatījumiem. <ph name="BEGIN_LINK_LEARN_MORE" />Uzzināt vairāk<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Sākumlapa</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Jūs un Google</translation>
@@ -2490,7 +2487,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3856800405688283469">Laika joslas atlasīšana</translation>
 <translation id="3857807444929313943">Paceliet un pieskarieties vēlreiz</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinhronizācija ir apturēta</translation>
-<translation id="3861386850461794863">Lietotņu un vietņu valodas</translation>
 <translation id="3861638017150647085">Lietotājvārds “<ph name="USERNAME" />” nav pieejams.</translation>
 <translation id="3862693525629180217">Apstiprināt, izmantojot iebūvētu sensoru</translation>
 <translation id="3862788408946266506">Lai instalētu lietotni ar manifesta atribūtu kiosk_only, ir jāizmanto Chrome OS kioska režīms.</translation>
@@ -3800,7 +3796,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5457991019809708398">Viesabonēšana ieslēgta, netiek izmantota</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Bloķēšanas ekrāna piezīmes</translation>
-<translation id="546322474339998983">Tiek izmantota pārlūkprogrammā Chrome un <ph name="DEVICE_TYPE" /> palaidējā</translation>
 <translation id="5463231940765244860">Ievadīt</translation>
 <translation id="5463275305984126951">Indekss <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Izvēlne ar paslēptām grāmatzīmēm</translation>
@@ -3926,7 +3921,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Notiek lietotņu ielāde...</translation>
 <translation id="5592595402373377407">Vēl nav pieejams pietiekami daudz datu.</translation>
-<translation id="5593357315997824387">Sinhronizēt failus</translation>
 <translation id="5595485650161345191">Rediģēt adresi</translation>
 <translation id="5595727715083333657">Jūsu konteiners neatbalsta tā lieluma mainīšanu. Lai pielāgotu operētājsistēmai Linux (beta versija) iepriekš piešķirtās vietas lielumu, izveidojiet dublējumu un pēc tam atjaunojiet to jaunā konteinerā.</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
@@ -6172,7 +6166,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8218847192766059983">Pievienojiet valodas vai pārkārtojiet sarakstu. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Parasti jūs bloķējat paziņojumus. Lai ļautu šai vietnei sūtīt jums paziņojumus, noklikšķiniet šeit.</translation>
 <translation id="8225265270453771718">Lietojumprogrammas loga kopīgošana</translation>
-<translation id="8225753906568652947">Izmantot piedāvājumus</translation>
 <translation id="8226222018808695353">Aizliegts</translation>
 <translation id="8226619461731305576">Rinda</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
@@ -6335,7 +6328,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8417548266957501132">Vecāku parole</translation>
 <translation id="8418445294933751433">Rādīt kā cilni</translation>
 <translation id="8419098111404128271">Vaicājuma “<ph name="SEARCH_TEXT" />” meklēšanas rezultāti</translation>
-<translation id="8419368276599091549">Laipni lūdzam jūsu <ph name="DEVICE_TYPE" /> ierīcē!</translation>
 <translation id="8420308167132684745">Rediģēt vārdnīcas šķirkļus</translation>
 <translation id="8421361468937925547">Subtitri reāllaikā (tikai angļu valodā)</translation>
 <translation id="8422787418163030046">Nav paplātes.</translation>

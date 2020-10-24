@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">АҚШ пернетақтасы</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> элемент жойылды.</translation>
+<translation id="2541377937973966830">Бұл қалтадағы мазмұнды тек оқуға болады. Кейбір әрекеттерге қолдау көрсетілмейді.</translation>
 <translation id="2542049655219295786">Google кестесі</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> кеңейтіміне қосу</translation>
 <translation id="255937426064304553">АҚШ халықаралық</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Мәліметтер</translation>
 <translation id="4527800702232535228">Бұл қалта Parallels Desktop-пен бөлісіледі.</translation>
 <translation id="4552678318981539154">Көбірек сақтау орнын сатып алу</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> жойылды.</translation>
 <translation id="4559767610552730302">Боке</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> файлы</translation>
 <translation id="457386861538956877">Тағы…</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Файлдар пікірлері терезесі</translation>
 <translation id="6358884629796491903">Айдаһар</translation>
 <translation id="637062427944097960">Бұл файл басқа жұмыс үстелінде ашылды. Оны көру үшін <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) мекенжайына өтіңіз.</translation>
+<translation id="6394388407447716302">Тек оқуға арналған</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> элемент</translation>
 <translation id="6398765197997659313">Толық экраннан шығу</translation>
 <translation id="642282551015776456">Бұл атауды файл немесе қалта атауы ретінде пайдалануға болмайды</translation>

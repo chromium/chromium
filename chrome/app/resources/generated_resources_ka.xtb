@@ -1885,7 +1885,6 @@
 <translation id="3165371858310906303">შეკითხვა, როცა საიტი ითხოვს ინფორმაციას თქვენი დასწრების შესახებ</translation>
 <translation id="3165390001037658081">ზოგიერთი ოპერატორი შეიძლება ბლოკავდეს ამ ფუნქციას.</translation>
 <translation id="316652501498554287">G Suite for Education ანგარიშები</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">შეგიძლიათ ასევე გამოტოვოთ შესვლის ეტაპი და <ph name="LINK_START" />დაათვალიეროთ სტუმრის სტატუსით<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">გვერდის ენა:</translation>
 <translation id="3179982752812949580">ტექსტის შრიფტი</translation>
@@ -2028,7 +2027,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-ის მიერ თქვენთან ზიარდება <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" />-ის მიერ თქვენთან ზიარდება <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3364986687961713424">თქვენი ადმინისტრატორისგან: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">გამოიყენეთ Ctrl ან Alt</translation>
-<translation id="3367047597842238025">დააყენეთ თქვენი <ph name="DEVICE_TYPE" /> ისე, როგორც გსურთ, და აღმოაჩინეთ მისი ყველა გასაოცარი შესაძლებლობა.</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369067987974711168">ამ პორტთან დაკავშირებული სხვა მოქმედებების ჩვენება</translation>
 <translation id="3369624026883419694">ჰოსტის გადაწყვეტა…</translation>
@@ -2351,7 +2349,6 @@
 <translation id="3713047097299026954">უსაფრთხოების ამ გასაღებზე სისტემაში შესვლის მონაცემები არ არის</translation>
 <translation id="3714195043138862580">ეს დემო-მოწყობილობა გადაყვანილია არა-უზრუნველყოფილ მდგომარეობაში.</translation>
 <translation id="3714633008798122362">ვებ კალენდარი</translation>
-<translation id="3715954932774762075">აპები და ვებსაიტები, რომლებიც ხელმისაწვდომია რამდენიმე ენაზე, ამ სიიდან პირველ მხარდაჭერილ ენას გამოიყენებს. ეს პარამეტრები სინქრონიზდება თქვენი ბრაუზერის პარამეტრებთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">საწყისი გვერდი</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">თქვენ და Google</translation>
@@ -2489,7 +2486,6 @@
 <translation id="3856800405688283469">აირჩიეთ დროის სარტყელი</translation>
 <translation id="3857807444929313943">აიღეთ თითი, შემდეგ კი ხელახლა შეეხეთ</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: სინქრონიზაცია დაპაუზებულია</translation>
-<translation id="3861386850461794863">ენები აპებისა და ვებსაიტებისთვის</translation>
 <translation id="3861638017150647085">მომხმარებლის სახელი „<ph name="USERNAME" />“ მიუწვდომელია</translation>
 <translation id="3862693525629180217">ჩაშენებული სენსორის მეშვეობით დადასტურება</translation>
 <translation id="3862788408946266506">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს Chrome OS-ის კიოსკის რეჟიმში</translation>
@@ -3799,7 +3795,6 @@
 <translation id="5457991019809708398">ჩართული, როუმინგის გარეშე</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">ჩანიშვნები ჩაკეტილ ეკრანზე</translation>
-<translation id="546322474339998983">გამოიყენება Chrome ბრაუზერისა და <ph name="DEVICE_TYPE" /> გამშვების მიერ</translation>
 <translation id="5463231940765244860">შეყვანა</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />-ის ინდექსი</translation>
 <translation id="5463856536939868464">დამალული სანიშნეების შემცველი მენიუ</translation>
@@ -3925,7 +3920,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">აპები იტვირთება…</translation>
 <translation id="5592595402373377407">ჯერჯერობით არ არის საკმარისი მონაცემები.</translation>
-<translation id="5593357315997824387">ჩემი ფაილების სინქრონიზაცია</translation>
 <translation id="5595485650161345191">მისამართის რედაქტირება</translation>
 <translation id="5595727715083333657">კონტეინერის ზომის შეცვლა მხარდაუჭერელია. Linux-ისთვის (ბეტა) წინასწარ გამოყოფილი მეხსიერების ზომის შესაცვლელად შექმენით კონტეინერის სარეზერვო ასლი, ხოლო შემდეგ აღადგინეთ ის.</translation>
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
@@ -6170,7 +6164,6 @@
 <translation id="8218847192766059983">დაამატეთ ენები, ან შეცვალეთ სიის მიმდევრობა. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">როგორც წესი, თქვენ ბლოკავთ შეტყობინებებს. ამ საიტისგან შეტყობინებების მისაღებად დააწკაპუნეთ აქ.</translation>
 <translation id="8225265270453771718">აპლიკაციის ფანჯრის გაზიარება</translation>
-<translation id="8225753906568652947">შემოთავაზებებით სარგებლობა</translation>
 <translation id="8226222018808695353">აკრძალული</translation>
 <translation id="8226619461731305576">რიგი</translation>
 <translation id="8226628635270268143">აირჩიეთ თქვენი რჩეული ფოტოები და ალბომები</translation>
@@ -6333,7 +6326,6 @@
 <translation id="8417548266957501132">მშობლის პაროლი</translation>
 <translation id="8418445294933751433">ჩ&amp;ვენება ჩანართის სახით</translation>
 <translation id="8419098111404128271">ძიების შედეგები მოთხოვნაზე „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="8419368276599091549">მოგესალმებათ თქვენი <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">ლექსიკონის ჩანაწერების რედაქტირება</translation>
 <translation id="8421361468937925547">ავტოსუბტიტრები (მხოლოდ ინგლისური)</translation>
 <translation id="8422787418163030046">აკლია კალათა</translation>

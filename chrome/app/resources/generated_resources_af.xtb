@@ -1886,7 +1886,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3165371858310906303">Vra as 'n werf wil weet wanneer jy teenwoordig is</translation>
 <translation id="3165390001037658081">Sommige diensverskaffers kan hierdie funksie blokkeer.</translation>
 <translation id="316652501498554287">G Suite for Education-rekeninge</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Jy kan ook aanmelding oorslaan en <ph name="LINK_START" />as 'n gas blaai<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Bladsytaal:</translation>
 <translation id="3179982752812949580">Tekslettertipe</translation>
@@ -2029,7 +2028,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deel tans <ph name="ATTACHMENTS" /> met jou.}other{<ph name="DEVICE_NAME" /> deel tans <ph name="ATTACHMENTS" /> met jou.}}</translation>
 <translation id="3364986687961713424">Vanaf jou administrateur: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Gebruik óf Ctrl óf Alt</translation>
-<translation id="3367047597842238025">Stel jou <ph name="DEVICE_TYPE" /> op net soos jy dit wil hê en ontdek al die wonderlike vermoëns hier binne jou bereik.</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369067987974711168">Wys meer handelinge vir hierdie poort</translation>
 <translation id="3369624026883419694">Los tans gasheer op …</translation>
@@ -2352,7 +2350,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3713047097299026954">Hierdie sekuriteitsleutel het geen aanmelddata nie</translation>
 <translation id="3714195043138862580">Hierdie demonstrasietoestel is in 'n verwyderde staat geplaas.</translation>
 <translation id="3714633008798122362">webkalender</translation>
-<translation id="3715954932774762075">Programme en webwerwe wat in veelvuldige tale beskikbaar is, sal die eerste gesteunde taal op hierdie lys gebruik. Hierdie voorkeure word met jou blaaierinstellings gesinkroniseer. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Tuisblad</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Jy en Google</translation>
@@ -2490,7 +2487,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3856800405688283469">Kies tydsone</translation>
 <translation id="3857807444929313943">Lig en raak dan weer</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sinkronisering is onderbreek</translation>
-<translation id="3861386850461794863">Tale vir programme en webwerwe</translation>
 <translation id="3861638017150647085">Gebruikernaam "<ph name="USERNAME" />" is nie beskikbaar nie</translation>
 <translation id="3862693525629180217">Verifieer deur ingeboude sensor</translation>
 <translation id="3862788408946266506">Program met "net_kiosk"-manifeseienskap moet in Chrome-bedryfstelsel se kioskmodus geïnstalleer word</translation>
@@ -3800,7 +3796,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5457991019809708398">Aan, swerf nie</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Sluitskermnotas</translation>
-<translation id="546322474339998983">Gebruik deur Chrome-blaaier en <ph name="DEVICE_TYPE" />-lanseerder</translation>
 <translation id="5463231940765244860">Voer in</translation>
 <translation id="5463275305984126951">Indeks van <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Kieslys wat versteekte boekmerke bevat</translation>
@@ -3926,7 +3921,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Laai tans programme …</translation>
 <translation id="5592595402373377407">Nog nie genoeg data beskikbaar nie.</translation>
-<translation id="5593357315997824387">Sinkroniseer my lêers</translation>
 <translation id="5595485650161345191">Wysig adres</translation>
 <translation id="5595727715083333657">Jou houer se grootte kan nie verander word nie. Om die hoeveelheid spasie te verstel wat vooraf aan Linux (beta) toegewys word, moet jy rugsteun en dan in 'n nuwe houer terugstel.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
@@ -6173,7 +6167,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8218847192766059983">Voeg tale by of herrangskik lys. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Jy blokkeer gewoonlik kennisgewings. Klik hier sodat dié werf jou in kennis kan stel.</translation>
 <translation id="8225265270453771718">Deel 'n programvenster</translation>
-<translation id="8225753906568652947">Gebruik jou aanbiedings</translation>
 <translation id="8226222018808695353">Verbode</translation>
 <translation id="8226619461731305576">Waglys</translation>
 <translation id="8226628635270268143">Kies jou gunstelingfoto's en -albums</translation>
@@ -6336,7 +6329,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8417548266957501132">Ouerwagwoord</translation>
 <translation id="8418445294933751433">Wys as oortjie</translation>
 <translation id="8419098111404128271">Soekresultate vir "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Welkom by jou <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Redigeer woordeboekinskrywings</translation>
 <translation id="8421361468937925547">Intydse Onderskrifte (net Engels)</translation>
 <translation id="8422787418163030046">Laai ontbreek</translation>

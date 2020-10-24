@@ -117,7 +117,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2049240716062114887">Se ha cambiado el nombre del escritorio a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2067602449040652523">Brillo del teclado</translation>
-<translation id="2074759828767813253">Capturas de pantalla y descargas recientes</translation>
 <translation id="2083190527011054446">Buenas noches, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Sin conexión a la red</translation>
 <translation id="2126242104232412123">Nuevo escritorio</translation>
@@ -169,6 +168,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2575685495496069081">Se ha inhabilitado el inicio de sesión múltiple</translation>
 <translation id="2582112259361606227">Reiniciar para actualizar</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
+<translation id="2596078834055697711">Hacer una captura de pantalla de la ventana</translation>
 <translation id="2617342710774726426">La tarjeta SIM está bloqueada</translation>
 <translation id="2621713457727696555">Segura</translation>
 <translation id="2640255526076764619">El gesto del panel táctil para ir al escritorio anterior ha cambiado. Desliza cuatro dedos hacia la izquierda por la pantalla para ir al escritorio anterior.</translation>
@@ -330,6 +330,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4215497585250573029">Ajustes de VPN</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4261870227682513959">Muestra la configuración de notificaciones. Las notificaciones están desactivadas.</translation>
 <translation id="4267383818855338811">Una máquina virtual está usando tu cámara</translation>
 <translation id="4269883910223712419">El administrador de este dispositivo puede hacer lo siguiente:</translation>
@@ -377,6 +378,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4596144739579517758">Tema oscuro está desactivado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
+<translation id="4642092649622328492">Hacer una captura de pantalla parcial</translation>
 <translation id="4659419629803378708">ChromeVox habilitado</translation>
 <translation id="4665114317261903604">Activa o desactiva el modo No molestar. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desbloquear con código parental</translation>
@@ -424,7 +426,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> está conectado a un nuevo teléfono</translation>
 <translation id="5035389544768382859">Confirma la configuración de la pantalla</translation>
 <translation id="5083553833479578423">Descubre más funciones del Asistente.</translation>
-<translation id="5114495209940374989">Capturas de pantalla</translation>
 <translation id="5136175204352732067">Se ha conectado otro teclado</translation>
 <translation id="5168181903108465623">Dispositivos de transmisión disponibles</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
@@ -493,7 +494,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5901316534475909376">Mayús+Esc</translation>
 <translation id="5909862606227538307">Escritorio inactivo.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Haz clic en cualquier parte de la pantalla para hacer una captura de la pantalla completa</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
 <translation id="594179686076170922">Conectando con tu teléfono…</translation>
@@ -754,7 +754,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8563862697512465947">Configuración de notificaciones</translation>
 <translation id="857201607579416096">Se ha movido el menú a la esquina inferior derecha de la pantalla.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Toca cualquier punto de la pantalla para hacer una captura de la pantalla completa</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Ajustes de accesibilidad</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, gestionada por el administrador</translation>

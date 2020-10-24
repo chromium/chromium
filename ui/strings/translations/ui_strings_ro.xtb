@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Nu se poate trimite <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> a fost înlocuit cu <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Ai mai căutat asta. Dacă ștergi „<ph name="QUERY" />” din istoric, se va elimina definitiv din contul tău, de pe toate dispozitivele.</translation>
+<translation id="1510238584712386396">Lansator</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{Un minut și  }few{# minute și  }other{# de minute și  }}</translation>
 <translation id="1643823602425662293">Notificare</translation>
 <translation id="169515659049020177">Shift</translation>

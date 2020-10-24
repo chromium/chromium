@@ -273,6 +273,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2979025552038692506">Pestaña de incógnito seleccionada</translation>
 <translation id="2987620471460279764">Texto compartido desde otro dispositivo</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
+<translation id="2992473221983447149">Descripciones de imágenes</translation>
 <translation id="2996291259634659425">Crea una frase de contraseña</translation>
 <translation id="2996809686854298943">URL necesaria</translation>
 <translation id="3006881078666935414">No hay datos de uso</translation>
@@ -285,6 +286,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artículos sobre tus intereses en Chrome</translation>
 <translation id="3089395242580810162">Abrir en pestaña de incógnito</translation>
+<translation id="3098745985164956033">Algunas imágenes se envían a Google para mejorar las descripciones que recibes</translation>
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Anuncios</translation>
 <translation id="3137521801621304719">Salir del modo de incógnito</translation>
@@ -775,6 +777,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6545017243486555795">Borrar todos los datos</translation>
 <translation id="6560414384669816528">Realizar búsquedas con Sogou</translation>
 <translation id="656065428026159829">Ver más</translation>
+<translation id="6565959834589222080">Se utiliza la red Wi‑Fi si está disponible</translation>
 <translation id="6566259936974865419">Chrome te ha permitido ahorrar <ph name="GIGABYTES" /> GB</translation>
 <translation id="6573096386450695060">Permitir siempre</translation>
 <translation id="6573431926118603307">Aquí aparecen las pestañas que hayas abierto en Chrome en otros dispositivos.</translation>
@@ -1086,6 +1089,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8788968922598763114">Vuelve a abrir la última pestaña cerrada</translation>
 <translation id="8798449543960971550">Leído</translation>
 <translation id="8812260976093120287">En algunos sitios web, puedes realizar pagos en tu dispositivo con las aplicaciones compatibles mencionadas anteriormente.</translation>
+<translation id="881688628773363275">La vista previa del contenido de la pestaña no está disponible.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="883806473910249246">No se ha podido descargar el contenido.</translation>
 <translation id="8840953339110955557">Esta página puede ser distinta de la versión online.</translation>

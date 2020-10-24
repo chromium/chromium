@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">הפריט <ph name="SECOND_ITEM_TITLE" /> החליף את <ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">חיפשת את השאילתה הזו בעבר. מחיקת "<ph name="QUERY" />" מההיסטוריה תסיר אותה באופן סופי מהחשבון בכל המכשירים שברשותך.</translation>
+<translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{דקה אחת ו }two{# דקות ו }many{# דקות ו }other{# דקות ו }}</translation>
 <translation id="1643823602425662293">הודעה</translation>
 <translation id="169515659049020177">Shift</translation>

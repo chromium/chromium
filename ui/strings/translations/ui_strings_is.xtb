@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Ekki er hægt að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> skipt út fyrir <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Þú hefur leitað að þessu áður. Ef þú eyðir „<ph name="QUERY" />“ úr ferlinum þínum verður það fjarlægt varanlega af reikningnum þínum í öllum tækjunum þínum.</translation>
+<translation id="1510238584712386396">Ræsiforrit</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 mínúta og }one{# mínúta og }other{# mínútur og }}</translation>
 <translation id="1643823602425662293">Tilkynning</translation>
 <translation id="169515659049020177">Shift</translation>

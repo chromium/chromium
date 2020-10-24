@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">نام میزکار به <ph name="DESK_NAME" /> تغییر کرد</translation>
 <translation id="2050339315714019657">عمودی</translation>
 <translation id="2067602449040652523">روشنایی صفحه‌کلید</translation>
-<translation id="2074759828767813253">نماگرفت‌ها و بارگیری‌های اخیر</translation>
 <translation id="2083190527011054446">شب‌به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">به شبکه متصل نیست</translation>
 <translation id="2126242104232412123">فضای کار جدید</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">ورود چندگانه به سیستم غیرفعال شده است</translation>
 <translation id="2582112259361606227">بازراه‌اندازی برای به‌روزرسانی</translation>
 <translation id="2595239820337756193">‏5K in miles (‏۵ کیلومتر به مایل)</translation>
+<translation id="2596078834055697711">گرفتن عکس از پنجره صفحه‌نمایش</translation>
 <translation id="2617342710774726426">سیم‌کارت قفل است</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
 <translation id="2640255526076764619">اشاره صفحه لمسی برای جابه‌جایی به میزکار قبلی تغییر کرده است. برای جابه‌جایی به میزکار قبلی، با چهار انگشت تند به‌چپ بکشید.</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">‏تنظیمات VPN</translation>
 <translation id="4217571870635786043">املا</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4261870227682513959">نمایش تنظیمات اعلان. اعلان‌ها خاموش است</translation>
 <translation id="4267383818855338811">ماشینی مجازی درحال استفاده از دوربین است</translation>
 <translation id="4269883910223712419">سرپرست این دستگاه می‌تواند:</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">طرح زمینه تیره خاموش است</translation>
 <translation id="4623167406982293031">به‌تأیید رساندن حساب</translation>
 <translation id="4628757576491864469">دستگاه‌ها</translation>
+<translation id="4642092649622328492">گرفتن عکس از قسمتی از صفحه‌نمایش</translation>
 <translation id="4659419629803378708">‏ChromeVox فعال شد</translation>
 <translation id="4665114317261903604">روشن/خاموش کردن «مزاحم نشوید». <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> به تلفن جدیدی متصل است</translation>
 <translation id="5035389544768382859">تأیید پیکربندی نمایشگر</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
-<translation id="5114495209940374989">نماگرفت‌ها</translation>
 <translation id="5136175204352732067">صفحه‌کلید دیگری متصل شد</translation>
 <translation id="5168181903108465623">دستگاه‌های فرستادن موجود هستند</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">میزکار غیرفعال است.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">برای گرفتن عکس از تمام صفحه، روی هر جایی که می‌خواهید کلیک کنید</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5920710855273935292">میکروفون صامت است.</translation>
 <translation id="594179686076170922">درحال اتصال به تلفنتان…</translation>
@@ -595,7 +595,7 @@
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6972754398087986839">شروع به کار</translation>
-<translation id="6981982820502123353">قابلیت دسترسی</translation>
+<translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="698231206551913481">اگر کاربر حذف شود، همه فایل‌ها و داده‌های محلی مربوط به او به‌طور دائم حذف خواهند شد.</translation>
 <translation id="7007983414944123363">نمی‌توان پین یا گذرواژه را تأیید کرد. دوباره امتحان کنید.</translation>
 <translation id="7013005189539051442">فعال کردن نقطه اتصال</translation>
@@ -753,7 +753,6 @@
 <translation id="8563862697512465947">تنظیمات اعلام</translation>
 <translation id="857201607579416096">منو به گوشه چپ پایین صفحه منتقل شد.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">برای گرفتن عکس از تمام صفحه، روی هر جایی که می‌خواهید ضربه بزنید</translation>
 <translation id="8627191004499078455">متصل به <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">تنظیمات دسترس‌پذیری</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>

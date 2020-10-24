@@ -1885,7 +1885,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3165371858310906303">Opýtať sa, keď chce web vedieť, či ste prítomný/-á</translation>
 <translation id="3165390001037658081">Niektorí operátori môžu túto funkciu blokovať.</translation>
 <translation id="316652501498554287">Účty G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Môžete tiež preskočiť prihlásenie a <ph name="LINK_START" />prehliadať ako hosť<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Jazyk stránky:</translation>
 <translation id="3179982752812949580">Písmo textu</translation>
@@ -2028,7 +2027,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> s vami zdieľa <ph name="ATTACHMENTS" />.}few{<ph name="DEVICE_NAME" /> s vami zdieľa <ph name="ATTACHMENTS" />.}many{<ph name="DEVICE_NAME" /> s vami zdieľa <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> s vami zdieľa <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3364986687961713424">Od správcu: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Použite Ctrl alebo Alt</translation>
-<translation id="3367047597842238025">Nastavte si zariadenie <ph name="DEVICE_TYPE" /> podľa svojich predstáv a objavte všetky úžasné možnosti, ktoré vám prináša.</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369067987974711168">Zobraziť ďalšie akcie pre tento port</translation>
 <translation id="3369624026883419694">Rozpoznávanie hostiteľa...</translation>
@@ -2351,7 +2349,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3713047097299026954">Tento bezpečnostný kľúč nemá žiadne prihlasovacie údaje</translation>
 <translation id="3714195043138862580">Toto zariadenie s ukážkou bolo uvedené do stavu zrušenia prístupu.</translation>
 <translation id="3714633008798122362">webový kalendár</translation>
-<translation id="3715954932774762075">Aplikácie a weby dostupné vo viacerých jazykoch použijú prvý podporovaný jazyk z tohto zoznamu. Tieto predvoľby sú synchronizované s nastaveniami vášho prehliadača. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Domovská stránka</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Vy a Google</translation>
@@ -2489,7 +2486,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3856800405688283469">Výber časového pásma</translation>
 <translation id="3857807444929313943">Zdvihnite a opäť priložte</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: synchronizácia je pozastavená</translation>
-<translation id="3861386850461794863">Jazyky aplikácií a webov</translation>
 <translation id="3861638017150647085">Používateľské meno <ph name="USERNAME" /> nie je k dispozícii</translation>
 <translation id="3862693525629180217">Overiť prostredníctvom vstavaného senzora</translation>
 <translation id="3862788408946266506">Aplikácia s atribútom manifestu „kiosk_only“ musí byť nainštalovaná v režime verejného terminálu systému Chrome OS</translation>
@@ -3799,7 +3795,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5457991019809708398">Zapnutý, roaming neprebieha</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Poznámky na uzamknutej obrazovke</translation>
-<translation id="546322474339998983">Používa prehliadač Chrome a spúšťač zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Zadať</translation>
 <translation id="5463275305984126951">Index adresára <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Ponuka obsahujúca skryté záložky</translation>
@@ -3925,7 +3920,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Načítavajú sa aplikácie...</translation>
 <translation id="5592595402373377407">Zatiaľ nie je k dispozícii dostatok údajov.</translation>
-<translation id="5593357315997824387">Synchronizovať moje súbory</translation>
 <translation id="5595485650161345191">Upraviť adresu</translation>
 <translation id="5595727715083333657">Váš kontajner nepodporuje zmenu veľkosti. Ak chcete upraviť priestor, ktorý bol vopred pridelený systému Linux (Beta), vytvorte zálohu a potom ju obnovte do nového kontajnera.</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
@@ -6171,7 +6165,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8218847192766059983">Pridajte jazyky alebo upravte poradie zoznamu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Zvyčajne blokujete upozornenia. Ak chcete tomuto webu povoliť odosielanie upozornení, kliknite tu.</translation>
 <translation id="8225265270453771718">Zdieľanie okna aplikácie</translation>
-<translation id="8225753906568652947">Uplatniť ponuky</translation>
 <translation id="8226222018808695353">Zakázané</translation>
 <translation id="8226619461731305576">Poradie</translation>
 <translation id="8226628635270268143">Vyberte svoje obľúbené fotky a albumy</translation>
@@ -6334,7 +6327,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8417548266957501132">Heslo rodiča</translation>
 <translation id="8418445294933751433">&amp;Zobraziť ako kartu</translation>
 <translation id="8419098111404128271">Výsledky vyhľadávania pre výraz „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="8419368276599091549">Vitajte v zariadení <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Upraviť záznamy slovníka</translation>
 <translation id="8421361468937925547">Živý prepis (iba v angličtine)</translation>
 <translation id="8422787418163030046">Chýba zásobník</translation>

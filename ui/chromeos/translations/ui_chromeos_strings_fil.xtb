@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">US keyboard</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> (na) item ang na-delete</translation>
+<translation id="2541377937973966830">Read only ang mga nilalaman ng folder na ito. Hindi sinusuportahan ang ilang aktibidad.</translation>
 <translation id="2542049655219295786">Talahanayan ng Google</translation>
 <translation id="2547921442987553570">Idagdag sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US international</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Mga Detalye</translation>
 <translation id="4527800702232535228">Nakabahagi ang folder sa Parallels Desktop</translation>
 <translation id="4552678318981539154">Bumili ng higit pang storage</translation>
+<translation id="4559318885353833501">Na-delete ang <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> na file</translation>
 <translation id="457386861538956877">Higit pa...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Window ng feedback ng mga file</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="637062427944097960">Ang file na ito na binuksan sa ibang desktop. Ilipat sa <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) upang tingnan ito.</translation>
+<translation id="6394388407447716302">Read-only</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> (na) item</translation>
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
 <translation id="642282551015776456">Hindi maaaring gamitin ang pangalang ito bilang isang pangalan ng file o folder</translation>

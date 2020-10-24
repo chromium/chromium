@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">US କୀବୋର୍ଡ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍‌ ଡିଲିଟ୍‍ ହୋ‍ଇଛି</translation>
+<translation id="2541377937973966830">ଏହି ଫୋଲ୍ଡରରେ ଥିବା ବିଷୟବସ୍ତୁଗୁଡ଼ିକ କେବଳ-ପଢ଼ିବା ପାଇଁ ଅଟେ। କିଛି କାର୍ଯ୍ୟକଳାପ ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="2542049655219295786">Google ଟେବଲ୍</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> ସହିତ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="255937426064304553">US ଆନ୍ତର୍ଜାତିକ</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">ବିବରଣୀ</translation>
 <translation id="4527800702232535228">Parallels Desktop ସହିତ ଏହି ଫୋଲ୍ଡରକୁ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="4552678318981539154">ଅଧିକ ଷ୍ଟୋରେଜ୍ କିଣନ୍ତୁ</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" />କୁ ଡିଲିଟ୍ କରାଯାଇଛି</translation>
 <translation id="4559767610552730302">ବୋକେ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍</translation>
 <translation id="457386861538956877">ଅଧିକ...</translation>
@@ -506,6 +508,7 @@
 <translation id="6356685157277930264">ଫାଇଲ୍ସ ଫିଡ୍‍ବ୍ୟାକ୍ ୱିଣ୍ଡୋ</translation>
 <translation id="6358884629796491903">ଡ୍ରାଗନ୍</translation>
 <translation id="637062427944097960">ଏହି ଫାଇଲ୍‌ଟି ଏକ ଭିନ୍ନ ଡେସ୍କଟପ୍‌ରେ ଖୋଲିଲା। (<ph name="MAIL_ADDRESS" />)କୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" />କୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
+<translation id="6394388407447716302">କେବଳ-ପଢ଼ିବା ପାଇଁ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />ଟି ଆଇଟମ୍</translation>
 <translation id="6398765197997659313">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
 <translation id="642282551015776456">ଏହି ନାମ କୌଣସି ଫାଇଲ୍‍ କିମ୍ବା ଫୋଲ୍ଡର୍‌ର ନାମ ଭାବେ ବ୍ୟବହାର କରାଯାଇନପାରେ</translation>

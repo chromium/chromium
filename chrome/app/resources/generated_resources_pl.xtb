@@ -1882,7 +1882,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3165371858310906303">Pytaj, gdy strona chce wiedzieć, kiedy używasz urządzenia</translation>
 <translation id="3165390001037658081">Niektórzy operatorzy mogą blokować tę funkcję.</translation>
 <translation id="316652501498554287">Konta G Suite dla Szkół i Uczelni</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Możesz też pominąć logowanie i <ph name="LINK_START" />przeglądać internet jako gość<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Język strony:</translation>
 <translation id="3179982752812949580">Czcionka tekstu</translation>
@@ -2025,7 +2024,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> udostępnia Ci <ph name="ATTACHMENTS" />.}few{<ph name="DEVICE_NAME" /> udostępnia Ci <ph name="ATTACHMENTS" />.}many{<ph name="DEVICE_NAME" /> udostępnia Ci <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> udostępnia Ci <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3364986687961713424">Od administratora: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Użyj klawisza Ctrl lub Alt</translation>
-<translation id="3367047597842238025"><ph name="DEVICE_TYPE" /> oferuje wiele możliwości. Skonfiguruj go tak jak chcesz i zobacz, co potrafi.</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3369067987974711168">Pokaż więcej działań dla tego portu</translation>
 <translation id="3369624026883419694">Łączę z hostem...</translation>
@@ -2348,7 +2346,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3713047097299026954">Na tym kluczu bezpieczeństwa nie ma żadnych danych logowania</translation>
 <translation id="3714195043138862580">To urządzenie demonstracyjne zostało wyrejestrowane.</translation>
 <translation id="3714633008798122362">kalendarz sieciowy</translation>
-<translation id="3715954932774762075">Aplikacje i strony dostępne w wielu językach będą używać pierwszego obsługiwanego języka z tej listy. Te ustawienia są zsynchronizowane z ustawieniami przeglądarki. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Strona główna</translation>
 <translation id="372062398998492895">Drukarki CUPS</translation>
 <translation id="3721119614952978349">Ty i Google</translation>
@@ -2486,7 +2483,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3856800405688283469">Wybierz strefę czasową</translation>
 <translation id="3857807444929313943">Podnieś i przyłóż ponownie</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: synchronizacja wstrzymana</translation>
-<translation id="3861386850461794863">Języki aplikacji i stron</translation>
 <translation id="3861638017150647085">Nazwa użytkownika „<ph name="USERNAME" />” jest niedostępna</translation>
 <translation id="3862693525629180217">Zweryfikuj za pomocą wbudowanego czujnika</translation>
 <translation id="3862788408946266506">Aplikację z atrybutem „kiosk_only” w pliku manifestu należy zainstalować w Chrome OS w trybie kiosku</translation>
@@ -3796,7 +3792,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5457991019809708398">Wł., nie w roamingu</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notatki na ekranie blokady</translation>
-<translation id="546322474339998983">Używana w przeglądarce Chrome i w Menu z aplikacjami na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Wpisz</translation>
 <translation id="5463275305984126951">Indeks – <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Menu zawierające ukryte zakładki</translation>
@@ -3922,7 +3917,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Wczytuję aplikacje…</translation>
 <translation id="5592595402373377407">Brak wystarczającej ilości danych.</translation>
-<translation id="5593357315997824387">Synchronizuj moje pliki</translation>
 <translation id="5595485650161345191">Edytuj adres</translation>
 <translation id="5595727715083333657">Kontener nie obsługuje zmiany rozmiaru. Aby zmienić ilość miejsca wstępnie przydzielonego dla Linuksa (beta), utwórz kopię zapasową i przywróć ją w nowym kontenerze.</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
@@ -6169,7 +6163,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8218847192766059983">Dodaj języki lub zmień kolejność na liście. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na ich wysyłanie, kliknij tutaj.</translation>
 <translation id="8225265270453771718">Udostępnij okno aplikacji</translation>
-<translation id="8225753906568652947">Wykorzystaj swoje oferty</translation>
 <translation id="8226222018808695353">Zabroniony</translation>
 <translation id="8226619461731305576">Kolejka</translation>
 <translation id="8226628635270268143">Wybierz ulubione zdjęcia i albumy</translation>
@@ -6332,7 +6325,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8417548266957501132">Hasło rodzica</translation>
 <translation id="8418445294933751433">&amp;Pokaż jako kartę</translation>
 <translation id="8419098111404128271">Wyniki wyszukiwania dla „<ph name="SEARCH_TEXT" />”</translation>
-<translation id="8419368276599091549">Oto Twój <ph name="DEVICE_TYPE" /></translation>
 <translation id="8420308167132684745">Edytuj wpisy w słowniku</translation>
 <translation id="8421361468937925547">Napisy na żywo (tylko w języku angielskim)</translation>
 <translation id="8422787418163030046">Brak tacy</translation>

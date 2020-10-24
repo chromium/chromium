@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Bàn phím Anh-Mỹ</translation>
 <translation id="2534155362429831547">Đã xóa <ph name="NUMBER_OF_ITEMS" /> mục</translation>
+<translation id="2541377937973966830">Nội dung trong thư mục này đang ở chế độ chỉ đọc. Vì thế, một số hoạt động sẽ không thực hiện được.</translation>
 <translation id="2542049655219295786">Bảng Google</translation>
 <translation id="2547921442987553570">Thêm vào <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">Bàn phím quốc tế Hoa Kỳ</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Chi tiết</translation>
 <translation id="4527800702232535228">Thư mục này được chia sẻ với Parallels Desktop</translation>
 <translation id="4552678318981539154">Mua thêm dung lượng lưu trữ</translation>
+<translation id="4559318885353833501">Đã xóa <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Hiệu ứng Bokeh</translation>
 <translation id="4572815280350369984">Tệp <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Thêm...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">Cửa sổ phản hồi về tệp</translation>
 <translation id="6358884629796491903">Rồng</translation>
 <translation id="637062427944097960">Tệp này được mở trên máy tính khác. Chuyển sang <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp này.</translation>
+<translation id="6394388407447716302">Chỉ đọc</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> mục</translation>
 <translation id="6398765197997659313">Thoát khỏi chế độ toàn màn hình</translation>
 <translation id="642282551015776456">Không thể sử dụng tên này làm tên tệp trong thư mục</translation>

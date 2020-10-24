@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">Ընտրված ինկոգնիտո ներդիր</translation>
 <translation id="2987620471460279764">Այլ սարքից ուղարկված տեքստ</translation>
 <translation id="2989523299700148168">Վերջերս այցելած</translation>
+<translation id="2992473221983447149">Պատկերավոր նկարագրություններ</translation>
 <translation id="2996291259634659425">Անցաբառի ստեղծում</translation>
 <translation id="2996809686854298943">Պահանջվում է URL-ը</translation>
 <translation id="3006881078666935414">Օգտագործման տվյալներ չկան</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
 <translation id="3062802207422175757">Ձեր հետաքրքրությունների հիման վրա ընտրված հոդվածներ՝ Chrome-ում</translation>
 <translation id="3089395242580810162">Բացել ինկոգնիտո ներդիրում</translation>
+<translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
 <translation id="3114507951000454849">Կարդացեք այսօրվա նորությունները <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Հայտարարություններ</translation>
 <translation id="3137521801621304719">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">Մաքրել բոլոր տվյալները</translation>
 <translation id="6560414384669816528">Որոնել Sogou որոնման համակարգով</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
+<translation id="6565959834589222080">Wi-Fi ցանցը օգտագործվում է հասանելի լինելու դեպքում</translation>
 <translation id="6566259936974865419">Chrome-ը խնայել է <ph name="GIGABYTES" /> ԳԲ տարածք</translation>
 <translation id="6573096386450695060">Միշտ թույլատրել</translation>
 <translation id="6573431926118603307">Ձեր մյուս սարքերում Chrome-ով բացված ներդիրները կտեսնեք այստեղ:</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">Վերաբացել վերջին փակված ներդիրը</translation>
 <translation id="8798449543960971550">Ընթերցված</translation>
 <translation id="8812260976093120287">Որոշ կայքերում կարող եք վճարել ձեր սարքից՝ վերոնշյալ աջակցվող վճարային հավելվածների օգնությամբ:</translation>
+<translation id="881688628773363275">Նախադիտման ներդիրի բովանդակությունը չի ցուցադրվում։</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="883806473910249246">Բովանդակությունը ներբեռնելիս սխալ առաջացավ:</translation>
 <translation id="8840953339110955557">Այս էջը կարող է տարբերվել առցանց տարբերակից։</translation>

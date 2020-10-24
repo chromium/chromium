@@ -1882,7 +1882,6 @@
 <translation id="3165371858310906303">תוצג שאלה כשאתר ירצה לדעת על זמני הנוכחות שלך</translation>
 <translation id="3165390001037658081">ייתכן שספקים מסוימים חוסמים את התכונה הזו.</translation>
 <translation id="316652501498554287">‏חשבונות G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">ניתן גם לדלג על הכניסה ו<ph name="LINK_START" />לגלוש כאורח<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">שפת הדף:</translation>
 <translation id="3179982752812949580">גופן הטקסט</translation>
@@ -2025,7 +2024,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}two{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}many{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3364986687961713424">ממנהל המערכת שלך: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏צריך להשתמש ב-Ctrl או ב-Alt</translation>
-<translation id="3367047597842238025">התהליך הזה מאפשר לך להגדיר את ה-<ph name="DEVICE_TYPE" /> לפי ההעדפות שלך ולגלות את כל היכולות המעולות שזמינות לך.</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369067987974711168">הצגת פעולות נוספות בנוגע ליציאה הזאת</translation>
 <translation id="3369624026883419694">מברר כתובת שרת מארח...</translation>
@@ -2348,7 +2346,6 @@
 <translation id="3713047097299026954">אין פרטי כניסה במפתח האבטחה הזה</translation>
 <translation id="3714195043138862580">מכשיר ההדגמה הזה הועבר למצב ביטול של ניהול תצורה.</translation>
 <translation id="3714633008798122362">יומן אינטרנט</translation>
-<translation id="3715954932774762075">אפליקציות ואתרים שזמינים במספר שפות ישתמשו בשפה הנתמכת הראשונה ברשימה הזו. ההעדפות האלה מסונכרנות עם ההגדרות של הדפדפן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">דף הבית</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏ההגדרות שלך ב-Google</translation>
@@ -2486,7 +2483,6 @@
 <translation id="3856800405688283469">בחירת אזור זמן</translation>
 <translation id="3857807444929313943">יש להרים ולגעת בחיישן שוב</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: הסנכרון הושהה</translation>
-<translation id="3861386850461794863">שפות לאפליקציות ולאתרים</translation>
 <translation id="3861638017150647085">שם המשתמש "<ph name="USERNAME" />" לא זמין</translation>
 <translation id="3862693525629180217">אימות באמצעות חיישן מובנה</translation>
 <translation id="3862788408946266506">‏במצב קיוסק של Chrome OS, יש להתקין אפליקציות עם מאפיין המניפסט 'kiosk_only'</translation>
@@ -3792,7 +3788,6 @@
 <translation id="5457991019809708398">פועל, ללא נדידה</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">הערות במסך הנעילה</translation>
-<translation id="546322474339998983">‏בשימוש על ידי דפדפן Chrome ומרכז האפליקציות של <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">הזנת הקוד</translation>
 <translation id="5463275305984126951">אינדקס של <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">התפריט מכיל סימניות נסתרות</translation>
@@ -3918,7 +3913,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">המערכת טוענת אפליקציות...</translation>
 <translation id="5592595402373377407">אין עדיין מספיק נתונים זמינים.</translation>
-<translation id="5593357315997824387">סנכרון הקבצים שלי</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
 <translation id="5595727715083333657">‏אי אפשר לשנות את הגודל של הקונטיינר. כדי לשנות את הנפח שמוקצה מראש ל-Linux (גרסת הבטא), יש לגבות ולאחר מכן לשחזר בקונטיינר חדש.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
@@ -6161,7 +6155,6 @@
 <translation id="8218847192766059983">הוספת שפות או שינוי סדר הרשימה. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות יש ללחוץ כאן.</translation>
 <translation id="8225265270453771718">שיתוף חלון של אפליקציה</translation>
-<translation id="8225753906568652947">מימוש המבצעים שלך</translation>
 <translation id="8226222018808695353">אסור</translation>
 <translation id="8226619461731305576">תור</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
@@ -6322,7 +6315,6 @@
 <translation id="8417548266957501132">סיסמת הורה</translation>
 <translation id="8418445294933751433">&amp;הצגה ככרטיסייה</translation>
 <translation id="8419098111404128271">תוצאות לחיפוש "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">ה-<ph name="DEVICE_TYPE" /> שלך מוכן להגדרה.</translation>
 <translation id="8420308167132684745">עריכת ערכים במילון</translation>
 <translation id="8421361468937925547">כתוביות מיידיות (באנגלית בלבד)</translation>
 <translation id="8422787418163030046">המגש חסר</translation>

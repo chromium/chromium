@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">選取的無痕式分頁</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
 <translation id="2989523299700148168">最近造訪過</translation>
+<translation id="2992473221983447149">圖片說明</translation>
 <translation id="2996291259634659425">建立通關密語</translation>
 <translation id="2996809686854298943">必須要有網址</translation>
 <translation id="3006881078666935414">沒有使用情況資料</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">在 Chrome 上閱讀你有興趣的文章</translation>
 <translation id="3089395242580810162">在無痕式分頁中開啟</translation>
+<translation id="3098745985164956033">系統會將某些圖片傳送到 Google，為你提供更完善的圖片說明</translation>
 <translation id="3114507951000454849">閱讀今日新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">公告事項</translation>
 <translation id="3137521801621304719">離開無痕模式</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">清除所有資料</translation>
 <translation id="6560414384669816528">使用 Sogou 搜尋</translation>
 <translation id="656065428026159829">顯示更多</translation>
+<translation id="6565959834589222080">有可用 Wi-Fi 時，系統會使用 Wi-Fi</translation>
 <translation id="6566259936974865419">Chrome 為你節省了 <ph name="GIGABYTES" /> GB</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573431926118603307">您在其他裝置上透過 Chrome 開啟的分頁會顯示在這裡。</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>
 <translation id="8798449543960971550">讀取</translation>
 <translation id="8812260976093120287">在部分網站上，你可以在你的裝置上使用上述支援的付款應用程式付款。</translation>
+<translation id="881688628773363275">無法檢視預覽分頁的內容。</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="883806473910249246">下載這項內容時發生錯誤。</translation>
 <translation id="8840953339110955557">這個網頁可能會和線上版本有所不同。</translation>

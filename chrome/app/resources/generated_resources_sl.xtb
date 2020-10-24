@@ -1886,7 +1886,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3165371858310906303">Vprašaj, ko spletno mesto želi vedeti, ali ste prisotni</translation>
 <translation id="3165390001037658081">Nekateri operaterji morda blokirajo to funkcijo.</translation>
 <translation id="316652501498554287">G Suite za račune za Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Prijavo lahko tudi preskočite in <ph name="LINK_START" />brskate kot gost<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Jezik strani:</translation>
 <translation id="3179982752812949580">Pisava besedila</translation>
@@ -2029,7 +2028,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3361421571228286637">{COUNT,plural, =1{Naprava <ph name="DEVICE_NAME" /> z vami deli priloge (<ph name="ATTACHMENTS" />).}one{Naprava <ph name="DEVICE_NAME" /> z vami deli priloge (<ph name="ATTACHMENTS" />).}two{Naprava <ph name="DEVICE_NAME" /> z vami deli priloge (<ph name="ATTACHMENTS" />).}few{Naprava <ph name="DEVICE_NAME" /> z vami deli priloge (<ph name="ATTACHMENTS" />).}other{Naprava <ph name="DEVICE_NAME" /> z vami deli priloge (<ph name="ATTACHMENTS" />).}}</translation>
 <translation id="3364986687961713424">Od skrbnika: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Uporabite Ctrl ali Alt</translation>
-<translation id="3367047597842238025">Nastavite napravo <ph name="DEVICE_TYPE" /> po željah in odkrijte izjemne zmogljivosti na dosegu prstov.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369067987974711168">Pokaži več dejanj za ta vrata</translation>
 <translation id="3369624026883419694">Razrešujem gostitelja ...</translation>
@@ -2352,7 +2350,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3713047097299026954">Na tem varnostnem ključu ni shranjenih podatkov za prijavo</translation>
 <translation id="3714195043138862580">Ta predstavitvena naprava je bila onemogočena za uporabo.</translation>
 <translation id="3714633008798122362">spletni koledar</translation>
-<translation id="3715954932774762075">V aplikacijah in na spletnih mestih, ki so na voljo v več jezikih, bo uporabljen prvi podprti jezik s tega seznama. Te nastavitve se sinhronizirajo z nastavitvami brskalnika. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Domača stran</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Vi in Google</translation>
@@ -2490,7 +2487,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3856800405688283469">Izbira časovnega pasu</translation>
 <translation id="3857807444929313943">Dvignite in se spet dotaknite</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinhronizacija je zaustavljena</translation>
-<translation id="3861386850461794863">Jeziki za aplikacije in spletna mesta</translation>
 <translation id="3861638017150647085">Uporabniško ime »<ph name="USERNAME" />« ni na voljo</translation>
 <translation id="3862693525629180217">Preverite prek vgrajenega tipala</translation>
 <translation id="3862788408946266506">Aplikacijo z atributom manifesta »kiosk_only« je treba namestiti v načinu kioska sistema OS Chrome</translation>
@@ -3800,7 +3796,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5457991019809708398">Vklopljeno, ni gostovanja</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Zapiski na zaklenjenem zaslonu</translation>
-<translation id="546322474339998983">Uporabljata brskalnik Chrome in zaganjalnik za napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Vnos</translation>
 <translation id="5463275305984126951">Kazalo lokacije <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Meni s skritimi zaznamki</translation>
@@ -3927,7 +3922,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Nalaganje aplikacij ...</translation>
 <translation id="5592595402373377407">Na voljo še ni dovolj podatkov.</translation>
-<translation id="5593357315997824387">Sinhroniziraj moje datoteke</translation>
 <translation id="5595485650161345191">Uredi naslov</translation>
 <translation id="5595727715083333657">Vsebnik ne podpira spreminjanja velikosti. Če želite prilagoditi količino prostora, ki je vnaprej dodeljen Linuxu (Beta), ustvarite varnostno kopijo in jo nato obnovite v novem vsebniku.</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
@@ -6175,7 +6169,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8218847192766059983">Dodajte jezike ali preuredite seznam. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Obvestila običajno blokirate. Če želite dovoliti, da vas to spletno mesto obvešča, kliknite tukaj.</translation>
 <translation id="8225265270453771718">Deljenje okna aplikacije</translation>
-<translation id="8225753906568652947">Izkoristite ponudbe</translation>
 <translation id="8226222018808695353">Prepovedano</translation>
 <translation id="8226619461731305576">Čakalna vrsta</translation>
 <translation id="8226628635270268143">Izberite priljubljene fotografije in albume</translation>
@@ -6338,7 +6331,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8417548266957501132">Geslo starša</translation>
 <translation id="8418445294933751433">&amp;Prikaži kot zavihek</translation>
 <translation id="8419098111404128271">Rezultati iskanja za poizvedbo »<ph name="SEARCH_TEXT" />«</translation>
-<translation id="8419368276599091549">Pozdravljeni v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8420308167132684745">Urejanje slovarskih vnosov</translation>
 <translation id="8421361468937925547">Samodejni podnapisi (samo angleščina)</translation>
 <translation id="8422787418163030046">Ni pladnja</translation>

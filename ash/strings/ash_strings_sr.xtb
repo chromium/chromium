@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">Име радне површине је промењено у <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2067602449040652523">Осветљеност тастатуре</translation>
-<translation id="2074759828767813253">Недавни снимци екрана и преузимања</translation>
 <translation id="2083190527011054446">Лаку ноћ, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Нисте повезани на мрежу</translation>
 <translation id="2126242104232412123">Нови радни простор</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">Онемогућено је вишеструко пријављивање</translation>
 <translation id="2582112259361606227">Рестартујте да бисте ажурирали</translation>
 <translation id="2595239820337756193">5 km у миљама</translation>
+<translation id="2596078834055697711">Направите снимак екрана прозора</translation>
 <translation id="2617342710774726426">SIM картица је закључана</translation>
 <translation id="2621713457727696555">Заштићено</translation>
 <translation id="2640255526076764619">Промењен је покрет по тачпеду за прелазак на претходну радну површину. Превуците налево помоћу четири прста да бисте прешли на претходну радну површину.</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">Подешавања VPN-а</translation>
 <translation id="4217571870635786043">Диктирање</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Снимак екрана</translation>
 <translation id="4261870227682513959">Прегледајте подешавања обавештења. Обавештења су искључена</translation>
 <translation id="4267383818855338811">Виртуелна машина користи камеру</translation>
 <translation id="4269883910223712419">Администратор овог уређаја може:</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">Тамна тема је искључена</translation>
 <translation id="4623167406982293031">Верификујте налог</translation>
 <translation id="4628757576491864469">Уређаји</translation>
+<translation id="4642092649622328492">Направите делимичан снимак екрана</translation>
 <translation id="4659419629803378708">ChromeVox је омогућен</translation>
 <translation id="4665114317261903604">Укључите/искључите режим Не узнемиравај. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Откључајте уређај помоћу кода родитеља</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> се повезао са новим телефоном</translation>
 <translation id="5035389544768382859">Потврдите конфигурацију екрана</translation>
 <translation id="5083553833479578423">Откључајте још функција Помоћника.</translation>
-<translation id="5114495209940374989">Снимци екрана</translation>
 <translation id="5136175204352732067">Нека друга тастатура је повезана</translation>
 <translation id="5168181903108465623">Доступни су уређаји за пребацивање</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Неактивна радна површина.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Кликните било где да бисте снимили цео екран</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5920710855273935292">Микрофон је искључен.</translation>
 <translation id="594179686076170922">Повезује се са телефоном...</translation>
@@ -753,7 +753,6 @@
 <translation id="8563862697512465947">Подешавања обавештења</translation>
 <translation id="857201607579416096">Мени је премештен у доњи десни угао екрана.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Додирните било где да бисте снимили цео екран</translation>
 <translation id="8627191004499078455">Повезани сте са уређајем <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Подешавања приступачности</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>

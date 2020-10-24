@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">桌面名称已更改为“<ph name="DESK_NAME" />”</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2067602449040652523">键盘亮度</translation>
-<translation id="2074759828767813253">近期的屏幕截图和下载内容</translation>
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安！</translation>
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2126242104232412123">新桌面</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">多帐号登录已被停用</translation>
 <translation id="2582112259361606227">重启以进行更新</translation>
 <translation id="2595239820337756193">5 公里是多少英里</translation>
+<translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2621713457727696555">受保护</translation>
 <translation id="2640255526076764619">用于切换到上一个桌面的触控板手势已更改。若要切换到上一个桌面，请用四根手指向左滑动。</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">VPN 设置</translation>
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4261870227682513959">显示通知设置。通知已关闭</translation>
 <translation id="4267383818855338811">有一台虚拟机正在使用您的摄像头</translation>
 <translation id="4269883910223712419">此设备的管理员能够：</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4623167406982293031">验证帐号</translation>
 <translation id="4628757576491864469">设备</translation>
+<translation id="4642092649622328492">截取局部屏幕截图</translation>
 <translation id="4659419629803378708">已启用 ChromeVox</translation>
 <translation id="4665114317261903604">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />已连接到新手机</translation>
 <translation id="5035389544768382859">确认显示屏配置</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
-<translation id="5114495209940374989">屏幕截图</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
 <translation id="5168181903108465623">有可用的投射设备</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">闲置的桌面。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">点击任意位置即可截取全屏</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="5920710855273935292">麦克风已静音。</translation>
 <translation id="594179686076170922">正在连接到您的手机…</translation>
@@ -753,7 +753,6 @@
 <translation id="8563862697512465947">通知设置</translation>
 <translation id="857201607579416096">菜单已移至屏幕的右下角。</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">点按任意位置即可截取全屏</translation>
 <translation id="8627191004499078455">已连接到<ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">无障碍设置</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>

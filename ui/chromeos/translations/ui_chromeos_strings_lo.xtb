@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ຄີບອດສະ​ຫະ​ລັດ</translation>
 <translation id="2534155362429831547">ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​​ແລ້ວ</translation>
+<translation id="2541377937973966830">ເນື້ອຫາຂອງໂຟນເດີນີ້ເປັນແບບອ່ານເທົ່ານັ້ນ. ບໍ່ຮອງຮັບບາງກິດຈະກຳ.</translation>
 <translation id="2542049655219295786">ຕາ​ຕະ​ລາງ​ Google</translation>
 <translation id="2547921442987553570">ເພີ່ມໃສ່ <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">US ສາ​ກົນ</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="4527800702232535228">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Parallels Desktop</translation>
 <translation id="4552678318981539154">ຊື້​ບ່ອນເກັບຂໍ້ມູນເພີ່ມເຕີມ</translation>
+<translation id="4559318885353833501">ລຶບ <ph name="FILE_NAME" /> ແລ້ວ</translation>
 <translation id="4559767610552730302">ຮູບໜ້າແຈ້ງຫຼັງມົວ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ໄຟລ​໌</translation>
 <translation id="457386861538956877">ເພີ່ມເຕີມ...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">ໜ້າຈໍຄຳເຫັນຂອງ Files</translation>
 <translation id="6358884629796491903">ມັງກອນ</translation>
 <translation id="637062427944097960">ໄຟລ໌ນີ້ເປີດຢູ່ໃນເດັສທັອບອື່ນແລ້ວ. ຍ້າຍໄປຫາ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ເພື່ອເບິ່ງມັນ.</translation>
+<translation id="6394388407447716302">ອ່ານເທົ່ານັ້ນ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ລາຍການ</translation>
 <translation id="6398765197997659313">ອອກຈາກເຕັມໜ້າຈໍ</translation>
 <translation id="642282551015776456">ຊື່ນີ້ອາດຈະບໍ່ໃຊ້ເປັນຊື່ໄຟລ໌ ຫຼືໂຟລເດີໄດ້</translation>

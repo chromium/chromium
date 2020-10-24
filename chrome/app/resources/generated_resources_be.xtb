@@ -448,6 +448,7 @@
 <translation id="1509281256533087115">Доступ да <ph name="DEVICE_NAME_AND_VENDOR" /> праз USB</translation>
 <translation id="1509960214886564027">Функцыі на многіх сайтах могуць перастаць працаваць</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
+<translation id="151070646350206700">Сайты не могуць запытваць дазвол на адпраўку апавяшчэнняў</translation>
 <translation id="1510785804673676069">Калі вы карыстаецеся проксі-серверам, праверце яго налады
     або звярніцеся да адміністратара сеткі, каб
     праверыць, ці працуе проксі-сервер. Калі вы лічыце, што проксі-сервер вам
@@ -934,6 +935,7 @@
 <translation id="205560151218727633">Лагатып памочніка Google</translation>
 <translation id="2058456167109518507">Выяўлена прылада</translation>
 <translation id="2059913712424898428">Часавы пояс</translation>
+<translation id="2060375639911876205">Выдаліць профіль eSIM-карты</translation>
 <translation id="2065405795449409761">Chrome кантралюецца праграмным забеспячэннем для аўтаматызаванага тэсціравання.</translation>
 <translation id="2071393345806050157">Няма файла лакальнага журнала.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Каб усталяваць гэта пашырэнне, націсніце тут}one{Каб усталяваць гэтыя пашырэнні, націсніце тут}few{Каб усталяваць гэтыя пашырэнні, націсніце тут}many{Каб усталяваць гэтыя пашырэнні, націсніце тут}other{Каб усталяваць гэтыя пашырэнні, націсніце тут}}</translation>
@@ -1884,7 +1886,6 @@
 <translation id="3165371858310906303">Пытацца, перш чым перадаваць сайту звесткі аб вашай прысутнасці</translation>
 <translation id="3165390001037658081">Некаторыя аператары могуць блакіраваць гэту функцыю.</translation>
 <translation id="316652501498554287">Уліковыя запісы G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Таксама можна не ўваходзіць і <ph name="LINK_START" />праглядаць вэб-старонкі як госць<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Мова старонкі:</translation>
 <translation id="3179982752812949580">Шрыфт тэксту</translation>
@@ -2027,7 +2028,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}one{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}few{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}many{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}other{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}}</translation>
 <translation id="3364986687961713424">Паведамленне ад адміністратара: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Выкарыстоўвайце або Ctrl, або Alt</translation>
-<translation id="3367047597842238025">Наладзьце прыладу <ph name="DEVICE_TYPE" /> на свой густ і карыстайцеся захапляльнымі магчымасцямі – з лёгкасцю.</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369067987974711168">Паказаць іншыя дзеянні для гэтага порта</translation>
 <translation id="3369624026883419694">Вызначэнне хоста...</translation>
@@ -2350,7 +2350,6 @@
 <translation id="3713047097299026954">На гэтым ключы бяспекі няма даных для ўваходу</translation>
 <translation id="3714195043138862580">Ініцыялізацыя гэтай дэманстрацыйнай прылады была скасавана.</translation>
 <translation id="3714633008798122362">вэб-каляндар</translation>
-<translation id="3715954932774762075">Праграмы і вэб-сайты, даступныя на некалькіх мовах, будуць выкарыстоўваць першую мову ў спісе. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Галоўная старонка</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вы і Google</translation>
@@ -2488,7 +2487,6 @@
 <translation id="3856800405688283469">Выберыце часавы пояс</translation>
 <translation id="3857807444929313943">Адніміце палец і дакраніцеся зноў</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: сінхранізацыя прыпынена</translation>
-<translation id="3861386850461794863">Мовы праграм і вэб-сайтаў</translation>
 <translation id="3861638017150647085">Імя карыстальніка "<ph name="USERNAME" />" недаступнае</translation>
 <translation id="3862693525629180217">Прайсці спраўджанне з дапамогай убудаванага датчыка</translation>
 <translation id="3862788408946266506">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS</translation>
@@ -2732,6 +2730,7 @@
 <translation id="4131410914670010031">Чорна-белы друк</translation>
 <translation id="413193092008917129">Паслядоўнасці дзеянняў для дыягностыкі сеткі</translation>
 <translation id="4132183752438206707">Шукайце праграмы ў Краме Google Play</translation>
+<translation id="4132364317545104286">Перайменаваць профіль eSIM-карты</translation>
 <translation id="4133076602192971179">Каб змяніць пароль, адкрыйце праграму</translation>
 <translation id="4136203100490971508">Начная падсветка выключыцца аўтаматычна пасля ўзыходу сонца</translation>
 <translation id="41365691917097717">Калі працягнуць, будзе ўключана адладка ADB для стварэння і тэсціравання праграм для Android. Звярніце ўвагу, што, уключыўшы ADB, вы дазваляеце ўсталёўваць праграмы для Android, якія не былі спраўджаны Google, а для выключэння ADB патрабуецца скід налад да заводскіх значэнняў.</translation>
@@ -3245,6 +3244,7 @@
 <translation id="4778644898150334464">Выкарыстаць іншы пароль</translation>
 <translation id="4779083564647765204">Маштаб</translation>
 <translation id="4779136857077979611">Рысавы шарык</translation>
+<translation id="4779766576531456629">Перайменаваць сотавую сетку eSIM-карты</translation>
 <translation id="4780321648949301421">Захаваць старонку як...</translation>
 <translation id="4785719467058219317">Вы выкарыстоўваеце ключ бяспекі, не зарэгістраваны на гэтым вэб-сайце</translation>
 <translation id="4788092183367008521">Праверце падключэнне да сеткі і паўтарыце спробу.</translation>
@@ -3688,6 +3688,7 @@
 <translation id="5324780743567488672">Задаваць часавы пояс аўтаматычна – з дапамогай даных пра месцазнаходжанне</translation>
 <translation id="5327248766486351172">Імя</translation>
 <translation id="5327570636534774768">Гэта прылада пазначана для кіравання іншым даменам. Выдаліце яе з гэтага дамена, перш чым наладжваць дэманстрацыйны рэжым.</translation>
+<translation id="5327912693242073631">Функцыі, для якіх патрэбны апавяшчэнні, не будуць працаваць</translation>
 <translation id="532943162177641444">Націсніце на апавяшчэнне на тэлефоне <ph name="PHONE_NAME" />, каб наладзіць мабільны хот-спот, які гэта прылада зможа выкарыстоўваць.</translation>
 <translation id="5329858601952122676">&amp;Выдаліць</translation>
 <translation id="5331069282670671859">У вас няма сертыфікатаў у гэтай катэгорыі</translation>
@@ -3739,6 +3740,7 @@
 <translation id="5390112241331447203">Дадаць файл system_logs.txt, які быў адпраўлены ў водгуках-справаздачах.</translation>
 <translation id="5390677308841849479">Цёмна-чырвоны і аранжавы</translation>
 <translation id="5390743329570580756">Адправіць</translation>
+<translation id="5392192690789334093">Дазволена адпраўляць апавяшчэнні</translation>
 <translation id="5397794290049113714">Вы</translation>
 <translation id="5398497406011404839">Схаваныя закладкі</translation>
 <translation id="5398572795982417028">Спасылка на старонку па-за межамі, максімальная колькасць старонак: <ph name="MAXIMUM_PAGE" /></translation>
@@ -3794,7 +3796,6 @@
 <translation id="5457991019809708398">Уключана. Не ў роўмінгу</translation>
 <translation id="5458214261780477893">Раскладка Дворака</translation>
 <translation id="5458998536542739734">Нататкі на экране блакіроўкі</translation>
-<translation id="546322474339998983">Выкарыстоўваецца браўзерам Chrome і панэллю запуску <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Увесці</translation>
 <translation id="5463275305984126951">Пералік файлаў у каталогу "<ph name="LOCATION" />"</translation>
 <translation id="5463856536939868464">Меню са схаванымі закладкамі</translation>
@@ -3920,7 +3921,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Загрузка праграм...</translation>
 <translation id="5592595402373377407">Пакуль што недастаткова даных.</translation>
-<translation id="5593357315997824387">Сінхранізаваць мае файлы</translation>
 <translation id="5595485650161345191">Рэдагаваць адрас</translation>
 <translation id="5595727715083333657">Гэты кантэйнер не падтрымлівае змяненне памеру. Каб змяніць колькасць месца, папярэдне вылучанага для Linux (бэта-версія), зрабіце рэзервовую копію і аднавіце яе ў новым кантэйнеры.</translation>
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
@@ -4043,6 +4043,7 @@
 <translation id="5739235828260127894">Чаканне спраўджання. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Вельмі вялікі</translation>
 <translation id="5740328398383587084">Абагульванне паблізу</translation>
+<translation id="5740820643029013514">Задаць радзейшы паказ апавяшчэнняў (рэкамендуецца)</translation>
 <translation id="574104302965107104">Адлюстраванне дысплэя</translation>
 <translation id="574209121243317957">Вышыня голасу</translation>
 <translation id="5746169159649715125">Захаваць як PDF</translation>
@@ -4262,6 +4263,7 @@
 <translation id="6002210667729577411">Перамясціць групу ўкладак у новае акно</translation>
 <translation id="6002452033851752583">Пароль выдалены з Уліковага запісу Google</translation>
 <translation id="6002458620803359783">Пажаданыя галасы</translation>
+<translation id="6003143259071779217">Выдаліць сотавую сетку eSIM-карты</translation>
 <translation id="6006484371116297560">Класічная</translation>
 <translation id="6007240208646052708">Галасавы пошук на вашай мове недаступны.</translation>
 <translation id="6009781704028455063">Убудаваны датчык</translation>
@@ -4530,6 +4532,7 @@
 <translation id="6308937455967653460">Захаваць &amp;спасылку як...</translation>
 <translation id="6309443618838462258">Ваш адміністратар не дазваляе выкарыстоўваць гэты метад уводу</translation>
 <translation id="6309510305002439352">Мікрафон выключаны</translation>
+<translation id="6310472381159916879">Выдаліць профіль</translation>
 <translation id="6311220991371174222">Chrome запусціць не ўдалося: нешта пайшло не так падчас адкрыцця вашага профілю. Паспрабуйце перазапусціць Chrome.</translation>
 <translation id="6312403991423642364">Невядомая памылка сеткі</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Праверка бяспекі выконвалася дзень таму}one{Праверка бяспекі выконвалася {NUM_DAYS} дзень таму}few{Праверка бяспекі выконвалася {NUM_DAYS} дні таму}many{Праверка бяспекі выконвалася {NUM_DAYS} дзён таму}other{Праверка бяспекі выконвалася {NUM_DAYS} дня таму}}</translation>
@@ -4719,6 +4722,7 @@
 <translation id="6532663472409656417">Зарэгістравана карпарацыяй</translation>
 <translation id="6535331821390304775">Заўсёды дазваляць сайту <ph name="ORIGIN" /> адкрываць спасылкі гэтага тыпу ў звязанай з імі праграме</translation>
 <translation id="6537613839935722475">У назве можна выкарыстоўваць літары, лічбы і злучкі (-)</translation>
+<translation id="6537880577641744343">Commander</translation>
 <translation id="6538635548667167211">Бягучая налада выкарыстання трафіка: перадача даных</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Заўвага!<ph name="END_BOLD" /> Уключайце гэту наладу толькі тады, калі ведаеце, што робіце, або калі вас папрасілі гэта зрабіць, бо накапленне даных можа знізіць прадукцыйнасць.</translation>
 <translation id="6541638731489116978">Гэтаму сайту быў заблакіраваны доступ да датыкаў руху.</translation>
@@ -5850,6 +5854,7 @@
 <translation id="7855678561139483478">Перамясціць укладку ў новае акно</translation>
 <translation id="7857117644404132472">Дадаць выключэнне</translation>
 <translation id="7857949311770343000">Ці з'яўляецца старонка новай укладкі той, якую вы чакалі ўбачыць?</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">Са студзеня выбар гэтага варыянта падтрымлівацца не будзе. Звярніцеся да адміністратара.</translation>
 <translation id="786073089922909430">Сэрвіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Спампоўкі</translation>
@@ -6161,7 +6166,6 @@
 <translation id="8218847192766059983">Дадайце мовы або змяніце іх парадак у спісе. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Звычайна вы блакіруеце апавяшчэнні. Каб даць дазвол гэтаму сайту на паказ апавяшчэнняў, націсніце тут.</translation>
 <translation id="8225265270453771718">Абагульце акно праграмы</translation>
-<translation id="8225753906568652947">Скарыстаць прапановы</translation>
 <translation id="8226222018808695353">Забаронены</translation>
 <translation id="8226619461731305576">Чарга</translation>
 <translation id="8226628635270268143">Выберыце любімыя фота і альбомы</translation>
@@ -6172,6 +6176,7 @@
 <translation id="8236917170563564587">Абагуліць гэту ўкладку</translation>
 <translation id="8237647586961940482">Цёмна-ружовы і чырвоны</translation>
 <translation id="8239032431519548577">Рэгістрацыя для арганізацый завершана</translation>
+<translation id="8239932336306009582">Не дазволена адпраўляць апавяшчэнні</translation>
 <translation id="8241040075392580210">Воблачнасць</translation>
 <translation id="8241806945692107836">Ідзе выяўленне канфігурацыі прылады...</translation>
 <translation id="8241868517363889229">Прагляд і змяненне закладак</translation>
@@ -6301,6 +6306,7 @@
 <translation id="8386091599636877289">Палітыка не знойдзена.</translation>
 <translation id="8386903983509584791">Пошук завершаны</translation>
 <translation id="8387361103813440603">Не дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
+<translation id="8389264703141926739">Блакіраваць апавяшчэнні</translation>
 <translation id="8389416080014625855">Стварыць QR-код для гэтай старонкі</translation>
 <translation id="8389492867173948260">Дазволіць гэтаму пашырэнню чытаць і змяняць любыя вашы даныя на вэб-сайтах, якія вы наведваеце:</translation>
 <translation id="8390449457866780408">Сервер недаступны.</translation>
@@ -6322,7 +6328,6 @@
 <translation id="8417548266957501132">Бацькоўскі пароль</translation>
 <translation id="8418445294933751433">&amp;Паказаць як укладку</translation>
 <translation id="8419098111404128271">Вынікі пошуку па запыце "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Давайце наладзім <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Змяніць запісы ў слоўніку</translation>
 <translation id="8421361468937925547">Імгненныя субцітры (толькі на англійскай мове)</translation>
 <translation id="8422787418163030046">Няма латка</translation>
@@ -6511,6 +6516,7 @@
 <translation id="8645354835496065562">Працягваць дазваляць доступ да датчыкаў</translation>
 <translation id="8645920082661222035">Прадказвае небяспечныя падзеі і папярэджвае пра іх да таго, як яны здараюцца</translation>
 <translation id="8646209145740351125">Выключыць сінхранізацыю</translation>
+<translation id="864637694230589560">Звычайна сайты адпраўляюць апавяшчэнні, каб паведаміць вам пра экстранныя навіны або новыя паведамленні ў чаце</translation>
 <translation id="8647834505253004544">Няправiльны вэб-адрас</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> або <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Тэмпература колеру для Начной падсветкі</translation>

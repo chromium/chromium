@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Δεν είναι δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Γίνεται ανταλλαγή του στοιχείου <ph name="FIRST_ITEM_TITLE" /> με το στοιχείο <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Αναζητήσατε αυτόν τον όρο στο παρελθόν. Η διαγραφή του όρου "<ph name="QUERY" />" από το ιστορικό σας θα τον καταργήσει οριστικά από τον λογαριασμό σας σε όλες τις συσκευές σας.</translation>
+<translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 λεπτό και }other{# λεπτά και }}</translation>
 <translation id="1643823602425662293">Ειδοποίηση</translation>
 <translation id="169515659049020177">Shift</translation>

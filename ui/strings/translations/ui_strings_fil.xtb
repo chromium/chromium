@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Ipinagpalit ang <ph name="FIRST_ITEM_TITLE" /> sa <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Hinanap mo ito dati. Kapag na-delete ang "<ph name="QUERY" />" sa iyong history, permanente itong aalisin sa account mo sa lahat ng iyong device.</translation>
+<translation id="1510238584712386396">Launcher</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto at }one{# minuto at }other{# na minuto at }}</translation>
 <translation id="1643823602425662293">Notification</translation>
 <translation id="169515659049020177">Shift</translation>

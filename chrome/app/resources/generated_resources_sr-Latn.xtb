@@ -1883,7 +1883,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3165371858310906303">Pitaj kada sajt želi informacije o prisustvu</translation>
 <translation id="3165390001037658081">Neki mobilni operateri mogu da blokiraju ovu funkciju.</translation>
 <translation id="316652501498554287">G Suite for Education nalozi</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Možete i da preskočite prijavljivanje i da <ph name="LINK_START" />pregledate kao gost<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Jezik stranice:</translation>
 <translation id="3179982752812949580">Font teksta</translation>
@@ -2026,7 +2025,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deli sa vama (<ph name="ATTACHMENTS" />).}one{<ph name="DEVICE_NAME" /> deli sa vama (<ph name="ATTACHMENTS" />).}few{<ph name="DEVICE_NAME" /> deli <ph name="ATTACHMENTS" /> sa vama.}other{<ph name="DEVICE_NAME" /> deli <ph name="ATTACHMENTS" /> sa vama.}}</translation>
 <translation id="3364986687961713424">Od administratora: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Koristite Ctrl ili Alt</translation>
-<translation id="3367047597842238025">Podesite <ph name="DEVICE_TYPE" /> onako kako vi to želite i otkrijte sve dostupne sjajne mogućnosti.</translation>
 <translation id="3368922792935385530">Povezan</translation>
 <translation id="3369067987974711168">Prikaži još radnji za ovaj port</translation>
 <translation id="3369624026883419694">Određuje se host...</translation>
@@ -2349,7 +2347,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3713047097299026954">Na ovom bezbednosnom ključu nema podataka za prijavljivanje</translation>
 <translation id="3714195043138862580">Za ovaj uređaj za demonstraciju opozvano je dodeljivanje.</translation>
 <translation id="3714633008798122362">veb kalendar</translation>
-<translation id="3715954932774762075">Aplikacije i veb-sajtovi koji su dostupni na više jezika koriste prvi podržani jezik sa ove liste. Ova podešavanja se sinhronizuju sa podešavanjima pregledača. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Početna stranica</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Vi i Google</translation>
@@ -2487,7 +2484,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3856800405688283469">Izaberite vremensku zonu</translation>
 <translation id="3857807444929313943">Podignite, pa opet dodirnite</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinhronizacija je pauzirana</translation>
-<translation id="3861386850461794863">Jezici za aplikacije i veb-sajtove</translation>
 <translation id="3861638017150647085">Korisničko ime <ph name="USERNAME" /> nije dostupno</translation>
 <translation id="3862693525629180217">Potvrdi pomoću ugrađenog senzora</translation>
 <translation id="3862788408946266506">Aplikacija sa atributom manifesta „kiosk_only“ mora da se instalira u režimu kioska u Chrome OS-u</translation>
@@ -3797,7 +3793,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5457991019809708398">Uključeno, nije u romingu</translation>
 <translation id="5458214261780477893">dvorak</translation>
 <translation id="5458998536542739734">Beleške na zaključanom ekranu</translation>
-<translation id="546322474339998983">Koriste ga pregledač Chrome i pokretač uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Unesi</translation>
 <translation id="5463275305984126951">Indeks lokacije <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Meni sa skrivenim obeleživačima</translation>
@@ -3923,7 +3918,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Aplikacije se učitavaju…</translation>
 <translation id="5592595402373377407">Još uvek nije dostupna dovoljna količina podataka.</translation>
-<translation id="5593357315997824387">Sinhronizuj moje datoteke</translation>
 <translation id="5595485650161345191">Izmena adrese</translation>
 <translation id="5595727715083333657">Kontejner ne podržava promenu veličine. Da biste prilagodili količinu prostora koja se unapred dodeljuje Linux-u (beta), napravite rezervnu kopiju i vratite je u novom kontejneru.</translation>
 <translation id="5596627076506792578">Još opcija</translation>
@@ -6171,7 +6165,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8218847192766059983">Dodajte jezike ili promenite redosled stavki na listi. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Obično blokirate obaveštenja. Da biste dozvolili ovom sajtu da vas obaveštava, kliknite ovde.</translation>
 <translation id="8225265270453771718">Delite prozor aplikacije</translation>
-<translation id="8225753906568652947">Iskoristite ponude</translation>
 <translation id="8226222018808695353">Zabranjeno je</translation>
 <translation id="8226619461731305576">Red</translation>
 <translation id="8226628635270268143">Odaberite omiljene slike i albume</translation>
@@ -6334,7 +6327,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8417548266957501132">Lozinka roditelja</translation>
 <translation id="8418445294933751433">&amp;Prikaži kao karticu</translation>
 <translation id="8419098111404128271">Rezultati pretrage za „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="8419368276599091549">Dobro došli u <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Izmeni unose u rečniku</translation>
 <translation id="8421361468937925547">Titl uživo (samo na engleskom)</translation>
 <translation id="8422787418163030046">Nedostaje fioka</translation>

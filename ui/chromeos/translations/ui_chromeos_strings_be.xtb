@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Клавіятура ЗША</translation>
 <translation id="2534155362429831547">Выдалена элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2541377937973966830">Змесціва ў гэтай папцы – толькі для чытання. Некаторыя дзеянні не падтрымліваюцца.</translation>
 <translation id="2542049655219295786">Табліца Google</translation>
 <translation id="2547921442987553570">Дадаць у пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="255937426064304553">ЗША, міжнародная</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4527800702232535228">Гэта папка абагулена з Parallels Desktop</translation>
 <translation id="4552678318981539154">Купіце больш месца ў сховішчы</translation>
+<translation id="4559318885353833501">Файл "<ph name="FILE_NAME" />" выдалены</translation>
 <translation id="4559767610552730302">Эфект баке</translation>
 <translation id="4572815280350369984">Файл <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Яшчэ...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">Акно водгукаў на праграму "Файлы"</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="637062427944097960">Гэты файл адкрыты на іншым працоўным стале. Каб праглядзець яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
+<translation id="6394388407447716302">Толькі чытанне</translation>
 <translation id="6395575651121294044">Элементаў: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
 <translation id="642282551015776456">Гэту назву нельга выкарыстоўваць як назву файла або папкі</translation>

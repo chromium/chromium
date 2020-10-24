@@ -1886,7 +1886,6 @@ Pretende pará-lo?</translation>
 <translation id="3165371858310906303">Perguntar quando um site pretender saber quando está presente</translation>
 <translation id="3165390001037658081">Alguns operadores podem bloquear esta funcionalidade.</translation>
 <translation id="316652501498554287">Contas do G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Também pode ignorar o início de sessão e <ph name="LINK_START" />navegar como Convidado<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Idioma da página:</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
@@ -2029,7 +2028,6 @@ Pretende pará-lo?</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> está a partilhar <ph name="ATTACHMENTS" /> consigo.}other{<ph name="DEVICE_NAME" /> está a partilhar <ph name="ATTACHMENTS" /> consigo.}}</translation>
 <translation id="3364986687961713424">Do seu administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Utilize Ctrl ou Alt.</translation>
-<translation id="3367047597842238025">Configure o <ph name="DEVICE_TYPE" /> ao seu gosto e descubra todas as capacidades fantásticas ao seu alcance.</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3369067987974711168">Mostrar mais ações para esta porta</translation>
 <translation id="3369624026883419694">A resolver anfitrião...</translation>
@@ -2352,7 +2350,6 @@ Pretende pará-lo?</translation>
 <translation id="3713047097299026954">Esta chave de segurança não tem dados de início de sessão.</translation>
 <translation id="3714195043138862580">Este dispositivo de demonstração foi colocado num estado sem aprovisionamento.</translation>
 <translation id="3714633008798122362">calendário Web</translation>
-<translation id="3715954932774762075">As apps e os Websites que estão disponíveis em vários idiomas irão utilizar o primeiro idioma suportado desta lista. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Página inicial</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">O utilizador e a Google</translation>
@@ -2490,7 +2487,6 @@ Pretende pará-lo?</translation>
 <translation id="3856800405688283469">Selecionar fuso horário</translation>
 <translation id="3857807444929313943">Levante e toque novamente</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sincronização em pausa</translation>
-<translation id="3861386850461794863">Idiomas para apps e Websites</translation>
 <translation id="3861638017150647085">O nome de utilizador "<ph name="USERNAME" />" não está disponível.</translation>
 <translation id="3862693525629180217">Validar através do sensor integrado</translation>
 <translation id="3862788408946266506">É necessário instalar a aplicação com o atributo de manifesto "kiosk_only" no modo quiosque do Chrome OS.</translation>
@@ -3800,7 +3796,6 @@ Pretende pará-lo?</translation>
 <translation id="5457991019809708398">Ativado, sem roaming</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notas no ecrã de bloqueio</translation>
-<translation id="546322474339998983">Utilizado pelo navegador Chrome e pelo Launcher do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5463231940765244860">Introduzir</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Menu com marcadores ocultos</translation>
@@ -3926,7 +3921,6 @@ Pretende pará-lo?</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">A carregar aplicações…</translation>
 <translation id="5592595402373377407">Ainda não estão disponíveis dados suficientes.</translation>
-<translation id="5593357315997824387">Sincronizar os meus ficheiros</translation>
 <translation id="5595485650161345191">Editar morada</translation>
 <translation id="5595727715083333657">O seu contentor não suporta o redimensionamento. Para ajustar a quantidade de espaço que é pré-atribuída ao Linux (beta), faça uma cópia de segurança e, em seguida, restaure para um novo contentor.</translation>
 <translation id="5596627076506792578">Mais opções</translation>
@@ -6173,7 +6167,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8218847192766059983">Adicione idiomas ou reordene a lista. <ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Normalmente, bloqueia as notificações. Para permitir que este site lhe apresente notificações, clique aqui.</translation>
 <translation id="8225265270453771718">Partilhe uma janela da aplicação</translation>
-<translation id="8225753906568652947">Resgatar as suas ofertas</translation>
 <translation id="8226222018808695353">Proibido</translation>
 <translation id="8226619461731305576">Fila</translation>
 <translation id="8226628635270268143">Escolha os seus álbuns ou fotos favoritos.</translation>
@@ -6336,7 +6329,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8417548266957501132">Palavra-passe do Pai ou Mãe</translation>
 <translation id="8418445294933751433">Mo&amp;strar como separador</translation>
 <translation id="8419098111404128271">Resultados da pesquisa para "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Bem-vindo a <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Editar entradas do dicionário</translation>
 <translation id="8421361468937925547">Legendas instantâneas (apenas em inglês)</translation>
 <translation id="8422787418163030046">Tabuleiro de papel em falta.</translation>

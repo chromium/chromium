@@ -1883,7 +1883,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3165371858310906303">Spør når et nettsted vil vite når du er til stede</translation>
 <translation id="3165390001037658081">Det kan hende at enkelte operatører blokkerer denne funksjonen.</translation>
 <translation id="316652501498554287">G Suite for utdanning-kontoer</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Du kan også hoppe over påloggingen og <ph name="LINK_START" />surfe som gjest<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Språket siden er på:</translation>
 <translation id="3179982752812949580">Skrifttype</translation>
@@ -2026,7 +2025,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deler <ph name="ATTACHMENTS" /> med deg.}other{<ph name="DEVICE_NAME" /> deler <ph name="ATTACHMENTS" /> med deg.}}</translation>
 <translation id="3364986687961713424">Fra administratoren din: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Bruk enten Ctrl eller Alt</translation>
-<translation id="3367047597842238025">Still inn <ph name="DEVICE_TYPE" /> akkurat slik du ønsker, og oppdag alle de fantastiske mulighetene du har.</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3369067987974711168">Vis flere handlinger for denne porten</translation>
 <translation id="3369624026883419694">Slår opp vertsnavn …</translation>
@@ -2349,7 +2347,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3713047097299026954">Det er ingen påloggingsinformasjon på denne sikkerhetsnøkkelen</translation>
 <translation id="3714195043138862580">Denne demoenheten er satt i en tilstand uten tilgang og ressurser.</translation>
 <translation id="3714633008798122362">nettkalender</translation>
-<translation id="3715954932774762075">Apper og nettsteder som er tilgjengelige på flere språk, bruker det første støttede språket på denne listen. Disse preferansene synkroniseres med nettleserinnstillingene dine. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Startside</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Deg og Google</translation>
@@ -2487,7 +2484,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3856800405688283469">Velg tidssone</translation>
 <translation id="3857807444929313943">Løft fingeren og berør igjen</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Synkronisering er satt på pause</translation>
-<translation id="3861386850461794863">Språk for apper og nettsteder</translation>
 <translation id="3861638017150647085">Brukernavnet «<ph name="USERNAME" />» er ikke tilgjengelig</translation>
 <translation id="3862693525629180217">Bekreft via innebygd sensor</translation>
 <translation id="3862788408946266506">Apper med manifest-attributtet «kiosk_only» må være installert i Chrome OS-kioskmodus</translation>
@@ -3795,7 +3791,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5457991019809708398">På – roamer ikke</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notater på låseskjermen</translation>
-<translation id="546322474339998983">Brukes av Chrome-nettleseren og appoversikten for <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Skriv inn</translation>
 <translation id="5463275305984126951">Indeks for <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Meny med skjulte bokmerker</translation>
@@ -3921,7 +3916,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Laster inn apper …</translation>
 <translation id="5592595402373377407">Nok data er ikke tilgjengelig ennå.</translation>
-<translation id="5593357315997824387">Synkroniser filene mine</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="5595727715083333657">Beholderen støtter ikke størrelsesendringer. For å justere mengden plass som er forhåndsallokert til Linux (beta), sikkerhetskopiér disken og gjenopprett den deretter i en ny beholder.</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
@@ -6168,7 +6162,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8218847192766059983">Legg til språk, eller endre rekkefølgen på listen. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Du blokkerer vanligvis varsler. For å la dette nettstedet varsle deg, klikk her.</translation>
 <translation id="8225265270453771718">Del et programvindu</translation>
-<translation id="8225753906568652947">Løs inn tilbudene dine</translation>
 <translation id="8226222018808695353">Forbudt</translation>
 <translation id="8226619461731305576">Kø</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
@@ -6331,7 +6324,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8417548266957501132">Foreldrepassord</translation>
 <translation id="8418445294933751433">Vi&amp;s som fane</translation>
 <translation id="8419098111404128271">Søkeresultater for «<ph name="SEARCH_TEXT" />»</translation>
-<translation id="8419368276599091549">Velkommen til <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Endre ordlisteoppføringer</translation>
 <translation id="8421361468937925547">Direkteteksting (kun på engelsk)</translation>
 <translation id="8422787418163030046">En skuff mangler</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1487931858675166540">تم استبدال <ph name="FIRST_ITEM_TITLE" /> بالعنصر <ph name="SECOND_ITEM_TITLE" />.</translation>
 <translation id="1498028757988366001">لقد بحثت عن هذا الموضوع من قبل. سيؤدي حذف "<ph name="QUERY" />" من السجل إلى إزالته نهائيًا من حسابك على جميع أجهزتك.</translation>
+<translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{دقيقة واحدة و }zero{# من الدقائق و }two{دقيقتان (#) و }few{# دقائق و }many{# دقيقة و }other{# من الدقائق و }}</translation>
 <translation id="1643823602425662293">الإشعار</translation>
 <translation id="169515659049020177">Shift</translation>

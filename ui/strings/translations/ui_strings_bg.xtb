@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Споделянето на <ph name="CONTENT_TYPE" /> не е възможно</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> се замени от <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">Тази заявка е сред предишните ви търсения. Изтриването на „<ph name="QUERY" />“ от историята ви ще я премахне за постоянно от профила ви на всичките ви устройства.</translation>
+<translation id="1510238584712386396">Стартов панел</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минута и }other{# минути и }}</translation>
 <translation id="1643823602425662293">Известие</translation>
 <translation id="169515659049020177">Shift</translation>

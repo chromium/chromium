@@ -23,6 +23,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ვერ ზიარდება</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ჩანაცვლდა შემდეგით: <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">თქვენ უკვე ეძებდით ამას. ისტორიიდან „<ph name="QUERY" />“-ის წაშლის შემთხვევაში, ის ამოიშლება თქვენი ანგარიშიდან თქვენს ყველა მოწყობილობაზე.</translation>
+<translation id="1510238584712386396">გამშვები</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 წუთი და }other{# წუთი და }}</translation>
 <translation id="1643823602425662293">შეტყობინება</translation>
 <translation id="169515659049020177">Shift</translation>

@@ -1886,7 +1886,6 @@
 <translation id="3165371858310906303">Прашувај кога некој сајт сака да знае дали сум присутен</translation>
 <translation id="3165390001037658081">Некои оператори може да ја блокираат функцијава.</translation>
 <translation id="316652501498554287">Сметки на G Suite for Education</translation>
-<translation id="3169472444629675720">Откриј</translation>
 <translation id="3170072451822350649">Може да прескокнете и најавување и <ph name="LINK_START" />да прелистувате како Гостин<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Јазик на страницата:</translation>
 <translation id="3179982752812949580">Фонт на текстот</translation>
@@ -2029,7 +2028,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> споделува <ph name="ATTACHMENTS" /> со вас.}one{<ph name="DEVICE_NAME" /> споделува <ph name="ATTACHMENTS" /> со вас.}other{<ph name="DEVICE_NAME" /> споделува <ph name="ATTACHMENTS" /> со вас.}}</translation>
 <translation id="3364986687961713424">Од администраторот: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Користете Ctrl или Alt</translation>
-<translation id="3367047597842238025">Поставете го вашиот <ph name="DEVICE_TYPE" /> токму како што сакате и откријте ги сите неверојатни способности што ви се на дофат на прстите.</translation>
 <translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369067987974711168">Прикажи повеќе дејства за портава</translation>
 <translation id="3369624026883419694">Разрешување домаќин...</translation>
@@ -2352,7 +2350,6 @@
 <translation id="3713047097299026954">Овој безбедносен клуч нема податоци за најавување</translation>
 <translation id="3714195043138862580">Овој демо-режим е ставен во состојба на оневозможен пристап.</translation>
 <translation id="3714633008798122362">веб-календар</translation>
-<translation id="3715954932774762075">Апликациите и веб-сајтовите што се достапни на повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставкиве се синхронизирани со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Почетна страница</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
@@ -2490,7 +2487,6 @@
 <translation id="3856800405688283469">Изберете временска зона</translation>
 <translation id="3857807444929313943">Подигнете и допрете повторно</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронизацијата е паузирана</translation>
-<translation id="3861386850461794863">Јазици за апликациите и веб-сајтовите</translation>
 <translation id="3861638017150647085">Корисничкото име „<ph name="USERNAME" />“ не е достапно</translation>
 <translation id="3862693525629180217">Потврди преку вграден сензор</translation>
 <translation id="3862788408946266506">Апликацијата со атрибут на манифестот „kiosk_only“ мора да се инсталира во режим на киоск на Chrome OS</translation>
@@ -3800,7 +3796,6 @@
 <translation id="5457991019809708398">Вклучена, не е во роаминг</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Белешки на заклучениот екран</translation>
-<translation id="546322474339998983">Се користи во прелистувачот Chrome и стартерот <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Внеси</translation>
 <translation id="5463275305984126951">Индекс на <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Мени што содржи сокриени обележувачи</translation>
@@ -3926,7 +3921,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Вчитување апликации…</translation>
 <translation id="5592595402373377407">Уште нема доволно достапни податоци.</translation>
-<translation id="5593357315997824387">Синхронизирај ги моите датотеки</translation>
 <translation id="5595485650161345191">Измени адреса</translation>
 <translation id="5595727715083333657">Вашиот контејнер не поддржува промена на големината. За да го приспособите количеството простор што однапред се доделува во Linux (бета), направете бекап, па вратете го во нов контејнер.</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
@@ -6172,7 +6166,6 @@
 <translation id="8218847192766059983">Додајте јазици или прередете го списокот. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Вообичаено ги блокирате известувањата. За да дозволите сајтов да ве известува, кликнете тука.</translation>
 <translation id="8225265270453771718">Споделете го прозорецот на апликацијата</translation>
-<translation id="8225753906568652947">Активирајте ги вашите понуди</translation>
 <translation id="8226222018808695353">Забрането</translation>
 <translation id="8226619461731305576">Ред на чекање</translation>
 <translation id="8226628635270268143">Изберете ги омилените фотографии и албуми</translation>
@@ -6338,7 +6331,6 @@
 <translation id="8417548266957501132">Лозинка на родител</translation>
 <translation id="8418445294933751433">&amp;Прикажи како картичка</translation>
 <translation id="8419098111404128271">Резултати од пребарувањето за „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="8419368276599091549">Добре дојдовте во вашиот <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Измена на ставки во речникот</translation>
 <translation id="8421361468937925547">Автоматски титлови (само на англиски)</translation>
 <translation id="8422787418163030046">Недостасува фиока</translation>

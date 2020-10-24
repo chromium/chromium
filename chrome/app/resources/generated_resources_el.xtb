@@ -1886,7 +1886,6 @@
 <translation id="3165371858310906303">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να γνωρίζει πότε είστε ενεργοί.</translation>
 <translation id="3165390001037658081">Ορισμένες εταιρείες κινητής τηλεφωνίας ενδέχεται να αποκλείσουν αυτήν τη λειτουργία.</translation>
 <translation id="316652501498554287">Λογαριασμοί G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Μπορείτε επίσης να παραλείψετε τη σύνδεση και να <ph name="LINK_START" />πραγματοποιήσετε περιήγηση ως Επισκέπτης<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Γλώσσα σελίδας:</translation>
 <translation id="3179982752812949580">Γραμματοσειρά κειμένου</translation>
@@ -2029,7 +2028,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{Η συσκευή <ph name="DEVICE_NAME" /> μοιράζεται μαζί σας <ph name="ATTACHMENTS" />.}other{Η συσκευή <ph name="DEVICE_NAME" /> μοιράζεται μαζί σας <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3364986687961713424">Από τον διαχειριστή σας: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Χρησιμοποιήστε το Ctrl ή το Alt</translation>
-<translation id="3367047597842238025">Ρυθμίστε τη συσκευή <ph name="DEVICE_TYPE" /> όπως θέλετε και ανακαλύψτε όλες τις εκπληκτικές δυνατότητες που είναι στη διάθεσή σας.</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3369067987974711168">Εμφάνιση περισσότερων ενεργειών για τη συγκεκριμένη θύρα</translation>
 <translation id="3369624026883419694">Ανάλυση της διεύθυνσης του κεντρικού υπολογιστή...</translation>
@@ -2352,7 +2350,6 @@
 <translation id="3713047097299026954">Αυτό το κλειδί ασφαλείας δεν διαθέτει δεδομένα σύνδεσης.</translation>
 <translation id="3714195043138862580">Αυτή η συσκευή επίδειξης έχει τεθεί σε κατάσταση κατάργησης παροχής.</translation>
 <translation id="3714633008798122362">ημερολόγιο ιστού</translation>
-<translation id="3715954932774762075">Οι εφαρμογές και οι ιστότοποι που διατίθενται σε πολλές γλώσσες θα χρησιμοποιούν την πρώτη υποστηριζόμενη γλώσσα από αυτήν τη λίστα. Αυτές οι προτιμήσεις συγχρονίζονται με τις ρυθμίσεις του προγράμματος περιήγησης. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Αρχική σελίδα</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Εσείς και η Google</translation>
@@ -2490,7 +2487,6 @@
 <translation id="3856800405688283469">Επιλογή ζώνης ώρας</translation>
 <translation id="3857807444929313943">Ανασηκώστε και αγγίξτε ξανά</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Ο συγχρονισμός τέθηκε σε παύση</translation>
-<translation id="3861386850461794863">Γλώσσες για εφαρμογές και ιστοτόπους</translation>
 <translation id="3861638017150647085">Δεν είναι διαθέσιμο το όνομα χρήστη "<ph name="USERNAME" />".</translation>
 <translation id="3862693525629180217">Επαλήθευση μέσω ενσωματωμένου αισθητήρα</translation>
 <translation id="3862788408946266506">Θα πρέπει να εγκατασταθεί μια εφαρμογή με χαρακτηριστικό μανιφέστου "kiosk_only" στη λειτουργία kiosk του Chrome OS</translation>
@@ -3800,7 +3796,6 @@
 <translation id="5457991019809708398">Ενεργό, χωρίς περιαγωγή</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Σημειώσεις κλειδώματος οθόνης</translation>
-<translation id="546322474339998983">Χρησιμοποιείται από το πρόγραμμα περιήγησης Chrome και την εφαρμογή εκκίνησης της συσκευής <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463231940765244860">Εισαγωγή</translation>
 <translation id="5463275305984126951">Ευρετήριο του <ph name="LOCATION" /></translation>
 <translation id="5463856536939868464">Μενού που περιέχει κρυφούς σελιδοδείκτες</translation>
@@ -3926,7 +3921,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Φόρτωση εφαρμογών…</translation>
 <translation id="5592595402373377407">Δεν υπάρχουν ακόμη αρκετά διαθέσιμα στοιχεία.</translation>
-<translation id="5593357315997824387">Συγχρονισμός των αρχείων μου</translation>
 <translation id="5595485650161345191">Επεξεργασία διεύθυνσης</translation>
 <translation id="5595727715083333657">Το κοντέινερ σας δεν υποστηρίζει την αλλαγή μεγέθους. Για να ρυθμίσετε το μέγεθος του χώρου που έχει εκχωρηθεί εκ των προτέρων στο Linux (Beta), δημιουργήστε αντίγραφα ασφαλείας και, στη συνέχεια, επαναφέρετε το περιεχόμενο σε νέο κοντέινερ.</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
@@ -6174,7 +6168,6 @@
 <translation id="8218847192766059983">Προσθέστε γλώσσες ή κάντε αναδιάταξη της λίστας. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Συνήθως αποκλείετε τις ειδοποιήσεις. Για να επιτρέψετε σε αυτόν τον ιστότοπο να σας στέλνει ειδοποιήσεις, κάντε κλικ εδώ.</translation>
 <translation id="8225265270453771718">Μοιραστείτε ένα παράθυρο εφαρμογής</translation>
-<translation id="8225753906568652947">Εξαργυρώστε τις προσφορές σας</translation>
 <translation id="8226222018808695353">Απαγορευμένο</translation>
 <translation id="8226619461731305576">Ουρά</translation>
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
@@ -6337,7 +6330,6 @@
 <translation id="8417548266957501132">Κωδικός πρόσβασης γονέα</translation>
 <translation id="8418445294933751433">&amp;Εμφάνιση ως καρτέλα</translation>
 <translation id="8419098111404128271">Αποτελέσματα αναζήτησης για "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419368276599091549">Καλώς ήρθατε στο <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Επεξεργασία καταχωρίσεων λεξικού</translation>
 <translation id="8421361468937925547">Ζωντανοί υπότιτλοι (μόνο στα αγγλικά)</translation>
 <translation id="8422787418163030046">Λείπει δίσκος</translation>

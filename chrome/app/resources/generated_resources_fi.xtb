@@ -1886,7 +1886,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3165371858310906303">Pyydä lupaa, kun sivusto haluaa tietää, oletko paikalla</translation>
 <translation id="3165390001037658081">Jotkin operaattorit saattavat estää tämän ominaisuuden.</translation>
 <translation id="316652501498554287">G Suite for Education ‑tilit</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Voit myös ohittaa sisäänkirjautumisen ja <ph name="LINK_START" />selata vierailijana<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Sivun kieli:</translation>
 <translation id="3179982752812949580">Tekstin fontti</translation>
@@ -2029,7 +2028,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> jakaa <ph name="ATTACHMENTS" /> kanssasi.}other{<ph name="DEVICE_NAME" /> jakaa <ph name="ATTACHMENTS" /> kanssasi.}}</translation>
 <translation id="3364986687961713424">Järjestelmänvalvojalta: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Käytä joko Ctrl- tai Alt-näppäintä</translation>
-<translation id="3367047597842238025">Yksilöi <ph name="DEVICE_TYPE" /> makusi mukaiseksi ja löydä sen kaikki hienot ominaisuudet.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369067987974711168">Näytä lisää tämän portin toimintoja</translation>
 <translation id="3369624026883419694">Jäsennetään palvelinta...</translation>
@@ -2352,7 +2350,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3713047097299026954">Tässä suojausavaimessa ei ole mitään kirjautumisdataa.</translation>
 <translation id="3714195043138862580">Esittelylaitteen oikeudet on poistettu.</translation>
 <translation id="3714633008798122362">verkkokalenteri</translation>
-<translation id="3715954932774762075">Sovellukset ja sivustot, jotka ovat saatavilla useilla kielillä, käyttävät ensimmäistä tuettua kieltä tältä listalta. Nämä asetukset synkronoidaan selainasetustesi kanssa. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Etusivu</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Sinä ja Google</translation>
@@ -2490,7 +2487,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3856800405688283469">Valitse aikavyöhyke</translation>
 <translation id="3857807444929313943">Nosta sormi ja kosketa uudelleen</translation>
 <translation id="3860104611854310167">Synkronointi keskeytetty: <ph name="PROFILE_NAME" /></translation>
-<translation id="3861386850461794863">Sovellusten ja sivustojen kielet</translation>
 <translation id="3861638017150647085">Käyttäjänimi <ph name="USERNAME" /> ei ole käytettävissä</translation>
 <translation id="3862693525629180217">Vahvista sisäänrakennetun anturin kautta</translation>
 <translation id="3862788408946266506">Sovellukset, joilla on luetteloattribuutti kiosk_only, täytyy asentaa Chrome-käyttöjärjestelmän kioskitilassa.</translation>
@@ -3797,7 +3793,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5457991019809708398">Päällä, ei roaming-tilassa</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Muistiinpanot lukitusnäytöllä</translation>
-<translation id="546322474339998983">Käytössä Chrome-selaimessa ja käynnistysohjelmassa (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5463231940765244860">Syötä</translation>
 <translation id="5463275305984126951">Sijainnin <ph name="LOCATION" /> hakemisto</translation>
 <translation id="5463856536939868464">Piilotetut kirjanmerkit sisältävä valikko</translation>
@@ -3923,7 +3918,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Ladataan sovelluksia…</translation>
 <translation id="5592595402373377407">Tietoja ei ole vielä saatavilla tarpeeksi.</translation>
-<translation id="5593357315997824387">Synkronoi tiedostoni</translation>
 <translation id="5595485650161345191">Osoitteen muokkaus</translation>
 <translation id="5595727715083333657">Säilö ei tue koon muuttamista. Jos haluat muuttaa sen tilan määrää, joka on varattu ennakkoon Linuxille (Beta), luo varmuuskopio ja palauta se sitten uuteen säilöön.</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
@@ -6171,7 +6165,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8218847192766059983">Lisää kieliä tai järjestä lista uudelleen. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla tätä.</translation>
 <translation id="8225265270453771718">Jaa sovellusikkuna</translation>
-<translation id="8225753906568652947">Lunasta tarjoukset</translation>
 <translation id="8226222018808695353">Kielletty</translation>
 <translation id="8226619461731305576">Jono</translation>
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>
@@ -6334,7 +6327,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8417548266957501132">Vanhemman salasana</translation>
 <translation id="8418445294933751433">&amp;Näytä välilehtenä</translation>
 <translation id="8419098111404128271">Tulokset haulle <ph name="SEARCH_TEXT" /></translation>
-<translation id="8419368276599091549">Tervetuloa <ph name="DEVICE_TYPE" />-käyttäjäksi!</translation>
 <translation id="8420308167132684745">Muokkaa sanakirjan tietueita</translation>
 <translation id="8421361468937925547">Livetekstitys (vain englanniksi)</translation>
 <translation id="8422787418163030046">Lokero puuttuu</translation>

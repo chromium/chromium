@@ -449,6 +449,7 @@
 <translation id="1509281256533087115">Մուտք գործեք ցանկացած <ph name="DEVICE_NAME_AND_VENDOR" /> սարք USB-ի միջոցով</translation>
 <translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
+<translation id="151070646350206700">Կայքերը չեն ընդհատի ձեր աշխատանքը՝ ծանուցումներ ուղարկելու հարցումներով</translation>
 <translation id="1510785804673676069">Եթե դուք օգտվում եք միջնորդ սերվերից, ստուգեք նրա կարգավորումները
     կամ խնդրեք ցանցի ադմինիստրատորին
     կարգավորել այն: Եթե միջնորդ սերվեր չեք օգտագործում, կարգաբերեք ձեր
@@ -935,6 +936,7 @@
 <translation id="205560151218727633">Google Օգնականի լոգո</translation>
 <translation id="2058456167109518507">Հայտնաբերվել է սարք</translation>
 <translation id="2059913712424898428">Ժամային գոտի</translation>
+<translation id="2060375639911876205">Հեռացնել eSIM-ի պրոֆիլը</translation>
 <translation id="2065405795449409761">Chrome դիտարկիչը կառավարվում է ավտոմատացված փորձնական ծրագրակազմի կողմից:</translation>
 <translation id="2071393345806050157">Տեղային մատյան-ֆայլ չկա:</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Սեղմեք՝ ընդլայնումը տեղադրելու համար}one{Սեղմեք՝ այս ընդլայնումները տեղադրելու համար}other{Սեղմեք՝ այս ընդլայնումները տեղադրելու համար}}</translation>
@@ -1885,7 +1887,6 @@
 <translation id="3165371858310906303">Հարցնել, երբ որևէ կայք ուզենա տեղեկություններ ստանալ ձեր ներկայության մասին</translation>
 <translation id="3165390001037658081">Որոշ մատակարարներ կարող են արգելափակել այս գործառույթը։</translation>
 <translation id="316652501498554287">G Suite for Education հաշիվներ</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">Դուք կարող եք նաև մուտք չգործել և <ph name="LINK_START" />սկսել հյուրի աշխատաշրջան<ph name="LINK_END" />:</translation>
 <translation id="3177909033752230686">Էջի լեզուն՝</translation>
 <translation id="3179982752812949580">Տեքստի տառատեսակը</translation>
@@ -2028,7 +2029,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}one{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}other{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}}</translation>
 <translation id="3364986687961713424">Ձեր ադմինիստրատորից. «<ph name="ADMIN_MESSAGE" />»</translation>
 <translation id="3365598184818502391">Օգտագործեք Ctrl կամ Alt</translation>
-<translation id="3367047597842238025">Կարգավորեք <ph name="DEVICE_TYPE" /> սարքը՝ ըստ ձեր ցանկության և իմացեք ձեզ հասանելի բոլոր օգտակար գործառույթների մասին։</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369067987974711168">Ցույց տալ ավելի շատ գործողություններ այս միացքի համար</translation>
 <translation id="3369624026883419694">Խնամորդի վերլուծում…</translation>
@@ -2351,7 +2351,6 @@
 <translation id="3713047097299026954">Անվտանգության այս բանալին մուտքի տվյալներ չունի</translation>
 <translation id="3714195043138862580">Այս դեմո սարքի տրամադրումը չեղարկվել է։</translation>
 <translation id="3714633008798122362">վեբ օրացույց</translation>
-<translation id="3715954932774762075">Մի քանի լեզուներով հասանելի հավելվածներն ու կայքերը կօգտագործեն ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Գլխավոր էջ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
@@ -2489,7 +2488,6 @@
 <translation id="3856800405688283469">Ընտրեք ժամային գոտին</translation>
 <translation id="3857807444929313943">Բարձրացրեք մատը և նորից փորձեք</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />․ համաժամացումը դադարեցված է</translation>
-<translation id="3861386850461794863">Հավելվածների ու կայքերի լեզուն</translation>
 <translation id="3861638017150647085">«<ph name="USERNAME" />» օգտանունը հասանելի չէ</translation>
 <translation id="3862693525629180217">Հաստատել ներկառուցված սկաների միջոցով</translation>
 <translation id="3862788408946266506">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի Chrome OS-ի կրպակի ռեժիմում</translation>
@@ -2733,6 +2731,7 @@
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="413193092008917129">Ցանցի դիագնոստիկայի հերթականություններ</translation>
 <translation id="4132183752438206707">Գտեք հավելվածներ Google Play Խանութում</translation>
+<translation id="4132364317545104286">Վերանվանել eSIM-ի պրոֆիլը</translation>
 <translation id="4133076602192971179">Գաղտնաբառը փոխելու համար բացեք հավելվածը</translation>
 <translation id="4136203100490971508">Լույսը բացվելուն պես գիշերային ռեժիմը ավտոմատ կանջատվի</translation>
 <translation id="41365691917097717">Եթե շարունակեք, ADB վրիպազերծումը կմիանա և Android-ի համար հավելվածներ կստեղծվեն ու կփորձարկվեն: Նկատի ունեցեք, որ այս գործողությունը թույլ է տալիս այն Android հավելվածների տեղադրումը, որոնք չեն ստուգվել Google-ի կողմից։ Դրա համար անհրաժեշտ է վերականգնել սարքի գործարանային կարգավորումները։</translation>
@@ -3246,6 +3245,7 @@
 <translation id="4778644898150334464">Օգտագործել այլ գաղտնաբառ</translation>
 <translation id="4779083564647765204">Խոշորացում</translation>
 <translation id="4779136857077979611">Օնիգիրի</translation>
+<translation id="4779766576531456629">Վերանվանել eSIM-ի բջջային ցանցը</translation>
 <translation id="4780321648949301421">Save Page As...</translation>
 <translation id="4785719467058219317">Դուք օգտագործում եք անվտանգության բանալի, որը գրանցված չէ այս կայքում</translation>
 <translation id="4788092183367008521">Ստուգեք կապը և նորից փորձեք:</translation>
@@ -3692,6 +3692,7 @@
 <translation id="5324780743567488672">Սահմանել ժամային գոտին ավտոմատ՝ ձեր տեղադրության հիման վրա</translation>
 <translation id="5327248766486351172">Անուն</translation>
 <translation id="5327570636534774768">Այս սարքը կառավարվում է մեկ այլ տիրույթի կողմից։ Նախքան դեմո ռեժիմը կարգավորելը անջատեք այդ կապը։</translation>
+<translation id="5327912693242073631">Գործառույթները, որոնց համար պահանջվում են ծանուցումներ, չեն աշխատի</translation>
 <translation id="532943162177641444"><ph name="PHONE_NAME" /> հեռախոսում հպեք ծանուցմանը՝ այս սարքի համար բջջային թեժ կետ ստեղծելու համար։</translation>
 <translation id="5329858601952122676">&amp;Ջնջել</translation>
 <translation id="5331069282670671859">Այս կատեգորիայում հավաստագրեր չկան</translation>
@@ -3743,6 +3744,7 @@
 <translation id="5390112241331447203">Ներառել system_logs.txt ֆայլը, որն ուղարկվում է կարծիքի հաշվետվություններում։</translation>
 <translation id="5390677308841849479">Մուգ կարմիր և նարնջագույն</translation>
 <translation id="5390743329570580756">Ուղարկել</translation>
+<translation id="5392192690789334093">Ծանուցումների ուղարկումը թույլատրված է</translation>
 <translation id="5397794290049113714">Դուք</translation>
 <translation id="5398497406011404839">Թաքցված էջանիշներ</translation>
 <translation id="5398572795982417028">Դուրս է էջի համարակալման սահմաններից, թույլատրելի սահմանաչափն է <ph name="MAXIMUM_PAGE" /></translation>
@@ -3798,7 +3800,6 @@
 <translation id="5457991019809708398">Միացված է, ռոումինգում չէ</translation>
 <translation id="5458214261780477893">Դվորակ</translation>
 <translation id="5458998536542739734">Կողպէկրանի նշումներ</translation>
-<translation id="546322474339998983">Օգտագործվում է Chrome դիտարկիչի և <ph name="DEVICE_TYPE" />-ի գործարկիչի կողմից</translation>
 <translation id="5463231940765244860">Մուտքագրել</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />-ի բովանդակություն</translation>
 <translation id="5463856536939868464">Թաքցված էջանիշներ պարունակող ցանկ</translation>
@@ -3924,7 +3925,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Հավելվածների բեռնում…</translation>
 <translation id="5592595402373377407">Բավարար քանակությամբ տվյալներ չկան:</translation>
-<translation id="5593357315997824387">Համաժամացնել իմ ֆայլերը</translation>
 <translation id="5595485650161345191">Փոխել հասցեն</translation>
 <translation id="5595727715083333657">Ձեր կոնտեյները չի աջակցում սկավառակի չափի փոխումը։ Լինուքսին (բետա) նախապես հատկացվող տարածքի ծավալը փոխելու համար պահուստավորեք սկավառակը և վերականգնեք այն նոր կոնտեյներում։</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
@@ -4047,6 +4047,7 @@
 <translation id="5739235828260127894">Պահանջվում է հաստատում: <ph name="LINK_BEGIN" />Մանրամասն<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Շատ մեծ</translation>
 <translation id="5740328398383587084">Փոխանակում մոտակա սարքերի հետ</translation>
+<translation id="5740820643029013514">Օգտագործել անձայն հաղորդագրությունները (խորհուրդ է տրվում)</translation>
 <translation id="574104302965107104">Էկրանի հայելապատճենում</translation>
 <translation id="574209121243317957">Ձայնի մակարդակը</translation>
 <translation id="5746169159649715125">Պահել որպես PDF</translation>
@@ -4266,6 +4267,7 @@
 <translation id="6002210667729577411">Խումբը տեղափոխել նոր պատուհան</translation>
 <translation id="6002452033851752583">Գաղտնաբառը ջնջվեց ձեր Google հաշվից</translation>
 <translation id="6002458620803359783">Նախընտրելի ձայներ</translation>
+<translation id="6003143259071779217">Հեռացնել eSIM-ի բջջային ցանցը</translation>
 <translation id="6006484371116297560">Դասական</translation>
 <translation id="6007240208646052708">Ձայնային որոնումը ձեր լեզվով հասանելի չէ:</translation>
 <translation id="6009781704028455063">Ներկառուցված տվիչ</translation>
@@ -4534,6 +4536,7 @@
 <translation id="6308937455967653460">Պահել հղ&amp;ումը որպես…</translation>
 <translation id="6309443618838462258">Ձեր ադմինիստրատորը թույլ չի տալիս ներածման այս մեթոդը</translation>
 <translation id="6309510305002439352">Խոսափողի օգտագործման թույլտվությունն անջատած է</translation>
+<translation id="6310472381159916879">Հեռացնել պրոֆիլը</translation>
 <translation id="6311220991371174222">Չհաջողվեց գործարկել Chrome-ը, քանի որ պրոֆիլը բացելիս սխալ առաջացավ: Վերագործարկեք Chrome-ը:</translation>
 <translation id="6312403991423642364">Ցանցի անհայտ սխալ</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Անվտանգության ստուգումն արվել է 1 օր առաջ}one{Անվտանգության ստուգումն արվել է {NUM_DAYS} օր առաջ}other{Անվտանգության ստուգումն արվել է {NUM_DAYS} օր առաջ}}</translation>
@@ -4723,6 +4726,7 @@
 <translation id="6532663472409656417">Գրանցված է կորպորատիվ տիրույթում</translation>
 <translation id="6535331821390304775">Միշտ թույլատրել <ph name="ORIGIN" /> կայքին բացել նման տեսակի հղումները համապատասխան հավելվածում</translation>
 <translation id="6537613839935722475">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և գծիկներ (-)</translation>
+<translation id="6537880577641744343">Commander</translation>
 <translation id="6538635548667167211">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Բջջային ինտերնետ»</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Նշում.<ph name="END_BOLD" /> Այս գործառույթը միացնել միայն այն դեպքում, երբ գիտեք թե ինչ եք անում կամ, եթե ձեզ խնդրել են դա անել, քանի որ տվյալների հավաքումը կարող է նվազեցնել կատարողականությունը:</translation>
 <translation id="6541638731489116978">Այս կայքին արգելվել է օգտագործել շարժման տվիչները:</translation>
@@ -5853,6 +5857,7 @@
 <translation id="7855678561139483478">Բացել ներդիրը նոր պատուհանում</translation>
 <translation id="7857117644404132472">Ավելացնել բացառություն</translation>
 <translation id="7857949311770343000">Սա՞ է ձեր ուզած նոր ներդիրի էջը:</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">Դեկտեմբերից հետո այս տարբերակն այլևս չի աջակցվի։ Դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="786073089922909430">Ծառայություն՝ <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Ներբեռնումներ</translation>
@@ -6164,7 +6169,6 @@
 <translation id="8218847192766059983">Ավելացրեք լեզուներ կամ վերադասավորեք ցանկը։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">Դուք սովորաբար արգելափակում եք ծանուցումները։ Այս կայքում ծանուցումներ ստանալու համար սեղմեք այստեղ։</translation>
 <translation id="8225265270453771718">Կիսվեք հավելվածի պատուհանով</translation>
-<translation id="8225753906568652947">Օգտագործել բոնուսները</translation>
 <translation id="8226222018808695353">Արգելված</translation>
 <translation id="8226619461731305576">Հերթականություն</translation>
 <translation id="8226628635270268143">Ընտրեք ձեր սիրած լուսանկարներն ու ալբոմները</translation>
@@ -6175,6 +6179,7 @@
 <translation id="8236917170563564587">Փոխարենը կիսվեք այս ներդիրով</translation>
 <translation id="8237647586961940482">Մուգ վարդագույն և կարմիր</translation>
 <translation id="8239032431519548577">Ընկերության գրանցումն ավարտված է</translation>
+<translation id="8239932336306009582">Չի թույլատրվում ուղարկել ծանուցումներ</translation>
 <translation id="8241040075392580210">Ամպիկ</translation>
 <translation id="8241806945692107836">Սարքի կազմաձևման սահմանում...</translation>
 <translation id="8241868517363889229">Դիտել և փոփոխել ձեր էջանիշները</translation>
@@ -6304,6 +6309,7 @@
 <translation id="8386091599636877289">Քաղաքականությունը չգտնվեց։</translation>
 <translation id="8386903983509584791">Որոնումն ավարտվեց</translation>
 <translation id="8387361103813440603">Չի թույլատրվում տեսնել ձեր տեղադրությունը</translation>
+<translation id="8389264703141926739">Արգելափակել ծանուցումները</translation>
 <translation id="8389416080014625855">Ստեղծել QR կոդ այս էջի համար</translation>
 <translation id="8389492867173948260">Թույլատրեք այս ընդլայնմանը կարդալ և փոխել ձեր այցելած կայքերի բոլոր տվյալները՝</translation>
 <translation id="8390449457866780408">Սերվերը մատչելի չէ:</translation>
@@ -6325,7 +6331,6 @@
 <translation id="8417548266957501132">Ծնողի գաղտնաբառը</translation>
 <translation id="8418445294933751433">&amp;Ցույց տալ որպես ներդիր</translation>
 <translation id="8419098111404128271">«<ph name="SEARCH_TEXT" />» որոնման արդյունքներ</translation>
-<translation id="8419368276599091549">Բարի գալուստ <ph name="DEVICE_TYPE" /> սարք</translation>
 <translation id="8420308167132684745">Փոփոխել բառարանի գրառումները</translation>
 <translation id="8421361468937925547">Կենդանի ենթագրեր (միայն անգլերենով)</translation>
 <translation id="8422787418163030046">Թղթի դարակը բացակայում է</translation>
@@ -6514,6 +6519,7 @@
 <translation id="8645354835496065562">Միշտ թույլատրել տվիչների օգտագործումը</translation>
 <translation id="8645920082661222035">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին</translation>
 <translation id="8646209145740351125">Անջատել համաժամացումը</translation>
+<translation id="864637694230589560">Կայքերը հաճախ ծանուցումներ են ուղարկում՝ տեղեկացնելու ձեզ հրատապ լուրերի կամ զրույցի հաղորդագրությունների մասին</translation>
 <translation id="8647834505253004544">Հասցեն անվավեր է</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> կամ <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Գիշերային լույսի ռեժիմում գույնի ջերմաստիճանը</translation>

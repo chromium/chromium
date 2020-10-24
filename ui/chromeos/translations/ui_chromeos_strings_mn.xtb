@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">АНУ-ын хэлний гар</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгасан</translation>
+<translation id="2541377937973966830">Энэ фолдерын контентуудыг зөвхөн уншиж болно. Зарим үйл ажиллагааг дэмждэггүй.</translation>
 <translation id="2542049655219295786">Google-ийн хүснэгт</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" />-д нэмэх</translation>
 <translation id="255937426064304553">АНУ олон улсын</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4527800702232535228">Энэ фолдерыг Parallels Desktop-тай хуваалцсан байна</translation>
 <translation id="4552678318981539154">Нэмэлт мэдээлэл хадгах зай худалдан авах</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" />-г устгасан</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> файл</translation>
 <translation id="457386861538956877">Илүү ихийг ...</translation>
@@ -509,6 +511,7 @@
 <translation id="6356685157277930264">Файлын мэдээллийн цонх</translation>
 <translation id="6358884629796491903">Луу</translation>
 <translation id="637062427944097960">Энэ файл нь өөр десктоп дээр нээгдсэн байна. Үүнийг харахын тулд <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) руу шилжинэ үү.</translation>
+<translation id="6394388407447716302">Зєвхєн унших</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> зүйл</translation>
 <translation id="6398765197997659313">Дэлгэц дүүрэн харах горимоос гарах</translation>
 <translation id="642282551015776456">Энэ нэрийг хавтасны нэрийн файл болгон ашиглаж болохгүй.</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> y <ph name="SECOND_ITEM_TITLE" /> se han intercambiado</translation>
 <translation id="1498028757988366001">Ya has buscado esto antes. Si eliminas "<ph name="QUERY" />" de tu historial, se eliminará de tu cuenta de forma permanente en todos tus dispositivos.</translation>
+<translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto y }other{# minutos y }}</translation>
 <translation id="1643823602425662293">Notificación</translation>
 <translation id="169515659049020177">Mayús</translation>

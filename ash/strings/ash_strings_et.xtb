@@ -117,7 +117,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2049240716062114887">Töölaua nimeks määrati <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertikaalpaigutus</translation>
 <translation id="2067602449040652523">Klaviatuuri eredus</translation>
-<translation id="2074759828767813253">Hiljutised ekraanipildid ja allalaadimised</translation>
 <translation id="2083190527011054446">Head ööd, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Pole võrguga ühendatud</translation>
 <translation id="2126242104232412123">Uus töölaud</translation>
@@ -169,6 +168,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2575685495496069081">Mitmele kontole sisselogimine on keelatud</translation>
 <translation id="2582112259361606227">Taaskäivitage värskendamiseks</translation>
 <translation id="2595239820337756193">5 km miilides</translation>
+<translation id="2596078834055697711">Jäädvustab aknast kuvatõmmise</translation>
 <translation id="2617342710774726426">SIM-kaart on lukustatud</translation>
 <translation id="2621713457727696555">Kaitstud</translation>
 <translation id="2640255526076764619">Puuteplaadi liigutus eelmisele töölauale lülitumiseks on muutunud. Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule.</translation>
@@ -330,6 +330,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4215497585250573029">VPN-i seaded</translation>
 <translation id="4217571870635786043">Dikteerimine</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="4261870227682513959">Kuvab märguandeseaded. Märguanded on välja lülitatud</translation>
 <translation id="4267383818855338811">Virtuaalmasin kasutab teie kaamerat</translation>
 <translation id="4269883910223712419">Selle seadme administraator saab teha järgmist.</translation>
@@ -377,6 +378,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4596144739579517758">Tume teema on väljas</translation>
 <translation id="4623167406982293031">Kinnitage konto</translation>
 <translation id="4628757576491864469">Seadmed</translation>
+<translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
 <translation id="4659419629803378708">ChromeVox on lubatud</translation>
 <translation id="4665114317261903604">Lülitab režiimi Mitte segada sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
@@ -424,7 +426,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ühendati uue telefoniga</translation>
 <translation id="5035389544768382859">Kuva seadistuse kinnitamine</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
-<translation id="5114495209940374989">Ekraanipildid</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
 <translation id="5168181903108465623">Ülekandeseadmed on saadaval</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
@@ -493,7 +494,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5901316534475909376">Tõstuklahv + ESC</translation>
 <translation id="5909862606227538307">Inaktiivne töölaud.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">Täisekraani jäädvustamiseks klõpsake ekraanikuval kus tahes</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5920710855273935292">Mikrofon on vaigistatud.</translation>
 <translation id="594179686076170922">Telefoniga ühenduse loomine …</translation>
@@ -754,7 +754,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8563862697512465947">Teatiste seaded</translation>
 <translation id="857201607579416096">Menüü teisaldati ekraanikuva paremasse alanurka.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">Täisekraani jäädvustamiseks puudutage ekraanikuval kus tahes</translation>
 <translation id="8627191004499078455">Ühendatud seadmega <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Juurdepääsetavuse seaded</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>

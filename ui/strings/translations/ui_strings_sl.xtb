@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Ni mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1487931858675166540">Element <ph name="FIRST_ITEM_TITLE" /> je zamenjan z elementom <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1498028757988366001">To ste v preteklosti že iskali. Če izbrišete poizvedbo »<ph name="QUERY" />« iz zgodovine, bo trajno odstranjena iz računa v vseh napravah.</translation>
+<translation id="1510238584712386396">Zaganjalnik</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 min in }one{# min in }two{# min in }few{# min in }other{# min in }}</translation>
 <translation id="1643823602425662293">Obvestilo</translation>
 <translation id="169515659049020177">Shift</translation>

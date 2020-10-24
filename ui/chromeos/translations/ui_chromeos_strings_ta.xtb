@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">யுஎஸ் விசைப்பலகை</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> வரலாற்று உள்ளடக்கங்கள் நீக்கப்பட்டன</translation>
+<translation id="2541377937973966830">இந்தக் கோப்புறையில் உள்ள உள்ளடக்கத்தைப் படிக்க மட்டுமே முடியும். சில செயல்பாடுகள் ஆதரிக்கப்படாது.</translation>
 <translation id="2542049655219295786">Google அட்டவணை</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> இல் சேர்</translation>
 <translation id="255937426064304553">யு.எஸ். இன்டர்நேஷனல்</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4527800702232535228">Parallels Desktopபுடன் இந்தக் கோப்புறை பகிரப்பட்டுள்ளது</translation>
 <translation id="4552678318981539154">கூடுதல் சேமிப்பிடத்தை வாங்கு</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> நீக்கப்பட்டது</translation>
 <translation id="4559767610552730302">பொக்கே</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> கோப்பு</translation>
 <translation id="457386861538956877">மேலும்...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">கோப்புகளின் கருத்துச் சாளரம்</translation>
 <translation id="6358884629796491903">டிராகன்</translation>
 <translation id="637062427944097960">இந்தக் கோப்பு மற்றொரு டெஸ்க்டாப்பில் திறக்கப்பட்டது. இதைப் பார்க்க, <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) க்கு நகர்த்தவும்.</translation>
+<translation id="6394388407447716302">படிக்க மட்டும்</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> கோப்புகள்</translation>
 <translation id="6398765197997659313">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="642282551015776456">கோப்புறைப் பெயரின் கோப்பாக இந்தப் பெயரைப் பயன்பட முடியாமல் போகக்கூடும்</translation>

@@ -23,6 +23,7 @@
 <translation id="1450753235335490080">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1487931858675166540">«<ph name="FIRST_ITEM_TITLE" />» և «<ph name="SECOND_ITEM_TITLE" />» տարրերը տեղերով փոխվեցին</translation>
 <translation id="1498028757988366001">Դուք նախկինում որոնել եք սա: Եթե ջնջեք «<ph name="QUERY" />» հարցումը պատմությունից, այն ընդմիշտ կհեռացվի ձեր բոլոր սարքերից, որտեղ մուտք եք գործել հաշիվ։</translation>
+<translation id="1510238584712386396">Գործարկիչ</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 րոպե }one{# րոպե }other{# րոպե }}</translation>
 <translation id="1643823602425662293">Ծանուցում</translation>
 <translation id="169515659049020177">Shift</translation>

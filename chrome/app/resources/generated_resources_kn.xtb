@@ -1884,7 +1884,6 @@
 <translation id="3165371858310906303">ನಿಮ್ಮ ಉಪಸ್ಥಿತಿಯ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಕೇಳಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="3165390001037658081">ಕೆಲವು ವಾಹಕಗಳು ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ನಿರ್ಬಂಧಿಸಬಹುದು.</translation>
 <translation id="316652501498554287">ಶಿಕ್ಷಣಕ್ಕಾಗಿ G Suite ಖಾತೆಗಳು</translation>
-<translation id="3169472444629675720">Discover</translation>
 <translation id="3170072451822350649">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡುವುದನ್ನು ಸ್ಕಿಪ್‌ ಮಾಡಬಹುದು ಹಾಗೂ <ph name="LINK_START" />ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">ಪುಟದ ಭಾಷೆ:</translation>
 <translation id="3179982752812949580">ಪಠ್ಯದ ಫಾಂಟ್</translation>
@@ -2027,7 +2026,6 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ಸಾಧನವು ನಿಮ್ಮೊಂದಿಗೆ <ph name="ATTACHMENTS" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.}one{<ph name="DEVICE_NAME" /> ಸಾಧನವು ನಿಮ್ಮೊಂದಿಗೆ <ph name="ATTACHMENTS" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.}other{<ph name="DEVICE_NAME" /> ಸಾಧನವು ನಿಮ್ಮೊಂದಿಗೆ <ph name="ATTACHMENTS" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.}}</translation>
 <translation id="3364986687961713424">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl ಅಥವಾ Alt ಬಳಸಿ</translation>
-<translation id="3367047597842238025">ನಿಮಗೆ ಬೇಕಾದ ರೀತಿಯಲ್ಲಿ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ, ಮತ್ತು ನಿಮ್ಮ ಬೆರಳ ತುದಿಯಲ್ಲಿರುವ ಅದ್ಭುತ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಕಂಡುಹಿಡಿಯಿರಿ.</translation>
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369067987974711168">ಈ ಪೋರ್ಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಇನ್ನಷ್ಟು ಕ್ರಮಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3369624026883419694">ಹಾಸ್ಟ್ ಅನ್ನು ನಿವಾರಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -2350,7 +2348,6 @@
 <translation id="3713047097299026954">ಈ ಸುರಕ್ಷತಾ ಕೀ, ಯಾವುದೇ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಹೊಂದಿಲ್ಲ</translation>
 <translation id="3714195043138862580">ಈ ಡೆಮೊ ಸಾಧನವನ್ನು ಒದಗಿಸಲಾಗದಿರುವ ಸ್ಥಿತಿಯಲ್ಲಿ ಇರಿಸಲಾಗಿದೆ.</translation>
 <translation id="3714633008798122362">ವೆಬ್ ಕ್ಯಾಲೆಂಡರ್</translation>
-<translation id="3715954932774762075">ಹಲವು ಭಾಷೆಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳು ಈ ಪಟ್ಟಿಯಿಂದ ಮೊದಲು ಬೆಂಬಲಿಸುವ ಭಾಷೆಯನ್ನು ಬಳಸುತ್ತವೆ. ಈ ಆದ್ಯತೆಗಳನ್ನು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">ಮುಖಪುಟ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ನೀವು ಮತ್ತು Google</translation>
@@ -2488,7 +2485,6 @@
 <translation id="3856800405688283469">ಸಮಯ ವಲಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3857807444929313943">ಎತ್ತಿರಿ, ನಂತರ ಪುನಃ ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="3861386850461794863">ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗಾಗಿ ಭಾಷೆಗಳು</translation>
 <translation id="3861638017150647085">ಬಳಕೆದಾರ ಹೆಸರು "<ph name="USERNAME" />" ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3862693525629180217">ಅಂತರ್ನಿರ್ಮಿತ ಸೆನ್ಸರ್‌ಗಳ ಮೂಲಕ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3862788408946266506">ChromeOS ಕಿಯೋಸ್ಕ್ ಮೋಡ್‌ನಲ್ಲಿ 'kiosk_only' ಮ್ಯಾನಿಫೆಸ್ಟ್‌ ಲಕ್ಷಣವನ್ನು ಹೊಂದಿರುವ ಅಪ್ಲಿಕೇಶನ್‌ ಅನ್ನು ಇನ್‍ಸ್ಟಾಲ್ ಮಾಡಿರಬೇಕು</translation>
@@ -3795,7 +3791,6 @@
 <translation id="5457991019809708398">ಆನ್ ಆಗಿದೆ, ರೋಮಿಂಗ್ ಸೇವೆ ಇಲ್ಲ</translation>
 <translation id="5458214261780477893">ಡಿವೊರಾಕ್‌</translation>
 <translation id="5458998536542739734">ಲಾಕ್‌ ಪರದೆಯ ಟಿಪ್ಪಣಿಗಳು</translation>
-<translation id="546322474339998983">Chrome ಬ್ರೌಸರ್ ಹಾಗೂ <ph name="DEVICE_TYPE" /> ಲಾಂಚರ್‌ನಿಂದ ಬಳಸಲ್ಪಡುತ್ತದೆ</translation>
 <translation id="5463231940765244860">ನಮೂದಿಸಿ</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> ನ ಸೂಚಿಕೆ</translation>
 <translation id="5463856536939868464">ಮರೆಮಾಡಿದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಹೊಂದಿರುವ ಮೆನು</translation>
@@ -3921,7 +3916,6 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5592595402373377407">ಇನ್ನೂ ಸಾಕಷ್ಟು ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ.</translation>
-<translation id="5593357315997824387">ನನ್ನ ಫೈಲ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="5595485650161345191">ವಿಳಾಸ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5595727715083333657">ಮರುಗಾತ್ರಗೊಳಿಸುವ ಡಿಸ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ಕಂಟೇನರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. Linux (ಬೀಟಾ) ಗೆ ಮೊದಲೇ ನಿಗದಿಪಡಿಸಿದ ಸ್ಥಳಾವಕಾಶದ ಪ್ರಮಾಣವನ್ನು ಹೊಂದಿಸಲು, ಬ್ಯಾಕಪ್ ಮಾಡಿ ನಂತರ ಹೊಸ ಕಂಟೇನರ್‌ಗೆ ಮರುಸ್ಥಾಪಿಸಿ.</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
@@ -6161,7 +6155,6 @@
 <translation id="8218847192766059983">ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಿ ಅಥವಾ ಪಟ್ಟಿಯನ್ನು ಮರುಕ್ರಮಗೊಳಿಸಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8221491193165283816">ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತೀರಿ. ನಿಮಗೆ ಸೂಚನೆ ನೀಡಲು ಈ ಸೈಟ್‌ಗೆ ಅನುಮತಿಸುವುದಕ್ಕಾಗಿ, ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8225265270453771718">ಅಪ್ಲಿಕೇಶನ್ ವಿಂಡೋ ಹಂಚಿಕೊಳ್ಳಿ</translation>
-<translation id="8225753906568652947">ನಿಮ್ಮ ಆಫರ್‌ಗಳನ್ನು ರಿಡೀಮ್ ಮಾಡಿಕೊಳ್ಳಿ</translation>
 <translation id="8226222018808695353">ನಿಷೇಧಿತ</translation>
 <translation id="8226619461731305576">ಸರತಿ</translation>
 <translation id="8226628635270268143">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -6322,7 +6315,6 @@
 <translation id="8417548266957501132">ಪೋಷಕರ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="8418445294933751433">ಟ್ಯಾಬ್‌ನಂತೆ &amp;ತೋರಿಸಿ</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' ಕುರಿತ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು</translation>
-<translation id="8419368276599091549">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನಕ್ಕೆ ಸ್ವಾಗತ!</translation>
 <translation id="8420308167132684745">ನಿಘಂಟು ನಮೂದುಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="8421361468937925547">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ (ಇಂಗ್ಲಿಷ್ ಮಾತ್ರ)</translation>
 <translation id="8422787418163030046">ಟ್ರೇ ಕಾಣೆಯಾಗಿದೆ</translation>

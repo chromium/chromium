@@ -117,7 +117,6 @@
 <translation id="2049240716062114887">डेस्कचे नाव <ph name="DESK_NAME" /> वर बदलले होते</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2067602449040652523">कीबोर्डची चमक</translation>
-<translation id="2074759828767813253">अलीकडील स्क्रीनशॉट आणि डाउनलोड</translation>
 <translation id="2083190527011054446">शुभ रात्री <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्कशी कनेक्ट केलेले नाही</translation>
 <translation id="2126242104232412123">नवीन डेस्क</translation>
@@ -169,6 +168,7 @@
 <translation id="2575685495496069081">एकाहून अधिक साइन इन बंद करण्यात आले आहे</translation>
 <translation id="2582112259361606227">अपडेट करण्यासाठी रीस्टार्ट करा</translation>
 <translation id="2595239820337756193">५००० मैल</translation>
+<translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक केले आहे</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="2640255526076764619">मागील डेस्‍कवर स्विच करण्यासाठीचा टचपॅड जेश्चर बदलला आहे. मागील डेस्कवर स्विच करण्यासाठी चार बोटांनी डावीकडे स्‍वाइप करा.</translation>
@@ -329,6 +329,7 @@
 <translation id="4215497585250573029">VPN सेटिंग्ज</translation>
 <translation id="4217571870635786043">डिक्टेशन</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4261870227682513959">सूचना सेटिंग्ज दाखवा. सूचना बंद आहेत</translation>
 <translation id="4267383818855338811">व्हर्च्युअल मशीन तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="4269883910223712419">या डिव्हाइसचे प्रशासन पुढील गोष्टी करू शकते:</translation>
@@ -376,6 +377,7 @@
 <translation id="4596144739579517758">गडद थीम बंद आहे</translation>
 <translation id="4623167406982293031">खात्याची पडताळणी करा</translation>
 <translation id="4628757576491864469">डिव्हाइस</translation>
+<translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
 <translation id="4659419629803378708">ChromeVox सुरू केले</translation>
 <translation id="4665114317261903604">व्यत्यय आणू नका टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">पालक कोडने डिव्हाइस अनलॉक करा</translation>
@@ -423,7 +425,6 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> नवीन फोनशी कनेक्ट केले</translation>
 <translation id="5035389544768382859">डिस्प्ले कॉंफिगरेशन निश्चित करा</translation>
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
-<translation id="5114495209940374989">स्क्रीनशॉट</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
 <translation id="5168181903108465623">कास्‍ट डिव्‍हाइसेस उपलब्‍ध</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
@@ -492,7 +493,6 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">इनॅक्टिव्ह डेस्‍क.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
-<translation id="5915278665499293471">फुलस्क्रीन कॅप्चर करण्यासाठी कुठेही क्लिक करा</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5920710855273935292">माइक म्यूट केलेला आहे.</translation>
 <translation id="594179686076170922">तुमच्या फोनशी कनेक्ट करत आहे...</translation>
@@ -753,7 +753,6 @@
 <translation id="8563862697512465947">सूचना सेटिंग्ज</translation>
 <translation id="857201607579416096">मेनू स्क्रीनच्या तळाशी उजव्या कोपर्‍यात हलवला.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="861041328460089089">फुलस्क्रीन कॅप्चर करण्यासाठी कुठेही टॅप करा</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> शी कनेक्ट केले</translation>
 <translation id="8631727435199967028">अ‍ॅक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
