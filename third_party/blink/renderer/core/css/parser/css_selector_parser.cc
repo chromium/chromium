@@ -34,6 +34,11 @@ CSSParserTokenRange ConsumeNestedArgument(CSSParserTokenRange& range) {
   return range.MakeSubRange(&first, &range.Peek());
 }
 
+bool AtEndIgnoringWhitepace(CSSParserTokenRange range) {
+  range.ConsumeWhitespace();
+  return range.AtEnd();
+}
+
 }  // namespace
 
 // static
@@ -420,6 +425,18 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeCompoundSelector(
       compound_selector = std::move(simple_selector);
   }
 
+  // While inside a nested selector like :is(), the default namespace shall
+  // be ignored when [1]:
+  //
+  // - The compound selector represents the subject [2], and
+  // - The compound selector does not contain a type/universal selector.
+  //
+  // [1] https://drafts.csswg.org/selectors/#matches
+  // [2] https://drafts.csswg.org/selectors/#selector-subject
+  base::AutoReset<bool> ignore_namespace(
+      &ignore_default_namespace_, resist_default_namespace_ && !has_q_name &&
+                                      AtEndIgnoringWhitepace(range));
+
   if (!compound_selector) {
     AtomicString namespace_uri = DetermineNamespace(namespace_prefix);
     if (namespace_uri.IsNull()) {
@@ -670,6 +687,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       disallow_shadow_dom_v0_ = true;
 
       DisallowPseudoElementsScope scope(this);
+      base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
@@ -687,6 +705,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       disallow_shadow_dom_v0_ = true;
 
       DisallowPseudoElementsScope scope(this);
+      base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
@@ -953,7 +972,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenRange& range,
 }
 
 const AtomicString& CSSSelectorParser::DefaultNamespace() const {
-  if (!style_sheet_)
+  if (!style_sheet_ || ignore_default_namespace_)
     return g_star_atom;
   return style_sheet_->DefaultNamespace();
 }

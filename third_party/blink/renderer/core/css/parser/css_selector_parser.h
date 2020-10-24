@@ -112,6 +112,17 @@ class CORE_EXPORT CSSSelectorParser {
   // PseudoType of the pseudo-element causing the restriction.
   CSSSelector::PseudoType restricting_pseudo_element_ =
       CSSSelector::kPseudoUnknown;
+  // If we're _resisting_ the default namespace, it means that we are inside
+  // a nested selector (:is(), :where(), etc) where we should _consider_
+  // ignoring the default namespace (depending on circumstance). See the
+  // relevant spec text [1] regarding default namespaces for information about
+  // those circumstances.
+  //
+  // [1] https://drafts.csswg.org/selectors/#matches
+  bool resist_default_namespace_ = false;
+  // While this flag is true, the default namespace is ignored. In other words,
+  // the default namespace is '*' while this flag is true.
+  bool ignore_default_namespace_ = false;
 
   class DisallowPseudoElementsScope {
     STACK_ALLOCATED();
