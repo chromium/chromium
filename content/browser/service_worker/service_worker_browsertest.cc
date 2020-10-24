@@ -3155,33 +3155,30 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
   EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_url),
             running_info.script_url);
 
-  // TODO(crbug.com/1131404): We do not currently set the cross-origin isolated
-  // state on ServiceWorkers. Service Workers are always considered
-  // non-isolated.
-  // TODO(crbug.com/1141002): Process allocation is broken because during a
-  // fresh installation. We currently do not have the headers, and end up with a
-  // non isolated service worker script.
+  // TODO(crbug.com/996511): Process allocation is broken during a fresh
+  // installation. We currently do not have the headers, and end up with a non
+  // isolated service worker script.
   bool is_in_process =
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_TRUE(is_in_process);
   if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // Update to EXPECT_FALSE when both fixes mentioned above are done.
+    // Update to EXPECT_FALSE when the fix mentioned above is done.
     EXPECT_TRUE(is_in_process);
   }
   if (IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_FALSE(is_in_process);
   if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // Update to EXPECT_TRUE when both fixes mentioned above are done.
+    // Update to EXPECT_TRUE when the fix mentioned above is done.
     EXPECT_FALSE(is_in_process);
   }
 
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
-  // Update to equal IsServiceWorkerCrossOriginIsolated when crbug.com/1131404
-  // is fixed.
+  // Update to equal IsServiceWorkerCrossOriginIsolated when the fixed mentioned
+  // above is done.
   EXPECT_FALSE(
       process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
 }
@@ -3227,32 +3224,18 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
   EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_url),
             running_info.script_url);
 
-  // TODO(crbug.com/1131404): We do not currently set the cross-origin isolated
-  // state on ServiceWorkers. Service Workers are always considered
-  // non-isolated.
   bool is_in_process =
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
-  if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
-    EXPECT_TRUE(is_in_process);
-  if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // Update to EXPECT_FALSE when the fix mentioned above is done.
-    EXPECT_TRUE(is_in_process);
-  }
-  if (IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
-    EXPECT_FALSE(is_in_process);
-  if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // Update to EXPECT_TRUE when the fix mentioned above is done.
-    EXPECT_FALSE(is_in_process);
-  }
+  bool should_be_in_process =
+      IsPageCrossOriginIsolated() == IsServiceWorkerCrossOriginIsolated();
+  EXPECT_EQ(is_in_process, should_be_in_process);
 
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
-  // Update to equal IsServiceWorkerCrossOriginIsolated when crbug.com/1131404
-  // is fixed.
-  EXPECT_FALSE(
-      process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
+            process_lock.coop_coep_cross_origin_isolated_info().is_isolated());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

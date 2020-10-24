@@ -120,8 +120,9 @@ TEST_F(ServiceWorkerProcessManagerTest,
   ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
   blink::ServiceWorkerStatusCode status =
       process_manager_->AllocateWorkerProcess(
-          kEmbeddedWorkerId, script_url_, true /* can_use_existing_process */,
-          &process_info);
+          kEmbeddedWorkerId, script_url_,
+          base::nullopt /* cross_origin_embedder_policy */,
+          true /* can_use_existing_process */, &process_info);
 
   // An existing process should be allocated to the worker.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
@@ -163,8 +164,9 @@ TEST_F(ServiceWorkerProcessManagerTest,
   ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
   blink::ServiceWorkerStatusCode status =
       process_manager_->AllocateWorkerProcess(
-          kEmbeddedWorkerId, script_url_, false /* can_use_existing_process */,
-          &process_info);
+          kEmbeddedWorkerId, script_url_,
+          base::nullopt /* cross_origin_embedder_policy */,
+          false /* can_use_existing_process */, &process_info);
 
   // A new process should be allocated to the worker.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
@@ -192,7 +194,8 @@ TEST_F(ServiceWorkerProcessManagerTest, AllocateWorkerProcess_InShutdown) {
   ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
   blink::ServiceWorkerStatusCode status =
       process_manager_->AllocateWorkerProcess(
-          1, script_url_, true /* can_use_existing_process */, &process_info);
+          1, script_url_, base::nullopt /* cross_origin_embedder_policy */,
+          true /* can_use_existing_process */, &process_info);
 
   // Allocating a process in shutdown should abort.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, status);
@@ -215,8 +218,9 @@ TEST_F(ServiceWorkerProcessManagerTest,
     ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
     blink::ServiceWorkerStatusCode status =
         process_manager_->AllocateWorkerProcess(
-            kEmbeddedWorkerId, script_url_, true /* can_use_existing_process */,
-            &process_info);
+            kEmbeddedWorkerId, script_url_,
+            base::nullopt /* cross_origin_embedder_policy */,
+            true /* can_use_existing_process */, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     // Instead of testing the input to the CreateRenderProcessHost(), it'd be
     // more interesting to check the StoragePartition of the returned process
@@ -257,8 +261,9 @@ TEST_F(ServiceWorkerProcessManagerTest,
     ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
     blink::ServiceWorkerStatusCode status =
         process_manager_->AllocateWorkerProcess(
-            kEmbeddedWorkerId, script_url_, true /* can_use_existing_process */,
-            &process_info);
+            kEmbeddedWorkerId, script_url_,
+            base::nullopt /* cross_origin_embedder_policy */,
+            true /* can_use_existing_process */, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     EXPECT_EQ(
         kGuestSiteUrl,

@@ -273,11 +273,17 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   //         The <webview> guest site URL if |is_guest| is true.
   // |can_reuse_process| - Set to true if the new SiteInstance can use the
   //                       same process as the renderer for |url|.
+  // |cross_origin_isolated_info| - Indicates the cross-origin isolation state
+  //                                of the main script. ServiceWorkers are
+  //                                considered cross-origin Isolated if their
+  //                                Cross-Origin-Embedder-Policy header is set
+  //                                to "same-origin".
   // |is_guest| - Set to true if the new SiteInstance is for a <webview>
   // guest.
   static scoped_refptr<SiteInstanceImpl> CreateForServiceWorker(
       BrowserContext* browser_context,
       const GURL& url,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
       bool can_reuse_process = false,
       bool is_guest = false);
 

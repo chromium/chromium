@@ -265,8 +265,8 @@ void SetupOnUIThread(
   // Get a process.
   blink::ServiceWorkerStatusCode status =
       process_manager->AllocateWorkerProcess(
-          embedded_worker_id, params->script_url, can_use_existing_process,
-          process_info.get());
+          embedded_worker_id, params->script_url, cross_origin_embedder_policy,
+          can_use_existing_process, process_info.get());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     base::Optional<base::Time> ui_post_time;
     if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled())

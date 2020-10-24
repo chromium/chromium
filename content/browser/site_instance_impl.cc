@@ -323,6 +323,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForUrlInfo(
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
     BrowserContext* browser_context,
     const GURL& url,
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
     bool can_reuse_process,
     bool is_guest) {
   scoped_refptr<SiteInstanceImpl> site_instance;
@@ -331,16 +332,11 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
     site_instance = CreateForGuest(browser_context, url);
   } else {
     // This will create a new SiteInstance and BrowsingInstance.
-    // TODO(ahemery): We need to assess here if the SW operates in a
-    // crossOriginIsolated context and forward that value to the
-    // BrowsingInstance created.
-    scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
-        browser_context, CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated()));
+    scoped_refptr<BrowsingInstance> instance(
+        new BrowsingInstance(browser_context, cross_origin_isolated_info));
 
     // We do NOT want to allow the default site instance here because workers
     // need to be kept separate from other sites.
-    // TODO(ahemery): What, if anything, do we need to do regarding opt-in
-    // isolation and COOP/COEP for service workers.
     site_instance = instance->GetSiteInstanceForURL(
         UrlInfo(url, false /* origin_requests_isolation */),
         /* allow_default_instance */ false);

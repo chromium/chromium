@@ -205,7 +205,9 @@ TEST_F(RenderProcessHostUnitTest, ReuseUnmatchedServiceWorkerProcess) {
 
   // Gets a RenderProcessHost for an unmatched service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance1->GetLastProcessAssignmentOutcome());
@@ -214,7 +216,9 @@ TEST_F(RenderProcessHostUnitTest, ReuseUnmatchedServiceWorkerProcess) {
   // should not reuse the existing service worker's process. We create this
   // second service worker to test the "find the newest process" logic later.
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_NE(sw_host1, sw_host2);
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
@@ -265,7 +269,9 @@ TEST_F(RenderProcessHostUnitTest,
 
   // Gets a RenderProcessHost for an unmatched service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* sw_host = sw_site_instance->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance->GetLastProcessAssignmentOutcome());
@@ -299,8 +305,10 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
 
   // Gets a RenderProcessHost for a service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl,
-                                               /* can_reuse_process */ true);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+          /* can_reuse_process */ true);
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance1->GetLastProcessAssignmentOutcome());
@@ -311,7 +319,9 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // start the service worker and want to use a new process. We create this
   // second service worker to test the "find the newest process" logic later.
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_NE(sw_host1, sw_host2);
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
@@ -321,8 +331,10 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // REUSE_PENDING_OR_COMMITTED_SITE reuse policy should reuse the newest
   // unmatched service worker's process (i.e., sw_host2).
   scoped_refptr<SiteInstanceImpl> sw_site_instance3 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl,
-                                               /* can_reuse_process */ true);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+          /* can_reuse_process */ true);
   RenderProcessHost* sw_host3 = sw_site_instance3->GetProcess();
   EXPECT_EQ(sw_host2, sw_host3);
   EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
@@ -334,8 +346,10 @@ TEST_F(RenderProcessHostUnitTest, ReuseServiceWorkerProcessForServiceWorker) {
   // sw_host2 to be considered matched, so we can keep putting more service
   // workers in that process.
   scoped_refptr<SiteInstanceImpl> sw_site_instance4 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl,
-                                               /* can_reuse_process */ true);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+          /* can_reuse_process */ true);
   RenderProcessHost* sw_host4 = sw_site_instance4->GetProcess();
   EXPECT_EQ(sw_host2, sw_host4);
   EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
@@ -366,7 +380,9 @@ TEST_F(RenderProcessHostUnitTest,
 
   // Gets a RenderProcessHost for a service worker with process-per-site flag.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance1->GetLastProcessAssignmentOutcome());
@@ -374,7 +390,9 @@ TEST_F(RenderProcessHostUnitTest,
   // Getting a RenderProcessHost for a service worker of the same site with
   // process-per-site flag should reuse the unmatched service worker's process.
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* sw_host2 = sw_site_instance2->GetProcess();
   EXPECT_EQ(sw_host1, sw_host2);
   EXPECT_EQ(SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS,
@@ -403,7 +421,9 @@ TEST_F(RenderProcessHostUnitTest, DoNotReuseOtherSiteServiceWorkerProcess) {
 
   // Gets a RenderProcessHost for a service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance1 =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl1);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl1,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* sw_host1 = sw_site_instance1->GetProcess();
   EXPECT_EQ(SiteInstanceProcessAssignment::CREATED_NEW_PROCESS,
             sw_site_instance1->GetLastProcessAssignmentOutcome());
@@ -871,7 +891,9 @@ TEST_F(RenderProcessHostUnitTest,
 
   // Create a RenderProcessHost for a service worker.
   scoped_refptr<SiteInstanceImpl> sw_site_instance =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context(), kUrl);
+      SiteInstanceImpl::CreateForServiceWorker(
+          browser_context(), kUrl,
+          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* sw_process = sw_site_instance->GetProcess();
 
   // Change foo.com SiteInstances to use a different StoragePartition.
