@@ -213,6 +213,27 @@ bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
   return false;
 }
 
+bool IsOperatorWithSpecialShaping(const NGBlockNode& node) {
+  if (!node.IsBlock() || !node.IsMathML())
+    return false;
+  // https://mathml-refresh.github.io/mathml-core/#layout-of-operators
+  if (auto* element = DynamicTo<MathMLOperatorElement>(node.GetDOMNode())) {
+    UChar32 base_code_point = element->GetOperatorContent().code_point;
+    if (base_code_point == kNonCharacter ||
+        !node.Style().GetFont().PrimaryFont() ||
+        !node.Style().GetFont().PrimaryFont()->GlyphForCharacter(
+            base_code_point))
+      return false;
+
+    // TODO(crbug.com/1124301) Implement stretchy operators.
+
+    if (element->HasBooleanProperty(MathMLOperatorElement::kLargeOp) &&
+        HasDisplayStyle(node.Style()))
+      return true;
+  }
+  return false;
+}
+
 namespace {
 
 inline LayoutUnit DefaultFractionLineThickness(const ComputedStyle& style) {
