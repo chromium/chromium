@@ -731,6 +731,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       return selector;
     }
     case CSSSelector::kPseudoNot: {
+      base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
       std::unique_ptr<CSSParserSelector> inner_selector =
           ConsumeCompoundSelector(block);
       block.ConsumeWhitespace();
