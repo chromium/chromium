@@ -67,7 +67,10 @@ void FindMyDeviceControllerImpl::UpdateStatus() {
   if (phone_ringing_status_ == status)
     return;
 
+  PA_LOG(INFO) << "Find My Device ringing status update: "
+               << phone_ringing_status_ << " => " << status;
   phone_ringing_status_ = status;
+
   NotifyPhoneRingingStateChanged();
 }
 

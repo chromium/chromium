@@ -27,7 +27,10 @@ void DoNotDisturbControllerImpl::SetDoNotDisturbStateInternal(
   if (is_dnd_enabled == is_dnd_enabled_)
     return;
 
+  PA_LOG(INFO) << "Do Not Disturb state updated: " << is_dnd_enabled_ << " => "
+               << is_dnd_enabled;
   is_dnd_enabled_ = is_dnd_enabled;
+
   NotifyDndStateChanged();
 }
 

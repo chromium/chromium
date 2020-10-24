@@ -344,7 +344,11 @@ void TetherControllerImpl::UpdateStatus() {
 
   if (status_ == status)
     return;
+
+  PA_LOG(INFO) << "TetherController status update: " << status_ << " => "
+               << status;
   status_ = status;
+
   NotifyStatusChanged();
 }
 

@@ -6,8 +6,19 @@
 
 #include "chromeos/components/multidevice/logging/logging.h"
 
+#include <sstream>
+
 namespace chromeos {
 namespace phonehub {
+namespace {
+std::string GetIdStream(const base::flat_set<int64_t>& notification_ids) {
+  std::ostringstream output(std::ostringstream::ate);
+  for (const auto& id : notification_ids) {
+    output << id << " ";
+  }
+  return output.str();
+}
+}  // namespace
 
 NotificationManager::NotificationManager() = default;
 
@@ -23,25 +34,33 @@ void NotificationManager::RemoveObserver(Observer* observer) {
 
 void NotificationManager::NotifyNotificationsAdded(
     const base::flat_set<int64_t>& notification_ids) {
+  PA_LOG(INFO) << "Added the following notification ids: "
+               << GetIdStream(notification_ids);
+
   for (auto& observer : observer_list_)
     observer.OnNotificationsAdded(notification_ids);
 }
 
 void NotificationManager::NotifyNotificationsUpdated(
     const base::flat_set<int64_t>& notification_ids) {
+  PA_LOG(INFO) << "Updated the following notification id: "
+               << GetIdStream(notification_ids);
+
   for (auto& observer : observer_list_)
     observer.OnNotificationsUpdated(notification_ids);
 }
 
 void NotificationManager::NotifyNotificationsRemoved(
     const base::flat_set<int64_t>& notification_ids) {
+  PA_LOG(INFO) << "Removed the following notification id: "
+               << GetIdStream(notification_ids);
+
   for (auto& observer : observer_list_)
     observer.OnNotificationsRemoved(notification_ids);
 }
 
 void NotificationManager::SetNotificationsInternal(
     const base::flat_set<Notification>& notifications) {
-  PA_LOG(INFO) << "Setting notifications internally.";
 
   base::flat_set<int64_t> added_ids;
   base::flat_set<int64_t> updated_ids;
@@ -60,14 +79,14 @@ void NotificationManager::SetNotificationsInternal(
     updated_ids.emplace(id);
   }
 
-  NotifyNotificationsAdded(added_ids);
-  NotifyNotificationsUpdated(updated_ids);
+  if (!added_ids.empty())
+    NotifyNotificationsAdded(added_ids);
+  if (!updated_ids.empty())
+    NotifyNotificationsUpdated(updated_ids);
 }
 
 void NotificationManager::RemoveNotificationsInternal(
     const base::flat_set<int64_t>& notification_ids) {
-  PA_LOG(INFO) << "Removing notifications internally.";
-
   for (int64_t id : notification_ids) {
     auto it = id_to_notification_map_.find(id);
     if (it == id_to_notification_map_.end())
@@ -80,8 +99,6 @@ void NotificationManager::RemoveNotificationsInternal(
 }
 
 void NotificationManager::ClearNotificationsInternal() {
-  PA_LOG(INFO) << "Clearing notification internally.";
-
   base::flat_set<int64_t> removed_ids;
   for (const auto& pair : id_to_notification_map_) {
     removed_ids.emplace(pair.first);

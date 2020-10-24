@@ -149,6 +149,7 @@ void ConnectionManagerImpl::AttemptConnection() {
   }
   connection_attempt_->SetDelegate(this);
 
+  PA_LOG(INFO) << "ConnectiongManager status updated to: " << GetStatus();
   NotifyStatusChanged();
 
   timer_->Start(FROM_HERE, kConnectionTimeoutSeconds,
