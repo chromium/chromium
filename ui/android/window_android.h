@@ -106,8 +106,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   void SetForce60HzRefreshRate();
 
-  bool ApplyDisableSurfaceControlWorkaround();
-
   class TestHooks {
    public:
     virtual ~TestHooks() = default;

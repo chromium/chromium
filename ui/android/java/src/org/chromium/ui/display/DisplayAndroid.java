@@ -20,7 +20,7 @@ import java.util.WeakHashMap;
  * anywhere, as long as the corresponding WindowAndroids are destroyed. The observers are
  * held weakly so to not lead to leaks.
  */
-public abstract class DisplayAndroid {
+public class DisplayAndroid {
     /**
      * DisplayAndroidObserver interface for changes to this Display.
      */
@@ -253,8 +253,6 @@ public abstract class DisplayAndroid {
     public void updateIsDisplayServerWideColorGamut(Boolean isDisplayServerWideColorGamut) {
         update(null, null, null, null, null, null, isDisplayServerWideColorGamut, null, null, null);
     }
-
-    public abstract boolean applyDisableSurfaceControlWorkaround();
 
     /**
      * Update the display to the provided parameters. Null values leave the parameter unchanged.
