@@ -4,11 +4,15 @@
 
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "ui/gl/init/gl_factory.h"
@@ -28,6 +32,13 @@ std::unique_ptr<gpu::SingleTaskSequence>
 SkiaOutputSurfaceDependencyImpl::CreateSequence() {
   return std::make_unique<gpu::SchedulerSequence>(
       gpu_service_impl_->GetGpuScheduler());
+}
+
+std::unique_ptr<DisplayCompositorMemoryAndTaskController>
+SkiaOutputSurfaceDependencyImpl::
+    CreateDisplayCompositorMemoryAndTaskController() {
+  return std::make_unique<DisplayCompositorMemoryAndTaskController>(
+      gpu_service_impl_);
 }
 
 gpu::SharedImageManager*

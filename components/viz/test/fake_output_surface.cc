@@ -120,7 +120,4 @@ void FakeOutputSurface::SetNeedsSwapSizeNotifications(
     bool needs_swap_size_notifications) {}
 #endif
 
-gpu::MemoryTracker* FakeOutputSurface::GetMemoryTracker() {
-  return nullptr;
-}
 }  // namespace viz

@@ -147,8 +147,4 @@ void SoftwareOutputSurface::SetNeedsSwapSizeNotifications(
   needs_swap_size_notifications_ = needs_swap_size_notifications;
 }
 #endif
-
-gpu::MemoryTracker* SoftwareOutputSurface::GetMemoryTracker() {
-  return nullptr;
-}
 }  // namespace viz

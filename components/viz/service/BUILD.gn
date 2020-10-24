@@ -338,6 +338,8 @@ viz_component("service") {
 # then this build target will no longer be needed.
 viz_source_set("gpu_service_dependencies") {
   sources = [
+    "display/display_compositor_memory_and_task_controller.cc",
+    "display/display_compositor_memory_and_task_controller.h",
     "display_embedder/image_context_impl.cc",
     "display_embedder/image_context_impl.h",
     "display_embedder/output_presenter.cc",

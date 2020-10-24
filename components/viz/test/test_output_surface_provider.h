@@ -22,14 +22,14 @@ class TestOutputSurfaceProvider : public OutputSurfaceProvider {
   ~TestOutputSurfaceProvider() override;
 
   // OutputSurfaceProvider implementation.
-  std::unique_ptr<gpu::GpuTaskSchedulerHelper> CreateGpuTaskScheduler(
+  std::unique_ptr<DisplayCompositorMemoryAndTaskController> CreateGpuDependency(
       bool gpu_compositing,
       const RendererSettings& renderer_settings) override;
   std::unique_ptr<OutputSurface> CreateOutputSurface(
       gpu::SurfaceHandle surface_handle,
       bool gpu_compositing,
       mojom::DisplayClient* display_client,
-      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
+      DisplayCompositorMemoryAndTaskController* display_controller,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) override;
 

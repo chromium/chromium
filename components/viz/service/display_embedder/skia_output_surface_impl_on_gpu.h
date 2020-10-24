@@ -85,6 +85,7 @@ class SkiaOutputSurfaceImplOnGpu
       SkiaOutputSurfaceDependency* deps,
       const RendererSettings& renderer_settings,
       const gpu::SequenceId sequence_id,
+      gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       BufferPresentedCallback buffer_presented_callback,
       ContextLostCallback context_lost_callback,
@@ -96,6 +97,7 @@ class SkiaOutputSurfaceImplOnGpu
       scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
       const RendererSettings& renderer_settings,
       const gpu::SequenceId sequence_id,
+      gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       BufferPresentedCallback buffer_presented_callback,
       ContextLostCallback context_lost_callback,
@@ -103,8 +105,9 @@ class SkiaOutputSurfaceImplOnGpu
   ~SkiaOutputSurfaceImplOnGpu() override;
 
   gpu::CommandBufferId command_buffer_id() const {
-    return sync_point_client_state_->command_buffer_id();
+    return shared_gpu_deps_->command_buffer_id();
   }
+
   const OutputSurface::Capabilities capabilities() const {
     return output_device_->capabilities();
   }
@@ -200,8 +203,6 @@ class SkiaOutputSurfaceImplOnGpu
     num_readbacks_pending_--;
   }
 
-  gpu::MemoryTracker* GetMemoryTracker() { return memory_tracker_; }
-
   // Make context current for GL, and return false if the context is lost.
   // It will do nothing when Vulkan is used.
   bool MakeCurrent(bool need_framebuffer);
@@ -282,9 +283,9 @@ class SkiaOutputSurfaceImplOnGpu
   base::Optional<ReleaseCurrent> release_current_last_;
 
   SkiaOutputSurfaceDependency* const dependency_;
+  gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps_;
   scoped_refptr<gpu::gles2::FeatureInfo> feature_info_;
   scoped_refptr<gpu::SyncPointClientState> sync_point_client_state_;
-  gpu::MemoryTracker* const memory_tracker_;
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;

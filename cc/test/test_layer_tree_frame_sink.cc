@@ -113,7 +113,7 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   // need to pass in an gpu::GpuTaskSchedulerHelper here.
   display_ = std::make_unique<viz::Display>(
       shared_bitmap_manager_.get(), renderer_settings_, debug_settings_,
-      frame_sink_id_, nullptr /* gpu::GpuTaskSchedulerHelper */,
+      frame_sink_id_, nullptr /* DisplayCompositorMemoryAndTaskController */,
       std::move(display_output_surface), std::move(overlay_processor),
       std::move(scheduler), compositor_task_runner_);
 

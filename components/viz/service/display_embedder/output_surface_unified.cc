@@ -48,8 +48,4 @@ unsigned OutputSurfaceUnified::UpdateGpuFence() {
 gfx::OverlayTransform OutputSurfaceUnified::GetDisplayTransform() {
   return gfx::OVERLAY_TRANSFORM_NONE;
 }
-
-gpu::MemoryTracker* OutputSurfaceUnified::GetMemoryTracker() {
-  return nullptr;
-}
 }  // namespace viz

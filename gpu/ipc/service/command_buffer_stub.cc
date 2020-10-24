@@ -666,6 +666,10 @@ void CommandBufferStub::SetMemoryTrackerFactoryForTesting(
   SetOrGetMemoryTrackerFactory(factory);
 }
 
+MemoryTracker* CommandBufferStub::GetMemoryTracker() const {
+  return memory_tracker_.get();
+}
+
 scoped_refptr<Buffer> CommandBufferStub::GetTransferBuffer(int32_t id) {
   return command_buffer_->GetTransferBuffer(id);
 }

@@ -61,7 +61,9 @@ ContextResult WebGPUInProcessContext::Initialize(
   auto result = command_buffer_->Initialize(
       surface, is_offscreen, kNullSurfaceHandle, attribs,
       gpu_memory_buffer_manager, image_factory, gpu_channel_manager_delegate,
-      client_task_runner_, nullptr /* task_sequence */, nullptr, nullptr);
+      client_task_runner_, nullptr /* task_sequence */,
+      nullptr /* display_compositor_memory_and_task_controller_on_gpu */,
+      nullptr, nullptr);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;

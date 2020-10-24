@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 
 #if defined(OS_APPLE)
@@ -78,8 +79,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     gpu::SurfaceHandle surface_handle,
     const OutputSurface::Capabilities& capabilities,
     gpu::SharedImageManager* shared_image_manager,
-    gpu::MemoryTracker* memory_tracker,
-    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
+    DisplayCompositorMemoryAndTaskController* display_controller,
     gpu::SharedImageInterface* shared_image_interface,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
@@ -127,6 +127,8 @@ OverlayProcessorInterface::CreateOverlayProcessor(
       std::move(overlay_candidates),
       std::move(renderer_settings.overlay_strategies), sii);
 #elif defined(OS_ANDROID)
+  DCHECK(display_controller);
+
   if (capabilities.supports_surfaceless) {
     // This is for Android SurfaceControl case.
     return std::make_unique<OverlayProcessorSurfaceControl>();
@@ -141,7 +143,9 @@ OverlayProcessorInterface::CreateOverlayProcessor(
       return std::make_unique<OverlayProcessorStub>();
 
     return std::make_unique<OverlayProcessorAndroid>(
-        shared_image_manager, memory_tracker, gpu_task_scheduler);
+        shared_image_manager,
+        display_controller->get_controller_on_gpu()->memory_tracker(),
+        display_controller->get_gpu_task_scheduler());
   }
 #else  // Default
   return std::make_unique<OverlayProcessorStub>();

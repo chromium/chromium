@@ -37,7 +37,7 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
       CommandBufferStub* share_group,
       const GPUCreateCommandBufferConfig& init_params,
       base::UnsafeSharedMemoryRegion shared_state_shm) override;
-  MemoryTracker* GetMemoryTracker() const override;
+  MemoryTracker* GetContextGroupMemoryTracker() const override;
 
   // DecoderClient implementation.
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;

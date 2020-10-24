@@ -110,7 +110,4 @@ gfx::OverlayTransform PixelTestOutputSurface::GetDisplayTransform() {
   return gfx::OVERLAY_TRANSFORM_NONE;
 }
 
-gpu::MemoryTracker* PixelTestOutputSurface::GetMemoryTracker() {
-  return nullptr;
-}
 }  // namespace cc

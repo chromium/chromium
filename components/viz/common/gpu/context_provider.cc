@@ -4,6 +4,8 @@
 
 #include "components/viz/common/gpu/context_provider.h"
 
+#include <utility>
+
 namespace viz {
 
 ContextProvider::ScopedContextLock::ScopedContextLock(
@@ -19,10 +21,6 @@ ContextProvider::ScopedContextLock::~ScopedContextLock() {
 }
 
 gpu::SharedImageManager* ContextProvider::GetSharedImageManager() {
-  return nullptr;
-}
-
-gpu::MemoryTracker* ContextProvider::GetMemoryTracker() {
   return nullptr;
 }
 }  // namespace viz

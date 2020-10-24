@@ -8,6 +8,8 @@ component("gl_in_process_context") {
   sources = [
     "command_buffer_task_executor.cc",
     "command_buffer_task_executor.h",
+    "display_compositor_memory_and_task_controller_on_gpu.cc",
+    "display_compositor_memory_and_task_controller_on_gpu.h",
     "gl_in_process_context.cc",
     "gl_in_process_context.h",
     "gl_in_process_context_export.h",

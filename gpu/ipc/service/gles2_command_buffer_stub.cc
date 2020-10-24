@@ -85,6 +85,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
 
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
+  memory_tracker_ = CreateMemoryTracker();
 
   if (share_command_buffer_stub) {
     context_group_ =
@@ -432,7 +433,7 @@ base::TimeDelta GLES2CommandBufferStub::GetGpuBlockedTimeSinceLastSwap() {
   return channel_->scheduler()->TakeTotalBlockingTime();
 }
 
-MemoryTracker* GLES2CommandBufferStub::GetMemoryTracker() const {
+MemoryTracker* GLES2CommandBufferStub::GetContextGroupMemoryTracker() const {
   return context_group_->memory_tracker();
 }
 

@@ -12,6 +12,7 @@
 
 namespace viz {
 class VizProcessContextProvider;
+class DisplayCompositorMemoryAndTaskController;
 }
 
 namespace gpu {
@@ -76,6 +77,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
 
   friend class gpu::InProcessCommandBuffer;
   friend class viz::VizProcessContextProvider;
+  friend class viz::DisplayCompositorMemoryAndTaskController;
   // Only used for inside CommandBuffer implementation.
   SingleTaskSequence* GetTaskSequence() const;
 

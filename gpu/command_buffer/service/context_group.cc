@@ -636,7 +636,6 @@ void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
     passthrough_resources_.reset();
     ReportProgress();
   }
-  memory_tracker_ = nullptr;
 }
 
 uint32_t ContextGroup::GetMemRepresented() const {

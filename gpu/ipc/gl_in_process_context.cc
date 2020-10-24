@@ -79,7 +79,9 @@ ContextResult GLInProcessContext::Initialize(
       surface, is_offscreen, window, attribs, gpu_memory_buffer_manager,
       image_factory,
       /*gpu_channel_manager_delegate=*/nullptr, std::move(task_runner),
-      /*task_sequence=*/nullptr, nullptr, nullptr);
+      /*task_sequence=*/nullptr,
+      /*display_compositor_memory_and_task_controller_on_gpu=*/nullptr, nullptr,
+      nullptr);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;

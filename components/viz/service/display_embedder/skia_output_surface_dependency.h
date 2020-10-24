@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_DEPENDENCY_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_DEPENDENCY_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
@@ -12,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/sequence_id.h"
@@ -62,6 +64,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   // Returns a new task execution sequence. Sequences should not outlive the
   // task executor.
   virtual std::unique_ptr<gpu::SingleTaskSequence> CreateSequence() = 0;
+  // Returns a new DisplayCompositorMemoryAndTaskController that contains a new
+  // task execution sequence. This is used for the case where there is no need
+  // to share a DisplayCompositorMemoryAndTaskController with overlay, and
+  // SkiaOutputSurface could just create its own
+  // DisplayCompositorMemoryAndTaskController.
+  virtual std::unique_ptr<DisplayCompositorMemoryAndTaskController>
+  CreateDisplayCompositorMemoryAndTaskController() = 0;
 
   virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
   virtual gpu::SyncPointManager* GetSyncPointManager() = 0;

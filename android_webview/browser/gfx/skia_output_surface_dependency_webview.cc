@@ -11,6 +11,7 @@
 #include "android_webview/browser/gfx/task_queue_web_view.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "gpu/ipc/gpu_task_scheduler_helper.h"
 
 namespace android_webview {
 
@@ -33,6 +34,13 @@ std::unique_ptr<gpu::SingleTaskSequence>
 SkiaOutputSurfaceDependencyWebView::CreateSequence() {
   return std::make_unique<TaskForwardingSequence>(
       this->task_queue_, this->gpu_service_->sync_point_manager());
+}
+
+std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+SkiaOutputSurfaceDependencyWebView::
+    CreateDisplayCompositorMemoryAndTaskController() {
+  return std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
+      CreateSequence());
 }
 
 gpu::SharedImageManager*

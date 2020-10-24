@@ -133,8 +133,4 @@ gfx::OverlayTransform ParentOutputSurface::GetDisplayTransform() {
   return gfx::OVERLAY_TRANSFORM_NONE;
 }
 
-gpu::MemoryTracker* ParentOutputSurface::GetMemoryTracker() {
-  return nullptr;
-}
-
 }  // namespace android_webview

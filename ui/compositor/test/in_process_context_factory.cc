@@ -126,7 +126,6 @@ class DirectOutputSurface : public viz::OutputSurface {
   gfx::OverlayTransform GetDisplayTransform() override {
     return gfx::OVERLAY_TRANSFORM_NONE;
   }
-  gpu::MemoryTracker* GetMemoryTracker() override { return nullptr; }
 
  private:
   void OnSwapBuffersComplete() {
@@ -320,13 +319,13 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   DCHECK_EQ(context_result, gpu::ContextResult::kSuccess);
 
   std::unique_ptr<viz::OutputSurface> display_output_surface;
-  std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler;
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+      display_dependency;
 
   if (renderer_settings_.use_skia_renderer) {
-    gpu_task_scheduler = std::make_unique<gpu::GpuTaskSchedulerHelper>(
-        viz::TestGpuServiceHolder::GetInstance()
-            ->gpu_service()
-            ->GetGpuScheduler());
+    display_dependency =
+        std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
+            viz::TestGpuServiceHolder::GetInstance()->gpu_service());
     display_output_surface = viz::SkiaOutputSurfaceImpl::Create(
         std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
             viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
@@ -368,7 +367,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
   data->SetDisplay(std::make_unique<viz::Display>(
       &shared_bitmap_manager_, renderer_settings_, &debug_settings_,
-      compositor->frame_sink_id(), std::move(gpu_task_scheduler),
+      compositor->frame_sink_id(), std::move(display_dependency),
       std::move(display_output_surface), std::move(overlay_processor),
       std::move(scheduler), compositor->task_runner()));
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source.get(),

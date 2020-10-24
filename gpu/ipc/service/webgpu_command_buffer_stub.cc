@@ -149,8 +149,8 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
 #endif  // defined(OS_FUCHSIA)
 }
 
-MemoryTracker* WebGPUCommandBufferStub::GetMemoryTracker() const {
-  return memory_tracker_.get();
+MemoryTracker* WebGPUCommandBufferStub::GetContextGroupMemoryTracker() const {
+  return nullptr;
 }
 
 bool WebGPUCommandBufferStub::HandleMessage(const IPC::Message& message) {

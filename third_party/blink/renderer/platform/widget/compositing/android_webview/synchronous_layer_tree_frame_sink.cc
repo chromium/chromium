@@ -124,7 +124,6 @@ class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
   gfx::OverlayTransform GetDisplayTransform() override {
     return gfx::OVERLAY_TRANSFORM_NONE;
   }
-  gpu::MemoryTracker* GetMemoryTracker() override { return nullptr; }
 };
 
 base::TimeDelta SynchronousLayerTreeFrameSink::StubDisplayClient::

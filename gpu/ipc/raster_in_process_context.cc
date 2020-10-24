@@ -67,7 +67,9 @@ ContextResult RasterInProcessContext::Initialize(
       nullptr /* surface */, true /* is_offscreen */, kNullSurfaceHandle,
       attribs, gpu_memory_buffer_manager, image_factory,
       gpu_channel_manager_delegate, client_task_runner_,
-      nullptr /* task_sequence */, gr_shader_cache, activity_flags);
+      nullptr /* task_sequence */,
+      nullptr /*display_compositor_memory_and_task_controller_on_gpu */,
+      gr_shader_cache, activity_flags);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;

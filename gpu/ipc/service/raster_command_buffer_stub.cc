@@ -177,8 +177,8 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   return gpu::ContextResult::kSuccess;
 }
 
-MemoryTracker* RasterCommandBufferStub::GetMemoryTracker() const {
-  return memory_tracker_.get();
+MemoryTracker* RasterCommandBufferStub::GetContextGroupMemoryTracker() const {
+  return nullptr;
 }
 
 bool RasterCommandBufferStub::HandleMessage(const IPC::Message& message) {

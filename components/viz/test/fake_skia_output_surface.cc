@@ -372,8 +372,4 @@ void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(
   NOTIMPLEMENTED();
 }
 
-gpu::MemoryTracker* FakeSkiaOutputSurface::GetMemoryTracker() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
 }  // namespace viz

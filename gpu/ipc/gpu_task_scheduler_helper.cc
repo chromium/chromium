@@ -70,7 +70,8 @@ SequenceId GpuTaskSchedulerHelper::GetSequenceId() {
 }
 
 gpu::SingleTaskSequence* GpuTaskSchedulerHelper::GetTaskSequence() const {
-  DCHECK(using_command_buffer_);
+  // The are two places this function is called: inside command buffer or during
+  // start up or tear down.
   return task_sequence_.get();
 }
 

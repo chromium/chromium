@@ -49,7 +49,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
   explicit OutputSurfaceProviderImpl(bool headless);
   ~OutputSurfaceProviderImpl() override;
 
-  std::unique_ptr<gpu::GpuTaskSchedulerHelper> CreateGpuTaskScheduler(
+  std::unique_ptr<DisplayCompositorMemoryAndTaskController> CreateGpuDependency(
       bool gpu_compositing,
       const RendererSettings& renderer_settings) override;
 
@@ -58,7 +58,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
       gpu::SurfaceHandle surface_handle,
       bool gpu_compositing,
       mojom::DisplayClient* display_client,
-      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
+      DisplayCompositorMemoryAndTaskController* gpu_dependency,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) override;
 

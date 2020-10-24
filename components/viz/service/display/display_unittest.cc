@@ -202,14 +202,16 @@ class DisplayTest : public testing::Test {
       std::unique_ptr<OutputSurface> output_surface) {
     auto overlay_processor = std::make_unique<OverlayProcessorStub>();
     // Normally display will need to take ownership of a
-    // gpu::GpuTaskschedulerhelper in order to keep it alive to share between
-    // the output surface and the overlay processor. In this case the overlay
-    // processor is a stub and the output surface is test only as well, so there
-    // is no need to pass in a real gpu::GpuTaskSchedulerHelper.
+    // DisplayCompositorMemoryAndTaskController in order to keep it alive to
+    // share between the output surface and the overlay processor. In this case
+    // the overlay processor is a stub and the output surface is test only as
+    // well, so there is no need to pass in a real
+    // DisplayCompositorMemoryAndTaskController.
     auto display = std::make_unique<Display>(
         &shared_bitmap_manager_, settings, &debug_settings_, frame_sink_id,
-        nullptr /* gpu::GpuTaskSchedulerHelper */, std::move(output_surface),
-        std::move(overlay_processor), std::move(scheduler), task_runner_);
+        nullptr /* DisplayCompositorMemoryAndTaskController */,
+        std::move(output_surface), std::move(overlay_processor),
+        std::move(scheduler), task_runner_);
     display->SetVisible(true);
     return display;
   }

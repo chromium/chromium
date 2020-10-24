@@ -44,6 +44,7 @@ class GrContextForGLES2Interface;
 
 namespace viz {
 class ContextLostObserver;
+class DisplayCompositorMemoryAndTaskController;
 class GpuTaskSchedulerHelper;
 class RendererSettings;
 
@@ -60,7 +61,7 @@ class VIZ_SERVICE_EXPORT VizProcessContextProvider
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gpu::ImageFactory* image_factory,
       gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
+      DisplayCompositorMemoryAndTaskController* display_controller,
       const RendererSettings& renderer_settings);
 
   // ContextProvider implementation.
@@ -78,7 +79,6 @@ class VIZ_SERVICE_EXPORT VizProcessContextProvider
   void AddObserver(ContextLostObserver* obs) override;
   void RemoveObserver(ContextLostObserver* obs) override;
   gpu::SharedImageManager* GetSharedImageManager() override;
-  gpu::MemoryTracker* GetMemoryTracker() override;
 
   virtual void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback);
@@ -106,7 +106,7 @@ class VIZ_SERVICE_EXPORT VizProcessContextProvider
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gpu::ImageFactory* image_factory,
       gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
+      DisplayCompositorMemoryAndTaskController* display_controller,
       const gpu::SharedMemoryLimits& mem_limits);
   void OnContextLost();
 

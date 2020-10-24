@@ -41,6 +41,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
+#include "gpu/ipc/display_compositor_memory_and_task_controller_on_gpu.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/service/context_url.h"
@@ -122,6 +123,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
       GpuChannelManagerDelegate* gpu_channel_manager_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       SingleTaskSequence* task_sequence,
+      DisplayCompositorMemoryAndTaskControllerOnGpu* gpu_dependency,
       gpu::raster::GrShaderCache* gr_shader_cache,
       GpuProcessActivityFlags* activity_flags);
 
@@ -249,31 +251,29 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
     return task_executor_->shared_image_manager();
   }
 
-  gpu::MemoryTracker* GetMemoryTracker() {
-    // Should only be called after initialization.
-    DCHECK(context_group_);
-    return context_group_->memory_tracker();
-  }
-
  private:
   struct InitializeOnGpuThreadParams {
     SurfaceHandle surface_handle;
     const ContextCreationAttribs& attribs;
     Capabilities* capabilities;  // Ouptut.
     ImageFactory* image_factory;
+    DisplayCompositorMemoryAndTaskControllerOnGpu* gpu_dependency;
     gpu::raster::GrShaderCache* gr_shader_cache;
     GpuProcessActivityFlags* activity_flags;
 
-    InitializeOnGpuThreadParams(SurfaceHandle surface_handle,
-                                const ContextCreationAttribs& attribs,
-                                Capabilities* capabilities,
-                                ImageFactory* image_factory,
-                                gpu::raster::GrShaderCache* gr_shader_cache,
-                                GpuProcessActivityFlags* activity_flags)
+    InitializeOnGpuThreadParams(
+        SurfaceHandle surface_handle,
+        const ContextCreationAttribs& attribs,
+        Capabilities* capabilities,
+        ImageFactory* image_factory,
+        DisplayCompositorMemoryAndTaskControllerOnGpu* gpu_dependency,
+        gpu::raster::GrShaderCache* gr_shader_cache,
+        GpuProcessActivityFlags* activity_flags)
         : surface_handle(surface_handle),
           attribs(attribs),
           capabilities(capabilities),
           image_factory(image_factory),
+          gpu_dependency(gpu_dependency),
           gr_shader_cache(gr_shader_cache),
           activity_flags(activity_flags) {}
   };
@@ -353,7 +353,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void HandleGpuVSyncOnOriginThread(base::TimeTicks vsync_time,
                                     base::TimeDelta vsync_interval);
 
-  const CommandBufferId command_buffer_id_;
   const ContextUrl active_url_;
 
   bool is_offscreen_ = false;
@@ -365,6 +364,9 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   // Members accessed on the gpu thread (possibly with the exception of
   // creation):
+  DisplayCompositorMemoryAndTaskControllerOnGpu* gpu_dependency_;
+  std::unique_ptr<DisplayCompositorMemoryAndTaskControllerOnGpu>
+      gpu_dependency_holder_;
   bool use_virtualized_gl_context_ = false;
   raster::GrShaderCache* gr_shader_cache_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;

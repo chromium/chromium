@@ -836,8 +836,9 @@ uint64_t GpuChannel::GetMemoryUsage() const {
   unique_memory_trackers.reserve(stubs_.size());
   uint64_t size = 0;
   for (const auto& kv : stubs_) {
-    MemoryTracker* tracker = kv.second->GetMemoryTracker();
-    if (!unique_memory_trackers.insert(tracker).second) {
+    size += kv.second->GetMemoryTracker()->GetSize();
+    MemoryTracker* tracker = kv.second->GetContextGroupMemoryTracker();
+    if (!tracker || !unique_memory_trackers.insert(tracker).second) {
       // We already counted that tracker.
       continue;
     }

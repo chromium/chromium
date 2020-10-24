@@ -26,6 +26,8 @@ class SkiaOutputSurfaceDependencyWebView
   ~SkiaOutputSurfaceDependencyWebView() override;
 
   std::unique_ptr<gpu::SingleTaskSequence> CreateSequence() override;
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayCompositorMemoryAndTaskController() override;
   gpu::SharedImageManager* GetSharedImageManager() override;
   gpu::SyncPointManager* GetSyncPointManager() override;
   const gpu::GpuDriverBugWorkarounds& GetGpuDriverBugWorkarounds() override;

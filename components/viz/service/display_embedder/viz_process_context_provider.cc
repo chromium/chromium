@@ -21,6 +21,7 @@
 #include "components/viz/common/gpu/context_lost_reason.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/viz_utils.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -113,13 +114,13 @@ VizProcessContextProvider::VizProcessContextProvider(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
+    DisplayCompositorMemoryAndTaskController* display_controller,
     const RendererSettings& renderer_settings)
     : attributes_(CreateAttributes(renderer_settings.requires_alpha_channel,
                                    renderer_settings)) {
   InitializeContext(std::move(task_executor), surface_handle,
                     gpu_memory_buffer_manager, image_factory,
-                    gpu_channel_manager_delegate, gpu_task_scheduler,
+                    gpu_channel_manager_delegate, display_controller,
                     SharedMemoryLimitsForRendererSettings(renderer_settings));
 
   if (context_result_ == gpu::ContextResult::kSuccess) {
@@ -243,11 +244,12 @@ void VizProcessContextProvider::InitializeContext(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
+    DisplayCompositorMemoryAndTaskController* display_controller,
     const gpu::SharedMemoryLimits& mem_limits) {
   const bool is_offscreen = surface_handle == gpu::kNullSurfaceHandle;
-  DCHECK(gpu_task_scheduler);
-  gpu_task_scheduler_helper_ = gpu_task_scheduler;
+  DCHECK(display_controller);
+  gpu_task_scheduler_helper_ = display_controller->get_gpu_task_scheduler();
+
   command_buffer_ = std::make_unique<gpu::InProcessCommandBuffer>(
       task_executor,
       GURL("chrome://gpu/VizProcessContextProvider::InitializeContext"));
@@ -255,7 +257,8 @@ void VizProcessContextProvider::InitializeContext(
       /*surface=*/nullptr, is_offscreen, surface_handle, attributes_,
       gpu_memory_buffer_manager, image_factory, gpu_channel_manager_delegate,
       base::ThreadTaskRunnerHandle::Get(),
-      gpu_task_scheduler_helper_->GetTaskSequence(), nullptr, nullptr);
+      gpu_task_scheduler_helper_->GetTaskSequence(),
+      display_controller->get_controller_on_gpu(), nullptr, nullptr);
   if (context_result_ != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return;
@@ -338,10 +341,6 @@ base::ScopedClosureRunner VizProcessContextProvider::GetCacheBackBufferCb() {
 
 gpu::SharedImageManager* VizProcessContextProvider::GetSharedImageManager() {
   return command_buffer_->GetSharedImageManager();
-}
-
-gpu::MemoryTracker* VizProcessContextProvider::GetMemoryTracker() {
-  return command_buffer_->GetMemoryTracker();
 }
 
 void VizProcessContextProvider::SetNeedsMeasureNextDrawLatency() {

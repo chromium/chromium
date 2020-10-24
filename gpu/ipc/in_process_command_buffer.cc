@@ -61,7 +61,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
-#include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
@@ -96,13 +95,7 @@ namespace gpu {
 
 namespace {
 
-base::AtomicSequenceNumber g_next_route_id;
 base::AtomicSequenceNumber g_next_image_id;
-
-CommandBufferId NextCommandBufferId() {
-  return CommandBufferIdFromChannelAndRoute(kDisplayCompositorClientId,
-                                            g_next_route_id.GetNext() + 1);
-}
 
 template <typename T>
 base::OnceClosure WrapTaskWithResult(base::OnceCallback<T(void)> task,
@@ -171,8 +164,7 @@ bool InProcessCommandBuffer::SharedImageInterfaceHelper::EnableWrappedSkImage()
 InProcessCommandBuffer::InProcessCommandBuffer(
     CommandBufferTaskExecutor* task_executor,
     const GURL& active_url)
-    : command_buffer_id_(NextCommandBufferId()),
-      active_url_(active_url),
+    : active_url_(active_url),
       flush_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                    base::WaitableEvent::InitialState::NOT_SIGNALED),
       task_executor_(task_executor),
@@ -265,6 +257,7 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
     GpuChannelManagerDelegate* gpu_channel_manager_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     SingleTaskSequence* task_sequence,
+    DisplayCompositorMemoryAndTaskControllerOnGpu* gpu_dependency,
     gpu::raster::GrShaderCache* gr_shader_cache,
     GpuProcessActivityFlags* activity_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
@@ -293,8 +286,8 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
 
   Capabilities capabilities;
   InitializeOnGpuThreadParams params(surface_handle, attribs, &capabilities,
-                                     image_factory, gr_shader_cache,
-                                     activity_flags);
+                                     image_factory, gpu_dependency,
+                                     gr_shader_cache, activity_flags);
 
   base::OnceCallback<gpu::ContextResult(void)> init_task =
       base::BindOnce(&InProcessCommandBuffer::InitializeOnGpuThread,
@@ -326,9 +319,9 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
   if (result == gpu::ContextResult::kSuccess) {
     capabilities_ = capabilities;
     shared_image_interface_ = std::make_unique<SharedImageInterfaceInProcess>(
-        task_executor_, task_sequence_, NextCommandBufferId(),
+        task_executor_, task_sequence_, gpu_dependency_->NextCommandBufferId(),
         context_group_->mailbox_manager(), image_factory_,
-        context_group_->memory_tracker(),
+        gpu_dependency_->memory_tracker(),
         std::make_unique<SharedImageInterfaceHelper>(this));
   }
 
@@ -340,6 +333,15 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   TRACE_EVENT0("gpu", "InProcessCommandBuffer::InitializeOnGpuThread")
   UpdateActiveUrl();
+
+  if (params.gpu_dependency) {
+    gpu_dependency_ = params.gpu_dependency;
+  } else {
+    gpu_dependency_holder_ =
+        std::make_unique<DisplayCompositorMemoryAndTaskControllerOnGpu>(
+            task_executor_);
+    gpu_dependency_ = gpu_dependency_holder_.get();
+  }
 
   if (gpu_channel_manager_delegate_ &&
       gpu_channel_manager_delegate_->IsExiting()) {
@@ -358,7 +360,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         base::trace_event::MemoryDumpManager::GetInstance()
             ->GetTracingProcessId();
     memory_tracker = std::make_unique<GpuCommandBufferMemoryTracker>(
-        command_buffer_id_, client_tracing_id,
+        gpu_dependency_->command_buffer_id(), client_tracing_id,
         base::ThreadTaskRunnerHandle::Get(), /* obserer=*/nullptr);
   }
 
@@ -402,7 +404,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
                                                                         : "0");
 
   command_buffer_ = std::make_unique<CommandBufferService>(
-      this, context_group_->memory_tracker());
+      this, gpu_dependency_->memory_tracker());
 
   context_state_ = task_executor_->GetSharedContextState();
 
@@ -500,7 +502,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     std::unique_ptr<webgpu::WebGPUDecoder> webgpu_decoder(
         webgpu::WebGPUDecoder::Create(
             this, command_buffer_.get(), task_executor_->shared_image_manager(),
-            context_group_->memory_tracker(), task_executor_->outputter(),
+            gpu_dependency_->memory_tracker(), task_executor_->outputter(),
             task_executor_->gpu_preferences()));
     gpu::ContextResult result = webgpu_decoder->Initialize();
     if (result != gpu::ContextResult::kSuccess) {
@@ -575,7 +577,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       decoder_.reset(raster::RasterDecoder::Create(
           this, command_buffer_.get(), task_executor_->outputter(),
           task_executor_->gpu_feature_info(), task_executor_->gpu_preferences(),
-          context_group_->memory_tracker(),
+          gpu_dependency_->memory_tracker(),
           task_executor_->shared_image_manager(), context_state_,
           true /*is_privileged*/));
     } else {
@@ -721,6 +723,9 @@ bool InProcessCommandBuffer::DestroyOnGpuThread() {
   if (context_state_)
     context_state_->MakeCurrent(nullptr);
   context_state_ = nullptr;
+
+  if (gpu_dependency_holder_)
+    gpu_dependency_holder_.reset();
   return true;
 }
 
@@ -1374,7 +1379,7 @@ CommandBufferNamespace InProcessCommandBuffer::GetNamespaceID() const {
 }
 
 CommandBufferId InProcessCommandBuffer::GetCommandBufferID() const {
-  return command_buffer_id_;
+  return gpu_dependency_->command_buffer_id();
 }
 
 void InProcessCommandBuffer::FlushPendingWork() {

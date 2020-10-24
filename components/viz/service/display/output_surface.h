@@ -263,12 +263,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
       const gfx::SwapResponse& response,
       std::vector<ui::LatencyInfo>* latency_info);
 
-  // This is used to share the same method to schedule task on the gpu thread
-  // between the output surface and the overlay processor.
-  // TODO(weiliangc): Consider making this outside of output surface and pass in
-  // instead of passing it out here.
-  virtual gpu::MemoryTracker* GetMemoryTracker() = 0;
-
   // Notifies the OutputSurface of rate of content updates in frames per second.
   virtual void SetFrameRate(float frame_rate) {}
 

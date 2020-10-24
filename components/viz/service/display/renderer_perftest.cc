@@ -298,7 +298,7 @@ class RendererPerfTest : public testing::Test {
   // Overloaded for concrete RendererType below.
   std::unique_ptr<OutputSurface> CreateOutputSurface(
       GpuServiceImpl* gpu_service,
-      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler);
+      DisplayCompositorMemoryAndTaskController* display_controller);
 
   void SetUp() override {
     enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
@@ -318,32 +318,41 @@ class RendererPerfTest : public testing::Test {
     gpu::ImageFactory* image_factory = gpu_service->gpu_image_factory();
     auto* gpu_channel_manager_delegate =
         gpu_service->gpu_channel_manager()->delegate();
-    child_task_scheduler_ = std::make_unique<gpu::GpuTaskSchedulerHelper>(
+    auto child_task_scheduler = std::make_unique<gpu::GpuTaskSchedulerHelper>(
         TestGpuServiceHolder::GetInstance()->task_executor());
+    child_gpu_dependency_ =
+        std::make_unique<DisplayCompositorMemoryAndTaskController>(
+            TestGpuServiceHolder::GetInstance()->task_executor(),
+            image_factory);
     child_context_provider_ = base::MakeRefCounted<VizProcessContextProvider>(
         TestGpuServiceHolder::GetInstance()->task_executor(),
         gpu::kNullSurfaceHandle, gpu_memory_buffer_manager_.get(),
         image_factory, gpu_channel_manager_delegate,
-        child_task_scheduler_.get(), renderer_settings_);
+        child_gpu_dependency_.get(), renderer_settings_);
     child_context_provider_->BindToCurrentThread();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
 
-    std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler;
+    std::unique_ptr<DisplayCompositorMemoryAndTaskController>
+        display_controller;
     if (renderer_settings_.use_skia_renderer) {
-      gpu_task_scheduler = std::make_unique<gpu::GpuTaskSchedulerHelper>(
-          gpu_service->GetGpuScheduler());
+      display_controller =
+          std::make_unique<DisplayCompositorMemoryAndTaskController>(
+              gpu_service);
     } else {
-      gpu_task_scheduler = std::make_unique<gpu::GpuTaskSchedulerHelper>(
-          TestGpuServiceHolder::GetInstance()->task_executor());
+      auto* task_executor =
+          TestGpuServiceHolder::GetInstance()->task_executor();
+      display_controller =
+          std::make_unique<DisplayCompositorMemoryAndTaskController>(
+              task_executor, image_factory);
     }
     auto output_surface =
-        CreateOutputSurface(gpu_service, gpu_task_scheduler.get());
+        CreateOutputSurface(gpu_service, display_controller.get());
     // WaitForSwapDisplayClient depends on this.
     output_surface->SetNeedsSwapSizeNotifications(true);
     auto overlay_processor = std::make_unique<OverlayProcessorStub>();
     display_ = std::make_unique<Display>(
         &shared_bitmap_manager_, renderer_settings_, &debug_settings_,
-        kArbitraryFrameSinkId, std::move(gpu_task_scheduler),
+        kArbitraryFrameSinkId, std::move(display_controller),
         std::move(output_surface), std::move(overlay_processor),
         /*display_scheduler=*/nullptr, base::ThreadTaskRunnerHandle::Get());
     display_->SetVisible(true);
@@ -394,7 +403,7 @@ class RendererPerfTest : public testing::Test {
     child_resource_provider_->ShutdownAndReleaseAllResources();
     child_resource_provider_.reset();
     child_context_provider_.reset();
-    child_task_scheduler_.reset();
+    child_gpu_dependency_.reset();
     gpu_memory_buffer_manager_.reset();
 
     display_.reset();
@@ -700,7 +709,8 @@ class RendererPerfTest : public testing::Test {
   RendererSettings renderer_settings_;
   DebugRendererSettings debug_settings_;
   std::unique_ptr<Display> display_;
-  std::unique_ptr<gpu::GpuTaskSchedulerHelper> child_task_scheduler_;
+  std::unique_ptr<DisplayCompositorMemoryAndTaskController>
+      child_gpu_dependency_;
   scoped_refptr<ContextProvider> child_context_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::vector<TransferableResource> resource_list_;
@@ -714,25 +724,25 @@ template <>
 std::unique_ptr<OutputSurface>
 RendererPerfTest<SkiaRenderer>::CreateOutputSurface(
     GpuServiceImpl* gpu_service,
-    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler) {
+    DisplayCompositorMemoryAndTaskController* display_controller) {
   return SkiaOutputSurfaceImpl::Create(
       std::make_unique<SkiaOutputSurfaceDependencyImpl>(
           gpu_service, gpu::kNullSurfaceHandle),
-      gpu_task_scheduler, renderer_settings_, &debug_settings_);
+      display_controller, renderer_settings_, &debug_settings_);
 }
 
 template <>
 std::unique_ptr<OutputSurface>
 RendererPerfTest<GLRenderer>::CreateOutputSurface(
     GpuServiceImpl* gpu_service,
-    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler) {
+    DisplayCompositorMemoryAndTaskController* display_controller) {
   gpu::ImageFactory* image_factory = gpu_service->gpu_image_factory();
   auto* gpu_channel_manager_delegate =
       gpu_service->gpu_channel_manager()->delegate();
   auto context_provider = base::MakeRefCounted<VizProcessContextProvider>(
       TestGpuServiceHolder::GetInstance()->task_executor(),
       gpu::kNullSurfaceHandle, gpu_memory_buffer_manager_.get(), image_factory,
-      gpu_channel_manager_delegate, gpu_task_scheduler, renderer_settings_);
+      gpu_channel_manager_delegate, display_controller, renderer_settings_);
   context_provider->BindToCurrentThread();
   return std::make_unique<GLOutputSurfaceOffscreen>(
       std::move(context_provider));

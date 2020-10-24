@@ -17,6 +17,10 @@ namespace base {
 class WaitableEvent;
 }
 
+namespace gpu {
+class MemoryTracker;
+}
+
 namespace viz {
 class OverlayProcessorOnGpu;
 

@@ -54,7 +54,6 @@ class GLOutputSurface : public OutputSurface {
   base::ScopedClosureRunner GetCacheBackBufferCb() override;
 
   gpu::SurfaceHandle GetSurfaceHandle() const override;
-  gpu::MemoryTracker* GetMemoryTracker() override;
   void SetFrameRate(float frame_rate) override;
   void SetNeedsMeasureNextDrawLatency() override;
 

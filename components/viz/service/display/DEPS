@@ -39,6 +39,7 @@ include_rules = [
   "+ui/gl/trace_util.h",
   "+gpu/ipc/common/vulkan_ycbcr_info.h",
   "+gpu/ipc/gpu_task_scheduler_helper.h",
+  "+gpu/ipc/display_compositor_memory_and_task_controller_on_gpu.h",
   "+gpu/ipc/scheduler_sequence.h",
   "+gpu/command_buffer/service/shared_image_factory.h",
   "+gpu/command_buffer/service/shared_image_manager.h",

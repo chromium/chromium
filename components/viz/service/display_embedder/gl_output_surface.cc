@@ -252,10 +252,6 @@ gpu::SurfaceHandle GLOutputSurface::GetSurfaceHandle() const {
   return surface_handle_;
 }
 
-gpu::MemoryTracker* GLOutputSurface::GetMemoryTracker() {
-  return viz_context_provider_->GetMemoryTracker();
-}
-
 void GLOutputSurface::SetFrameRate(float frame_rate) {
   viz_context_provider_->ContextSupport()->SetFrameRate(frame_rate);
 }

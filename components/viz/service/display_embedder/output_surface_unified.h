@@ -47,7 +47,6 @@ class OutputSurfaceUnified : public OutputSurface {
       UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   gfx::OverlayTransform GetDisplayTransform() override;
-  gpu::MemoryTracker* GetMemoryTracker() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(OutputSurfaceUnified);

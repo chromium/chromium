@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -46,15 +47,16 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
  public:
   static std::unique_ptr<SkiaOutputSurface> Create(
       std::unique_ptr<SkiaOutputSurfaceDependency> deps,
-      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
+      DisplayCompositorMemoryAndTaskController* display_controller,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);
 
-  SkiaOutputSurfaceImpl(util::PassKey<SkiaOutputSurfaceImpl> pass_key,
-                        std::unique_ptr<SkiaOutputSurfaceDependency> deps,
-                        gpu::GpuTaskSchedulerHelper* gpu_task_scheduler,
-                        const RendererSettings& renderer_settings,
-                        const DebugRendererSettings* debug_settings);
+  SkiaOutputSurfaceImpl(
+      util::PassKey<SkiaOutputSurfaceImpl> pass_key,
+      std::unique_ptr<SkiaOutputSurfaceDependency> deps,
+      DisplayCompositorMemoryAndTaskController* display_controller,
+      const RendererSettings& renderer_settings,
+      const DebugRendererSettings* debug_settings);
   ~SkiaOutputSurfaceImpl() override;
 
   // OutputSurface implementation:
@@ -146,8 +148,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       ResourceFormat format,
       const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space) override;
-
-  gpu::MemoryTracker* GetMemoryTracker() override;
 
   // Set the fields of |capabilities_| and propagates to |impl_on_gpu_|. Should
   // be called after BindToClient().
@@ -275,7 +275,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // scheduler inside this class by having a unique_ptr.
   // TODO(weiliangc): After changing to proper initialization order for Android
   // WebView, remove this holder.
-  std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_holder_;
+  DisplayCompositorMemoryAndTaskController* display_compositor_controller_;
+  std::unique_ptr<DisplayCompositorMemoryAndTaskController>
+      display_compositor_controller_holder_;
 
   // The display transform relative to the hardware natural orientation,
   // applied to the frame content. The transform can be rotations in 90 degree

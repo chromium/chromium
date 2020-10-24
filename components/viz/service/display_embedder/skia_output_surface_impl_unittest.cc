@@ -82,7 +82,7 @@ void SkiaOutputSurfaceImplTest::SetUpSkiaOutputSurfaceImpl() {
   output_surface_ = SkiaOutputSurfaceImpl::Create(
       std::make_unique<SkiaOutputSurfaceDependencyImpl>(
           GetGpuService(), gpu::kNullSurfaceHandle),
-      gpu_task_scheduler_.get(), settings, &debug_settings_);
+      nullptr, settings, &debug_settings_);
   output_surface_->BindToClient(&output_surface_client_);
 }
 

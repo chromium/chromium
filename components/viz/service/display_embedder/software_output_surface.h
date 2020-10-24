@@ -52,7 +52,6 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
 #endif
-  gpu::MemoryTracker* GetMemoryTracker() override;
 
  private:
   void SwapBuffersCallback(base::TimeTicks swap_time,

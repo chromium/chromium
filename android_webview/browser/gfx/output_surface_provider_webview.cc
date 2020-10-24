@@ -128,6 +128,8 @@ OutputSurfaceProviderWebview::CreateOutputSurface() {
       << "InitializeContext() must be called before CreateOutputSurface()";
 
   if (renderer_settings_.use_skia_renderer) {
+    // TODO(weiliangc): Move creation of dependency to InitializeContext() so
+    // DisplayCompositorMemoryAndTaskControllerOnGpu can be created there.
     auto skia_dependency = std::make_unique<SkiaOutputSurfaceDependencyWebView>(
         TaskQueueWebView::GetInstance(), GpuServiceWebView::GetInstance(),
         shared_context_state_.get(), gl_surface_.get());
