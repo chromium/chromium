@@ -85,6 +85,7 @@ source_set("filters") {
 
   deps = [
     "//base/util/type_safety:type_safety",
+    "//build:chromeos_buildflags",
     "//cc/base",  # For MathUtil.
     "//media:media_buildflags",
     "//media/base",
@@ -303,6 +304,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
@@ -91,6 +92,7 @@ source_set("capture_device_specific") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/ipc/common:common",
     "//media",
@@ -139,6 +141,7 @@ component("capture_lib") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//media",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
@@ -261,7 +264,7 @@ component("capture_lib") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_ash) {
     sources += [
       "video/chromeos/camera_3a_controller.cc",
       "video/chromeos/camera_3a_controller.h",
@@ -361,6 +364,7 @@ source_set("test_support") {
   deps = [
     ":capture_lib",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common:common",
     "//media:test_support",
@@ -379,7 +383,7 @@ source_set("test_support") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_ash) {
     sources += [
       "video/chromeos/mock_camera_module.cc",
       "video/chromeos/mock_camera_module.h",
@@ -419,6 +423,7 @@ test("capture_unittests") {
     ":capture",
     ":test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//media:test_support",
     "//media/capture/mojom:image_capture",
@@ -437,7 +442,7 @@ test("capture_unittests") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_ash) {
     sources += [ "video/linux/camera_config_chromeos_unittest.cc" ]
   }
 
@@ -505,11 +510,11 @@ test("capture_unittests") {
   }
 
   # TODO(https://crbug.com/1043007): use is_linux.
-  if (is_chromeos) {
+  if (is_ash) {
     deps += [ "//media/gpu/test:local_gpu_memory_buffer_manager" ]
   }
 
-  if (is_chromeos) {
+  if (is_ash) {
     sources += [
       "video/chromeos/camera_3a_controller_unittest.cc",
       "video/chromeos/camera_device_delegate_unittest.cc",

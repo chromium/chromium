@@ -5,10 +5,11 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 
 #include <memory>
+#include "build/chromeos_buildflags.h"
 
 #include "media/capture/video/shared_memory_buffer_tracker.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "media/capture/video/chromeos/gpu_memory_buffer_tracker.h"
 #endif
 
@@ -19,7 +20,7 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
     VideoCaptureBufferType buffer_type) {
   switch (buffer_type) {
     case VideoCaptureBufferType::kGpuMemoryBuffer:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       return std::make_unique<GpuMemoryBufferTracker>();
 #else
       return nullptr;

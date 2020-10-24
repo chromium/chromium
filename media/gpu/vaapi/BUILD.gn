@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
@@ -99,7 +100,7 @@ source_set("vaapi") {
     "//ui/gl",
   ]
 
-  if (is_chromeos) {
+  if (is_ash) {
     sources += [
       "vaapi_jpeg_encode_accelerator.cc",
       "vaapi_jpeg_encode_accelerator.h",
@@ -167,6 +168,7 @@ source_set("common") {
   ]
   deps = [
     ":libva_stubs",
+    "//build:chromeos_buildflags",
     "//third_party/libyuv",
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
@@ -242,7 +244,7 @@ source_set("vaapi_image_decoder_test_common") {
 }
 
 # TODO(https://crbug.com/1043007): remove is_chromeos.
-if (is_chromeos) {
+if (is_ash) {
   source_set("jpeg_decoder_unit_test") {
     testonly = true
     sources = [ "vaapi_jpeg_decoder_unittest.cc" ]
@@ -300,13 +302,14 @@ test("vaapi_unittest") {
     ":vaapi_utils_unittest",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//gpu",
     "//media/gpu/test:helpers",
     "//testing/gtest",
   ]
 
   # TODO(https://crbug.com/1043007): remove is_chromeos.
-  if (is_chromeos) {
+  if (is_ash) {
     deps += [
       ":jpeg_decoder_unit_test",
       ":webp_decoder_unit_test",

@@ -6,13 +6,14 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/file_video_capture_device_factory.h"
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if defined(OS_LINUX) || BUILDFLAG(IS_LACROS)
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
@@ -56,7 +57,7 @@ CreateFakeVideoCaptureDeviceFactory() {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 std::unique_ptr<VideoCaptureDeviceFactory>
 CreateChromeOSVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
@@ -77,14 +78,14 @@ CreateChromeOSVideoCaptureDeviceFactory(
     return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 std::unique_ptr<VideoCaptureDeviceFactory>
 CreatePlatformSpecificVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if defined(OS_LINUX) || BUILDFLAG(IS_LACROS)
   return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
   return CreateChromeOSVideoCaptureDeviceFactory(ui_task_runner, {});
 #elif defined(OS_WIN)
   return std::make_unique<VideoCaptureDeviceFactoryWin>();
@@ -114,7 +115,7 @@ std::unique_ptr<VideoCaptureDeviceFactory> CreateVideoCaptureDeviceFactory(
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 std::unique_ptr<VideoCaptureDeviceFactory> CreateVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     media::CameraAppDeviceBridgeImpl* camera_app_device_bridge) {
@@ -128,6 +129,6 @@ std::unique_ptr<VideoCaptureDeviceFactory> CreateVideoCaptureDeviceFactory(
                                                    camera_app_device_bridge);
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 }  // namespace media

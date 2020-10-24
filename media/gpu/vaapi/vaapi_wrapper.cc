@@ -37,6 +37,7 @@
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 
 #include "media/base/media_switches.h"
@@ -353,7 +354,7 @@ const ProfileCodecMap& GetProfileCodecMap() {
           {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
       // VaapiWrapper does not support Profile 3.
       //{VP9PROFILE_PROFILE3, VAProfileVP9Profile3},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
           // TODO(hiroh): Remove if-macro once libva for linux-chrome is upreved
           // to 2.9.0 or newer.
           // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
@@ -2260,7 +2261,7 @@ void VaapiWrapper::PreSandboxInitialization() {
   static bool result = InitializeStubs(paths);
   if (!result) {
     static const char kErrorMsg[] = "Failed to initialize VAAPI libs";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     // When Chrome runs on Linux with target_os="chromeos", do not log error
     // message without VAAPI libraries.
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS()) << kErrorMsg;

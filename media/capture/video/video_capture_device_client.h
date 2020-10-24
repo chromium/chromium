@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_collision_warner.h"
+#include "build/chromeos_buildflags.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
@@ -43,7 +44,7 @@ using VideoCaptureJpegDecoderFactoryCB =
 class CAPTURE_EXPORT VideoCaptureDeviceClient
     : public VideoCaptureDevice::Client {
  public:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   VideoCaptureDeviceClient(
       VideoCaptureBufferType target_buffer_type,
       std::unique_ptr<VideoFrameReceiver> receiver,
@@ -53,7 +54,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   VideoCaptureDeviceClient(VideoCaptureBufferType target_buffer_type,
                            std::unique_ptr<VideoFrameReceiver> receiver,
                            scoped_refptr<VideoCaptureBufferPool> buffer_pool);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
   ~VideoCaptureDeviceClient() override;
 
   static Buffer MakeBufferStruct(
@@ -125,11 +126,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   const std::unique_ptr<VideoFrameReceiver> receiver_;
   std::vector<int> buffer_ids_known_by_receiver_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   VideoCaptureJpegDecoderFactoryCB optional_jpeg_decoder_factory_callback_;
   std::unique_ptr<VideoCaptureJpegDecoder> external_jpeg_decoder_;
   base::OnceClosure on_started_using_gpu_cb_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   // The pool of shared-memory buffers used for capturing.
   const scoped_refptr<VideoCaptureBufferPool> buffer_pool_;

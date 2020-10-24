@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/macros.h"
@@ -236,7 +237,7 @@ std::unique_ptr<VideoFrameValidator::MismatchedFrameInfo>
 MD5VideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
                                  size_t frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_ASH) || BUILDFLAG(IS_LACROS)
   // b/149808895: There is a bug in the synchronization on mapped buffers, which
   // causes the frame validation failure. The bug is due to some missing i915
   // patches in kernel v3.18. The bug will be fixed if the kernel is upreved to
@@ -256,7 +257,7 @@ MD5VideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
     if (is_skylake)
       usleep(10);
   }
-#endif  // defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#endif  // BUILDFLAG(IS_ASH) || BUILDFLAG(IS_LACROS)
   if (frame->format() != validation_format_) {
     frame = ConvertVideoFrame(frame.get(), validation_format_);
   }

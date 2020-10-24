@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/gpu/video_frame_mapper.h"
 #include "media/gpu/video_frame_mapper_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -127,7 +128,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   base::SStringPrintf(&filename, FILE_PATH_LITERAL("frame_%04zu_%dx%d"),
                       frame_index, visible_size.width(), visible_size.height());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Create VideoFrameMapper if not yet created. The decoder's output pixel
   // format is not known yet when creating the VideoFrameWriter. We can only
   // create the VideoFrameMapper upon receiving the first video frame.
@@ -160,7 +161,7 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
       video_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     CHECK(video_frame_mapper_);
@@ -205,7 +206,7 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
       video_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     CHECK(video_frame_mapper_);

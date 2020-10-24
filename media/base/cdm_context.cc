@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/base/cdm_context.h"
+#include "build/chromeos_buildflags.h"
 
 #include "media/base/callback_registry.h"
 
@@ -52,7 +53,7 @@ FuchsiaCdmContext* CdmContext::GetFuchsiaCdmContext() {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 chromeos::ChromeOsCdmContext* CdmContext::GetChromeOsCdmContext() {
   return nullptr;
 }

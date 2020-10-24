@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -290,6 +291,7 @@ source_set("common") {
   deps = [
     ":buildflags",
     "//base",
+    "//build:chromeos_buildflags",
     "//media",
     "//media/parsers",
     "//ui/gfx:buffer_types",
@@ -438,6 +440,7 @@ if (use_v4l2_codec || use_vaapi || is_mac || is_win) {
       "test:helpers",
       "//base",
       "//base/test:test_support",
+      "//build:chromeos_buildflags",
       "//media:test_support",
       "//media/gpu",
       "//media/gpu/test:test_helpers",
@@ -496,7 +499,7 @@ source_set("unit_tests") {
   ]
   sources = [ "h264_decoder_unittest.cc" ]
 
-  if (is_chromeos && (use_v4l2_codec || use_vaapi)) {
+  if (is_ash && (use_v4l2_codec || use_vaapi)) {
     deps += [ "//media/gpu/chromeos:unit_tests" ]
   }
   if (use_vaapi) {

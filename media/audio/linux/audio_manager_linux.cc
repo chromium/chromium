@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/chromeos_buildflags.h"
 #include "media/audio/fake_audio_manager.h"
 #include "media/base/media_switches.h"
 
@@ -14,7 +15,7 @@
 #include "media/audio/alsa/audio_manager_alsa.h"
 #endif
 
-#if defined(USE_CRAS) && defined(OS_CHROMEOS)
+#if defined(USE_CRAS) && BUILDFLAG(IS_ASH)
 #include "media/audio/cras/audio_manager_chromeos.h"
 #elif defined(USE_CRAS)
 #include "media/audio/cras/audio_manager_cras.h"
@@ -47,7 +48,7 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
 #if defined(USE_CRAS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseCras)) {
     UMA_HISTOGRAM_ENUMERATION("Media.LinuxAudioIO", kCras, kAudioIOMax + 1);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     return std::make_unique<AudioManagerChromeOS>(std::move(audio_thread),
                                                   audio_log_factory);
 #else

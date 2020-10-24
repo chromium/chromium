@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/media_export.h"
 
 namespace features {
@@ -18,12 +19,12 @@ MEDIA_EXPORT extern const base::Feature kDumpOnAudioServiceHang;
 MEDIA_EXPORT extern const base::Feature kUseAAudioDriver;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 MEDIA_EXPORT extern const base::Feature kCrOSSystemAEC;
 MEDIA_EXPORT extern const base::Feature kCrOSSystemAECDeactivatedGroups;
 #endif
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
 MEDIA_EXPORT extern const base::Feature kForceEnableSystemAec;
 #endif
 

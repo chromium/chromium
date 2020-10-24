@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/media.h"
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
@@ -242,7 +243,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
     case kCodecAMR_NB:
     case kCodecAMR_WB:
     case kCodecGSM_MS:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       return true;
 #else
       return false;
@@ -324,7 +325,7 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
       return false;
 
     case kCodecMPEG4:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       return true;
 #else
       return false;

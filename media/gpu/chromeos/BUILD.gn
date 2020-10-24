@@ -158,6 +158,7 @@ test("image_processor_test") {
   deps = [
     ":chromeos",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//media:test_support",
     "//media/gpu:buildflags",
     "//media/gpu/test:frame_file_writer",

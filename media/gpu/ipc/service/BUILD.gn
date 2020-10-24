@@ -38,6 +38,7 @@ target(link_target_type, "service") {
     "//media/gpu",
   ]
   deps = [
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
     "//media:media_buildflags",

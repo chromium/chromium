@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_factory.h"
@@ -58,9 +59,9 @@ using media::android_mojo_util::CreateProvisionFetcher;
 using media::android_mojo_util::CreateMediaDrmStorage;
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 namespace media {
 
@@ -110,7 +111,7 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
 // otherwise it returns false.
 bool ShouldUseChromeOSDirectVideoDecoder(
     const gpu::GpuPreferences& gpu_preferences) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   const bool should_use_direct_video_decoder =
       !gpu_preferences.platform_disallows_chromeos_direct_video_decoder &&
       base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder);
@@ -346,7 +347,7 @@ std::unique_ptr<CdmFactory> GpuMojoMediaClient::CreateCdmFactory(
   return std::make_unique<AndroidCdmFactory>(
       base::BindRepeating(&CreateProvisionFetcher, frame_interfaces),
       base::BindRepeating(&CreateMediaDrmStorage, frame_interfaces));
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
   return std::make_unique<chromeos::ChromeOsCdmFactory>(frame_interfaces);
 #else
   return nullptr;

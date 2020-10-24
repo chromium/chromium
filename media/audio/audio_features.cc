@@ -4,6 +4,7 @@
 
 #include "media/audio/audio_features.h"
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 
 namespace features {
 
@@ -31,14 +32,14 @@ const base::Feature kUseAAudioDriver{"UseAAudioDriver",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 const base::Feature kCrOSSystemAEC{"CrOSSystemAEC",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCrOSSystemAECDeactivatedGroups{
     "CrOSSystemAECDeactivatedGroups", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
 const base::Feature kForceEnableSystemAec{"ForceEnableSystemAec",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif

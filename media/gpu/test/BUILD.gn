@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 
@@ -39,6 +40,7 @@ source_set("frame_validator") {
   deps = [
     ":helpers",
     ":test_helpers",
+    "//build:chromeos_buildflags",
     "//media/gpu",
   ]
 }
@@ -51,6 +53,7 @@ source_set("frame_file_writer") {
   ]
   deps = [
     ":helpers",
+    "//build:chromeos_buildflags",
     "//media/gpu",
     "//ui/gfx/codec:codec",
   ]
@@ -153,6 +156,7 @@ static_library("video_player_test_environment") {
     ":helpers",
     ":video_player",
     ":video_test_environment",
+    "//build:chromeos_buildflags",
     "//media/gpu",
   ]
 }
@@ -204,6 +208,7 @@ if (use_vaapi || use_v4l2_codec) {
     ]
     deps = [
       ":helpers",
+      "//build:chromeos_buildflags",
       "//media:test_support",
       "//media/gpu",
       "//media/gpu/chromeos",
@@ -214,7 +219,7 @@ if (use_vaapi || use_v4l2_codec) {
   }
 }
 
-if (is_chromeos) {
+if (is_ash) {
   static_library("local_gpu_memory_buffer_manager") {
     testonly = true
     sources = [

@@ -19,7 +19,6 @@ source_set("cdm") {
 
     # TODO(crbug.com/583067): These files should not be in //media/base.
     "//media/base/android",
-
     "//media/filters",
     "//media/fuchsia/cdm",
   ]
@@ -134,6 +133,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//crypto",
     "//media:test_support",
     "//testing/gmock",

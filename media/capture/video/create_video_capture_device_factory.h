@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/single_thread_task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
@@ -19,12 +20,12 @@ std::unique_ptr<VideoCaptureDeviceFactory> CAPTURE_EXPORT
 CreateVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 std::unique_ptr<VideoCaptureDeviceFactory> CAPTURE_EXPORT
 CreateVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     media::CameraAppDeviceBridgeImpl* camera_app_device_bridge);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 }  // namespace media
 

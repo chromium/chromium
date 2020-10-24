@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
@@ -108,7 +109,7 @@ source_set("v4l2") {
     deps += [ ":libv4l2_stubs" ]
   }
 
-  if (is_chromeos) {
+  if (is_ash) {
     sources += [
       "v4l2_jpeg_encode_accelerator.cc",
       "v4l2_jpeg_encode_accelerator.h",

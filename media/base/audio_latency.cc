@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 
 #if defined(OS_ANDROID)
@@ -42,7 +43,7 @@ uint32_t RoundUpToPowerOfTwo(uint32_t v) {
 
 // static
 bool AudioLatency::IsResamplingPassthroughSupported(LatencyType type) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   return true;
 #elif defined(OS_ANDROID)
   // Only N MR1+ has support for OpenSLES performance modes which allow for

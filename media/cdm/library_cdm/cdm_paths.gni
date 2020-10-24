@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 # This file defines output paths for the CDM adapters and CDMs.
 
 # Naming and folder structure below are following the recommendation for Chrome
@@ -9,7 +11,7 @@
 
 # OS name for components is close to "target_os" but has some differences.
 # Explicitly define what we use to avoid confusion.
-if (is_chromeos) {
+if (is_ash) {
   component_os = "cros"
 } else if (is_linux) {
   component_os = "linux"

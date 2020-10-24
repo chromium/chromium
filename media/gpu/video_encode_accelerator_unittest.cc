@@ -44,6 +44,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -313,7 +314,7 @@ static bool IsVP9(VideoCodecProfile profile) {
   return profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 // Determine the test is known-to-fail and should be skipped.
 bool ShouldSkipTest(VideoPixelFormat format) {
   struct Pattern {
@@ -361,7 +362,7 @@ bool ShouldSkipTest(VideoPixelFormat format) {
 
   return false;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 // Helper functions to do string conversions.
 static base::FilePath::StringType StringToFilePathStringType(
@@ -2792,10 +2793,10 @@ TEST_P(VideoEncodeAcceleratorTest, TestSimpleEncode) {
   const bool force_level = std::get<8>(GetParam());
   const bool scale = std::get<9>(GetParam());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   if (ShouldSkipTest(g_env->test_streams_[0]->pixel_format))
     GTEST_SKIP();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   if (force_level) {
     // Skip ForceLevel test if "--force_level=false".
@@ -2927,10 +2928,10 @@ TEST_P(VideoEncodeAcceleratorSimpleTest, TestSimpleEncode) {
   const int test_type = GetParam();
   ASSERT_LT(test_type, 2) << "Invalid test type=" << test_type;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   if (ShouldSkipTest(g_env->test_streams_[0]->pixel_format))
     GTEST_SKIP();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   if (test_type == 0)
     SimpleTestFunc<VEANoInputClient>();
@@ -3184,7 +3185,7 @@ class VEATestSuite : public base::TestSuite {
   void Initialize() override {
     base::TestSuite::Initialize();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     task_environment_ = std::make_unique<base::test::TaskEnvironment>(
         base::test::TaskEnvironment::MainThreadType::UI);
 #else
@@ -3276,7 +3277,7 @@ int main(int argc, char** argv) {
     }
 
     if (it->first == "native_input") {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       media::g_native_input = true;
 #else
       LOG(FATAL) << "Unsupported option";

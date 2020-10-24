@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
@@ -363,7 +364,7 @@ test("cast_unittests") {
   }
 }
 
-if (is_win || is_mac || (is_linux && !is_chromeos)) {
+if (is_win || is_mac || is_linux || is_lacros) {
   # This is a target for the collection of cast development tools.  They are
   # not built/linked into the Chromium browser.
   group("testing_tools") {
@@ -495,13 +496,13 @@ if (is_win || is_mac || (is_linux && !is_chromeos)) {
       "//net",
     ]
   }
-} else {  # !(is_win || is_mac || (is_linux && !is_chromeos))
+} else {  # !(is_win || is_mac || is_linux || is_lacros)
   # The testing tools are only built for the desktop platforms.
   group("testing_tools") {
   }
 }
 
-if (is_linux && !is_chromeos) {
+if (is_linux || is_lacros) {
   test("tap_proxy") {
     sources = [ "test/utility/tap_proxy.cc" ]
 

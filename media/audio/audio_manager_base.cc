@@ -27,6 +27,7 @@
 #include "media/base/media_switches.h"
 
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_input_stream_data_interceptor.h"
 
 namespace media {
@@ -342,7 +343,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
   std::string output_device_id =
       AudioDeviceDescription::IsDefaultDevice(device_id)
           ?
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
           // On ChromeOS, it is expected that, if the default device is given,
           // no specific device ID should be used since the actual output device
           // should change dynamically if the system default device changes.

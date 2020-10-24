@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/container_names.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_data_util.h"
@@ -315,7 +316,7 @@ TEST_F(FFmpegGlueContainerTest, AAC) {
   ExpectContainer(container_names::CONTAINER_AAC);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 TEST_F(FFmpegGlueContainerTest, AVI) {
   InitializeAndOpen("bear.avi");
   ExpectContainer(container_names::CONTAINER_AVI);
@@ -325,7 +326,7 @@ TEST_F(FFmpegGlueContainerTest, AMR) {
   InitializeAndOpen("bear.amr");
   ExpectContainer(container_names::CONTAINER_AMR);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Probe something unsupported to ensure we fall back to the our internal guess.

@@ -5,6 +5,7 @@
 #include "media/base/supported_types.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)
@@ -19,7 +20,7 @@ const bool kPropCodecsEnabled = true;
 const bool kPropCodecsEnabled = false;
 #endif
 
-#if defined(OS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(IS_ASH) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 const bool kMpeg4Supported = true;
 #else
 const bool kMpeg4Supported = false;
@@ -170,8 +171,8 @@ TEST(SupportedTypesTest, IsSupportedVideoType_VP9Profiles) {
 
 // VP9 Profile2 are supported on x86, ChromeOS on ARM and Mac/Win on ARM64.
 // See third_party/libvpx/BUILD.gn.
-#if defined(ARCH_CPU_X86_FAMILY) ||                           \
-    (defined(ARCH_CPU_ARM_FAMILY) && defined(OS_CHROMEOS)) || \
+#if defined(ARCH_CPU_X86_FAMILY) ||                        \
+    (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_ASH)) || \
     (defined(ARCH_CPU_ARM64) && (defined(OS_MAC) || defined(OS_WIN)))
   EXPECT_TRUE(IsSupportedVideoType(
       {kCodecVP9, VP9PROFILE_PROFILE2, kUnspecifiedLevel, kColorSpace}));

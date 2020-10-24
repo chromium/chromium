@@ -23,6 +23,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_client.h"
@@ -778,7 +779,7 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOpusDiscard_Sync) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 TEST_F(FFmpegDemuxerTest, TestAudioNegativeTimestamps) {
   // Note: This test will _crash_ the browser if negative timestamp
   // values are skipped, since this file is heavily truncated to avoid
@@ -794,7 +795,7 @@ TEST_F(FFmpegDemuxerTest, TestAudioNegativeTimestamps) {
   Read(audio, FROM_HERE, 104, 77619, true);
   Read(audio, FROM_HERE, 104, 103492, true);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 // Similar to the test above, but using an opus clip plus h264 b-frames to
 // ensure we don't apply chained ogg workarounds to other content.

@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
@@ -43,9 +44,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactory {
       std::vector<VideoCaptureDeviceInfo> devices_info)>;
   virtual void GetDevicesInfo(GetDevicesInfoCallback callback) = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   virtual bool IsSupportedCameraAppDeviceBridge();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
  protected:
   base::ThreadChecker thread_checker_;

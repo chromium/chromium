@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_context.h"
 #include "media/base/demuxer_stream.h"
@@ -42,7 +43,7 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
                                                const VideoDecoder& decoder) {
 #if defined(OS_ANDROID)
   constexpr auto kSoftwareDecoderHeightCutoff = 360;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
   constexpr auto kSoftwareDecoderHeightCutoff = 360;
 #else
   constexpr auto kSoftwareDecoderHeightCutoff = 720;

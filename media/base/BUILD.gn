@@ -355,6 +355,7 @@ source_set("base") {
   deps = [
     "//base/allocator:buildflags",
     "//base/util/values:values_util",
+    "//build:chromeos_buildflags",
     "//components/system_media_controls/linux/buildflags",
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/common",
@@ -612,6 +613,7 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/viz/common",
     "//gpu/command_buffer/common",
     "//media:test_support",
