@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
@@ -109,10 +110,9 @@ bool GetCertificateFields(const net::X509Certificate& cert,
                    std::make_unique<base::Value>(base::JoinString(
                        subject.organization_unit_names, "\n")));
 
-  const std::string& serial_number = cert.serial_number();
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_SERIAL_NUMBER,
-                   base::Value::CreateWithCopiedBuffer(serial_number.data(),
-                                                       serial_number.length()));
+                   base::Value::ToUniquePtrValue(base::Value(
+                       base::as_bytes(base::make_span(cert.serial_number())))));
   fields->SetField(
       PP_X509CERTIFICATE_PRIVATE_VALIDITY_NOT_BEFORE,
       std::make_unique<base::Value>(cert.valid_start().ToDoubleT()));
@@ -122,8 +122,8 @@ bool GetCertificateFields(const net::X509Certificate& cert,
   base::StringPiece cert_der =
       net::x509_util::CryptoBufferAsStringPiece(cert.cert_buffer());
   fields->SetField(PP_X509CERTIFICATE_PRIVATE_RAW,
-                   std::make_unique<base::Value>(base::Value::BlobStorage(
-                       cert_der.begin(), cert_der.end())));
+                   base::Value::ToUniquePtrValue(
+                       base::Value(base::as_bytes(base::make_span(cert_der)))));
   return true;
 }
 

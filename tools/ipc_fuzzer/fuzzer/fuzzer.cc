@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/strings/nullable_string16.h"
@@ -535,7 +536,8 @@ struct FuzzTraits<base::ListValue> {
           char tmp[200];
           size_t bin_length = RandInRange(sizeof(tmp));
           fuzzer->FuzzData(tmp, bin_length);
-          p->Set(index, base::Value::CreateWithCopiedBuffer(tmp, bin_length));
+          p->Set(index, base::Value::ToUniquePtrValue(base::Value(
+                            base::as_bytes(base::make_span(tmp, bin_length)))));
           break;
         }
         case base::Value::Type::DICTIONARY: {
@@ -612,7 +614,8 @@ struct FuzzTraits<base::DictionaryValue> {
           size_t bin_length = RandInRange(sizeof(tmp));
           fuzzer->FuzzData(tmp, bin_length);
           p->SetWithoutPathExpansion(
-              property, base::Value::CreateWithCopiedBuffer(tmp, bin_length));
+              property, base::Value::ToUniquePtrValue(base::Value(
+                            base::as_bytes(base::make_span(tmp, bin_length)))));
           break;
         }
         case base::Value::Type::DICTIONARY: {

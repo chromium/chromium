@@ -9,6 +9,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -83,10 +84,8 @@ TEST_F(GinJavaBridgeValueTest, BrokenValues) {
       GinJavaBridgeValue::ContainsGinJavaBridgeValue(non_binary.get()));
 
   const char dummy_data[] = "\000\001\002\003\004\005\006\007\010\011\012\013";
-  std::unique_ptr<base::Value> broken_binary(
-      base::Value::CreateWithCopiedBuffer(dummy_data, sizeof(dummy_data)));
-  EXPECT_FALSE(
-      GinJavaBridgeValue::ContainsGinJavaBridgeValue(broken_binary.get()));
+  base::Value broken_binary(base::as_bytes(base::make_span(dummy_data)));
+  EXPECT_FALSE(GinJavaBridgeValue::ContainsGinJavaBridgeValue(&broken_binary));
 }
 
 }  // namespace

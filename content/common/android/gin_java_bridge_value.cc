@@ -4,6 +4,8 @@
 
 #include "content/common/android/gin_java_bridge_value.h"
 
+#include "base/containers/span.h"
+
 namespace content {
 
 namespace {
@@ -118,8 +120,9 @@ GinJavaBridgeValue::GinJavaBridgeValue(const base::Value* value)
 }
 
 std::unique_ptr<base::Value> GinJavaBridgeValue::SerializeToBinaryValue() {
-  return base::Value::CreateWithCopiedBuffer(
-      reinterpret_cast<const char*>(pickle_.data()), pickle_.size());
+  const auto* data = static_cast<const uint8_t*>(pickle_.data());
+  return base::Value::ToUniquePtrValue(
+      base::Value(base::make_span(data, pickle_.size())));
 }
 
 }  // namespace content

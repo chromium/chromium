@@ -122,12 +122,6 @@ class PathSplitter {
 }  // namespace
 
 // static
-std::unique_ptr<Value> Value::CreateWithCopiedBuffer(const char* buffer,
-                                                     size_t size) {
-  return std::make_unique<Value>(BlobStorage(buffer, buffer + size));
-}
-
-// static
 Value Value::FromUniquePtrValue(std::unique_ptr<Value> val) {
   return std::move(*val);
 }

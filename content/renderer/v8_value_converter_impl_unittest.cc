@@ -10,6 +10,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
@@ -1220,18 +1221,18 @@ TEST_F(V8ValueConverterImplTest, StrategyBypass) {
   std::unique_ptr<base::Value> binary_value(
       converter.FromV8Value(array_buffer, context));
   ASSERT_TRUE(binary_value);
-  std::unique_ptr<base::Value> reference_binary_value(
-      base::Value::CreateWithCopiedBuffer(kExampleData, sizeof(kExampleData)));
-  EXPECT_EQ(*reference_binary_value, *binary_value);
+  base::Value reference_binary_value(
+      base::as_bytes(base::make_span(kExampleData)));
+  EXPECT_EQ(reference_binary_value, *binary_value);
 
   v8::Local<v8::ArrayBufferView> array_buffer_view(
       v8::Uint8Array::New(array_buffer, 1, 3));
   std::unique_ptr<base::Value> binary_view_value(
       converter.FromV8Value(array_buffer_view, context));
   ASSERT_TRUE(binary_view_value);
-  std::unique_ptr<base::Value> reference_binary_view_value(
-      base::Value::CreateWithCopiedBuffer(&kExampleData[1], 3));
-  EXPECT_EQ(*reference_binary_view_value, *binary_view_value);
+  base::Value reference_binary_view_value(
+      base::as_bytes(base::make_span(kExampleData).subspan(1, 3)));
+  EXPECT_EQ(reference_binary_view_value, *binary_view_value);
 
   v8::Local<v8::Number> number(v8::Number::New(isolate_, 0.0));
   std::unique_ptr<base::Value> number_value(

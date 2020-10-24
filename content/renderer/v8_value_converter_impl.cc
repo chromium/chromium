@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "v8/include/v8.h"
@@ -497,18 +498,20 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ArrayBuffer(
 
   if (val->IsArrayBuffer()) {
     auto contents = val.As<v8::ArrayBuffer>()->GetContents();
-    return base::Value::CreateWithCopiedBuffer(
-        static_cast<const char*>(contents.Data()), contents.ByteLength());
-  } else if (val->IsArrayBufferView()) {
+    const auto* data = static_cast<const uint8_t*>(contents.Data());
+    return base::Value::ToUniquePtrValue(
+        base::Value(base::make_span(data, contents.ByteLength())));
+  }
+  if (val->IsArrayBufferView()) {
     v8::Local<v8::ArrayBufferView> view = val.As<v8::ArrayBufferView>();
     size_t byte_length = view->ByteLength();
     std::vector<char> buffer(byte_length);
     view->CopyContents(buffer.data(), buffer.size());
     return std::make_unique<base::Value>(std::move(buffer));
-  } else {
-    NOTREACHED() << "Only ArrayBuffer and ArrayBufferView should get here.";
-    return nullptr;
   }
+
+  NOTREACHED() << "Only ArrayBuffer and ArrayBufferView should get here.";
+  return nullptr;
 }
 
 std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
