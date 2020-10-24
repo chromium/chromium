@@ -1029,7 +1029,7 @@ void LayoutTable::AddVisualOverflowFromChildren() {
   if (ShouldCollapseBorders() && (collapsed_outer_border_start_overflow_ ||
                                   collapsed_outer_border_end_overflow_)) {
     LogicalToPhysical<LayoutUnit> physical_border_overflow(
-        StyleRef().GetWritingMode(), StyleRef().Direction(),
+        StyleRef().GetWritingDirection(),
         LayoutUnit(collapsed_outer_border_start_overflow_),
         LayoutUnit(collapsed_outer_border_end_overflow_), LayoutUnit(),
         LayoutUnit());
@@ -1061,7 +1061,7 @@ void LayoutTable::AddLayoutOverflowFromChildren() {
   if (ShouldCollapseBorders() && (collapsed_outer_border_start_overflow_ ||
                                   collapsed_outer_border_end_overflow_)) {
     LogicalToPhysical<LayoutUnit> physical_border_overflow(
-        StyleRef().GetWritingMode(), StyleRef().Direction(),
+        StyleRef().GetWritingDirection(),
         LayoutUnit(collapsed_outer_border_start_overflow_),
         LayoutUnit(collapsed_outer_border_end_overflow_), LayoutUnit(),
         LayoutUnit());

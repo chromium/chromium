@@ -2340,9 +2340,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     const auto& style = override_style ? *override_style : StyleRef();
     return LogicalToPhysicalSetter<LayoutUnit, LayoutBox>(
-        style.GetWritingMode(), style.Direction(), *this,
-        &LayoutBox::SetMarginTop, &LayoutBox::SetMarginRight,
-        &LayoutBox::SetMarginBottom, &LayoutBox::SetMarginLeft);
+        style.GetWritingDirection(), *this, &LayoutBox::SetMarginTop,
+        &LayoutBox::SetMarginRight, &LayoutBox::SetMarginBottom,
+        &LayoutBox::SetMarginLeft);
   }
 
   std::unique_ptr<BoxOverflowModel> overflow_;

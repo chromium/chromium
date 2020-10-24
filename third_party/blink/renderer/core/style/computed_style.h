@@ -2884,39 +2884,39 @@ class ComputedStyle : public ComputedStyleBase,
 
   PhysicalToLogical<const Length&> PhysicalMarginToLogical(
       const ComputedStyle& other) const {
-    return PhysicalToLogical<const Length&>(
-        other.GetWritingMode(), other.Direction(), MarginTop(), MarginRight(),
-        MarginBottom(), MarginLeft());
+    return PhysicalToLogical<const Length&>(other.GetWritingDirection(),
+                                            MarginTop(), MarginRight(),
+                                            MarginBottom(), MarginLeft());
   }
 
   PhysicalToLogical<const Length&> PhysicalPaddingToLogical() const {
-    return PhysicalToLogical<const Length&>(GetWritingMode(), Direction(),
-                                            PaddingTop(), PaddingRight(),
-                                            PaddingBottom(), PaddingLeft());
+    return PhysicalToLogical<const Length&>(GetWritingDirection(), PaddingTop(),
+                                            PaddingRight(), PaddingBottom(),
+                                            PaddingLeft());
   }
 
   PhysicalToLogical<BorderValue> PhysicalBorderToLogical(
       const ComputedStyle& other) const {
-    return PhysicalToLogical<BorderValue>(
-        other.GetWritingMode(), other.Direction(), BorderTop(), BorderRight(),
-        BorderBottom(), BorderLeft());
+    return PhysicalToLogical<BorderValue>(other.GetWritingDirection(),
+                                          BorderTop(), BorderRight(),
+                                          BorderBottom(), BorderLeft());
   }
 
   PhysicalToLogical<float> PhysicalBorderWidthToLogical() const {
-    return PhysicalToLogical<float>(GetWritingMode(), Direction(),
-                                    BorderTopWidth(), BorderRightWidth(),
-                                    BorderBottomWidth(), BorderLeftWidth());
+    return PhysicalToLogical<float>(GetWritingDirection(), BorderTopWidth(),
+                                    BorderRightWidth(), BorderBottomWidth(),
+                                    BorderLeftWidth());
   }
 
   PhysicalToLogical<EBorderStyle> PhysicalBorderStyleToLogical() const {
     return PhysicalToLogical<EBorderStyle>(
-        GetWritingMode(), Direction(), BorderTopStyle(), BorderRightStyle(),
+        GetWritingDirection(), BorderTopStyle(), BorderRightStyle(),
         BorderBottomStyle(), BorderLeftStyle());
   }
 
   PhysicalToLogical<const Length&> PhysicalBoundsToLogical() const {
-    return PhysicalToLogical<const Length&>(GetWritingMode(), Direction(),
-                                            Top(), Right(), Bottom(), Left());
+    return PhysicalToLogical<const Length&>(GetWritingDirection(), Top(),
+                                            Right(), Bottom(), Left());
   }
 
   static Difference ComputeDifferenceIgnoringInheritedFirstLineStyle(

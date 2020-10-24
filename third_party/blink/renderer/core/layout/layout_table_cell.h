@@ -490,9 +490,8 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
     NOT_DESTROYED();
     return LogicalToPhysical<CollapsedBorderValuesMethod>(
         // Collapsed border logical directions are in table's directions.
-        TableStyle().GetWritingMode(), TableStyle().Direction(),
-        &CollapsedBorderValues::StartBorder, &CollapsedBorderValues::EndBorder,
-        &CollapsedBorderValues::BeforeBorder,
+        TableStyle().GetWritingDirection(), &CollapsedBorderValues::StartBorder,
+        &CollapsedBorderValues::EndBorder, &CollapsedBorderValues::BeforeBorder,
         &CollapsedBorderValues::AfterBorder);
   }
 
@@ -506,9 +505,9 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
     NOT_DESTROYED();
     return PhysicalToLogical<bool>(
         // Collapsed border logical directions are in table's directions.
-        TableStyle().GetWritingMode(), TableStyle().Direction(),
-        kInnerHalfPixelAsOneTop, kInnerHalfPixelAsOneRight,
-        kInnerHalfPixelAsOneBottom, kInnerHalfPixelAsOneLeft);
+        TableStyle().GetWritingDirection(), kInnerHalfPixelAsOneTop,
+        kInnerHalfPixelAsOneRight, kInnerHalfPixelAsOneBottom,
+        kInnerHalfPixelAsOneLeft);
   }
 
   unsigned CollapsedBorderHalfLeft(bool outer) const {
@@ -566,9 +565,9 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
 
   LogicalToPhysical<int> LogicalIntrinsicPaddingToPhysical() const {
     NOT_DESTROYED();
-    return LogicalToPhysical<int>(
-        StyleRef().GetWritingMode(), StyleRef().Direction(), 0, 0,
-        intrinsic_padding_before_, intrinsic_padding_after_);
+    return LogicalToPhysical<int>(StyleRef().GetWritingDirection(), 0, 0,
+                                  intrinsic_padding_before_,
+                                  intrinsic_padding_after_);
   }
   void SetIntrinsicPaddingBefore(int p) {
     NOT_DESTROYED();

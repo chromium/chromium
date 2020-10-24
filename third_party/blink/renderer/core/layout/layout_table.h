@@ -643,9 +643,9 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LogicalToPhysical<unsigned> LogicalCollapsedOuterBorderToPhysical() const {
     NOT_DESTROYED();
     return LogicalToPhysical<unsigned>(
-        StyleRef().GetWritingMode(), StyleRef().Direction(),
-        collapsed_outer_border_start_, collapsed_outer_border_end_,
-        collapsed_outer_border_before_, collapsed_outer_border_after_);
+        StyleRef().GetWritingDirection(), collapsed_outer_border_start_,
+        collapsed_outer_border_end_, collapsed_outer_border_before_,
+        collapsed_outer_border_after_);
   }
 
   int16_t h_spacing_;

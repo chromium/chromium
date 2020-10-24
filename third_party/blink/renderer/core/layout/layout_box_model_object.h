@@ -682,7 +682,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   PhysicalPaddingToLogical() const {
     NOT_DESTROYED();
     return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
-        StyleRef().GetWritingMode(), StyleRef().Direction(), *this,
+        StyleRef().GetWritingDirection(), *this,
         &LayoutBoxModelObject::PaddingTop, &LayoutBoxModelObject::PaddingRight,
         &LayoutBoxModelObject::PaddingBottom,
         &LayoutBoxModelObject::PaddingLeft);
@@ -693,16 +693,16 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
     const auto& style = other_style ? *other_style : StyleRef();
     return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
-        style.GetWritingMode(), style.Direction(), *this,
-        &LayoutBoxModelObject::MarginTop, &LayoutBoxModelObject::MarginRight,
-        &LayoutBoxModelObject::MarginBottom, &LayoutBoxModelObject::MarginLeft);
+        style.GetWritingDirection(), *this, &LayoutBoxModelObject::MarginTop,
+        &LayoutBoxModelObject::MarginRight, &LayoutBoxModelObject::MarginBottom,
+        &LayoutBoxModelObject::MarginLeft);
   }
 
   PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>
   PhysicalBorderToLogical() const {
     NOT_DESTROYED();
     return PhysicalToLogicalGetter<LayoutUnit, LayoutBoxModelObject>(
-        StyleRef().GetWritingMode(), StyleRef().Direction(), *this,
+        StyleRef().GetWritingDirection(), *this,
         &LayoutBoxModelObject::BorderTop, &LayoutBoxModelObject::BorderRight,
         &LayoutBoxModelObject::BorderBottom, &LayoutBoxModelObject::BorderLeft);
   }

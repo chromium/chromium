@@ -517,8 +517,7 @@ void NGTableBorders::MergeBorders(wtf_size_t cell_start_row,
     EnsureCellRowFits(cell_start_row + clamped_rowspan - 1);
   } else {
     PhysicalToLogical<EBorderStyle> border_style(
-        table_writing_direction.GetWritingMode(),
-        table_writing_direction.Direction(), source_style->BorderTopStyle(),
+        table_writing_direction, source_style->BorderTopStyle(),
         source_style->BorderRightStyle(), source_style->BorderBottomStyle(),
         source_style->BorderLeftStyle());
     if (border_style.InlineStart() == EBorderStyle::kNone &&
