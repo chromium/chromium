@@ -33,7 +33,8 @@
     <iron-list grid scrollable scroll-target="document" items="{{albums}}">
       <template>
         <album-item album="{{item}}" checked="{{item.checked}}"
-            topic-source="[[topicSource]]" tabindex$="[[tabIndex]]">
+            topic-source="[[topicSource]]" tabindex$="[[tabIndex]]"
+            role="checkbox">
         </album-item>
       </template>
     </iron-list>
