@@ -1,6 +1,7 @@
 include_rules = [
   "+services/device/public/mojom",
   "+services/network/public/cpp/constants.h",
+  "+services/network/public/mojom",
   "+services/network/network_service.h",
   "+services/network/public/cpp",
 ]
