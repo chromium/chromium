@@ -3732,6 +3732,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           is_html_legend_element_(false),
           has_non_collapsed_border_decoration_(false),
           being_destroyed_(false),
+          is_layout_ng_object_for_list_marker_image_(false),
           is_table_column_constraints_dirty_(false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
@@ -4031,7 +4032,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     ADD_BOOLEAN_BITFIELD(being_destroyed_, BeingDestroyed);
 
     // From LayoutListMarkerImage
-    ADD_BOOLEAN_BITFIELD(is_layout_ng_object_for_list_marker_image,
+    ADD_BOOLEAN_BITFIELD(is_layout_ng_object_for_list_marker_image_,
                          IsLayoutNGObjectForListMarkerImage);
 
     // Column constraints are cached on LayoutNGTable.
