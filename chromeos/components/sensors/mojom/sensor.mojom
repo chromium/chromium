@@ -14,6 +14,28 @@
 
 module chromeos.sensors.mojom;
 
+const string kScale = "scale";
+const string kSamplingFrequencyAvailable = "sampling_frequency_available";
+const string kLocation = "location";
+
+const string kLocationBase = "base";
+const string kLocationLid = "lid";
+const string kLocationCamera = "camera";
+
+// As Mojo doesn't support const arrays of strings and char, and also axes are
+// trivial, let Sensor clients append the axes.
+// Supported axes: {"x", "y", "z"}. Ex: "accel_x".
+const string kAccelerometerChannel = "accel";
+const string kGyroscopeChannel = "anglvel";
+const string kMagnetometerChannel = "magn";
+
+// The light sensor may have not only channel "illuminance", but three color
+// channels: illuminance_red, illuminance_green, and illuminance_blue.
+const string kLightChannel = "illuminance";
+const string kPressureChannel = "pressure";
+
+const string kTimestampChannel = "timestamp";
+
 enum DeviceType {
   NONE = 0,  // invalid device type
   ACCEL = 1,
