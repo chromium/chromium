@@ -4432,6 +4432,8 @@ static_library("browser") {
       "lacros/account_manager_util.h",
       "lacros/feedback_util.cc",
       "lacros/feedback_util.h",
+      "lacros/immersive_context_lacros.cc",
+      "lacros/immersive_context_lacros.h",
       "lacros/lacros_chrome_service_delegate_impl.cc",
       "lacros/lacros_chrome_service_delegate_impl.h",
       "lacros/system_logs/lacros_system_log_fetcher.cc",
@@ -4449,6 +4451,7 @@ static_library("browser") {
     deps += [
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//chromeos/ui/frame",
     ]
   }
 

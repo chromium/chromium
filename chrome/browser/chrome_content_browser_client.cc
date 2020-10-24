@@ -642,6 +642,7 @@
 #endif
 
 #if BUILDFLAG(IS_LACROS)
+#include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
@@ -1385,7 +1386,10 @@ ChromeContentBrowserClient::CreateBrowserMainParts(
     // Construct additional browser parts. Stages are called in the order in
     // which they are added.
 #if defined(TOOLKIT_VIEWS)
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LACROS)
+  main_parts->AddParts(
+      std::make_unique<ChromeBrowserMainExtraPartsViewsLacros>());
+#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
   main_parts->AddParts(
       std::make_unique<ChromeBrowserMainExtraPartsViewsLinux>());
 #else

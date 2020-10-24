@@ -2708,6 +2708,8 @@ static_library("ui") {
   # TODO(crbug.com/1052397): Rename GN variable. This is the lacros browser.
   if (chromeos_is_browser_only) {
     sources += [
+      "views/chrome_browser_main_extra_parts_views_lacros.cc",
+      "views/chrome_browser_main_extra_parts_views_lacros.h",
       "views/frame/immersive_mode_controller_chromeos.cc",
       "views/frame/immersive_mode_controller_chromeos.h",
       "window_sizer/window_sizer_chromeos.cc",
