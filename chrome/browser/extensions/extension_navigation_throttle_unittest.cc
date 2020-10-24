@@ -152,7 +152,7 @@ class ExtensionNavigationThrottleUnitTest
     }
 
     ukm::SourceId source_id = ukm::ConvertToSourceId(
-        navigation_id, base::UkmSourceId::Type::NAVIGATION_ID);
+        navigation_id, ukm::SourceIdObj::Type::NAVIGATION_ID);
 
     ASSERT_EQ(1u, entries.size());
     EXPECT_EQ(source_id, entries[0].source);

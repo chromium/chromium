@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/isolation_info.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
@@ -320,7 +321,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       /*frame=*/nullptr, worker_process_host_->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
       worker_origin_, /*navigation_id=*/base::nullopt,
-      base::UkmSourceId::FromInt64(
+      ukm::SourceIdObj::FromInt64(
           ancestor_render_frame_host->GetPageUkmSourceId()),
       &default_factory_receiver, &factory_params->header_client,
       bypass_redirect_checks,

@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/metrics/ukm_source_id.h"
 #include "extensions/common/extension_id.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 class GURL;
@@ -31,18 +31,18 @@ enum class ExtensionResourceAccessResult : int {
 // Records results of attempts to access an extension resource at the url
 // |gurl|. Done as part of a study to see if this is being used as a
 // fingerprinting method.
-void RecordExtensionResourceAccessResult(base::UkmSourceId ukm_source_id,
+void RecordExtensionResourceAccessResult(ukm::SourceIdObj ukm_source_id,
                                          const GURL& gurl,
                                          ExtensionResourceAccessResult result);
 
 // Records that the extension |extension_id| has injected a content script into
 // page identified by |ukm_source_id|.
-void RecordContentScriptInjection(base::UkmSourceId ukm_source_id,
+void RecordContentScriptInjection(ukm::SourceIdObj ukm_source_id,
                                   const ExtensionId& extension_id);
 
 // Records that the extension |extension_id| has blocked a network request on
 // page identified by |ukm_source_id|.
-void RecordNetworkRequestBlocked(base::UkmSourceId ukm_source_id,
+void RecordNetworkRequestBlocked(ukm::SourceIdObj ukm_source_id,
                                  const ExtensionId& extension_id);
 
 }  // namespace extensions

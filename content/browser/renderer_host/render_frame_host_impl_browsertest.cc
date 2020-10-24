@@ -68,6 +68,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -153,7 +154,7 @@ class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
 
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
-      base::UkmSourceId ukm_source_id,
+      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories) override {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> trustme_remote;
     trustme_factory_->Clone(trustme_remote.InitWithNewPipeAndPassReceiver());

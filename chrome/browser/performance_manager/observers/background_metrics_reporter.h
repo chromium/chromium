@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/ukm_source_id.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

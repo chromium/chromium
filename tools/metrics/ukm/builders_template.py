@@ -6,9 +6,8 @@
 
 import codegen
 
-HEADER = codegen.Template(
-basename="ukm_builders.h",
-file_template="""
+HEADER = codegen.Template(basename="ukm_builders.h",
+                          file_template="""
 // Generated from gen_builders.py.  DO NOT EDIT!
 // source: ukm.xml
 
@@ -29,11 +28,11 @@ namespace builders {{
 
 #endif  // {file.guard_path}
 """,
-event_template="""
+                          event_template="""
 class {event.name} final : public ::ukm::internal::UkmEntryBuilderBase {{
  public:
   explicit {event.name}(ukm::SourceId source_id);
-  explicit {event.name}(base::UkmSourceId source_id);
+  explicit {event.name}(ukm::SourceIdObj source_id);
   ~{event.name}() override;
 
   static const char kEntryName[];
@@ -42,7 +41,7 @@ class {event.name} final : public ::ukm::internal::UkmEntryBuilderBase {{
 {metric_code}
 }};
 """,
-metric_template="""
+                          metric_template="""
   static const char k{metric.name}Name[];
   static constexpr uint64_t k{metric.name}NameHash = UINT64_C({metric.hash});
   {event.name}& Set{metric.name}(int64_t value);
@@ -71,7 +70,7 @@ const uint64_t {event.name}::kEntryNameHash;
   ::ukm::internal::UkmEntryBuilderBase(source_id, kEntryNameHash) {{
 }}
 
-{event.name}::{event.name}(base::UkmSourceId source_id) :
+{event.name}::{event.name}(ukm::SourceIdObj source_id) :
   ::ukm::internal::UkmEntryBuilderBase(source_id, kEntryNameHash) {{
 }}
 

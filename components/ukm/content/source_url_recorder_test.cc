@@ -10,6 +10,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
@@ -66,13 +67,13 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, InitialUrl) {
   size_t document_type_source_count = 0;
   for (const auto& kv : sources) {
     if (ukm::GetSourceIdType(kv.first) ==
-        base::UkmSourceId::Type::NAVIGATION_ID) {
+        ukm::SourceIdObj::Type::NAVIGATION_ID) {
       // The navigation source has both URLs.
       EXPECT_EQ(initial_url, kv.second->urls().front());
       EXPECT_EQ(final_url, kv.second->urls().back());
       navigation_type_source_count++;
     }
-    if (ukm::GetSourceIdType(kv.first) == base::UkmSourceId::Type::DEFAULT) {
+    if (ukm::GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::DEFAULT) {
       // The document source has the final URL which is one set on the
       // committed document.
       EXPECT_EQ(final_url, kv.second->urls().front());
@@ -129,8 +130,7 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, SameDocumentNavigation) {
 
   for (auto& kv : test_ukm_recorder_.GetSources()) {
     // Populate protos from the navigation sources.
-    if (ukm::GetSourceIdType(kv.first) !=
-        base::UkmSourceId::Type::NAVIGATION_ID)
+    if (ukm::GetSourceIdType(kv.first) != ukm::SourceIdObj::Type::NAVIGATION_ID)
       continue;
 
     if (kv.second->url() == url1) {

@@ -38,6 +38,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
@@ -62,7 +63,7 @@ std::string Entry1And2Whitelist() {
 }
 
 SourceId ConvertSourceIdToWhitelistedType(SourceId id, SourceIdType type) {
-  return base::UkmSourceId::FromOtherId(id, type).ToInt64();
+  return ukm::SourceIdObj::FromOtherId(id, type).ToInt64();
 }
 
 // A small shim exposing UkmRecorder methods to tests.

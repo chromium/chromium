@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/ukm_source_id.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/post_task.h"
@@ -30,6 +29,7 @@
 #include "content/public/common/content_client.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {

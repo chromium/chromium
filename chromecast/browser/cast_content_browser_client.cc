@@ -15,7 +15,6 @@
 #include "base/files/scoped_file.h"
 #include "base/i18n/rtl.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/metrics/ukm_source_id.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -86,6 +85,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -871,7 +871,7 @@ CastContentBrowserClient::CreateThrottlesForNavigation(
 
 void CastContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
-    base::UkmSourceId ukm_source_id,
+    ukm::SourceIdObj ukm_source_id,
     NonNetworkURLLoaderFactoryMap* factories) {
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   content::WebContents* web_contents =

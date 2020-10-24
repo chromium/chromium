@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/common/content_client.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -438,8 +439,8 @@ void AppCacheRequestHandler::RunLoaderCallbackForMainResource(
               ContentBrowserClient::URLLoaderFactoryType::kNavigation,
               url::Origin(),
               frame_tree_node->navigation_request()->GetNavigationId(),
-              base::UkmSourceId::FromInt64(frame_tree_node->navigation_request()
-                                               ->GetNextPageUkmSourceId()),
+              ukm::SourceIdObj::FromInt64(frame_tree_node->navigation_request()
+                                              ->GetNextPageUkmSourceId()),
               &factory_receiver, nullptr /* header_client */,
               nullptr /* bypass_redirect_checks */,
               nullptr /* disable_secure_dns */, nullptr /* factory_override */);

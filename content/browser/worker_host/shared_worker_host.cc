@@ -34,6 +34,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -281,7 +282,7 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       /*frame=*/nullptr, worker_process_host_->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource, origin,
       /*navigation_id=*/base::nullopt,
-      base::UkmSourceId::FromInt64(ukm_source_id_), &default_factory_receiver,
+      ukm::SourceIdObj::FromInt64(ukm_source_id_), &default_factory_receiver,
       &factory_params->header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, &factory_params->factory_override);
 

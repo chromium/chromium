@@ -25,6 +25,7 @@
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/script_injection_callback.h"
 #include "extensions/renderer/scripts_run_info.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -165,7 +166,7 @@ ScriptInjection::ScriptInjection(
       injection_host_(std::move(injection_host)),
       run_location_(run_location),
       request_id_(kInvalidRequestId),
-      ukm_source_id_(base::UkmSourceId::FromInt64(
+      ukm_source_id_(ukm::SourceIdObj::FromInt64(
           render_frame_->GetWebFrame()->GetDocument().GetUkmSourceId())),
       complete_(false),
       did_inject_js_(false),

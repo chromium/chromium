@@ -7,7 +7,6 @@
 #include <cinttypes>
 #include <limits>
 
-#include "base/metrics/ukm_source_id.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -25,7 +24,7 @@ TEST(IdentifiabilityMetricBuilderTest, Set) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
 
-  IdentifiabilityMetricBuilder builder(base::UkmSourceId{});
+  IdentifiabilityMetricBuilder builder(ukm::SourceIdObj{});
   constexpr int64_t kInputHash = 2;
   constexpr int64_t kValue = 3;
 
@@ -52,7 +51,7 @@ TEST(IdentifiabilityMetricBuilderTest, BuilderOverload) {
   constexpr auto kSurface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kWebFeature, kInputHash);
 
-  const auto kSource = base::UkmSourceId::New();
+  const auto kSource = ukm::SourceIdObj::New();
   IdentifiabilityMetricBuilder(kSource).Set(kSurface, kValue).Record(&recorder);
 
   ASSERT_EQ(1u, collector.entries().size());
@@ -81,7 +80,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetWebfeature) {
   constexpr int64_t kTestInput =
       static_cast<int64_t>(mojom::WebFeature::kEventSourceDocument);
 
-  IdentifiabilityMetricBuilder builder(base::UkmSourceId{});
+  IdentifiabilityMetricBuilder builder(ukm::SourceIdObj{});
   builder.SetWebfeature(mojom::WebFeature::kEventSourceDocument, kValue)
       .Record(&recorder);
   ASSERT_EQ(1u, collector.entries().size());
@@ -90,7 +89,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetWebfeature) {
 
   // Only testing that using SetWebfeature(x,y) is equivalent to
   // .Set(IdentifiableSurface::FromTypeAndToken(kWebFeature, x), y);
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(IdentifiableSurface::FromTypeAndToken(
                IdentifiableSurface::Type::kWebFeature, kTestInput),
            kValue)
@@ -151,7 +150,7 @@ const int64_t kExpectedHashOfOnePointFive = 0x3ff8000000000000;
 TEST(IdentifiabilityMetricBuilderTest, SetChar) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, 'A')
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(65)));
@@ -161,7 +160,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetCharArray) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
   IdentifiableToken sample(kAbcd);
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, sample)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(kExpectedHashOfAbcd));
@@ -171,7 +170,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetStringPiece) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
   // StringPiece() needs an explicit constructor invocation.
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, IdentifiableToken(base::StringPiece(kAbcd)))
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(kExpectedHashOfAbcd));
@@ -181,7 +180,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetStdString) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
   IdentifiableToken sample((std::string(kAbcd)));
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, sample)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(kExpectedHashOfAbcd));
@@ -190,7 +189,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetStdString) {
 TEST(IdentifiabilityMetricBuilderTest, SetInt) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, -5)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(-5)));
@@ -201,7 +200,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetIntRef) {
   test::TestUkmRecorder recorder;
   int x = -5;
   int& xref = x;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, xref)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(-5)));
@@ -212,7 +211,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetIntConstRef) {
   test::TestUkmRecorder recorder;
   int x = -5;
   const int& xref = x;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, xref)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(-5)));
@@ -221,7 +220,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetIntConstRef) {
 TEST(IdentifiabilityMetricBuilderTest, SetUnsigned) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, 5u)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(5)));
@@ -230,7 +229,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetUnsigned) {
 TEST(IdentifiabilityMetricBuilderTest, SetUint64) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, UINT64_C(5))
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(5)));
@@ -241,7 +240,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetBigUnsignedInt) {
   test::TestUkmRecorder recorder;
   // Slightly different in that this value cannot be converted into the sample
   // type without loss. Hence it is digested as raw bytes.
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, std::numeric_limits<uint64_t>::max())
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(-1)));
@@ -250,7 +249,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetBigUnsignedInt) {
 TEST(IdentifiabilityMetricBuilderTest, SetFloat) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, 1.5f)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(kExpectedHashOfOnePointFive));
@@ -259,7 +258,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetFloat) {
 TEST(IdentifiabilityMetricBuilderTest, SetDouble) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, 1.5l)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(kExpectedHashOfOnePointFive));
@@ -268,7 +267,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetDouble) {
 TEST(IdentifiabilityMetricBuilderTest, SetEnum) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, Never::kUp)
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(3)));
@@ -277,7 +276,7 @@ TEST(IdentifiabilityMetricBuilderTest, SetEnum) {
 TEST(IdentifiabilityMetricBuilderTest, SetParameterPack) {
   test::ScopedIdentifiabilityTestSampleCollector collector;
   test::TestUkmRecorder recorder;
-  IdentifiabilityMetricBuilder(base::UkmSourceId{})
+  IdentifiabilityMetricBuilder(ukm::SourceIdObj{})
       .Set(kTestSurface, IdentifiableToken(1, 2, 3.0, 4, 'a'))
       .Record(&recorder);
   EXPECT_THAT(collector, FirstMetricIs(INT64_C(0x672cf4c107b5b22)));

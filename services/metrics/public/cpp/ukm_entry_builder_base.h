@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/metrics/ukm_source_id.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 
 namespace ukm {
@@ -32,7 +32,7 @@ class METRICS_EXPORT UkmEntryBuilderBase {
   mojom::UkmEntryPtr TakeEntry();
 
  protected:
-  UkmEntryBuilderBase(base::UkmSourceId source_id, uint64_t event_hash);
+  UkmEntryBuilderBase(ukm::SourceIdObj source_id, uint64_t event_hash);
   // TODO(crbug/873866): Remove this version once callers are migrated.
   UkmEntryBuilderBase(SourceId source_id, uint64_t event_hash);
 

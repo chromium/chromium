@@ -47,6 +47,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -348,7 +349,7 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
         request_initiator,
         /*navigation_id=*/base::nullopt,
         /* TODO(https://crbug.com/1103288): The UKM ID could be computed */
-        base::kInvalidUkmSourceId, &default_factory_receiver,
+        ukm::kInvalidSourceIdObj, &default_factory_receiver,
         &factory_params->header_client, &bypass_redirect_checks,
         nullptr /* disable_secure_dns */, &factory_params->factory_override);
     factory_bundle_for_browser_info->set_bypass_redirect_checks(

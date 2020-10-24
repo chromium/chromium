@@ -7,16 +7,110 @@
 
 #include <stdint.h>
 
-#include "base/metrics/ukm_source_id.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 
 namespace ukm {
 
 typedef int64_t SourceId;
 
-using SourceIdType = base::UkmSourceId::Type;
-
 const SourceId kInvalidSourceId = 0;
+
+// An ID used to identify a Source to UKM, and contains the type information.
+// These objects are copyable, assignable, and occupy 64-bits per instance.
+// Prefer passing them by value. When a new type is added, please also update
+// the enum type in third_party/metrics_proto/ukm/source.proto and the
+// conversion function ToProtobufSourceType.
+// NOTES ON USAGE: if only the underlying int value is required to identify a
+// Source and is used in Mojo interface, and no type conversion needs to be
+// performed, use ukm::SourceId instead.
+// TODO(crbug/1046951): migrate callers to use the public methods below then
+// remove METRICS_EXPORT on this class.
+class METRICS_EXPORT SourceIdObj {
+ public:
+  enum class Type : SourceId {
+    // Source ids of this type are created via ukm::AssignNewSourceId, to denote
+    // 'custom' source other than the types below. Source of this type has
+    // additional restrictions with logging, as determined by
+    // IsWhitelistedSourceId.
+    DEFAULT = 0,
+    // Sources created by navigation. They will be kept in memory as long as
+    // the associated tab is still alive and the number of sources are within
+    // the max threshold.
+    NAVIGATION_ID = 1,
+    // Source ID used by AppLaunchEventLogger::Log. A new source of this type
+    // and associated events are expected to be recorded within the same report
+    // interval; it will not be kept in memory between different reports.
+    APP_ID = 2,
+    // Source ID for background events that don't have an open tab but the
+    // associated URL is still present in the browsing history. A new source of
+    // this type and associated events are expected to be recorded within the
+    // same report interval; it will not be kept in memory between different
+    // reports.
+    HISTORY_ID = 3,
+    // Source ID used by WebApkUkmRecorder. A new source of this type and
+    // associated events are expected to be recorded within the same report
+    // interval; it will not be kept in memory between different reports.
+    WEBAPK_ID = 4,
+    // Source ID for service worker based payment handlers. A new source of this
+    // type and associated events are expected to be recorded within the same
+    // report interval; it will not be kept in memory between different reports.
+    PAYMENT_APP_ID = 5,
+    // Source ID for desktop web apps, based on the start_url in the web app
+    // manifest. A new source of this type and associated events are expected to
+    // be recorded within the same report interval; it will not be kept in
+    // memory between different reports.
+    DESKTOP_WEB_APP_ID = 6,
+    // Source ID for web workers, namely SharedWorkers and ServiceWorkers. Web
+    // workers may inherit a source ID from the spawner context (in the case of
+    // dedicated workers), or may have their own source IDs (in the case of
+    // shared workers and service workers). Shared workers and service workers
+    // can be connected to multiple clients (e.g. documents or other workers).
+    WORKER_ID = 7,
+    kMaxValue = WORKER_ID,
+  };
+
+  // Default constructor has the invalid value.
+  constexpr SourceIdObj() : value_(kInvalidSourceId) {}
+
+  constexpr SourceIdObj& operator=(SourceIdObj other) {
+    value_ = other.value_;
+    return *this;
+  }
+
+  // Allow identity comparisons.
+  constexpr bool operator==(SourceIdObj other) const {
+    return value_ == other.value_;
+  }
+  constexpr bool operator!=(SourceIdObj other) const {
+    return value_ != other.value_;
+  }
+
+  // Extract the Type of the SourceId.
+  Type GetType() const;
+
+  // Return the ID as an int64.
+  constexpr int64_t ToInt64() const { return value_; }
+
+  // Convert an int64 ID value to an ID object.
+  static constexpr SourceIdObj FromInt64(int64_t internal_value) {
+    return SourceIdObj(internal_value);
+  }
+
+  // Get a new Default-type SourceId, which is unique within the scope of a
+  // browser session.
+  static SourceIdObj New();
+
+  // Utility for converting other unique ids to source ids.
+  static SourceIdObj FromOtherId(int64_t value, Type type);
+
+ private:
+  constexpr explicit SourceIdObj(int64_t value) : value_(value) {}
+  int64_t value_;
+};
+
+constexpr SourceIdObj kInvalidSourceIdObj = SourceIdObj();
+
+using SourceIdType = ukm::SourceIdObj::Type;
 
 // Get a new source ID, which is unique for the duration of a browser session.
 METRICS_EXPORT SourceId AssignNewSourceId();
@@ -25,7 +119,7 @@ METRICS_EXPORT SourceId AssignNewSourceId();
 METRICS_EXPORT SourceId ConvertToSourceId(int64_t other_id,
                                           SourceIdType id_type);
 
-// Get the SourceIdType of the SourceId.
+// Get the SourceIdType of the SourceId object.
 METRICS_EXPORT SourceIdType GetSourceIdType(SourceId source_id);
 
 }  // namespace ukm

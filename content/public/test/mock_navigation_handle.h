@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "url/gurl.h"
@@ -29,7 +30,7 @@ class MockNavigationHandle : public NavigationHandle {
   int64_t GetNavigationId() override { return navigation_id_; }
   ukm::SourceId GetNextPageUkmSourceId() override {
     return ukm::ConvertToSourceId(navigation_id_,
-                                  base::UkmSourceId::Type::NAVIGATION_ID);
+                                  ukm::SourceIdObj::Type::NAVIGATION_ID);
   }
   const GURL& GetURL() override { return url_; }
   const GURL& GetPreviousURL() override { return previous_url_; }

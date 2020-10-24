@@ -1561,7 +1561,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
 
   return CreateNetworkServiceDefaultFactoryAndObserve(
       CreateURLLoaderFactoryParamsForMainWorld(navigation_request),
-      base::UkmSourceId::FromInt64(GetPageUkmSourceId()),
+      ukm::SourceIdObj::FromInt64(GetPageUkmSourceId()),
       std::move(default_factory_receiver));
 }
 
@@ -1636,7 +1636,7 @@ RenderFrameHostImpl::CreateURLLoaderFactoriesForIsolatedWorlds(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     CreateNetworkServiceDefaultFactoryAndObserve(
         std::move(factory_params),
-        base::kInvalidUkmSourceId, /* isolated from page */
+        ukm::kInvalidSourceIdObj, /* isolated from page */
         factory_remote.InitWithNewPipeAndPassReceiver());
     result[isolated_world_origin] = std::move(factory_remote);
   }
@@ -3823,7 +3823,7 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
     bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
         CreateURLLoaderFactoryParamsForMainWorld(
             latest_nav_request_still_committing),
-        base::UkmSourceId::FromInt64(
+        ukm::SourceIdObj::FromInt64(
             latest_nav_request_still_committing
                 ? latest_nav_request_still_committing->GetNextPageUkmSourceId()
                 : GetPageUkmSourceId()),
@@ -4966,7 +4966,7 @@ RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
       std::move(factory_params),
       // This is for renderer prefetches, so it's associated with this page, not
       // pending navigation.
-      base::UkmSourceId::FromInt64(GetPageUkmSourceId()),
+      ukm::SourceIdObj::FromInt64(GetPageUkmSourceId()),
       pending_default_factory.InitWithNewPipeAndPassReceiver());
 
   return std::make_unique<blink::PendingURLLoaderFactoryBundle>(
@@ -6179,8 +6179,8 @@ void RenderFrameHostImpl::CommitNavigation(
   }
   // This needs to ask |navigation_request| for the UKM ID since the commit is
   // in progress but not yet done.
-  base::UkmSourceId next_page_ukm_source_id = base::UkmSourceId::FromInt64(
-      navigation_request->GetNextPageUkmSourceId());
+  ukm::SourceIdObj next_page_ukm_source_id =
+      ukm::SourceIdObj::FromInt64(navigation_request->GetNextPageUkmSourceId());
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
   if ((!is_same_document || is_first_navigation) && !is_srcdoc) {
@@ -6615,7 +6615,7 @@ void RenderFrameHostImpl::FailedNavigation(
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
   bool bypass_redirect_checks = CreateNetworkServiceDefaultFactoryAndObserve(
       CreateURLLoaderFactoryParamsForMainWorld(navigation_request),
-      base::kInvalidUkmSourceId,
+      ukm::kInvalidSourceIdObj,
       default_factory_remote.InitWithNewPipeAndPassReceiver());
   subresource_loader_factories =
       std::make_unique<blink::PendingURLLoaderFactoryBundle>(
@@ -7306,7 +7306,7 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
     network::mojom::URLLoaderFactoryParamsPtr params,
-    base::UkmSourceId ukm_source_id,
+    ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
   bool bypass_redirect_checks = CreateNetworkServiceDefaultFactoryInternal(
@@ -7343,7 +7343,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
     network::mojom::URLLoaderFactoryParamsPtr params,
-    base::UkmSourceId ukm_source_id,
+    ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver) {
   DCHECK(params->request_initiator_origin_lock.has_value());
@@ -7365,7 +7365,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryInternal(
 void RenderFrameHostImpl::WillCreateURLLoaderFactory(
     const url::Origin& request_initiator,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
-    base::UkmSourceId ukm_source_id,
+    ukm::SourceIdObj ukm_source_id,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client,
     bool* bypass_redirect_checks,

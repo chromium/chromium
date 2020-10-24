@@ -13,7 +13,7 @@
 namespace blink {
 
 IdentifiabilityMetricBuilder::IdentifiabilityMetricBuilder(
-    base::UkmSourceId source_id)
+    ukm::SourceIdObj source_id)
     : source_id_(source_id) {}
 
 IdentifiabilityMetricBuilder::~IdentifiabilityMetricBuilder() = default;

@@ -372,9 +372,9 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   for (const auto& kv : recordings_.sources) {
     // Don't keep sources of these types after current report because their
     // entries are logged only at source creation time.
-    if (GetSourceIdType(kv.first) == base::UkmSourceId::Type::APP_ID ||
-        GetSourceIdType(kv.first) == base::UkmSourceId::Type::HISTORY_ID ||
-        GetSourceIdType(kv.first) == base::UkmSourceId::Type::WEBAPK_ID ||
+    if (GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::APP_ID ||
+        GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::HISTORY_ID ||
+        GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::WEBAPK_ID ||
         GetSourceIdType(kv.first) == SourceIdType::PAYMENT_APP_ID) {
       MarkSourceForDeletion(kv.first);
     }
@@ -396,7 +396,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
       if (!base::Contains(source_ids_seen, kv.first)) {
         continue;
       } else {
-        // Source of base::UkmSourceId::Type::DEFAULT type will not be kept
+        // Source of ukm::SourceIdObj::Type::DEFAULT type will not be kept
         // after entries are logged.
         MarkSourceForDeletion(kv.first);
       }

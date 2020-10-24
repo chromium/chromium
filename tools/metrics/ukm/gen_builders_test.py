@@ -47,7 +47,7 @@ class GenBuildersTest(unittest.TestCase):
 class {name} final : public ::ukm::internal::UkmEntryBuilderBase {{
  public:
   explicit {name}(ukm::SourceId source_id);
-  explicit {name}(base::UkmSourceId source_id);
+  explicit {name}(ukm::SourceIdObj source_id);
   ~{name}() override;
 
   static const char kEntryName[];
@@ -77,7 +77,7 @@ const uint64_t {name}::kEntryNameHash;
   ::ukm::internal::UkmEntryBuilderBase(source_id, kEntryNameHash) {{
 }}
 
-{name}::{name}(base::UkmSourceId source_id) :
+{name}::{name}(ukm::SourceIdObj source_id) :
   ::ukm::internal::UkmEntryBuilderBase(source_id, kEntryNameHash) {{
 }}""".format(name=eventInfo.name, rawName=eventInfo.raw_name),
         builders_impl_output)

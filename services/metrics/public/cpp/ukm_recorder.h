@@ -80,8 +80,8 @@ class METRICS_EXPORT UkmRecorder {
 
  protected:
   // Type-safe wrappers for Update<X> functions.
-  void RecordOtherURL(base::UkmSourceId source_id, const GURL& url);
-  void RecordAppURL(base::UkmSourceId source_id,
+  void RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url);
+  void RecordAppURL(ukm::SourceIdObj source_id,
                     const GURL& url,
                     const AppType app_type);
 

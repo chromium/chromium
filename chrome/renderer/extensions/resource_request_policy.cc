@@ -17,6 +17,7 @@
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/renderer_extension_registry.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -119,7 +120,7 @@ bool ResourceRequestPolicy::CanRequestResource(
   if (!is_dev_tools && !web_accessible_ids_.count(extension_origin.host())) {
     // Failures are recorded here, successes will be in the browser.
     RecordExtensionResourceAccessResult(
-        base::UkmSourceId::FromInt64(frame->GetDocument().GetUkmSourceId()),
+        ukm::SourceIdObj::FromInt64(frame->GetDocument().GetUkmSourceId()),
         resource_url, ExtensionResourceAccessResult::kFailure);
 
     return false;
@@ -155,7 +156,7 @@ bool ResourceRequestPolicy::CanRequestResource(
     LOG(ERROR) << "Denying load of " << resource_url.spec() << " from "
                << "hosted app.";
     RecordExtensionResourceAccessResult(
-        base::UkmSourceId::FromInt64(frame->GetDocument().GetUkmSourceId()),
+        ukm::SourceIdObj::FromInt64(frame->GetDocument().GetUkmSourceId()),
         resource_url, ExtensionResourceAccessResult::kFailure);
     return false;
   }
@@ -176,7 +177,7 @@ bool ResourceRequestPolicy::CanRequestResource(
         blink::WebConsoleMessage(blink::mojom::ConsoleMessageLevel::kError,
                                  blink::WebString::FromUTF8(message)));
     RecordExtensionResourceAccessResult(
-        base::UkmSourceId::FromInt64(frame->GetDocument().GetUkmSourceId()),
+        ukm::SourceIdObj::FromInt64(frame->GetDocument().GetUkmSourceId()),
         resource_url, ExtensionResourceAccessResult::kFailure);
     return false;
   }

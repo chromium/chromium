@@ -184,7 +184,9 @@ ukm::builders::MyEvent(source_id)
 
 UKM identifies navigations by their source ID and you'll need to associate an ID with your event in order to tie it to a main frame URL.  Preferably, get an existing ID for the navigation from another object.
 
-The main method for doing this is by getting a navigation ID:
+Prefer using `ukm::SourceId` if only the underlying int64 value is required to identify a source and is used in Mojo interface, and no type conversion needs to be performed. If additional source type information is needed, `ukm::SourceIdObj` can be used.
+
+The main method for getting an existing ID is by converting from the navigation ID:
 
 ```cpp
 ukm::SourceId source_id = GetSourceIdForWebContentsDocument(web_contents);

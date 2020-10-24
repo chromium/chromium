@@ -4,7 +4,6 @@
 
 #include "weblayer/browser/background_sync/background_sync_delegate_impl.h"
 
-#include "base/metrics/ukm_source_id.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"

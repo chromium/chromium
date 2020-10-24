@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/ukm_source_id.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace base {
@@ -49,7 +49,7 @@ void SetExtensionProtocolTestHandler(ExtensionProtocolTestHandler* handler);
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateExtensionNavigationURLLoaderFactory(
     content::BrowserContext* browser_context,
-    base::UkmSourceId ukm_source_id,
+    ukm::SourceIdObj ukm_source_id,
     bool is_web_view_request);
 
 // Creates a new network::mojom::URLLoaderFactory implementation suitable for

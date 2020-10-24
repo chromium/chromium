@@ -23,6 +23,7 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/base/upload_file_element_reader.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader.h"
@@ -164,7 +165,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     bool is_async,
     bool is_service_worker_script,
     base::Optional<int64_t> navigation_id,
-    base::UkmSourceId ukm_source_id)
+    ukm::SourceIdObj ukm_source_id)
     : id(request_id),
       url(request.url),
       render_process_id(render_process_id),

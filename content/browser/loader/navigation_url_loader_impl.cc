@@ -79,6 +79,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_util.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -1145,7 +1146,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         frame_tree_node->current_frame_host()->GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
         frame_tree_node->navigation_request()->GetNavigationId(),
-        base::UkmSourceId::FromInt64(
+        ukm::SourceIdObj::FromInt64(
             frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
         &factory_receiver, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
@@ -1169,8 +1170,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         ->browser()
         ->RegisterNonNetworkNavigationURLLoaderFactories(
             frame_tree_node_id_,
-            base::UkmSourceId::FromInt64(frame_tree_node->navigation_request()
-                                             ->GetNextPageUkmSourceId()),
+            ukm::SourceIdObj::FromInt64(frame_tree_node->navigation_request()
+                                            ->GetNextPageUkmSourceId()),
             &non_network_url_loader_factories_);
 
     // The embedder may want to proxy all network-bound URLLoaderFactory
@@ -1185,7 +1186,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         frame_tree_node->current_frame_host()->GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
         frame_tree_node->navigation_request()->GetNavigationId(),
-        base::UkmSourceId::FromInt64(
+        ukm::SourceIdObj::FromInt64(
             frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
         &factory_receiver, &header_client, &bypass_redirect_checks_,
         nullptr /* disable_secure_dns */, nullptr /* factory_override */);
@@ -1367,7 +1368,7 @@ void NavigationURLLoaderImpl::
       frame->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
       frame_tree_node->navigation_request()->GetNavigationId(),
-      base::UkmSourceId::FromInt64(
+      ukm::SourceIdObj::FromInt64(
           frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
       &factory_receiver, nullptr /* header_client */,
       nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,

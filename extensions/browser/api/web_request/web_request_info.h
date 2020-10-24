@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/ukm_source_id.h"
 #include "base/optional.h"
 #include "base/values.h"
 #include "content/public/browser/global_routing_id.h"
@@ -24,6 +23,7 @@
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
@@ -52,7 +52,7 @@ struct WebRequestInfoInitParams {
       bool is_async,
       bool is_service_worker_script,
       base::Optional<int64_t> navigation_id,
-      base::UkmSourceId ukm_source_id);
+      ukm::SourceIdObj ukm_source_id);
 
   ~WebRequestInfoInitParams();
 
@@ -76,7 +76,7 @@ struct WebRequestInfoInitParams {
   ExtensionApiFrameIdMap::FrameData frame_data;
   bool is_service_worker_script = false;
   base::Optional<int64_t> navigation_id;
-  base::UkmSourceId ukm_source_id = base::kInvalidUkmSourceId;
+  ukm::SourceIdObj ukm_source_id = ukm::kInvalidSourceIdObj;
   content::GlobalFrameRoutingId parent_routing_id;
 
  private:
@@ -182,7 +182,7 @@ struct WebRequestInfo {
   const base::Optional<int64_t> navigation_id;
 
   // UKM source to associate metrics with for this request.
-  const base::UkmSourceId ukm_source_id;
+  const ukm::SourceIdObj ukm_source_id;
 
   // ID of the RenderFrameHost corresponding to the parent frame. Only valid for
   // document subresource and sub-frame requests.

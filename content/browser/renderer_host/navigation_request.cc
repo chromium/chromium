@@ -4587,7 +4587,7 @@ ukm::SourceId NavigationRequest::GetNextPageUkmSourceId() {
     return previous_page_ukm_source_id_;
 
   return ukm::ConvertToSourceId(navigation_id_,
-                                base::UkmSourceId::Type::NAVIGATION_ID);
+                                ukm::SourceIdObj::Type::NAVIGATION_ID);
 }
 
 const GURL& NavigationRequest::GetURL() {

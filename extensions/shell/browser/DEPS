@@ -27,6 +27,7 @@ include_rules = [
   "+net",
 
   "+ppapi",
+  "+services/metrics/public/cpp/ukm_source_id.h",
   "+services/network/public/cpp/session_cookie_delete_predicate.h",
   "+services/network/public/mojom/cors_origin_pattern.mojom.h",
   "+services/network/public/mojom/url_loader.mojom.h",

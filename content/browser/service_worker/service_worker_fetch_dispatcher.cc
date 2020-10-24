@@ -43,6 +43,7 @@
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
@@ -325,7 +326,7 @@ void CreateNetworkFactoryForNavigationPreloadOnUI(
       frame_tree_node->current_frame_host()->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
       frame_tree_node->navigation_request()->GetNavigationId(),
-      base::UkmSourceId::FromInt64(
+      ukm::SourceIdObj::FromInt64(
           frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
       &receiver, &header_client, &bypass_redirect_checks_unused,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);

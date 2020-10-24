@@ -13,11 +13,11 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/ukm_source_id.h"
 #include "base/optional.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/injection_host.h"
 #include "extensions/renderer/script_injector.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 struct HostID;
 
@@ -129,7 +129,7 @@ class ScriptInjection {
   int64_t request_id_;
 
   // Identifies the frame we're injecting into.
-  base::UkmSourceId ukm_source_id_;
+  ukm::SourceIdObj ukm_source_id_;
 
   // Whether or not the injection is complete, either via injecting the script
   // or because it will never complete.

@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
@@ -657,7 +658,7 @@ void AppCacheHost::MaybePassSubresourceFactory() {
         rfh->GetProcess()->GetBrowserContext(), rfh, process_id_,
         ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
         origin_for_url_loader_factory_, base::nullopt /* navigation_id */,
-        base::UkmSourceId::FromInt64(rfh->GetPageUkmSourceId()),
+        ukm::SourceIdObj::FromInt64(rfh->GetPageUkmSourceId()),
         &factory_receiver, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
         nullptr /* factory_override */);

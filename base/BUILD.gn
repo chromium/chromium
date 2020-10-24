@@ -395,8 +395,6 @@ component("base") {
     "metrics/sparse_histogram.h",
     "metrics/statistics_recorder.cc",
     "metrics/statistics_recorder.h",
-    "metrics/ukm_source_id.cc",
-    "metrics/ukm_source_id.h",
     "metrics/user_metrics.cc",
     "metrics/user_metrics.h",
     "metrics/user_metrics_action.h",

@@ -40,6 +40,7 @@
 #include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_request_headers.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 
@@ -197,7 +198,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       int render_process_id,
       content::ContentBrowserClient::URLLoaderFactoryType type,
       base::Optional<int64_t> navigation_id,
-      base::UkmSourceId ukm_source_id,
+      ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
           header_client);

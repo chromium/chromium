@@ -32,6 +32,7 @@
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/page_transition_types.h"
 
 namespace extensions {
@@ -148,7 +149,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  base::UkmSourceId source_id = base::UkmSourceId::FromInt64(
+  ukm::SourceIdObj source_id = ukm::SourceIdObj::FromInt64(
       navigation_handle()->GetNextPageUkmSourceId());
 
   // If the navigation is to an unknown or disabled extension, block it.

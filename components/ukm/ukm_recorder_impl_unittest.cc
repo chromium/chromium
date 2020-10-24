@@ -6,12 +6,12 @@
 
 #include "base/bind.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/metrics/ukm_source_id.h"
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "url/gurl.h"

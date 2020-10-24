@@ -84,6 +84,7 @@
 #include "net/base/auth.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -688,7 +689,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     int render_process_id,
     URLLoaderFactoryType type,
     base::Optional<int64_t> navigation_id,
-    base::UkmSourceId ukm_source_id,
+    ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
         header_client) {
@@ -797,10 +798,10 @@ void WebRequestAPI::ProxyWebSocket(
           frame->GetProcess()->GetBrowserContext());
 
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
-  const base::UkmSourceId ukm_source_id =
-      web_contents ? base::UkmSourceId::FromInt64(
+  const ukm::SourceIdObj ukm_source_id =
+      web_contents ? ukm::SourceIdObj::FromInt64(
                          ukm::GetSourceIdForWebContentsDocument(web_contents))
-                   : base::kInvalidUkmSourceId;
+                   : ukm::kInvalidSourceIdObj;
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
       std::move(handshake_client), has_extra_headers,

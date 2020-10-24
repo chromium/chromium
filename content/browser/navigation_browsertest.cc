@@ -71,6 +71,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_failed_job.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
@@ -3273,7 +3274,7 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
 
     void RegisterNonNetworkNavigationURLLoaderFactories(
         int frame_tree_node_id,
-        base::UkmSourceId ukm_source_id,
+        ukm::SourceIdObj ukm_source_id,
         NonNetworkURLLoaderFactoryMap* factories) override {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
       fake_url_loader_factory_->Clone(
