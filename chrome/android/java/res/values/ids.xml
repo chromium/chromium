@@ -44,16 +44,6 @@
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />
 
-    <!-- PaymentRequest -->
-    <item type="id" name="payments_section" />
-    <item type="id" name="payments_left_summary_label" />
-    <item type="id" name="payments_first_radio_button" />
-    <item type="id" name="payments_add_option_button" />
-    <item type="id" name="payments_edit_cancel_button" />
-    <item type="id" name="payments_edit_checkbox" />
-    <item type="id" name="payments_description_label" />
-    <item type="id" name="payments_warning_label" />
-
     <!-- Password update prompt -->
     <item type="id" name="password_infobar_accounts_spinner" />
 

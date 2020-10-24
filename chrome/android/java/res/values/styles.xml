@@ -358,27 +358,6 @@
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Secondary</item>
     </style>
 
-    <!-- Payments UI -->
-    <style name="TextAppearance.PaymentsUiSectionWarningText">
-        <item name="android:textColor">@color/default_text_color_error</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-    <style name="TextAppearance.PaymentsUiSectionDescriptiveTextEndAligned"
-        parent="TextAppearance.TextMedium.Secondary">
-        <item name="android:textAlignment">viewEnd</item>
-    </style>
-    <style name="TextAppearance.PaymentsUiSectionPendingTextEndAligned"
-        parent="TextAppearance.PaymentsUiSectionDescriptiveTextEndAligned">
-        <item name="android:textColor">@color/explanation_text_color</item>
-    </style>
-    <style name="TextAppearance.EditorDialogSectionAddButton" parent="TextAppearance.TextMedium.Blue">
-        <item name="android:textAllCaps">true</item>
-    </style>
-    <style name="TextAppearance.PaymentRequestHeaderTitle"
-        parent="TextAppearance.TextLarge.Primary">
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <!-- Autofill Card -->
     <style name="TextAppearance.AutofillCardErrorMessage">
         <item name="android:textColor">@color/input_underline_error_color</item>

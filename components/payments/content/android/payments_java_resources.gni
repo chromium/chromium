@@ -17,5 +17,8 @@ payments_java_resources = [
   "//components/payments/content/android/java/res/layout/payment_request_spinny.xml",
   "//components/payments/content/android/java/res/layout/payments_request_editor_textview.xml",
   "//components/payments/content/android/java/res/values-sw600dp/dimens.xml",
+  "//components/payments/content/android/java/res/values/colors.xml",
   "//components/payments/content/android/java/res/values/dimens.xml",
+  "//components/payments/content/android/java/res/values/ids.xml",
+  "//components/payments/content/android/java/res/values/styles.xml",
 ]

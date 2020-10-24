@@ -98,11 +98,6 @@
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>
     <color name="bookmark_widget_background">@color/default_bg_color</color>
 
-    <!-- Payments UI colors -->
-    <color name="payment_request_bg">@color/sheet_bg_color</color>
-    <color name="payments_section_edit_background">@color/default_bg_color_secondary</color>
-    <color name="payments_section_chevron">#B2B2B2</color>
-
     <!-- History Navigation UI colors -->
     <color name="navigation_bubble_background_color">@color/default_bg_color_elev_2</color>
     <color name="navigation_bubble_arrow">@android:color/black</color>

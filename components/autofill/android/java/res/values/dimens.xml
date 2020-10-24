@@ -24,4 +24,26 @@
     <dimen name="autofill_dropdown_refresh_horizontal_padding">16dp</dimen>
     <dimen name="autofill_dropdown_refresh_vertical_padding">12dp</dimen>
     <dimen name="autofill_dropdown_refresh_icon_margin">24dp</dimen>
+
+    <!-- Preferences dimensions
+      pref_autofill_field_horizontal_padding exists because TextInputLayouts have an internal
+      padding set.
+    -->
+    <dimen name="pref_autofill_content_spacing">12dp</dimen>
+    <dimen name="pref_autofill_field_horizontal_padding">4dp</dimen>
+    <dimen name="pref_autofill_field_top_margin">8dp</dimen>
+    <dimen name="pref_autofill_field_large_top_margin">16dp</dimen>
+    <dimen name="pref_autofill_field_extra_large_top_margin">24dp</dimen>
+    <dimen name="pref_autofill_field_bottom_margin">8dp</dimen>
+
+    <!-- The dropdown element has no embedded bottom padding like the TextView has so the margin
+      is doubled. -->
+    <dimen name="pref_autofill_dropdown_bottom_margin">16dp</dimen>
+    <dimen name="pref_autofill_touch_target_padding">15dp</dimen>
+
+    <!-- Editor dialog UI -->
+    <dimen name="editor_dialog_section_small_spacing">8dp</dimen>
+    <dimen name="editor_dialog_section_large_spacing">16dp</dimen>
+    <dimen name="editor_dialog_section_buttons_vertical_padding">10dp</dimen>
+    <dimen name="editable_option_section_logo_width">38dp</dimen>
 </resources>
