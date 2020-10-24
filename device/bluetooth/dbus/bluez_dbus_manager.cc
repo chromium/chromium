@@ -15,6 +15,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "dbus/bus.h"
 #include "dbus/dbus_statistics.h"
@@ -52,7 +53,7 @@ BluezDBusManager::BluezDBusManager(dbus::Bus* bus,
   // On Chrome OS, Bluez might not be ready by the time we initialize the
   // BluezDBusManager so we initialize the clients anyway.
   bool should_check_object_manager = true;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   should_check_object_manager = false;
 #endif
 
@@ -225,7 +226,7 @@ void BluezDBusManager::InitializeClients() {
       GetSystemBus(),
       bluetooth_object_manager::kBluetoothObjectManagerServiceName);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   if (base::FeatureList::IsEnabled(
           chromeos::features::kShowBluetoothDeviceBattery)) {
     client_bundle_->bluetooth_battery_client()->Init(GetSystemBus(),
@@ -253,7 +254,7 @@ void BluezDBusManager::Initialize(dbus::Bus* system_bus) {
 
   BluezDBusThreadManager::Initialize();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   DCHECK(system_bus);
   // On ChromeOS, BluetoothSystem needs a separate connection to Bluez, so we
   // use BluezDBusThreadManager to get two different connections to the same
@@ -312,7 +313,7 @@ void BluezDBusManager::Shutdown() {
   g_bluez_dbus_manager = nullptr;
   delete dbus_manager;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   if (!g_using_bluez_dbus_manager_for_testing)
     BluezDBusThreadManager::Shutdown();
 #endif

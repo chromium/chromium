@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -125,7 +126,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristicClient
   // Starts a notification session from this characteristic with object path
   // |object_path| if it supports value notifications or indications. Invokes
   // |callback| on success and |error_callback| on failure.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   virtual void StartNotify(
       const dbus::ObjectPath& object_path,
       device::BluetoothGattCharacteristic::NotificationType notification_type,

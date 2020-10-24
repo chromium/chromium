@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
@@ -124,9 +125,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
 #if defined(OS_MAC)
   bool IsTouchIdAuthenticator() const override;
 #endif  // defined(OS_MAC)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   bool IsChromeOSAuthenticator() const override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
   FidoDevice* device() { return device_.get(); }

@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_supported_options.h"
@@ -254,7 +255,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
 #if defined(OS_MAC)
   virtual bool IsTouchIdAuthenticator() const = 0;
 #endif  // defined(OS_MAC)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   virtual bool IsChromeOSAuthenticator() const = 0;
 #endif
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;

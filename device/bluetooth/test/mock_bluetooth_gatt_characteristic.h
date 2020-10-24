@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -47,7 +48,7 @@ class MockBluetoothGattCharacteristic
                      std::vector<BluetoothRemoteGattDescriptor*>());
   MOCK_CONST_METHOD1(GetDescriptor,
                      BluetoothRemoteGattDescriptor*(const std::string&));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void StartNotifySession(NotificationType t,
                           NotifySessionCallback c,
                           ErrorCallback ec) override {
@@ -91,7 +92,7 @@ class MockBluetoothGattCharacteristic
                void(const std::vector<uint8_t>&,
                     base::OnceClosure&,
                     ErrorCallback&));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void PrepareWriteRemoteCharacteristic(const std::vector<uint8_t>& v,
                                         base::OnceClosure c,
                                         ErrorCallback ec) override {
@@ -107,7 +108,7 @@ class MockBluetoothGattCharacteristic
       std::unique_ptr<MockBluetoothGattDescriptor> mock_descriptor);
 
  protected:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void SubscribeToNotifications(BluetoothRemoteGattDescriptor* d,
                                 NotificationType t,
                                 base::OnceClosure c,

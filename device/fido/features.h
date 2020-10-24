@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace url {
 class Origin;
@@ -43,11 +44,11 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCableLowLatency;
 #endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 // Enable a ChromeOS platform authenticator
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCrosPlatformAuthenticator;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthAttestationBlockList;

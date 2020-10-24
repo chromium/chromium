@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_read_response.h"
 
@@ -193,7 +194,7 @@ void FakeRemoteGattCharacteristic::DeprecatedWriteRemoteCharacteristic(
                      std::move(error_callback), value, write_type));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void FakeRemoteGattCharacteristic::PrepareWriteRemoteCharacteristic(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
@@ -204,7 +205,7 @@ void FakeRemoteGattCharacteristic::PrepareWriteRemoteCharacteristic(
 
 void FakeRemoteGattCharacteristic::SubscribeToNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     NotificationType notification_type,
 #endif
     base::OnceClosure callback,

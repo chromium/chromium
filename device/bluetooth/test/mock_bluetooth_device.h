@@ -14,6 +14,7 @@
 #include "base/containers/queue.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -126,7 +127,7 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_METHOD1(CreateGattConnectionImpl,
                void(base::Optional<BluetoothUUID> service_uuid));
   MOCK_METHOD0(DisconnectGatt, void());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   MOCK_METHOD2(ExecuteWrite,
                void(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback));

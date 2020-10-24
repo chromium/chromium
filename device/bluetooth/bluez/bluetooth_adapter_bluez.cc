@@ -24,6 +24,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -51,7 +52,7 @@
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
@@ -102,7 +103,7 @@ UMABluetoothDiscoverySessionOutcome TranslateDiscoveryErrorToUMA(
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 device::BluetoothDevice::ServiceDataMap ConvertServiceDataMap(
     const base::flat_map<std::string, std::vector<uint8_t>>& input) {
   device::BluetoothDevice::ServiceDataMap output;
@@ -118,7 +119,7 @@ device::BluetoothDevice::ManufacturerDataMap ConvertManufacturerDataMap(
   return device::BluetoothDevice::ManufacturerDataMap(input.begin(),
                                                       input.end());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 }  // namespace
 
@@ -1090,7 +1091,7 @@ void BluetoothAdapterBlueZ::SetAdapter(const dbus::ObjectPath& object_path) {
 
   BLUETOOTH_LOG(EVENT) << object_path_.value() << ": using adapter.";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   SetStandardChromeOSAdapterName();
 #endif
 
@@ -1118,7 +1119,7 @@ void BluetoothAdapterBlueZ::SetAdapter(const dbus::ObjectPath& object_path) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void BluetoothAdapterBlueZ::SetStandardChromeOSAdapterName() {
   DCHECK(IsPresent());
 
@@ -1236,7 +1237,7 @@ void BluetoothAdapterBlueZ::NotifyDeviceAdvertisementReceived(
   for (auto& observer : observers_)
     observer.DeviceAdvertisementReceived(this, device, rssi, eir);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   if (ble_scan_parser_.is_bound()) {
     ScanRecordCallback callback =
         base::BindOnce(&BluetoothAdapterBlueZ::OnAdvertisementReceived,
@@ -1245,10 +1246,10 @@ void BluetoothAdapterBlueZ::NotifyDeviceAdvertisementReceived(
                        rssi, device->GetAppearance());
     ble_scan_parser_->Parse(eir, std::move(callback));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void BluetoothAdapterBlueZ::OnAdvertisementReceived(std::string device_address,
                                                     std::string device_name,
                                                     uint8_t rssi,
@@ -1268,7 +1269,7 @@ void BluetoothAdapterBlueZ::OnAdvertisementReceived(std::string device_address,
         service_data_map, manufacturer_data_map);
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 void BluetoothAdapterBlueZ::NotifyDeviceConnectedStateChanged(
     BluetoothDeviceBlueZ* device,
@@ -1589,9 +1590,9 @@ void BluetoothAdapterBlueZ::StartScanWithFilter(
 }
 
 void BluetoothAdapterBlueZ::StopScan(DiscoverySessionResultCallback callback) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   ble_scan_parser_.reset();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   // Not having an adapter qualifies as not scanning so we callback a success
   if (!IsPresent()) {
@@ -1682,7 +1683,7 @@ void BluetoothAdapterBlueZ::OnStartDiscovery(
   // Report success on the original request and increment the count.
   BLUETOOTH_LOG(EVENT) << __func__;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   device::BluetoothAdapterFactory::BleScanParserCallback
       ble_scan_parser_callback =
           device::BluetoothAdapterFactory::GetBleScanParserCallback();
@@ -1700,7 +1701,7 @@ void BluetoothAdapterBlueZ::OnStartDiscovery(
     logged_once = true;
 #endif  // DCHECK_IS_ON()
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
   if (IsPresent()) {
     std::move(callback).Run();

@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 
@@ -97,7 +98,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySession(
                              std::move(error_callback));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void BluetoothRemoteGattCharacteristic::StartNotifySession(
     NotificationType notification_type,
     NotifySessionCallback callback,
@@ -220,7 +221,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
   // do whatever else is needed to get the notifications flowing.
   SubscribeToNotifications(
       ccc_descriptor[0],
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       notification_type.value_or((GetProperties() & PROPERTY_NOTIFY)
                                      ? NotificationType::kNotification
                                      : NotificationType::kIndication),

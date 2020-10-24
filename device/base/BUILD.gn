@@ -20,14 +20,14 @@ component("base") {
     "//base",
     "//device/vr/buildflags",
   ]
-
+  deps = [ "//build:chromeos_buildflags" ]
   if (use_udev) {
     sources += [
       "device_monitor_linux.cc",
       "device_monitor_linux.h",
     ]
 
-    deps = [ "//device/udev_linux" ]
+    deps += [ "//device/udev_linux" ]
   }
 
   if (is_win) {

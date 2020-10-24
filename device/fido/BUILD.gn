@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -51,6 +52,7 @@ component("fido") {
   defines = [ "IS_DEVICE_FIDO_IMPL" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/apdu",
     "//components/cbor",
     "//components/device_event_log",
@@ -255,7 +257,7 @@ component("fido") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_ash) {
     sources += [
       "cros/authenticator.cc",
       "cros/authenticator.h",
@@ -314,7 +316,7 @@ static_library("cablev2_test_util") {
   ]
 }
 
-if (is_chromeos) {
+if (is_ash) {
   proto_library("u2f_proto") {
     sources = [ "//third_party/cros_system_api/dbus/u2f/u2f_interface.proto" ]
 

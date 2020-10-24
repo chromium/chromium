@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "url/origin.h"
 
 namespace device {
@@ -33,11 +34,11 @@ const base::Feature kWebAuthCableLowLatency{"WebAuthenticationCableLowLatency",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 const base::Feature kWebAuthCrosPlatformAuthenticator{
     "WebAuthenticationCrosPlatformAuthenticator",
     base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 extern const base::Feature kWebAuthAttestationBlockList{
     "WebAuthentiationAttestationBlockList", base::FEATURE_DISABLED_BY_DEFAULT};

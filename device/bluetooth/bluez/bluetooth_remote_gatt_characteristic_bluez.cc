@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
@@ -219,7 +220,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::
                          std::move(error_callback)));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void BluetoothRemoteGattCharacteristicBlueZ::PrepareWriteRemoteCharacteristic(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
@@ -241,7 +242,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::PrepareWriteRemoteCharacteristic(
 
 void BluetoothRemoteGattCharacteristicBlueZ::SubscribeToNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     NotificationType notification_type,
 #endif
     base::OnceClosure callback,
@@ -250,7 +251,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::SubscribeToNotifications(
       ->GetBluetoothGattCharacteristicClient()
       ->StartNotify(
           object_path(),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
           notification_type,
 #endif
           base::BindOnce(

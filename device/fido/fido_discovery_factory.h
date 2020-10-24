@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/optional.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_device_discovery.h"
@@ -93,7 +94,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       std::unique_ptr<FidoDiscoveryBase> discovery);
 
  private:
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
   std::unique_ptr<FidoDiscoveryBase> MaybeCreatePlatformDiscovery() const;
 #endif
 

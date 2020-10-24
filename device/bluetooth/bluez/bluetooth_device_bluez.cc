@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -723,7 +724,7 @@ void BluetoothDeviceBlueZ::GetServiceRecords(
                      std::move(error_callback)));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void BluetoothDeviceBlueZ::ExecuteWrite(
     base::OnceClosure callback,
     ExecuteWriteErrorCallback error_callback) {
@@ -944,7 +945,7 @@ void BluetoothDeviceBlueZ::OnGetServiceRecordsError(
   std::move(error_callback).Run(code);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 void BluetoothDeviceBlueZ::OnExecuteWriteError(
     ExecuteWriteErrorCallback error_callback,
     const std::string& error_name,

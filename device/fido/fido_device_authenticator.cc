@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -988,11 +989,11 @@ bool FidoDeviceAuthenticator::IsTouchIdAuthenticator() const {
 }
 #endif  // defined(OS_MAC)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 bool FidoDeviceAuthenticator::IsChromeOSAuthenticator() const {
   return false;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 void FidoDeviceAuthenticator::SetTaskForTesting(
     std::unique_ptr<FidoTask> task) {

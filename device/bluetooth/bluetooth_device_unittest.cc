@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
@@ -1150,7 +1151,7 @@ TEST_F(BluetoothTest, MAYBE_GetName_NullName) {
 // and is non trivial to implement. On ChromeOS, it is not essential for
 // this test to operate, and so it is simply skipped. Android at least
 // does require this step.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_ASH)
   StartLowEnergyDiscoverySession();
 #endif
 

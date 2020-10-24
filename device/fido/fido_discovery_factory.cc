@@ -5,6 +5,7 @@
 #include "device/fido/fido_discovery_factory.h"
 
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
@@ -27,9 +28,9 @@
 #include "device/fido/mac/discovery.h"
 #endif  // defined(OSMACOSX)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "device/fido/cros/discovery.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 namespace device {
 
@@ -70,7 +71,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       // TODO(https://crbug.com/825949): Add NFC support.
       return {};
     case FidoTransportProtocol::kInternal: {
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
       std::unique_ptr<FidoDiscoveryBase> discovery =
           MaybeCreatePlatformDiscovery();
       if (discovery) {
@@ -173,7 +174,7 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 std::unique_ptr<FidoDiscoveryBase>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
   return base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)

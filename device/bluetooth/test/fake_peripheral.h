@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/fake_central.h"
 #include "device/bluetooth/test/fake_remote_gatt_service.h"
@@ -117,7 +118,7 @@ class FakePeripheral : public device::BluetoothDevice {
       ConnectErrorCallback error_callback,
       base::Optional<device::BluetoothUUID> service_uuid) override;
   bool IsGattServicesDiscoveryComplete() const override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
   void AbortWrite(base::OnceClosure callback,

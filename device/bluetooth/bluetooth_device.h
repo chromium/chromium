@@ -26,6 +26,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
@@ -588,7 +589,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   std::vector<BluetoothRemoteGattService*> GetPrimaryServicesByUUID(
       const BluetoothUUID& service_uuid);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   using ExecuteWriteErrorCallback =
       base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>;
   using AbortWriteErrorCallback =
