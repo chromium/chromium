@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 import("//third_party/openh264/openh264_args.gni")
@@ -12,7 +13,7 @@ config("config") {
   cflags = []
   defines = []
 
-  if (is_chromeos && current_cpu == "arm") {
+  if (is_ash && current_cpu == "arm") {
     # HAVE_NEON and __chromeos__ are needed for enabling NEON on ChromeOS
     # devices.
     defines += [
@@ -62,7 +63,10 @@ if (use_assembler) {
     sources = openh264_common_sources_asm_x86
     defines = asm_defines
     if (current_cpu == "x86") {
-      defines += [ "X86_32", "X86_32_PICASM" ]
+      defines += [
+        "X86_32",
+        "X86_32_PICASM",
+      ]
     } else {  # x64
       if (is_mac) {
         defines += [
@@ -83,7 +87,10 @@ if (use_assembler) {
     sources = openh264_processing_sources_asm_x86
     defines = asm_defines
     if (current_cpu == "x86") {
-      defines += [ "X86_32", "X86_32_PICASM" ]
+      defines += [
+        "X86_32",
+        "X86_32_PICASM",
+      ]
     } else {  # x64
       if (is_mac) {
         defines += [
@@ -104,7 +111,10 @@ if (use_assembler) {
     sources = openh264_encoder_sources_asm_x86
     defines = asm_defines
     if (current_cpu == "x86") {
-      defines += [ "X86_32", "X86_32_PICASM" ]
+      defines += [
+        "X86_32",
+        "X86_32_PICASM",
+      ]
     } else {  # x64
       if (is_mac) {
         defines += [
@@ -122,7 +132,7 @@ if (use_assembler) {
 
 source_set("common") {
   sources = openh264_common_sources
-  if (is_chromeos && current_cpu == "arm") {
+  if (is_ash && current_cpu == "arm") {
     sources += openh264_common_sources_asm_arm
   }
   include_dirs = openh264_common_include_dirs
@@ -148,7 +158,7 @@ source_set("common") {
 
 source_set("processing") {
   sources = openh264_processing_sources
-  if (is_chromeos && current_cpu == "arm") {
+  if (is_ash && current_cpu == "arm") {
     sources += openh264_processing_sources_asm_arm
   }
   include_dirs = openh264_processing_include_dirs
@@ -165,7 +175,7 @@ source_set("processing") {
 
 source_set("encoder") {
   sources = openh264_encoder_sources
-  if (is_chromeos && current_cpu == "arm") {
+  if (is_ash && current_cpu == "arm") {
     sources += openh264_encoder_sources_asm_arm
   }
   include_dirs = openh264_encoder_include_dirs

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SCOPED_MOCK_OVERLAY_SCROLLBARS_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -67,7 +68,7 @@ class ScopedMockOverlayScrollbars {
     // platform independent.
     if (use_mock_overlay_scrollbars_)
       return true;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_ASH)
     // Non-overlay scrollbar is not supported on Android and ChromeOS.
     return false;
 #else

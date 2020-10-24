@@ -33,6 +33,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/storage/public/cpp/filesystem/file_error_or.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "third_party/leveldatabase/chromium_logger.h"
@@ -454,7 +455,7 @@ Options::Options() {
 //
 // Currently log reuse is an experimental feature in leveldb. More info at:
 // https://github.com/google/leveldb/commit/251ebf5dc70129ad3
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   // Reusing logs on Chrome OS resulted in an unacceptably high leveldb
   // corruption rate (at least for Indexed DB). More info at
   // https://crbug.com/460568

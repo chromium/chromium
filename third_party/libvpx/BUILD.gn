@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/libvpx/libvpx_srcs.gni")
 import("//third_party/nasm/nasm_assemble.gni")
@@ -18,7 +19,7 @@ if (current_cpu == "x86") {
     cpu_arch_full = "x64"
   }
 } else if (current_cpu == "arm") {
-  if (is_chromeos) {
+  if (is_ash) {
     # ChromeOS gets highbd vp9 but other arm targets do not.
     cpu_arch_full = "arm-neon-highbd"
   } else if (arm_use_neon) {
@@ -29,7 +30,7 @@ if (current_cpu == "x86") {
     cpu_arch_full = "arm"
   }
 } else if (current_cpu == "arm64") {
-  if (is_chromeos || is_mac) {
+  if (is_ash || is_mac) {
     cpu_arch_full = "arm64-highbd"
   } else {
     cpu_arch_full = current_cpu
@@ -323,7 +324,7 @@ static_library("libvpx") {
   } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
     sources = libvpx_srcs_mips
   } else if (current_cpu == "arm") {
-    if (is_chromeos) {
+    if (is_ash) {
       sources = libvpx_srcs_arm_neon_highbd
     } else if (arm_use_neon) {
       sources = libvpx_srcs_arm_neon
@@ -333,7 +334,7 @@ static_library("libvpx") {
       sources = libvpx_srcs_arm
     }
   } else if (current_cpu == "arm64") {
-    if (is_chromeos || is_win || is_mac) {
+    if (is_ash || is_win || is_mac) {
       sources = libvpx_srcs_arm64_highbd
     } else {
       sources = libvpx_srcs_arm64

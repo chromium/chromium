@@ -378,7 +378,7 @@ crashpad_static_library("util") {
     ]
   }
 
-  deps = []
+  deps = [ "//build:chromeos_buildflags" ]
 
   if (crashpad_is_linux || crashpad_is_fuchsia || crashpad_is_android) {
     sources += [ "net/http_transport_socket.cc" ]

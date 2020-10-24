@@ -40,5 +40,8 @@ blink_modules_sources("bluetooth") {
     "navigator_bluetooth.h",
   ]
 
-  deps = [ "//device/bluetooth/public/mojom:mojom_blink" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//device/bluetooth/public/mojom:mojom_blink",
+  ]
 }

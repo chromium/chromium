@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 
@@ -419,7 +420,7 @@ const base::FeatureParam<int> kForceDarkBackgroundLightnessThresholdParam{
 const base::Feature kWebRtcUseMinMaxVEADimensions {
   "WebRtcUseMinMaxVEADimensions",
   // TODO(crbug.com/1008491): enable other platforms.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -454,7 +455,7 @@ const base::Feature kVerifyHTMLFetchedFromAppCacheBeforeDelay{
 // compositor & IO threads.
 const base::Feature kBlinkCompositorUseDisplayThreadPriority {
   "BlinkCompositorUseDisplayThreadPriority",
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_ASH) || defined(OS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -519,7 +520,7 @@ const base::Feature kDispatchBeforeUnloadOnFreeze{
 // us to overlay these resources.
 const base::Feature kLowLatencyCanvas2dImageChromium {
   "LowLatencyCanvas2dImageChromium",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

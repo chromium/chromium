@@ -182,6 +182,7 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//media/capture:capture_base",
     "//media/capture/mojom:video_capture_mojom_support",
     "//mojo/public/cpp/system",

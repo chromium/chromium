@@ -38,6 +38,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "client/crash_report_database.h"
 #include "client/crashpad_client.h"
 #include "client/crashpad_info.h"
@@ -56,7 +57,7 @@
 #include "util/string/split_string.h"
 #include "util/synchronization/semaphore.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 #include "handler/linux/cros_crash_report_exception_handler.h"
 #endif
 
@@ -162,7 +163,7 @@ void Usage(const base::FilePath& me) {
 #endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID
 "      --url=URL               send crash reports to this Breakpad server URL,\n"
 "                              only if uploads are enabled for the database\n"
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 "      --use-cros-crash-reporter\n"
 "                              pass crash reports to /sbin/crash_reporter\n"
 "                              instead of storing them in the database\n"
@@ -173,7 +174,7 @@ void Usage(const base::FilePath& me) {
 "                              pass the --always_allow_feedback flag to\n"
 "                              crash_reporter, thus skipping metrics consent\n"
 "                              checks\n"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ASH) 
 #if defined(OS_ANDROID)
 "      --write-minidump-to-log write minidump to log\n"
 #endif  // OS_ANDROID
@@ -212,11 +213,11 @@ struct Options {
   bool periodic_tasks;
   bool rate_limit;
   bool upload_gzip;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   bool use_cros_crash_reporter = false;
   base::FilePath minidump_dir_for_tests;
   bool always_allow_feedback = false;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ASH) 
 #if defined(ATTACHMENTS_SUPPORTED)
   std::vector<base::FilePath> attachments;
 #endif  // ATTACHMENTS_SUPPORTED
@@ -506,7 +507,7 @@ class ScopedStoppable {
 
 void InitCrashpadLogging() {
   logging::LoggingSettings settings;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   settings.logging_dest = logging::LOG_TO_FILE;
   settings.log_file_path = "/var/log/chrome/chrome";
 #elif defined(OS_WIN)
@@ -576,11 +577,11 @@ int HandlerMain(int argc,
     kOptionTraceParentWithException,
 #endif
     kOptionURL,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     kOptionUseCrosCrashReporter,
     kOptionMinidumpDirForTests,
     kOptionAlwaysAllowFeedback,
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ASH) 
 #if defined(OS_ANDROID)
     kOptionWriteMinidumpToLog,
 #endif  // OS_ANDROID
@@ -658,7 +659,7 @@ int HandlerMain(int argc,
      kOptionTraceParentWithException},
 #endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID
     {"url", required_argument, nullptr, kOptionURL},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
     {"use-cros-crash-reporter",
       no_argument,
       nullptr,
@@ -671,7 +672,7 @@ int HandlerMain(int argc,
       no_argument,
       nullptr,
       kOptionAlwaysAllowFeedback},
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ASH) 
 #if defined(OS_ANDROID)
     {"write-minidump-to-log", no_argument, nullptr, kOptionWriteMinidumpToLog},
 #endif  // OS_ANDROID
@@ -832,7 +833,7 @@ int HandlerMain(int argc,
         options.url = optarg;
         break;
       }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       case kOptionUseCrosCrashReporter: {
         options.use_cros_crash_reporter = true;
         break;
@@ -846,7 +847,7 @@ int HandlerMain(int argc,
         options.always_allow_feedback = true;
         break;
       }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ASH) 
 #if defined(OS_ANDROID)
       case kOptionWriteMinidumpToLog: {
         options.write_minidump_to_log = true;
@@ -992,7 +993,7 @@ int HandlerMain(int argc,
   std::unique_ptr<CrashReportExceptionHandler> exception_handler;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   if (options.use_cros_crash_reporter) {
     auto cros_handler = std::make_unique<CrosCrashReportExceptionHandler>(
         database.get(),
@@ -1035,7 +1036,7 @@ int HandlerMain(int argc,
       false,
 #endif  // OS_LINUX
       user_stream_sources);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ASH) 
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   if (options.exception_information_address) {

@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
@@ -106,7 +107,7 @@ WebPreferences::WebPreferences()
       editing_behavior(mojom::EditingBehavior::kEditingWindowsBehavior),
 #elif defined(OS_ANDROID)
       editing_behavior(mojom::EditingBehavior::kEditingAndroidBehavior),
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
       editing_behavior(
           base::FeatureList::IsEnabled(blink::features::kCrOSAutoSelect)
               ? mojom::EditingBehavior::kEditingChromeOSBehavior

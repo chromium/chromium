@@ -39,6 +39,7 @@
 #include "base/stl_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -12781,7 +12782,7 @@ TEST_F(WebFrameTest, ShowVirtualKeyboardOnElementFocus) {
 
   RunPendingTasks();
   // Verify that the right WebWidgetClient has been notified.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   EXPECT_FALSE(web_widget_client.DidShowVirtualKeyboard());
 #else
   EXPECT_TRUE(web_widget_client.DidShowVirtualKeyboard());

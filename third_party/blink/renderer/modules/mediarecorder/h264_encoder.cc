@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
+#include "build/chromeos_buildflags.h"
 
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -153,7 +154,7 @@ void H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {
     init_params.iRCMode = RC_OFF_MODE;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   init_params.iMultipleThreadIdc = 0;
 #else
   // Threading model: Set to 1 due to https://crbug.com/583348.

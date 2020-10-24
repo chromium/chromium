@@ -76,6 +76,7 @@ static_library("handler") {
     "../minidump",
     "../snapshot",
     "../tools:tool_support",
+    "//build:chromeos_buildflags",
   ]
 
   if (crashpad_is_win) {

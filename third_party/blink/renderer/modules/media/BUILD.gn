@@ -20,10 +20,12 @@ blink_modules_sources("media") {
     "webmediaplayer_util.cc",
   ]
 
+  deps = [ "//build:chromeos_buildflags" ]
+
   if (is_fuchsia) {
     sources += [ "audio/fuchsia_audio_device_factory.cc" ]
 
-    deps = [
+    deps += [
       "//media/fuchsia/audio",
       "//media/fuchsia/mojom:mojom_blink",
     ]

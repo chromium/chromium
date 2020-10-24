@@ -258,6 +258,7 @@ component("core") {
     "//v8",
   ]
   deps = [
+    "//build:chromeos_buildflags",
     "//components/paint_preview/common",
     "//gpu/config",
     "//mojo/public/cpp/bindings:bindings",
@@ -344,6 +345,7 @@ source_set("testing") {
   deps = [
     ":core",
     ":generated_testing_idls",
+    "//build:chromeos_buildflags",
     "//third_party/blink/renderer/bindings/core/v8:testing",
     "//third_party/blink/renderer/platform:test_support",
     "//ui/base/cursor:cursor_base",
@@ -1592,6 +1594,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":unit_test_support",
+    "//build:chromeos_buildflags",
     "//components/paint_preview/common:common",
     "//components/ukm:test_support",
     "//mojo/public/cpp/system",

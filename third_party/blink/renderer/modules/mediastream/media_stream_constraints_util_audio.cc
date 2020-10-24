@@ -12,6 +12,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_features.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
@@ -312,7 +313,7 @@ class EchoCancellationContainer {
         device_parameters_(device_parameters),
         is_device_capture_(is_device_capture) {
     if (!has_active_source) {
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
       // If force system echo cancellation feature is enabled, only expose that
       // type if available; otherwise expose no type.
       if (base::FeatureList::IsEnabled(features::kForceEnableSystemAec)) {
@@ -321,7 +322,7 @@ class EchoCancellationContainer {
                 {EchoCancellationType::kEchoCancellationSystem,
                  EchoCancellationType::kEchoCancellationDisabled}));
       }
-#endif  // defined(OS_MAC) || defined(OS_CHROMEOS)
+#endif  // defined(OS_MAC) || BUILDFLAG(IS_ASH)
       return;
     }
 
@@ -440,13 +441,13 @@ class EchoCancellationContainer {
 
   static bool ShouldUseExperimentalSystemEchoCanceller(
       const media::AudioParameters& parameters) {
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || BUILDFLAG(IS_ASH)
     if (base::FeatureList::IsEnabled(features::kForceEnableSystemAec) &&
         (parameters.effects() &
          media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER)) {
       return true;
     }
-#endif  // defined(OS_MAC) || defined(OS_CHROMEOS)
+#endif  // defined(OS_MAC) || BUILDFLAG(IS_ASH)
     return false;
   }
 

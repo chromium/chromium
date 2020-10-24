@@ -155,7 +155,10 @@ absl_source_set("platform") {
     "randen_traits.h",
   ]
   sources = [ "randen_round_keys.cc" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
 }
 
 absl_source_set("randen") {

@@ -69,13 +69,11 @@ OR:
   }
 
 */
-#if BROTLI_GNUC_HAS_BUILTIN(__builtin_expect, 3, 0, 0) || \
-    BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||               \
-    BROTLI_SUNPRO_VERSION_CHECK(5, 15, 0) ||              \
-    BROTLI_ARM_VERSION_CHECK(4, 1, 0) ||                  \
-    BROTLI_IBM_VERSION_CHECK(10, 1, 0) ||                 \
-    BROTLI_TI_VERSION_CHECK(7, 3, 0) ||                   \
-    BROTLI_TINYC_VERSION_CHECK(0, 9, 27)
+#if BROTLI_GNUC_HAS_BUILTIN(__builtin_expect, 3, 0, 0) ||                      \
+    BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||                                    \
+    BROTLI_SUNPRO_VERSION_CHECK(5, 15, 0) ||                                   \
+    BROTLI_ARM_VERSION_CHECK(4, 1, 0) || BROTLI_IBM_VERSION_CHECK(10, 1, 0) || \
+    BROTLI_TI_VERSION_CHECK(7, 3, 0) || BROTLI_TINYC_VERSION_CHECK(0, 9, 27)
 #define BROTLI_PREDICT_TRUE(x) (__builtin_expect(!!(x), 1))
 #define BROTLI_PREDICT_FALSE(x) (__builtin_expect(x, 0))
 #else
@@ -86,14 +84,12 @@ OR:
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) && \
     !defined(__cplusplus)
 #define BROTLI_RESTRICT restrict
-#elif BROTLI_GNUC_VERSION_CHECK(3, 1, 0) ||                         \
-    BROTLI_MSVC_VERSION_CHECK(14, 0, 0) ||                          \
-    BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||                         \
-    BROTLI_ARM_VERSION_CHECK(4, 1, 0) ||                            \
-    BROTLI_IBM_VERSION_CHECK(10, 1, 0) ||                           \
-    BROTLI_PGI_VERSION_CHECK(17, 10, 0) ||                          \
-    BROTLI_TI_VERSION_CHECK(8, 0, 0) ||                             \
-    BROTLI_IAR_VERSION_CHECK(8, 0, 0) ||                            \
+#elif BROTLI_GNUC_VERSION_CHECK(3, 1, 0) ||                                    \
+    BROTLI_MSVC_VERSION_CHECK(14, 0, 0) ||                                     \
+    BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||                                    \
+    BROTLI_ARM_VERSION_CHECK(4, 1, 0) || BROTLI_IBM_VERSION_CHECK(10, 1, 0) || \
+    BROTLI_PGI_VERSION_CHECK(17, 10, 0) || BROTLI_TI_VERSION_CHECK(8, 0, 0) || \
+    BROTLI_IAR_VERSION_CHECK(8, 0, 0) ||                                       \
     (BROTLI_SUNPRO_VERSION_CHECK(5, 14, 0) && defined(__cplusplus))
 #define BROTLI_RESTRICT __restrict
 #elif BROTLI_SUNPRO_VERSION_CHECK(5, 3, 0) && !defined(__cplusplus)
@@ -118,10 +114,10 @@ OR:
 #if BROTLI_GNUC_HAS_ATTRIBUTE(always_inline, 4, 0, 0) ||                       \
     BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||                                    \
     BROTLI_SUNPRO_VERSION_CHECK(5, 11, 0) ||                                   \
-    BROTLI_ARM_VERSION_CHECK(4, 1, 0) ||                                       \
-    BROTLI_IBM_VERSION_CHECK(10, 1, 0) ||                                      \
+    BROTLI_ARM_VERSION_CHECK(4, 1, 0) || BROTLI_IBM_VERSION_CHECK(10, 1, 0) || \
     BROTLI_TI_VERSION_CHECK(8, 0, 0) ||                                        \
-    (BROTLI_TI_VERSION_CHECK(7, 3, 0) && defined(__TI_GNU_ATTRIBUTE_SUPPORT__))
+    (BROTLI_TI_VERSION_CHECK(7, 3, 0) &&                                       \
+     defined(__TI_GNU_ATTRIBUTE_SUPPORT__))
 #define BROTLI_INLINE BROTLI_MAYBE_INLINE __attribute__((__always_inline__))
 #elif BROTLI_MSVC_VERSION_CHECK(12, 0, 0)
 #define BROTLI_INLINE BROTLI_MAYBE_INLINE __forceinline
@@ -136,10 +132,10 @@ OR:
 #if BROTLI_GNUC_HAS_ATTRIBUTE(noinline, 4, 0, 0) ||                            \
     BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||                                    \
     BROTLI_SUNPRO_VERSION_CHECK(5, 11, 0) ||                                   \
-    BROTLI_ARM_VERSION_CHECK(4, 1, 0) ||                                       \
-    BROTLI_IBM_VERSION_CHECK(10, 1, 0) ||                                      \
+    BROTLI_ARM_VERSION_CHECK(4, 1, 0) || BROTLI_IBM_VERSION_CHECK(10, 1, 0) || \
     BROTLI_TI_VERSION_CHECK(8, 0, 0) ||                                        \
-    (BROTLI_TI_VERSION_CHECK(7, 3, 0) && defined(__TI_GNU_ATTRIBUTE_SUPPORT__))
+    (BROTLI_TI_VERSION_CHECK(7, 3, 0) &&                                       \
+     defined(__TI_GNU_ATTRIBUTE_SUPPORT__))
 #define BROTLI_NOINLINE __attribute__((__noinline__))
 #elif BROTLI_MSVC_VERSION_CHECK(13, 10, 0)
 #define BROTLI_NOINLINE __declspec(noinline)
@@ -157,13 +153,12 @@ OR:
 #if !defined(BROTLI_INTERNAL)
 #if defined(_WIN32) || defined(__CYGWIN__)
 #define BROTLI_INTERNAL
-#elif BROTLI_GNUC_VERSION_CHECK(3, 3, 0) ||                         \
-    BROTLI_TI_VERSION_CHECK(8, 0, 0) ||                             \
-    BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||                         \
-    BROTLI_ARM_VERSION_CHECK(4, 1, 0) ||                            \
-    BROTLI_IBM_VERSION_CHECK(13, 1, 0) ||                           \
-    BROTLI_SUNPRO_VERSION_CHECK(5, 11, 0) ||                        \
-    (BROTLI_TI_VERSION_CHECK(7, 3, 0) &&                            \
+#elif BROTLI_GNUC_VERSION_CHECK(3, 3, 0) ||                                    \
+    BROTLI_TI_VERSION_CHECK(8, 0, 0) ||                                        \
+    BROTLI_INTEL_VERSION_CHECK(16, 0, 0) ||                                    \
+    BROTLI_ARM_VERSION_CHECK(4, 1, 0) || BROTLI_IBM_VERSION_CHECK(13, 1, 0) || \
+    BROTLI_SUNPRO_VERSION_CHECK(5, 11, 0) ||                                   \
+    (BROTLI_TI_VERSION_CHECK(7, 3, 0) &&                                       \
      defined(__TI_GNU_ATTRIBUTE_SUPPORT__) && defined(__TI_EABI__))
 #define BROTLI_INTERNAL __attribute__ ((visibility ("hidden")))
 #else
@@ -191,8 +186,8 @@ OR:
 #define BROTLI_TARGET_ARMV7
 #endif  /* ARMv7 */
 
-#if (defined(__ARM_ARCH) && (__ARM_ARCH == 8)) || \
-    defined(__aarch64__) || defined(__ARM64_ARCH_8__)
+#if (defined(__ARM_ARCH) && (__ARM_ARCH == 8)) || defined(__aarch64__) || \
+    defined(__ARM64_ARCH_8__)
 #define BROTLI_TARGET_ARMV8_ANY
 
 #if defined(__ARM_32BIT_STATE)
@@ -277,7 +272,7 @@ OR:
 
 #if defined(BROTLI_BUILD_PORTABLE)
 #define BROTLI_ALIGNED_READ (!!1)
-#elif defined(BROTLI_TARGET_X86) || defined(BROTLI_TARGET_X64) || \
+#elif defined(BROTLI_TARGET_X86) || defined(BROTLI_TARGET_X64) ||       \
     defined(BROTLI_TARGET_ARMV7) || defined(BROTLI_TARGET_ARMV8_ANY) || \
     defined(BROTLI_TARGET_RISCV64)
 /* Allow unaligned read only for white-listed CPUs. */

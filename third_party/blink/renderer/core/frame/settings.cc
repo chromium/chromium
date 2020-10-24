@@ -31,6 +31,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace blink {
@@ -50,7 +51,7 @@ static mojom::blink::EditingBehavior EditingBehaviorTypeForPlatform() {
       mojom::blink::EditingBehavior::kEditingWindowsBehavior
 #elif defined(OS_ANDROID)
       mojom::blink::EditingBehavior::kEditingAndroidBehavior
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
       base::FeatureList::IsEnabled(features::kCrOSAutoSelect)
           ? mojom::blink::EditingBehavior::kEditingChromeOSBehavior
           : mojom::blink::EditingBehavior::kEditingUnixBehavior

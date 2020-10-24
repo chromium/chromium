@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -34,7 +35,7 @@ proto_library("private_membership_proto") {
   link_deps = [ "//third_party/shell-encryption:serialization_proto" ]
 }
 
-if (is_chromeos) {
+if (is_ash) {
   source_set("private_membership") {
     public_configs = [ ":private_membership_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -77,7 +78,7 @@ if (is_chromeos) {
   }
 }
 
-if (is_chromeos) {
+if (is_ash) {
   test("private_membership_unittests") {
     testonly = true
     public_configs = [ ":private_membership_config" ]

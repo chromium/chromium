@@ -1610,6 +1610,7 @@ component("platform") {
   deps = [
     "//base:base_static",
     "//base/allocator:buildflags",
+    "//build:chromeos_buildflags",
     "//cc/ipc",
     "//cc/mojo_embedder",
     "//components/paint_preview/common",

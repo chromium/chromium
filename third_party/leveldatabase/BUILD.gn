@@ -127,6 +127,7 @@ component("leveldatabase") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/services/storage/public/cpp/filesystem",
     "//third_party/crc32c",
     "//third_party/re2",
@@ -151,8 +152,8 @@ component("leveldatabase") {
 # leveldb source code.
 static_library("leveldb_static") {
   visibility = [
-    ":leveldb_testutil",
     ":leveldb_leveldbutil",
+    ":leveldb_testutil",
   ]
   sources = leveldb_sources
 
@@ -163,6 +164,7 @@ static_library("leveldb_static") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/services/storage/public/cpp/filesystem",
     "//third_party/crc32c",
     "//third_party/re2",

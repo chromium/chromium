@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_input_device.h"
 #include "media/audio/audio_output_device.h"
 #include "media/base/audio_renderer_mixer_input.h"
@@ -32,8 +33,8 @@ WebAudioDeviceFactory* WebAudioDeviceFactory::factory_ = nullptr;
 
 namespace {
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_LACROS)
 // Due to driver deadlock issues on Windows (http://crbug/422522) there is a
 // chance device authorization response is never received from the browser side.
 // In this case we will time out, to avoid renderer hang forever waiting for

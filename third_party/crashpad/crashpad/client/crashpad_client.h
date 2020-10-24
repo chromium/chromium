@@ -25,6 +25,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "util/file/file_io.h"
 #include "util/misc/capture_context.h"
 
@@ -646,7 +647,7 @@ class CrashpadClient {
   static void UseSystemDefaultHandler();
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   //! \brief Sets a timestamp on the signal handler to be passed on to
   //!     crashpad_handler and then eventually Chrome OS's crash_reporter.
   //!

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -54,7 +55,7 @@ const char kHandleGestureForPermissionRequest[] =
 // TODO(https://crbug.com/570344): Remove this method when all platforms are
 // supported.
 void AddUnsupportedPlatformConsoleMessage(ExecutionContext* context) {
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID) && !defined(OS_MAC) && \
+#if !BUILDFLAG(IS_ASH) && !defined(OS_ANDROID) && !defined(OS_MAC) && \
     !defined(OS_WIN)
   context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,

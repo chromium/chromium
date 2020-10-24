@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
+#include "build/chromeos_buildflags.h"
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -53,7 +54,7 @@ const char kInterfaceStateChangeInProgress[] =
     "An operation that changes interface state is in progress.";
 const char kOpenRequired[] = "The device must be opened first.";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
 const char kExtensionProtocol[] = "chrome-extension";
 
 // These Imprivata extensions can claim the protected HID interface class (used
@@ -95,7 +96,7 @@ bool IsClassAllowedForExtension(uint8_t class_code, const KURL& url) {
       return false;
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
 
 DOMException* ConvertFatalTransferStatus(const UsbTransferStatus& status) {
   switch (status) {
@@ -669,7 +670,7 @@ bool USBDevice::IsProtectedInterfaceClass(wtf_size_t interface_index) const {
     if (std::binary_search(std::begin(kProtectedClasses),
                            std::end(kProtectedClasses),
                            alternate->class_code)) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
       return !IsClassAllowedForExtension(alternate->class_code,
                                          GetExecutionContext()->Url());
 #else
