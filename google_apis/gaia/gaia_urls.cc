@@ -9,6 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
@@ -46,7 +47,7 @@ const char kSigninChromeSyncDice[] = "signin/chrome/sync?ssp=1";
 const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/android";
 #elif defined(OS_IOS)
 const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/ios";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
 const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/chromeos";
 #else
 const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/desktop";

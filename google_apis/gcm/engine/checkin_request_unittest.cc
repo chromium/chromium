@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/gcm/engine/checkin_request.h"
 #include "google_apis/gcm/engine/gcm_request_test_base.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
@@ -153,7 +154,7 @@ TEST_F(CheckinRequestTest, FetcherDataAndURL) {
   EXPECT_EQ(kEmailAddress, request_proto.account_cookie(0));
   EXPECT_EQ(kTokenValue, request_proto.account_cookie(1));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ASH)
   EXPECT_EQ(checkin_proto::DEVICE_CHROME_OS, request_proto.checkin().type());
 #else
   EXPECT_EQ(checkin_proto::DEVICE_CHROME_BROWSER,

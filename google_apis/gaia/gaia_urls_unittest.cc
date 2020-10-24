@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -20,7 +21,7 @@ namespace {
 const char kSigninChromeSyncKeysPlatformSuffix[] = "android";
 #elif defined(OS_IOS)
 const char kSigninChromeSyncKeysPlatformSuffix[] = "ios";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_ASH)
 const char kSigninChromeSyncKeysPlatformSuffix[] = "chromeos";
 #else
 const char kSigninChromeSyncKeysPlatformSuffix[] = "desktop";
