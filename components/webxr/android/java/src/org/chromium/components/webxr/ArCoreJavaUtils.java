@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.vr;
+package org.chromium.components.webxr;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,7 +15,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.webxr.ArCompositorDelegateProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -25,7 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
  * <p>This class provides static methods called by ArDelegateImpl via ArDelegateProvider,
  * and provides JNI interfaces to/from the C++ AR code.</p>
  */
-@JNINamespace("vr")
+@JNINamespace("webxr")
 public class ArCoreJavaUtils {
     private static final String TAG = "ArCoreJavaUtils";
     private static final boolean DEBUG_LOGS = false;

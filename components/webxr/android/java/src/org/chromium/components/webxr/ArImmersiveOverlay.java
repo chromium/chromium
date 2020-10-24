@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.vr;
+package org.chromium.components.webxr;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -23,8 +24,6 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.R;
-import org.chromium.components.webxr.ArCompositorDelegate;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -167,6 +166,7 @@ public class ArImmersiveOverlay
         private SurfaceView mSurfaceView;
         private WebContentsObserver mWebContentsObserver;
 
+        @SuppressLint("ClickableViewAccessibility")
         public SurfaceUiCompositor() {
             mSurfaceView = new SurfaceView(mActivity);
             // Keep the camera layer at "default" Z order. Chrome's compositor SurfaceView is in
@@ -229,6 +229,7 @@ public class ArImmersiveOverlay
     }
 
     @Override // View.OnTouchListener
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(View v, MotionEvent ev) {
         // Only forward primary actions, ignore more complex events such as secondary pointer
         // touches. Ignore batching since we're only sending one ray pose per frame.

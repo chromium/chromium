@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.vr;
 
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.components.webxr.ArCoreJavaUtils;
+import org.chromium.components.webxr.ArDelegate;
 
 /**
  * This class provides methods to call into AR. It will be compiled into Chrome

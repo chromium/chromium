@@ -17,6 +17,8 @@ bool create_called = false;
 // static
 std::unique_ptr<device::VRDeviceProvider>
 ArCoreDeviceProviderFactory::Create() {
+  DVLOG(2) << __func__;
+
   create_called = true;
   if (!g_arcore_device_provider_factory)
     return nullptr;
@@ -26,6 +28,8 @@ ArCoreDeviceProviderFactory::Create() {
 // static
 void ArCoreDeviceProviderFactory::Install(
     std::unique_ptr<ArCoreDeviceProviderFactory> factory) {
+  DVLOG(2) << __func__;
+
   DCHECK_NE(g_arcore_device_provider_factory, factory.get());
   if (g_arcore_device_provider_factory) {
     delete g_arcore_device_provider_factory;

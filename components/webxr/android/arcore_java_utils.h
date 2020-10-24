@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_JAVA_UTILS_H_
-#define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_JAVA_UTILS_H_
+#ifndef COMPONENTS_WEBXR_ANDROID_ARCORE_JAVA_UTILS_H_
+#define COMPONENTS_WEBXR_ANDROID_ARCORE_JAVA_UTILS_H_
 
 #include <android/native_window_jni.h>
 #include <jni.h>
@@ -14,21 +14,22 @@
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "device/vr/android/arcore/arcore_session_utils.h"
 
-namespace vr {
+namespace webxr {
 
-class ArCoreJavaUtils : public ArCoreSessionUtils {
+class ArCoreJavaUtils : public vr::ArCoreSessionUtils {
  public:
   explicit ArCoreJavaUtils(
       webxr::ArCompositorDelegateProvider compositor_delegate_provider);
   ~ArCoreJavaUtils() override;
 
   // ArCoreSessionUtils:
-  void RequestArSession(int render_process_id,
-                        int render_frame_id,
-                        bool use_overlay,
-                        SurfaceReadyCallback ready_callback,
-                        SurfaceTouchCallback touch_callback,
-                        SurfaceDestroyedCallback destroyed_callback) override;
+  void RequestArSession(
+      int render_process_id,
+      int render_frame_id,
+      bool use_overlay,
+      vr::SurfaceReadyCallback ready_callback,
+      vr::SurfaceTouchCallback touch_callback,
+      vr::SurfaceDestroyedCallback destroyed_callback) override;
   void EndSession() override;
   bool EnsureLoaded() override;
   base::android::ScopedJavaLocalRef<jobject> GetApplicationContext() override;
@@ -57,11 +58,11 @@ class ArCoreJavaUtils : public ArCoreSessionUtils {
 
   webxr::ArCompositorDelegateProvider compositor_delegate_provider_;
 
-  SurfaceReadyCallback surface_ready_callback_;
-  SurfaceTouchCallback surface_touch_callback_;
-  SurfaceDestroyedCallback surface_destroyed_callback_;
+  vr::SurfaceReadyCallback surface_ready_callback_;
+  vr::SurfaceTouchCallback surface_touch_callback_;
+  vr::SurfaceDestroyedCallback surface_destroyed_callback_;
 };
 
-}  // namespace vr
+}  // namespace webxr
 
-#endif  // CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_JAVA_UTILS_H_
+#endif  // COMPONENTS_WEBXR_ANDROID_ARCORE_JAVA_UTILS_H_

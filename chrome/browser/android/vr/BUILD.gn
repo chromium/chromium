@@ -66,8 +66,6 @@ static_library("vr_android") {
       "arcore_device/arcore_device_provider.cc",
       "arcore_device/arcore_device_provider.h",
       "arcore_device/arcore_device_utils.cc",
-      "arcore_device/arcore_java_utils.cc",
-      "arcore_device/arcore_java_utils.h",
     ]
   }
 
@@ -177,7 +175,6 @@ if (enable_arcore) {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCoreDeviceUtils.java",
-      "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCoreJavaUtils.java",
     ]
   }
 }

@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.vr;
 
+import org.chromium.base.Log;
+import org.chromium.components.webxr.ArDelegate;
+
 /**
  * Class used to create ArDelegate instances.
  */
 public class ArDelegateProvider {
+    private static final String TAG = "ArDelegateProvider";
+    private static final boolean DEBUG_LOGS = false;
+
     /**
      * Cached instance of ArDelegate implementation. It is ok to cache since the
      * inclusion of ArDelegateImpl is controlled at build time.
@@ -23,6 +29,12 @@ public class ArDelegateProvider {
      * Provides an instance of ArDelegate.
      */
     public static ArDelegate getDelegate() {
+        if (DEBUG_LOGS) {
+            Log.i(TAG,
+                    "ArDelegate.getDelegate(): sDelegateInitialized=" + sDelegateInitialized
+                            + ", is sDelegate null? " + (sDelegate == null));
+        }
+
         if (sDelegateInitialized) return sDelegate;
 
         try {
@@ -33,6 +45,10 @@ public class ArDelegateProvider {
         } catch (IllegalAccessException e) {
         } finally {
             sDelegateInitialized = true;
+        }
+
+        if (DEBUG_LOGS) {
+            Log.i(TAG, "Is sDelegate null? " + (sDelegate == null));
         }
 
         return sDelegate;

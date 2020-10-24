@@ -45,8 +45,6 @@ if (enable_arcore) {
     "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
     "java/src/org/chromium/chrome/browser/vr/ArCoreDeviceUtils.java",
-    "java/src/org/chromium/chrome/browser/vr/ArCoreJavaUtils.java",
     "java/src/org/chromium/chrome/browser/vr/ArDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/ArImmersiveOverlay.java",
   ]
 }

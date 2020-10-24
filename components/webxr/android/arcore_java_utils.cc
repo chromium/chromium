@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/arcore_device/arcore_java_utils.h"
+#include "components/webxr/android/arcore_java_utils.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/android/vr/ar_jni_headers/ArCoreJavaUtils_jni.h"
+#include "components/webxr/android/ar_jni_headers/ArCoreJavaUtils_jni.h"
 #include "components/webxr/android/webxr_utils.h"
 #include "device/vr/android/arcore/arcore_shim.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 
-namespace vr {
+namespace webxr {
 
 ArCoreJavaUtils::ArCoreJavaUtils(
     webxr::ArCompositorDelegateProvider compositor_delegate_provider)
@@ -39,9 +39,9 @@ void ArCoreJavaUtils::RequestArSession(
     int render_process_id,
     int render_frame_id,
     bool use_overlay,
-    SurfaceReadyCallback ready_callback,
-    SurfaceTouchCallback touch_callback,
-    SurfaceDestroyedCallback destroyed_callback) {
+    vr::SurfaceReadyCallback ready_callback,
+    vr::SurfaceTouchCallback touch_callback,
+    vr::SurfaceDestroyedCallback destroyed_callback) {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
 
@@ -124,7 +124,8 @@ bool ArCoreJavaUtils::EnsureLoaded() {
     return false;
   }
 
-  return LoadArCoreSdk(base::android::ConvertJavaStringToUTF8(env, java_path));
+  return vr::LoadArCoreSdk(
+      base::android::ConvertJavaStringToUTF8(env, java_path));
 }
 
 ScopedJavaLocalRef<jobject> ArCoreJavaUtils::GetApplicationContext() {
@@ -132,4 +133,4 @@ ScopedJavaLocalRef<jobject> ArCoreJavaUtils::GetApplicationContext() {
   return Java_ArCoreJavaUtils_getApplicationContext(env);
 }
 
-}  // namespace vr
+}  // namespace webxr

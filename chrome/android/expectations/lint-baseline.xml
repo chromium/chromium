@@ -1257,28 +1257,6 @@
 
     <issue
         id="ClickableViewAccessibility"
-        message="Custom view ``SurfaceView`` has `setOnTouchListener` called on it but does not override `performClick`"
-        errorLine1="            mSurfaceView.setOnTouchListener(ArImmersiveOverlay.this);"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/vr/ArImmersiveOverlay.java"
-            line="176"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="`ArImmersiveOverlay#onTouch` should call `View#performClick` when a click is detected"
-        errorLine1="    public boolean onTouch(View v, MotionEvent ev) {"
-        errorLine2="                   ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/vr/ArImmersiveOverlay.java"
-            line="222"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
         message="`onTouch` lambda should call `View#performClick` when a click is detected"
         errorLine1="            row.setDragHandleOnTouchListener((v, event) -> {"
         errorLine2="                                             ^">
