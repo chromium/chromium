@@ -14,20 +14,17 @@ const REQUIRED_NUM_OPTIONS = 2;
  */
 export const SelectBehavior = {
   properties: {
+    /** Controls whether the select element is disabled. */
+    disabled: {
+      type: Boolean,
+      computed: 'computeDisabled_(numOptions_, settingsDisabled)',
+    },
+
     /**
      * Indicates whether all scan settings have been disabled by the parent
      * element.
      */
     settingsDisabled: Boolean,
-
-    /**
-     * Controls whether the select element is disabled.
-     * @private
-     */
-    disabled_: {
-      type: Boolean,
-      computed: 'computeDisabled_(numOptions_, settingsDisabled)',
-    },
 
     /**
      * The number of options in the select element.

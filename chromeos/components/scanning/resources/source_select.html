@@ -4,7 +4,7 @@
     <!-- TODO(jschettler): Verify this meets a11y expecations (e.g. ChromeVox
         should announce when a new option is focused). -->
     <select class="md-select" value="{{selectedSource::change}}"
-        disabled="[[disabled_]]">
+        disabled="[[disabled]]">
       <!-- TODO(jschettler): Determine how the sources should be sorted. -->
       <template is="dom-repeat" items="[[sources]]" as="source">
         <option value="[[source.name]]">
