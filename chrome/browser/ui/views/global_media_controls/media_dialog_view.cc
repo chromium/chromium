@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
+#include "chrome/browser/ui/views/in_product_help/new_badge_label.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -258,7 +259,8 @@ void MediaDialogView::Init() {
   live_caption_image->SetImage(
       gfx::CreateVectorIcon(kLiveCaptionIcon, kLiveCaptionImageWidthDip,
                             SkColor(gfx::kGoogleGrey700)));
-  views::Label* live_caption_title = new views::Label(
+  // TODO(crbug.com/1055150): Replace NewBadgeLabel with Label by M93.
+  views::Label* live_caption_title = new NewBadgeLabel(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
   live_caption_title->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
