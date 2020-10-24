@@ -34,7 +34,7 @@ if "--use_bundled_pylibs" in sys.argv[1:]:
   sys.path.insert(0, os.path.join(_GetDirAbove("components"), "third_party"))
 
 sys.path.insert(0, os.path.join(_GetDirAbove("components"),
-                                "mojo", "public", "tools", "bindings", "pylib"))
+                                "mojo", "public", "tools", "mojom"))
 
 # pylint: disable=wrong-import-position
 from mojom.error import Error
