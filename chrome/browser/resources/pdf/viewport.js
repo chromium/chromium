@@ -488,6 +488,18 @@ export class Viewport {
     this.window_.scrollTo(position.x, position.y + this.topToolbarHeight_);
   }
 
+  /**
+   * Scroll the viewport smoothly to the specified position.
+   * @param {!Point} position The position to scroll to.
+   */
+  setPositionSmooth(position) {
+    this.window_.scrollTo({
+      left: position.x,
+      top: position.y + this.topToolbarHeight_,
+      behavior: 'smooth',
+    });
+  }
+
   /** @return {!Size} the size of the viewport excluding scrollbars. */
   get size() {
     return {
@@ -1140,6 +1152,84 @@ export class Viewport {
   }
 
   /**
+   * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
+   * @private
+   */
+  keyHHandler_(e, formFieldFocused) {
+    // We must not scroll if ths is input to a form field or if a modifier is pressed.
+    if (formFieldFocused || hasKeyModifiers(e)) {
+      return;
+    }
+
+    // Go to the previous page if there are no horizontal scrollbars.
+    if (!this.documentHasScrollbars().horizontal) {
+      this.goToPreviousPage();
+    } else {
+      // Scroll smoothly
+      this.scrollBy({
+        x: -SCROLL_INCREMENT, y: 0
+      }, true);
+    }
+  }
+
+  /**
+   * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
+   * @private
+   */
+  keyLHandler_(e, formFieldFocused) {
+    // We must not scroll if ths is input to a form field or if a modifier is pressed.
+    if (formFieldFocused || hasKeyModifiers(e)) {
+      return;
+    }
+
+    // Go to the next page if there are no horizontal scrollbars.
+    if (!this.documentHasScrollbars().horizontal) {
+      this.goToNextPage();
+    } else {
+      // Scroll smoothly
+      this.scrollBy({
+        x: SCROLL_INCREMENT, y: 0
+      }, true);
+    }
+  }
+
+  /**
+   * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
+   * @private
+   */
+  keyJHandler_(e, formFieldFocused) {
+    // We must not scroll if ths is input to a form field or if a modifier is pressed.
+    if (formFieldFocused || hasKeyModifiers(e)) {
+      return;
+    }
+
+    // Scroll smoothly
+    this.scrollBy({
+      x: 0, y: SCROLL_INCREMENT
+    }, true);
+  }
+
+  /**
+   * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
+   * @private
+   */
+  keyKHandler_(e, formFieldFocused) {
+    // We must not scroll if ths is input to a form field or if a modifier is pressed.
+    if (formFieldFocused || hasKeyModifiers(e)) {
+      return;
+    }
+
+    // Scroll smoothly
+    this.scrollBy({
+      x: 0, y: -SCROLL_INCREMENT
+    }, true);
+  }
+
+  /**
    * Handle certain directional key events.
    * @param {!KeyboardEvent} e the event to handle.
    * @param {boolean} formFieldFocused Whether a form field is currently
@@ -1177,6 +1267,18 @@ export class Viewport {
         return true;
       case 'ArrowDown':
         this.arrowDownHandler_(!!fromScriptingAPI);
+        return true;
+      case 'h':
+        this.keyHHandler_(e, formFieldFocused);
+        return true;
+      case 'k':
+        this.keyKHandler_(e, formFieldFocused);
+        return true;
+      case 'l':
+        this.keyLHandler_(e, formFieldFocused);
+        return true;
+      case 'j':
+        this.keyJHandler_(e, formFieldFocused);
         return true;
       default:
         return false;
@@ -1358,8 +1460,9 @@ export class Viewport {
 
   /**
    * @param {!PartialPoint} point The position to which to scroll the viewport.
+   * @param {boolean} smooth Whether to scroll smoothly.
    */
-  scrollTo(point) {
+  scrollTo(point, smooth=false) {
     let changed = false;
     const newPosition = this.position;
     if (point.x !== undefined && point.x !== newPosition.x) {
@@ -1372,16 +1475,23 @@ export class Viewport {
     }
 
     if (changed) {
-      this.position = newPosition;
+      if (!smooth) {
+        this.position = newPosition;
+      } else {
+        this.setPositionSmooth(newPosition);
+      }
     }
   }
 
-  /** @param {!Point} delta The delta by which to scroll the viewport. */
-  scrollBy(delta) {
+  /**
+   * @param {!Point} delta The delta by which to scroll the viewport.
+   * @param {boolean} smooth Whether to scroll smoothly.
+   */
+  scrollBy(delta, smooth=false) {
     const newPosition = this.position;
     newPosition.x += delta.x;
     newPosition.y += delta.y;
-    this.scrollTo(newPosition);
+    this.scrollTo(newPosition, smooth);
   }
 
   /** Removes all events being tracked from the tracker. */
