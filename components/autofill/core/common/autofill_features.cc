@@ -29,7 +29,7 @@ const base::Feature kAutofillAddressEnhancementVotes{
 // When enabled, a save prompt will be shown to user upon form submission before
 // storing any detected address profile.
 const base::Feature kAutofillAddressProfileSavePrompt{
-    "kAutofillAddressProfileSavePrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillAddressProfileSavePrompt", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // By default, AutofillAgent and, if |kAutofillProbableFormSubmissionInBrowser|
 // is enabled, also ContentAutofillDriver omit duplicate form submissions, even
