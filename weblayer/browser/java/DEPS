@@ -8,6 +8,7 @@ include_rules = [
   "+components/location/android/java/src/org/chromium/components/location",
   "+components/minidump_uploader",
   "+components/page_info/android/java",
+  "+components/payments/content/android/java",
   "+components/webapk/android/libs",
   "+services/device/public/java/src/org/chromium/device/geolocation",
 

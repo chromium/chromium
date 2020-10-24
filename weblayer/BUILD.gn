@@ -616,6 +616,7 @@ source_set("weblayer_lib_base") {
       "//components/minidump_uploader",
       "//components/navigation_interception",
       "//components/page_info/android",
+      "//components/payments/content/android",
       "//components/permissions/android:native",
       "//components/resources:android_resources",
       "//components/safe_browsing/android:remote_database_manager",

@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.payments.ErrorStrings;
+import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.OriginSecurityChecker;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
@@ -21,15 +21,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.MojoResult;
-import org.chromium.payments.mojom.CanMakePaymentQueryResult;
-import org.chromium.payments.mojom.HasEnrolledInstrumentQueryResult;
-import org.chromium.payments.mojom.PaymentDetails;
-import org.chromium.payments.mojom.PaymentErrorReason;
-import org.chromium.payments.mojom.PaymentMethodData;
-import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
-import org.chromium.payments.mojom.PaymentRequestClient;
-import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 /**
@@ -40,66 +32,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     public static PaymentRequestService.Delegate sDelegateForTest;
 
     private final RenderFrameHost mRenderFrameHost;
-
-    /**
-     * An implementation of PaymentRequest that immediately rejects all connections.
-     * Necessary because Mojo does not handle null returned from createImpl().
-     */
-    private static final class InvalidPaymentRequest implements PaymentRequest {
-        private PaymentRequestClient mClient;
-
-        @Override
-        public void init(PaymentRequestClient client, PaymentMethodData[] methodData,
-                PaymentDetails details, PaymentOptions options,
-                boolean unusedGooglePayBridgeEligible) {
-            mClient = client;
-        }
-
-        @Override
-        public void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
-            if (mClient != null) {
-                mClient.onError(
-                        PaymentErrorReason.USER_CANCEL, ErrorStrings.WEB_PAYMENT_API_DISABLED);
-                mClient.close();
-            }
-        }
-
-        @Override
-        public void updateWith(PaymentDetails details) {}
-
-        @Override
-        public void onPaymentDetailsNotUpdated() {}
-
-        @Override
-        public void abort() {}
-
-        @Override
-        public void complete(int result) {}
-
-        @Override
-        public void retry(PaymentValidationErrors errors) {}
-
-        @Override
-        public void canMakePayment() {
-            if (mClient != null) {
-                mClient.onCanMakePayment(CanMakePaymentQueryResult.CANNOT_MAKE_PAYMENT);
-            }
-        }
-
-        @Override
-        public void hasEnrolledInstrument() {
-            if (mClient != null) {
-                mClient.onHasEnrolledInstrument(
-                        HasEnrolledInstrumentQueryResult.HAS_NO_ENROLLED_INSTRUMENT);
-            }
-        }
-
-        @Override
-        public void close() {}
-
-        @Override
-        public void onConnectionError(MojoException e) {}
-    }
 
     /**
      * Production implementation of the ChromePaymentRequestService's Delegate. Gives true answers
