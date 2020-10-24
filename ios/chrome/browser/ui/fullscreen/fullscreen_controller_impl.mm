@@ -251,12 +251,9 @@ void FullscreenControllerImpl::ExitFullscreen() {
   mediator_.ExitFullscreen();
 }
 
-void FullscreenControllerImpl::ResizeViewport() {
+void FullscreenControllerImpl::ResizeHorizontalViewport() {
   // TODO(crbug.com/1114054) this hack temporarily force change webview's
-  // height to trigger a width recomputation of its content.  It will cause
-  // two renderings on the most liklely very rare case of window resizes.
-  CGFloat height = model_.GetBottomToolbarHeight();
-  CGFloat delta = height > 0 ? -1 : 1;
-  model_.SetBottomToolbarHeight(height + delta);
-  model_.SetBottomToolbarHeight(height);
+  // width insets to trigger a width recomputation of its content. It will cause
+  // two relayouts.
+  mediator_.ResizeHorizontalInsets();
 }

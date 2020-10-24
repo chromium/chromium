@@ -185,6 +185,7 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -1665,7 +1666,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       }
       completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         BrowserViewController* strongSelf = weakSelf;
-        strongSelf.fullscreenController->ResizeViewport();
+        // Resize horizontal viewport if Smooth Scrolling is on for multiwindow.
+        if (fullscreen::features::ShouldUseSmoothScrolling() &&
+            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+          strongSelf.fullscreenController->ResizeHorizontalViewport();
+        }
         if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
           if (strongSelf.tabStripView) {
             [strongSelf.legacyTabStripCoordinator tabStripSizeDidChange];
@@ -2376,6 +2381,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     } else {
       self.browserContainerViewController.contentView =
           [self viewForWebState:webState];
+    }
+    // Resize horizontal viewport if Smooth Scrolling is on for multiwindow.
+    if (fullscreen::features::ShouldUseSmoothScrolling() &&
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      self.fullscreenController->ResizeHorizontalViewport();
     }
   }
   [self updateToolbar];
@@ -3482,10 +3492,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     if (self.isNTPActiveForCurrentWebState) {
       NewTabPageTabHelper::FromWebState(self.currentWebState)->Deactivate();
     }
-    // The next call ensures that web view content of any window that doesn't
-    // go through viewWillTransitionToSize:withTransitionCoordinator:,
-    // including for the first window, is sized properly.
-    self.fullscreenController->ResizeViewport();
   }
 }
 
