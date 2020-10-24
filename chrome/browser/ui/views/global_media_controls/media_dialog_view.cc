@@ -239,7 +239,7 @@ void MediaDialogView::Init() {
                        views::BoxLayout::Orientation::kVertical))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
 
-  views::View* live_caption_container = new views::View();
+  auto live_caption_container = std::make_unique<View>();
   auto* live_caption_container_layout =
       live_caption_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
@@ -255,18 +255,18 @@ void MediaDialogView::Init() {
         views::CreateSolidBackground(native_theme_bg_color));
   }
 
-  views::ImageView* live_caption_image = new views::ImageView();
+  auto live_caption_image = std::make_unique<views::ImageView>();
   live_caption_image->SetImage(
       gfx::CreateVectorIcon(kLiveCaptionIcon, kLiveCaptionImageWidthDip,
                             SkColor(gfx::kGoogleGrey700)));
   // TODO(crbug.com/1055150): Replace NewBadgeLabel with Label by M93.
-  views::Label* live_caption_title = new NewBadgeLabel(
+  auto live_caption_title = std::make_unique<NewBadgeLabel>(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
   live_caption_title->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  views::ToggleButton* live_caption_button =
-      new views::ToggleButton(base::BindRepeating(
+  auto live_caption_button =
+      std::make_unique<views::ToggleButton>(base::BindRepeating(
           &MediaDialogView::ToggleLiveCaption, base::Unretained(this)));
   live_caption_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
