@@ -269,7 +269,7 @@ void DragDropController::DragCancel() {
 }
 
 bool DragDropController::IsDragDropInProgress() {
-  return !!drag_drop_tracker_.get();
+  return !!drag_drop_tracker_ && !!drag_data_;
 }
 
 void DragDropController::AddObserver(
