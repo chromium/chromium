@@ -141,8 +141,7 @@ base::Optional<Notification> ProcessNotificationProto(
           base::UTF8ToUTF16(proto.origin_app().visible_name()),
           proto.origin_app().package_name(),
           CreateImageFromSerializedIcon(proto.origin_app().icon())),
-      base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMilliseconds(proto.epoch_time_millis())),
+      base::Time::FromJsTime(proto.epoch_time_millis()),
       GetNotificationImportanceFromProto(proto.importance()), actions_it->id(),
       title, text_content, shared_image, contact_image);
 }
