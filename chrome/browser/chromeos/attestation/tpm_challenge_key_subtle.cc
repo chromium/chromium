@@ -349,21 +349,27 @@ void TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabledCallback(
 void TpmChallengeKeySubtleImpl::PrepareKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CryptohomeClient::Get()->TpmAttestationIsPrepared(
-      base::BindOnce(&TpmChallengeKeySubtleImpl::IsAttestationPreparedCallback,
-                     weak_factory_.GetWeakPtr()));
+  ::attestation::GetEnrollmentPreparationsRequest request;
+  AttestationClient::Get()->GetEnrollmentPreparations(
+      request,
+      base::BindOnce(
+          &TpmChallengeKeySubtleImpl::GetEnrollmentPreparationsCallback,
+          weak_factory_.GetWeakPtr()));
 }
 
-void TpmChallengeKeySubtleImpl::IsAttestationPreparedCallback(
-    base::Optional<bool> result) {
+void TpmChallengeKeySubtleImpl::GetEnrollmentPreparationsCallback(
+    const ::attestation::GetEnrollmentPreparationsReply& reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.has_value()) {
-    std::move(callback_).Run(Result::MakeError(ResultCode::kDbusError));
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    std::move(callback_).Run(
+        Result::MakeError(reply.status() == ::attestation::STATUS_DBUS_ERROR
+                              ? ResultCode::kDbusError
+                              : ResultCode::kAttestationServiceInternalError));
     return;
   }
 
-  if (!result.value()) {
+  if (!AttestationClient::IsAttestationPrepared(reply)) {
     CryptohomeClient::Get()->TpmIsEnabled(base::BindOnce(
         &TpmChallengeKeySubtleImpl::PrepareKeyErrorHandlerCallback,
         weak_factory_.GetWeakPtr()));

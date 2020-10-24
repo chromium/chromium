@@ -22,6 +22,8 @@
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/mock_async_method_caller.h"
+#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "components/prefs/pref_service.h"
@@ -149,6 +151,7 @@ class TpmChallengeKeySubtleTest : public ::testing::Test {
 
 TpmChallengeKeySubtleTest::TpmChallengeKeySubtleTest()
     : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+  ::chromeos::AttestationClient::InitializeFake();
   CHECK(testing_profile_manager_.SetUp());
 
   mock_async_method_caller_ =
@@ -168,6 +171,7 @@ TpmChallengeKeySubtleTest::TpmChallengeKeySubtleTest()
 
 TpmChallengeKeySubtleTest::~TpmChallengeKeySubtleTest() {
   cryptohome::AsyncMethodCaller::Shutdown();
+  ::chromeos::AttestationClient::Shutdown();
 }
 
 void TpmChallengeKeySubtleTest::InitSigninProfile() {
@@ -398,7 +402,9 @@ TEST_F(TpmChallengeKeySubtleTest, KeyExists) {
 TEST_F(TpmChallengeKeySubtleTest, AttestationNotPrepared) {
   InitSigninProfile();
 
-  cryptohome_client_.set_tpm_attestation_is_prepared(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparations(false);
 
   RunOneStepAndExpect(KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
@@ -408,8 +414,9 @@ TEST_F(TpmChallengeKeySubtleTest, AttestationNotPrepared) {
 // Test that we get a proper error message in case we don't have a TPM.
 TEST_F(TpmChallengeKeySubtleTest, AttestationUnsupported) {
   InitSigninProfile();
-
-  cryptohome_client_.set_tpm_attestation_is_prepared(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparations(false);
   cryptohome_client_.set_tpm_is_enabled(false);
 
   RunOneStepAndExpect(
@@ -421,11 +428,27 @@ TEST_F(TpmChallengeKeySubtleTest, AttestationUnsupported) {
 TEST_F(TpmChallengeKeySubtleTest, AttestationPreparedDbusFailed) {
   InitSigninProfile();
 
-  cryptohome_client_.SetServiceIsAvailable(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparationsStatus(::attestation::STATUS_DBUS_ERROR);
 
   RunOneStepAndExpect(
       KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(TpmChallengeKeyResultCode::kDbusError));
+}
+
+TEST_F(TpmChallengeKeySubtleTest, AttestationPreparedServiceInternalError) {
+  InitSigninProfile();
+
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparationsStatus(
+          ::attestation::STATUS_NOT_AVAILABLE);
+
+  RunOneStepAndExpect(
+      KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
+      TpmChallengeKeyResult::MakeError(
+          TpmChallengeKeyResultCode::kAttestationServiceInternalError));
 }
 
 TEST_F(TpmChallengeKeySubtleTest, DeviceKeyNotRegisteredSuccess) {

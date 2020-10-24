@@ -16,6 +16,8 @@
 #include "chrome/browser/chromeos/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/attestation/attestation_flow.h"
+#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "components/account_id/account_id.h"
@@ -190,7 +192,8 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
       const base::RepeatingCallback<void(bool)>& callback);
   void GetDeviceAttestationEnabledCallback(bool enabled);
 
-  void IsAttestationPreparedCallback(base::Optional<bool> result);
+  void GetEnrollmentPreparationsCallback(
+      const ::attestation::GetEnrollmentPreparationsReply& reply);
   void PrepareKeyErrorHandlerCallback(base::Optional<bool> is_tpm_enabled);
   void DoesKeyExistCallback(base::Optional<bool> result);
   void AskForUserConsent(base::OnceCallback<void(bool)> callback) const;
