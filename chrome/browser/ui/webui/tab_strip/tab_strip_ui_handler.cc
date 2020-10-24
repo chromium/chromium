@@ -760,8 +760,8 @@ void TabStripUIHandler::HandleShowTabContextMenu(const base::ListValue* args) {
   const bool got_tab = extensions::ExtensionTabUtil::GetTabById(
       tab_id, browser_->profile(), true /* include_incognito */, &browser,
       nullptr, nullptr, &tab_index);
-  DCHECK(got_tab);
-  DCHECK_EQ(browser, browser_);
+  CHECK(got_tab);
+  CHECK_EQ(browser, browser_);
 
   DCHECK(embedder_);
   embedder_->ShowContextMenuAtPoint(
