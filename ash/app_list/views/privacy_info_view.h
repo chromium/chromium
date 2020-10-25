@@ -69,7 +69,7 @@ class PrivacyInfoView : public SearchResultBaseView {
 
   // Indicates which of the privacy notice's actions is selected for keyboard
   // navigation.
-  Action selected_action_;
+  Action selected_action_ = Action::kNone;
 
   DISALLOW_COPY_AND_ASSIGN(PrivacyInfoView);
 };
