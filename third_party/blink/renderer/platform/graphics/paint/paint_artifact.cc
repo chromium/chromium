@@ -4,13 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 
-#include "cc/paint/display_item_list.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -25,25 +20,10 @@ size_t PaintArtifact::ApproximateUnsharedMemoryUsage() const {
   return total_size;
 }
 
-void PaintArtifact::Replay(GraphicsContext& graphics_context,
-                           const PropertyTreeState& replay_state,
-                           const IntPoint& offset) const {
-  Replay(*graphics_context.Canvas(), replay_state, offset);
-}
-
-void PaintArtifact::Replay(cc::PaintCanvas& canvas,
-                           const PropertyTreeState& replay_state,
-                           const IntPoint& offset) const {
-  TRACE_EVENT0("blink,benchmark", "PaintArtifact::replay");
-  canvas.drawPicture(GetPaintRecord(replay_state, offset));
-}
-
 sk_sp<PaintRecord> PaintArtifact::GetPaintRecord(
-    const PropertyTreeState& replay_state,
-    const IntPoint& offset) const {
+    const PropertyTreeState& replay_state) const {
   return PaintChunksToCcLayer::Convert(
-             PaintChunkSubset(this), replay_state,
-             gfx::Vector2dF(offset.X(), offset.Y()),
+             PaintChunkSubset(this), replay_state, gfx::Vector2dF(),
              cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)
       ->ReleaseAsRecord();
 }

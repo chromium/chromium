@@ -10,15 +10,8 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkColor.h"
-
-namespace cc {
-class PaintCanvas;
-}
 
 namespace blink {
-
-class GraphicsContext;
 
 // A PaintArtifact represents the output of painting, consisting of paint chunks
 // and display items (in DisplayItemList).
@@ -63,20 +56,8 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   // shared with the embedder after copying to cc::DisplayItemList.
   size_t ApproximateUnsharedMemoryUsage() const;
 
-  // Draws the paint artifact to a GraphicsContext, into the ancestor state
-  // given by |replay_state|.
-  void Replay(GraphicsContext&,
-              const PropertyTreeState& replay_state,
-              const IntPoint& offset = IntPoint()) const;
-
-  // Draws the paint artifact to a PaintCanvas, into the ancestor state given
-  // by |replay_state|.
-  void Replay(cc::PaintCanvas&,
-              const PropertyTreeState& replay_state,
-              const IntPoint& offset = IntPoint()) const;
-
-  sk_sp<PaintRecord> GetPaintRecord(const PropertyTreeState& replay_state,
-                                    const IntPoint& offset = IntPoint()) const;
+  sk_sp<PaintRecord> GetPaintRecord(
+      const PropertyTreeState& replay_state) const;
 
  private:
   DisplayItemList display_item_list_;

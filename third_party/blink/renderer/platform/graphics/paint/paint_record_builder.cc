@@ -48,9 +48,7 @@ sk_sp<PaintRecord> PaintRecordBuilder::EndRecording(
 
 void PaintRecordBuilder::EndRecording(cc::PaintCanvas& canvas,
                                       const PropertyTreeState& replay_state) {
-  paint_controller_->CommitNewDisplayItems();
-  paint_controller_->FinishCycle();
-  paint_controller_->GetPaintArtifact().Replay(canvas, replay_state);
+  canvas.drawPicture(EndRecording(replay_state));
 }
 
 }  // namespace blink

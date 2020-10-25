@@ -117,9 +117,9 @@ TEST_P(FrameOverlayTest, AcceleratedCompositing) {
     graphics_layer->PaintRecursively(builder.Context(), pre_composited_layers);
     ASSERT_EQ(1u, pre_composited_layers.size());
     graphics_layer->GetPaintController().FinishCycle();
-    SkiaPaintCanvas paint_canvas(&canvas);
-    graphics_layer->GetPaintController().GetPaintArtifact().Replay(
-        paint_canvas, PropertyTreeState::Root());
+    SkiaPaintCanvas(&canvas).drawPicture(
+        graphics_layer->GetPaintController().GetPaintArtifact().GetPaintRecord(
+            PropertyTreeState::Root()));
   }
 }
 

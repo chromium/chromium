@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
@@ -20,6 +18,7 @@ class PaintCanvas;
 }
 
 namespace blink {
+
 class GraphicsContext;
 class PaintController;
 
@@ -63,8 +62,6 @@ class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
   PaintController* paint_controller_;
   std::unique_ptr<PaintController> own_paint_controller_;
   std::unique_ptr<GraphicsContext> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintRecordBuilder);
 };
 
 }  // namespace blink
