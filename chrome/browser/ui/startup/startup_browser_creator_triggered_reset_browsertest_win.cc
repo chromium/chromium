@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/win/windows_version.h"
@@ -58,6 +57,9 @@ Browser* FindOneOtherBrowser(Browser* browser) {
 class MockTriggeredProfileResetter : public TriggeredProfileResetter {
  public:
   MockTriggeredProfileResetter() : TriggeredProfileResetter(nullptr) {}
+  MockTriggeredProfileResetter(const MockTriggeredProfileResetter&) = delete;
+  MockTriggeredProfileResetter& operator=(const MockTriggeredProfileResetter&) =
+      delete;
 
   void Activate() override {}
   bool HasResetTrigger() override { return has_reset_trigger_; }
@@ -67,7 +69,6 @@ class MockTriggeredProfileResetter : public TriggeredProfileResetter {
 
  private:
   static bool has_reset_trigger_;
-  DISALLOW_COPY_AND_ASSIGN(MockTriggeredProfileResetter);
 };
 
 bool MockTriggeredProfileResetter::has_reset_trigger_ = false;
@@ -86,7 +87,11 @@ GURL GetTriggeredResetSettingsURL() {
 
 class StartupBrowserCreatorTriggeredResetTest : public InProcessBrowserTest {
  public:
-  StartupBrowserCreatorTriggeredResetTest() {}
+  StartupBrowserCreatorTriggeredResetTest() = default;
+  StartupBrowserCreatorTriggeredResetTest(
+      const StartupBrowserCreatorTriggeredResetTest&) = delete;
+  StartupBrowserCreatorTriggeredResetTest& operator=(
+      const StartupBrowserCreatorTriggeredResetTest&) = delete;
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -107,8 +112,6 @@ class StartupBrowserCreatorTriggeredResetTest : public InProcessBrowserTest {
   std::unique_ptr<
       BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
       create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreatorTriggeredResetTest);
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,

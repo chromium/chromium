@@ -22,6 +22,10 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   // |infobar_service|.
   static void Create(InfoBarService* infobar_service, Profile* profile);
 
+  DefaultBrowserInfoBarDelegate(const DefaultBrowserInfoBarDelegate&) = delete;
+  DefaultBrowserInfoBarDelegate& operator=(
+      const DefaultBrowserInfoBarDelegate&) = delete;
+
  protected:
   explicit DefaultBrowserInfoBarDelegate(Profile* profile);
   ~DefaultBrowserInfoBarDelegate() override;
@@ -58,15 +62,13 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   Profile* profile_;
 
   // Whether the info bar should be dismissed on the next navigation.
-  bool should_expire_;
+  bool should_expire_ = false;
 
   // Indicates if the user interacted with the infobar.
-  bool action_taken_;
+  bool action_taken_ = false;
 
   // Used to delay the expiration of the info-bar.
   base::WeakPtrFactory<DefaultBrowserInfoBarDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultBrowserInfoBarDelegate);
 };
 
 }  // namespace chrome

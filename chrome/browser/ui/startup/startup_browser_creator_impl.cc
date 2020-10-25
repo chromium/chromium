@@ -190,12 +190,8 @@ StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
     chrome::startup::IsFirstRun is_first_run)
     : cur_dir_(cur_dir),
       command_line_(command_line),
-      profile_(nullptr),
       browser_creator_(browser_creator),
       is_first_run_(is_first_run == chrome::startup::IS_FIRST_RUN) {}
-
-StartupBrowserCreatorImpl::~StartupBrowserCreatorImpl() {
-}
 
 bool StartupBrowserCreatorImpl::Launch(
     Profile* profile,
@@ -377,7 +373,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
 }
 
 bool StartupBrowserCreatorImpl::IsAppLaunch(std::string* app_url,
-                                            std::string* app_id) {
+                                            std::string* app_id) const {
   if (command_line_.HasSwitch(switches::kApp)) {
     if (app_url)
       *app_url = command_line_.GetSwitchValueASCII(switches::kApp);

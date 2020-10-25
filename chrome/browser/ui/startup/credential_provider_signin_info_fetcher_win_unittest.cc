@@ -7,10 +7,11 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind_test_util.h"
@@ -38,6 +39,9 @@ constexpr char kRefreshTokenValue[] = "test_refresh_token_value";
 class CredentialProviderFetcherTest : public ::testing::Test {
  protected:
   CredentialProviderFetcherTest();
+  CredentialProviderFetcherTest(const CredentialProviderFetcherTest&) = delete;
+  CredentialProviderFetcherTest& operator=(
+      const CredentialProviderFetcherTest&) = delete;
   ~CredentialProviderFetcherTest() override;
 
   void OnFetchComplete(base::OnceClosure done_closure,
@@ -71,8 +75,6 @@ class CredentialProviderFetcherTest : public ::testing::Test {
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderFetcherTest);
 };
 
 CredentialProviderFetcherTest::CredentialProviderFetcherTest()

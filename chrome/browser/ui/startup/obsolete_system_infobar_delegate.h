@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_OBSOLETE_SYSTEM_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_STARTUP_OBSOLETE_SYSTEM_INFOBAR_DELEGATE_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
@@ -21,9 +19,13 @@ class ObsoleteSystemInfoBarDelegate : public ConfirmInfoBarDelegate {
   // |infobar_service|.
   static void Create(InfoBarService* infobar_service);
 
+  ObsoleteSystemInfoBarDelegate(const ObsoleteSystemInfoBarDelegate&) = delete;
+  ObsoleteSystemInfoBarDelegate& operator=(
+      const ObsoleteSystemInfoBarDelegate&) = delete;
+
  private:
   ObsoleteSystemInfoBarDelegate();
-  ~ObsoleteSystemInfoBarDelegate() override;
+  ~ObsoleteSystemInfoBarDelegate() override = default;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   base::string16 GetLinkText() const override;
@@ -31,8 +33,6 @@ class ObsoleteSystemInfoBarDelegate : public ConfirmInfoBarDelegate {
   base::string16 GetMessageText() const override;
   int GetButtons() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ObsoleteSystemInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_OBSOLETE_SYSTEM_INFOBAR_DELEGATE_H_

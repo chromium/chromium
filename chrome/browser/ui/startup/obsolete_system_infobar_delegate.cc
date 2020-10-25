@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 
+#include <memory>
+
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "components/infobars/core/infobar.h"
@@ -19,9 +21,6 @@ void ObsoleteSystemInfoBarDelegate::Create(InfoBarService* infobar_service) {
 
 ObsoleteSystemInfoBarDelegate::ObsoleteSystemInfoBarDelegate()
     : ConfirmInfoBarDelegate() {
-}
-
-ObsoleteSystemInfoBarDelegate::~ObsoleteSystemInfoBarDelegate() {
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

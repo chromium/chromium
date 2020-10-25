@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 
+#include <memory>
+
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/infobars/core/infobar.h"
@@ -21,9 +23,6 @@ void GoogleApiKeysInfoBarDelegate::Create(InfoBarService* infobar_service) {
 
 GoogleApiKeysInfoBarDelegate::GoogleApiKeysInfoBarDelegate()
     : ConfirmInfoBarDelegate() {
-}
-
-GoogleApiKeysInfoBarDelegate::~GoogleApiKeysInfoBarDelegate() {
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

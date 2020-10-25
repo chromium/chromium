@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -31,6 +30,8 @@ class StartupBrowserCreator {
   typedef std::vector<Profile*> Profiles;
 
   StartupBrowserCreator();
+  StartupBrowserCreator(const StartupBrowserCreator&) = delete;
+  StartupBrowserCreator& operator=(const StartupBrowserCreator&) = delete;
   ~StartupBrowserCreator();
 
   // Adds a url to be opened during first run. This overrides the standard
@@ -180,8 +181,6 @@ class StartupBrowserCreator {
   static bool was_restarted_read_;
 
   static bool in_synchronous_profile_launch_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreator);
 };
 
 // Returns true if |profile| has exited uncleanly and has not been launched

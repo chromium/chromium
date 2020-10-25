@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -122,7 +121,8 @@ class ProfileLaunchObserver : public ProfileObserver,
                               public BrowserListObserver {
  public:
   ProfileLaunchObserver() { BrowserList::AddObserver(this); }
-
+  ProfileLaunchObserver(const ProfileLaunchObserver&) = delete;
+  ProfileLaunchObserver& operator=(const ProfileLaunchObserver&) = delete;
   ~ProfileLaunchObserver() override { BrowserList::RemoveObserver(this); }
 
   // BrowserListObserver:
@@ -226,8 +226,6 @@ class ProfileLaunchObserver : public ProfileObserver,
   // Set once we attempted to activate a profile. We only get one shot at this.
   bool activated_profile_ = false;
   ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileLaunchObserver);
 };
 
 base::LazyInstance<ProfileLaunchObserver>::DestructorAtExit

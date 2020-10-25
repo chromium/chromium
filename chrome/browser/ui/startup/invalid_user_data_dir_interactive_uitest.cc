@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/common/chrome_paths.h"
@@ -12,8 +11,10 @@
 // https://crbug.com/833624
 class InvalidUserDataDirTest : public InProcessBrowserTest {
  public:
-  InvalidUserDataDirTest() {}
-  ~InvalidUserDataDirTest() override {}
+  InvalidUserDataDirTest() = default;
+  InvalidUserDataDirTest(const InvalidUserDataDirTest&) = delete;
+  InvalidUserDataDirTest& operator=(const InvalidUserDataDirTest&) = delete;
+  ~InvalidUserDataDirTest() override = default;
 
  private:
   void SetUp() override {
@@ -28,8 +29,6 @@ class InvalidUserDataDirTest : public InProcessBrowserTest {
   // browser initialization, the screen is not set until after the call to
   // chrome::GetInvalidSpecifiedUserDataDir.
   void SetScreenInstance() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidUserDataDirTest);
 };
 
 IN_PROC_BROWSER_TEST_F(InvalidUserDataDirTest, Basic) {

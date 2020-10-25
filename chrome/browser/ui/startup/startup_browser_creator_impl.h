@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -49,7 +48,10 @@ class StartupBrowserCreatorImpl {
                             const base::CommandLine& command_line,
                             StartupBrowserCreator* browser_creator,
                             chrome::startup::IsFirstRun is_first_run);
-  ~StartupBrowserCreatorImpl();
+  StartupBrowserCreatorImpl(const StartupBrowserCreatorImpl&) = delete;
+  StartupBrowserCreatorImpl& operator=(const StartupBrowserCreatorImpl&) =
+      delete;
+  ~StartupBrowserCreatorImpl() = default;
 
   // Creates the necessary windows for startup. Returns true on success,
   // false on failure. process_startup is true if Chrome is just
@@ -128,7 +130,7 @@ class StartupBrowserCreatorImpl {
   // If the process was launched with the web application command line flags,
   // e.g. --app=http://www.google.com/ or --app_id=... return true.
   // In this case |app_url| or |app_id| are populated if they're non-null.
-  bool IsAppLaunch(std::string* app_url, std::string* app_id);
+  bool IsAppLaunch(std::string* app_url, std::string* app_id) const;
 
   // Opens an application window or tab if the process was launched with the web
   // application command line switches. Returns true if launch succeeded (or is
@@ -196,10 +198,9 @@ class StartupBrowserCreatorImpl {
 
   const base::FilePath cur_dir_;
   const base::CommandLine& command_line_;
-  Profile* profile_;
+  Profile* profile_ = nullptr;
   StartupBrowserCreator* browser_creator_;
   bool is_first_run_;
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreatorImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_IMPL_H_

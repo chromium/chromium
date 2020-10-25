@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
@@ -16,10 +19,6 @@ void AutomationInfoBarDelegate::Create() {
       new AutomationInfoBarDelegate());
   GlobalConfirmInfoBar::Show(std::move(delegate));
 }
-
-AutomationInfoBarDelegate::AutomationInfoBarDelegate() {}
-
-AutomationInfoBarDelegate::~AutomationInfoBarDelegate() {}
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 AutomationInfoBarDelegate::GetIdentifier() const {

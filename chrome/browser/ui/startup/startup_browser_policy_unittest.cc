@@ -50,6 +50,11 @@ class UnittestProfileManager : public ProfileManagerWithoutInit {
 };
 
 class StartupBrowserPolicyUnitTest : public testing::Test {
+ public:
+  StartupBrowserPolicyUnitTest(const StartupBrowserPolicyUnitTest&) = delete;
+  StartupBrowserPolicyUnitTest& operator=(const StartupBrowserPolicyUnitTest&) =
+      delete;
+
  protected:
   StartupBrowserPolicyUnitTest() = default;
   ~StartupBrowserPolicyUnitTest() override = default;
@@ -109,9 +114,6 @@ class StartupBrowserPolicyUnitTest : public testing::Test {
     SetPolicy(*policy_map.get(), policy, args...);
     return policy_map;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserPolicyUnitTest);
 };
 
 TEST_F(StartupBrowserPolicyUnitTest, BookmarkBarEnabled) {

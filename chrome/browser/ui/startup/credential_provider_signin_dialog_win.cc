@@ -147,6 +147,11 @@ class CredentialProviderWebUIMessageHandler
       : signin_callback_(std::move(signin_callback)),
         additional_mdm_oauth_scopes_(additional_mdm_oauth_scopes) {}
 
+  CredentialProviderWebUIMessageHandler(
+      const CredentialProviderWebUIMessageHandler&) = delete;
+  CredentialProviderWebUIMessageHandler& operator=(
+      const CredentialProviderWebUIMessageHandler&) = delete;
+
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
     web_ui()->RegisterMessageCallback(
@@ -249,8 +254,6 @@ class CredentialProviderWebUIMessageHandler
 
   HandleGcpwSigninCompleteResult signin_callback_;
   const std::string additional_mdm_oauth_scopes_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderWebUIMessageHandler);
 };
 
 }  // namespace
@@ -279,6 +282,11 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
         additional_mdm_oauth_scopes(additional_mdm_oauth_scopes),
         show_tos_(show_tos),
         signin_callback_(std::move(signin_callback)) {}
+
+  CredentialProviderWebDialogDelegate(
+      const CredentialProviderWebDialogDelegate&) = delete;
+  CredentialProviderWebDialogDelegate& operator=(
+      const CredentialProviderWebDialogDelegate&) = delete;
 
   GURL GetDialogContentURL() const override {
     signin_metrics::AccessPoint access_point =
@@ -403,9 +411,6 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   mutable HandleGcpwSigninCompleteResult signin_callback_;
 
   mutable CredentialProviderWebUIMessageHandler* handler_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderWebDialogDelegate);
 };
 
 bool ValidateSigninCompleteResult(const std::string& access_token,

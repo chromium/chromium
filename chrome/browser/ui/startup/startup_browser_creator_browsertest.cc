@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1197,6 +1196,10 @@ class StartupBrowserCreatorExtensionsCheckupExperimentTest
   StartupBrowserCreatorExtensionsCheckupExperimentTest() {
     set_open_about_blank_on_browser_launch(false);
   }
+  StartupBrowserCreatorExtensionsCheckupExperimentTest(
+      const StartupBrowserCreatorExtensionsCheckupExperimentTest&) = delete;
+  StartupBrowserCreatorExtensionsCheckupExperimentTest& operator=(
+      const StartupBrowserCreatorExtensionsCheckupExperimentTest&) = delete;
 
   void SetUp() override {
     // Enable the extensions checkup experiment.
@@ -1225,8 +1228,6 @@ class StartupBrowserCreatorExtensionsCheckupExperimentTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(
-      StartupBrowserCreatorExtensionsCheckupExperimentTest);
 };
 
 // Test that when the extensions checkup experiment is enabled for the startup
@@ -1296,6 +1297,10 @@ class StartupBrowserCreatorFirstRunTest : public InProcessBrowserTest {
   StartupBrowserCreatorFirstRunTest() {
     scoped_feature_list_.InitWithFeatures({welcome::kForceEnabled}, {});
   }
+  StartupBrowserCreatorFirstRunTest(const StartupBrowserCreatorFirstRunTest&) =
+      delete;
+  StartupBrowserCreatorFirstRunTest& operator=(
+      const StartupBrowserCreatorFirstRunTest&) = delete;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -1306,8 +1311,6 @@ class StartupBrowserCreatorFirstRunTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreatorFirstRunTest);
 };
 
 void StartupBrowserCreatorFirstRunTest::SetUpCommandLine(
@@ -1873,6 +1876,10 @@ class StartupBrowserCreatorPickerTest : public InProcessBrowserTest {
   StartupBrowserCreatorPickerTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kNewProfilePicker);
   }
+  StartupBrowserCreatorPickerTest(const StartupBrowserCreatorPickerTest&) =
+      delete;
+  StartupBrowserCreatorPickerTest& operator=(
+      const StartupBrowserCreatorPickerTest&) = delete;
   ~StartupBrowserCreatorPickerTest() override = default;
 
  protected:
@@ -1897,8 +1904,6 @@ class StartupBrowserCreatorPickerTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreatorPickerTest);
 };
 
 // Flaky: https://crbug.com/1126886

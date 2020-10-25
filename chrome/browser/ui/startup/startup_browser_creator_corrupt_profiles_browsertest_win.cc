@@ -110,8 +110,11 @@ void ExpectUserManagerToShow() {
 
 class StartupBrowserCreatorCorruptProfileTest : public InProcessBrowserTest {
  public:
-  StartupBrowserCreatorCorruptProfileTest()
-      : test_body_has_run_(false), expect_test_body_to_run_(true) {}
+  StartupBrowserCreatorCorruptProfileTest() = default;
+  StartupBrowserCreatorCorruptProfileTest(
+      const StartupBrowserCreatorCorruptProfileTest&) = delete;
+  StartupBrowserCreatorCorruptProfileTest& operator=(
+      const StartupBrowserCreatorCorruptProfileTest&) = delete;
 
   void SetExpectTestBodyToRun(bool expected_result) {
     expect_test_body_to_run_ = expected_result;
@@ -207,9 +210,8 @@ if (testing::UnitTest::GetInstance()->current_test_info()->name() == \
   }
 
  private:
-  bool test_body_has_run_;
-  bool expect_test_body_to_run_;
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreatorCorruptProfileTest);
+  bool test_body_has_run_ = false;
+  bool expect_test_body_to_run_ = true;
 };
 
 // Most of the tests below have three sections:
