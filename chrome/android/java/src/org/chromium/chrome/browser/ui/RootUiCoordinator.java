@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -154,6 +155,7 @@ public class RootUiCoordinator
     @Nullable
     private BrowserControlsManager mBrowserControlsManager;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     @Nullable
     private MessageQueueManager mMessageQueueManager;
 
@@ -171,6 +173,7 @@ public class RootUiCoordinator
      *                                     profile.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
+     * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      */
     public RootUiCoordinator(ChromeActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -179,7 +182,8 @@ public class RootUiCoordinator
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mOnOmniboxFocusChangedListener = onOmniboxFocusChangedListener;
@@ -209,6 +213,7 @@ public class RootUiCoordinator
         mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mOverviewModeBehaviorSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setOverviewModeBehavior));
+        mStartSurfaceSupplier = startSurfaceSupplier;
 
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
             mMessageQueueManager =
@@ -691,7 +696,8 @@ public class RootUiCoordinator
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
                 mActivity.getBrowserControlsManager(), mActivity.getFullscreenManager(),
                 mActivity::getModalDialogManager, this::getBottomSheetSnackbarManager,
-                mTabObscuringHandler, mOmniboxFocusStateSupplier, panelManagerSupplier);
+                mTabObscuringHandler, mOmniboxFocusStateSupplier, panelManagerSupplier,
+                mStartSurfaceSupplier);
     }
 
     /**

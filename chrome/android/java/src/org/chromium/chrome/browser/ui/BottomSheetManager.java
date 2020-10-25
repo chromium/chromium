@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -58,6 +59,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
 
     /** A tab observer that is only attached to the active tab. */
     private final TabObserver mTabObserver;
+
+    /** The supplier of {@link StartSurface} instance. */
+    private final Supplier<StartSurface> mStartSurfaceSupplier;
 
     /** A browser controls manager for polling browser controls offsets. */
     private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -114,7 +118,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
             Supplier<SnackbarManager> snackbarManagerSupplier,
             TabObscuringHandler obscuringDelegate,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            Supplier<OverlayPanelManager> overlayManager) {
+            Supplier<OverlayPanelManager> overlayManager,
+            Supplier<StartSurface> startSurfaceSupplier) {
         mSheetController = controller;
         mTabProvider = tabProvider;
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
@@ -125,6 +130,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
         mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mOverlayPanelManager = overlayManager;
+        mStartSurfaceSupplier = startSurfaceSupplier;
 
         mSheetController.addObserver(this);
         mSheetController.setAccssibilityUtil(ChromeAccessibilityUtil.get());
@@ -159,9 +165,12 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
             @Override
             public void onActivityTabChanged(Tab tab) {
                 // Temporarily suppress the sheet if entering a state where there is no activity
-                // tab.
+                // tab and the Start surface homepage isn't showing.
                 if (tab == null) {
-                    mToken = controller.suppressSheet(StateChangeReason.COMPOSITED_UI);
+                    if (mStartSurfaceSupplier.get() == null
+                            || !mStartSurfaceSupplier.get().getController().isHomePageShowing()) {
+                        mToken = controller.suppressSheet(StateChangeReason.COMPOSITED_UI);
+                    }
                     return;
                 }
 

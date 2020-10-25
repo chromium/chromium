@@ -130,6 +130,12 @@ public interface StartSurface {
          * @param activityCreateTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
          */
         void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs);
+
+        /**
+         * @return Whether the Start surface is currently showing with a state of
+         * {@link OverviewModeState.SHOWN_HOMEPAGE}.
+         */
+        boolean isHomePageShowing();
     }
 
     /**

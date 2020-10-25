@@ -51,6 +51,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
@@ -390,7 +391,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return new RootUiCoordinator(this, null, getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
-                mTabModelSelectorSupplier);
+                mTabModelSelectorSupplier, new OneshotSupplierImpl<>());
     }
 
     private NotificationManagerProxy getNotificationManagerProxy() {
