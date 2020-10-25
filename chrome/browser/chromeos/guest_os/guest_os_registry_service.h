@@ -218,6 +218,12 @@ class GuestOsRegistryService : public KeyedService {
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 
+  // Returns the AppId that will be used to refer to the given GuestOs
+  // application.
+  static std::string GenerateAppId(const std::string& desktop_file_id,
+                                   const std::string& vm_name,
+                                   const std::string& container_name);
+
  private:
   // Run start up tasks for the registry (e.g. recording metrics).
   void RecordStartupMetrics();

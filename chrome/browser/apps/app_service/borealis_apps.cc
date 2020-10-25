@@ -5,8 +5,11 @@
 #include "chrome/browser/apps/app_service/borealis_apps.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "base/bind.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
@@ -172,7 +175,18 @@ void BorealisApps::Launch(const std::string& app_id,
           ->Features()
           .IsEnabled()) {
     borealis::BorealisContextManagerFactory::GetForProfile(profile_)
-        ->StartBorealis(base::DoNothing());
+        ->StartBorealis(base::BindOnce(
+            [](const std::string& app_id,
+               borealis::BorealisContextManager::Result result) {
+              if (!result.Ok()) {
+                LOG(ERROR) << "Failed to launch " << app_id << ": "
+                           << result.FailureReason();
+                return;
+              }
+              borealis::BorealisAppLauncher::Launch(result.Success(), app_id,
+                                                    base::DoNothing());
+            },
+            app_id));
     return;
   }
   borealis::ShowBorealisInstallerView(profile_);

@@ -150,8 +150,8 @@ std::string CrostiniTestHelper::GenerateAppId(
     const std::string& desktop_file_id,
     const std::string& vm_name,
     const std::string& container_name) {
-  return crx_file::id_util::GenerateId("crostini:" + vm_name + "/" +
-                                       container_name + "/" + desktop_file_id);
+  return guest_os::GuestOsRegistryService::GenerateAppId(
+      desktop_file_id, vm_name, container_name);
 }
 
 // static

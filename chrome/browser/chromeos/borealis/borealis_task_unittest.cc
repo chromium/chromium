@@ -50,8 +50,7 @@ class BorealisTasksTest : public testing::Test {
     fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
         chromeos::DBusThreadManager::Get()->GetConciergeClient());
     CreateProfile();
-    context_ = BorealisContext::CreateBorealisContextForTesting();
-    context_->set_profile(profile_.get());
+    context_ = BorealisContext::CreateBorealisContextForTesting(profile_.get());
 
     chromeos::DlcserviceClient::InitializeFake();
     fake_dlcservice_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
@@ -66,7 +65,7 @@ class BorealisTasksTest : public testing::Test {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  BorealisContext* context_;
+  std::unique_ptr<BorealisContext> context_;
   content::BrowserTaskEnvironment task_environment_;
   // Owned by chromeos::DBusThreadManager
   chromeos::FakeConciergeClient* fake_concierge_client_;
@@ -89,7 +88,7 @@ TEST_F(BorealisTasksTest, MountDlcSucceedsAndCallbackRanWithResults) {
   EXPECT_CALL(callback, Callback(BorealisContextManager::kSuccess, _));
 
   MountDlc task;
-  task.Run(context_, callback.GetCallback());
+  task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(context_->root_path(), "test/path");
@@ -107,7 +106,7 @@ TEST_F(BorealisTasksTest, CreateDiskSucceedsAndCallbackRanWithResults) {
   EXPECT_CALL(callback, Callback(BorealisContextManager::kSuccess, _));
 
   CreateDiskImage task;
-  task.Run(context_, callback.GetCallback());
+  task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
@@ -127,7 +126,7 @@ TEST_F(BorealisTasksTest,
   EXPECT_CALL(callback, Callback(BorealisContextManager::kSuccess, _));
 
   CreateDiskImage task;
-  task.Run(context_, callback.GetCallback());
+  task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
@@ -143,7 +142,7 @@ TEST_F(BorealisTasksTest, StartBorealisVmSucceedsAndCallbackRanWithResults) {
   EXPECT_CALL(callback, Callback(BorealisContextManager::kSuccess, _));
 
   StartBorealisVm task;
-  task.Run(context_, callback.GetCallback());
+  task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
@@ -159,7 +158,7 @@ TEST_F(BorealisTasksTest,
   EXPECT_CALL(callback, Callback(BorealisContextManager::kSuccess, _));
 
   StartBorealisVm task;
-  task.Run(context_, callback.GetCallback());
+  task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
@@ -175,7 +174,7 @@ TEST_P(BorealisTasksTestDlc, MountDlcFailsAndCallbackRanWithResults) {
               Callback(BorealisContextManager::kMountFailed, StrNe("")));
 
   MountDlc task;
-  task.Run(context_, callback.GetCallback());
+  task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 }
 
@@ -204,7 +203,7 @@ TEST_P(BorealisTasksTestDiskImage, CreateDiskFailsAndCallbackRanWithResults) {
               Callback(BorealisContextManager::kDiskImageFailed, StrNe("")));
 
   CreateDiskImage task;
-  task.Run(context_, callback.GetCallback());
+  task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
@@ -236,7 +235,7 @@ TEST_P(BorealisTasksTestsStartBorealisVm,
               Callback(BorealisContextManager::kStartVmFailed, StrNe("")));
 
   StartBorealisVm task;
-  task.Run(context_, callback.GetCallback());
+  task.Run(context_.get(), callback.GetCallback());
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());

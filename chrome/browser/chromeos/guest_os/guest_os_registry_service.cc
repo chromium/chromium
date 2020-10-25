@@ -57,16 +57,6 @@ constexpr char kCrostiniAppsInstalledHistogram[] =
 constexpr char kPluginVmAppsInstalledHistogram[] =
     "PluginVm.AppsInstalledAtLogin";
 
-std::string GenerateAppId(const std::string& desktop_file_id,
-                          const std::string& vm_name,
-                          const std::string& container_name) {
-  // These can collide in theory because the user could choose VM and container
-  // names which contain slashes, but this will only result in apps missing from
-  // the launcher.
-  return crx_file::id_util::GenerateId(kCrostiniAppIdPrefix + vm_name + "/" +
-                                       container_name + "/" + desktop_file_id);
-}
-
 base::Value ProtoToDictionary(const App::LocaleString& locale_string) {
   base::Value result(base::Value::Type::DICTIONARY);
   for (const App::LocaleString::Entry& entry : locale_string.values()) {
@@ -1038,6 +1028,18 @@ void GuestOsRegistryService::SetAppScaled(const std::string& app_id,
     return;
   }
   app->SetKey(guest_os::prefs::kAppScaledKey, base::Value(scaled));
+}
+
+// static
+std::string GuestOsRegistryService::GenerateAppId(
+    const std::string& desktop_file_id,
+    const std::string& vm_name,
+    const std::string& container_name) {
+  // These can collide in theory because the user could choose VM and container
+  // names which contain slashes, but this will only result in apps missing from
+  // the launcher.
+  return crx_file::id_util::GenerateId(kCrostiniAppIdPrefix + vm_name + "/" +
+                                       container_name + "/" + desktop_file_id);
 }
 
 void GuestOsRegistryService::RequestContainerAppIcon(

@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_CONTEXT_H_
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_CONTEXT_H_
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/profiles/profile.h"
+
+class Profile;
 
 namespace borealis {
 
@@ -21,12 +23,10 @@ class BorealisContext {
   BorealisContext& operator=(const BorealisContext&) = delete;
   ~BorealisContext();
 
-  static BorealisContext* CreateBorealisContextForTesting() {
-    return new BorealisContext();
-  }
+  static std::unique_ptr<BorealisContext> CreateBorealisContextForTesting(
+      Profile* profile);
 
-  Profile* profile() { return profile_; }
-  void set_profile(Profile* profile) { profile_ = profile; }
+  Profile* profile() const { return profile_; }
 
   bool borealis_running() const { return borealis_running_; }
   void set_borealis_running(bool success) { borealis_running_ = success; }
@@ -48,10 +48,9 @@ class BorealisContext {
  private:
   friend class BorealisContextManagerImpl;
 
-  BorealisContext();
   explicit BorealisContext(Profile* profile);
 
-  Profile* profile_ = nullptr;
+  Profile* const profile_;
   bool borealis_running_ = false;
   std::string vm_name_;
   std::string container_name_;
