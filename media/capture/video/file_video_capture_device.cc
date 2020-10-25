@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -453,6 +454,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
         VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
       client_->OnFrameDropped(
           ConvertReservationFailureToFrameDropReason(reserve_result));
+      DVLOG(2) << __func__ << " frame was dropped.";
       return;
     }
     ScopedNV12GpuMemoryBufferMapping scoped_mapping(std::move(gmb));
@@ -469,7 +471,6 @@ void FileVideoCaptureDevice::OnCaptureTask() {
         src_v_plane, buffer_size.width() / 2, scoped_mapping.y_plane(),
         scoped_mapping.y_stride(), scoped_mapping.uv_plane(),
         scoped_mapping.uv_stride(), buffer_size.width(), buffer_size.height());
-
     VideoCaptureFormat modified_format = capture_format_;
     // When GpuMemoryBuffer is used, the frame data is opaque to the CPU for
     // most of the time.  Currently the only supported underlying format is

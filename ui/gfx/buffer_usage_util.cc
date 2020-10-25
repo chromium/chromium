@@ -22,6 +22,8 @@ const char* BufferUsageToString(BufferUsage usage) {
       return "SCANOUT_VDA_WRITE";
     case BufferUsage::GPU_READ_CPU_READ_WRITE:
       return "GPU_READ_CPU_READ_WRITE";
+    case BufferUsage::SCANOUT_VEA_CPU_READ:
+      return "SCANOUT_VEA_CPU_READ";
     case BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
       return "SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE";
   }

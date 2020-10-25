@@ -242,6 +242,8 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
     if (tracker_to_drop == trackers_.end()) {
       // We're out of space, and can't find an unused tracker to reallocate.
       *buffer_id = kInvalidId;
+      DLOG(ERROR) << __func__
+                  << " max buffer count exceeded count_ = " << count_;
       return VideoCaptureDevice::Client::ReserveResult::kMaxBufferCountExceeded;
     }
     *buffer_id_to_drop = tracker_to_drop->first;

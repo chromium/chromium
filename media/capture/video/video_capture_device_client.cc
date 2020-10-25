@@ -558,8 +558,10 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
       receiver_->OnBufferRetired(buffer_id_to_drop);
     }
   }
-  if (reservation_result_code != ReserveResult::kSucceeded)
+  if (reservation_result_code != ReserveResult::kSucceeded) {
+    DVLOG(2) << __func__ << " reservation failed";
     return reservation_result_code;
+  }
 
   DCHECK_NE(VideoCaptureBufferPool::kInvalidId, buffer_id);
 

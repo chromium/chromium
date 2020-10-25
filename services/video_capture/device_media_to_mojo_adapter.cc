@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/capture_switches.h"
@@ -177,7 +178,11 @@ int DeviceMediaToMojoAdapter::max_buffer_pool_buffer_count() {
   // those frames get dropped.
   static int kMaxBufferCount = 3;
 
-#if BUILDFLAG(IS_ASH)
+#if defined(OS_MAC)
+  // On macOS, we allow a few more buffers as it's routinely observed that it
+  // runs out of three when just displaying 60 FPS media in a video element.
+  kMaxBufferCount = 10;
+#elif BUILDFLAG(IS_ASH)
   // On Chrome OS with MIPI cameras running on HAL v3, there can be three
   // concurrent streams of camera pipeline depth ~6. We allow at most 30 buffers
   // here to take into account the delay caused by the consumer (e.g. display or

@@ -166,6 +166,8 @@ component("capture_lib") {
 
   if (is_mac) {
     sources += [
+      "video/mac/gpu_memory_buffer_tracker_mac.cc",
+      "video/mac/gpu_memory_buffer_tracker_mac.h",
       "video/mac/pixel_buffer_pool_mac.cc",
       "video/mac/pixel_buffer_pool_mac.h",
       "video/mac/pixel_buffer_transferer_mac.cc",
