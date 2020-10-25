@@ -99,7 +99,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   void InstallAttributesIsReady(DBusMethodCallback<bool> callback) override;
   bool InstallAttributesIsInvalid(bool* is_invalid) override;
   bool InstallAttributesIsFirstInstall(bool* is_first_install) override;
-  void TpmAttestationIsPrepared(DBusMethodCallback<bool> callback) override;
   void TpmAttestationGetEnrollmentId(
       bool ignore_cache,
       DBusMethodCallback<TpmAttestationDataResult> callback) override;
@@ -327,10 +326,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
     tpm_attestation_is_enrolled_ = enrolled;
   }
 
-  void set_tpm_attestation_is_prepared(bool prepared) {
-    tpm_attestation_is_prepared_ = prepared;
-  }
-
   void set_tpm_attestation_does_key_exist_should_succeed(bool should_succeed) {
     tpm_attestation_does_key_exist_should_succeed_ = should_succeed;
   }
@@ -502,7 +497,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   std::string tpm_attestation_enrollment_id_ =
       "6fcc0ebddec3db95cdcf82476d594f4d60db934c5b47fa6085c707b2a93e205b";
   bool tpm_attestation_is_enrolled_ = true;
-  bool tpm_attestation_is_prepared_ = true;
   bool tpm_attestation_does_key_exist_should_succeed_ = true;
   bool supports_low_entropy_credentials_ = false;
   // Controls if CheckKeyEx actually checks the key.

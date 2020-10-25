@@ -482,14 +482,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
   }
 
   // CryptohomeClient override.
-  void TpmAttestationIsPrepared(DBusMethodCallback<bool> callback) override {
-    dbus::MethodCall method_call(
-        cryptohome::kCryptohomeInterface,
-        cryptohome::kCryptohomeTpmIsAttestationPrepared);
-    return CallBoolMethod(&method_call, std::move(callback));
-  }
-
-  // CryptohomeClient override.
   void TpmAttestationGetEnrollmentId(
       bool ignore_cache,
       DBusMethodCallback<TpmAttestationDataResult> callback) override {

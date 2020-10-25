@@ -332,15 +332,6 @@ bool FakeCryptohomeClient::InstallAttributesIsFirstInstall(
   return true;
 }
 
-void FakeCryptohomeClient::TpmAttestationIsPrepared(
-    DBusMethodCallback<bool> callback) {
-  auto result = service_is_available_
-                    ? base::make_optional(tpm_attestation_is_prepared_)
-                    : base::nullopt;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
-}
-
 void FakeCryptohomeClient::TpmAttestationGetEnrollmentId(
     bool ignore_cache,
     DBusMethodCallback<TpmAttestationDataResult> callback) {
