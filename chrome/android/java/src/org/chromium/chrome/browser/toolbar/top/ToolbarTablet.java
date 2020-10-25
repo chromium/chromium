@@ -30,6 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.NavigationPopup;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -39,7 +40,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
@@ -91,6 +91,8 @@ public class ToolbarTablet extends ToolbarLayout
     private final int mStartPaddingWithoutButtons;
     private boolean mShouldAnimateButtonVisibilityChange;
     private AnimatorSet mButtonVisibilityAnimators;
+
+    private NewTabPage mVisibleNtp;
 
     /**
      * Constructs a ToolbarTablet object.
@@ -405,13 +407,24 @@ public class ToolbarTablet extends ToolbarLayout
      * Called when the currently visible New Tab Page changes.
      */
     private void updateNtp() {
-        NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
-        ntpDelegate.setSearchBoxScrollListener((scrollFraction) -> {
-            // Fade the search box out in the first 40% of the scrolling transition.
-            float alpha = Math.max(1f - scrollFraction * 2.5f, 0f);
-            ntpDelegate.setSearchBoxAlpha(alpha);
-            ntpDelegate.setSearchProviderLogoAlpha(alpha);
-        });
+        NewTabPage newVisibleNtp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        if (mVisibleNtp == newVisibleNtp) return;
+
+        if (mVisibleNtp != null) {
+            mVisibleNtp.setSearchBoxScrollListener(null);
+        }
+        mVisibleNtp = newVisibleNtp;
+        if (mVisibleNtp != null) {
+            mVisibleNtp.setSearchBoxScrollListener(new NewTabPage.OnSearchBoxScrollListener() {
+                @Override
+                public void onNtpScrollChanged(float scrollFraction) {
+                    // Fade the search box out in the first 40% of the scrolling transition.
+                    float alpha = Math.max(1f - scrollFraction * 2.5f, 0f);
+                    mVisibleNtp.setSearchBoxAlpha(alpha);
+                    mVisibleNtp.setSearchProviderLogoAlpha(alpha);
+                }
+            });
+        }
     }
 
     @Override
@@ -595,7 +608,7 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    public HomeButton getHomeButton() {
+    public HomeButton getHomeButtonForTesting() {
         return mHomeButton;
     }
 

@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 
 import java.util.List;
 
@@ -42,9 +43,11 @@ public interface FakeboxDelegate {
     boolean isUrlBarFocused();
 
     /**
-     * Get the {@link VoiceRecognitionHandler}.
-     * @return the {@link VoiceRecognitionHandler}
+     * @return whether the provided native page is the one currently displayed to the user.
      */
+    boolean isCurrentPage(NativePage nativePage);
+
+    /** Gets the {@link VoiceRecognitionHandler}. */
     @Nullable
     VoiceRecognitionHandler getVoiceRecognitionHandler();
 

@@ -38,8 +38,8 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarCommonPropertiesModel;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -61,7 +61,7 @@ public final class StatusMediatorUnitTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
-    NewTabPageDelegate mNewTabPageDelegate;
+    NewTabPage mNewTabPage;
     @Mock
     ToolbarCommonPropertiesModel mToolbarCommonPropertiesModel;
     @Mock
@@ -124,8 +124,7 @@ public final class StatusMediatorUnitTest {
     @UiThreadTest
     public void searchEngineLogo_showGoogleLogo_hideAfterAnimationFinished() {
         setupSearchEngineLogoForTesting(true, false, false);
-        doReturn(mNewTabPageDelegate).when(mToolbarCommonPropertiesModel).getNewTabPageDelegate();
-        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+        doReturn(mNewTabPage).when(mToolbarCommonPropertiesModel).getNewTabPageForCurrentTab();
         doReturn("chrome://newtab").when(mToolbarCommonPropertiesModel).getCurrentUrl();
 
         mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
@@ -172,8 +171,7 @@ public final class StatusMediatorUnitTest {
         setupSearchEngineLogoForTesting(true, false, false);
         doReturn(false).when(mToolbarCommonPropertiesModel).isLoading();
         doReturn(UrlConstants.NTP_URL).when(mToolbarCommonPropertiesModel).getCurrentUrl();
-        doReturn(mNewTabPageDelegate).when(mToolbarCommonPropertiesModel).getNewTabPageDelegate();
-        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+        doReturn(mNewTabPage).when(mToolbarCommonPropertiesModel).getNewTabPageForCurrentTab();
 
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);

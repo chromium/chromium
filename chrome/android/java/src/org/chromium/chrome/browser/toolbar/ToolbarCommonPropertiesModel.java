@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.toolbar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.ntp.NewTabPage;
+
 /**
  * Defines an interface that provides common properties to toolbar and omnibox classes.
  */
@@ -18,10 +20,9 @@ public interface ToolbarCommonPropertiesModel {
     String getCurrentUrl();
 
     /**
-     * @return a delegate providing the info for the NTP of the current tab.
+     * @return The NewTabPage shown for the current Tab or null if one is not being shown.
      */
-    @NonNull
-    NewTabPageDelegate getNewTabPageDelegate();
+    NewTabPage getNewTabPageForCurrentTab();
 
     /**
      * @return Whether the toolbar is currently being displayed for incognito.

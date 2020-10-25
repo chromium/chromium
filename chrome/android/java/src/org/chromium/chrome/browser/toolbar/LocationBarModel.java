@@ -20,6 +20,8 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
+import org.chromium.chrome.browser.native_page.NativePageFactory;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -29,7 +31,6 @@ import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -48,9 +49,8 @@ import java.net.URISyntaxException;
 /**
  * Provides a way of accessing toolbar data and state.
  */
-public class LocationBarModel implements ToolbarDataProvider {
+public class LocationBarModel implements ToolbarDataProvider, ToolbarCommonPropertiesModel {
     private final Context mContext;
-    private final NewTabPageDelegate mNtpDelegate;
 
     private Tab mTab;
     private int mPrimaryColor;
@@ -66,9 +66,8 @@ public class LocationBarModel implements ToolbarDataProvider {
      * Default constructor for this class.
      * @param context The Context used for styling the toolbar visuals.
      */
-    public LocationBarModel(Context context, NewTabPageDelegate newTabPageDelegate) {
+    public LocationBarModel(Context context) {
         mContext = context;
-        mNtpDelegate = newTabPageDelegate;
         mPrimaryColor = ChromeColors.getDefaultThemeColor(context.getResources(), false);
     }
 
@@ -139,8 +138,11 @@ public class LocationBarModel implements ToolbarDataProvider {
     }
 
     @Override
-    public NewTabPageDelegate getNewTabPageDelegate() {
-        return mNtpDelegate;
+    public NewTabPage getNewTabPageForCurrentTab() {
+        if (hasTab() && mTab.getNativePage() instanceof NewTabPage) {
+            return (NewTabPage) mTab.getNativePage();
+        }
+        return null;
     }
 
     @Override
@@ -148,7 +150,7 @@ public class LocationBarModel implements ToolbarDataProvider {
         if (!hasTab()) return UrlBarData.EMPTY;
 
         String url = getCurrentUrl();
-        if (NativePage.isNativePageUrl(url, isIncognito()) || UrlUtilities.isNTPUrl(url)) {
+        if (NativePageFactory.isNativePageUrl(url, isIncognito()) || UrlUtilities.isNTPUrl(url)) {
             return UrlBarData.EMPTY;
         }
 
@@ -419,7 +421,7 @@ public class LocationBarModel implements ToolbarDataProvider {
 
         boolean skipIconForNeutralState =
                 !SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
-                || mNtpDelegate.isCurrentlyVisible();
+                || getNewTabPageForCurrentTab() != null;
 
         return SecurityStatusIcon.getSecurityIconResource(securityLevel,
                 SecurityStateModel.shouldShowDangerTriangleForWarningLevel(), isSmallDevice,

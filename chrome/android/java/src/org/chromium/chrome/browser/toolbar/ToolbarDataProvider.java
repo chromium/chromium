@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,6 +48,12 @@ public interface ToolbarDataProvider extends ToolbarCommonPropertiesModel {
     @NonNull
     @Override
     String getCurrentUrl();
+
+    /**
+     * @return The NewTabPage shown for the current Tab or null if one is not being shown.
+     */
+    @Override
+    NewTabPage getNewTabPageForCurrentTab();
 
     /**
      * @return Whether the toolbar is currently being displayed for incognito.

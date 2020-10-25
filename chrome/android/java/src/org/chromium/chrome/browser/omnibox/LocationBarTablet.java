@@ -16,6 +16,7 @@ import android.view.View;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -149,7 +150,7 @@ class LocationBarTablet extends LocationBarLayout {
             mUrlFocusChangeAnimator = null;
         }
 
-        if (getToolbarDataProvider().getNewTabPageDelegate().isCurrentlyVisible()) {
+        if (getToolbarDataProvider().getNewTabPageForCurrentTab() == null) {
             finishUrlFocusChange(hasFocus);
             return;
         }
@@ -185,8 +186,9 @@ class LocationBarTablet extends LocationBarLayout {
     @Override
     public void setUrlFocusChangeFraction(float fraction) {
         super.setUrlFocusChangeFraction(fraction);
-        getToolbarDataProvider().getNewTabPageDelegate().setUrlFocusChangeAnimationPercent(
-                fraction);
+
+        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        if (ntp != null) ntp.setUrlFocusChangeAnimationPercent(fraction);
     }
 
     @Override

@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -62,7 +63,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
@@ -87,7 +87,8 @@ import java.util.List;
 /**
  * Phone specific toolbar implementation.
  */
-public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabCountObserver {
+public class ToolbarPhone extends ToolbarLayout
+        implements OnClickListener, NewTabPage.OnSearchBoxScrollListener, TabCountObserver {
     /** The amount of time transitioning from one theme color to another should take in ms. */
     public static final long THEME_COLOR_TRANSITION_DURATION = 250;
 
@@ -254,6 +255,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     protected @VisualState int mVisualState = VisualState.NORMAL;
 
+    private NewTabPage mVisibleNewTabPage;
     private float mPreTextureCaptureAlpha = 1f;
     private int mPreTextureCaptureVisibility;
     private boolean mIsOverlayTabStackDrawableLight;
@@ -499,7 +501,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // reached the top of the page yet.
         if (mNtpSearchBoxTranslation.y < 0
                 && mLocationBar.getPhoneCoordinator().getTranslationY() > 0) {
-            return getToolbarDataProvider().getNewTabPageDelegate().dispatchTouchEvent(ev);
+            NewTabPage newTabPage = getToolbarDataProvider().getNewTabPageForCurrentTab();
+
+            // No null check -- the toolbar should not be moved if we are not on an NTP.
+            return newTabPage.getView().dispatchTouchEvent(ev);
         }
 
         return super.onTouchEvent(ev);
@@ -778,7 +783,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         return super.verifyDrawable(who) || who == mActiveLocationBarBackground;
     }
 
-    private void onNtpScrollChanged(float scrollFraction) {
+    // NewTabPage.OnSearchBoxScrollListener
+    @Override
+    public void onNtpScrollChanged(float scrollFraction) {
         mNtpSearchBoxScrollFraction = scrollFraction;
         updateUrlExpansionFraction();
         updateUrlExpansionAnimation();
@@ -1000,8 +1007,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         Tab currentTab = getToolbarDataProvider().getTab();
         if (currentTab != null) {
-            getToolbarDataProvider().getNewTabPageDelegate().setUrlFocusChangeAnimationPercent(
-                    mUrlFocusChangeFraction);
+            NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+            if (ntp != null) {
+                ntp.setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
+            }
+
             if (isLocationBarShownInNTP()
                     && !getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
                 updateNtpTransitionAnimation();
@@ -1138,8 +1148,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mToolbarShadow.setAlpha(alpha);
         }
 
-        NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
-        ntpDelegate.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
+        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        ntp.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
         int locationBarTranslationY = Math.max(
                 0, (mNtpSearchBoxBounds.top - mLocationBar.getPhoneCoordinator().getTop()));
         mLocationBar.getPhoneCoordinator().setTranslationY(locationBarTranslationY);
@@ -1172,7 +1182,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mLocationBar.getPhoneCoordinator().setAlpha(relativeAlpha);
 
         // The search box on the NTP is visible if our omnibox is invisible, and vice-versa.
-        ntpDelegate.setSearchBoxAlpha(1f - relativeAlpha);
+        ntp.setSearchBoxAlpha(1f - relativeAlpha);
         if (!mForceDrawLocationBarBackground) {
             if (mActiveLocationBarBackground instanceof NtpSearchBoxDrawable) {
                 ((NtpSearchBoxDrawable) mActiveLocationBarBackground).resetBoundsToLastNonToolbar();
@@ -1634,7 +1644,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    public HomeButton getHomeButton() {
+    public HomeButton getHomeButtonForTesting() {
         return mHomeButton;
     }
 
@@ -2255,18 +2265,22 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private void updateNtpAnimationState() {
-        NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
-
         // Store previous NTP scroll before calling reset as that clears this value.
-        boolean wasShowingNtp = ntpDelegate.isCurrentlyVisible();
+        boolean wasShowingNtp = mVisibleNewTabPage != null;
         float previousNtpScrollFraction = mNtpSearchBoxScrollFraction;
 
         resetNtpAnimationValues();
-        ntpDelegate.setSearchBoxScrollListener(this::onNtpScrollChanged);
-        if (ntpDelegate.isLocationBarShown()) {
+        if (mVisibleNewTabPage != null) {
+            mVisibleNewTabPage.setSearchBoxScrollListener(null);
+            mVisibleNewTabPage = null;
+        }
+        mVisibleNewTabPage = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        if (mVisibleNewTabPage != null && mVisibleNewTabPage.isLocationBarShownInNTP()) {
+            mVisibleNewTabPage.setSearchBoxScrollListener(this);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 NtpSearchBoxDrawable ntpSearchBox = new NtpSearchBoxDrawable(getContext(), this);
-                ntpDelegate.setSearchBoxBackground(ntpSearchBox);
+                mVisibleNewTabPage.setSearchBoxBackground(ntpSearchBox);
                 mActiveLocationBarBackground = ntpSearchBox;
             }
 
@@ -2309,11 +2323,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private boolean isLocationBarShownInNTP() {
-        return getToolbarDataProvider().getNewTabPageDelegate().isLocationBarShown();
+        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        return ntp != null && ntp.isLocationBarShownInNTP();
     }
 
     private boolean isLocationBarCurrentlyShown() {
-        return !isLocationBarShownInNTP() || mUrlExpansionFraction > 0;
+        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        return ntp == null || !isLocationBarShownInNTP() || mUrlExpansionFraction > 0;
     }
 
     /**
@@ -2527,8 +2543,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             return;
         }
 
-        boolean transitioningAwayFromLocationBarInNTP =
-                getToolbarDataProvider().getNewTabPageDelegate().transitioningAwayFromLocationBar();
+        boolean transitioningAwayFromLocationBarInNTP = mVisibleNewTabPage != null
+                && mVisibleNewTabPage.isLocationBarShownInNTP() && !isLocationBarShownInNTP();
 
         if (mTabSwitcherState == STATIC_TAB && !mUrlFocusChangeInProgress && !urlHasFocus()
                 && !transitioningAwayFromLocationBarInNTP) {

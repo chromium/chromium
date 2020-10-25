@@ -30,16 +30,16 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
-import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.HomeButton;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider.ThemeColorObserver;
@@ -278,8 +278,8 @@ public abstract class ToolbarLayout
             }
 
             @Override
-            public NewTabPageDelegate getNewTabPageDelegate() {
-                return NewTabPageDelegate.EMPTY;
+            public NewTabPage getNewTabPageForCurrentTab() {
+                return null;
             }
 
             @Override
@@ -556,7 +556,14 @@ public abstract class ToolbarLayout
      * tabs but no normal tabs will still allow you to select the normal model), this should
      * not guarantee that the model's current tab is non-null.
      */
-    void onTabOrModelChanged() {}
+    void onTabOrModelChanged() {
+        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        if (ntp != null) {
+            getLocationBar().onTabLoadingNTP(ntp);
+        }
+
+        getLocationBar().updateMicButtonState();
+    }
 
     /**
      * For extending classes to override and carry out the changes related with the primary color
@@ -604,7 +611,10 @@ public abstract class ToolbarLayout
     /**
      * Triggered when the content view for the specified tab has changed.
      */
-    void onTabContentViewChanged() {}
+    void onTabContentViewChanged() {
+        NewTabPage ntp = getToolbarDataProvider().getNewTabPageForCurrentTab();
+        if (ntp != null) getLocationBar().onTabLoadingNTP(ntp);
+    }
 
     boolean isReadyForTextureCapture() {
         return true;
@@ -850,7 +860,8 @@ public abstract class ToolbarLayout
     /**
      * @return {@link HomeButton} this {@link ToolbarLayout} contains.
      */
-    public HomeButton getHomeButton() {
+    @VisibleForTesting
+    public HomeButton getHomeButtonForTesting() {
         return null;
     }
 }

@@ -1556,7 +1556,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/toolbar/LocationBarFocusScrimHandler.java",
   "java/src/org/chromium/chrome/browser/toolbar/LocationBarModel.java",
   "java/src/org/chromium/chrome/browser/toolbar/NewTabButton.java",
-  "java/src/org/chromium/chrome/browser/toolbar/NewTabPageDelegate.java",
   "java/src/org/chromium/chrome/browser/toolbar/ProgressAnimationSmooth.java",
   "java/src/org/chromium/chrome/browser/toolbar/SettableThemeColorProvider.java",
   "java/src/org/chromium/chrome/browser/toolbar/TabCountProvider.java",

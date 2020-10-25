@@ -200,13 +200,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         public boolean isCurrentPage() {
             if (mIsDestroyed) return false;
             if (mFakeboxDelegate == null) return false;
-            return getNewTabPageForCurrentTab() == NewTabPage.this;
-        }
-
-        private NewTabPage getNewTabPageForCurrentTab() {
-            Tab currentTab = mActivityTabProvider.get();
-            NativePage nativePage = currentTab != null ? currentTab.getNativePage() : null;
-            return (nativePage instanceof NewTabPage) ? (NewTabPage) nativePage : null;
+            return mFakeboxDelegate.isCurrentPage(NewTabPage.this);
         }
 
         @Override
