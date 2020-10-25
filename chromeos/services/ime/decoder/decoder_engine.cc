@@ -177,6 +177,14 @@ void DecoderEngine::OnSurroundingTextChanged(
                  base::DoNothing());
 }
 
+void DecoderEngine::OnCompositionCanceled() {
+  const uint64_t seq_id = current_seq_id_;
+  ++current_seq_id_;
+
+  ProcessMessage(WrapAndSerializeMessage(OnCompositionCanceledToProto(seq_id)),
+                 base::DoNothing());
+}
+
 void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,
                                    ProcessMessageCallback callback) {
   // TODO(https://crbug.com/837156): Set a default protobuf message.

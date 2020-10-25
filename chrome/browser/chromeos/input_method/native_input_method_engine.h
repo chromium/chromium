@@ -98,6 +98,7 @@ class NativeInputMethodEngine : public InputMethodEngine {
         const std::string& text,
         uint32_t offset,
         ime::mojom::SelectionRangePtr selection_range) override {}
+    void OnCompositionCanceled() override {}
     void ProcessKeypressForRulebased(
         ime::mojom::PhysicalKeyEventPtr event,
         ProcessKeypressForRulebasedCallback callback) override {}

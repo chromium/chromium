@@ -64,6 +64,7 @@ class StubInputChannel : public mojom::InputChannel {
       const std::string& text,
       uint32_t offset,
       ime::mojom::SelectionRangePtr selection_range) final {}
+  void OnCompositionCanceled() final {}
   void ResetForRulebased() final {}
   void GetRulebasedKeypressCountForTesting(
       GetRulebasedKeypressCountForTestingCallback callback) final {}
@@ -185,6 +186,23 @@ TEST_F(DecoderEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
   EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
 
   client->OnSurroundingTextChanged("hello", /*offset=*/1, selection->Clone());
+  client.FlushForTesting();
+}
+
+TEST_F(DecoderEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
+  DecoderEngine engine(/*platform=*/nullptr);
+  StubInputChannel stub_channel;
+  mojo::Receiver<mojom::InputChannel> receiver(&stub_channel);
+  mojo::Remote<mojom::InputChannel> client;
+  ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
+                                 receiver.BindNewPipeAndPassRemote(), {}));
+  ime::Wrapper expected_proto;
+  *expected_proto.mutable_public_message() =
+      OnCompositionCanceledToProto(/*seq_id=*/0);
+
+  EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
+
+  client->OnCompositionCanceled();
   client.FlushForTesting();
 }
 

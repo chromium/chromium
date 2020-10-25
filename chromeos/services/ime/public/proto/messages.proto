@@ -34,6 +34,7 @@ message PublicMessage {
     OnKeyEventReply on_key_event_reply = 4;
     OnSurroundingTextChanged on_surrounding_text_changed = 5;
     OnBlur on_blur = 6;
+    OnCompositionCanceled on_composition_canceled = 7;
   }
 }
 
@@ -99,3 +100,7 @@ message OnSurroundingTextChanged {
   optional uint32 offset = 2;
   optional SelectionRange selection_range = 3;
 }
+
+// Protobuf version of InputEngine::OnCompositionCanceled in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message OnCompositionCanceled {}

@@ -227,8 +227,12 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
 
 void NativeInputMethodEngine::ImeObserver::OnReset(
     const std::string& engine_id) {
-  if (ShouldUseRuleBasedMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
-    remote_to_engine_->ResetForRulebased();
+  if (remote_to_engine_.is_bound()) {
+    if (ShouldUseRuleBasedMojoEngine(engine_id)) {
+      remote_to_engine_->ResetForRulebased();
+    } else if (ShouldUseFstMojoEngine(engine_id)) {
+      remote_to_engine_->OnCompositionCanceled();
+    }
   }
   base_observer_->OnReset(engine_id);
 }

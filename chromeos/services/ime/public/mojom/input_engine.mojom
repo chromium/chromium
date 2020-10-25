@@ -143,6 +143,10 @@ interface InputChannel {
                            uint32 offset,
                            SelectionRange selection_range);
 
+  // Informs the IME that composition was canceled by the system. This can
+  // for example happen if the user presses the Escape key.
+  OnCompositionCanceled();
+
   // Process a PhysicalKeyEvent using the rule-based engine and return a
   // KeypressResponseForRulebased object with a list of operations to be handled
   // by the caller.

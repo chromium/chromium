@@ -31,6 +31,10 @@ ime::PublicMessage OnSurroundingTextChangedToProto(
     uint32_t focus,
     mojom::SelectionRangePtr selection_range);
 
+// Converts arguments of a Mojo call to InputChannel::OnCompositionCanceled into
+// a proto.
+ime::PublicMessage OnCompositionCanceledToProto(uint64_t seq_id);
+
 }  // namespace ime
 }  // namespace chromeos
 

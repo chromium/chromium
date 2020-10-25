@@ -52,6 +52,7 @@ class InputEngine : public mojom::InputChannel {
       const std::string& text,
       uint32_t offset,
       mojom::SelectionRangePtr selection_range) override;
+  void OnCompositionCanceled() override;
   void ProcessKeypressForRulebased(
       mojom::PhysicalKeyEventPtr event,
       ProcessKeypressForRulebasedCallback callback) override;

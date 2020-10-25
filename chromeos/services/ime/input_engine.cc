@@ -122,6 +122,10 @@ void InputEngine::OnSurroundingTextChanged(
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 
+void InputEngine::OnCompositionCanceled() {
+  NOTIMPLEMENTED();  // Not used in the rulebased engine.
+}
+
 void InputEngine::ProcessKeypressForRulebased(
     mojom::PhysicalKeyEventPtr event,
     ProcessKeypressForRulebasedCallback callback) {

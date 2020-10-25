@@ -40,6 +40,7 @@ class DecoderEngine : public InputEngine {
       const std::string& text,
       uint32_t offset,
       mojom::SelectionRangePtr selection_range) override;
+  void OnCompositionCanceled() override;
 
  private:
   // Try to load the decoding functions from some decoder shared library.
