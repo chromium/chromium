@@ -48,6 +48,7 @@ constexpr char kTiltRange[] = "com.google.control.tiltRange";
 constexpr char kZoom[] = "com.google.control.zoom";
 constexpr char kZoomRange[] = "com.google.control.zoomRange";
 constexpr int32_t kColorTemperatureStep = 100;
+constexpr int32_t kMicroToNano = 1000;
 
 using AwbModeTemperatureMap = std::map<uint8_t, int32_t>;
 
@@ -289,6 +290,7 @@ void CameraDeviceDelegate::AllocateAndStart(
   is_set_awb_mode_ = false;
   is_set_brightness_ = false;
   is_set_contrast_ = false;
+  is_set_exposure_time_ = false;
   is_set_pan_ = false;
   is_set_saturation_ = false;
   is_set_sharpness_ = false;
@@ -507,6 +509,18 @@ void CameraDeviceDelegate::SetPhotoOptions(
     camera_3a_controller_->SetAutoWhiteBalanceMode(
         cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_AUTO);
     is_set_awb_mode_ = false;
+  }
+
+  if (settings->has_exposure_mode &&
+      settings->exposure_mode == mojom::MeteringMode::MANUAL &&
+      settings->has_exposure_time) {
+    int64_t exposure_time_nanoseconds_ =
+        settings->exposure_time * 100 * kMicroToNano;
+    camera_3a_controller_->SetExposureTime(false, exposure_time_nanoseconds_);
+    is_set_exposure_time_ = true;
+  } else if (is_set_exposure_time_) {
+    camera_3a_controller_->SetExposureTime(true, 0);
+    is_set_exposure_time_ = false;
   }
 
   bool is_resolution_specified = settings->has_width && settings->has_height;
@@ -1242,13 +1256,25 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
         gfx::Rect(rect[0], rect[1], rect[2], rect[3]);
   }
 
+  result_metadata_.ae_mode.reset();
+  auto ae_mode = GetMetadataEntryAsSpan<uint8_t>(
+      result_metadata, cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AE_MODE);
+  if (ae_mode.size() == 1)
+    result_metadata_.ae_mode = ae_mode[0];
+
+  result_metadata_.exposure_time.reset();
+  auto exposure_time = GetMetadataEntryAsSpan<int64_t>(
+      result_metadata,
+      cros::mojom::CameraMetadataTag::ANDROID_SENSOR_EXPOSURE_TIME);
+  if (exposure_time.size() == 1)
+    result_metadata_.exposure_time = exposure_time[0];
+
   result_metadata_.awb_mode.reset();
   auto awb_mode = GetMetadataEntryAsSpan<uint8_t>(
       result_metadata,
       cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AWB_MODE);
-  if (awb_mode.size() == 1) {
+  if (awb_mode.size() == 1)
     result_metadata_.awb_mode = awb_mode[0];
-  }
 
   result_metadata_frame_number_ = frame_number;
   // We need to wait the new result metadata for new settings.
@@ -1380,6 +1406,45 @@ void CameraDeviceDelegate::DoGetPhotoState(
     photo_state->color_temperature->max = max;
     photo_state->color_temperature->step = kColorTemperatureStep;
     photo_state->color_temperature->current = current_temperature;
+  }
+
+  auto ae_available_modes = GetMetadataEntryAsSpan<uint8_t>(
+      static_metadata_,
+      cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AE_AVAILABLE_MODES);
+  bool support_manual_exposure_time = false;
+  if (ae_available_modes.size() > 1 && result_metadata_.ae_mode) {
+    support_manual_exposure_time = base::Contains(
+        ae_available_modes,
+        static_cast<uint8_t>(
+            cros::mojom::AndroidControlAeMode::ANDROID_CONTROL_AE_MODE_OFF));
+  }
+
+  auto exposure_time_range = GetMetadataEntryAsSpan<int64_t>(
+      static_metadata_,
+      cros::mojom::CameraMetadataTag::ANDROID_SENSOR_INFO_EXPOSURE_TIME_RANGE);
+
+  if (support_manual_exposure_time && exposure_time_range.size() == 2 &&
+      result_metadata_.exposure_time) {
+    photo_state->supported_exposure_modes.push_back(
+        mojom::MeteringMode::MANUAL);
+    photo_state->supported_exposure_modes.push_back(
+        mojom::MeteringMode::CONTINUOUS);
+    if (result_metadata_.ae_mode ==
+        static_cast<uint8_t>(
+            cros::mojom::AndroidControlAeMode::ANDROID_CONTROL_AE_MODE_OFF))
+      photo_state->current_exposure_mode = mojom::MeteringMode::MANUAL;
+    else
+      photo_state->current_exposure_mode = mojom::MeteringMode::CONTINUOUS;
+
+    // The unit of photo_state->exposure_time is 100 microseconds and from
+    // metadata is nanoseconds.
+    photo_state->exposure_time->min = std::ceil(
+        static_cast<float>(exposure_time_range[0]) / (100 * kMicroToNano));
+    photo_state->exposure_time->max =
+        exposure_time_range[1] / (100 * kMicroToNano);
+    photo_state->exposure_time->step = 1;  // 100 microseconds
+    photo_state->exposure_time->current =
+        result_metadata_.exposure_time.value() / (100 * kMicroToNano);
   }
 
   std::move(callback).Run(std::move(photo_state));
