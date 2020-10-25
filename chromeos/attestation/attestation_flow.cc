@@ -26,6 +26,22 @@ namespace attestation {
 
 namespace {
 
+base::Optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
+    AttestationCertificateProfile p) {
+  switch (p) {
+    case PROFILE_ENTERPRISE_MACHINE_CERTIFICATE:
+      return ::attestation::CertificateProfile::ENTERPRISE_MACHINE_CERTIFICATE;
+    case PROFILE_ENTERPRISE_USER_CERTIFICATE:
+      return ::attestation::CertificateProfile::ENTERPRISE_USER_CERTIFICATE;
+    case PROFILE_CONTENT_PROTECTION_CERTIFICATE:
+      return ::attestation::CertificateProfile::CONTENT_PROTECTION_CERTIFICATE;
+    case PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE:
+      return ::attestation::CertificateProfile::
+          ENTERPRISE_ENROLLMENT_CERTIFICATE;
+  }
+  return {};
+}
+
 // A reasonable timeout that gives enough time for attestation to be ready,
 // yet does not make the caller wait too long.
 constexpr uint16_t kReadyTimeoutInSeconds = 60;
@@ -67,14 +83,24 @@ AttestationKeyType AttestationFlow::GetKeyTypeForProfile(
 
 AttestationFlow::AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
                                  CryptohomeClient* cryptohome_client,
-                                 std::unique_ptr<ServerProxy> server_proxy)
+                                 std::unique_ptr<ServerProxy> server_proxy,
+                                 ::attestation::KeyType crypto_key_type)
     : async_caller_(async_caller),
       cryptohome_client_(cryptohome_client),
       attestation_client_(AttestationClient::Get()),
       server_proxy_(std::move(server_proxy)),
+      crypto_key_type_(crypto_key_type),
       ready_timeout_(base::TimeDelta::FromSeconds(kReadyTimeoutInSeconds)),
       retry_delay_(
           base::TimeDelta::FromMilliseconds(kRetryDelayInMilliseconds)) {}
+
+AttestationFlow::AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
+                                 CryptohomeClient* cryptohome_client,
+                                 std::unique_ptr<ServerProxy> server_proxy)
+    : AttestationFlow(async_caller,
+                      cryptohome_client,
+                      std::move(server_proxy),
+                      ::attestation::KEY_TYPE_RSA) {}
 
 AttestationFlow::~AttestationFlow() = default;
 
@@ -220,12 +246,25 @@ void AttestationFlow::StartCertificateRequest(
   AttestationKeyType key_type = GetKeyTypeForProfile(certificate_profile);
   if (generate_new_key) {
     // Get the attestation service to create a Privacy CA certificate request.
-    async_caller_->AsyncTpmAttestationCreateCertRequest(
-        server_proxy_->GetType(), certificate_profile,
-        cryptohome::Identification(account_id), request_origin,
-        base::BindOnce(&AttestationFlow::SendCertificateRequestToPCA,
-                       weak_factory_.GetWeakPtr(), key_type, account_id,
-                       key_name, std::move(callback)));
+    const base::Optional<::attestation::CertificateProfile>
+        attestation_profile =
+            ProfileToAttestationProtoEnum(certificate_profile);
+    if (!attestation_profile) {
+      LOG(DFATAL) << "Attestation: Unrecognized profile type: "
+                  << certificate_profile;
+      return;
+    }
+
+    ::attestation::CreateCertificateRequestRequest request;
+    request.set_username(cryptohome::Identification(account_id).id());
+    request.set_certificate_profile(*attestation_profile);
+    request.set_request_origin(request_origin);
+    request.set_key_type(crypto_key_type_);
+
+    attestation_client_->CreateCertificateRequest(
+        request, base::BindOnce(&AttestationFlow::SendCertificateRequestToPCA,
+                                weak_factory_.GetWeakPtr(), key_type,
+                                account_id, key_name, std::move(callback)));
     return;
   }
 
@@ -264,23 +303,25 @@ void AttestationFlow::OnKeyExistCheckComplete(
                           key_name, std::move(callback), true);
 }
 
-void AttestationFlow::SendCertificateRequestToPCA(AttestationKeyType key_type,
-                                                  const AccountId& account_id,
-                                                  const std::string& key_name,
-                                                  CertificateCallback callback,
-                                                  bool success,
-                                                  const std::string& data) {
-  if (!success) {
-    LOG(ERROR) << "Attestation: Failed to create certificate request.";
+void AttestationFlow::SendCertificateRequestToPCA(
+    AttestationKeyType key_type,
+    const AccountId& account_id,
+    const std::string& key_name,
+    CertificateCallback callback,
+    const ::attestation::CreateCertificateRequestReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    LOG(ERROR) << "Attestation: Failed to create certificate request. Status: "
+               << reply.status();
     std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
     return;
   }
 
   // Send the request to the Privacy CA.
   server_proxy_->SendCertificateRequest(
-      data, base::BindOnce(&AttestationFlow::SendCertificateResponseToDaemon,
-                           weak_factory_.GetWeakPtr(), key_type, account_id,
-                           key_name, std::move(callback)));
+      reply.pca_request(),
+      base::BindOnce(&AttestationFlow::SendCertificateResponseToDaemon,
+                     weak_factory_.GetWeakPtr(), key_type, account_id, key_name,
+                     std::move(callback)));
 }
 
 void AttestationFlow::SendCertificateResponseToDaemon(

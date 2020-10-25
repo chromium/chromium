@@ -49,6 +49,11 @@ FakeAttestationClient::FakeAttestationClient() = default;
 
 FakeAttestationClient::~FakeAttestationClient() = default;
 
+::attestation::CreateCertificateRequestReply*
+FakeAttestationClient::mutable_certificate_request_reply() {
+  return &certificate_request_reply_;
+}
+
 void FakeAttestationClient::GetKeyInfo(
     const ::attestation::GetKeyInfoRequest& request,
     GetKeyInfoCallback callback) {
@@ -153,7 +158,18 @@ void FakeAttestationClient::FinishEnroll(
 void FakeAttestationClient::CreateCertificateRequest(
     const ::attestation::CreateCertificateRequestRequest& request,
     CreateCertificateRequestCallback callback) {
-  NOTIMPLEMENTED();
+  for (const auto& req : allowlisted_create_requests_) {
+    if (req.username() == request.username() &&
+        req.request_origin() == request.request_origin() &&
+        req.certificate_profile() == request.certificate_profile() &&
+        req.key_type() == request.key_type()) {
+      PostProtoResponse(std::move(callback), certificate_request_reply_);
+      return;
+    }
+  }
+  ::attestation::CreateCertificateRequestReply failed_reply;
+  failed_reply.set_status(::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+  PostProtoResponse(std::move(callback), failed_reply);
 }
 
 void FakeAttestationClient::FinishCertificateRequest(
@@ -265,6 +281,19 @@ void FakeAttestationClient::AllowlistCertificateRequest(
   }
   allowlisted_requests_.push_back(request);
   certificate_indices_.push_back(kCertificateNotAssigned);
+}
+
+void FakeAttestationClient::AllowlistLegacyCreateCertificateRequest(
+    const std::string& username,
+    const std::string& request_origin,
+    ::attestation::CertificateProfile profile,
+    ::attestation::KeyType key_type) {
+  ::attestation::CreateCertificateRequestRequest request;
+  request.set_username(username);
+  request.set_request_origin(request_origin);
+  request.set_certificate_profile(profile);
+  request.set_key_type(key_type);
+  allowlisted_create_requests_.push_back(request);
 }
 
 AttestationClient::TestInterface* FakeAttestationClient::GetTestInterface() {

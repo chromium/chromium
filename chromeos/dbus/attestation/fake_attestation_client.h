@@ -99,6 +99,13 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       ::attestation::AttestationStatus status) override;
   void AllowlistCertificateRequest(
       const ::attestation::GetCertificateRequest& request) override;
+  void AllowlistLegacyCreateCertificateRequest(
+      const std::string& username,
+      const std::string& request_origin,
+      ::attestation::CertificateProfile profile,
+      ::attestation::KeyType key_type) override;
+  ::attestation::CreateCertificateRequestReply*
+  mutable_certificate_request_reply() override;
 
   AttestationClient::TestInterface* GetTestInterface() override;
 
@@ -110,8 +117,15 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
 
   bool is_enrolled_ = false;
 
+  ::attestation::CreateCertificateRequestReply certificate_request_reply_;
+
   // Maintains the allowlisted certificate requests.
   std::vector<::attestation::GetCertificateRequest> allowlisted_requests_;
+
+  // Maintains the allowlisted legacy create-certificate requests.
+  std::vector<::attestation::CreateCertificateRequestRequest>
+      allowlisted_create_requests_;
+
   // Maintains the numbers assigned to the allowlisted requests.
   std::vector<int> certificate_indices_;
   // The count of certificates that has been issued.

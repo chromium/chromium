@@ -92,10 +92,24 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
         ::attestation::AttestationStatus status) = 0;
 
     // Allowlists |request| so the certificate requests that comes in afterwards
-    // will get a fake certificate. if any alias of |request| has been
+    // will get a fake certificate. If any alias of |request| has been
     // allowlisted this functions performs no-ops.
     virtual void AllowlistCertificateRequest(
         const ::attestation::GetCertificateRequest& request) = 0;
+
+    // Allowlists the request that has |username|, |request_origin|, |profile|,
+    // and |key_type|, so the certificate requests that comes in afterwards will
+    // be successfully created.
+    virtual void AllowlistLegacyCreateCertificateRequest(
+        const std::string& username,
+        const std::string& request_origin,
+        ::attestation::CertificateProfile profile,
+        ::attestation::KeyType key_type) = 0;
+
+    // Gets the mutable |CreateCertificateRequestReply| that is returned when
+    // queried.
+    virtual ::attestation::CreateCertificateRequestReply*
+    mutable_certificate_request_reply() = 0;
   };
 
   // Not copyable or movable.

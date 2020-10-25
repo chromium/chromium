@@ -74,6 +74,11 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
                   CryptohomeClient* cryptohome_client,
                   std::unique_ptr<ServerProxy> server_proxy);
+  AttestationFlow(cryptohome::AsyncMethodCaller* async_caller,
+                  CryptohomeClient* cryptohome_client,
+                  std::unique_ptr<ServerProxy> server_proxy,
+                  ::attestation::KeyType crypto_key_type);
+
   virtual ~AttestationFlow();
 
   // Sets the timeout for attestation to be ready.
@@ -241,14 +246,13 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   //   account_id - Identifies the active user.
   //   key_name - The name of the key for which a certificate is requested.
   //   callback - Called when the operation completes.
-  //   success - The status of request creation.
-  //   data - The request data for the Privacy CA.
-  void SendCertificateRequestToPCA(AttestationKeyType key_type,
-                                   const AccountId& account_id,
-                                   const std::string& key_name,
-                                   CertificateCallback callback,
-                                   bool success,
-                                   const std::string& data);
+  //   reply - the result returned by |AttestationClient|.
+  void SendCertificateRequestToPCA(
+      AttestationKeyType key_type,
+      const AccountId& account_id,
+      const std::string& key_name,
+      CertificateCallback callback,
+      const ::attestation::CreateCertificateRequestReply& reply);
 
   // Called when the Privacy CA responds to a certificate request.  The response
   // is asynchronously forwarded as-is to the attestation daemon in order to
@@ -294,6 +298,9 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   CryptohomeClient* cryptohome_client_;
   AttestationClient* attestation_client_;
   std::unique_ptr<ServerProxy> server_proxy_;
+
+  // The key type that asks attestation service to create with.
+  const ::attestation::KeyType crypto_key_type_;
 
   base::TimeDelta ready_timeout_;
   base::TimeDelta retry_delay_;
