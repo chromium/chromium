@@ -19,6 +19,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
@@ -327,6 +328,13 @@ void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
   View::OnKeyEvent(event);
 }
 
+ax::mojom::Role SharesheetBubbleView::GetAccessibleWindowRole() {
+  // We override the role because the base class sets it to alert dialog.
+  // This would make screen readers repeatedly announce the whole of the
+  // |sharesheet_bubble_view| which is undesirable.
+  return ax::mojom::Role::kDialog;
+}
+
 std::unique_ptr<views::NonClientFrameView>
 SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
   auto bubble_border =
@@ -337,6 +345,10 @@ SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;
+}
+
+gfx::Size SharesheetBubbleView::CalculatePreferredSize() const {
+  return gfx::Size(width_, height_);
 }
 
 void SharesheetBubbleView::OnWidgetDestroyed(views::Widget* widget) {
@@ -350,10 +362,6 @@ void SharesheetBubbleView::OnWidgetDestroyed(views::Widget* widget) {
   if (close_callback_) {
     std::move(close_callback_).Run(sharesheet::SharesheetResult::kCancel);
   }
-}
-
-gfx::Size SharesheetBubbleView::CalculatePreferredSize() const {
-  return gfx::Size(width_, height_);
 }
 
 void SharesheetBubbleView::CreateBubble() {

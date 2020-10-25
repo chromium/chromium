@@ -46,14 +46,15 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void CloseBubble();
 
  private:
-  // ui::EventHandler overrides:
+  // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  // views::WidgetDelegate override
+  // views::WidgetDelegate:
+  ax::mojom::Role GetAccessibleWindowRole() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
-  // views::BubbleDialogDelegateView overrides
+  // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   void OnWidgetDestroyed(views::Widget* widget) override;
 
