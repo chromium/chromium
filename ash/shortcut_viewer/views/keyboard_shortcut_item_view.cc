@@ -14,6 +14,7 @@
 #include "ash/shortcut_viewer/views/bubble_view.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -100,18 +101,44 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
                                                        : accessible_name);
   }
 
+  int shortcut_message_id;
+  if (item.shortcut_message_id) {
+    shortcut_message_id = *item.shortcut_message_id;
+  } else {
+    // Automatically determine the shortcut message based on the number of
+    // shortcut_key_codes.
+    // As there are separators inserted between the modifiers, a shortcut with
+    // N modifiers has 2*N + 1 shortcut_key_codes.
+    switch (item.shortcut_key_codes.size()) {
+      case 1:
+        shortcut_message_id = IDS_KSV_SHORTCUT_ONE_KEY;
+        break;
+      case 3:
+        shortcut_message_id = IDS_KSV_SHORTCUT_ONE_MODIFIER_ONE_KEY;
+        break;
+      case 5:
+        shortcut_message_id = IDS_KSV_SHORTCUT_TWO_MODIFIERS_ONE_KEY;
+        break;
+      case 7:
+        shortcut_message_id = IDS_KSV_SHORTCUT_THREE_MODIFIERS_ONE_KEY;
+        break;
+      default:
+        NOTREACHED() << "Automatically determined shortcut has "
+                     << item.shortcut_key_codes.size() << " key codes.";
+    }
+  }
+
   base::string16 shortcut_string;
   base::string16 accessible_string;
   if (replacement_strings.empty()) {
-    shortcut_string = l10n_util::GetStringUTF16(has_invalid_dom_key
-                                                    ? IDS_KSV_KEY_NO_MAPPING
-                                                    : item.shortcut_message_id);
+    shortcut_string = l10n_util::GetStringUTF16(
+        has_invalid_dom_key ? IDS_KSV_KEY_NO_MAPPING : shortcut_message_id);
     accessible_string = shortcut_string;
   } else {
-    shortcut_string = l10n_util::GetStringFUTF16(item.shortcut_message_id,
+    shortcut_string = l10n_util::GetStringFUTF16(shortcut_message_id,
                                                  replacement_strings, &offsets);
     accessible_string = l10n_util::GetStringFUTF16(
-        item.shortcut_message_id, accessible_names, /*offsets=*/nullptr);
+        shortcut_message_id, accessible_names, /*offsets=*/nullptr);
   }
   shortcut_label_view_ = AddChildView(std::make_unique<views::StyledLabel>());
   shortcut_label_view_->SetText(shortcut_string);
