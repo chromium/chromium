@@ -142,7 +142,8 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(client);
 
-  if (PIXEL_FORMAT_I420 != config.input_format) {
+  if (config.input_format != PIXEL_FORMAT_I420 &&
+      config.input_format != PIXEL_FORMAT_NV12) {
     DLOG(ERROR) << "Input format not supported= "
                 << VideoPixelFormatToString(config.input_format);
     return false;
