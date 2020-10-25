@@ -51,6 +51,17 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                          QuadList::ConstIterator quad_list_begin,
                          QuadList::ConstIterator quad_list_end);
 
+  // Returns an estimate of this |quad|'s actual visible damage area. This
+  // visible damage is computed by combining from input
+  // |surface_damage_rect_list| with the occluding rects in the quad_list.
+  // This is an estimate since the occluded damage area is calculated on a per
+  // quad basis.
+  static int EstimateVisibleDamage(
+      const DrawQuad* quad,
+      SurfaceDamageRectList* surface_damage_rect_list,
+      QuadList::ConstIterator quad_list_begin,
+      QuadList::ConstIterator quad_list_end);
+
   // Returns true if any of the quads in the list given by |quad_list_begin|
   // and |quad_list_end| have a filter associated and occlude |candidate|.
   static bool IsOccludedByFilteredQuad(
@@ -108,7 +119,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // Stacking order of the overlay plane relative to the main surface,
   // which is 0. Signed to allow for "underlays".
-  int plane_z_order;
+  int plane_z_order = 0;
+
   // True if the overlay does not have any visible quads on top of it. Set by
   // the strategy so the OverlayProcessor can consider subtracting damage caused
   // by underlay quads.
@@ -120,6 +132,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // Gpu fence to wait for before overlay is ready for display.
   unsigned gpu_fence_id;
+
+  // The total area in square pixels of damage for this candidate's quad. This
+  // is an estimate when 'EstimateOccludedDamage' function is used.
+  int damage_area_estimate = 0;
+
+  // Cached result of call to 'RequiresOverlay' function.
+  bool requires_overlay = false;
 
  private:
   static bool FromDrawQuadResource(

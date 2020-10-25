@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -3276,6 +3277,122 @@ TEST_F(OverlayCandidateTest, IsOccludedScaled) {
   EXPECT_TRUE(OverlayCandidate::IsOccluded(
       CreateCandidate(2.f, 3.f, 15.f, 18.f), render_pass->quad_list.begin(),
       render_pass->quad_list.end()));
+}
+
+TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredBasic) {
+  // Add a small quad.
+  auto pass = CreateRenderPass();
+  const auto kSmallCandidateRect = gfx::Rect(0, 0, 16, 16);
+  auto* new_quad = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kSmallCandidateRect);
+  SurfaceDamageRectList surface_damage_rect_list;
+  SkMatrix44 default_color = GetIdentityColorMatrix();
+  OverlayCandidate candidate;
+  OverlayCandidate::FromDrawQuad(resource_provider_.get(),
+                                 &surface_damage_rect_list, default_color,
+                                 new_quad, &candidate);
+
+  // Verify that a default candidate is not a required overlay.
+  EXPECT_FALSE(candidate.requires_overlay);
+
+  ASSERT_EQ(gfx::ToRoundedRect(candidate.display_rect), kSmallCandidateRect);
+}
+
+TEST_F(UnderlayTest, EstimateOccludedDamage) {
+  // A visual depiction of how this test works.
+  //   * - Candidate
+  //   # - Occluder
+  //
+  //   The first candidate has no quad occlusions.
+  ///
+  //   ***********
+  //   *         *
+  //   *         *
+  //   *         *
+  //   ***********
+  //
+  //     The second candidate has only one quad occlusion.
+  //                      ######*****************
+  //                      #    #    *           *
+  //                      ######    *           *
+  //                      *         *           *
+  //                      **********######      *
+  //                      *         #    #      *
+  //                      *         ######      *
+  //                      *                     *
+  //                      *                     *
+  //                      ***********************
+  // Finally the third larger candidate is occluded by both quads.
+  // The |damage_area_estimate| reflects this damage occlusion when
+  // 'EstimateOccludedDamage' is called
+
+  auto pass = CreateRenderPass();
+  gfx::Transform identity;
+  identity.MakeIdentity();
+
+  // These quads will server to occlude some of our test overlay candidates.
+  const int kOccluderWidth = 10;
+  AddQuad(gfx::Rect(100, 100, kOccluderWidth, kOccluderWidth), identity,
+          pass.get());
+  AddQuad(gfx::Rect(150, 150, kOccluderWidth, kOccluderWidth), identity,
+          pass.get());
+
+  const int kCandidateSmallWidth = 50;
+  const int kCandidateLargeWidth = 100;
+  const gfx::Rect kCandidateRects[] = {
+      gfx::Rect(0, 0, kCandidateSmallWidth, kCandidateSmallWidth),
+      gfx::Rect(100, 100, kCandidateSmallWidth, kCandidateSmallWidth),
+      gfx::Rect(100, 100, kCandidateLargeWidth, kCandidateLargeWidth)};
+
+  const int kExpectedDamages[] = {kCandidateSmallWidth * kCandidateSmallWidth,
+                                  kCandidateSmallWidth * kCandidateSmallWidth -
+                                      kOccluderWidth * kOccluderWidth,
+                                  kCandidateLargeWidth * kCandidateLargeWidth -
+                                      kOccluderWidth * kOccluderWidth * 2};
+  QuadList& quad_list = pass->quad_list;
+  auto occluder_iter_count = quad_list.size();
+
+  for (size_t i = 0; i < base::size(kCandidateRects); ++i) {
+    SurfaceDamageRectList surface_damage_rect_list;
+    // Create fake surface damage for this candidate.
+    SharedQuadState* damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    damaged_shared_quad_state->overlay_damage_index = 0;
+    surface_damage_rect_list.emplace_back(kCandidateRects[i]);
+
+    auto* quad_candidate = CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), damaged_shared_quad_state, pass.get(),
+        kCandidateRects[i]);
+
+    SkMatrix44 default_color = GetIdentityColorMatrix();
+    OverlayCandidate candidate;
+    OverlayCandidate::FromDrawQuad(resource_provider_.get(),
+                                   &surface_damage_rect_list, default_color,
+                                   quad_candidate, &candidate);
+
+    // Before the 'EstimateOccludedDamage' function is called the damage area
+    // will just be whatever comes from the |surface_damage_rect_list|.
+    ASSERT_EQ(kCandidateRects[i].size().GetArea(),
+              candidate.damage_area_estimate);
+
+    // We have to find the occluder end of our list as it changes each
+    // iteration.
+    auto iter_occluder_end = quad_list.begin();
+    for (size_t j = 0; j < occluder_iter_count; j++) {
+      iter_occluder_end++;
+    }
+
+    // Now we test the opaque occlusion provided by 'EstimateOccludedDamage'
+    // function.
+    candidate.damage_area_estimate = OverlayCandidate::EstimateVisibleDamage(
+        quad_candidate, &surface_damage_rect_list, quad_list.begin(),
+        iter_occluder_end);
+    ASSERT_EQ(kExpectedDamages[i], candidate.damage_area_estimate);
+  }
 }
 
 }  // namespace

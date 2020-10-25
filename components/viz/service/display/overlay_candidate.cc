@@ -102,6 +102,22 @@ bool HasOccludingDamage(const SharedQuadState* shared_quad_state,
 
   return false;  // No occluding damges
 }
+
+gfx::Rect GetDamageRect(const SharedQuadState* shared_quad_state,
+                        SurfaceDamageRectList* surface_damage_rect_list) {
+  if (!shared_quad_state->overlay_damage_index.has_value())
+    return gfx::Rect();
+
+  size_t overlay_damage_index = shared_quad_state->overlay_damage_index.value();
+  // Invalid index.
+  if (overlay_damage_index >= surface_damage_rect_list->size()) {
+    DCHECK(false);
+    return gfx::Rect();
+  }
+
+  return (*surface_damage_rect_list)[overlay_damage_index];
+}
+
 }  // namespace
 
 OverlayCandidate::OverlayCandidate()
@@ -116,7 +132,6 @@ OverlayCandidate::OverlayCandidate()
       is_backed_by_surface_texture(false),
       is_promotable_hint(false),
 #endif
-      plane_z_order(0),
       is_unoccluded(false),
       overlay_handled(false),
       gpu_fence_id(0) {
@@ -198,12 +213,42 @@ bool OverlayCandidate::IsOccluded(const OverlayCandidate& candidate,
         overlap_iter->shared_quad_state->quad_to_target_transform,
         gfx::RectF(overlap_iter->rect)));
 
-    if (display_rect.Intersects(overlap_rect) &&
-        !OverlayCandidate::IsInvisibleQuad(*overlap_iter)) {
+    if (!OverlayCandidate::IsInvisibleQuad(*overlap_iter) &&
+        display_rect.Intersects(overlap_rect)) {
       return true;
     }
   }
   return false;
+}
+
+// static
+int OverlayCandidate::EstimateVisibleDamage(
+    const DrawQuad* quad,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    QuadList::ConstIterator quad_list_begin,
+    QuadList::ConstIterator quad_list_end) {
+  gfx::Rect quad_damage =
+      GetDamageRect(quad->shared_quad_state, surface_damage_rect_list);
+  int occluded_damage_estimate_total = 0;
+  for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
+       ++overlap_iter) {
+    gfx::Rect overlap_rect = gfx::ToRoundedRect(cc::MathUtil::MapClippedRect(
+        overlap_iter->shared_quad_state->quad_to_target_transform,
+        gfx::RectF(overlap_iter->rect)));
+
+    // Opaque quad that (partially) occludes this candidate.
+    if (!OverlayCandidate::IsInvisibleQuad(*overlap_iter) &&
+        !overlap_iter->ShouldDrawWithBlending()) {
+      overlap_rect.Intersect(quad_damage);
+      occluded_damage_estimate_total += overlap_rect.size().GetArea();
+    }
+  }
+  // In the case of overlapping UI the |occluded_damage_estimate_total| may
+  // exceed the |quad|'s damage rect that is in consideration. This is the
+  // reason why this computation is an estimate and why we have the max clamping
+  // below.
+  return std::max(
+      0, quad_damage.size().GetArea() - occluded_damage_estimate_total);
 }
 
 // static
@@ -277,11 +322,17 @@ bool OverlayCandidate::FromDrawQuadResource(
   candidate->is_opaque = !quad->ShouldDrawWithBlending();
   candidate->no_occluding_damage =
       !HasOccludingDamage(quad->shared_quad_state, surface_damage_rect_list);
-
+  // For underlays the function 'EstimateVisibleDamage()' is called to update
+  // |damage_area_estimate| to more accurately reflect the actual visible
+  // damage.
+  candidate->damage_area_estimate =
+      GetDamageRect(quad->shared_quad_state, surface_damage_rect_list)
+          .size()
+          .GetArea();
   candidate->resource_id = resource_id;
   candidate->transform = overlay_transform;
   candidate->mailbox = resource_provider->GetMailbox(resource_id);
-
+  candidate->requires_overlay = OverlayCandidate::RequiresOverlay(quad);
   return true;
 }
 
@@ -304,7 +355,14 @@ bool OverlayCandidate::FromVideoHoleQuad(
   candidate->transform = overlay_transform;
   candidate->no_occluding_damage =
       !HasOccludingDamage(quad->shared_quad_state, surface_damage_rect_list);
-
+  // For underlays the function 'EstimateVisibleDamage()' is called to update
+  // |damage_area_estimate| to more accurately reflect the actual visible
+  // damage.
+  candidate->damage_area_estimate =
+      GetDamageRect(quad->shared_quad_state, surface_damage_rect_list)
+          .size()
+          .GetArea();
+  candidate->requires_overlay = OverlayCandidate::RequiresOverlay(quad);
   return true;
 }
 
