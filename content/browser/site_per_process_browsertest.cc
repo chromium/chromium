@@ -11119,8 +11119,9 @@ class TouchEventObserver : public RenderWidgetHost::InputEventObserver {
 //
 // This test is disabled due to flakiness on all platforms, but especially on
 // Android.  See https://crbug.com/945025.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       DISABLED_TouchEventAckQueueOrdering) {
+// Note: temporarily re-enabled to collect data on the try-bots ... it will be
+// disabled again once we have some data.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TouchEventAckQueueOrdering) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
