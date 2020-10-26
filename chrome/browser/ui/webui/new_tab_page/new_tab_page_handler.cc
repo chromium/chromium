@@ -34,6 +34,7 @@
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -1176,6 +1177,8 @@ void NewTabPageHandler::NtpThemeChanged(const NtpTheme& ntp_theme) {
 
 void NewTabPageHandler::MostVisitedInfoChanged(
     const InstantMostVisitedInfo& info) {
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
   std::vector<new_tab_page::mojom::MostVisitedTilePtr> list;
   auto result = new_tab_page::mojom::MostVisitedInfo::New();
   for (auto& tile : info.items) {
@@ -1193,7 +1196,10 @@ void NewTabPageHandler::MostVisitedInfoChanged(
     value->title_source = static_cast<int32_t>(tile.title_source);
     value->data_generation_time = tile.data_generation_time;
     value->is_query_tile =
-        tile.source == ntp_tiles::TileSource::REPEATABLE_QUERIES_SERVICE;
+        base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries) &&
+        template_url_service &&
+        template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+            tile.url);
     list.push_back(std::move(value));
   }
   result->custom_links_enabled = !info.use_most_visited;

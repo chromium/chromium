@@ -574,8 +574,7 @@ class MostVisitedElement extends PolymerElement {
     const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
     if (modifier && e.key === 'z') {
       e.preventDefault();
-      this.pageHandler_.undoMostVisitedTileAction();
-      this.$.toast.hide();
+      this.onUndoClick_();
     }
   }
 
@@ -627,6 +626,9 @@ class MostVisitedElement extends PolymerElement {
 
   /** @private */
   onRestoreDefaultsClick_() {
+    if (!this.$.toast.open || !this.showToastButtons_) {
+      return;
+    }
     this.$.toast.hide();
     this.pageHandler_.restoreMostVisitedDefaults();
   }
@@ -734,6 +736,9 @@ class MostVisitedElement extends PolymerElement {
 
   /** @private */
   onUndoClick_() {
+    if (!this.$.toast.open || !this.showToastButtons_) {
+      return;
+    }
     this.$.toast.hide();
     this.pageHandler_.undoMostVisitedTileAction();
   }
@@ -803,9 +808,13 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   async tileRemove_(index) {
-    const {title, url} = this.tiles_[index];
+    const {url, isQueryTile} = this.tiles_[index];
     this.pageHandler_.deleteMostVisitedTile(url);
-    this.toast_('linkRemovedMsg', /* showButtons= */ true);
+    // Do not show the toast buttons when a query tile is removed unless it is a
+    // custom link. Removal is not reversible for non custom link query tiles.
+    this.toast_(
+        'linkRemovedMsg',
+        /* showButtons= */ this.customLinksEnabled_ || !isQueryTile);
     this.tileFocus_(index);
   }
 
