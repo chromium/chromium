@@ -22666,7 +22666,7 @@
     {
       'name': 'SystemProxySettings',
       'owners': ['acostinas@google.com', 'pmarko@chromium.org'],
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:87-'],
       'device_only': True,
       'id': 672,
       'type': 'dict',
