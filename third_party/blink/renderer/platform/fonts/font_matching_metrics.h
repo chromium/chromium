@@ -200,6 +200,13 @@ class PLATFORM_EXPORT FontMatchingMetrics {
                              SimpleFontData* font_data,
                              TokenToTokenHashMap hash_map);
 
+  // Reports a local font's existence was looked up by a name, but its actual
+  // font data may or may not have been loaded. This only includes lookups where
+  // the name is allowed to match PostScript names and full font names, but not
+  // family names.
+  void ReportLocalFontExistenceByUniqueNameOnly(const AtomicString& font_name,
+                                                bool font_exists);
+
   // Constructs a builder with a hash of the FontSelectionRequest already added.
   IdentifiableTokenBuilder GetTokenBuilderWithFontSelectionRequest(
       const FontDescription& font_description);
@@ -243,6 +250,7 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   TokenToTokenHashMap font_lookups_as_last_resort_;
   TokenToTokenHashMap generic_font_lookups_;
   TokenToTokenHashMap font_load_postscript_name_;
+  TokenToTokenHashMap local_font_existence_by_unique_name_only_;
 
   ukm::UkmRecorder* const ukm_recorder_;
   const ukm::SourceId source_id_;
