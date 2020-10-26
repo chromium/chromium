@@ -80,7 +80,7 @@ public class Profile {
         mName = name;
         mImpl = impl;
         mCookieManager = CookieManager.create(impl);
-        if (WebLayer.getSupportedMajorVersionInternal() >= 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() >= 87) {
             mPrerenderController = PrerenderController.create(impl);
         } else {
             mPrerenderController = null;
@@ -208,11 +208,11 @@ public class Profile {
     /**
      * Gets the prerender controller for this profile.
      *
-     * @since 88
+     * @since 87
      */
     @NonNull
     public PrerenderController getPrerenderController() {
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
             throw new UnsupportedOperationException();
         }
 

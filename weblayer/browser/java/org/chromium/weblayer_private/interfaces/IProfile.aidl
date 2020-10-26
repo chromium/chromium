@@ -45,7 +45,5 @@ interface IProfile {
 
   // Added in Version 87.
   void setUserIdentityCallbackClient(IUserIdentityCallbackClient client) = 13;
-
-  // Added in Version 88.
   IPrerenderController getPrerenderController() = 15;
 }
