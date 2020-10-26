@@ -376,7 +376,7 @@ void ChromeAppSorting::SetAppLaunchOrdinal(
   if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id)) {
     web_app_sync_bridge_->SetUserLaunchOrdinal(extension_id,
                                                new_app_launch_ordinal);
-    // Fall through on purpose to ensure Extensions system has correct data.
+    return;
   }
 
   std::unique_ptr<base::Value> new_value =
@@ -462,7 +462,7 @@ void ChromeAppSorting::SetPageOrdinal(
 
   if (web_app_registrar_ && web_app_registrar_->IsInstalled(extension_id)) {
     web_app_sync_bridge_->SetUserPageOrdinal(extension_id, new_page_ordinal);
-    // Fall through on purpose to ensure Extensions system has correct data.
+    return;
   }
 
   std::unique_ptr<base::Value> new_value =
