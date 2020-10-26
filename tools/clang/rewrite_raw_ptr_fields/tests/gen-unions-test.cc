@@ -41,4 +41,13 @@ union MyUnion3 {
   SomeClass* some_class_ptr2;
 };
 
+struct MyNestedStruct {
+  SomeClass* ptr_field;
+};
+
+union MyUnion4 {
+  MyNestedStruct nested_struct;
+  uintptr_t uintptr;
+};
+
 }  // namespace my_namespace

@@ -1143,9 +1143,13 @@ int main(int argc, const char* argv[]) {
       field_pointing_to_record_with_deleted_operator_new_matcher,
       &field_pointing_to_record_with_deleted_operator_new_writer);
 
-  // Matches fields in unions - see the testcases in tests/gen-unions-test.cc.
-  auto union_field_decl_matcher = fieldDecl(
-      allOf(field_decl_matcher, hasParent(decl(recordDecl(isUnion())))));
+  // Matches fields in unions (both directly rewritable fields as well as union
+  // fields that embed a struct that contains a rewritable field).  See also the
+  // testcases in tests/gen-unions-test.cc.
+  auto union_field_decl_matcher = recordDecl(allOf(
+      isUnion(), forEach(fieldDecl(anyOf(field_decl_matcher,
+                                         hasType(typeWithEmbeddedFieldDecl(
+                                             field_decl_matcher)))))));
   FilteredExprWriter union_field_decl_writer(&output_helper, "union");
   match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
 
