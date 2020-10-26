@@ -38,21 +38,25 @@ readonly KS_ARCHIVE="${KS_REG_FRAMEWORK}/Resources/Keystone.tbz"
 "${KS_INSTALL}" "--install=${KS_ARCHIVE}"
 
 
-# 2. Create the brand file.
+# 2. Create the brand file, if specified.
 
-echo "Creating the brand file."
-
-readonly BRAND_PLIST="/Library/Google/${APP_PRODUCT} Brand.plist"
-readonly KS_BRAND_KEY="KSBrandID"
-
-# Failure to write a brand file is less important than getting automatic updates
-# configured.
 brand_file_written="false"
-defaults write "${BRAND_PLIST}" "${KS_BRAND_KEY}" \
-               -string "${BRAND_CODE}" \
-  && chmod 644 "${BRAND_PLIST}" \
-  && brand_file_written="true"
 
+if [[ -n "${BRAND_CODE}" ]]; then
+  echo "Creating the brand file."
+
+  readonly BRAND_PLIST="/Library/Google/${APP_PRODUCT} Brand.plist"
+  readonly KS_BRAND_KEY="KSBrandID"
+
+  # Failure to write a brand file is less important than getting automatic
+  # updates configured.
+  defaults write "${BRAND_PLIST}" "${KS_BRAND_KEY}" \
+                 -string "${BRAND_CODE}" \
+    && chmod 644 "${BRAND_PLIST}" \
+    && brand_file_written="true"
+else
+  echo "Skipping the brand file."
+fi
 
 # 3. Register Chrome with Keystone.
 
