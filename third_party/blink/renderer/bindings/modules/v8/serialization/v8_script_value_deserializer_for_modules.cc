@@ -383,11 +383,6 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
 
 RTCEncodedAudioFrame*
 V8ScriptValueDeserializerForModules::ReadRTCEncodedAudioFrame() {
-  if (!RuntimeEnabledFeatures::RTCInsertableStreamsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
-    return nullptr;
-  }
-
   uint32_t index;
   if (!ReadUint32(&index))
     return nullptr;
@@ -407,11 +402,6 @@ V8ScriptValueDeserializerForModules::ReadRTCEncodedAudioFrame() {
 
 RTCEncodedVideoFrame*
 V8ScriptValueDeserializerForModules::ReadRTCEncodedVideoFrame() {
-  if (!RuntimeEnabledFeatures::RTCInsertableStreamsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
-    return nullptr;
-  }
-
   uint32_t index;
   if (!ReadUint32(&index))
     return nullptr;
