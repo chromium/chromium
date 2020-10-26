@@ -198,22 +198,22 @@ public class PasswordCheckEditViewTest {
         assertNotNull(unmaskButton);
         assertNotNull(maskButton);
 
-        // Unmasked by default since the user just reauthenticated.
-        assertThat(maskButton.getVisibility(), is(View.VISIBLE));
-        assertThat(unmaskButton.getVisibility(), is(View.GONE));
-        assertThat(password, isVisiblePasswordInput(true));
-
-        // Clicking the mask button obfuscates the password.
-        runOnUiThreadBlocking(maskButton::callOnClick);
+        // Masked by default
         assertThat(maskButton.getVisibility(), is(View.GONE));
         assertThat(unmaskButton.getVisibility(), is(View.VISIBLE));
         assertThat(password, isVisiblePasswordInput(false));
 
-        // Clicking the unmask button shows the password again.
+        // Clicking the unmask button shows the password.
         runOnUiThreadBlocking(unmaskButton::callOnClick);
         assertThat(maskButton.getVisibility(), is(View.VISIBLE));
         assertThat(unmaskButton.getVisibility(), is(View.GONE));
         assertThat(password, isVisiblePasswordInput(true));
+
+        // Clicking the mask button hides the password again.
+        runOnUiThreadBlocking(maskButton::callOnClick);
+        assertThat(maskButton.getVisibility(), is(View.GONE));
+        assertThat(unmaskButton.getVisibility(), is(View.VISIBLE));
+        assertThat(password, isVisiblePasswordInput(false));
     }
 
     private void setUpUiLaunchedFromSettings() {
