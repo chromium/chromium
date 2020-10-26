@@ -9085,6 +9085,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="8" label="BEHIND_CAPTIVE_PORTAL_HTTPS_LANDING_URL_IP_ADDRESS"/>
 </enum>
 
+<enum name="CaptivePortalNetworkState">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="ONLINE"/>
+  <int value="2" label="PORTAL_SUSPECTED"/>
+  <int value="3" label="PORTAL"/>
+  <int value="4" label="PROXY_AUTH_REQUIRED"/>
+  <int value="5" label="NO_INTERNET"/>
+</enum>
+
 <enum name="CaptivePortalNotificationStatus">
   <int value="0" label="DISPLAYED"/>
   <int value="1" label="ERROR"/>

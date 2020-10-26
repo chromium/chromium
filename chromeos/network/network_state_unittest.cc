@@ -166,39 +166,30 @@ TEST_F(NetworkStateTest, CaptivePortalState) {
       base::HexEncode(network_name.c_str(), network_name.length());
   EXPECT_TRUE(SetStringProperty(shill::kWifiHexSsid, hex_ssid));
 
-  // State != portal -> is_captive_portal == false
+  // State != portal -> portal_state() == kOnline
   EXPECT_TRUE(SetStringProperty(shill::kStateProperty, shill::kStateReady));
   SignalInitialPropertiesReceived();
-  EXPECT_FALSE(network_state_.is_captive_portal());
+  EXPECT_EQ(network_state_.portal_state(), NetworkState::PortalState::kOnline);
 
-  // State == portal, kPortalDetection* not set -> is_captive_portal = true
+  // State == redirect-found -> portal_state() == kPortal
+  EXPECT_TRUE(
+      SetStringProperty(shill::kStateProperty, shill::kStateRedirectFound));
+  SignalInitialPropertiesReceived();
+  EXPECT_EQ(network_state_.portal_state(), NetworkState::PortalState::kPortal);
+
+  // State == portal-suspected -> portal_state() == kPortalSuspected
+  EXPECT_TRUE(
+      SetStringProperty(shill::kStateProperty, shill::kStatePortalSuspected));
+  SignalInitialPropertiesReceived();
+  EXPECT_EQ(network_state_.portal_state(),
+            NetworkState::PortalState::kPortalSuspected);
+
+  // State == no-connectivity -> portal_state() == kOffline
   EXPECT_TRUE(
       SetStringProperty(shill::kStateProperty, shill::kStateNoConnectivity));
   SignalInitialPropertiesReceived();
-  EXPECT_TRUE(network_state_.is_captive_portal());
-
-  // Set kPortalDetectionFailed* properties to states that should not trigger
-  // is_captive_portal.
-  SetStringProperty(shill::kPortalDetectionFailedPhaseProperty,
-                    shill::kPortalDetectionPhaseUnknown);
-  SetStringProperty(shill::kPortalDetectionFailedStatusProperty,
-                    shill::kPortalDetectionStatusTimeout);
-  SignalInitialPropertiesReceived();
-  EXPECT_FALSE(network_state_.is_captive_portal());
-
-  // Set just the phase property to the expected captive portal state.
-  // is_captive_portal should still be false.
-  SetStringProperty(shill::kPortalDetectionFailedPhaseProperty,
-                    shill::kPortalDetectionPhaseContent);
-  SignalInitialPropertiesReceived();
-  EXPECT_FALSE(network_state_.is_captive_portal());
-
-  // Set the status property to the expected captive portal state property.
-  // is_captive_portal should now be true.
-  SetStringProperty(shill::kPortalDetectionFailedStatusProperty,
-                    shill::kPortalDetectionStatusFailure);
-  SignalInitialPropertiesReceived();
-  EXPECT_TRUE(network_state_.is_captive_portal());
+  EXPECT_EQ(network_state_.portal_state(),
+            NetworkState::PortalState::kNoInternet);
 }
 
 // Third-party VPN provider.

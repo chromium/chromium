@@ -358,7 +358,7 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   // if the default network is in portal state.
   if (result != captive_portal::RESULT_NO_RESPONSE &&
       DBusThreadManager::Get()->GetShillProfileClient()->GetTestInterface() &&
-      network && network->is_captive_portal()) {
+      network && network->IsShillCaptivePortal()) {
     result = captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL;
     response_code = 200;
   }
@@ -374,7 +374,7 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
     case captive_portal::RESULT_NO_RESPONSE:
       if (state.response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
         state.status = CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED;
-      } else if (network && network->is_captive_portal()) {
+      } else if (network && network->IsShillCaptivePortal()) {
         // Take into account shill's detection results.
         state.status = CAPTIVE_PORTAL_STATUS_PORTAL;
         no_response_since_portal = true;

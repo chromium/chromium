@@ -47,6 +47,23 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
     std::string type;
   };
 
+  enum class PortalState {
+    // The network is not connected or the portal state is not available.
+    kUnknown,
+    // The network is connected and no portal is detected.
+    kOnline,
+    // A portal is suspected but no redirect was provided.
+    kPortalSuspected,
+    // The network is in a portal state with a redirect URL.
+    kPortal,
+    // A proxy requiring authentication is detected.
+    kProxyAuthRequired,
+    // The network is connected but no internet is available and no proxy was
+    // detected.
+    kNoInternet,
+    kMaxValue = kNoInternet  // For UMA_HISTOGRAM_ENUMERATION
+  };
+
   // ManagedState overrides
   // If you change this method, update GetProperties too.
   bool PropertyChanged(const std::string& key,
@@ -102,7 +119,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Wireless property accessors
   bool connectable() const { return connectable_; }
   void set_connectable(bool connectable) { connectable_ = connectable; }
-  bool is_captive_portal() const { return is_captive_portal_; }
   int signal_strength() const { return signal_strength_; }
   void set_signal_strength(int signal_strength) {
     signal_strength_ = signal_strength;
@@ -151,6 +167,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   bool connect_requested() const { return connect_requested_; }
 
+  PortalState portal_state() const { return portal_state_; }
+
   // Returns true if the network is managed by policy (determined by
   // |onc_source_|).
   bool IsManagedByPolicy() const;
@@ -184,11 +202,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // NetworkStateHandler::EnsureCellularNetwork()).
   bool IsDefaultCellular() const;
 
+  // Returns true if Shill has detected a captive portal state.
+  bool IsShillCaptivePortal() const;
+
   // Returns true if Shill or Chrome have detected a captive portal state.
-  // The Chrome network portal detection is different from Shill's so the
-  // results may differ; this method tests both and should be preferred in UI.
-  // (NetworkState is already conservative in interpreting Shill's captive
-  // portal state, see IsCaptivePortalState in the .cc file).
   bool IsCaptivePortal() const;
 
   // Returns true if the security type is non-empty and not 'none'.
@@ -244,7 +261,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   static bool StateIsConnected(const std::string& connection_state);
   static bool StateIsConnecting(const std::string& connection_state);
   static bool StateIsPortalled(const std::string& connection_state);
-  static bool NetworkStateIsCaptivePortal(const base::Value& shill_properties);
   static bool ErrorIsValid(const std::string& error);
   static std::unique_ptr<NetworkState> CreateDefaultCellular(
       const std::string& device_path);
@@ -260,6 +276,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // be of type DICTIONARY, if the key exists, and validates |name_|. Returns
   // true if |name_| changes.
   bool UpdateName(const base::Value& properties);
+
+  void UpdateCaptivePortalState(const base::Value& properties);
 
   void SetVpnProvider(const std::string& id, const std::string& type);
 
@@ -294,7 +312,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Wireless properties, used for icons and Connect logic.
   bool connectable_ = false;
-  bool is_captive_portal_ = false;
   int signal_strength_ = 0;
   std::string bssid_;
   int frequency_ = 0;
@@ -319,6 +336,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Tether properties.
   std::string tether_carrier_;
   int battery_percentage_ = 0;
+
+  // Portal state is derived from connection_state_ and Shill portal properties.
+  PortalState portal_state_ = PortalState::kUnknown;
+  int portal_status_code_ = 0;
 
   // Whether the current device has already connected to the tether host device
   // providing the hotspot corresponding to this NetworkState.

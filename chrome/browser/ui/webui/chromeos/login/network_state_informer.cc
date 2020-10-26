@@ -59,16 +59,14 @@ NetworkStateInformer::State GetStateForDefaultNetwork() {
             ->HasDefaultNetworkProxyConfigured()) {
       return NetworkStateInformer::PROXY_AUTH_REQUIRED;
     }
-    if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL ||
-        (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN &&
-         network->is_captive_portal()))
+    if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL)
       return NetworkStateInformer::CAPTIVE_PORTAL;
   } else {
     if (NetworkState::StateIsConnecting(network->connection_state()))
       return NetworkStateInformer::CONNECTING;
     if (network->connection_state() == shill::kStateOnline)
       return NetworkStateInformer::ONLINE;
-    if (network->is_captive_portal())
+    if (network->IsCaptivePortal())
       return NetworkStateInformer::CAPTIVE_PORTAL;
   }
 

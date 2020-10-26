@@ -9,6 +9,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -21,6 +23,7 @@
 #include "chromeos/network/shill_property_util.h"
 #include "chromeos/network/tether_constants.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "net/http/http_status_code.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace {
@@ -30,51 +33,15 @@ const char kDefaultCellularNetworkPath[] = "/cellular";
 // TODO(tbarzic): Add payment portal method values to shill/dbus-constants.
 constexpr char kPaymentPortalMethodPost[] = "POST";
 
+// TODO(b/169939319): Use shill constant once it lands.
+const char kPortalDetectionFailedStatusCodeProperty[] =
+    "PortalDetectionFailedStatusCode";
+
 // |dict| may be an empty value, in which case return an empty string.
 std::string GetStringFromDictionary(const base::Value& dict, const char* key) {
   const std::string* stringp =
       dict.is_none() ? nullptr : dict.FindStringKey(key);
   return stringp ? *stringp : std::string();
-}
-
-bool IsCaptivePortalState(const base::Value& properties,
-                          const std::string& log_id) {
-  std::string state =
-      GetStringFromDictionary(properties, shill::kStateProperty);
-  if (!chromeos::NetworkState::StateIsPortalled(state))
-    return false;
-  if (!properties.FindKey(shill::kPortalDetectionFailedPhaseProperty) ||
-      !properties.FindKey(shill::kPortalDetectionFailedStatusProperty)) {
-    // If Shill (or a stub) has not set PortalDetectionFailedStatus
-    // or PortalDetectionFailedPhase, assume we are in captive portal state.
-    return true;
-  }
-
-  std::string portal_detection_phase = GetStringFromDictionary(
-      properties, shill::kPortalDetectionFailedPhaseProperty);
-  std::string portal_detection_status = GetStringFromDictionary(
-      properties, shill::kPortalDetectionFailedStatusProperty);
-
-  // Shill reports the phase in which it determined that the device is behind a
-  // captive portal. We only want to rely only on incorrect content being
-  // returned and ignore other reasons.
-  bool is_captive_portal =
-      portal_detection_phase == shill::kPortalDetectionPhaseContent &&
-      (portal_detection_status == shill::kPortalDetectionStatusSuccess ||
-       portal_detection_status == shill::kPortalDetectionStatusFailure ||
-       portal_detection_status == shill::kPortalDetectionStatusRedirect);
-
-  if (!log_id.empty()) {
-    if (!is_captive_portal) {
-      NET_LOG(EVENT) << "State is 'portal' but not in captive portal state:"
-                     << log_id << ", phase=" << portal_detection_phase
-                     << ", status=" << portal_detection_status;
-    } else {
-      NET_LOG(EVENT) << "Network is in captive portal state: " << log_id;
-    }
-  }
-
-  return is_captive_portal;
 }
 
 }  // namespace
@@ -247,9 +214,9 @@ bool NetworkState::InitialPropertiesReceived(const base::Value& properties) {
     signal_strength_ = 1;
   }
 
-  // Any change to connection state will trigger a complete property update,
-  // so we update is_captive_portal_ here.
-  is_captive_portal_ = IsCaptivePortalState(properties, NetworkId(this));
+  // Any change to connection state or portal properties will trigger a complete
+  // property update, so we update captive portal state here.
+  UpdateCaptivePortalState(properties);
 
   // Ensure that the network has a valid name.
   return UpdateName(properties);
@@ -493,8 +460,23 @@ bool NetworkState::IsDefaultCellular() const {
          path() == kDefaultCellularNetworkPath;
 }
 
+bool NetworkState::IsShillCaptivePortal() const {
+  switch (portal_state_) {
+    case PortalState::kUnknown:
+    case PortalState::kOnline:
+      return false;
+    case PortalState::kPortalSuspected:
+    case PortalState::kPortal:
+    case PortalState::kProxyAuthRequired:
+    case PortalState::kNoInternet:
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
 bool NetworkState::IsCaptivePortal() const {
-  return is_captive_portal_ || is_chrome_captive_portal_;
+  return is_chrome_captive_portal_ || IsShillCaptivePortal();
 }
 
 bool NetworkState::IsSecure() const {
@@ -621,12 +603,6 @@ bool NetworkState::StateIsPortalled(const std::string& connection_state) {
 }
 
 // static
-bool NetworkState::NetworkStateIsCaptivePortal(
-    const base::Value& shill_properties) {
-  return IsCaptivePortalState(shill_properties, std::string() /* log_id */);
-}
-
-// static
 bool NetworkState::ErrorIsValid(const std::string& error) {
   return !error.empty() && error != shill::kErrorNoFailure;
 }
@@ -652,6 +628,35 @@ bool NetworkState::UpdateName(const base::Value& properties) {
     return true;
   }
   return false;
+}
+
+void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
+  int status_code =
+      properties.FindIntKey(kPortalDetectionFailedStatusCodeProperty)
+          .value_or(0);
+  if (connection_state_ == shill::kStateNoConnectivity) {
+    portal_state_ = PortalState::kNoInternet;
+  } else if (connection_state_ == shill::kStatePortal ||
+             connection_state_ == shill::kStateRedirectFound) {
+    portal_state_ = status_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED
+                        ? PortalState::kProxyAuthRequired
+                        : PortalState::kPortal;
+  } else if (connection_state_ == shill::kStatePortalSuspected) {
+    portal_state_ = PortalState::kPortalSuspected;
+  } else {
+    portal_state_ = PortalState::kOnline;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkStateResult", portal_state_);
+  if (portal_state_ != PortalState::kOnline) {
+    portal_status_code_ = status_code;
+    NET_LOG(EVENT) << "Network is in captive portal state: " << NetworkId(this)
+                   << " status_code=" << portal_status_code_;
+    base::UmaHistogramSparse("CaptivePortal.NetworkStateStatusCode",
+                             std::abs(portal_status_code_));
+  } else {
+    portal_status_code_ = 0;
+  }
 }
 
 void NetworkState::SetVpnProvider(const std::string& id,

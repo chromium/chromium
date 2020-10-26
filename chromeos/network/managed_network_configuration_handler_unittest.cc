@@ -233,6 +233,15 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     managed_network_configuration_handler_.reset();
   }
 
+  bool PropertiesMatch(const base::Value& v1, const base::Value& v2) {
+    if (v1 == v2)
+      return true;
+    // EXPECT_EQ does not recursively log dictionaries, so use LOG instead.
+    LOG(ERROR) << "v1=" << v1;
+    LOG(ERROR) << "v2=" << v2;
+    return false;
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -721,7 +730,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
   const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(wifi2_service_path);
   ASSERT_TRUE(properties);
-  EXPECT_EQ(*expected_shill_properties, *properties);
+  EXPECT_TRUE(PropertiesMatch(*expected_shill_properties, *properties));
 
   // Verify that GetManagedProperties correctly augments the properties with the
   // global config from the user policy.
@@ -760,7 +769,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
       test_utils::ReadTestDictionary(
           "policy/"
           "managed_onc_disallow_autoconnect_on_unmanaged_wifi2.onc");
-  EXPECT_EQ(*expected_managed_onc, *dictionary);
+  EXPECT_TRUE(PropertiesMatch(*expected_managed_onc, *dictionary));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, LateProfileLoading) {

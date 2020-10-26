@@ -557,15 +557,15 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
     }
     onc_object_->SetKey(::onc::network_config::kConnectionState,
                         base::Value(onc_state));
-    // Only set 'RestrictedConnectivity' if captive portal state is true.
-    if (NetworkState::NetworkStateIsCaptivePortal(*shill_dictionary_)) {
+  }
+
+  if (network_state_) {
+    // Only visible networks set RestrictedConnectivity, and only if true.
+    if (network_state_->IsCaptivePortal()) {
       onc_object_->SetKey(::onc::network_config::kRestrictedConnectivity,
                           base::Value(true));
     }
-  }
-
-  // Non-visible networks (with null network_state_) do not set ErrorState.
-  if (network_state_) {
+    // Only visible networks set ErrorState, and only if not empty.
     if (!network_state_->GetError().empty()) {
       onc_object_->SetKey(::onc::network_config::kErrorState,
                           base::Value(network_state_->GetError()));
