@@ -26,6 +26,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -913,3 +915,62 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   EXPECT_EQ(nullptr, Browser::Create(Browser::CreateParams(
                          otr_profile, /* user_gesture = */ false)));
 }
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+class EphemeralGuestProfileBrowserTest : public ProfileBrowserTest {
+ public:
+  EphemeralGuestProfileBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnableEphemeralGuestProfilesOnDesktop);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests profile type functions on an ephemeral Guest profile.
+IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest, TestProfileType) {
+  Profile* guest_profile = CreateGuestBrowser()->profile();
+
+  EXPECT_TRUE(guest_profile->IsRegularProfile());
+  EXPECT_FALSE(guest_profile->IsOffTheRecord());
+  EXPECT_FALSE(guest_profile->IsGuestSession());
+  EXPECT_TRUE(guest_profile->IsEphemeralGuestProfile());
+}
+
+// Tests if ephemeral Guest profile paths are persistent as long as one does not
+// close all Guest browsers.
+IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
+                       TestProfilePathIsStableWhileNotClosed) {
+  Browser* guest1 = CreateGuestBrowser();
+  base::FilePath guest_path1 = guest1->profile()->GetPath();
+
+  Browser* guest2 = CreateGuestBrowser();
+  base::FilePath guest_path2 = guest2->profile()->GetPath();
+
+  EXPECT_EQ(guest_path1, guest_path2);
+
+  CloseBrowserSynchronously(guest1);
+
+  Browser* guest3 = CreateGuestBrowser();
+  base::FilePath guest_path3 = guest3->profile()->GetPath();
+
+  EXPECT_EQ(guest_path1, guest_path3);
+}
+
+// Tests if closing all ephemeral Guest profiles will result in a new path for
+// the next ephemeral Guest profile.
+IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest,
+                       TestGuestGetsNewPathAfterClosing) {
+  Browser* guest1 = CreateGuestBrowser();
+  base::FilePath guest_path1 = guest1->profile()->GetPath();
+
+  CloseBrowserSynchronously(guest1);
+
+  Browser* guest2 = CreateGuestBrowser();
+  base::FilePath guest_path2 = guest2->profile()->GetPath();
+
+  EXPECT_NE(guest_path1, guest_path2);
+}
+
+#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
