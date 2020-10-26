@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FavIconInfo, FrameInfo, GraphChangeStreamInterface, PageInfo, ProcessInfo, WorkerInfo} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
+// This file is loaded into a <webview> and cannot reference any chrome:
+// resources. The only communication to and from this implementation and the
+// WebUI is through postMessage.
 
 // Radius of a node circle.
 const /** number */ kNodeRadius = 6;
