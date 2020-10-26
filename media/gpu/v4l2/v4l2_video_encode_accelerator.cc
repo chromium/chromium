@@ -1502,9 +1502,10 @@ bool V4L2VideoEncodeAccelerator::SetOutputFormat(
   output_buffer_byte_size_ =
       GetEncodeBitstreamBufferSize(encoder_input_visible_rect_.size());
 
+  // Sets 0 to width and height in CAPTURE queue, which should be ignored by the
+  // driver.
   base::Optional<struct v4l2_format> format = output_queue_->SetFormat(
-      output_format_fourcc_, encoder_input_visible_rect_.size(),
-      output_buffer_byte_size_);
+      output_format_fourcc_, gfx::Size(), output_buffer_byte_size_);
   if (!format) {
     return false;
   }
