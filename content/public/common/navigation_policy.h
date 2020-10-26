@@ -93,8 +93,8 @@ struct CONTENT_EXPORT NavigationDownloadPolicy {
 CONTENT_EXPORT bool ShouldCreateNewHostForCrashedFrame();
 
 // If this is false we continue the old behaviour of doing an early call to
-// RenderFrameHostManager::CommitPending when we are replacing an inactive
-// frame (crashed or just newly created but never live).
+// RenderFrameHostManager::CommitPending when we are replacing a crashed
+// frame.
 // TODO(https://crbug.com/1072817): Stop allowing this.
 CONTENT_EXPORT bool ShouldSkipEarlyCommitPendingForCrashedFrame();
 

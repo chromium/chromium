@@ -829,8 +829,6 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
 
     if (!render_frame_host_->IsRenderFrameLive() &&
         !recovering_without_early_commit) {
-      // We should only do this if the current RFH is not live.
-      DCHECK(!render_frame_host_->IsRenderFrameLive());
       // The current RFH is not live. There's no reason to sit around with a
       // sad tab or a newly created RFH while we wait for the navigation to
       // complete. Just switch to the speculative RFH now and go back to
