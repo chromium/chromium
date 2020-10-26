@@ -39,11 +39,6 @@ class SuggestionHandlerInterface {
   virtual void OnSuggestionsChanged(
       const std::vector<std::string>& suggestions) = 0;
 
-  virtual bool ShowMultipleSuggestions(
-      int context_id,
-      const std::vector<base::string16>& candidates,
-      std::string* error) = 0;
-
   // Highlights or unhighlights a given assistive button based on the given
   // parameters. No-op if context_id doesn't match or engine is not active.
   virtual bool SetButtonHighlighted(

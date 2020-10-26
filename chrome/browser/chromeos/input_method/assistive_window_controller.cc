@@ -172,11 +172,6 @@ void AssistiveWindowController::ShowSuggestion(
   suggestion_window_view_->Show(details);
 }
 
-// TODO(crbug/1102219): Method unused. Remove all definitions and references.
-void AssistiveWindowController::ShowMultipleSuggestions(
-    const std::vector<base::string16>& suggestions) {
-}
-
 void AssistiveWindowController::SetButtonHighlighted(
     const ui::ime::AssistiveWindowButton& button,
     bool highlighted) {

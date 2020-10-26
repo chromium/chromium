@@ -118,10 +118,6 @@ class InputMethodEngine : public InputMethodEngineBase,
   void OnSuggestionsChanged(
       const std::vector<std::string>& suggestions) override;
 
-  bool ShowMultipleSuggestions(int context_id,
-                               const std::vector<base::string16>& suggestions,
-                               std::string* error) override;
-
   bool SetButtonHighlighted(int context_id,
                             const ui::ime::AssistiveWindowButton& button,
                             bool highlighted,

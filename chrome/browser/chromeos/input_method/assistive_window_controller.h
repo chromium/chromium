@@ -73,8 +73,6 @@ class AssistiveWindowController : public views::WidgetObserver,
   void SetAssistiveWindowProperties(
       const AssistiveWindowProperties& window) override;
   void ShowSuggestion(const ui::ime::SuggestionDetails& details) override;
-  void ShowMultipleSuggestions(
-      const std::vector<base::string16>& suggestions) override;
   void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button,
                             bool highlighted) override;
   void AcceptSuggestion(const base::string16& suggestion) override;

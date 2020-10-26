@@ -42,9 +42,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
 
   virtual void ShowSuggestion(const ui::ime::SuggestionDetails& details) {}
 
-  virtual void ShowMultipleSuggestions(
-      const std::vector<base::string16>& suggestions) {}
-
   // Highlights or unhighlights a given assistive button based on the given
   // parameters.
   virtual void SetButtonHighlighted(

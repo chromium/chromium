@@ -137,25 +137,6 @@ void InputMethodEngine::OnSuggestionsChanged(
   observer_->OnSuggestionsChanged(suggestions);
 }
 
-bool InputMethodEngine::ShowMultipleSuggestions(
-    int context_id,
-    const std::vector<base::string16>& suggestions,
-    std::string* error) {
-  if (!IsActive()) {
-    *error = kErrorNotActive;
-    return false;
-  }
-  if (context_id != context_id_ || context_id_ == -1) {
-    *error = kErrorWrongContext;
-    return false;
-  }
-  IMEAssistiveWindowHandlerInterface* aw_handler =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
-  if (aw_handler)
-    aw_handler->ShowMultipleSuggestions(suggestions);
-  return true;
-}
-
 bool InputMethodEngine::SetButtonHighlighted(
     int context_id,
     const ui::ime::AssistiveWindowButton& button,

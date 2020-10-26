@@ -71,12 +71,6 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
     previous_suggestions_ = suggestions;
   }
 
-  bool ShowMultipleSuggestions(int context_id,
-                               const std::vector<base::string16>& candidates,
-                               std::string* error) override {
-    return false;
-  }
-
   void ClickButton(const ui::ime::AssistiveWindowButton& button) override {
     button_clicked_ = button.id;
   }
