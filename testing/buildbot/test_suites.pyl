@@ -149,6 +149,7 @@
       'android_browsertests': {},
       'blink_platform_unittests': {},
       'chrome_java_test_pagecontroller_tests': {},
+      'chrome_java_test_webapk_launch_tests': {},
       'monochrome_public_bundle_fake_modules_smoke_test': {},
       'monochrome_public_bundle_smoke_test': {},
       'monochrome_public_smoke_test': {},
@@ -255,6 +256,10 @@
         'test': 'chrome_public_test_vr_apk',
         'experiment_percentage': 100,
       },
+    },
+
+    'android_webapk_launch_tests': {
+      'chrome_java_test_webapk_launch_tests': {},
     },
 
     'android_webview_gpu_telemetry_tests': {
@@ -4697,6 +4702,7 @@
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
+      'android_webapk_launch_tests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'linux_flavor_specific_chromium_gtests',
@@ -4722,6 +4728,7 @@
       'android_monochrome_smoke_tests',
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
+      'android_webapk_launch_tests',
       'chromium_tracing_gtests',
       # No standard tests due to capacity, no Vega tests since it's currently
       # O only.
@@ -4732,6 +4739,7 @@
       'android_monochrome_smoke_tests',
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
+      'android_webapk_launch_tests',
       # TODO: Following tests are experimental (crbug/1010211).
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
@@ -4756,6 +4764,7 @@
     #   'android_monochrome_smoke_tests',
     #   'android_pagecontroller_self_tests',
     #   'android_smoke_tests',
+    #   'android_webapk_launch_tests',
     #   # TODO: Following tests are experimental (crbug/1010211).
     #   'android_specific_chromium_gtests',  # Already includes gl_gtests.
     #   'chromium_gtests',
