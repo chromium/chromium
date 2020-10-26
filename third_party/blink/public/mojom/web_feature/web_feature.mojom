@@ -1435,9 +1435,9 @@ enum WebFeature {
   kCredentialManagerGetMediationRequired = 1984,
   kNetInfoRtt = 1989,
   kNetInfoDownlink = 1990,
-  kShapeDetection_BarcodeDetectorConstructor = 1991,
-  kShapeDetection_FaceDetectorConstructor = 1992,
-  kShapeDetection_TextDetectorConstructor = 1993,
+  kOBSOLETE_ShapeDetection_BarcodeDetectorConstructor = 1991,
+  kOBSOLETE_ShapeDetection_FaceDetectorConstructor = 1992,
+  kOBSOLETE_ShapeDetection_TextDetectorConstructor = 1993,
   kInertAttribute = 1995,
   kPluginInstanceAccessFromIsolatedWorld = 1996,
   kPluginInstanceAccessFromMainWorld = 1997,
@@ -1898,7 +1898,7 @@ enum WebFeature {
   kAddDocumentLevelPassiveFalseWheelEventListener = 2519,
   kAddDocumentLevelPassiveDefaultWheelEventListener = 2520,
   kDocumentLevelPassiveDefaultEventListenerPreventedWheel = 2521,
-  kShapeDetectionAPI = 2522,
+  kOBSOLETE_ShapeDetectionAPI = 2522,
   kV8SourceBuffer_ChangeType_Method = 2523,
   kPPAPIWebSocket = 2524,
   kV8MediaStreamTrack_ContentHint_AttributeGetter = 2525,
@@ -3039,6 +3039,9 @@ enum WebFeature {
   kWebBluetoothGetAvailability = 3708,
   kDigitalGoodsListPurchases = 3709,
   kCompositedSVG = 3710,
+  kBarcodeDetectorDetect = 3711,
+  kFaceDetectorDetect = 3712,
+  kTextDetectorDetect = 3713,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

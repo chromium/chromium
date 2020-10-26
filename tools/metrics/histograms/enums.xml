@@ -28194,9 +28194,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1988" label="CredentialManagerCustomFetch (obsolete as of M64)"/>
   <int value="1989" label="NetInfoRtt"/>
   <int value="1990" label="NetInfoDownlink"/>
-  <int value="1991" label="ShapeDetection_BarcodeDetectorConstructor"/>
-  <int value="1992" label="ShapeDetection_FaceDetectorConstructor"/>
-  <int value="1993" label="ShapeDetection_TextDetectorConstructor"/>
+  <int value="1991" label="OBSOLETE_ShapeDetection_BarcodeDetectorConstructor"/>
+  <int value="1992" label="OBSOLETE_ShapeDetection_FaceDetectorConstructor"/>
+  <int value="1993" label="OBSOLETE_ShapeDetection_TextDetectorConstructor"/>
   <int value="1994"
       label="CredentialManagerCredentialRequestOptionsOnlyUnmediated
              (obsolete as of M64)"/>
@@ -28751,7 +28751,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2520" label="AddDocumentLevelPassiveDefaultWheelEventListener"/>
   <int value="2521"
       label="DocumentLevelPassiveDefaultEventListenerPreventedWheel"/>
-  <int value="2522" label="ShapeDetectionAPI"/>
+  <int value="2522" label="OBSOLETE_ShapeDetectionAPI"/>
   <int value="2523" label="V8SourceBuffer_ChangeType_Method"/>
   <int value="2524" label="PPAPIWebSocket"/>
   <int value="2525" label="V8MediaStreamTrack_ContentHint_AttributeGetter"/>
@@ -30006,6 +30006,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3708" label="WebBluetoothGetAvailability"/>
   <int value="3709" label="DigitalGoodsListPurchases"/>
   <int value="3710" label="CompositedSVG"/>
+  <int value="3711" label="BarcodeDetectorDetect"/>
+  <int value="3712" label="FaceDetectorDetect"/>
+  <int value="3713" label="TextDetectorDetect"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -9,6 +9,6 @@
     SecureContext,
     RuntimeEnabled=TextDetector
 ] interface TextDetector {
-    [CallWith=ExecutionContext, MeasureAs=ShapeDetection_TextDetectorConstructor] constructor();
-    [CallWith=ScriptState, MeasureAs=ShapeDetectionAPI] Promise<sequence<DetectedText>> detect(ImageBitmapSource image);
+    [CallWith=ExecutionContext] constructor();
+    [CallWith=ScriptState, MeasureAs=TextDetectorDetect] Promise<sequence<DetectedText>> detect(ImageBitmapSource image);
 };

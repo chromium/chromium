@@ -180,6 +180,9 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kV8Window_ShowSaveFilePicker_Method,
           WebFeature::kV8Window_ShowDirectoryPicker_Method,
           WebFeature::kV8StorageManager_GetDirectory_Method,
+          WebFeature::kBarcodeDetectorDetect,
+          WebFeature::kFaceDetectorDetect,
+          WebFeature::kTextDetectorDetect,
       }));
   return *opt_in_features;
 }
