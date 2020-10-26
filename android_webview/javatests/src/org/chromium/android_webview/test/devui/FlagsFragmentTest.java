@@ -61,6 +61,7 @@ import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.services.DeveloperUiService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -398,6 +399,7 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1141442")
     public void testToggledFlagsFloatToTop() throws Throwable {
         ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
         int totalNumFlags = flagsList.getCount();
