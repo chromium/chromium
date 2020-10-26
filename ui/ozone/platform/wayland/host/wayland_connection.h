@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -15,6 +16,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+
+#if BUILDFLAG(IS_LACROS)
+#include "chromeos/ui/base/tablet_state.h"
+#endif
 
 namespace gfx {
 class Point;
@@ -234,6 +239,10 @@ class WaylandConnection {
 
   // Manages Wayland windows.
   WaylandWindowManager wayland_window_manager_;
+
+#if BUILDFLAG(IS_LACROS)
+  chromeos::TabletState tablet_state_;
+#endif
 
   bool scheduled_flush_ = false;
 

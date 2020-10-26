@@ -30,6 +30,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/banners/app_banner_manager.h"
@@ -3284,7 +3285,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
 }
 
 bool BrowserView::ShouldUseImmersiveFullscreenForUrl(const GURL& url) const {
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   // Kiosk mode needs the whole screen.
   if (chrome::IsRunningInAppMode())
     return false;

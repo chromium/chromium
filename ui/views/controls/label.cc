@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -652,11 +653,11 @@ void Label::PaintText(gfx::Canvas* canvas) {
   if (display_text_)
     display_text_->Draw(canvas);
 
-#if DCHECK_IS_ON() && !defined(OS_CHROMEOS)
-  // TODO(crbug.com/1139395): Enable this DCHECK on ChromeOS by fixing either
-  // this check (to correctly idenfify more paints-on-opaque cases), refactoring
-  // parents to use background() or by fixing subpixel-rendering issues that the
-  // DCHECK detects.
+#if DCHECK_IS_ON() && !defined(OS_CHROMEOS) && !BUILDFLAG(IS_LACROS)
+  // TODO(crbug.com/1139395): Enable this DCHECK on ChromeOS and LaCrOS by
+  // fixing either this check (to correctly idenfify more paints-on-opaque
+  // cases), refactoring parents to use background() or by fixing
+  // subpixel-rendering issues that the DCHECK detects.
   if (!display_text_ || display_text_->subpixel_rendering_suppressed())
     return;
 
