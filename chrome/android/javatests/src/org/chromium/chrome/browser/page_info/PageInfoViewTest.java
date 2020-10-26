@@ -151,11 +151,13 @@ public class PageInfoViewTest {
         int expected = hasPermissions ? ContentSettingValues.ALLOW : ContentSettingValues.ASK;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals(expected,
-                    WebsitePreferenceBridgeJni.get().getNotificationSettingForOrigin(
-                            Profile.getLastUsedRegularProfile(), url));
+                    WebsitePreferenceBridgeJni.get().getSettingForOrigin(
+                            Profile.getLastUsedRegularProfile(), ContentSettingsType.NOTIFICATIONS,
+                            url, url));
             assertEquals(expected,
-                    WebsitePreferenceBridgeJni.get().getGeolocationSettingForOrigin(
-                            Profile.getLastUsedRegularProfile(), url, "*"));
+                    WebsitePreferenceBridgeJni.get().getSettingForOrigin(
+                            Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION,
+                            url, "*"));
         });
     }
 

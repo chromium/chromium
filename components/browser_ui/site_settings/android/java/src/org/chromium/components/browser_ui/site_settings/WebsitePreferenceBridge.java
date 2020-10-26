@@ -36,46 +36,22 @@ public class WebsitePreferenceBridge {
     public List<PermissionInfo> getPermissionInfo(
             BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
         ArrayList<PermissionInfo> list = new ArrayList<PermissionInfo>();
+        boolean managedOnly = false;
         // Camera, Location & Microphone can be managed by the custodian
         // of a supervised account or by enterprise policy.
-        if (type == ContentSettingsType.AR) {
-            WebsitePreferenceBridgeJni.get().getArOrigins(browserContextHandle, list);
-        } else if (type == ContentSettingsType.MEDIASTREAM_CAMERA) {
-            boolean managedOnly = !isContentSettingUserModifiable(browserContextHandle, type);
-            WebsitePreferenceBridgeJni.get().getCameraOrigins(
-                    browserContextHandle, list, managedOnly);
-        } else if (type == ContentSettingsType.CLIPBOARD_READ_WRITE) {
-            WebsitePreferenceBridgeJni.get().getClipboardOrigins(browserContextHandle, list);
-        } else if (type == ContentSettingsType.GEOLOCATION) {
-            boolean managedOnly = !isContentSettingUserModifiable(browserContextHandle, type);
-            WebsitePreferenceBridgeJni.get().getGeolocationOrigins(
-                    browserContextHandle, list, managedOnly);
-        } else if (type == ContentSettingsType.IDLE_DETECTION) {
-            WebsitePreferenceBridgeJni.get().getIdleDetectionOrigins(browserContextHandle, list);
-        } else if (type == ContentSettingsType.MEDIASTREAM_MIC) {
-            boolean managedOnly = !isContentSettingUserModifiable(browserContextHandle, type);
-            WebsitePreferenceBridgeJni.get().getMicrophoneOrigins(
-                    browserContextHandle, list, managedOnly);
-        } else if (type == ContentSettingsType.MIDI_SYSEX) {
-            WebsitePreferenceBridgeJni.get().getMidiOrigins(browserContextHandle, list);
-        } else if (type == ContentSettingsType.NFC) {
-            WebsitePreferenceBridgeJni.get().getNfcOrigins(browserContextHandle, list);
-        } else if (type == ContentSettingsType.NOTIFICATIONS) {
-            WebsitePreferenceBridgeJni.get().getNotificationOrigins(browserContextHandle, list);
-        } else if (type == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
-            WebsitePreferenceBridgeJni.get().getProtectedMediaIdentifierOrigins(
-                    browserContextHandle, list);
-        } else if (type == ContentSettingsType.SENSORS) {
-            WebsitePreferenceBridgeJni.get().getSensorsOrigins(browserContextHandle, list);
-        } else if (type == ContentSettingsType.VR) {
-            WebsitePreferenceBridgeJni.get().getVrOrigins(browserContextHandle, list);
-        } else {
-            assert false;
+        switch (type) {
+            case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.MEDIASTREAM_CAMERA:
+            case ContentSettingsType.MEDIASTREAM_MIC:
+                managedOnly = !isContentSettingUserModifiable(browserContextHandle, type);
         }
+        WebsitePreferenceBridgeJni.get().getOriginsForPermission(
+                browserContextHandle, type, list, managedOnly);
         return list;
     }
 
-    private static void insertInfoIntoList(@ContentSettingsType int type,
+    @CalledByNative
+    private static void insertPermissionInfoIntoList(@ContentSettingsType int type,
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
         if (type == ContentSettingsType.MEDIASTREAM_CAMERA
                 || type == ContentSettingsType.MEDIASTREAM_MIC) {
@@ -89,85 +65,9 @@ public class WebsitePreferenceBridge {
     }
 
     @CalledByNative
-    private static void insertArInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.AR, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertCameraInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(
-                ContentSettingsType.MEDIASTREAM_CAMERA, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertClipboardInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(
-                ContentSettingsType.CLIPBOARD_READ_WRITE, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertGeolocationInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.GEOLOCATION, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertIdleDetectionInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.IDLE_DETECTION, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertMicrophoneInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(
-                ContentSettingsType.MEDIASTREAM_MIC, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertMidiInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.MIDI_SYSEX, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertNfcInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.NFC, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertNotificationIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.NOTIFICATIONS, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertProtectedMediaIdentifierInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, list, origin, embedder,
-                isEmbargoed);
-    }
-
-    @CalledByNative
-    private static void insertSensorsInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.SENSORS, list, origin, embedder, isEmbargoed);
-    }
-
-    @CalledByNative
     private static void insertStorageInfoIntoList(
             ArrayList<StorageInfo> list, String host, int type, long size) {
         list.add(new StorageInfo(host, type, size));
-    }
-
-    @CalledByNative
-    private static void insertVrInfoIntoList(
-            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(ContentSettingsType.VR, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
@@ -426,73 +326,10 @@ public class WebsitePreferenceBridge {
 
     @NativeMethods
     public interface Natives {
-        void getArOrigins(BrowserContextHandle browserContextHandle, Object list);
-        void getCameraOrigins(
-                BrowserContextHandle browserContextHandle, Object list, boolean managedOnly);
-        void getClipboardOrigins(BrowserContextHandle browserContextHandle, Object list);
-        void getGeolocationOrigins(
-                BrowserContextHandle browserContextHandle, Object list, boolean managedOnly);
-        void getIdleDetectionOrigins(BrowserContextHandle browserContextHandle, Object list);
-        void getMicrophoneOrigins(
-                BrowserContextHandle browserContextHandle, Object list, boolean managedOnly);
-        void getMidiOrigins(BrowserContextHandle browserContextHandle, Object list);
-        void getNotificationOrigins(BrowserContextHandle browserContextHandle, Object list);
-        void getNfcOrigins(BrowserContextHandle browserContextHandle, Object list);
-        void getProtectedMediaIdentifierOrigins(
-                BrowserContextHandle browserContextHandle, Object list);
-        void getSensorsOrigins(BrowserContextHandle browserContextHandle, Object list);
-        void getVrOrigins(BrowserContextHandle browserContextHandle, Object list);
-        int getArSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getCameraSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getClipboardSettingForOrigin(BrowserContextHandle browserContextHandle, String origin);
-        int getGeolocationSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getIdleDetectionSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getMicrophoneSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getMidiSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getNfcSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getNotificationSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin);
         boolean isNotificationEmbargoedForOrigin(
                 BrowserContextHandle browserContextHandle, String origin);
-        int getProtectedMediaIdentifierSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getSensorsSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        int getVrSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, String embedder);
-        void setArSettingForOrigin(BrowserContextHandle browserContextHandle, String origin,
-                String embedder, int value);
-        void setCameraSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, int value);
-        void setClipboardSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, int value);
-        void setGeolocationSettingForOrigin(BrowserContextHandle browserContextHandle,
-                String origin, String embedder, int value);
-        void setIdleDetectionSettingForOrigin(BrowserContextHandle browserContextHandle,
-                String origin, String embedder, int value);
-        void setMicrophoneSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, int value);
-        void setMidiSettingForOrigin(BrowserContextHandle browserContextHandle, String origin,
-                String embedder, int value);
-        void setNfcSettingForOrigin(BrowserContextHandle browserContextHandle, String origin,
-                String embedder, int value);
-        void setNotificationSettingForOrigin(
-                BrowserContextHandle browserContextHandle, String origin, int value);
         void reportNotificationRevokedForOrigin(
                 BrowserContextHandle browserContextHandle, String origin, int newSettingValue);
-        void setProtectedMediaIdentifierSettingForOrigin(BrowserContextHandle browserContextHandle,
-                String origin, String embedder, int value);
-        void setSensorsSettingForOrigin(BrowserContextHandle browserContextHandle, String origin,
-                String embedder, int value);
-        void setVrSettingForOrigin(BrowserContextHandle browserContextHandle, String origin,
-                String embedder, int value);
         void clearBannerData(BrowserContextHandle browserContextHandle, String origin);
         void clearMediaLicenses(BrowserContextHandle browserContextHandle, String origin);
         void clearCookieData(BrowserContextHandle browserContextHandle, String path);
@@ -510,6 +347,13 @@ public class WebsitePreferenceBridge {
         void fetchStorageInfo(BrowserContextHandle browserContextHandle, Object callback);
         void fetchLocalStorageInfo(BrowserContextHandle browserContextHandle, Object callback,
                 boolean includeImportant);
+        void getOriginsForPermission(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingsType, Object list, boolean managedOnly);
+        int getSettingForOrigin(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingsType, String origin, String embedder);
+        void setSettingForOrigin(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingsType, String origin, String embedder,
+                int value);
         boolean isPermissionControlledByDSE(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingsType, String origin);
         boolean getAdBlockingActivated(BrowserContextHandle browserContextHandle, String origin);

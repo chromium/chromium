@@ -96,8 +96,9 @@ public class SearchEngineSettingsTest {
             // first and ensure that location permission is NOT granted.
             String keyword3 = pref.getKeywordFromIndexForTesting(3);
             String url = templateUrlService.getSearchEngineUrlFromTemplateUrl(keyword3);
-            WebsitePreferenceBridgeJni.get().setGeolocationSettingForOrigin(
-                    Profile.getLastUsedRegularProfile(), url, url, ContentSettingValues.BLOCK);
+            WebsitePreferenceBridgeJni.get().setSettingForOrigin(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION, url, url,
+                    ContentSettingValues.BLOCK);
             keyword3 = pref.setValueForTesting("3");
             Assert.assertEquals(keyword3,
                     TemplateUrlServiceFactory.get()
@@ -113,12 +114,14 @@ public class SearchEngineSettingsTest {
             // setting to allow for search engine 3 before changing to search engine 2.
             // Otherwise the block setting will cause the content setting for search engine 2
             // to be reset when we switch to it.
-            WebsitePreferenceBridgeJni.get().setGeolocationSettingForOrigin(
-                    Profile.getLastUsedRegularProfile(), url, url, ContentSettingValues.ALLOW);
+            WebsitePreferenceBridgeJni.get().setSettingForOrigin(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION, url, url,
+                    ContentSettingValues.ALLOW);
             keyword2 = pref.getKeywordFromIndexForTesting(2);
             url = templateUrlService.getSearchEngineUrlFromTemplateUrl(keyword2);
-            WebsitePreferenceBridgeJni.get().setGeolocationSettingForOrigin(
-                    Profile.getLastUsedRegularProfile(), url, url, ContentSettingValues.ALLOW);
+            WebsitePreferenceBridgeJni.get().setSettingForOrigin(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION, url, url,
+                    ContentSettingValues.ALLOW);
             keyword2 = pref.setValueForTesting("2");
             Assert.assertEquals(keyword2,
                     TemplateUrlServiceFactory.get()

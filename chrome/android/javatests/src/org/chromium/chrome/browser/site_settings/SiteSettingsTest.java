@@ -1238,8 +1238,9 @@ public class SiteSettingsTest {
                 "exampleToBlock.com", "/chrome/test/data/notifications/notification_tester.html");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridgeJni.get().setNotificationSettingForOrigin(
-                    getBrowserContextHandle(), urlToBlock, ContentSettingValues.BLOCK);
+            WebsitePreferenceBridgeJni.get().setSettingForOrigin(getBrowserContextHandle(),
+                    ContentSettingsType.NOTIFICATIONS, urlToBlock, urlToBlock,
+                    ContentSettingValues.BLOCK);
         });
 
         final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(

@@ -312,18 +312,20 @@ public class WebsitePermissionsFetcherTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
             for (String url : PERMISSION_URLS) {
-                WebsitePreferenceBridgeJni.get().setGeolocationSettingForOrigin(
-                        profile, url, url, ContentSettingValues.BLOCK);
-                WebsitePreferenceBridgeJni.get().setMidiSettingForOrigin(
-                        profile, url, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setProtectedMediaIdentifierSettingForOrigin(
-                        profile, url, url, ContentSettingValues.BLOCK);
-                WebsitePreferenceBridgeJni.get().setNotificationSettingForOrigin(
-                        profile, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setMicrophoneSettingForOrigin(
-                        profile, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setCameraSettingForOrigin(
-                        profile, url, ContentSettingValues.BLOCK);
+                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                        ContentSettingsType.GEOLOCATION, url, url, ContentSettingValues.BLOCK);
+                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                        ContentSettingsType.MIDI_SYSEX, url, url, ContentSettingValues.ALLOW);
+                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                        ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, url, url,
+                        ContentSettingValues.BLOCK);
+                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                        ContentSettingsType.NOTIFICATIONS, url, url, ContentSettingValues.ALLOW);
+                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                        ContentSettingsType.MEDIASTREAM_MIC, url, url, ContentSettingValues.ALLOW);
+                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                        ContentSettingsType.MEDIASTREAM_CAMERA, url, url,
+                        ContentSettingValues.BLOCK);
             }
 
             // This should not time out. See crbug.com/732907.
