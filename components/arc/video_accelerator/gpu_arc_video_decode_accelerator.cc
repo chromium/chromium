@@ -114,6 +114,8 @@ void GpuArcVideoDecodeAccelerator::ProvidePictureBuffersWithVisibleRect(
 
   pending_coded_size_ = dimensions;
 
+  decoder_state_ = DecoderState::kAwaitingAssignPictureBuffers;
+
   auto pbf = mojom::PictureBufferFormat::New();
   pbf->min_num_buffers = requested_num_of_buffers;
   pbf->coded_size = dimensions;
@@ -439,9 +441,9 @@ void GpuArcVideoDecodeAccelerator::AssignPictureBuffers(uint32_t count) {
         mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
     return;
   }
-  if (assign_picture_buffers_called_) {
-    VLOGF(1) << "AssignPictureBuffers is called twice without "
-             << "ImportBufferForPicture()";
+  if (decoder_state_ != DecoderState::kAwaitingAssignPictureBuffers) {
+    VLOGF(1) << "AssignPictureBuffers is not called right after "
+             << "Client::ProvidePictureBuffers()";
     client_->NotifyError(
         mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
     return;
@@ -449,7 +451,7 @@ void GpuArcVideoDecodeAccelerator::AssignPictureBuffers(uint32_t count) {
 
   coded_size_ = pending_coded_size_;
   output_buffer_count_ = static_cast<size_t>(count);
-  assign_picture_buffers_called_ = true;
+  decoder_state_ = DecoderState::kAwaitingFirstImport;
 }
 
 void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
@@ -463,6 +465,12 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     VLOGF(1) << "VDA not initialized.";
     return;
   }
+  if (decoder_state_ == DecoderState::kAwaitingAssignPictureBuffers) {
+    DVLOGF(3) << "AssignPictureBuffers() hasn't been called after calling "
+              << "Client::ProvidePictureBuffers(), ignored.";
+    return;
+  }
+
   if (picture_buffer_id < 0 ||
       static_cast<size_t>(picture_buffer_id) >= output_buffer_count_) {
     VLOGF(1) << "Invalid picture_buffer_id=" << picture_buffer_id;
@@ -533,7 +541,7 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
 
   // This is the first time of ImportBufferForPicture() after
   // AssignPictureBuffers() is called. Call VDA::AssignPictureBuffers() here.
-  if (assign_picture_buffers_called_) {
+  if (decoder_state_ == DecoderState::kAwaitingFirstImport) {
     gfx::Size picture_size(gmb_handle.native_pixmap_handle.planes[0].stride,
                            coded_size_.height());
     std::vector<media::PictureBuffer> buffers;
@@ -543,7 +551,7 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     }
 
     vda_->AssignPictureBuffers(std::move(buffers));
-    assign_picture_buffers_called_ = false;
+    decoder_state_ = DecoderState::kDecoding;
   }
 
   vda_->ImportBufferForPicture(picture_buffer_id, pixel_format,
@@ -556,6 +564,11 @@ void GpuArcVideoDecodeAccelerator::ReusePictureBuffer(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!vda_) {
     VLOGF(1) << "VDA not initialized.";
+    return;
+  }
+  if (decoder_state_ == DecoderState::kAwaitingAssignPictureBuffers) {
+    DVLOGF(3) << "AssignPictureBuffers() hasn't been called after calling "
+              << "Client::ProvidePictureBuffers(), ignored.";
     return;
   }
 

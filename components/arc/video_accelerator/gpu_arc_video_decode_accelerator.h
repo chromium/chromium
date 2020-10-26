@@ -78,6 +78,25 @@ class GpuArcVideoDecodeAccelerator
   void Flush(FlushCallback callback) override;
   void Reset(ResetCallback callback) override;
  private:
+  // The calling flow of changing resolution is:
+  // 1. VDA calls Client::ProvidePictureBuffers()
+  // 2. Client calls VDA::AssignPictureBuffers()
+  // 3. Client calls VDA::ImportBufferForPicture() for N times
+  // 4. Client calls VDA::ReusePictureBuffer() when a buffer is recycled.
+  //
+  // The enum state is used to check these two situations:
+  // 1. Client should not call VDA::AssignPictureBuffers() twice without calling
+  //    VDA::ImportBufferForPicture() between them.
+  // 2. If VDA::ImportBufferForPicture() or VDA::ReusePictureBuffer() is
+  //    called right after calling Client::ProvidePictureBuffers() without
+  //    VDA::AssignPictureBuffers() be called, then the buffer contains previous
+  //    resolution and should be ignored.
+  enum class DecoderState {
+    kAwaitingAssignPictureBuffers,
+    kAwaitingFirstImport,
+    kDecoding,
+  };
+
   using PendingCallback =
       base::OnceCallback<void(mojom::VideoDecodeAccelerator::Result)>;
   static_assert(std::is_same<ResetCallback, PendingCallback>::value,
@@ -156,7 +175,8 @@ class GpuArcVideoDecodeAccelerator
 
   base::Optional<bool> secure_mode_ = base::nullopt;
   size_t output_buffer_count_ = 0;
-  bool assign_picture_buffers_called_ = false;
+
+  DecoderState decoder_state_ = DecoderState::kDecoding;
 
   THREAD_CHECKER(thread_checker_);
   DISALLOW_COPY_AND_ASSIGN(GpuArcVideoDecodeAccelerator);
