@@ -244,7 +244,8 @@
   "chrome/browser/resources/omnibox/resources.grd": {
     "includes": [2140],
   },
-  "chrome/browser/resources/quota_internals/quota_internals_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/quota_internals/quota_internals_resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
     "includes": [2160],
   },
   "chrome/browser/resources/sync_file_system_internals/sync_file_system_internals_resources.grd": {
