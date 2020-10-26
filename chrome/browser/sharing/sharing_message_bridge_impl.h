@@ -50,9 +50,7 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
   void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                 metadata_change_list) override;
 
-  size_t GetCallbacksCountForTesting() const {
-    return commit_callbacks_.size();
-  }
+  size_t GetCallbacksCountForTesting() const { return pending_commits_.size(); }
 
  private:
   class TimedCallback {
@@ -61,8 +59,10 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
     // |timeout_callback| if timeout happens.
     TimedCallback(CommitFinishedCallback commit_callback,
                   base::OnceClosure timeout_callback);
-
     ~TimedCallback();
+
+    TimedCallback(const TimedCallback&) = delete;
+    TimedCallback& operator=(const TimedCallback&) = delete;
 
     // Runs callback object with the given |commit_error| and stops the timer.
     void Run(const sync_pb::SharingMessageCommitError& commit_error);
@@ -72,9 +72,26 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
     CommitFinishedCallback commit_callback_;
   };
 
+  struct PendingCommit {
+    PendingCommit(std::unique_ptr<TimedCallback> timed_callback,
+                  sync_pb::SharingMessageSpecifics specifics);
+    ~PendingCommit();
+    PendingCommit(PendingCommit&&);
+    PendingCommit& operator=(PendingCommit&&);
+
+    PendingCommit(const PendingCommit&) = delete;
+    PendingCommit& operator=(const PendingCommit&) = delete;
+
+    // Make |timed_callback| moveable.
+    std::unique_ptr<TimedCallback> timed_callback;
+
+    // Copy of committed sharing message for possible retries.
+    sync_pb::SharingMessageSpecifics specifics;
+  };
+
   // Process timeout which happened for a callback with associated
   // |client_tag_hash|.
-  void ProcessCommitTimeout(syncer::ClientTagHash client_tag_hash);
+  void ProcessCommitTimeout(const syncer::ClientTagHash& client_tag_hash);
 
   // Sends commit outcome via callback for |client_tag_hash| and removes it from
   // callbacks mapping.
@@ -82,8 +99,9 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
       const syncer::ClientTagHash& client_tag_hash,
       const sync_pb::SharingMessageCommitError& commit_error);
 
-  std::map<syncer::ClientTagHash, std::unique_ptr<TimedCallback>>
-      commit_callbacks_;
+  // Contains the data for all pending commits. It is used to restore the
+  // committed data on retries if needed and to detect timeouts.
+  std::map<syncer::ClientTagHash, PendingCommit> pending_commits_;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_MESSAGE_BRIDGE_IMPL_H_

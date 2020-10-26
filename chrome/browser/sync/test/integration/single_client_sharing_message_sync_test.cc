@@ -84,6 +84,8 @@ class RetryingAccessTokenFetchChecker : public SingleClientStatusChangeChecker {
   }
 };
 
+// Waits until all expected sharing messages are successfully committed. Sharing
+// messages are equal if they have the same payload.
 class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
  public:
   SharingMessageEqualityChecker(
@@ -103,34 +105,98 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
     // becomes bigger then all hope is lost of passing, stop now.
     EXPECT_GE(expected_specifics_.size(), entities.size());
 
-    if (expected_specifics_.size() > entities.size()) {
+    if (expected_specifics_.size() != entities.size()) {
       return false;
     }
 
-    // Number of events on server matches expected, exit condition can be
-    // satisfied. Let's verify that content matches as well. It is safe to
-    // modify |expected_specifics_|.
-    for (const sync_pb::SyncEntity& entity : entities) {
-      const SharingMessageSpecifics& server_specifics =
-          entity.specifics().sharing_message();
-      // It is likely to have the same order, it is ok to use find here.
-      auto iter = std::find_if(
-          expected_specifics_.begin(), expected_specifics_.end(),
-          [&server_specifics](const SharingMessageSpecifics& specifics) {
-            return specifics.payload() == server_specifics.payload();
-          });
-      EXPECT_TRUE(iter != expected_specifics_.end());
-      if (iter == expected_specifics_.end())
+    for (const SharingMessageSpecifics& specifics : expected_specifics_) {
+      auto iter =
+          std::find_if(entities.begin(), entities.end(),
+                       [&specifics](const sync_pb::SyncEntity& entity) {
+                         return specifics.payload() ==
+                                entity.specifics().sharing_message().payload();
+                       });
+      if (iter == entities.end()) {
+        *os << "Server doesn't have expected sharing message with payload: "
+            << specifics.payload();
         return false;
-      expected_specifics_.erase(iter);
+      }
+      // Remove found entity to check for duplicate payloads.
+      entities.erase(iter);
     }
 
+    DCHECK(entities.empty());
     return true;
   }
 
  private:
-  fake_server::FakeServer* fake_server_;
-  std::vector<SharingMessageSpecifics> expected_specifics_;
+  fake_server::FakeServer* const fake_server_ = nullptr;
+  const std::vector<SharingMessageSpecifics> expected_specifics_;
+};
+
+// Waits for the sharing message callback with expected error code to be called.
+// The provided callback must be called only once.
+class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
+ public:
+  SharingMessageCallbackChecker(
+      syncer::ProfileSyncService* service,
+      sync_pb::SharingMessageCommitError::ErrorCode expected_error_code)
+      : SingleClientStatusChangeChecker(service),
+        expected_error_code_(expected_error_code) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for callback";
+
+    return last_error_code_ &&
+           last_error_code_->error_code() == expected_error_code_;
+  }
+
+  SharingMessageBridge::CommitFinishedCallback GetCommitFinishedCallback() {
+    return base::BindOnce(&SharingMessageCallbackChecker::OnCommitFinished,
+                          weak_ptr_factory_.GetWeakPtr());
+  }
+
+ private:
+  void OnCommitFinished(const sync_pb::SharingMessageCommitError& error_code) {
+    EXPECT_FALSE(last_error_code_.has_value());
+    last_error_code_ = error_code;
+  }
+
+  const sync_pb::SharingMessageCommitError::ErrorCode expected_error_code_;
+  base::Optional<sync_pb::SharingMessageCommitError> last_error_code_;
+
+  base::WeakPtrFactory<SharingMessageCallbackChecker> weak_ptr_factory_{this};
+};
+
+// Used to wait until the sharing message commit was sent to the server
+// (regardless of the commit result). Waits until the last commit message has at
+// least one sharing message with the expected payload.
+class SharingMessageCommitChecker : public SingleClientStatusChangeChecker {
+ public:
+  SharingMessageCommitChecker(syncer::ProfileSyncService* service,
+                              fake_server::FakeServer* fake_server,
+                              const std::string& expected_payload)
+      : SingleClientStatusChangeChecker(service),
+        fake_server_(fake_server),
+        expected_payload_(expected_payload) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for sharing message to be committed.";
+
+    sync_pb::ClientToServerMessage message;
+    fake_server_->GetLastCommitMessage(&message);
+    for (const sync_pb::SyncEntity& entity : message.commit().entries()) {
+      if (entity.specifics().sharing_message().payload() == expected_payload_) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+ private:
+  fake_server::FakeServer* const fake_server_ = nullptr;
+  const std::string expected_payload_;
 };
 
 class SingleClientSharingMessageSyncTest : public SyncTest {
@@ -152,12 +218,10 @@ class SingleClientSharingMessageSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {
-  base::MockOnceCallback<void(const sync_pb::SharingMessageCommitError&)>
-      callback;
-  EXPECT_CALL(callback,
-              Run(HasErrorCode(sync_pb::SharingMessageCommitError::NONE)));
-
   ASSERT_TRUE(SetupSync());
+  SharingMessageCallbackChecker callback_checker(
+      GetSyncService(0), sync_pb::SharingMessageCommitError::NONE);
+
   ASSERT_EQ(0u, GetFakeServer()
                     ->GetSyncEntitiesByModelType(syncer::SHARING_MESSAGE)
                     .size());
@@ -167,9 +231,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {
   SharingMessageSpecifics specifics;
   specifics.set_payload("payload");
   sharing_message_bridge->SendSharingMessage(
-      std::make_unique<SharingMessageSpecifics>(specifics), callback.Get());
+      std::make_unique<SharingMessageSpecifics>(specifics),
+      callback_checker.GetCommitFinishedCallback());
 
   EXPECT_TRUE(WaitForSharingMessage({specifics}));
+  EXPECT_TRUE(callback_checker.Wait());
 }
 
 // ChromeOS does not support late signin after profile creation, so the test
@@ -190,31 +256,28 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
 
-  base::MockOnceCallback<void(const sync_pb::SharingMessageCommitError&)>
-      callback;
-  EXPECT_CALL(callback,
-              Run(HasErrorCode(sync_pb::SharingMessageCommitError::NONE)));
+  SharingMessageCallbackChecker callback_checker(
+      GetSyncService(0), sync_pb::SharingMessageCommitError::NONE);
 
   SharingMessageBridge* sharing_message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(GetProfile(0));
   SharingMessageSpecifics specifics;
   specifics.set_payload("payload");
   sharing_message_bridge->SendSharingMessage(
-      std::make_unique<SharingMessageSpecifics>(specifics), callback.Get());
+      std::make_unique<SharingMessageSpecifics>(specifics),
+      callback_checker.GetCommitFinishedCallback());
 
   EXPECT_TRUE(WaitForSharingMessage({specifics}));
+  EXPECT_TRUE(callback_checker.Wait());
 }
 #endif  // !defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
                        ShouldPropagateCommitFailure) {
-  base::MockOnceCallback<void(const sync_pb::SharingMessageCommitError&)>
-      callback;
-  EXPECT_CALL(
-      callback,
-      Run(HasErrorCode(sync_pb::SharingMessageCommitError::SYNC_SERVER_ERROR)));
-
   ASSERT_TRUE(SetupSync());
+  SharingMessageCallbackChecker callback_checker(
+      GetSyncService(0), sync_pb::SharingMessageCommitError::SYNC_SERVER_ERROR);
+
   GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::TRANSIENT_ERROR);
 
   SharingMessageBridge* sharing_message_bridge =
@@ -222,32 +285,30 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
   SharingMessageSpecifics specifics;
   specifics.set_payload("payload");
   sharing_message_bridge->SendSharingMessage(
-      std::make_unique<SharingMessageSpecifics>(specifics), callback.Get());
+      std::make_unique<SharingMessageSpecifics>(specifics),
+      callback_checker.GetCommitFinishedCallback());
 
-  ASSERT_TRUE(NextCycleIterationChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(callback_checker.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
                        ShouldCleanPendingMessagesAfterSyncPaused) {
-  base::MockOnceCallback<void(const sync_pb::SharingMessageCommitError&)>
-      callback;
-  EXPECT_CALL(
-      callback,
-      Run(HasErrorCode(sync_pb::SharingMessageCommitError::SYNC_TURNED_OFF)));
-
   ASSERT_TRUE(SetupSync());
+  SharingMessageCallbackChecker callback_checker(
+      GetSyncService(0), sync_pb::SharingMessageCommitError::SYNC_TURNED_OFF);
 
   SharingMessageBridge* sharing_message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(GetProfile(0));
   SharingMessageSpecifics specifics;
   specifics.set_payload("payload");
   sharing_message_bridge->SendSharingMessage(
-      std::make_unique<SharingMessageSpecifics>(specifics), callback.Get());
+      std::make_unique<SharingMessageSpecifics>(specifics),
+      callback_checker.GetCommitFinishedCallback());
 
   GetClient(0)->StopSyncServiceAndClearData();
   GetClient(0)->StartSyncService();
-  ASSERT_TRUE(NextCycleIterationChecker(GetSyncService(0)).Wait());
 
+  EXPECT_TRUE(callback_checker.Wait());
   EXPECT_TRUE(GetFakeServer()
                   ->GetSyncEntitiesByModelType(syncer::SHARING_MESSAGE)
                   .empty());
@@ -261,50 +322,51 @@ IN_PROC_BROWSER_TEST_F(
   SetOAuth2TokenResponse(kInvalidGrantOAuth2Token, net::HTTP_BAD_REQUEST,
                          net::OK);
 
-  base::MockOnceCallback<void(const sync_pb::SharingMessageCommitError&)>
-      callback;
-  EXPECT_CALL(
-      callback,
-      Run(HasErrorCode(sync_pb::SharingMessageCommitError::SYNC_TURNED_OFF)));
+  SharingMessageCallbackChecker callback_checker(
+      GetSyncService(0), sync_pb::SharingMessageCommitError::SYNC_TURNED_OFF);
 
   SharingMessageBridge* sharing_message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(GetProfile(0));
   SharingMessageSpecifics specifics;
   specifics.set_payload("payload");
   sharing_message_bridge->SendSharingMessage(
-      std::make_unique<SharingMessageSpecifics>(specifics), callback.Get());
+      std::make_unique<SharingMessageSpecifics>(specifics),
+      callback_checker.GetCommitFinishedCallback());
 
   EXPECT_TRUE(DisabledSharingMessageChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(callback_checker.Wait());
 }
 
-// TODO(crbug.com/1097054): enable the test once the issue is fixed, without
-// that it may be flaky because SharingMessage data type might not generate
-// retries.
 IN_PROC_BROWSER_TEST_F(
     SingleClientSharingMessageSyncTest,
-    DISABLED_ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
+    ShouldRetrySendingSharingMessageDataTypeOnTransientAuthError) {
+  const std::string payload = "payload";
+
   ASSERT_TRUE(SetupSync());
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
   SetOAuth2TokenResponse(kEmptyOAuth2Token, net::HTTP_INTERNAL_SERVER_ERROR,
                          net::OK);
 
-  base::MockOnceCallback<void(const sync_pb::SharingMessageCommitError&)>
-      callback;
-  EXPECT_CALL(callback,
-              Run(HasErrorCode(sync_pb::SharingMessageCommitError::NONE)));
+  SharingMessageCallbackChecker callback_checker(
+      GetSyncService(0), sync_pb::SharingMessageCommitError::NONE);
 
   SharingMessageBridge* sharing_message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(GetProfile(0));
   SharingMessageSpecifics specifics;
-  specifics.set_payload("payload");
+  specifics.set_payload(payload);
   sharing_message_bridge->SendSharingMessage(
-      std::make_unique<SharingMessageSpecifics>(specifics), callback.Get());
+      std::make_unique<SharingMessageSpecifics>(specifics),
+      callback_checker.GetCommitFinishedCallback());
 
+  ASSERT_TRUE(
+      SharingMessageCommitChecker(GetSyncService(0), GetFakeServer(), payload)
+          .Wait());
   ASSERT_TRUE(RetryingAccessTokenFetchChecker(GetSyncService(0)).Wait());
-  GetFakeServer()->ClearHttpError();
   SetOAuth2TokenResponse(kValidOAuth2Token, net::HTTP_OK, net::OK);
+  GetFakeServer()->ClearHttpError();
 
   EXPECT_TRUE(WaitForSharingMessage({specifics}));
+  EXPECT_TRUE(callback_checker.Wait());
 }
 
 }  // namespace

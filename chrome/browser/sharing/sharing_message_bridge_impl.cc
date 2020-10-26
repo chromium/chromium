@@ -47,6 +47,12 @@ std::unique_ptr<syncer::EntityData> MoveToEntityData(
   return entity_data;
 }
 
+std::unique_ptr<syncer::EntityData> CopyToEntityData(
+    const sync_pb::SharingMessageSpecifics& specifics) {
+  return MoveToEntityData(
+      std::make_unique<sync_pb::SharingMessageSpecifics>(specifics));
+}
+
 }  // namespace
 
 SharingMessageBridgeImpl::SharingMessageBridgeImpl(
@@ -85,13 +91,17 @@ void SharingMessageBridgeImpl::SendSharingMessage(
       MoveToEntityData(std::move(specifics));
   const syncer::ClientTagHash client_tag_hash =
       GetClientTagHashFromStorageKey(message_id);
-  const auto result = commit_callbacks_.emplace(
+
+  DCHECK(pending_commits_.find(client_tag_hash) == pending_commits_.end());
+  pending_commits_.emplace(
       client_tag_hash,
-      std::make_unique<TimedCallback>(
-          std::move(on_commit_callback),
-          base::BindOnce(&SharingMessageBridgeImpl::ProcessCommitTimeout,
-                         base::Unretained(this), client_tag_hash)));
-  DCHECK(result.second);
+      PendingCommit(
+          std::make_unique<TimedCallback>(
+              std::move(on_commit_callback),
+              base::BindOnce(&SharingMessageBridgeImpl::ProcessCommitTimeout,
+                             base::Unretained(this), client_tag_hash)),
+          entity_data->specifics.sharing_message()));
+
   change_processor()->Put(message_id, std::move(entity_data),
                           metadata_change_list.get());
 }
@@ -134,13 +144,31 @@ base::Optional<syncer::ModelError> SharingMessageBridgeImpl::ApplySyncChanges(
 
 void SharingMessageBridgeImpl::GetData(StorageKeyList storage_keys,
                                        DataCallback callback) {
-  return GetAllDataForDebugging(std::move(callback));
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+
+  for (const std::string& storage_key : storage_keys) {
+    auto iter =
+        pending_commits_.find(GetClientTagHashFromStorageKey(storage_key));
+    if (iter == pending_commits_.end()) {
+      continue;
+    }
+    batch->Put(storage_key, CopyToEntityData(iter->second.specifics));
+  }
+
+  std::move(callback).Run(std::move(batch));
 }
 
 void SharingMessageBridgeImpl::GetAllDataForDebugging(DataCallback callback) {
-  // This data type does not store any data, we can always run the callback
-  // with empty data.
-  std::move(callback).Run(std::make_unique<syncer::MutableDataBatch>());
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+
+  for (const auto& cth_to_commit : pending_commits_) {
+    std::unique_ptr<syncer::EntityData> entity_data =
+        CopyToEntityData(cth_to_commit.second.specifics);
+    const std::string storage_key = GetStorageKey(*entity_data);
+    batch->Put(storage_key, std::move(entity_data));
+  }
+
+  std::move(callback).Run(std::move(batch));
 }
 
 std::string SharingMessageBridgeImpl::GetClientTag(
@@ -189,11 +217,11 @@ void SharingMessageBridgeImpl::OnCommitAttemptFailed(
 
   sync_pb::SharingMessageCommitError sync_error_message;
   sync_error_message.set_error_code(sharing_message_error_code);
-  for (auto& cth_and_callback : commit_callbacks_) {
-    change_processor()->UntrackEntityForClientTagHash(cth_and_callback.first);
-    cth_and_callback.second->Run(sync_error_message);
+  for (auto& cth_and_commit : pending_commits_) {
+    change_processor()->UntrackEntityForClientTagHash(cth_and_commit.first);
+    cth_and_commit.second.timed_callback->Run(sync_error_message);
   }
-  commit_callbacks_.clear();
+  pending_commits_.clear();
 }
 
 void SharingMessageBridgeImpl::ApplyStopSyncChanges(
@@ -201,15 +229,15 @@ void SharingMessageBridgeImpl::ApplyStopSyncChanges(
   sync_pb::SharingMessageCommitError sync_disabled_error_message;
   sync_disabled_error_message.set_error_code(
       sync_pb::SharingMessageCommitError::SYNC_TURNED_OFF);
-  for (auto& cth_and_callback : commit_callbacks_) {
-    change_processor()->UntrackEntityForClientTagHash(cth_and_callback.first);
-    cth_and_callback.second->Run(sync_disabled_error_message);
+  for (auto& cth_and_commit : pending_commits_) {
+    change_processor()->UntrackEntityForClientTagHash(cth_and_commit.first);
+    cth_and_commit.second.timed_callback->Run(sync_disabled_error_message);
   }
-  commit_callbacks_.clear();
+  pending_commits_.clear();
 }
 
 void SharingMessageBridgeImpl::ProcessCommitTimeout(
-    syncer::ClientTagHash client_tag_hash) {
+    const syncer::ClientTagHash& client_tag_hash) {
   change_processor()->UntrackEntityForClientTagHash(client_tag_hash);
   sync_pb::SharingMessageCommitError error_message;
   error_message.set_error_code(
@@ -220,14 +248,14 @@ void SharingMessageBridgeImpl::ProcessCommitTimeout(
 void SharingMessageBridgeImpl::ProcessCommitResponse(
     const syncer::ClientTagHash& client_tag_hash,
     const sync_pb::SharingMessageCommitError& commit_error_message) {
-  const auto iter = commit_callbacks_.find(client_tag_hash);
-  if (iter == commit_callbacks_.end()) {
+  const auto iter = pending_commits_.find(client_tag_hash);
+  if (iter == pending_commits_.end()) {
     // This may happen if tasks from OnUpdateReceived and OneShotTimer were
     // added at one time.
     return;
   }
-  iter->second->Run(commit_error_message);
-  commit_callbacks_.erase(iter);
+  iter->second.timed_callback->Run(commit_error_message);
+  pending_commits_.erase(iter);
 }
 
 SharingMessageBridgeImpl::TimedCallback::TimedCallback(
@@ -252,3 +280,16 @@ void SharingMessageBridgeImpl::TimedCallback::Run(
     timer_.Stop();
   }
 }
+
+SharingMessageBridgeImpl::PendingCommit::PendingCommit(
+    std::unique_ptr<TimedCallback> timed_callback,
+    sync_pb::SharingMessageSpecifics specifics)
+    : timed_callback(std::move(timed_callback)),
+      specifics(std::move(specifics)) {}
+
+SharingMessageBridgeImpl::PendingCommit::~PendingCommit() = default;
+
+SharingMessageBridgeImpl::PendingCommit::PendingCommit(PendingCommit&&) =
+    default;
+SharingMessageBridgeImpl::PendingCommit&
+SharingMessageBridgeImpl::PendingCommit::operator=(PendingCommit&&) = default;

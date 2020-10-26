@@ -10,8 +10,10 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/sharing/features.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,12 +23,15 @@ namespace {
 
 using sync_pb::SharingMessageCommitError;
 using sync_pb::SharingMessageSpecifics;
+using syncer::DataBatch;
 using syncer::SyncCommitError;
 using testing::_;
 using testing::InvokeWithoutArgs;
 using testing::NotNull;
+using testing::Pair;
 using testing::Return;
 using testing::SaveArg;
+using testing::UnorderedElementsAre;
 
 // Action SaveArgPointeeMove<k>(pointer) saves the value pointed to by the k-th
 // (0-based) argument of the mock function by moving it to *pointer.
@@ -49,6 +54,20 @@ class OfflineNetworkChangeNotifier : public net::NetworkChangeNotifier {
     return NetworkChangeNotifier::CONNECTION_NONE;
   }
 };
+
+std::unordered_map<std::string, std::string> ExtractStorageKeyAndPayloads(
+    std::unique_ptr<DataBatch> batch) {
+  std::unordered_map<std::string, std::string> storage_key_to_payload;
+  DCHECK(batch);
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& pair = batch->Next();
+    const SharingMessageSpecifics& specifics =
+        pair.second->specifics.sharing_message();
+    const std::string& storage_key = pair.first;
+    storage_key_to_payload.emplace(storage_key, specifics.payload());
+  }
+  return storage_key_to_payload;
+}
 
 class SharingMessageBridgeTest : public testing::Test {
  protected:
@@ -140,6 +159,18 @@ TEST_F(SharingMessageBridgeTest, ShouldInvokeCallbackOnSuccess) {
   EXPECT_EQ(bridge()->GetCallbacksCountForTesting(), 0u);
   histogram_tester.ExpectUniqueSample("Sync.SharingMessage.CommitResult",
                                       SharingMessageCommitError::NONE, 1);
+
+  // Check that GetData doesn't return anything after successful commit.
+  base::MockCallback<syncer::ModelTypeSyncBridge::DataCallback> data_callback;
+  std::unique_ptr<DataBatch> data_batch;
+  EXPECT_CALL(data_callback, Run(_))
+      .WillOnce([&data_batch](std::unique_ptr<DataBatch> batch) {
+        data_batch = std::move(batch);
+      });
+
+  bridge()->GetData({storage_key}, data_callback.Get());
+  ASSERT_THAT(data_batch, NotNull());
+  EXPECT_FALSE(data_batch->HasNext());
 }
 
 TEST_F(SharingMessageBridgeTest, ShouldInvokeCallbackOnFailure) {
@@ -263,6 +294,44 @@ TEST_F(SharingMessageBridgeTest, ShouldIgnoreSyncAuthError) {
   bridge()->OnCommitAttemptFailed(syncer::SyncCommitError::kAuthError);
 
   EXPECT_EQ(1u, bridge()->GetCallbacksCountForTesting());
+}
+
+TEST_F(SharingMessageBridgeTest, ShouldReturnUnsyncedData) {
+  const std::string payload1 = "payload_1";
+  const std::string payload2 = "payload_2";
+
+  base::MockCallback<SharingMessageBridge::CommitFinishedCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  bridge()->SendSharingMessage(CreateSpecifics(payload1), callback.Get());
+  bridge()->SendSharingMessage(CreateSpecifics(payload2), callback.Get());
+
+  base::MockCallback<syncer::ModelTypeSyncBridge::DataCallback> data_callback;
+  std::unique_ptr<DataBatch> data_batch;
+  EXPECT_CALL(data_callback, Run(_))
+      .Times(2)
+      .WillRepeatedly([&data_batch](std::unique_ptr<DataBatch> batch) {
+        data_batch = std::move(batch);
+      });
+
+  bridge()->GetAllDataForDebugging(data_callback.Get());
+  ASSERT_THAT(data_batch, NotNull());
+  std::unordered_map<std::string, std::string> storage_key_to_payload =
+      ExtractStorageKeyAndPayloads(std::move(data_batch));
+  EXPECT_THAT(storage_key_to_payload,
+              UnorderedElementsAre(Pair(_, payload1), Pair(_, payload2)));
+
+  syncer::ModelTypeSyncBridge::StorageKeyList storage_key_list;
+  for (const auto& sk_to_payload : storage_key_to_payload) {
+    storage_key_list.push_back(sk_to_payload.first);
+  }
+
+  // Add another one invalid storage key.
+  storage_key_list.push_back("invalid_storage_key");
+  bridge()->GetData(std::move(storage_key_list), data_callback.Get());
+  ASSERT_THAT(data_batch, NotNull());
+  storage_key_to_payload = ExtractStorageKeyAndPayloads(std::move(data_batch));
+  EXPECT_THAT(storage_key_to_payload,
+              UnorderedElementsAre(Pair(_, payload1), Pair(_, payload2)));
 }
 
 TEST_P(SharingMessageBridgeErrorsTest,
