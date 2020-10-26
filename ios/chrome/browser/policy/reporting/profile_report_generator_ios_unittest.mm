@@ -13,6 +13,7 @@ namespace em = enterprise_management;
 #import <Foundation/Foundation.h>
 
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
@@ -35,6 +36,7 @@ namespace enterprise_reporting {
 namespace {
 
 const base::FilePath kProfilePath = base::FilePath("/fake/profile/default");
+const std::string kAccount = "fake_account";
 
 }  // namespace
 
@@ -55,6 +57,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
     InitPolicyMap();
 
+    authentication_service_ =
+        AuthenticationServiceFactory::GetForBrowserState(browser_state.get());
     scoped_browser_state_manager_ =
         std::make_unique<IOSChromeScopedTestingChromeBrowserStateManager>(
             std::make_unique<TestChromeBrowserStateManager>(
@@ -84,6 +88,15 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
                     base::Value(true), nullptr);
   }
 
+  void SignIn() {
+    ios::FakeChromeIdentityService* identityService =
+        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+    identityService->AddIdentities(@[ base::SysUTF8ToNSString(kAccount) ]);
+    ChromeIdentity* identity =
+        [identityService->GetAllIdentitiesSortedForDisplay() objectAtIndex:0];
+    authentication_service_->SignIn(identity);
+  }
+
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
     std::unique_ptr<em::ChromeUserProfileInfo> report =
         generator_.MaybeGenerate(kProfilePath,
@@ -111,12 +124,23 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
   policy::PolicyMap policy_map_;
   std::unique_ptr<IOSChromeScopedTestingChromeBrowserStateManager>
       scoped_browser_state_manager_;
+  AuthenticationService* authentication_service_;
 };
 
 TEST_F(ProfileReportGeneratorIOSTest, UnsignedInProfile) {
   auto report = GenerateReport();
   ASSERT_TRUE(report);
   EXPECT_FALSE(report->has_chrome_signed_in_user());
+}
+
+TEST_F(ProfileReportGeneratorIOSTest, SignedInProfile) {
+  SignIn();
+  auto report = GenerateReport();
+  ASSERT_TRUE(report);
+  EXPECT_TRUE(report->has_chrome_signed_in_user());
+  EXPECT_EQ(kAccount + "@gmail.com", report->chrome_signed_in_user().email());
+  EXPECT_EQ(kAccount + "_hashID",
+            report->chrome_signed_in_user().obfudscated_gaia_id());
 }
 
 TEST_F(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
