@@ -219,4 +219,25 @@ TEST_P(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
   EXPECT_FALSE(root.HasDescendantCompositingReasons());
 }
 
+TEST_P(CompositeSVGLayoutSVGRootTest, CompositedSVGMetric) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .anim { animation: anim 5s infinite; }
+      @keyframes anim {
+        from { transform: translateX(0); }
+        to { transform: translateX(100px); }
+      }
+    </style>
+    <svg style="width: 200px; height: 200px;">
+      <rect id="rect" width="100" height="100" fill="green"/>
+    </svg>
+  )HTML");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCompositedSVG));
+  auto* rect = GetDocument().getElementById("rect");
+  rect->setAttribute(html_names::kClassAttr, "anim");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCompositedSVG));
+}
+
 }  // namespace blink

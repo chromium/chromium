@@ -625,6 +625,9 @@ bool LayoutSVGRoot::HasDescendantWithCompositingReason() const {
       }
     }
     has_descendant_with_compositing_reason_dirty_ = false;
+
+    if (has_descendant_with_compositing_reason_)
+      UseCounter::Count(GetDocument(), WebFeature::kCompositedSVG);
   }
   return has_descendant_with_compositing_reason_;
 }

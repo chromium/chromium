@@ -30006,6 +30006,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3707" label="ColorSchemeDarkSupportedOnRoot"/>
   <int value="3708" label="WebBluetoothGetAvailability"/>
   <int value="3709" label="DigitalGoodsListPurchases"/>
+  <int value="3710" label="CompositedSVG"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

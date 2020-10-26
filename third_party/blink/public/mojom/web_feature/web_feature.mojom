@@ -3038,6 +3038,7 @@ enum WebFeature {
   kColorSchemeDarkSupportedOnRoot = 3707,
   kWebBluetoothGetAvailability = 3708,
   kDigitalGoodsListPurchases = 3709,
+  kCompositedSVG = 3710,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
