@@ -586,8 +586,8 @@ class ShellUtil {
 
   typedef base::RefCountedData<base::AtomicFlag> SharedCancellationFlag;
 
-  // Appends Chrome shortcuts with non-whitelisted arguments to |shortcuts| if
-  // not nullptr. If |do_removal|, also removes non-whitelisted arguments from
+  // Appends Chrome shortcuts with disallowed arguments to |shortcuts| if
+  // not nullptr. If |do_removal|, also removes disallowed arguments from
   // those shortcuts. This method will abort and return false if |cancel| is
   // non-nullptr and gets set at any point during this call.
   static bool ShortcutListMaybeRemoveUnknownArgs(

@@ -1472,7 +1472,7 @@ bool BatchShortcutAction(
 // where no deletion occurred because directory is non-empty.
 bool RemoveShortcutFolderIfEmpty(ShellUtil::ShortcutLocation location,
                                  ShellUtil::ShellChange level) {
-  // Explicitly whitelist locations, since accidental calls can be very harmful.
+  // Explicitly allow locations, since accidental calls can be very harmful.
   if (location !=
           ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED &&
       location != ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR &&
@@ -1764,7 +1764,7 @@ void ShellUtil::AddDefaultShortcutProperties(const base::FilePath& target_exe,
 bool ShellUtil::MoveExistingShortcut(ShortcutLocation old_location,
                                      ShortcutLocation new_location,
                                      const ShortcutProperties& properties) {
-  // Explicitly whitelist locations to which this is applicable.
+  // Explicitly allow locations to which this is applicable.
   if (old_location != SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED ||
       new_location != SHORTCUT_LOCATION_START_MENU_ROOT) {
     NOTREACHED();
@@ -1788,7 +1788,7 @@ bool ShellUtil::MoveExistingShortcut(ShortcutLocation old_location,
 bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
                                        const ShortcutProperties& properties,
                                        ShortcutOperation operation) {
-  // Explicitly whitelist locations to which this is applicable.
+  // Explicitly allow locations to which this is applicable.
   if (location != SHORTCUT_LOCATION_DESKTOP &&
       location != SHORTCUT_LOCATION_QUICK_LAUNCH &&
       location != SHORTCUT_LOCATION_START_MENU_ROOT &&

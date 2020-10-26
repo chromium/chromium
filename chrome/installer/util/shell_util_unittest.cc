@@ -629,7 +629,7 @@ TEST_F(ShellUtilShortcutTest, ClearShortcutArguments) {
   ASSERT_TRUE(base::PathExists(shortcut1_path));
   ShellUtil::ShortcutProperties expected_properties1(test_properties_);
 
-  // Shortcut 2: targets "chrome.exe"; has 1 whitelisted argument.
+  // Shortcut 2: targets "chrome.exe"; has 1 argument in the allow list.
   test_properties_.set_shortcut_name(L"Chrome 2");
   test_properties_.set_arguments(L"--profile-directory=\"Profile 2\"");
   ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
