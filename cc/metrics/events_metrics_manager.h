@@ -21,9 +21,11 @@ namespace cc {
 class CC_EXPORT EventsMetricsManager {
  public:
   // This interface is used to denote the scope of an event handling. The scope
-  // is started as soon as an instance is constructed and ended when instance is
-  // desctucted. EventsMetricsManager uses this to determine whether a frame
-  // update has happened due to handling of a specific event or not.
+  // is started as soon as an instance is constructed and ended when the
+  // instance is destructed. EventsMetricsManager uses this to determine whether
+  // a frame update has happened due to handling of a specific event or not.
+  // Since it is possible to have nested event loops, scoped monitors can be
+  // nested.
   class ScopedMonitor {
    public:
     ScopedMonitor() = default;
@@ -41,7 +43,8 @@ class CC_EXPORT EventsMetricsManager {
 
   // Called by clients when they start handling an event. Destruction of the
   // scoped monitor indicates the end of event handling. |event_metrics| is
-  // allowed to be nullptr in which case the return value would also be nullptr.
+  // allowed to be nullptr, which means the client is not interested in
+  // reporting metrics for this specific events.
   std::unique_ptr<ScopedMonitor> GetScopedMonitor(
       const EventMetrics* event_metrics);
 
@@ -60,8 +63,8 @@ class CC_EXPORT EventsMetricsManager {
  private:
   void OnScopedMonitorEnded();
 
-  // Current active EventMetrics, if any.
-  const EventMetrics* active_event_ = nullptr;
+  // Stack of active, potentially nested, event metrics
+  std::vector<const EventMetrics*> active_events_;
 
   // List of saved event metrics.
   std::vector<EventMetrics> saved_events_;

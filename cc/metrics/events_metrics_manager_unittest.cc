@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/stl_util.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,11 +15,17 @@
 #include "ui/events/types/scroll_input_type.h"
 
 namespace cc {
-namespace {
-base::TimeTicks TimeAtMs(int ms) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(ms);
-}
-}  // namespace
+
+#define EXPECT_SCOPED(statements) \
+  {                               \
+    SCOPED_TRACE("");             \
+    statements;                   \
+  }
+
+using ::testing::Each;
+using ::testing::Message;
+using ::testing::NotNull;
+using ::testing::UnorderedElementsAreArray;
 
 class EventsMetricsManagerTest : public testing::Test {
  public:
@@ -26,7 +33,15 @@ class EventsMetricsManagerTest : public testing::Test {
   ~EventsMetricsManagerTest() override = default;
 
  protected:
+  base::TimeTicks now() const { return now_; }
+
+  base::TimeTicks AdvanceNowByMs(int ms) {
+    now_ += base::TimeDelta::FromMilliseconds(ms);
+    return now_;
+  }
+
   EventsMetricsManager manager_;
+  base::TimeTicks now_ = base::TimeTicks::Now();
 };
 
 // Tests that EventMetrics are saved only if they have an event type we are
@@ -42,27 +57,26 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
   std::pair<std::unique_ptr<EventMetrics>, Behavior> events[] = {
       // An interesting event type for which SaveActiveEventMetrics() is not
       // called.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt, TimeAtMs(0),
-                            base::nullopt),
+      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt,
+                            AdvanceNowByMs(1), base::nullopt),
        Behavior::kDoNotSave},
 
       // An interesting event type for which SaveActiveEventMetrics() is called
       // inside its monitor scope.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt, TimeAtMs(1),
-                            base::nullopt),
+      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt,
+                            AdvanceNowByMs(1), base::nullopt),
        Behavior::kSaveInsideScope},
 
       // An interesting event type for which SaveActiveEventMetrics() is called
-      // after
-      // its monitor scope is finished.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt, TimeAtMs(2),
-                            base::nullopt),
+      // after its monitor scope is finished.
+      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt,
+                            AdvanceNowByMs(1), base::nullopt),
        Behavior::kSaveOutsideScope},
 
       // A non-interesting event type for which SaveActiveEventMetrics() is
       // called inside its monitor scope.
-      {EventMetrics::Create(ui::ET_MOUSE_MOVED, base::nullopt, TimeAtMs(3),
-                            base::nullopt),
+      {EventMetrics::Create(ui::ET_MOUSE_MOVED, base::nullopt,
+                            AdvanceNowByMs(1), base::nullopt),
        Behavior::kSaveInsideScope},
   };
   EXPECT_NE(events[0].first, nullptr);
@@ -90,11 +104,112 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 
   // Check saved event metrics are as expected.
   EXPECT_THAT(manager_.TakeSavedEventsMetrics(),
-              testing::ContainerEq(expected_saved_events));
+              UnorderedElementsAreArray(expected_saved_events));
 
   // The first call to TakeSavedEventsMetrics() should remove events metrics
   // from the manager, so the second call should return empty list.
   EXPECT_THAT(manager_.TakeSavedEventsMetrics(), testing::IsEmpty());
+}
+
+// Tests that metrics for nested event loops are handled properly in a few
+// different configurations.
+TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
+  const std::unique_ptr<EventMetrics> events[] = {
+      EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt,
+                           AdvanceNowByMs(1), base::nullopt),
+      EventMetrics::Create(ui::ET_MOUSE_RELEASED, base::nullopt,
+                           AdvanceNowByMs(1), base::nullopt),
+  };
+  EXPECT_THAT(events, Each(NotNull()));
+
+  struct {
+    // Metrics to use for the outer scope.
+    const EventMetrics* outer_metrics;
+
+    // Whether to save the outer scope metrics before starting the inner scope.
+    bool save_outer_metrics_before_inner;
+
+    // Metrics to use for the inner scope.
+    const EventMetrics* inner_metrics;
+
+    // Whether to save the inner scope metrics.
+    bool save_inner_metrics;
+
+    // Whether to save the outer scope metrics after the inner scope ended.
+    bool save_outer_metrics_after_inner;
+
+    // List of metrics expected to be saved.
+    std::vector<EventMetrics> expected_saved_metrics;
+  } configs[] = {
+      // Config #0.
+      {
+          /*outer_metrics=*/events[0].get(),
+          /*save_outer_metrics_before_inner=*/true,
+          /*inner_metrics=*/events[1].get(),
+          /*save_inner_metrics=*/true,
+          /*save_outer_metrics_after_inner=*/false,
+          /*expected_saved_metrics=*/{*events[0], *events[1]},
+      },
+
+      // Config #1.
+      {
+          /*outer_metrics=*/events[0].get(),
+          /*save_outer_metrics_before_inner=*/false,
+          /*inner_metrics=*/events[1].get(),
+          /*save_inner_metrics=*/true,
+          /*save_outer_metrics_after_inner=*/true,
+          /*expected_saved_metrics=*/{*events[0], *events[1]},
+      },
+
+      // Config #2.
+      {
+          /*outer_metrics=*/events[0].get(),
+          /*save_outer_metrics_before_inner=*/true,
+          /*inner_metrics=*/events[1].get(),
+          /*save_inner_metrics=*/true,
+          /*save_outer_metrics_after_inner=*/true,
+          /*expected_saved_metrics=*/{*events[0], *events[1]},
+      },
+
+      // Config #3.
+      {
+          /*outer_metrics=*/events[0].get(),
+          /*save_outer_metrics_before_inner=*/false,
+          /*inner_metrics=*/nullptr,
+          /*save_inner_metrics=*/false,
+          /*save_outer_metrics_after_inner=*/true,
+          /*expected_saved_metrics=*/{*events[0]},
+      },
+
+      // Config #4.
+      {
+          /*outer_metrics=*/nullptr,
+          /*save_outer_metrics_before_inner=*/false,
+          /*inner_metrics=*/events[0].get(),
+          /*save_inner_metrics=*/true,
+          /*save_outer_metrics_after_inner=*/false,
+          /*expected_saved_metrics=*/{*events[0]},
+      },
+  };
+
+  for (size_t i = 0; i < base::size(configs); i++) {
+    auto& config = configs[i];
+    {
+      auto outer_monitor = manager_.GetScopedMonitor(config.outer_metrics);
+      if (config.save_outer_metrics_before_inner)
+        manager_.SaveActiveEventMetrics();
+      {
+        auto inner_monitor = manager_.GetScopedMonitor(config.inner_metrics);
+        if (config.save_inner_metrics)
+          manager_.SaveActiveEventMetrics();
+      }
+      if (config.save_outer_metrics_after_inner)
+        manager_.SaveActiveEventMetrics();
+    }
+    SCOPED_TRACE(Message() << "Config #" << i);
+    EXPECT_THAT(manager_.TakeSavedEventsMetrics(),
+                UnorderedElementsAreArray(config.expected_saved_metrics));
+  }
 }
 
 }  // namespace cc

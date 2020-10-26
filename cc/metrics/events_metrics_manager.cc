@@ -36,16 +36,13 @@ EventsMetricsManager::~EventsMetricsManager() = default;
 
 std::unique_ptr<EventsMetricsManager::ScopedMonitor>
 EventsMetricsManager::GetScopedMonitor(const EventMetrics* event_metrics) {
-  DCHECK(!active_event_);
-  if (!event_metrics)
-    return nullptr;
-  active_event_ = event_metrics;
+  active_events_.push_back(event_metrics);
   return std::make_unique<ScopedMonitorImpl>(base::BindOnce(
       &EventsMetricsManager::OnScopedMonitorEnded, weak_factory_.GetWeakPtr()));
 }
 
 void EventsMetricsManager::SaveActiveEventMetrics() {
-  if (active_event_) {
+  if (active_events_.size() > 0 && active_events_.back()) {
     // TODO(crbug.com/1054009): It is fine to make a copy of active EventMetrics
     // object here as we are not going to change it later. However, the plan is
     // to add timestamp of when the processing is done to this object. Since end
@@ -53,8 +50,11 @@ void EventsMetricsManager::SaveActiveEventMetrics() {
     // here. In that case, here we can just mark the event for saving and do the
     // actual copy when the scoped monitor is destroyed which happens after the
     // event processing is done.
-    saved_events_.push_back(*active_event_);
-    active_event_ = nullptr;
+    saved_events_.push_back(*active_events_.back());
+
+    // The items will be popped from the stack when the scoped monitor is ended,
+    // but replace it nullptr here to avoid reporting it multiple times.
+    active_events_.back() = nullptr;
   }
 }
 
@@ -65,7 +65,8 @@ std::vector<EventMetrics> EventsMetricsManager::TakeSavedEventsMetrics() {
 }
 
 void EventsMetricsManager::OnScopedMonitorEnded() {
-  active_event_ = nullptr;
+  DCHECK_GT(active_events_.size(), 0u);
+  active_events_.pop_back();
 }
 
 }  // namespace cc
