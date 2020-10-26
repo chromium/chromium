@@ -7135,9 +7135,7 @@ def generate_install_properties_per_feature(function_name,
         arg_decls=[
             "ScriptState* script_state",
             "OriginTrialFeature feature",
-            "base::span<const std::pair<"
-            "const WrapperTypeInfo*, InstallFuncType>> "
-            "wrapper_type_info_list",
+            "base::span<const WrapperTypeInfo* const> wrapper_type_info_list",
         ],
         return_type="void")
 
@@ -7166,8 +7164,6 @@ def generate_install_properties_per_feature(function_name,
         EmptyNode(),
         TextNode("#include \"{}\"".format(header_path)),
         EmptyNode(),
-        TextNode("#include <algorithm>"),
-        EmptyNode(),
         make_header_include_directives(source_node.accumulator),
         EmptyNode(),
         source_blink_ns,
@@ -7179,16 +7175,7 @@ def generate_install_properties_per_feature(function_name,
         func_decl,
     ])
     source_bindings_ns.body.extend([
-        CxxNamespaceNode(
-            name="",
-            body=[
-                TextNode("""\
-using InstallFuncType =
-    V8InterfaceBridgeBase::InstallContextDependentPropertiesFuncType;\
-"""),
-                EmptyNode(),
-                helper_func_def,
-            ]),
+        CxxNamespaceNode(name="", body=helper_func_def),
         EmptyNode(),
         func_def,
     ])
@@ -7220,22 +7207,18 @@ using InstallFuncType =
     switch_node.append(
         case=None,
         body=[
-            TextNode("// Ignore unknown, deprecated, and/or unused features."),
+            TextNode("// Ignore unknown, deprecated, and unused features."),
             TextNode("return;"),
         ],
         should_add_break=False)
     for feature, class_likes in sorted(feature_to_class_likes.items()):
         entries = [
-            TextNode("{{"
-                     "{0}::GetWrapperTypeInfo(), "
-                     "{0}::InstallContextDependentProperties"
-                     "}}, ".format(v8_bridge_class_name(class_like)))
+            TextNode("{}::GetWrapperTypeInfo(), ".format(
+                v8_bridge_class_name(class_like)))
             for class_like in sorted(class_likes, key=lambda x: x.identifier)
         ]
         table_def = ListNode([
-            TextNode("static const std::pair<"
-                     "const WrapperTypeInfo*, "
-                     "InstallFuncType> wti_list[] = {"),
+            TextNode("static const WrapperTypeInfo* const wti_list[] = {"),
             ListNode(entries),
             TextNode("};"),
         ])
@@ -7247,9 +7230,8 @@ using InstallFuncType =
             ])
 
     func_def.body.extend([
-        TextNode("base::span<const std::pair<"
-                 "const WrapperTypeInfo*, "
-                 "InstallFuncType>> selected_wti_list;"),
+        TextNode(
+            "base::span<const WrapperTypeInfo* const> selected_wti_list;"),
         EmptyNode(),
         switch_node,
         EmptyNode(),
@@ -7271,23 +7253,30 @@ v8::Local<v8::Context> context = script_state->GetContext();
 const DOMWrapperWorld& world = script_state->World();
 V8InterfaceBridgeBase::FeatureSelector feature_selector(feature);
 
-for (const auto& pair : wrapper_type_info_list) {
-  const WrapperTypeInfo* wrapper_type_info = pair.first;
-  InstallFuncType install_func = pair.second;
-
+for (const auto* wrapper_type_info : wrapper_type_info_list) {
   v8::Local<v8::Object> instance_object;
   v8::Local<v8::Object> prototype_object;
   v8::Local<v8::Function> interface_object;
-  v8::Local<v8::Template> interface_template;
+  v8::Local<v8::Template> interface_template =
+      wrapper_type_info->GetV8ClassTemplate(isolate, world);
 
-  if (!per_context_data->GetExistingConstructorAndPrototypeForType(
-          wrapper_type_info, &prototype_object, &interface_object)) {
-    continue;
+  switch (wrapper_type_info->idl_definition_kind) {
+    case WrapperTypeInfo::kIdlInterface:
+      if (!per_context_data->GetExistingConstructorAndPrototypeForType(
+              wrapper_type_info, &prototype_object, &interface_object)) {
+        continue;
+      }
+      break;
+    case WrapperTypeInfo::kIdlNamespace:
+      NOTIMPLEMENTED();
+      break;
+    default:
+      NOTREACHED();
   }
 
-  interface_template = wrapper_type_info->GetV8ClassTemplate(isolate, world);
-  install_func(context, world, instance_object, prototype_object,
-               interface_object, interface_template, feature_selector);
+  wrapper_type_info->install_context_dependent_props_func(
+      context, world, instance_object, prototype_object,  interface_object,
+      interface_template, feature_selector);
 }\
 """))
 
