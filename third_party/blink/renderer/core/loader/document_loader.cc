@@ -1235,7 +1235,14 @@ void DocumentLoader::StartLoadingInternal() {
     HandleRedirect(redirect_response.CurrentRequestUrl());
   }
 
-  MixedContentChecker::CheckMixedPrivatePublic(GetFrame(), response_);
+  if (!frame_->IsMainFrame()) {
+    // We only care about detecting embedded private subresources.
+    //
+    // TODO(crbug.com/1129326): Revisit this when we have a coherent story for
+    // top-level navigations.
+    MixedContentChecker::CheckMixedPrivatePublic(frame_, response_);
+  }
+
   ApplyClientHintsConfig(params_->enabled_client_hints);
   PreloadHelper::LoadLinksFromHeader(
       response_.HttpHeaderField(http_names::kLink),
