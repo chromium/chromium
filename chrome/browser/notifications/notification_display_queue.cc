@@ -43,6 +43,11 @@ void NotificationDisplayQueue::EnqueueNotification(
   RemoveQueuedNotification(notification.id());
   queued_notifications_.emplace_back(notification_type, notification,
                                      std::move(metadata));
+  // Notify blockers that a new notification has been blocked.
+  for (auto& blocker : blockers_) {
+    if (blocker->ShouldBlockNotification(notification))
+      blocker->OnBlockedNotification(notification);
+  }
 }
 
 void NotificationDisplayQueue::RemoveQueuedNotification(

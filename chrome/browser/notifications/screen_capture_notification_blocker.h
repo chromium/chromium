@@ -15,6 +15,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class NotificationDisplayService;
+
 // This notification blocker listens to the events when the user starts
 // capturing a display. It will block notifications while such a capture is
 // ongoing. Note that this does not include casting the whole display and only
@@ -24,7 +26,8 @@ class ScreenCaptureNotificationBlocker
     : public NotificationBlocker,
       public MediaStreamCaptureIndicator::Observer {
  public:
-  ScreenCaptureNotificationBlocker();
+  explicit ScreenCaptureNotificationBlocker(
+      NotificationDisplayService* notification_display_service);
   ScreenCaptureNotificationBlocker(const ScreenCaptureNotificationBlocker&) =
       delete;
   ScreenCaptureNotificationBlocker& operator=(
@@ -34,6 +37,8 @@ class ScreenCaptureNotificationBlocker
   // NotificationBlocker:
   bool ShouldBlockNotification(
       const message_center::Notification& notification) override;
+  void OnBlockedNotification(
+      const message_center::Notification& notification) override;
 
   // MediaStreamCaptureIndicator::Observer:
   void OnIsCapturingDisplayChanged(content::WebContents* web_contents,
@@ -42,6 +47,17 @@ class ScreenCaptureNotificationBlocker
  private:
   FRIEND_TEST_ALL_PREFIXES(ScreenCaptureNotificationBlockerTest,
                            ObservesMediaStreamCaptureIndicator);
+
+  void DisplayMuteNotification();
+  void CloseMuteNotification();
+
+  // Counter for the number of notifications that have been muted during the
+  // current screen capturing session.
+  int muted_notification_count_ = 0;
+
+  // The |notification_display_service_| owns a NotificationDisplayQueue which
+  // owns |this| so a raw pointer is safe here.
+  NotificationDisplayService* notification_display_service_;
 
   ScopedObserver<MediaStreamCaptureIndicator,
                  MediaStreamCaptureIndicator::Observer>

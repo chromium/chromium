@@ -77,8 +77,8 @@ function permissionCallbackNoResponse() {
   g_permissionGranted = true;
 }
 
-// Starts a screen cast session and reports success to the test driver.
-function startScreenCast() {
+// Starts a screen capture session and reports success to the test driver.
+function startScreenCapture() {
   navigator.mediaDevices.getDisplayMedia({video: true}).then((stream) => {
     g_mediaStream = stream;
     sendResultToTest('success');
@@ -87,8 +87,8 @@ function startScreenCast() {
   });
 }
 
-// Stops a screen cast session and reports success to the test driver.
-function stopScreenCast() {
+// Stops a screen capture session and reports success to the test driver.
+function stopScreenCapture() {
   if (!g_mediaStream) {
     sendResultToTest('error');
     return;

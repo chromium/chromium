@@ -98,8 +98,11 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
 
     if (base::FeatureList::IsEnabled(
             features::kMuteNotificationsDuringScreenShare)) {
+      // TODO(knollr): Implement custom handler for actions.
+      AddNotificationHandler(NotificationHandler::Type::NOTIFICATIONS_MUTED,
+                             std::make_unique<NotificationHandler>());
       notification_queue_.AddNotificationBlocker(
-          std::make_unique<ScreenCaptureNotificationBlocker>());
+          std::make_unique<ScreenCaptureNotificationBlocker>(this));
     }
 
 #endif

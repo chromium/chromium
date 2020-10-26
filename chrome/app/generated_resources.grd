@@ -8590,6 +8590,23 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_NOTIFICATION_REPLY_PLACEHOLDER" desc="Placeholder text shown in the text box before any text is entered when replying directly to a notification.">
         Send message
       </message>
+      <message name="IDS_NOTIFICATION_MUTED_MESSAGE" desc="Informative message describing that notification content is currently hidden while the screen is being shared. Shown as the body of a notification.">
+        Details are hidden while you share your screen
+      </message>
+      <if expr="not use_titlecase">
+        <message name="IDS_NOTIFICATION_MUTED_TITLE" desc="Title of a notification showing how many new notifications are currently hidden. The number is always greater than zero.">
+          {MUTED_NOTIFICATIONS_COUNT, plural,
+            =1 {New notification}
+            other {# new notifications}}
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_NOTIFICATION_MUTED_TITLE" desc="Title of a notification showing how many new notifications are currently hidden. The number is always greater than zero.">
+          {MUTED_NOTIFICATIONS_COUNT, plural,
+            =1 {New Notification}
+            other {# New Notifications}}
+        </message>
+      </if>
       <if expr="is_android">
         <message name="IDS_NOTIFICATION_BUTTON_MANAGE" desc="Text of a button shown on notification permission requests, that opens the Chrome notifications settings page. This allows users to edit notification settings when a site asks them to allow notifications.">
           Manage

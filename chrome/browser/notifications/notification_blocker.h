@@ -35,6 +35,10 @@ class NotificationBlocker {
   virtual bool ShouldBlockNotification(
       const message_center::Notification& notification) = 0;
 
+  // Called when |notification| got blocked because this blocker is active.
+  virtual void OnBlockedNotification(
+      const message_center::Notification& notification) {}
+
   // Observer methods.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
