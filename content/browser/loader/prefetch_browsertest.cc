@@ -5,8 +5,13 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "content/browser/loader/prefetch_browsertest_base.h"
 #include "content/browser/web_package/mock_signed_exchange_handler.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -20,6 +25,7 @@
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/features.h"
+#include "net/base/filename_util.h"
 #include "net/base/isolation_info.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/features.h"
@@ -953,6 +959,49 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   // Subsequent navigation to the target URL wouldn't hit the network for
   // the target URL. The target content should still be read correctly.
   NavigateToURLAndWaitTitle(target_sxg_url, "done");
+}
+
+IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, FileToHttp) {
+  const char* target_path = "/target.html";
+  RegisterResponse(
+      target_path,
+      ResponseEntry("<head><title>Prefetch Target</title></head>"));
+
+  base::RunLoop prefetch_waiter;
+  auto request_counter = RequestCounter::CreateAndMonitor(
+      embedded_test_server(), target_path, &prefetch_waiter);
+  RegisterRequestHandler(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_EQ(0, request_counter->GetRequestCount());
+  EXPECT_EQ(0, GetPrefetchURLLoaderCallCount());
+
+  const GURL target_url = embedded_test_server()->GetURL(target_path);
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::ScopedTempDir temp_dir;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+    std::string file_content = base::StringPrintf(
+        "<body><link rel='prefetch' as='document' href='%s'></body>",
+        target_url.spec().c_str());
+    ASSERT_TRUE(base::WriteFile(file_path, file_content));
+
+    // Loading a page that prefetches the target URL would increment the
+    // |request_counter|.
+    GURL file_url = net::FilePathToFileURL(file_path);
+    EXPECT_TRUE(NavigateToURL(shell(), file_url));
+    prefetch_waiter.Run();
+    EXPECT_EQ(1, request_counter->GetRequestCount());
+    EXPECT_EQ(1, GetPrefetchURLLoaderCallCount());
+  }
+
+  // Shutdown the server.
+  EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+
+  // Subsequent navigation to the target URL wouldn't hit the network for
+  // the target URL. The target content should still be read correctly.
+  NavigateToURLAndWaitTitle(target_url, "Prefetch Target");
 }
 
 INSTANTIATE_TEST_SUITE_P(PrefetchBrowserTest,

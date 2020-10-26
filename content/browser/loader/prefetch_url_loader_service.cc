@@ -272,8 +272,9 @@ bool PrefetchURLLoaderService::IsValidCrossOriginPrefetch(
   // Presence of |render_frame_host| is guaranteed by the caller - the caller
   // calls earlier EnsureCrossOriginFactory which has the same DCHECK.
   DCHECK(current_context.render_frame_host);
-  if (resource_request.request_initiator.value() !=
-      current_context.render_frame_host->GetLastCommittedOrigin()) {
+  if (!resource_request.request_initiator->opaque() &&
+      resource_request.request_initiator.value() !=
+          current_context.render_frame_host->GetLastCommittedOrigin()) {
     mojo::ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: frame origin mismatch");
     return false;
