@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldDisplayCardResponse) {
 
   ShowAssistantUi();
 
-  EXPECT_TRUE(tester()->IsVisible());
+  ASSERT_TRUE(tester()->IsVisible());
 
   tester()->SendTextQuery("What is the highest mountain in the world?");
   tester()->ExpectCardResponse("Mount Everest");
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnUpVolume) {
 
   ShowAssistantUi();
 
-  EXPECT_TRUE(tester()->IsVisible());
+  ASSERT_TRUE(tester()->IsVisible());
 
   auto* cras = chromeos::CrasAudioHandler::Get();
   constexpr int kStartVolumePercent = 50;
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnDownVolume) {
 
   ShowAssistantUi();
 
-  EXPECT_TRUE(tester()->IsVisible());
+  ASSERT_TRUE(tester()->IsVisible());
 
   auto* cras = chromeos::CrasAudioHandler::Get();
   constexpr int kStartVolumePercent = 50;
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnUpBrightness) {
 
   ShowAssistantUi();
 
-  EXPECT_TRUE(tester()->IsVisible());
+  ASSERT_TRUE(tester()->IsVisible());
 
   InitializeBrightness();
 
@@ -212,13 +212,26 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnDownBrightness) {
 
   ShowAssistantUi();
 
-  EXPECT_TRUE(tester()->IsVisible());
+  ASSERT_TRUE(tester()->IsVisible());
 
   InitializeBrightness();
 
   tester()->SendTextQuery("turn down brightness");
 
   ExpectBrightnessDown();
+}
+
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
+                       ShouldPuntWhenChangingUnsupportedSetting) {
+  tester()->StartAssistantAndWaitForReady();
+
+  ShowAssistantUi();
+
+  ASSERT_TRUE(tester()->IsVisible());
+
+  tester()->SendTextQuery("enable night mode");
+
+  tester()->ExpectTextResponse("Night Mode isn't available on your device");
 }
 
 // TODO(crbug.com/1112278): Disabled because it's flaky.
@@ -228,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
 
   ShowAssistantUi();
 
-  EXPECT_TRUE(tester()->IsVisible());
+  ASSERT_TRUE(tester()->IsVisible());
 
   tester()->DisableFakeS3Server();
 
