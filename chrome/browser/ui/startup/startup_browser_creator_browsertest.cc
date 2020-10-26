@@ -545,12 +545,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ValidNotificationLaunchId) {
   command_line.AppendSwitchNative(
       switches::kNotificationLaunchId,
       L"1|1|0|Default|0|https://example.com/|notification_id");
-  chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_TRUE(
-      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
+
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), false, browser()->profile(), {}));
 
   // The launch delegates to the notification system and doesn't open any new
   // browser window.
@@ -561,12 +558,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, InvalidNotificationLaunchId) {
   // Simulate a launch with invalid launch id, which will fail.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchNative(switches::kNotificationLaunchId, L"");
-  chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
-  StartupBrowserCreatorImpl launch(base::FilePath(), command_line, first_run);
-  ASSERT_FALSE(
-      launch.Launch(browser()->profile(), std::vector<GURL>(), false, nullptr));
+  StartupBrowserCreator browser_creator;
+  ASSERT_FALSE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), false, browser()->profile(), {}));
 
   // No new browser window is open.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));

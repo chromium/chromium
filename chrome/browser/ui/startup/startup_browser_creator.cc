@@ -99,7 +99,9 @@
 #if defined(OS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/metrics/jumplist_metrics_win.h"
+#include "chrome/browser/notifications/notification_platform_bridge_win.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
+#include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -411,6 +413,10 @@ bool StartupBrowserCreator::LaunchBrowser(
     chrome::startup::IsFirstRun is_first_run,
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
   DCHECK(profile);
+#if defined(OS_WIN)
+  DCHECK(!command_line.HasSwitch(credential_provider::kGcpwSigninSwitch));
+  DCHECK(!command_line.HasSwitch(switches::kNotificationLaunchId));
+#endif  // defined(OS_WIN)
   in_synchronous_profile_launch_ =
       process_startup == chrome::startup::IS_PROCESS_STARTUP;
 
@@ -430,12 +436,6 @@ bool StartupBrowserCreator::LaunchBrowser(
     if (!profile->IsEphemeralGuestProfile())
       profile = profile->GetPrimaryOTRProfile();
   }
-
-#if defined(OS_WIN)
-  // Continue with the incognito profile if this is a credential provider logon.
-  if (command_line.HasSwitch(credential_provider::kGcpwSigninSwitch))
-    profile = profile->GetPrimaryOTRProfile();
-#endif
 
   if (!IsSilentLaunchEnabled(command_line, profile)) {
     StartupBrowserCreatorImpl lwp(cur_dir, command_line, this, is_first_run);
@@ -851,6 +851,35 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     last_used_profile->SetUserData(
         chrome::kJumpListIconDirname,
         base::WrapUnique(new base::SupportsUserData::Data()));
+  }
+
+  // If the command line has the kNotificationLaunchId switch, then this
+  // call is from notification_helper.exe to process toast activation.
+  // Delegate to the notification system; do not open a browser window here.
+  if (command_line.HasSwitch(switches::kNotificationLaunchId)) {
+    if (NotificationPlatformBridgeWin::HandleActivation(command_line)) {
+      LaunchModeRecorder().SetLaunchMode(LaunchMode::kWinPlatformNotification);
+      return true;
+    }
+    return false;
+  }
+
+  // If being started for credential provider logon purpose, only show the
+  // signin page.
+  if (command_line.HasSwitch(credential_provider::kGcpwSigninSwitch)) {
+    // Use incognito profile since this is a credential provider logon.
+    Profile* profile = last_used_profile->GetPrimaryOTRProfile();
+    DCHECK(profile->IsIncognitoProfile());
+    // NOTE: All launch urls are ignored when running with --gcpw-signin since
+    // this mode only loads Google's sign in page.
+
+    // If GCPW signin dialog fails, returning false here will allow Chrome to
+    // exit gracefully during the launch.
+    if (!StartGCPWSignin(command_line, profile))
+      return false;
+
+    LaunchModeRecorder().SetLaunchMode(LaunchMode::kCredentialProviderSignIn);
+    return true;
   }
 #endif  // defined(OS_WIN)
 

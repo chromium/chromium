@@ -72,14 +72,9 @@
 #include "chrome/browser/ui/startup/mac_system_infobar_delegate.h"
 #endif
 
-#if defined(OS_WIN)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/notifications/notification_platform_bridge_win.h"
-#include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
-#include "chrome/credential_provider/common/gcp_strings.h"
-#endif  // defined(OS_WIN)
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/flash_deprecation_infobar_delegate.h"
@@ -200,40 +195,6 @@ bool StartupBrowserCreatorImpl::Launch(
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
   DCHECK(profile);
   profile_ = profile;
-
-#if defined(OS_WIN)
-  // If the command line has the kNotificationLaunchId switch, then this
-  // Launch() call is from notification_helper.exe to process toast activation.
-  // Delegate to the notification system; do not open a browser window here.
-  if (command_line_.HasSwitch(switches::kNotificationLaunchId)) {
-    if (NotificationPlatformBridgeWin::HandleActivation(command_line_)) {
-      if (launch_mode_recorder) {
-        launch_mode_recorder->SetLaunchMode(
-            LaunchMode::kWinPlatformNotification);
-      }
-      return true;
-    }
-    return false;
-  }
-  // If being started for credential provider logon purpose, only show the
-  // signin page.
-  if (command_line_.HasSwitch(credential_provider::kGcpwSigninSwitch)) {
-    DCHECK(profile_->IsIncognitoProfile());
-    // NOTE: All launch urls are ignored when running with --gcpw-signin since
-    // this mode only loads Google's sign in page.
-
-    // If GCPW signin dialog fails, returning false here will allow Chrome to
-    // exit gracefully during the launch.
-    if (!StartGCPWSignin(command_line_, profile_))
-      return false;
-
-    if (launch_mode_recorder) {
-      launch_mode_recorder->SetLaunchMode(
-          LaunchMode::kCredentialProviderSignIn);
-    }
-    return true;
-  }
-#endif  // defined(OS_WIN)
 
   if (command_line_.HasSwitch(switches::kAppId)) {
     std::string app_id = command_line_.GetSwitchValueASCII(switches::kAppId);
