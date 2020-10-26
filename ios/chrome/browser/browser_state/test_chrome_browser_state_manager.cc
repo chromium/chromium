@@ -30,6 +30,8 @@ ChromeBrowserState* TestChromeBrowserStateManager::GetLastUsedBrowserState() {
 
 ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserState(
     const base::FilePath& path) {
+  if (browser_state_ && browser_state_->GetStatePath() == path)
+    return browser_state_.get();
   return nullptr;
 }
 

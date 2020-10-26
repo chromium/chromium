@@ -105,12 +105,14 @@ TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& path,
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
-    RefcountedTestingFactories refcounted_testing_factories)
+    RefcountedTestingFactories refcounted_testing_factories,
+    std::unique_ptr<BrowserStatePolicyConnector> policy_connector)
     : ChromeBrowserState(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       state_path_(path),
       prefs_(std::move(prefs)),
       testing_prefs_(nullptr),
+      policy_connector_(std::move(policy_connector)),
       otr_browser_state_(nullptr),
       original_browser_state_(nullptr) {
   for (const auto& pair : testing_factories) {
@@ -236,9 +238,7 @@ PrefProxyConfigTracker* TestChromeBrowserState::GetProxyConfigTracker() {
 }
 
 BrowserStatePolicyConnector* TestChromeBrowserState::GetPolicyConnector() {
-  // TODO(crbug.com/1055318): Determine what level of support is needed for
-  // unittesting and return a mock or fake here.
-  return nullptr;
+  return policy_connector_.get();
 }
 
 PrefService* TestChromeBrowserState::GetPrefs() {
@@ -354,11 +354,17 @@ void TestChromeBrowserState::Builder::SetPrefService(
   pref_service_ = std::move(prefs);
 }
 
+void TestChromeBrowserState::Builder::SetPolicyConnector(
+    std::unique_ptr<BrowserStatePolicyConnector> policy_connector) {
+  DCHECK(!build_called_);
+  policy_connector_ = std::move(policy_connector);
+}
+
 std::unique_ptr<TestChromeBrowserState>
 TestChromeBrowserState::Builder::Build() {
   DCHECK(!build_called_);
   build_called_ = true;
   return base::WrapUnique(new TestChromeBrowserState(
       state_path_, std::move(pref_service_), std::move(testing_factories_),
-      std::move(refcounted_testing_factories_)));
+      std::move(refcounted_testing_factories_), std::move(policy_connector_)));
 }

@@ -87,6 +87,8 @@ source_set("feature_flags") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "browser_state_policy_connector_mock.h",
+    "browser_state_policy_connector_mock.mm",
     "enterprise_policy_test_helper.cc",
     "enterprise_policy_test_helper.h",
     "test_platform_policy_provider.cc",

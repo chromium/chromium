@@ -70,6 +70,8 @@ class TestingApplicationContext : public ApplicationContext {
   base::ThreadChecker thread_checker_;
   std::string application_locale_;
   PrefService* local_state_;
+  // Must be destroyed after |local_state_|.
+  std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
   ios::ChromeBrowserStateManager* chrome_browser_state_manager_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   bool was_last_shutdown_clean_;

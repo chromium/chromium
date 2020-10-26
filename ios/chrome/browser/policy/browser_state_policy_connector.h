@@ -43,6 +43,8 @@ class BrowserStatePolicyConnector {
   policy::SchemaRegistry* GetSchemaRegistry() const { return schema_registry_; }
 
  private:
+  friend class BrowserStatePolicyConnectorMock;
+
   // |policy_providers_| contains a list of the policy providers available for
   // the PolicyService of this connector, in decreasing order of priority.
   //
