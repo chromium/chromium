@@ -57,8 +57,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.DigitalGainApplied" units="dB"
-    expires_after="2019-03-01">
-  <owner>aleloi@chromium.org</owner>
+    expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
   <summary>
     Logs adaptive digital compression gain that is applied by AgcManagerDirect.
     A log call is made once per second. The compression gain is applied to the
@@ -67,8 +67,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.DigitalGainUpdated" units="dB"
-    expires_after="2019-03-01">
-  <owner>aleloi@chromium.org</owner>
+    expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
   <summary>
     Logs adaptive digital compression gain that is applied by AgcManagerDirect.
     A log call is made every time the gain changes. The compression gain is
@@ -77,8 +77,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.DigitalGainApplied" units="dB"
-    expires_after="2019-09-01">
-  <owner>aleloi@chromium.org</owner>
+    expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
   <summary>
     Logs adaptive digital compression gain that is applied by
     AdaptiveDigitalGainApplier in GainController2. A log call is made once per
@@ -88,8 +88,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.EstimatedNoiseLevel" units="dBFS (negated)"
-    expires_after="2019-09-01">
-  <owner>aleloi@chromium.org</owner>
+    expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
   <summary>
     This histogram reports the noise level estimation done in GainController2. A
     value is reported every second. The unit is inverted dBFS. The scale goes
@@ -98,8 +98,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Identity"
-    units="seconds" expires_after="2019-09-01">
-  <owner>aleloi@chromium.org</owner>
+    units="seconds" expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
   <summary>
     The Fixed-Digital part of the AGC protects from saturation by reducing the
     level of too loud signals. This metric shows how long the level estimate
@@ -110,8 +110,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Knee"
-    units="seconds" expires_after="2019-09-01">
-  <owner>aleloi@chromium.org</owner>
+    units="seconds" expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
   <summary>
     The Fixed-Digital part of the AGC protects from saturation by reducing the
     level of too loud signals. This metric shows how long the level estimate
@@ -121,8 +121,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Limiter"
-    units="seconds" expires_after="2019-09-01">
-  <owner>aleloi@chromium.org</owner>
+    units="seconds" expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
   <summary>
     The Fixed-Digital part of the AGC protects from saturation by reducing the
     level of too loud signals. This metric shows how long the level estimate
@@ -133,8 +133,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Saturation"
-    units="seconds" expires_after="2019-09-01">
-  <owner>aleloi@chromium.org</owner>
+    units="seconds" expires_after="2021-12-31">
+  <owner>alessiob@chromium.org</owner>
   <summary>
     The Fixed-Digital part of the AGC protects from saturation by reducing the
     level of too loud signals. This metric shows how long the level estimate
@@ -145,7 +145,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.AgcClippingAdjustmentAllowed" enum="Boolean"
-    expires_after="2020-12-27">
+    expires_after="2021-12-31">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The automatic gain control (AGC) in WebRTC tries to adjust the microphone
@@ -158,7 +158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.AgcSetLevel" units="level"
-    expires_after="2021-03-07">
+    expires_after="2021-12-31">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The automatic gain control (AGC) in WebRTC tries to adjust the microphone
@@ -169,7 +169,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2021-02-07">
+    units="dBFS (negated)" expires_after="2021-12-31">
   <owner>hlundin@chromium.org</owner>
   <summary>
     This histogram reports the average RMS of the signal coming in to WebRTC's
@@ -181,7 +181,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2021-02-07">
+    units="dBFS (negated)" expires_after="2021-12-31">
   <owner>hlundin@chromium.org</owner>
   <summary>
     This histogram reports the peak RMS of the signal coming in to WebRTC's
@@ -193,7 +193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2021-04-11">
+    units="dBFS (negated)" expires_after="2021-12-31">
   <owner>peah@chromium.org</owner>
   <summary>
     This histogram reports the average RMS of the signal in the output of
@@ -205,7 +205,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2021-04-18">
+    units="dBFS (negated)" expires_after="2021-12-31">
   <owner>peah@chromium.org</owner>
   <summary>
     This histogram reports the peak RMS of the signal in the output of WebRTC's
