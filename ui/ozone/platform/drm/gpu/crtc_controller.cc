@@ -39,8 +39,8 @@ CrtcController::~CrtcController() {
 
     // Disable CRTC controller.
     CommitRequest commit_request;
-    CrtcRequest crtc_request{crtc_, connector_, nullptr, {}};
-    commit_request.commit_state.push_back(std::move(crtc_request));
+    commit_request.push_back(
+        CrtcCommitRequest::DisableCrtcRequest(crtc_, connector_));
     drm_->plane_manager()->Commit(std::move(commit_request),
                                   DRM_MODE_ATOMIC_ALLOW_MODESET);
   }

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/files/platform_file.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
@@ -106,74 +107,78 @@ bool HardwareDisplayPlaneManagerAtomic::SetConnectorProps(
 
 bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
                                                uint32_t flags) {
+  bool is_testing = flags & DRM_MODE_ATOMIC_TEST_ONLY;
   bool status = true;
-  bool should_set_props_for_enable = false;
-  ScopedDrmAtomicReqPtr atomic_request(drmModeAtomicAlloc());
 
   std::vector<ScopedDrmPropertyBlob> scoped_blobs;
-  std::vector<DrmOverlayPlaneList> scoped_overlay_lists;
 
-  for (const auto& crtc_request : commit_request.commit_state) {
-    uint32_t crtc_id = crtc_request.crtc_id;
-    bool should_enable = crtc_request.primary_plane;
+  base::flat_set<HardwareDisplayPlaneList*> enable_planes_lists;
+  base::flat_set<HardwareDisplayPlaneList*> all_planes_lists;
 
-    if (should_enable) {
-      auto mode_blob = drm_->CreatePropertyBlob(&crtc_request.mode,
-                                                sizeof(crtc_request.mode));
-      // TODO(markyacoub): failed |status|'s should be made as DCHECKs. The only
-      // reason some of these would be failing is OOM. If we OOM-ed there's no
-      // point in trying to recover.
+  ScopedDrmAtomicReqPtr atomic_request(drmModeAtomicAlloc());
+
+  for (const auto& crtc_request : commit_request) {
+    if (crtc_request.plane_list())
+      all_planes_lists.insert(crtc_request.plane_list());
+
+    uint32_t mode_id = 0;
+    if (crtc_request.should_enable()) {
+      auto mode_blob = drm_->CreatePropertyBlob(&crtc_request.mode(),
+                                                sizeof(crtc_request.mode()));
       status &= (mode_blob != nullptr);
-      uint32_t mode_id = 0;
       if (mode_blob) {
         scoped_blobs.push_back(std::move(mode_blob));
         mode_id = scoped_blobs.back()->id();
       }
-      status &= SetCrtcProps(atomic_request.get(), crtc_request.crtc_id,
-                             /*set_active=*/true, mode_id);
-
-      status &= SetConnectorProps(atomic_request.get(),
-                                  crtc_request.connector_id, crtc_id);
-
-      // Set Plane props.
-      scoped_overlay_lists.emplace_back();
-      scoped_overlay_lists.back().push_back(
-          crtc_request.primary_plane->Clone());
-      status &= AssignOverlayPlanes(commit_request.plane_list,
-                                    scoped_overlay_lists.back(), crtc_id);
-
-      should_set_props_for_enable = true;
-    } else {
-      status &= SetCrtcProps(atomic_request.get(), crtc_request.crtc_id,
-                             /*set_active=*/false, /*mode_id=*/0UL);
-      status &= SetConnectorProps(atomic_request.get(),
-                                  crtc_request.connector_id, /*crtc_id=*/0UL);
     }
-  }
 
-  if (!status) {
-    PLOG(ERROR) << "Failed to Set Props for Commit.";
-    return false;
+    uint32_t crtc_id = crtc_request.crtc_id();
+
+    status &= SetCrtcProps(atomic_request.get(), crtc_id,
+                           crtc_request.should_enable(), mode_id);
+    status &=
+        SetConnectorProps(atomic_request.get(), crtc_request.connector_id(),
+                          crtc_request.should_enable() * crtc_id);
+
+    if (crtc_request.should_enable()) {
+      DCHECK(crtc_request.plane_list());
+      status &= AssignOverlayPlanes(crtc_request.plane_list(),
+                                    crtc_request.overlays(), crtc_id);
+      enable_planes_lists.insert(crtc_request.plane_list());
+    }
   }
 
   // TODO(markyacoub): Ideally this doesn't need to be a separate step. It
   // should all be handled in Set{Crtc,Connector,Plane}Props() modulo some state
-  // tracking changes that should be done post commit.
-  // Break it apart when both Commit() are consolidated.
-  if (should_set_props_for_enable) {
-    SetAtomicPropsForCommit(atomic_request.get(), commit_request.plane_list,
-                            GetCrtcIdsOfPlanes(*commit_request.plane_list),
-                            /*test_only=*/false);
+  // tracking changes that should be done post commit. Break it apart when both
+  // Commit() are consolidated.
+  for (HardwareDisplayPlaneList* list : enable_planes_lists) {
+    SetAtomicPropsForCommit(atomic_request.get(), list,
+                            GetCrtcIdsOfPlanes(*list), is_testing);
   }
 
-  if (!drm_->CommitProperties(atomic_request.get(), flags, 1, nullptr)) {
-    PLOG(ERROR) << "Failed to commit properties for modeset.";
-    if (commit_request.plane_list)
-      ResetCurrentPlaneList(commit_request.plane_list);
+  // TODO(markyacoub): failed |status|'s should be made as DCHECKs. The only
+  // reason some of these would be failing is OOM. If we OOM-ed there's no point
+  // in trying to recover.
+  if (!status || !drm_->CommitProperties(atomic_request.get(), flags,
+                                         commit_request.size(), nullptr)) {
+    if (is_testing)
+      VPLOG(2) << "Modeset Test is rejected.";
+    else
+      PLOG(ERROR) << "Failed to commit properties for modeset.";
+
+    for (HardwareDisplayPlaneList* list : all_planes_lists)
+      ResetCurrentPlaneList(list);
+
     return false;
   }
 
-  UpdateCrtcAndPlaneStatesAfterModeset(commit_request);
+  if (!is_testing)
+    UpdateCrtcAndPlaneStatesAfterModeset(commit_request);
+
+  for (HardwareDisplayPlaneList* list : enable_planes_lists)
+    list->plane_list.clear();
+
   return true;
 }
 

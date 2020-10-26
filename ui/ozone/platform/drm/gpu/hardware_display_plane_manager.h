@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
+#include "ui/ozone/platform/drm/gpu/crtc_commit_request.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/public/swap_completion_callback.h"
@@ -52,25 +53,6 @@ struct HardwareDisplayPlaneList {
   std::vector<PageFlipInfo> legacy_page_flips;
 
   ScopedDrmAtomicReqPtr atomic_property_set;
-};
-
-// Container holding information for a single CRTC that need to be modeset.
-// TODO(markyacoub): PAGE_FLIP could re-use the same CrtcRequest. The difference
-// between MODESET and PAGE_FLIP are minimal.
-struct CrtcRequest {
-  uint32_t crtc_id = 0;
-  uint32_t connector_id = 0;
-  const DrmOverlayPlane* primary_plane = nullptr;
-  drmModeModeInfo mode = {};
-};
-
-// Container holding all parameters required to perform a modeset.
-struct CommitRequest {
-  CommitRequest();
-  CommitRequest(const CommitRequest& other);
-  ~CommitRequest();
-  std::vector<CrtcRequest> commit_state;
-  HardwareDisplayPlaneList* plane_list = nullptr;
 };
 
 class HardwareDisplayPlaneManager {

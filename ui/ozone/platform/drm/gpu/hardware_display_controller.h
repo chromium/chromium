@@ -93,15 +93,18 @@ class HardwareDisplayController {
                             const gfx::Point& origin);
   ~HardwareDisplayController();
 
-  // Performs the initial CRTC configuration. If successful, it will display the
-  // framebuffer for |primary| with |mode|.
-  bool Modeset(const DrmOverlayPlane& primary, const drmModeModeInfo& mode);
+  // Gets the props required to modeset a CRTC with a |mode| onto
+  // |commit_request|.
+  void GetModesetProps(CommitRequest* commit_request,
+                       const DrmOverlayPlane& primary,
+                       const drmModeModeInfo& mode);
+  // Gets the props required to enable/disable a CRTC onto |commit_request|.
+  void GetEnableProps(CommitRequest* commit_request,
+                      const DrmOverlayPlane& primary);
+  void GetDisableProps(CommitRequest* commit_request);
 
-  // Performs a CRTC configuration re-using the modes from the CRTCs.
-  bool Enable(const DrmOverlayPlane& primary);
-
-  // Disables the CRTC.
-  void Disable();
+  // Updates state of the controller after modeset/enable/disable is performed.
+  void UpdateState(bool is_enabled, const DrmOverlayPlane* primary_plane);
 
   // Schedules the |overlays|' framebuffers to be displayed on the next vsync
   // event. The event will be posted on the graphics card file descriptor |fd_|
@@ -169,12 +172,12 @@ class HardwareDisplayController {
       const gfx::PresentationFeedback& presentation_feedback);
 
  private:
-  // If multiple CRTC Controllers exist and they're enabled, each will be
-  // enabled with its own mode. Set |use_current_crtc_mode| to Modeset using
-  // controller's mode instead of |mode|.
-  bool ModesetCrtc(const DrmOverlayPlane& primary,
-                   bool use_current_crtc_mode,
-                   const drmModeModeInfo& mode);
+  // Loops over |crtc_controllers_| and save their props into |commit_request|
+  // to be enabled/modeset.
+  void GetModesetPropsForCrtcs(CommitRequest* commit_request,
+                               const DrmOverlayPlane& primary,
+                               bool use_current_crtc_mode,
+                               const drmModeModeInfo& mode);
   void OnModesetComplete(const DrmOverlayPlane& primary);
   bool ScheduleOrTestPageFlip(const DrmOverlayPlaneList& plane_list,
                               scoped_refptr<PageFlipRequest> page_flip_request,

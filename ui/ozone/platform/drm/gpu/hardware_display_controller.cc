@@ -73,61 +73,70 @@ HardwareDisplayController::HardwareDisplayController(
 
 HardwareDisplayController::~HardwareDisplayController() = default;
 
-bool HardwareDisplayController::Modeset(const DrmOverlayPlane& primary,
-                                        const drmModeModeInfo& mode) {
-  TRACE_EVENT0("drm", "HDC::Modeset");
-  return ModesetCrtc(primary, /*use_current_crtc_mode=*/false, mode);
+void HardwareDisplayController::GetModesetProps(CommitRequest* commit_request,
+                                                const DrmOverlayPlane& primary,
+                                                const drmModeModeInfo& mode) {
+  TRACE_EVENT0("drm", "HDC::GetModesetProps");
+  GetModesetPropsForCrtcs(commit_request, primary,
+                          /*use_current_crtc_mode=*/false, mode);
 }
 
-bool HardwareDisplayController::Enable(const DrmOverlayPlane& primary) {
-  TRACE_EVENT0("drm", "HDC::Enable");
+void HardwareDisplayController::GetEnableProps(CommitRequest* commit_request,
+                                               const DrmOverlayPlane& primary) {
+  TRACE_EVENT0("drm", "HDC::GetEnableProps");
+  // TODO(markyacoub): Simplify and remove the use of empty_mode.
   drmModeModeInfo empty_mode = {};
-  return ModesetCrtc(primary, /*use_current_crtc_mode=*/true, empty_mode);
+  GetModesetPropsForCrtcs(commit_request, primary,
+                          /*use_current_crtc_mode=*/true, empty_mode);
 }
 
-bool HardwareDisplayController::ModesetCrtc(const DrmOverlayPlane& primary,
-                                            bool use_current_crtc_mode,
-                                            const drmModeModeInfo& mode) {
-  DCHECK(primary.buffer.get());
-  CommitRequest commit_request;
+void HardwareDisplayController::GetModesetPropsForCrtcs(
+    CommitRequest* commit_request,
+    const DrmOverlayPlane& primary,
+    bool use_current_crtc_mode,
+    const drmModeModeInfo& mode) {
+  DCHECK(commit_request);
 
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
-
-  commit_request.plane_list = &owned_hardware_planes_;
 
   for (const auto& controller : crtc_controllers_) {
     drmModeModeInfo modeset_mode =
         use_current_crtc_mode ? controller->mode() : mode;
-    CrtcRequest crtc_request{controller->crtc(), controller->connector(),
-                             &primary, modeset_mode};
-    commit_request.commit_state.push_back(std::move(crtc_request));
+
+    DrmOverlayPlaneList overlays;
+    overlays.push_back(primary.Clone());
+
+    CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
+        controller->crtc(), controller->connector(), modeset_mode,
+        &owned_hardware_planes_, std::move(overlays));
+    commit_request->push_back(std::move(request));
   }
-
-  bool status = GetDrmDevice()->plane_manager()->Commit(
-      std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET);
-
-  is_disabled_ = false;
-  ResetCursor();
-  OnModesetComplete(primary);
-  return status;
 }
 
-void HardwareDisplayController::Disable() {
-  TRACE_EVENT0("drm", "HDC::Disable");
-
-  CommitRequest commit_request;
-  commit_request.plane_list = &owned_hardware_planes_;
+void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
+  TRACE_EVENT0("drm", "HDC::GetDisableProps");
 
   for (const auto& controller : crtc_controllers_) {
-    CrtcRequest crtc_request{
-        controller->crtc(), controller->connector(), nullptr, {}};
-    commit_request.commit_state.push_back(std::move(crtc_request));
+    CrtcCommitRequest request = CrtcCommitRequest::DisableCrtcRequest(
+        controller->crtc(), controller->connector(), &owned_hardware_planes_);
+    commit_request->push_back(std::move(request));
   }
+}
 
-  GetDrmDevice()->plane_manager()->Commit(std::move(commit_request),
-                                          DRM_MODE_ATOMIC_ALLOW_MODESET);
+void HardwareDisplayController::UpdateState(
+    bool is_enabled,
+    const DrmOverlayPlane* primary_plane) {
+  // TODO(markyacoub): Update how we report the controller state. Right now, the
+  // controller state is independent of its CRTCs; however, it should reflect
+  // its CRTCs active states.
+  is_disabled_ = !is_enabled;
 
-  is_disabled_ = true;
+  if (is_enabled) {
+    DCHECK(primary_plane);
+    // TODO(markyacoub): This should be absorbed in the commit request.
+    ResetCursor();
+    OnModesetComplete(*primary_plane);
+  }
 }
 
 void HardwareDisplayController::SchedulePageFlip(

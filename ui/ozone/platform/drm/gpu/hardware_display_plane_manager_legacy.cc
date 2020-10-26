@@ -48,19 +48,23 @@ HardwareDisplayPlaneManagerLegacy::~HardwareDisplayPlaneManagerLegacy() =
 
 bool HardwareDisplayPlaneManagerLegacy::Commit(CommitRequest commit_request,
                                                uint32_t flags) {
+  if (flags & DRM_MODE_ATOMIC_TEST_ONLY)
+    // Legacy DRM does not support testing.
+    return true;
+
   bool status = true;
-
-  for (const auto& crtc_request : commit_request.commit_state) {
-    bool should_enable = crtc_request.primary_plane;
-
-    if (should_enable) {
-      status &= drm_->SetCrtc(
-          crtc_request.crtc_id,
-          crtc_request.primary_plane->buffer->opaque_framebuffer_id(),
-          std::vector<uint32_t>(1, crtc_request.connector_id),
-          crtc_request.mode);
+  for (const auto& crtc_request : commit_request) {
+    if (crtc_request.should_enable()) {
+      // Overlays are not supported in legacy hence why we're only looking at
+      // the primary plane.
+      uint32_t fb_id = DrmOverlayPlane::GetPrimaryPlane(crtc_request.overlays())
+                           ->buffer->opaque_framebuffer_id();
+      status &=
+          drm_->SetCrtc(crtc_request.crtc_id(), fb_id,
+                        std::vector<uint32_t>(1, crtc_request.connector_id()),
+                        crtc_request.mode());
     } else {
-      drm_->DisableCrtc(crtc_request.crtc_id);
+      drm_->DisableCrtc(crtc_request.crtc_id());
     }
   }
 
