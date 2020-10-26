@@ -9,6 +9,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/notifications/muted_notification_handler.h"
 #include "chrome/browser/notifications/notification_blocker.h"
 
 namespace content {
@@ -24,6 +25,7 @@ class NotificationDisplayService;
 // TODO(crbug.com/1131375): Also block notifications while casting a screen.
 class ScreenCaptureNotificationBlocker
     : public NotificationBlocker,
+      public MutedNotificationHandler::Delegate,
       public MediaStreamCaptureIndicator::Observer {
  public:
   explicit ScreenCaptureNotificationBlocker(
@@ -40,6 +42,9 @@ class ScreenCaptureNotificationBlocker
   void OnBlockedNotification(
       const message_center::Notification& notification) override;
 
+  // MutedNotificationHandler::Delegate:
+  void OnAction(MutedNotificationHandler::Action action) override;
+
   // MediaStreamCaptureIndicator::Observer:
   void OnIsCapturingDisplayChanged(content::WebContents* web_contents,
                                    bool is_capturing_display) override;
@@ -50,6 +55,15 @@ class ScreenCaptureNotificationBlocker
 
   void DisplayMuteNotification();
   void CloseMuteNotification();
+
+  enum class NotifyState {
+    // We will show "muted" notifications instead of the actual notifications.
+    kNotifyMuted,
+    // The user clicked on "Show" and we show all notifications as usual.
+    kShowAll,
+  };
+
+  NotifyState state_ = NotifyState::kNotifyMuted;
 
   // Counter for the number of notifications that have been muted during the
   // current screen capturing session.

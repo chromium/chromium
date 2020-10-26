@@ -40,6 +40,7 @@
 #endif
 
 #if !defined(OS_ANDROID)
+#include "chrome/browser/notifications/muted_notification_handler.h"
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 #endif
 
@@ -98,11 +99,13 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
 
     if (base::FeatureList::IsEnabled(
             features::kMuteNotificationsDuringScreenShare)) {
-      // TODO(knollr): Implement custom handler for actions.
+      auto screen_capture_blocker =
+          std::make_unique<ScreenCaptureNotificationBlocker>(this);
       AddNotificationHandler(NotificationHandler::Type::NOTIFICATIONS_MUTED,
-                             std::make_unique<NotificationHandler>());
+                             std::make_unique<MutedNotificationHandler>(
+                                 screen_capture_blocker.get()));
       notification_queue_.AddNotificationBlocker(
-          std::make_unique<ScreenCaptureNotificationBlocker>(this));
+          std::move(screen_capture_blocker));
     }
 
 #endif
@@ -297,6 +300,14 @@ void NotificationDisplayServiceImpl::
         std::unique_ptr<NotificationPlatformBridgeDelegator> bridge_delegator) {
   bridge_delegator_ = std::move(bridge_delegator);
   OnNotificationPlatformBridgeReady();
+}
+
+void NotificationDisplayServiceImpl::OverrideNotificationHandlerForTesting(
+    NotificationHandler::Type notification_type,
+    std::unique_ptr<NotificationHandler> handler) {
+  DCHECK(handler);
+  DCHECK_EQ(1u, notification_handlers_.count(notification_type));
+  notification_handlers_[notification_type] = std::move(handler);
 }
 
 void NotificationDisplayServiceImpl::OnNotificationPlatformBridgeReady() {

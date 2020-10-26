@@ -32,6 +32,10 @@ ScreenCaptureNotificationBlocker::~ScreenCaptureNotificationBlocker() = default;
 
 bool ScreenCaptureNotificationBlocker::ShouldBlockNotification(
     const message_center::Notification& notification) {
+  // Don't block if the user clicked on "Show" for the current session.
+  if (state_ == NotifyState::kShowAll)
+    return false;
+
   // Don't block if no WebContents currently captures the screen.
   if (capturing_web_contents_.empty())
     return false;
@@ -48,7 +52,25 @@ bool ScreenCaptureNotificationBlocker::ShouldBlockNotification(
 void ScreenCaptureNotificationBlocker::OnBlockedNotification(
     const message_center::Notification& notification) {
   ++muted_notification_count_;
-  DisplayMuteNotification();
+  if (state_ == NotifyState::kNotifyMuted)
+    DisplayMuteNotification();
+}
+
+void ScreenCaptureNotificationBlocker::OnAction(
+    MutedNotificationHandler::Action action) {
+  DCHECK(state_ == NotifyState::kNotifyMuted);
+  CloseMuteNotification();
+
+  switch (action) {
+    case MutedNotificationHandler::Action::kUserClose:
+    case MutedNotificationHandler::Action::kBodyClick:
+      // Nothing to do here.
+      break;
+    case MutedNotificationHandler::Action::kShowClick:
+      state_ = NotifyState::kShowAll;
+      NotifyBlockingStateChanged();
+      break;
+  }
 }
 
 void ScreenCaptureNotificationBlocker::OnIsCapturingDisplayChanged(
@@ -61,6 +83,7 @@ void ScreenCaptureNotificationBlocker::OnIsCapturingDisplayChanged(
 
   if (capturing_web_contents_.empty()) {
     muted_notification_count_ = 0;
+    state_ = NotifyState::kNotifyMuted;
     CloseMuteNotification();
   }
 
@@ -70,6 +93,8 @@ void ScreenCaptureNotificationBlocker::OnIsCapturingDisplayChanged(
 void ScreenCaptureNotificationBlocker::DisplayMuteNotification() {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.renotify = true;
+  rich_notification_data.buttons.emplace_back(l10n_util::GetPluralStringFUTF16(
+      IDS_NOTIFICATION_MUTED_ACTION_SHOW, muted_notification_count_));
 
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kMuteNotificationId,

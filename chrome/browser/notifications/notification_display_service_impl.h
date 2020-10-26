@@ -102,6 +102,12 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   void SetNotificationPlatformBridgeDelegatorForTesting(
       std::unique_ptr<NotificationPlatformBridgeDelegator> bridge_delegator);
 
+  // Sets an implementation object to handle notification operations for
+  // |notification_type| and overrides any existing ones.
+  void OverrideNotificationHandlerForTesting(
+      NotificationHandler::Type notification_type,
+      std::unique_ptr<NotificationHandler> handler);
+
  private:
   // Called when the NotificationPlatformBridgeDelegator has been initialized.
   void OnNotificationPlatformBridgeReady();
@@ -125,13 +131,13 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   // Boolean tracking whether the |bridge_delegator_| has been initialized.
   bool bridge_delegator_initialized_ = false;
 
-  // Map containing the notification handlers responsible for processing events.
-  std::map<NotificationHandler::Type, std::unique_ptr<NotificationHandler>>
-      notification_handlers_;
-
   // Notification queue that holds on to notifications instead of displaying
   // them if certain blockers are temporarily active.
   NotificationDisplayQueue notification_queue_{this};
+
+  // Map containing the notification handlers responsible for processing events.
+  std::map<NotificationHandler::Type, std::unique_ptr<NotificationHandler>>
+      notification_handlers_;
 
   base::ObserverList<Observer> observers_;
 

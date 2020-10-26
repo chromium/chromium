@@ -3586,6 +3586,8 @@ static_library("browser") {
       "metrics/tab_stats_tracker.cc",
       "metrics/tab_stats_tracker.h",
       "metrics/tab_stats_tracker_delegate.h",
+      "notifications/muted_notification_handler.cc",
+      "notifications/muted_notification_handler.h",
       "notifications/notification_system_observer.cc",
       "notifications/notification_system_observer.h",
       "notifications/profile_notification.cc",
