@@ -342,7 +342,8 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
       root_surface_(new DirectCompositionChildSurfaceWin(
           std::move(vsync_callback),
           settings.use_angle_texture_offset,
-          settings.max_pending_frames)),
+          settings.max_pending_frames,
+          settings.force_root_surface_full_damage)),
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
           settings.disable_larger_than_screen_overlays,

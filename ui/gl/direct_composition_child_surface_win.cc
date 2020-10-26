@@ -70,10 +70,12 @@ DirectCompositionChildSurfaceWin::PendingFrame::operator=(
 DirectCompositionChildSurfaceWin::DirectCompositionChildSurfaceWin(
     VSyncCallback vsync_callback,
     bool use_angle_texture_offset,
-    size_t max_pending_frames)
+    size_t max_pending_frames,
+    bool force_full_damage)
     : vsync_callback_(std::move(vsync_callback)),
       use_angle_texture_offset_(use_angle_texture_offset),
       max_pending_frames_(max_pending_frames),
+      force_full_damage_(force_full_damage),
       vsync_thread_(VSyncThreadWin::GetInstance()),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
@@ -148,13 +150,11 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
           first_swap_ || !vsync_enabled_ || use_swap_chain_tearing ? 0 : 1;
       UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
 
-      bool force_full_damage =
-          ShouldForceDirectCompositionRootSurfaceFullDamage();
       TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",
                    "interval", interval, "dirty_rect",
-                   force_full_damage ? "full_damage" : swap_rect_.ToString());
+                   force_full_damage_ ? "full_damage" : swap_rect_.ToString());
       HRESULT hr;
-      if (force_full_damage) {
+      if (force_full_damage_) {
         hr = swap_chain_->Present(interval, flags);
       } else {
         DXGI_PRESENT_PARAMETERS params = {};

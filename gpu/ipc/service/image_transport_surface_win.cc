@@ -17,6 +17,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/vsync_provider_win.h"
 
@@ -34,6 +35,9 @@ CreateDirectCompositionSurfaceSettings(
   settings.use_angle_texture_offset = features::IsUsingSkiaRenderer();
   settings.reset_vp_when_colorspace_changes =
       workarounds.reset_vp_when_colorspace_changes;
+  settings.force_root_surface_full_damage =
+      features::IsUsingSkiaRenderer() &&
+      gl::ShouldForceDirectCompositionRootSurfaceFullDamage();
   return settings;
 }
 }  // namespace

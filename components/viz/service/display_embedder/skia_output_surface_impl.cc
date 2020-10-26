@@ -767,7 +767,6 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   if (capabilities_.preserve_buffer_content &&
       capabilities_.supports_post_sub_buffer) {
     capabilities_.only_invalidates_damage_rect = false;
-    capabilities_.supports_target_damage = true;
     // If there is only one pending frame, then we can use damage area hint from
     // SkiaOutputDevice, otherwise we have to track damage area in
     // SkiaOutputSurfaceImpl.

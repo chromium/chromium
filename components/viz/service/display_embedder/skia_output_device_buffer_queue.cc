@@ -135,6 +135,9 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   capabilities_.max_frames_pending = capabilities_.number_of_buffers - 1;
 
   presenter_->InitializeCapabilities(&capabilities_);
+
+  if (capabilities_.supports_post_sub_buffer)
+    capabilities_.supports_target_damage = true;
 }
 
 SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {

@@ -299,6 +299,7 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   capabilities_.preserve_buffer_content = true;
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities_.supports_post_sub_buffer = true;
+  capabilities_.supports_target_damage = true;
   capabilities_.orientation_mode = OutputSurface::OrientationMode::kHardware;
 #if defined(OS_ANDROID)
   // With vulkan, if the chrome is launched in landscape mode, the chrome is
