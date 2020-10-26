@@ -26,7 +26,7 @@ class DiskEntryCreator {
   // Can be nullptr when a disk cache error occurs.
   ServiceWorkerDiskCacheEntry* entry() {
     DCHECK_EQ(creation_phase_, CreationPhase::kDone);
-    return entry_;
+    return entry_.get();
   }
 
   // Calls the callback when entry() is created and can be used.
@@ -52,27 +52,20 @@ class DiskEntryCreator {
     kDone,
   };
 
-  // Callbacks of EnsureEntryIsCreated(). These are static to manage the
-  // ownership of ServiceWorkerDiskCacheEntry correctly.
-  // TODO(crbug.com/586174): Refactor service worker's disk cache to use
-  // disk_cache::EntryResult to make these callbacks non-static.
-  static void DidCreateEntryForFirstAttempt(
-      base::WeakPtr<DiskEntryCreator> entry_creator,
-      ServiceWorkerDiskCacheEntry** entry,
-      int rv);
-  static void DidDoomExistingEntry(
-      base::WeakPtr<DiskEntryCreator> entry_creator,
-      int rv);
-  static void DidCreateEntryForSecondAttempt(
-      base::WeakPtr<DiskEntryCreator> entry_creator,
-      ServiceWorkerDiskCacheEntry** entry,
-      int rv);
+  // Callbacks of EnsureEntryIsCreated().
+  void DidCreateEntryForFirstAttempt(
+      int rv,
+      std::unique_ptr<ServiceWorkerDiskCacheEntry> entry);
+  void DidDoomExistingEntry(int rv);
+  void DidCreateEntryForSecondAttempt(
+      int rv,
+      std::unique_ptr<ServiceWorkerDiskCacheEntry> entry);
 
   void RunEnsureEntryIsCreatedCallback();
 
   const int64_t resource_id_;
   base::WeakPtr<ServiceWorkerDiskCache> disk_cache_;
-  ServiceWorkerDiskCacheEntry* entry_ = nullptr;
+  std::unique_ptr<ServiceWorkerDiskCacheEntry> entry_;
 
   CreationPhase creation_phase_ = CreationPhase::kNoAttempt;
 
@@ -93,7 +86,7 @@ class DiskEntryOpener {
   DiskEntryOpener& operator=(const DiskEntryOpener&) = delete;
 
   // Can be nullptr when a disk cache error occurs.
-  ServiceWorkerDiskCacheEntry* entry() { return entry_; }
+  ServiceWorkerDiskCacheEntry* entry() { return entry_.get(); }
 
   // Calls the callback when entry() is opened and can be used.
   //
@@ -103,18 +96,13 @@ class DiskEntryOpener {
   void EnsureEntryIsOpen(base::OnceClosure callback);
 
  private:
-  // TODO(crbug.com/586174): Refactor service worker's disk cache to use
-  // disk_cache::EntryResult to make this callback non-static.
-  static void DidOpenEntry(base::WeakPtr<DiskEntryOpener> entry_creator,
-                           ServiceWorkerDiskCacheEntry** entry,
-                           int rv);
+  void DidOpenEntry(base::OnceClosure callback,
+                    int rv,
+                    std::unique_ptr<ServiceWorkerDiskCacheEntry> entry);
 
   const int64_t resource_id_;
   base::WeakPtr<ServiceWorkerDiskCache> disk_cache_;
-  ServiceWorkerDiskCacheEntry* entry_ = nullptr;
-
-  // Stored as a data member to handle //net-style maybe-async methods.
-  base::OnceClosure ensure_entry_is_opened_callback_;
+  std::unique_ptr<ServiceWorkerDiskCacheEntry> entry_;
 
   base::WeakPtrFactory<DiskEntryOpener> weak_factory_{this};
 };

@@ -132,11 +132,7 @@ DiskEntryCreator::DiskEntryCreator(
   DCHECK(disk_cache_);
 }
 
-DiskEntryCreator::~DiskEntryCreator() {
-  if (entry_) {
-    entry_->Close();
-  }
-}
+DiskEntryCreator::~DiskEntryCreator() = default;
 
 void DiskEntryCreator::EnsureEntryIsCreated(base::OnceClosure callback) {
   DCHECK(creation_phase_ == CreationPhase::kNoAttempt ||
@@ -150,122 +146,84 @@ void DiskEntryCreator::EnsureEntryIsCreated(base::OnceClosure callback) {
   }
 
   if (!disk_cache_) {
-    entry_ = nullptr;
+    entry_.reset();
     RunEnsureEntryIsCreatedCallback();
     return;
   }
 
-  ServiceWorkerDiskCacheEntry** entry_ptr = new ServiceWorkerDiskCacheEntry*;
   creation_phase_ = CreationPhase::kInitialAttempt;
-  int rv = disk_cache_->CreateEntry(
-      resource_id_, entry_ptr,
-      base::BindOnce(&DidCreateEntryForFirstAttempt, weak_factory_.GetWeakPtr(),
-                     entry_ptr));
-  if (rv != net::ERR_IO_PENDING) {
-    DidCreateEntryForFirstAttempt(weak_factory_.GetWeakPtr(), entry_ptr, rv);
-  }
+  disk_cache_->CreateEntry(
+      resource_id_,
+      base::BindOnce(&DiskEntryCreator::DidCreateEntryForFirstAttempt,
+                     weak_factory_.GetWeakPtr()));
 }
 
-// static
 void DiskEntryCreator::DidCreateEntryForFirstAttempt(
-    base::WeakPtr<DiskEntryCreator> entry_creator,
-    ServiceWorkerDiskCacheEntry** entry,
-    int rv) {
-  if (!entry_creator) {
-    delete entry;
-    return;
-  }
+    int rv,
+    std::unique_ptr<ServiceWorkerDiskCacheEntry> entry) {
+  DCHECK_EQ(creation_phase_, CreationPhase::kInitialAttempt);
+  DCHECK(!entry_);
 
-  DCHECK_EQ(entry_creator->creation_phase_, CreationPhase::kInitialAttempt);
-  DCHECK(!entry_creator->entry_);
-
-  if (!entry_creator->disk_cache_) {
-    delete entry;
-    entry_creator->entry_ = nullptr;
-    entry_creator->RunEnsureEntryIsCreatedCallback();
+  if (!disk_cache_) {
+    entry_.reset();
+    RunEnsureEntryIsCreatedCallback();
     return;
   }
 
   if (rv != net::OK) {
     // The first attempt to create an entry is failed. Try to overwrite the
     // existing entry.
-    delete entry;
-    entry_creator->creation_phase_ = CreationPhase::kDoomExisting;
-    rv = entry_creator->disk_cache_->DoomEntry(
-        entry_creator->resource_id_,
-        base::BindOnce(&DiskEntryCreator::DidDoomExistingEntry, entry_creator));
-    if (rv != net::ERR_IO_PENDING) {
-      DidDoomExistingEntry(entry_creator, rv);
-    }
+    creation_phase_ = CreationPhase::kDoomExisting;
+    disk_cache_->DoomEntry(
+        resource_id_, base::BindOnce(&DiskEntryCreator::DidDoomExistingEntry,
+                                     weak_factory_.GetWeakPtr()));
     return;
   }
 
   DCHECK(entry);
-  entry_creator->entry_ = *entry;
-  delete entry;
-  entry_creator->RunEnsureEntryIsCreatedCallback();
+  entry_ = std::move(entry);
+  RunEnsureEntryIsCreatedCallback();
 }
 
-// static
-void DiskEntryCreator::DidDoomExistingEntry(
-    base::WeakPtr<DiskEntryCreator> entry_creator,
-    int rv) {
-  if (!entry_creator) {
+void DiskEntryCreator::DidDoomExistingEntry(int rv) {
+  DCHECK_EQ(creation_phase_, CreationPhase::kDoomExisting);
+  DCHECK(!entry_);
+
+  if (!disk_cache_) {
+    entry_.reset();
+    RunEnsureEntryIsCreatedCallback();
     return;
   }
 
-  DCHECK_EQ(entry_creator->creation_phase_, CreationPhase::kDoomExisting);
-  DCHECK(!entry_creator->entry_);
-
-  if (!entry_creator->disk_cache_) {
-    entry_creator->entry_ = nullptr;
-    entry_creator->RunEnsureEntryIsCreatedCallback();
-    return;
-  }
-
-  entry_creator->creation_phase_ = CreationPhase::kSecondAttempt;
-  auto** entry_ptr = new ServiceWorkerDiskCacheEntry*;
-  rv = entry_creator->disk_cache_->CreateEntry(
-      entry_creator->resource_id_, entry_ptr,
+  creation_phase_ = CreationPhase::kSecondAttempt;
+  disk_cache_->CreateEntry(
+      resource_id_,
       base::BindOnce(&DiskEntryCreator::DidCreateEntryForSecondAttempt,
-                     entry_creator, entry_ptr));
-  if (rv != net::ERR_IO_PENDING) {
-    DidCreateEntryForSecondAttempt(entry_creator, entry_ptr, rv);
-  }
+                     weak_factory_.GetWeakPtr()));
 }
 
-// static
 void DiskEntryCreator::DidCreateEntryForSecondAttempt(
-    base::WeakPtr<DiskEntryCreator> entry_creator,
-    ServiceWorkerDiskCacheEntry** entry,
-    int rv) {
-  if (!entry_creator) {
-    delete entry;
-    return;
-  }
+    int rv,
+    std::unique_ptr<ServiceWorkerDiskCacheEntry> entry) {
+  DCHECK_EQ(creation_phase_, CreationPhase::kSecondAttempt);
 
-  DCHECK_EQ(entry_creator->creation_phase_, CreationPhase::kSecondAttempt);
-
-  if (!entry_creator->disk_cache_) {
-    delete entry;
-    entry_creator->entry_ = nullptr;
-    entry_creator->RunEnsureEntryIsCreatedCallback();
+  if (!disk_cache_) {
+    entry_.reset();
+    RunEnsureEntryIsCreatedCallback();
     return;
   }
 
   if (rv != net::OK) {
     // The second attempt is also failed. Give up creating an entry.
-    delete entry;
-    entry_creator->entry_ = nullptr;
-    entry_creator->RunEnsureEntryIsCreatedCallback();
+    entry_.reset();
+    RunEnsureEntryIsCreatedCallback();
     return;
   }
 
-  DCHECK(!entry_creator->entry_);
+  DCHECK(!entry_);
   DCHECK(entry);
-  entry_creator->entry_ = *entry;
-  entry_creator->RunEnsureEntryIsCreatedCallback();
-  delete entry;
+  entry_ = std::move(entry);
+  RunEnsureEntryIsCreatedCallback();
 }
 
 void DiskEntryCreator::RunEnsureEntryIsCreatedCallback() {
@@ -281,52 +239,35 @@ DiskEntryOpener::DiskEntryOpener(
   DCHECK(disk_cache_);
 }
 
-DiskEntryOpener::~DiskEntryOpener() {
-  if (entry_) {
-    entry_->Close();
-  }
-}
+DiskEntryOpener::~DiskEntryOpener() = default;
 
 void DiskEntryOpener::EnsureEntryIsOpen(base::OnceClosure callback) {
-  DCHECK(!ensure_entry_is_opened_callback_);
-  ensure_entry_is_opened_callback_ = std::move(callback);
-
-  int rv;
-  ServiceWorkerDiskCacheEntry** entry_ptr = nullptr;
   if (entry_) {
-    rv = net::OK;
-  } else if (!disk_cache_) {
-    rv = net::ERR_FAILED;
-  } else {
-    entry_ptr = new ServiceWorkerDiskCacheEntry*;
-    rv = disk_cache_->OpenEntry(
-        resource_id_, entry_ptr,
-        base::BindOnce(&DiskEntryOpener::DidOpenEntry,
-                       weak_factory_.GetWeakPtr(), entry_ptr));
-  }
-
-  if (rv != net::ERR_IO_PENDING) {
-    DidOpenEntry(weak_factory_.GetWeakPtr(), entry_ptr, rv);
-  }
-}
-
-// static
-void DiskEntryOpener::DidOpenEntry(base::WeakPtr<DiskEntryOpener> entry_opener,
-                                   ServiceWorkerDiskCacheEntry** entry,
-                                   int rv) {
-  if (!entry_opener) {
-    delete entry;
+    std::move(callback).Run();
     return;
   }
 
-  if (!entry_opener->entry_ && rv == net::OK) {
-    DCHECK(entry);
-    entry_opener->entry_ = *entry;
+  if (!disk_cache_) {
+    std::move(callback).Run();
+    return;
   }
-  delete entry;
 
-  DCHECK(entry_opener->ensure_entry_is_opened_callback_);
-  std::move(entry_opener->ensure_entry_is_opened_callback_).Run();
+  disk_cache_->OpenEntry(
+      resource_id_,
+      base::BindOnce(&DiskEntryOpener::DidOpenEntry, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void DiskEntryOpener::DidOpenEntry(
+    base::OnceClosure callback,
+    int rv,
+    std::unique_ptr<ServiceWorkerDiskCacheEntry> entry) {
+  if (!entry_ && rv == net::OK) {
+    DCHECK(entry);
+    entry_ = std::move(entry);
+  }
+
+  std::move(callback).Run();
 }
 
 class ServiceWorkerResourceReaderImpl::DataReader {

@@ -18,6 +18,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/cache_type.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_errors.h"
 
@@ -59,8 +60,10 @@ ServiceWorkerDiskCacheEntry::ServiceWorkerDiskCacheEntry(
 }
 
 ServiceWorkerDiskCacheEntry::~ServiceWorkerDiskCacheEntry() {
-  if (cache_)
+  if (disk_cache_entry_) {
+    disk_cache_entry_->Close();
     cache_->RemoveOpenEntry(this);
+  }
 }
 
 int ServiceWorkerDiskCacheEntry::Read(int index,
@@ -94,105 +97,10 @@ int64_t ServiceWorkerDiskCacheEntry::GetSize(int index) {
   return disk_cache_entry_ ? disk_cache_entry_->GetDataSize(index) : 0L;
 }
 
-void ServiceWorkerDiskCacheEntry::Close() {
-  if (disk_cache_entry_)
-    disk_cache_entry_->Close();
-  delete this;
-}
-
 void ServiceWorkerDiskCacheEntry::Abandon() {
-  cache_ = nullptr;
   disk_cache_entry_->Close();
   disk_cache_entry_ = nullptr;
 }
-
-namespace {
-
-// Separate object to hold state for each Create, Delete, or Doom call
-// while the call is in-flight and to produce an EntryImpl upon completion.
-class ActiveCall : public base::RefCounted<ActiveCall> {
- public:
-  ActiveCall(const base::WeakPtr<ServiceWorkerDiskCache>& owner,
-             ServiceWorkerDiskCacheEntry** entry,
-             net::CompletionOnceCallback callback)
-      : owner_(owner), entry_(entry), callback_(std::move(callback)) {
-    DCHECK(owner_);
-  }
-
-  static net::Error CreateEntry(
-      const base::WeakPtr<ServiceWorkerDiskCache>& owner,
-      int64_t key,
-      ServiceWorkerDiskCacheEntry** entry,
-      net::CompletionOnceCallback callback) {
-    scoped_refptr<ActiveCall> active_call =
-        base::MakeRefCounted<ActiveCall>(owner, entry, std::move(callback));
-    disk_cache::EntryResult result = owner->disk_cache()->CreateEntry(
-        base::NumberToString(key), net::HIGHEST,
-        base::BindOnce(&ActiveCall::OnAsyncCompletion, active_call));
-    return active_call->HandleImmediateReturnValue(std::move(result));
-  }
-
-  static net::Error OpenEntry(
-      const base::WeakPtr<ServiceWorkerDiskCache>& owner,
-      int64_t key,
-      ServiceWorkerDiskCacheEntry** entry,
-      net::CompletionOnceCallback callback) {
-    scoped_refptr<ActiveCall> active_call =
-        base::MakeRefCounted<ActiveCall>(owner, entry, std::move(callback));
-    disk_cache::EntryResult result = owner->disk_cache()->OpenEntry(
-        base::NumberToString(key), net::HIGHEST,
-        base::BindOnce(&ActiveCall::OnAsyncCompletion, active_call));
-    return active_call->HandleImmediateReturnValue(std::move(result));
-  }
-
-  static net::Error DoomEntry(
-      const base::WeakPtr<ServiceWorkerDiskCache>& owner,
-      int64_t key,
-      net::CompletionOnceCallback callback) {
-    return owner->disk_cache()->DoomEntry(base::NumberToString(key),
-                                          net::HIGHEST, std::move(callback));
-  }
-
- private:
-  friend class base::RefCounted<ActiveCall>;
-
-  ~ActiveCall() = default;
-
-  net::Error HandleImmediateReturnValue(disk_cache::EntryResult result) {
-    net::Error rv = result.net_error();
-    if (rv == net::ERR_IO_PENDING) {
-      // OnAsyncCompletion will be called later.
-      return rv;
-    }
-
-    if (rv == net::OK) {
-      *entry_ =
-          new ServiceWorkerDiskCacheEntry(result.ReleaseEntry(), owner_.get());
-    }
-
-    return rv;
-  }
-
-  void OnAsyncCompletion(disk_cache::EntryResult result) {
-    int rv = result.net_error();
-    if (rv == net::OK) {
-      if (owner_) {
-        *entry_ = new ServiceWorkerDiskCacheEntry(result.ReleaseEntry(),
-                                                  owner_.get());
-      } else {
-        result.ReleaseEntry()->Close();
-        rv = net::ERR_ABORTED;
-      }
-    }
-    std::move(callback_).Run(rv);
-  }
-
-  base::WeakPtr<ServiceWorkerDiskCache> owner_;
-  ServiceWorkerDiskCacheEntry** entry_;
-  net::CompletionOnceCallback callback_;
-};
-
-}  // namespace
 
 ServiceWorkerDiskCache::ServiceWorkerDiskCache() = default;
 
@@ -242,91 +150,113 @@ void ServiceWorkerDiskCache::Disable() {
   disk_cache_.reset();
 }
 
-net::Error ServiceWorkerDiskCache::CreateEntry(
-    int64_t key,
-    ServiceWorkerDiskCacheEntry** entry,
-    net::CompletionOnceCallback callback) {
+void ServiceWorkerDiskCache::CreateEntry(int64_t key, EntryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(entry);
   DCHECK(!callback.is_null());
-  if (is_disabled_)
-    return net::ERR_ABORTED;
-
-  if (is_initializing_or_waiting_to_initialize()) {
-    pending_calls_.emplace_back(PendingCallType::kCreate, key, entry,
-                                std::move(callback));
-    return net::ERR_IO_PENDING;
+  if (is_disabled_) {
+    std::move(callback).Run(net::ERR_ABORTED, nullptr);
+    return;
   }
 
-  if (!disk_cache_)
-    return net::ERR_FAILED;
+  if (is_initializing_or_waiting_to_initialize()) {
+    // Unretained use is safe here because the callback is stored in
+    // `pending_calls_`, which is owned by this instance.
+    pending_calls_.emplace_back(
+        base::BindOnce(&ServiceWorkerDiskCache::CreateEntry,
+                       base::Unretained(this), key, std::move(callback)));
+    return;
+  }
 
-  return ActiveCall::CreateEntry(weak_factory_.GetWeakPtr(), key, entry,
-                                 std::move(callback));
+  if (!disk_cache_) {
+    std::move(callback).Run(net::ERR_FAILED, nullptr);
+    return;
+  }
+
+  DCHECK(!base::Contains(active_entry_calls_, key));
+  active_entry_calls_.emplace(key, std::move(callback));
+
+  disk_cache::EntryResult result = disk_cache_->CreateEntry(
+      base::NumberToString(key), net::HIGHEST,
+      base::BindOnce(&ServiceWorkerDiskCache::DidGetEntryResult,
+                     weak_factory_.GetWeakPtr(), key));
+  if (result.net_error() != net::ERR_IO_PENDING) {
+    DidGetEntryResult(key, std::move(result));
+  }
 }
 
-net::Error ServiceWorkerDiskCache::OpenEntry(
-    int64_t key,
-    ServiceWorkerDiskCacheEntry** entry,
-    net::CompletionOnceCallback callback) {
+void ServiceWorkerDiskCache::OpenEntry(int64_t key, EntryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(entry);
   DCHECK(!callback.is_null());
-  if (is_disabled_)
-    return net::ERR_ABORTED;
-
-  if (is_initializing_or_waiting_to_initialize()) {
-    pending_calls_.emplace_back(PendingCallType::kOpen, key, entry,
-                                std::move(callback));
-    return net::ERR_IO_PENDING;
+  if (is_disabled_) {
+    std::move(callback).Run(net::ERR_ABORTED, nullptr);
+    return;
   }
 
-  if (!disk_cache_)
-    return net::ERR_FAILED;
+  if (is_initializing_or_waiting_to_initialize()) {
+    // Unretained use is safe here because the callback is stored in
+    // `pending_calls_`, which is owned by this instance.
+    pending_calls_.emplace_back(
+        base::BindOnce(&ServiceWorkerDiskCache::OpenEntry,
+                       base::Unretained(this), key, std::move(callback)));
+    return;
+  }
 
-  return ActiveCall::OpenEntry(weak_factory_.GetWeakPtr(), key, entry,
-                               std::move(callback));
+  if (!disk_cache_) {
+    std::move(callback).Run(net::ERR_FAILED, nullptr);
+    return;
+  }
+
+  DCHECK(!base::Contains(active_entry_calls_, key));
+  active_entry_calls_.emplace(key, std::move(callback));
+
+  disk_cache::EntryResult result = disk_cache_->OpenEntry(
+      base::NumberToString(key), net::HIGHEST,
+      base::BindOnce(&ServiceWorkerDiskCache::DidGetEntryResult,
+                     weak_factory_.GetWeakPtr(), key));
+  if (result.net_error() != net::ERR_IO_PENDING) {
+    DidGetEntryResult(key, std::move(result));
+  }
 }
 
-net::Error ServiceWorkerDiskCache::DoomEntry(
-    int64_t key,
-    net::CompletionOnceCallback callback) {
+void ServiceWorkerDiskCache::DoomEntry(int64_t key,
+                                       net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  if (is_disabled_)
-    return net::ERR_ABORTED;
-
-  if (is_initializing_or_waiting_to_initialize()) {
-    pending_calls_.emplace_back(PendingCallType::kDoom, key, nullptr,
-                                std::move(callback));
-    return net::ERR_IO_PENDING;
+  if (is_disabled_) {
+    std::move(callback).Run(net::ERR_ABORTED);
+    return;
   }
 
-  if (!disk_cache_)
-    return net::ERR_FAILED;
+  if (is_initializing_or_waiting_to_initialize()) {
+    // Unretained use is safe here because the callback is stored in
+    // `pending_calls_`, which is owned by this instance.
+    pending_calls_.emplace_back(
+        base::BindOnce(&ServiceWorkerDiskCache::DoomEntry,
+                       base::Unretained(this), key, std::move(callback)));
+    return;
+  }
 
-  return ActiveCall::DoomEntry(weak_factory_.GetWeakPtr(), key,
-                               std::move(callback));
+  if (!disk_cache_) {
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
+
+  DCHECK(!base::Contains(active_doom_calls_, key));
+  active_doom_calls_.emplace(key, std::move(callback));
+
+  net::Error net_error = disk_cache_->DoomEntry(
+      base::NumberToString(key), net::HIGHEST,
+      base::BindOnce(&ServiceWorkerDiskCache::DidDoomEntry,
+                     weak_factory_.GetWeakPtr(), key));
+  if (net_error != net::ERR_IO_PENDING) {
+    DidDoomEntry(key, net_error);
+  }
 }
 
 base::WeakPtr<ServiceWorkerDiskCache> ServiceWorkerDiskCache::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
 }
-
-ServiceWorkerDiskCache::PendingCall::PendingCall(
-    PendingCallType call_type,
-    int64_t key,
-    ServiceWorkerDiskCacheEntry** entry,
-    net::CompletionOnceCallback callback)
-    : call_type(call_type),
-      key(key),
-      entry(entry),
-      callback(std::move(callback)) {}
-
-ServiceWorkerDiskCache::PendingCall::PendingCall(PendingCall&& other) = default;
-
-ServiceWorkerDiskCache::PendingCall::~PendingCall() = default;
 
 net::Error ServiceWorkerDiskCache::Init(net::CacheType cache_type,
                                         const base::FilePath& cache_directory,
@@ -369,31 +299,35 @@ void ServiceWorkerDiskCache::OnCreateBackendComplete(int return_value) {
   }
 
   // Service pending calls that were queued up while we were initializing.
-  for (auto& call : pending_calls_) {
-    // This is safe, because the callback will only be called once.
-    net::CompletionRepeatingCallback copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(call.callback));
-    return_value = net::ERR_FAILED;
-    switch (call.call_type) {
-      case PendingCallType::kCreate:
-        return_value = CreateEntry(call.key, call.entry, copyable_callback);
-        break;
-      case PendingCallType::kOpen:
-        return_value = OpenEntry(call.key, call.entry, copyable_callback);
-        break;
-      case PendingCallType::kDoom:
-        return_value = DoomEntry(call.key, copyable_callback);
-        break;
-    }
-    // disk_cache::{Create,Open,Doom}Entry() call their callbacks iff they
-    // return net::ERR_IO_PENDING. In this case, the callback was not called.
-    // However, the corresponding ServiceWorkerDiskCache wrapper returned
-    // net::ERR_IO_PENDING as it queued up the pending call. To follow the
-    // disk_cache API contract, we need to call the callback ourselves here.
-    if (return_value != net::ERR_IO_PENDING)
-      copyable_callback.Run(return_value);
-  }
+  for (auto& call : pending_calls_)
+    std::move(call).Run();
   pending_calls_.clear();
+}
+
+void ServiceWorkerDiskCache::DidGetEntryResult(int64_t key,
+                                               disk_cache::EntryResult result) {
+  auto it = active_entry_calls_.find(key);
+  DCHECK(it != active_entry_calls_.end());
+  EntryCallback callback = std::move(it->second);
+  active_entry_calls_.erase(it);
+
+  net::Error net_error = result.net_error();
+  std::unique_ptr<ServiceWorkerDiskCacheEntry> entry;
+  if (net_error == net::OK) {
+    entry = std::make_unique<ServiceWorkerDiskCacheEntry>(result.ReleaseEntry(),
+                                                          this);
+  }
+
+  std::move(callback).Run(net_error, std::move(entry));
+}
+
+void ServiceWorkerDiskCache::DidDoomEntry(int64_t key, int net_error) {
+  auto it = active_doom_calls_.find(key);
+  DCHECK(it != active_doom_calls_.end());
+  net::CompletionOnceCallback callback = std::move(it->second);
+  active_doom_calls_.erase(it);
+
+  std::move(callback).Run(net_error);
 }
 
 void ServiceWorkerDiskCache::AddOpenEntry(ServiceWorkerDiskCacheEntry* entry) {

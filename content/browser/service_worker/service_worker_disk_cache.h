@@ -33,6 +33,7 @@ class CONTENT_EXPORT ServiceWorkerDiskCacheEntry {
   // on destruction. |cache| must outlive the newly created entry.
   ServiceWorkerDiskCacheEntry(disk_cache::Entry* disk_cache_entry,
                               ServiceWorkerDiskCache* cache);
+  ~ServiceWorkerDiskCacheEntry();
 
   // See `disk_cache::Entry::ReadData()`.
   int Read(int index,
@@ -48,21 +49,16 @@ class CONTENT_EXPORT ServiceWorkerDiskCacheEntry {
             int buf_len,
             net::CompletionOnceCallback callback);
   int64_t GetSize(int index);
-  // Closes the disk cache and destroyes the instance.
-  void Close();
 
   // Should only be called by ServiceWorkerDiskCache.
   void Abandon();
 
  private:
-  // Call Close() instead of calling this directly.
-  ~ServiceWorkerDiskCacheEntry();
-
   // The disk_cache::Entry is owned by this entry and closed on destruction.
   disk_cache::Entry* disk_cache_entry_;
 
   // The cache that this entry belongs to.
-  ServiceWorkerDiskCache* cache_;
+  ServiceWorkerDiskCache* const cache_;
 };
 
 // net::DiskCache wrapper for the cache used by service worker resources.
@@ -87,13 +83,15 @@ class CONTENT_EXPORT ServiceWorkerDiskCache {
   void Disable();
   bool is_disabled() const { return is_disabled_; }
 
-  net::Error CreateEntry(int64_t key,
-                         ServiceWorkerDiskCacheEntry** entry,
-                         net::CompletionOnceCallback callback);
-  net::Error OpenEntry(int64_t key,
-                       ServiceWorkerDiskCacheEntry** entry,
-                       net::CompletionOnceCallback callback);
-  net::Error DoomEntry(int64_t key, net::CompletionOnceCallback callback);
+  using EntryCallback =
+      base::OnceCallback<void(int rv,
+                              std::unique_ptr<ServiceWorkerDiskCacheEntry>)>;
+
+  // Creates/opens/dooms a disk cache entry associated with `key`. These calls
+  // should not overlap.
+  void CreateEntry(int64_t key, EntryCallback callback);
+  void OpenEntry(int64_t key, EntryCallback callback);
+  void DoomEntry(int64_t key, net::CompletionOnceCallback callback);
 
   base::WeakPtr<ServiceWorkerDiskCache> GetWeakPtr();
 
@@ -106,30 +104,6 @@ class CONTENT_EXPORT ServiceWorkerDiskCache {
  private:
   class CreateBackendCallbackShim;
   friend class ServiceWorkerDiskCacheEntry;
-
-  // PendingCalls allow CreateEntry, OpenEntry, and DoomEntry to be called
-  // immediately after construction, without waiting for the
-  // underlying disk_cache::Backend to be fully constructed. Early
-  // calls are queued up and serviced once the disk_cache::Backend is
-  // really ready to go.
-  enum class PendingCallType { kCreate, kOpen, kDoom };
-  struct PendingCall {
-    PendingCall(PendingCallType call_type,
-                int64_t key,
-                ServiceWorkerDiskCacheEntry** entry,
-                net::CompletionOnceCallback callback);
-    PendingCall(PendingCall&& other);
-    PendingCall(const PendingCall&) = delete;
-    PendingCall& operator=(const PendingCall&) = delete;
-    PendingCall& operator=(PendingCall&&) = delete;
-
-    ~PendingCall();
-
-    const PendingCallType call_type;
-    const int64_t key;
-    ServiceWorkerDiskCacheEntry** const entry;
-    net::CompletionOnceCallback callback;
-  };
 
   bool is_initializing_or_waiting_to_initialize() const {
     return create_backend_callback_.get() != nullptr ||
@@ -144,6 +118,9 @@ class CONTENT_EXPORT ServiceWorkerDiskCache {
                   net::CompletionOnceCallback callback);
   void OnCreateBackendComplete(int return_value);
 
+  void DidGetEntryResult(int64_t key, disk_cache::EntryResult result);
+  void DidDoomEntry(int64_t key, int net_error);
+
   // Called by ServiceWorkerDiskCacheEntry constructor.
   void AddOpenEntry(ServiceWorkerDiskCacheEntry* entry);
   // Called by ServiceWorkerDiskCacheEntry destructor.
@@ -153,7 +130,9 @@ class CONTENT_EXPORT ServiceWorkerDiskCache {
   bool is_waiting_to_initialize_ = false;
   net::CompletionOnceCallback init_callback_;
   scoped_refptr<CreateBackendCallbackShim> create_backend_callback_;
-  std::vector<PendingCall> pending_calls_;
+  std::vector<base::OnceClosure> pending_calls_;
+  std::map</*key=*/int64_t, EntryCallback> active_entry_calls_;
+  std::map</*key=*/int64_t, net::CompletionOnceCallback> active_doom_calls_;
   std::set<ServiceWorkerDiskCacheEntry*> open_entries_;
   std::unique_ptr<disk_cache::Backend> disk_cache_;
 

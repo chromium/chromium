@@ -1449,11 +1449,9 @@ void ServiceWorkerStorage::ContinuePurgingResources() {
 
 void ServiceWorkerStorage::PurgeResource(int64_t id) {
   DCHECK(is_purge_pending_);
-  int rv = disk_cache()->DoomEntry(
+  disk_cache()->DoomEntry(
       id, base::BindOnce(&ServiceWorkerStorage::OnResourcePurged,
                          weak_factory_.GetWeakPtr(), id));
-  if (rv != net::ERR_IO_PENDING)
-    OnResourcePurged(id, rv);
 }
 
 void ServiceWorkerStorage::OnResourcePurged(int64_t id, int rv) {
