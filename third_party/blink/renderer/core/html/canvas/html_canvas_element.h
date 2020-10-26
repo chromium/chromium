@@ -292,7 +292,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   ScriptPromise convertToBlob(ScriptState*,
                               const ImageEncodeOptions*,
-                              ExceptionState&) override;
+                              ExceptionState&);
 
   bool NeedsUnbufferedInputEvents() const { return needs_unbuffered_input_; }
 

@@ -270,42 +270,10 @@ void HTMLCanvasElement::IdentifiabilityReportWithDigest(
     IdentifiableToken canvas_contents_token) const {
   if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(
           blink::IdentifiableSurface::Type::kCanvasReadback)) {
-    const uint64_t context_digest =
-        context_ ? context_->IdentifiableTextToken().ToUkmMetricValue() : 0;
-    const IdentifiabilityPaintOpDigest* const identifiability_paintop_digest =
-        ResourceProvider()
-            ? &(ResourceProvider()->GetIdentifiablityPaintOpDigest())
-            : nullptr;
-    const uint64_t canvas_digest =
-        identifiability_paintop_digest
-            ? identifiability_paintop_digest->GetToken().ToUkmMetricValue()
-            : 0;
-    const uint64_t context_type =
-        context_ ? context_->GetContextType()
-                 : CanvasRenderingContext::kContextTypeUnknown;
-    const bool encountered_skipped_ops =
-        (context_ && context_->IdentifiabilityEncounteredSkippedOps()) ||
-        (identifiability_paintop_digest &&
-         identifiability_paintop_digest->encountered_skipped_ops());
-    const bool encountered_sensitive_ops =
-        context_ && context_->IdentifiabilityEncounteredSensitiveOps();
-    const bool encountered_partially_digested_image =
-        identifiability_paintop_digest &&
-        identifiability_paintop_digest->encountered_partially_digested_image();
-    // Bits [0-3] are the context type, bits [4-6] are skipped ops, sensitive
-    // ops, and partial image ops bits, respectively. The remaining bits are
-    // for the canvas digest.
-    uint64_t final_digest =
-        ((context_digest ^ canvas_digest) << 7) | context_type;
-    if (encountered_skipped_ops)
-      final_digest |= IdentifiableSurface::CanvasTaintBit::kSkipped;
-    if (encountered_sensitive_ops)
-      final_digest |= IdentifiableSurface::CanvasTaintBit::kSensitive;
-    if (encountered_partially_digested_image)
-      final_digest |= IdentifiableSurface::CanvasTaintBit::kPartiallyDigested;
     RecordIdentifiabilityMetric(
         blink::IdentifiableSurface::FromTypeAndToken(
-            blink::IdentifiableSurface::Type::kCanvasReadback, final_digest),
+            blink::IdentifiableSurface::Type::kCanvasReadback,
+            IdentifiabilityInputDigest(context_)),
         canvas_contents_token.ToUkmMetricValue());
   }
 }
@@ -432,7 +400,7 @@ ScriptPromise HTMLCanvasElement::convertToBlob(
     const ImageEncodeOptions* options,
     ExceptionState& exception_state) {
   return CanvasRenderingContextHost::convertToBlob(script_state, options,
-                                                   exception_state);
+                                                   exception_state, context_);
 }
 
 bool HTMLCanvasElement::ShouldBeDirectComposited() const {
@@ -1068,12 +1036,12 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
         image_bitmap, options,
         CanvasAsyncBlobCreator::kHTMLCanvasToBlobCallback, callback, start_time,
         GetExecutionContext(),
-        UkmParameters{GetDocument().UkmRecorder(),
-                      GetDocument().UkmSourceID()});
+        UkmParameters{GetDocument().UkmRecorder(), GetDocument().UkmSourceID()},
+        IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+            IdentifiableSurface::Type::kCanvasReadback)
+            ? IdentifiabilityInputDigest(context_)
+            : 0);
   }
-
-  // TODO(crbug.com/973801): Report real digest for toBlob().
-  IdentifiabilityReportWithDigest(IdentifiableToken(0));
 
   if (async_creator) {
     async_creator->ScheduleAsyncBlobCreation(quality);

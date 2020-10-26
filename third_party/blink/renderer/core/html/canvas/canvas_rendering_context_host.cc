@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
@@ -287,7 +288,8 @@ CanvasColorParams CanvasRenderingContextHost::ColorParams() const {
 ScriptPromise CanvasRenderingContextHost::convertToBlob(
     ScriptState* script_state,
     const ImageEncodeOptions* options,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    const CanvasRenderingContext* const context) {
   WTF::String object_name = "Canvas";
   if (this->IsOffscreenCanvas())
     object_name = "OffscreenCanvas";
@@ -338,7 +340,12 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
     }
     auto* async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
         image_bitmap, options, function_type, start_time,
-        ExecutionContext::From(script_state), ukm_params_, resolver);
+        ExecutionContext::From(script_state), ukm_params_,
+        IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+            IdentifiableSurface::Type::kCanvasReadback)
+            ? IdentifiabilityInputDigest(context)
+            : 0,
+        resolver);
     async_creator->ScheduleAsyncBlobCreation(options->quality());
     return resolver->Promise();
   }
@@ -349,6 +356,44 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
 
 bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
   return host_type_ == kOffscreenCanvasHost;
+}
+
+IdentifiableToken CanvasRenderingContextHost::IdentifiabilityInputDigest(
+    const CanvasRenderingContext* const context) const {
+  const uint64_t context_digest =
+      context ? context->IdentifiableTextToken().ToUkmMetricValue() : 0;
+  const IdentifiabilityPaintOpDigest* const identifiability_paintop_digest =
+      ResourceProvider()
+          ? &(ResourceProvider()->GetIdentifiablityPaintOpDigest())
+          : nullptr;
+  const uint64_t canvas_digest =
+      identifiability_paintop_digest
+          ? identifiability_paintop_digest->GetToken().ToUkmMetricValue()
+          : 0;
+  const uint64_t context_type =
+      context ? context->GetContextType()
+              : CanvasRenderingContext::kContextTypeUnknown;
+  const bool encountered_skipped_ops =
+      (context && context->IdentifiabilityEncounteredSkippedOps()) ||
+      (identifiability_paintop_digest &&
+       identifiability_paintop_digest->encountered_skipped_ops());
+  const bool encountered_sensitive_ops =
+      context && context->IdentifiabilityEncounteredSensitiveOps();
+  const bool encountered_partially_digested_image =
+      identifiability_paintop_digest &&
+      identifiability_paintop_digest->encountered_partially_digested_image();
+  // Bits [0-3] are the context type, bits [4-6] are skipped ops, sensitive
+  // ops, and partial image ops bits, respectively. The remaining bits are
+  // for the canvas digest.
+  uint64_t final_digest =
+      ((context_digest ^ canvas_digest) << 7) | context_type;
+  if (encountered_skipped_ops)
+    final_digest |= IdentifiableSurface::CanvasTaintBit::kSkipped;
+  if (encountered_sensitive_ops)
+    final_digest |= IdentifiableSurface::CanvasTaintBit::kSensitive;
+  if (encountered_partially_digested_image)
+    final_digest |= IdentifiableSurface::CanvasTaintBit::kPartiallyDigested;
+  return final_digest;
 }
 
 }  // namespace blink

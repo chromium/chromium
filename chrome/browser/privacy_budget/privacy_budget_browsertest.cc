@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
   // adjust this test to deal.
   ASSERT_EQ(1u, merged_entries.size());
 
-  constexpr uint64_t input_digest = 0;
+  constexpr uint64_t input_digest = 9;
   EXPECT_THAT(merged_entries.begin()->second->metrics,
               IsSupersetOf({
                   Key(blink::IdentifiableSurface::FromTypeAndToken(

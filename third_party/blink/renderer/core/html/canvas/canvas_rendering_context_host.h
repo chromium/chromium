@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
@@ -82,9 +83,10 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
 
   // For deferred canvases this will have the side effect of drawing recorded
   // commands in order to finalize the frame.
-  virtual ScriptPromise convertToBlob(ScriptState*,
-                                      const ImageEncodeOptions*,
-                                      ExceptionState&);
+  ScriptPromise convertToBlob(ScriptState*,
+                              const ImageEncodeOptions*,
+                              ExceptionState&,
+                              const CanvasRenderingContext* const context);
 
   bool IsPaintable() const;
 
@@ -118,6 +120,12 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
 
   void CreateCanvasResourceProvider2D(RasterModeHint hint);
   void CreateCanvasResourceProvider3D();
+
+  // Computes the digest that corresponds to the "input" of this canvas,
+  // including the context type, and if applicable, canvas digest, and taint
+  // bits.
+  IdentifiableToken IdentifiabilityInputDigest(
+      const CanvasRenderingContext* const context) const;
 
   bool did_fail_to_create_resource_provider_ = false;
   bool did_record_canvas_size_to_uma_ = false;
