@@ -1,0 +1,96 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("platform") {
+  sources = [
+    "atomic_boolean.cc",
+    "atomic_boolean.h",
+    "atomic_uint32.cc",
+    "atomic_uint32.h",
+    "ble_medium.cc",
+    "ble_medium.h",
+    "ble_peripheral.cc",
+    "ble_peripheral.h",
+    "bluetooth_adapter.cc",
+    "bluetooth_adapter.h",
+    "bluetooth_classic_medium.cc",
+    "bluetooth_classic_medium.h",
+    "bluetooth_device.cc",
+    "bluetooth_device.h",
+    "bluetooth_server_socket.cc",
+    "bluetooth_server_socket.h",
+    "bluetooth_socket.cc",
+    "bluetooth_socket.h",
+    "condition_variable.cc",
+    "condition_variable.h",
+    "count_down_latch.cc",
+    "count_down_latch.h",
+    "crypto.cc",
+    "input_file.cc",
+    "input_file.h",
+    "log_message.cc",
+    "log_message.h",
+    "mutex.cc",
+    "mutex.h",
+    "output_file.cc",
+    "output_file.h",
+    "recursive_mutex.cc",
+    "recursive_mutex.h",
+    "scheduled_executor.cc",
+    "scheduled_executor.h",
+    "submittable_executor.cc",
+    "submittable_executor.h",
+    "system_clock.cc",
+    "webrtc.cc",
+    "webrtc.h",
+  ]
+
+  public_deps = [
+    "//third_party/nearby:platform_api_platform",
+    "//third_party/nearby:platform_impl_shared_file",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/services/sharing/webrtc",
+    "//chromeos/services/nearby/public/mojom",
+    "//crypto",
+    "//jingle:webrtc_glue",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "atomic_boolean_unittest.cc",
+    "atomic_uint32_unittest.cc",
+    "ble_medium_unittest.cc",
+    "bluetooth_adapter_unittest.cc",
+    "bluetooth_classic_medium_unittest.cc",
+    "bluetooth_server_socket_unittest.cc",
+    "bluetooth_socket_unittest.cc",
+    "condition_variable_unittest.cc",
+    "count_down_latch_unittest.cc",
+    "crypto_unittest.cc",
+    "input_file_unittest.cc",
+    "multi_thread_executor_unittest.cc",
+    "mutex_unittest.cc",
+    "recursive_mutex_unittest.cc",
+    "scheduled_executor_unittest.cc",
+    "single_thread_executor_unittest.cc",
+    "webrtc_test.cc",
+  ]
+
+  deps = [
+    ":platform",
+    "//base/test:test_support",
+    "//chrome/services/sharing/nearby/test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

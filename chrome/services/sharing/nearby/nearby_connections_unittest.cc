@@ -26,7 +26,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/nearby/src/cpp/core_v2/internal/mock_service_controller.h"
+#include "third_party/nearby/src/cpp/core/internal/mock_service_controller.h"
 
 namespace location {
 namespace nearby {

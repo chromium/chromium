@@ -15,7 +15,7 @@ source_set("nearby") {
 
   public_deps = [
     "decoder",
-    "platform_v2",
+    "platform",
     "//base",
     "//chrome/services/sharing/public/cpp",
     "//chromeos/services/nearby/public/mojom",
@@ -37,6 +37,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/nearby:core_v2_internal_test",
+    "//third_party/nearby:core_internal_test",
   ]
 }

@@ -36,6 +36,9 @@ message IdType {
   }
 }
 
+// TODO(https://crbug.com/1142001): Replace with LocationStandard message from
+// //third_party/nearby/src/proto/connections/offline_wire_formats.proto if
+// possible.
 message LocationStandard {
   enum Format {
     UNKNOWN = 0;
@@ -51,6 +54,9 @@ message LocationStandard {
 }
 
 // LocationHint is used to specify a location as well as format.
+// TODO(https://crbug.com/1142001): Replace with LocationHint message from
+// //third_party/nearby/src/proto/connections/offline_wire_formats.proto if
+// possible.
 message LocationHint {
   // Location is the location, provided in the format specified by format.
   string location = 1;

@@ -26,7 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/nearby/src/cpp/core_v2/core.h"
+#include "third_party/nearby/src/cpp/core/core.h"
 
 namespace location {
 namespace nearby {

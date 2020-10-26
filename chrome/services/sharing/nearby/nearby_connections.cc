@@ -10,7 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
-#include "chrome/services/sharing/nearby/platform_v2/input_file.h"
+#include "chrome/services/sharing/nearby/platform/input_file.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 namespace location {

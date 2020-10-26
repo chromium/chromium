@@ -11,8 +11,8 @@
 #include "base/callback_forward.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom-forward.h"
-#include "third_party/nearby/src/cpp/core_v2/options.h"
-#include "third_party/nearby/src/cpp/core_v2/params.h"
+#include "third_party/nearby/src/cpp/core/options.h"
+#include "third_party/nearby/src/cpp/core/params.h"
 
 namespace location {
 namespace nearby {
