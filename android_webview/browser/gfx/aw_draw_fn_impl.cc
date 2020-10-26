@@ -8,11 +8,11 @@
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser_jni_headers/AwDrawFnImpl_jni.h"
-#include "android_webview/common/aw_switches.h"
 #include "base/command_line.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "gpu/config/gpu_switches.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"

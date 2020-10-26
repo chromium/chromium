@@ -84,4 +84,7 @@ const char kGpuRevision[] = "gpu-revision";
 // collection GPU process.
 const char kGpuDriverVersion[] = "gpu-driver-version";
 
+// Used to enable vulkan draw mode instead of interop draw mode for webview.
+const char kWebViewEnableVulkan[] = "webview-enable-vulkan";
+
 }  // namespace switches

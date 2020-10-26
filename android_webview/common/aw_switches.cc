@@ -14,9 +14,6 @@ const char kWebViewSandboxedRenderer[] = "webview-sandboxed-renderer";
 const char kWebViewDisableSafebrowsingSupport[] =
     "webview-disable-safebrowsing-support";
 
-// Used to enable vulkan draw mode instead of interop draw mode for webview.
-const char kWebViewEnableVulkan[] = "webview-enable-vulkan";
-
 // Enables SafeBrowsing and causes WebView to treat all resources as malicious.
 // Use care: this will block all resources from loading.
 const char kWebViewSafebrowsingBlockAllResources[] =

@@ -29,6 +29,7 @@ GPU_EXPORT extern const char kGpuDeviceId[];
 GPU_EXPORT extern const char kGpuSubSystemId[];
 GPU_EXPORT extern const char kGpuRevision[];
 GPU_EXPORT extern const char kGpuDriverVersion[];
+GPU_EXPORT extern const char kWebViewEnableVulkan[];
 
 }  // namespace switches
 

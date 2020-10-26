@@ -137,6 +137,7 @@ class GpuWatchdogInit {
 
 // TODO(https://crbug.com/1095744): We currently do not handle
 // VK_ERROR_DEVICE_LOST in in-process-gpu.
+// Android WebView is allowed for now because it CHECKs on context loss.
 void DisableInProcessGpuVulkan(GpuFeatureInfo* gpu_feature_info,
                                GpuPreferences* gpu_preferences) {
   if (gpu_feature_info->status_values[GPU_FEATURE_TYPE_VULKAN] ==
@@ -611,7 +612,13 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   InitializeGLThreadSafe(command_line, gpu_preferences_, &gpu_info_,
                          &gpu_feature_info_);
 
-  DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
+  if (!command_line->HasSwitch(switches::kWebViewEnableVulkan)) {
+    DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
+  } else if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
+             kGpuFeatureStatusEnabled) {
+    bool result = InitializeVulkan();
+    CHECK(result);
+  }
   default_offscreen_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
