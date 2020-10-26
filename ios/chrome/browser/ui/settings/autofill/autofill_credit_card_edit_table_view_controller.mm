@@ -231,6 +231,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableViewItemDidEndEditing:
     (TableViewTextEditItem*)tableViewTextEditItem {
+  // If the table view has already been dismissed or the editing stopped
+  // ignore call as the item might no longer be in the cells (crbug/1125094).
+  if (!self.tableView.isEditing) {
+    return;
+  }
+
   if ([tableViewTextEditItem isKindOfClass:[AutofillEditItem class]]) {
     AutofillEditItem* item = (AutofillEditItem*)tableViewTextEditItem;
     // Reconfigure to trigger appropiate icon change.
