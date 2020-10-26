@@ -8056,36 +8056,90 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(orig_site_instance, child->current_frame_host()->GetSiteInstance());
 }
 
-// Intercepts calls to RenderFramHost's ShowCreatedWindow mojo method, and
+// Intercepts calls to LocalMainFrame's ShowCreatedWindow mojo method, and
 // invokes the provided callback.
 class ShowCreatedWindowInterceptor
-    : public mojom::FrameHostInterceptorForTesting {
+    : public blink::mojom::LocalMainFrameHostInterceptorForTesting {
  public:
   ShowCreatedWindowInterceptor(
       RenderFrameHostImpl* render_frame_host,
-      base::RepeatingCallback<void(int32_t pending_widget_routing_id)>
-          test_callback)
+      base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
       : render_frame_host_(render_frame_host),
         test_callback_(std::move(test_callback)) {
-    render_frame_host_->frame_host_receiver_for_testing().SwapImplForTesting(
-        this);
+    render_frame_host_->local_main_frame_host_receiver_for_testing()
+        .SwapImplForTesting(this);
   }
 
   ~ShowCreatedWindowInterceptor() override = default;
 
-  FrameHost* GetForwardingInterface() override { return render_frame_host_; }
+  blink::mojom::LocalMainFrameHost* GetForwardingInterface() override {
+    return render_frame_host_;
+  }
 
-  void ShowCreatedWindow(int32_t pending_widget_routing_id,
+  void ShowCreatedWindow(const base::UnguessableToken& opener_frame_token,
                          WindowOpenDisposition disposition,
                          const gfx::Rect& initial_rect,
-                         bool user_gesture) override {
-    test_callback_.Run(pending_widget_routing_id);
+                         bool user_gesture,
+                         ShowCreatedWindowCallback callback) override {
+    show_callback_ = std::move(callback);
+    opener_frame_token_ = opener_frame_token;
+    user_gesture_ = user_gesture;
+    initial_rect_ = initial_rect;
+    disposition_ = disposition;
+    std::move(test_callback_)
+        .Run(render_frame_host_->GetRenderWidgetHost()->GetRoutingID());
+  }
+
+  void ResumeShowCreatedWindow() {
+    GetForwardingInterface()->ShowCreatedWindow(
+        opener_frame_token_, disposition_, initial_rect_, user_gesture_,
+        std::move(show_callback_));
   }
 
  private:
   RenderFrameHostImpl* render_frame_host_;
-  base::RepeatingCallback<void(int32_t pending_widget_routing_id)>
-      test_callback_;
+  base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
+  ShowCreatedWindowCallback show_callback_;
+  base::UnguessableToken opener_frame_token_;
+  gfx::Rect initial_rect_;
+  bool user_gesture_ = false;
+  WindowOpenDisposition disposition_;
+};
+
+// Listens for the source WebContents opening the new WebContents then attaches
+// a show listener to the widget.
+class NewWindowCreatedObserver : public WebContentsObserver {
+ public:
+  NewWindowCreatedObserver(
+      WebContents* web_contents,
+      base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
+      : WebContentsObserver(web_contents),
+        test_callback_(std::move(test_callback)) {}
+
+  // WebContentsObserver overrides.
+  void DidOpenRequestedURL(WebContents* new_contents,
+                           RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override {
+    show_interceptor_ = std::make_unique<ShowCreatedWindowInterceptor>(
+        static_cast<RenderFrameHostImpl*>(new_contents->GetMainFrame()),
+        std::move(test_callback_));
+
+    // Stop observing now.
+    Observe(nullptr);
+  }
+
+  void ResumeShowCreatedWindow() {
+    show_interceptor_->ResumeShowCreatedWindow();
+  }
+
+ private:
+  std::unique_ptr<ShowCreatedWindowInterceptor> show_interceptor_;
+  base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
 };
 
 // Test for https://crbug.com/612276.  Simultaneously open two new windows from
@@ -8117,8 +8171,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // call.
   base::RunLoop run_loop1;
   int32_t routing_id1;
-  ShowCreatedWindowInterceptor interceptor1(
-      frame1,
+  NewWindowCreatedObserver interceptor1(
+      web_contents(),
       base::BindLambdaForTesting([&](int32_t pending_widget_routing_id) {
         routing_id1 = pending_widget_routing_id;
         run_loop1.Quit();
@@ -8128,8 +8182,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   base::RunLoop run_loop2;
   int32_t routing_id2;
-  ShowCreatedWindowInterceptor interceptor2(
-      frame2,
+  NewWindowCreatedObserver interceptor2(
+      web_contents(),
       base::BindLambdaForTesting([&](int32_t pending_widget_routing_id) {
         routing_id2 = pending_widget_routing_id;
         run_loop2.Quit();
@@ -8149,14 +8203,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // pending contents map in the original bug).
   EXPECT_EQ(routing_id1, routing_id2);
 
-  // Now, simulate that both FrameHostMsg_ShowCreatedWindow messages arrive by
-  // showing both of the pending WebContents.
-  web_contents()->ShowCreatedWindow(frame1, routing_id1,
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                    gfx::Rect(), true);
-  web_contents()->ShowCreatedWindow(frame2, routing_id2,
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                    gfx::Rect(), true);
+  // Now, resuming processing the show messages.
+  interceptor1.ResumeShowCreatedWindow();
+  interceptor2.ResumeShowCreatedWindow();
 
   // Verify that both shells were properly created.
   EXPECT_EQ(3u, Shell::windows().size());

@@ -1558,8 +1558,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     RenderViewImpl* render_view,
     CompositorDependencies* compositor_deps,
     blink::WebFrame* opener,
-    mojom::CreateViewParamsPtr* params_ptr,
-    RenderWidget::ShowCallback show_callback) {
+    mojom::CreateViewParamsPtr* params_ptr) {
   mojom::CreateViewParamsPtr& params = *params_ptr;
 
   // A main frame RenderFrame must have a RenderWidget.
@@ -1604,9 +1603,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
           mojom::ViewWidgetType::kTopLevel,
       /*hidden=*/true, render_view->widgets_never_composited());
 
-  render_widget->InitForMainFrame(std::move(show_callback), web_frame_widget,
-                                  params->visual_properties.screen_info,
-                                  *render_view);
+  render_widget->InitForMainFrame(
+      web_frame_widget, params->visual_properties.screen_info, *render_view);
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call
@@ -1775,8 +1773,8 @@ void RenderFrameImpl::CreateFrame(
         /*hidden=*/true, render_view->widgets_never_composited());
 
     render_widget->InitForMainFrame(
-        RenderWidget::ShowCallback(), web_frame_widget,
-        widget_params->visual_properties.screen_info, *render_view);
+        web_frame_widget, widget_params->visual_properties.screen_info,
+        *render_view);
     // The RenderWidget should start with valid VisualProperties, including a
     // non-zero size. While RenderWidget would not normally receive IPCs and
     // thus would not get VisualProperty updates while the frame is provisional,
@@ -6540,24 +6538,6 @@ void RenderFrameImpl::OnSetPepperVolume(int32_t pp_instance, double volume) {
     instance->audio_controller().SetVolume(volume);
 }
 #endif  // ENABLE_PLUGINS
-
-void RenderFrameImpl::ShowCreatedWindow(bool opened_by_user_gesture,
-                                        RenderWidget* render_widget_to_show,
-                                        WebNavigationPolicy policy,
-                                        const gfx::Rect& initial_rect) {
-  // |render_widget_to_show| is the main RenderWidget for a pending window
-  // created by this object, but not yet shown. The tab is currently offscreen,
-  // and still owned by the opener. Sending |FrameHostMsg_ShowCreatedWindow|
-  // will move it off the opener's pending list, and put it in its own tab or
-  // window.
-  //
-  // This call happens only for renderer-created windows; for example, when a
-  // tab is created by script via window.open().
-  GetFrameHost()->ShowCreatedWindow(
-      render_widget_to_show->routing_id(),
-      RenderViewImpl::NavigationPolicyToDisposition(policy), initial_rect,
-      opened_by_user_gesture);
-}
 
 blink::WebComputedAXTree* RenderFrameImpl::GetOrCreateWebComputedAXTree() {
   if (!computed_ax_tree_)

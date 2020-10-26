@@ -518,7 +518,7 @@ void RenderViewTest::SetUp() {
 
   RenderViewImpl* view = RenderViewImpl::Create(
       *agent_scheduling_group_, compositor_deps_.get(), std::move(view_params),
-      RenderWidget::ShowCallback(), base::ThreadTaskRunnerHandle::Get());
+      /*was_created_by_renderer=*/false, base::ThreadTaskRunnerHandle::Get());
 
   RenderFrameWasShownWaiter waiter(view->GetMainRenderFrame());
   render_widget_host_->widget_remote_for_testing()->WasShown(

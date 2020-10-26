@@ -246,7 +246,8 @@ Page* ChromeClientImpl::CreateWindowDelegate(
     const WebWindowFeatures& features,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const FeaturePolicyFeatureState& opener_feature_state,
-    const SessionStorageNamespaceId& session_storage_namespace_id) {
+    const SessionStorageNamespaceId& session_storage_namespace_id,
+    bool& consumed_user_gesture) {
   if (!web_view_->Client())
     return nullptr;
 
@@ -261,7 +262,8 @@ Page* ChromeClientImpl::CreateWindowDelegate(
           WebLocalFrameImpl::FromFrame(frame),
           WrappedResourceRequest(r.GetResourceRequest()), features, frame_name,
           static_cast<WebNavigationPolicy>(r.GetNavigationPolicy()),
-          sandbox_flags, opener_feature_state, session_storage_namespace_id));
+          sandbox_flags, opener_feature_state, session_storage_namespace_id,
+          consumed_user_gesture));
   if (!new_view)
     return nullptr;
   return new_view->GetPage();
@@ -302,13 +304,12 @@ void ChromeClientImpl::SetOverscrollBehavior(
       overscroll_behavior);
 }
 
-void ChromeClientImpl::Show(NavigationPolicy navigation_policy) {
-  // TODO(darin): Change caller to pass LocalFrame.
-  WebLocalFrameImpl* main_frame = web_view_->MainFrameImpl();
-  DCHECK(main_frame);
-  main_frame->FrameWidgetImpl()->Client()->Show(
-      static_cast<WebNavigationPolicy>(navigation_policy));
-  main_frame->DevToolsAgentImpl()->DidShowNewWindow();
+void ChromeClientImpl::Show(const base::UnguessableToken& opener_frame_token,
+                            NavigationPolicy navigation_policy,
+                            const IntRect& initial_rect,
+                            bool user_gesture) {
+  web_view_->Show(opener_frame_token, navigation_policy, initial_rect,
+                  user_gesture);
 }
 
 bool ChromeClientImpl::ShouldReportDetailedMessageForSource(

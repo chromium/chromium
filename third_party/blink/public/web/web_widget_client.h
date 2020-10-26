@@ -53,7 +53,6 @@
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
-#include "third_party/blink/public/web/web_navigation_policy.h"
 
 class SkBitmap;
 
@@ -85,9 +84,6 @@ class WebWidgetClient {
 
   // Called when the cursor for the widget changes.
   virtual void DidChangeCursor(const ui::Cursor&) {}
-
-  // Called to show the widget according to the given policy.
-  virtual void Show(WebNavigationPolicy) {}
 
   // Called to set the position of the widget's window in screen
   // coordinates. Note, the window includes any decorations such as borders,

@@ -7082,7 +7082,8 @@ class TestNewWindowWebViewClient
                       WebNavigationPolicy,
                       network::mojom::blink::WebSandboxFlags,
                       const FeaturePolicyFeatureState&,
-                      const SessionStorageNamespaceId&) override {
+                      const SessionStorageNamespaceId&,
+                      bool& consumed_user_gesture) override {
     EXPECT_TRUE(false);
     return nullptr;
   }

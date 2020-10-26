@@ -3512,6 +3512,22 @@ void RenderFrameHostImpl::RequestClose() {
   render_view_host_->ClosePageIgnoringUnloadEvents();
 }
 
+void RenderFrameHostImpl::ShowCreatedWindow(
+    const base::UnguessableToken& opener_frame_token,
+    WindowOpenDisposition disposition,
+    const gfx::Rect& initial_rect,
+    bool user_gesture,
+    ShowCreatedWindowCallback callback) {
+  // This needs to be sent to the opener frame's delegate since it stores
+  // the handle to this class's associated RenderWidgetHostView.
+  RenderFrameHostImpl* opener_frame_host =
+      FromFrameToken(GetProcess()->GetID(), opener_frame_token);
+  opener_frame_host->delegate()->ShowCreatedWindow(
+      opener_frame_host, GetRenderWidgetHost()->GetRoutingID(), disposition,
+      initial_rect, user_gesture);
+  std::move(callback).Run();
+}
+
 void RenderFrameHostImpl::UpdateFaviconURL(
     std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
   delegate_->UpdateFaviconURL(this, std::move(favicon_urls));
@@ -4861,14 +4877,6 @@ void RenderFrameHostImpl::SetKeepAliveTimeoutForTesting(
   keep_alive_timeout_ = timeout;
   if (keep_alive_handle_factory_)
     keep_alive_handle_factory_->SetTimeout(keep_alive_timeout_);
-}
-
-void RenderFrameHostImpl::ShowCreatedWindow(int pending_widget_routing_id,
-                                            WindowOpenDisposition disposition,
-                                            const gfx::Rect& initial_rect,
-                                            bool user_gesture) {
-  delegate_->ShowCreatedWindow(this, pending_widget_routing_id, disposition,
-                               initial_rect, user_gesture);
 }
 
 void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {

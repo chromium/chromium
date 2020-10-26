@@ -97,7 +97,10 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void DidFocusPage() override {}
   bool CanTakeFocus(mojom::blink::FocusType) override { return false; }
   void TakeFocus(mojom::blink::FocusType) override {}
-  void Show(NavigationPolicy) override {}
+  void Show(const base::UnguessableToken& opener_frame_token,
+            NavigationPolicy navigation_policy,
+            const IntRect& initial_rect,
+            bool user_gesture) override {}
   void DidOverscroll(const gfx::Vector2dF&,
                      const gfx::Vector2dF&,
                      const gfx::PointF&,
@@ -137,7 +140,8 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
                              const WebWindowFeatures&,
                              network::mojom::blink::WebSandboxFlags,
                              const FeaturePolicyFeatureState&,
-                             const SessionStorageNamespaceId&) override {
+                             const SessionStorageNamespaceId&,
+                             bool& consumed_user_gesture) override {
     return nullptr;
   }
   bool OpenJavaScriptAlertDelegate(LocalFrame*, const String&) override {

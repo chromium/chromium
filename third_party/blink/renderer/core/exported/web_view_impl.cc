@@ -380,6 +380,26 @@ WebMediaPlayer::SurfaceLayerMode GetVideoSurfaceLayerMode() {
   return WebMediaPlayer::SurfaceLayerMode::kAlways;
 }
 
+ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
+    NavigationPolicy policy) {
+  switch (policy) {
+    case kNavigationPolicyDownload:
+      return ui::mojom::blink::WindowOpenDisposition::SAVE_TO_DISK;
+    case kNavigationPolicyCurrentTab:
+      return ui::mojom::blink::WindowOpenDisposition::CURRENT_TAB;
+    case kNavigationPolicyNewBackgroundTab:
+      return ui::mojom::blink::WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    case kNavigationPolicyNewForegroundTab:
+      return ui::mojom::blink::WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    case kNavigationPolicyNewWindow:
+      return ui::mojom::blink::WindowOpenDisposition::NEW_WINDOW;
+    case kNavigationPolicyNewPopup:
+      return ui::mojom::blink::WindowOpenDisposition::NEW_POPUP;
+  }
+  NOTREACHED() << "Unexpected NavigationPolicy";
+  return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;
+}
+
 }  // namespace
 
 // WebView ----------------------------------------------------------------
@@ -3462,6 +3482,26 @@ void WebViewImpl::TakeFocus(bool reverse) {
     DCHECK(remote_main_frame_host_remote_);
     remote_main_frame_host_remote_->TakeFocus(reverse);
   }
+}
+
+void WebViewImpl::Show(const base::UnguessableToken& opener_frame_token,
+                       NavigationPolicy policy,
+                       const gfx::Rect& rect,
+                       bool opened_by_user_gesture) {
+  // This is only called on local main frames.
+  DCHECK(local_main_frame_host_remote_);
+  DCHECK(web_widget_);
+  web_widget_->SetPendingWindowRect(rect);
+  local_main_frame_host_remote_->ShowCreatedWindow(
+      opener_frame_token, NavigationPolicyToDisposition(policy), rect,
+      opened_by_user_gesture,
+      WTF::Bind(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
+
+  MainFrameDevToolsAgentImpl()->DidShowNewWindow();
+}
+
+void WebViewImpl::DidShowCreatedWindow() {
+  web_widget_->AckPendingWindowRect();
 }
 
 void WebViewImpl::UpdateTargetURL(const WebURL& url,

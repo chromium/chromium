@@ -113,7 +113,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       AgentSchedulingGroup& agent_scheduling_group,
       CompositorDependencies* compositor_deps,
       mojom::CreateViewParamsPtr params,
-      RenderWidget::ShowCallback show_callback,
+      bool was_created_by_renderer,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Instances of this object are created by and destroyed by the browser
@@ -185,8 +185,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       blink::WebNavigationPolicy policy,
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::FeaturePolicyFeatureState& opener_feature_state,
-      const blink::SessionStorageNamespaceId& session_storage_namespace_id)
-      override;
+      const blink::SessionStorageNamespaceId& session_storage_namespace_id,
+      bool& consumed_user_gesture) override;
   blink::WebPagePopup* CreatePopup(blink::WebLocalFrame* creator) override;
   base::StringPiece GetSessionStorageNamespaceId() override;
   void PrintPage(blink::WebLocalFrame* frame) override;
@@ -307,7 +307,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // before any other code can interact with instances of this call.
   void Initialize(CompositorDependencies* compositor_deps,
                   mojom::CreateViewParamsPtr params,
-                  RenderWidget::ShowCallback show_callback,
+                  bool was_created_by_renderer,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // RenderWidgetDelegate implementation ----------------------------------

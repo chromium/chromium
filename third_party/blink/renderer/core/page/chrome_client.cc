@@ -52,9 +52,10 @@ void ChromeClient::InstallSupplements(LocalFrame& frame) {
   CoreInitializer::GetInstance().InstallSupplements(frame);
 }
 
-void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
-                                               LocalFrame& frame,
-                                               LocalFrame& requesting_frame) {
+IntRect ChromeClient::CalculateWindowRectWithAdjustment(
+    const IntRect& pending_rect,
+    LocalFrame& frame,
+    LocalFrame& requesting_frame) {
   IntRect screen(GetScreenInfo(frame).available_rect);
   IntRect window = pending_rect;
 
@@ -112,7 +113,13 @@ void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
                       WebFeature::kDOMWindowSetWindowRectCrossScreen);
   }
 
-  SetWindowRect(window, frame);
+  return window;
+}
+
+void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
+                                               LocalFrame& frame) {
+  IntRect rect = CalculateWindowRectWithAdjustment(pending_rect, frame, frame);
+  SetWindowRect(rect, frame);
 }
 
 bool ChromeClient::CanOpenUIElementIfDuringPageDismissal(
@@ -141,15 +148,16 @@ Page* ChromeClient::CreateWindow(
     const WebWindowFeatures& features,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const FeaturePolicyFeatureState& opener_feature_state,
-    const SessionStorageNamespaceId& session_storage_namespace_id) {
+    const SessionStorageNamespaceId& session_storage_namespace_id,
+    bool& consumed_user_gesture) {
   if (!CanOpenUIElementIfDuringPageDismissal(
           frame->Tree().Top(), UIElementType::kPopup, g_empty_string)) {
     return nullptr;
   }
 
-  return CreateWindowDelegate(frame, r, frame_name, features, sandbox_flags,
-                              opener_feature_state,
-                              session_storage_namespace_id);
+  return CreateWindowDelegate(
+      frame, r, frame_name, features, sandbox_flags, opener_feature_state,
+      session_storage_namespace_id, consumed_user_gesture);
 }
 
 template <typename Delegate>

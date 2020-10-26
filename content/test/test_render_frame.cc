@@ -95,11 +95,6 @@ class MockFrameHost : public mojom::FrameHost {
     }
   }
 
-  void ShowCreatedWindow(int32_t pending_widget_routing_id,
-                         WindowOpenDisposition disposition,
-                         const gfx::Rect& initial_rect,
-                         bool user_gesture) override {}
-
   void set_overlay_routing_token(const base::UnguessableToken& token) {
     overlay_routing_token_ = token;
   }

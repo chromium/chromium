@@ -231,7 +231,7 @@ mojom("mojom_platform") {
     "//ui/base/cursor/mojom",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime/mojom",
-    "//ui/base/mojom/",
+    "//ui/base/mojom",
     "//ui/display/mojom",
     "//ui/events/mojom",
     "//ui/gfx/geometry/mojom",
@@ -857,6 +857,7 @@ mojom("mojom_core") {
       "//services/network/public/mojom:url_loader_base",
       "//third_party/blink/public/mojom/frame",
       "//third_party/blink/public/mojom/tokens",
+      "//ui/base/mojom",
       "//ui/events/mojom",
     ]
   }

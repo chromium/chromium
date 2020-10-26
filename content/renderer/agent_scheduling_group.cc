@@ -155,7 +155,8 @@ void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
       params->web_preferences.enable_scroll_animator, PassKey());
 
   RenderViewImpl::Create(
-      *this, &renderer, std::move(params), RenderWidget::ShowCallback(),
+      *this, &renderer, std::move(params),
+      /*was_created_by_renderer=*/false,
       // TODO(crbug.com/1111231): Use proper per-ASG task-runner.
       renderer.GetWebMainThreadScheduler()->DefaultTaskRunner());
 }

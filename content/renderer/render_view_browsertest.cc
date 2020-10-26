@@ -1094,6 +1094,7 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
 
   // A popup that creates a view first and then navigates to a
   // normal HTTP URL.
+  bool consumed_user_gesture = false;
   blink::WebURLRequest popup_request(GURL("http://foo.com"));
   popup_request.SetRequestorOrigin(requestor_origin);
   popup_request.SetMode(network::mojom::RequestMode::kNavigate);
@@ -1104,7 +1105,7 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
       blink::kWebNavigationPolicyNewForegroundTab,
       network::mojom::WebSandboxFlags::kNone,
       blink::FeaturePolicyFeatureState(),
-      blink::AllocateSessionStorageNamespaceId());
+      blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture);
   auto popup_navigation_info = std::make_unique<blink::WebNavigationInfo>();
   popup_navigation_info->url_request = std::move(popup_request);
   popup_navigation_info->frame_type =

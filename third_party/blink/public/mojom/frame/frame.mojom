@@ -47,6 +47,7 @@ import "third_party/blink/public/mojom/security_context/insecure_request_policy.
 import "third_party/blink/public/mojom/timing/resource_timing.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
@@ -1002,6 +1003,13 @@ interface LocalMainFrameHost {
   // Request close of the window. This corresponds to a window.close() javascript API call.
   // Frame unload handlers should have already been called before this method is called.
   RequestClose();
+
+  // Causes a window previously opened via RenderMessageFilter::CreateNewWindow
+  // to be shown on the screen. This message contains the opener_frame_token
+  // which is always set. This is called on the main frame of the window to be shown.
+  ShowCreatedWindow(mojo_base.mojom.UnguessableToken opener_frame_token,
+                    ui.mojom.WindowOpenDisposition disposition,
+                    gfx.mojom.Rect rect, bool opened_by_user_gesture) => ();
 };
 
 // Implemented in Browser, this interface defines remote-main-frame-specific

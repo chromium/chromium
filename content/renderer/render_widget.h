@@ -104,11 +104,6 @@ class CONTENT_EXPORT RenderWidget
 
   ~RenderWidget() override;
 
-  using ShowCallback =
-      base::OnceCallback<void(RenderWidget* widget_to_show,
-                              blink::WebNavigationPolicy policy,
-                              const gfx::Rect& initial_rect)>;
-
   // Time-To-First-Active-Paint(TTFAP) type
   enum {
     TTFAP_AFTER_PURGED,
@@ -154,8 +149,7 @@ class CONTENT_EXPORT RenderWidget
 
   // Initialize a new RenderWidget that will be attached to a RenderFrame (via
   // the WebFrameWidget), for a frame that is a main frame.
-  void InitForMainFrame(ShowCallback show_callback,
-                        blink::WebFrameWidget* web_frame_widget,
+  void InitForMainFrame(blink::WebFrameWidget* web_frame_widget,
                         const blink::ScreenInfo& screen_info,
                         RenderWidgetDelegate& delegate);
 
@@ -196,7 +190,6 @@ class CONTENT_EXPORT RenderWidget
   // blink::WebWidgetClient
   void ScheduleAnimation() override;
   void BrowserClosedIpcChannelForPopupWidget() override;
-  void Show(blink::WebNavigationPolicy) override;
   void SetWindowRect(const gfx::Rect&) override;
   viz::FrameSinkId GetFrameSinkId() override;
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
@@ -238,8 +231,7 @@ class CONTENT_EXPORT RenderWidget
   friend class RenderWidgetTest;
   friend class RenderViewImplTest;
 
-  void Initialize(ShowCallback show_callback,
-                  blink::WebWidget* web_widget,
+  void Initialize(blink::WebWidget* web_widget,
                   const blink::ScreenInfo& screen_info);
   // Initializes the compositor and dependent systems, as part of the
   // Initialize() process.
@@ -298,9 +290,6 @@ class CONTENT_EXPORT RenderWidget
   // This is valid while |webwidget_| is valid.
   cc::LayerTreeHost* layer_tree_host_ = nullptr;
 
-  // The rect where this view should be initially shown.
-  gfx::Rect initial_rect_;
-
   // True once Close() is called, during the self-destruction process, and to
   // verify destruction always goes through Close().
   bool closing_ = false;
@@ -318,10 +307,6 @@ class CONTENT_EXPORT RenderWidget
   // ownership via IPC.  These booleans exist to allow us to confirm than an IPC
   // message to kill the render widget is coming for a popup.
   bool for_popup_ = false;
-
-  // A callback into the creator/opener of this widget, to be executed when
-  // WebWidgetClient::Show() occurs.
-  ShowCallback show_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidget);
 };

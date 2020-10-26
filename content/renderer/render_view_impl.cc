@@ -127,15 +127,11 @@ RenderViewImpl::RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
 void RenderViewImpl::Initialize(
     CompositorDependencies* compositor_deps,
     mojom::CreateViewParamsPtr params,
-    RenderWidget::ShowCallback show_callback,
+    bool was_created_by_renderer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(RenderThread::IsMainThread());
 
   agent_scheduling_group_.AddRoute(routing_id_, this);
-
-#if defined(OS_ANDROID)
-  bool has_show_callback = !!show_callback;
-#endif
 
   WebFrame* opener_frame = nullptr;
   if (params->opener_frame_token)
@@ -159,8 +155,7 @@ void RenderViewImpl::Initialize(
 
   if (local_main_frame) {
     main_render_frame_ = RenderFrameImpl::CreateMainFrame(
-        agent_scheduling_group_, this, compositor_deps, opener_frame, &params,
-        std::move(show_callback));
+        agent_scheduling_group_, this, compositor_deps, opener_frame, &params);
   } else {
     RenderFrameProxy::CreateFrameProxy(
         agent_scheduling_group_, params->proxy_routing_id, GetRoutingID(),
@@ -182,12 +177,7 @@ void RenderViewImpl::Initialize(
 #if defined(OS_ANDROID)
   // TODO(sgurun): crbug.com/325351 Needed only for android webview's deprecated
   // HandleNavigation codepath.
-  // Renderer-created RenderViews have a ShowCallback because they send a Show
-  // request (ViewHostMsg_ShowWidget, ViewHostMsg_ShowFullscreenWidget, or
-  // FrameHostMsg_ShowCreatedWindow) to the browser to attach them to the UI
-  // there. Browser-created RenderViews do not send a Show request to the
-  // browser, so have no such callback.
-  was_created_by_renderer_ = has_show_callback;
+  was_created_by_renderer_ = was_created_by_renderer;
 #endif
 }
 
@@ -255,7 +245,7 @@ RenderViewImpl* RenderViewImpl::Create(
     AgentSchedulingGroup& agent_scheduling_group,
     CompositorDependencies* compositor_deps,
     mojom::CreateViewParamsPtr params,
-    RenderWidget::ShowCallback show_callback,
+    bool was_created_by_renderer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(params->view_id != MSG_ROUTING_NONE);
   // Frame and widget routing ids come together.
@@ -275,7 +265,7 @@ RenderViewImpl* RenderViewImpl::Create(
   }
 
   render_view->Initialize(compositor_deps, std::move(params),
-                          std::move(show_callback), std::move(task_runner));
+                          was_created_by_renderer, std::move(task_runner));
   return render_view;
 }
 
@@ -381,7 +371,9 @@ WebView* RenderViewImpl::CreateView(
     WebNavigationPolicy policy,
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::FeaturePolicyFeatureState& opener_feature_state,
-    const blink::SessionStorageNamespaceId& session_storage_namespace_id) {
+    const blink::SessionStorageNamespaceId& session_storage_namespace_id,
+    bool& consumed_user_gesture) {
+  consumed_user_gesture = false;
   RenderFrameImpl* creator_frame = RenderFrameImpl::FromWebFrame(creator);
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
 
@@ -445,7 +437,7 @@ WebView* RenderViewImpl::CreateView(
 
   // The browser allowed creation of a new window and consumed the user
   // activation.
-  bool was_consumed = creator->ConsumeTransientUserActivation(
+  consumed_user_gesture = creator->ConsumeTransientUserActivation(
       blink::UserActivationUpdateSource::kBrowser);
 
   // While this view may be a background extension page, it can spawn a visible
@@ -495,15 +487,9 @@ WebView* RenderViewImpl::CreateView(
   view_params->never_composited = never_composited;
   view_params->visual_properties = reply->visual_properties;
 
-  // Unretained() is safe here because our calling function will also call
-  // show().
-  RenderWidget::ShowCallback show_callback =
-      base::BindOnce(&RenderFrameImpl::ShowCreatedWindow,
-                     base::Unretained(creator_frame), was_consumed);
-
   RenderViewImpl* view = RenderViewImpl::Create(
       agent_scheduling_group_, compositor_deps_, std::move(view_params),
-      std::move(show_callback),
+      /*was_created_by_renderer=*/true,
       creator->GetTaskRunner(blink::TaskType::kInternalDefault));
 
   if (reply->wait_for_debugger) {

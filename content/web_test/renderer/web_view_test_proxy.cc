@@ -43,7 +43,8 @@ blink::WebView* WebViewTestProxy::CreateView(
     blink::WebNavigationPolicy policy,
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::FeaturePolicyFeatureState& opener_feature_state,
-    const blink::SessionStorageNamespaceId& session_storage_namespace_id) {
+    const blink::SessionStorageNamespaceId& session_storage_namespace_id,
+    bool& consumed_user_gesture) {
   if (test_runner_->ShouldDumpNavigationPolicy()) {
     test_runner_->PrintMessage(
         "Default policy for createView for '" +
@@ -61,7 +62,8 @@ blink::WebView* WebViewTestProxy::CreateView(
   }
   return RenderViewImpl::CreateView(creator, request, features, frame_name,
                                     policy, sandbox_flags, opener_feature_state,
-                                    session_storage_namespace_id);
+                                    session_storage_namespace_id,
+                                    consumed_user_gesture);
 }
 
 void WebViewTestProxy::PrintPage(blink::WebLocalFrame* frame) {

@@ -90,8 +90,12 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                              const WebWindowFeatures&,
                              network::mojom::blink::WebSandboxFlags,
                              const FeaturePolicyFeatureState&,
-                             const SessionStorageNamespaceId&) override;
-  void Show(NavigationPolicy) override;
+                             const SessionStorageNamespaceId&,
+                             bool& consumed_user_gesture) override;
+  void Show(const base::UnguessableToken& opener_frame_token,
+            NavigationPolicy navigation_policy,
+            const IntRect& initial_rect,
+            bool user_gesture) override;
   void DidOverscroll(const gfx::Vector2dF& overscroll_delta,
                      const gfx::Vector2dF& accumulated_overscroll,
                      const gfx::PointF& position_in_viewport,

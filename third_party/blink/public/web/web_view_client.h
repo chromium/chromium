@@ -40,6 +40,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_widget_client.h"
 
 namespace blink {
@@ -70,7 +71,8 @@ class WebViewClient {
       WebNavigationPolicy policy,
       network::mojom::WebSandboxFlags,
       const FeaturePolicyFeatureState&,
-      const SessionStorageNamespaceId& session_storage_namespace_id) {
+      const SessionStorageNamespaceId& session_storage_namespace_id,
+      bool& consumed_user_gesture) {
     return nullptr;
   }
 

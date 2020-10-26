@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/resize_viewport_anchor.h"
+#include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
@@ -491,6 +492,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // adjacent UI element in the containing window.
   void TakeFocus(bool reverse);
 
+  // Shows a previously created WebView (via window.open()).
+  void Show(const base::UnguessableToken& opener_frame_token,
+            NavigationPolicy policy,
+            const gfx::Rect& rect,
+            bool opened_by_user_gesture);
+
   // This method is used for testing.
   // Resizes the unscaled (page scale = 1.0) visual viewport. Normally the
   // unscaled visual viewport is the same size as the main frame. The passed
@@ -649,6 +656,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // Sends any outstanding TrackedFeaturesUpdate messages to the browser.
   void ReportActiveSchedulerTrackedFeatures();
+
+  // Callback when this widget window has been displayed by the browser.
+  // Corresponds to a Show method call.
+  void DidShowCreatedWindow();
 
   // Can be null (e.g. unittests, shared workers, etc).
   WebViewClient* web_view_client_;
@@ -829,12 +840,16 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   Persistent<ResizeViewportAnchor> resize_viewport_anchor_;
 
   // Handle to the local main frame host. Only valid when the MainFrame is
-  // local.
+  // local. It is ok to use WTF::Unretained(this) for callbacks made on this
+  // interface because the callbacks will be associated with the lifecycle
+  // of this AssociatedRemote and the lifetiime of the main LocalFrame.
   mojo::AssociatedRemote<mojom::blink::LocalMainFrameHost>
       local_main_frame_host_remote_;
 
   // Handle to the remote main frame host. Only valid when the MainFrame is
-  // remote.
+  // remote.  It is ok to use WTF::Unretained(this) for callbacks made on this
+  // interface because the callbacks will be associated with the lifecycle
+  // of this AssociatedRemote and the lifetime of the main RemoteFrame.
   mojo::AssociatedRemote<mojom::blink::RemoteMainFrameHost>
       remote_main_frame_host_remote_;
 

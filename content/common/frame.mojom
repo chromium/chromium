@@ -528,14 +528,6 @@ interface FrameHost {
       int32 line_number,
       mojo_base.mojom.String16 source_id);
 
-  // Causes a window previously opened via RenderMessageFilter::CreateNewWindow
-  // to be shown on the screen. This message is routed to the preexisting frame
-  // that opened the window, and |pending_widget_routing_id| corresponds to the
-  // widget routing id from the CreateNewWindow reply.
-  ShowCreatedWindow(int32 pending_widget_routing_id,
-                    ui.mojom.WindowOpenDisposition disposition,
-                    gfx.mojom.Rect rect, bool opened_by_user_gesture);
-
   // Notifies the browser that this frame has new session history information.
   UpdateState(PageState state);
 

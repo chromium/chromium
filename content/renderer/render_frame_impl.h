@@ -185,8 +185,7 @@ class CONTENT_EXPORT RenderFrameImpl
       RenderViewImpl* render_view,
       CompositorDependencies* compositor_deps,
       blink::WebFrame* opener,
-      mojom::CreateViewParamsPtr* params,
-      RenderWidget::ShowCallback show_callback);
+      mojom::CreateViewParamsPtr* params);
 
   // Creates a new RenderFrame with |routing_id|. If |previous_routing_id| is
   // MSG_ROUTING_NONE, it creates the Blink WebLocalFrame and inserts it into
@@ -334,12 +333,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // TODO(https://crbug.com/578349): Remove this once provisional frames are
   // gone, and clean up code that depends on it.
   bool in_frame_tree() { return in_frame_tree_; }
-
-  // A RenderView opened by this RenderFrame needs to be shown.
-  void ShowCreatedWindow(bool opened_by_user_gesture,
-                         RenderWidget* render_widget_to_show,
-                         blink::WebNavigationPolicy policy,
-                         const gfx::Rect& initial_rect);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Notification that a PPAPI plugin has been created.

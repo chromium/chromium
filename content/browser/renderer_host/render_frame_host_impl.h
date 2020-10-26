@@ -1710,6 +1710,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
                        blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback
                            callback) override;
   void RequestClose() override;
+  void ShowCreatedWindow(const base::UnguessableToken& opener_frame_token,
+                         WindowOpenDisposition disposition,
+                         const gfx::Rect& initial_rect,
+                         bool user_gesture,
+                         ShowCreatedWindowCallback callback) override;
 
   void ReportNoBinderForInterface(const std::string& error);
 
@@ -2082,10 +2087,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                               const base::string16& message,
                               int32_t line_no,
                               const base::string16& source_id) override;
-  void ShowCreatedWindow(int32_t pending_widget_routing_id,
-                         WindowOpenDisposition disposition,
-                         const gfx::Rect& initial_rect,
-                         bool user_gesture) override;
   void UpdateState(const blink::PageState& state) override;
   void OpenURL(mojom::OpenURLParamsPtr params) override;
   void DidStopLoading() override;

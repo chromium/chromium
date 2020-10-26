@@ -64,15 +64,16 @@ class WebViewTestProxy : public RenderViewImpl {
                             TestRunner* test_runner);
 
   // WebViewClient implementation.
-  blink::WebView* CreateView(blink::WebLocalFrame* creator,
-                             const blink::WebURLRequest& request,
-                             const blink::WebWindowFeatures& features,
-                             const blink::WebString& frame_name,
-                             blink::WebNavigationPolicy policy,
-                             network::mojom::WebSandboxFlags sandbox_flags,
-                             const blink::FeaturePolicyFeatureState&,
-                             const blink::SessionStorageNamespaceId&
-                                 session_storage_namespace_id) override;
+  blink::WebView* CreateView(
+      blink::WebLocalFrame* creator,
+      const blink::WebURLRequest& request,
+      const blink::WebWindowFeatures& features,
+      const blink::WebString& frame_name,
+      blink::WebNavigationPolicy policy,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      const blink::FeaturePolicyFeatureState&,
+      const blink::SessionStorageNamespaceId& session_storage_namespace_id,
+      bool& consumed_user_gesture) override;
   void PrintPage(blink::WebLocalFrame* frame) override;
   blink::WebString AcceptLanguages() override;
 

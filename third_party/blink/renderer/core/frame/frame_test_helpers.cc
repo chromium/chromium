@@ -855,7 +855,8 @@ WebView* TestWebViewClient::CreateView(WebLocalFrame* opener,
                                        WebNavigationPolicy,
                                        network::mojom::blink::WebSandboxFlags,
                                        const FeaturePolicyFeatureState&,
-                                       const SessionStorageNamespaceId&) {
+                                       const SessionStorageNamespaceId&,
+                                       bool& consumed_user_gesture) {
   auto webview_helper = std::make_unique<WebViewHelper>();
   WebView* result = webview_helper->InitializeWithOpener(opener);
   child_web_views_.push_back(std::move(webview_helper));

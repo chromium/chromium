@@ -143,15 +143,19 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void ScheduleAnimation(const LocalFrameView*,
                                  base::TimeDelta = base::TimeDelta()) = 0;
 
-  // Adjusts |pending_rect| for the minimum window size and |frame|'s screen,
-  // then calls SetWindowRect on |frame| with the adjusted rectangle.
+  // Adjusts |pending_rect| for the minimum window size and |frame|'s screen
+  // and returns the adjusted value.
   // Cross-screen window placements are passed on without same-screen clamping
   // if the |requesting_frame| (i.e. the opener or |frame| itself) has
   // experimental window placement features enabled. The browser will check
   // permissions before actually supporting cross-screen placement requests.
+  IntRect CalculateWindowRectWithAdjustment(const IntRect& pending_rect,
+                                            LocalFrame& frame,
+                                            LocalFrame& requesting_frame);
+
+  // Calls CalculateWindowRectWithAdjustment, then SetWindowRect.
   void SetWindowRectWithAdjustment(const IntRect& pending_rect,
-                                   LocalFrame& frame,
-                                   LocalFrame& requesting_frame);
+                                   LocalFrame& frame);
 
   // This gives the rect of the top level window that the given LocalFrame is a
   // part of.
@@ -212,8 +216,18 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                      const WebWindowFeatures&,
                      network::mojom::blink::WebSandboxFlags,
                      const FeaturePolicyFeatureState&,
-                     const SessionStorageNamespaceId&);
-  virtual void Show(NavigationPolicy) = 0;
+                     const SessionStorageNamespaceId&,
+                     bool& consumed_user_gesture);
+
+  // Show a previously created Page that was created via CreateWindow. This
+  // should only be called once the newly created window when it is ready to be
+  // shown. Under some circumstances CreateWindow's implementation may return a
+  // previously shown page. Calling this method should still work and the
+  // browser will discard the unnecessary show request.
+  virtual void Show(const base::UnguessableToken& opener_frame_token,
+                    NavigationPolicy navigation_policy,
+                    const IntRect& initial_rect,
+                    bool consumed_user_gesture) = 0;
 
   // All the parameters should be in viewport space. That is, if an event
   // scrolls by 10 px, but due to a 2X page scale we apply a 5px scroll to the
@@ -531,7 +545,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                      const WebWindowFeatures&,
                                      network::mojom::blink::WebSandboxFlags,
                                      const FeaturePolicyFeatureState&,
-                                     const SessionStorageNamespaceId&) = 0;
+                                     const SessionStorageNamespaceId&,
+                                     bool& consumed_user_gesture) = 0;
 
  private:
   bool CanOpenUIElementIfDuringPageDismissal(Frame& main_frame,

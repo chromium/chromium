@@ -307,9 +307,10 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   CoreInitializer::GetInstance().CloneSessionStorage(old_page,
                                                      new_namespace_id);
 
+  bool consumed_user_gesture = false;
   Page* page = old_page->GetChromeClient().CreateWindow(
       &opener_frame, request, frame_name, features, sandbox_flags,
-      opener_feature_state, new_namespace_id);
+      opener_feature_state, new_namespace_id, consumed_user_gesture);
   if (!page)
     return nullptr;
 
@@ -342,10 +343,11 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   if (features.height_set)
     window_rect.SetHeight(features.height);
 
-  page->GetChromeClient().SetWindowRectWithAdjustment(window_rect, frame,
-                                                      opener_frame);
-  page->GetChromeClient().Show(request.GetNavigationPolicy());
-
+  IntRect rect = page->GetChromeClient().CalculateWindowRectWithAdjustment(
+      window_rect, frame, opener_frame);
+  page->GetChromeClient().Show(opener_frame.GetFrameToken(),
+                               request.GetNavigationPolicy(), rect,
+                               consumed_user_gesture);
   MaybeLogWindowOpen(opener_frame);
   return &frame;
 }

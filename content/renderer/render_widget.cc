@@ -147,22 +147,21 @@ void RenderWidget::InitForPopup(RenderWidget* opener_widget,
                                 blink::WebPagePopup* web_page_popup,
                                 const blink::ScreenInfo& screen_info) {
   for_popup_ = true;
-  Initialize(base::NullCallback(), web_page_popup, screen_info);
+  Initialize(web_page_popup, screen_info);
 }
 
-void RenderWidget::InitForMainFrame(ShowCallback show_callback,
-                                    blink::WebFrameWidget* web_frame_widget,
+void RenderWidget::InitForMainFrame(blink::WebFrameWidget* web_frame_widget,
                                     const blink::ScreenInfo& screen_info,
                                     RenderWidgetDelegate& delegate) {
   delegate_ = &delegate;
-  Initialize(std::move(show_callback), web_frame_widget, screen_info);
+  Initialize(web_frame_widget, screen_info);
 }
 
 void RenderWidget::InitForChildLocalRoot(
     blink::WebFrameWidget* web_frame_widget,
     const blink::ScreenInfo& screen_info) {
   for_child_local_root_frame_ = true;
-  Initialize(base::NullCallback(), web_frame_widget, screen_info);
+  Initialize(web_frame_widget, screen_info);
 }
 
 void RenderWidget::CloseForFrame(std::unique_ptr<RenderWidget> widget) {
@@ -172,13 +171,10 @@ void RenderWidget::CloseForFrame(std::unique_ptr<RenderWidget> widget) {
   Close(std::move(widget));
 }
 
-void RenderWidget::Initialize(ShowCallback show_callback,
-                              blink::WebWidget* web_widget,
+void RenderWidget::Initialize(blink::WebWidget* web_widget,
                               const blink::ScreenInfo& screen_info) {
   DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
   DCHECK(web_widget);
-
-  show_callback_ = std::move(show_callback);
 
   agent_scheduling_group_.AddRoute(routing_id_, this);
 
@@ -283,38 +279,6 @@ void RenderWidget::SetHandlingInputEvent(bool handling_input_event) {
   GetWebWidget()->SetHandlingInputEvent(handling_input_event);
 }
 
-// We are supposed to get a single call to Show for a newly created RenderWidget
-// that was created via RenderWidget::CreateWebView.  So, we wait until this
-// point to dispatch the ShowWidget message.
-//
-// This method provides us with the information about how to display the newly
-// created RenderWidget (i.e., as a blocked popup or as a new tab).
-//
-void RenderWidget::Show(WebNavigationPolicy policy) {
-  if (!show_callback_) {
-    if (delegate()) {
-      // When SupportsMultipleWindows is disabled, popups are reusing
-      // the view's RenderWidget. In some scenarios, this makes blink to call
-      // Show() twice. But otherwise, if it is enabled, we should not visit
-      // Show() more than once.
-      DCHECK(!delegate()->SupportsMultipleWindowsForWidget());
-      return;
-    } else {
-      NOTREACHED() << "received extraneous Show call";
-    }
-  }
-
-  DCHECK(routing_id_ != MSG_ROUTING_NONE);
-
-  // The opener is responsible for actually showing this widget.
-  std::move(show_callback_).Run(this, policy, initial_rect_);
-
-  // NOTE: initial_rect_ may still have its default values at this point, but
-  // that's okay.  It'll be ignored if as_popup is false, or the browser
-  // process will impose a default position otherwise.
-  SetPendingWindowRect(initial_rect_);
-}
-
 void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
   TRACE_EVENT0("blink", "RenderWidget::InitializeLayerTreeView");
 
@@ -367,15 +331,8 @@ bool RenderWidget::IsForProvisionalFrame() const {
 }
 
 void RenderWidget::SetWindowRect(const gfx::Rect& window_rect) {
-  if (show_callback_) {
-    // The widget is not shown yet. Delay the |window_rect| being sent to the
-    // browser until Show() is called so it can be sent with that IPC, once the
-    // browser is ready for the info.
-    initial_rect_ = window_rect;
-  } else {
-    Send(new WidgetHostMsg_RequestSetBounds(routing_id_, window_rect));
-    SetPendingWindowRect(window_rect);
-  }
+  Send(new WidgetHostMsg_RequestSetBounds(routing_id_, window_rect));
+  SetPendingWindowRect(window_rect);
 }
 
 void RenderWidget::OnDragTargetDragEnter(
