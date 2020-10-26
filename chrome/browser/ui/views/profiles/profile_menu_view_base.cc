@@ -562,6 +562,13 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
   auto avatar_image_view = std::make_unique<AvatarImageView>(image_model, this);
 
+  // Use the profile identity info to label the entire menu, for accessibility
+  // users to get the user account as context information when they open it.
+  const base::string16& accessible_menu_name =
+      title.empty() ? (subtitle.empty() ? GetAccessibleWindowTitle() : subtitle)
+                    : title;
+  GetViewAccessibility().OverrideName(accessible_menu_name);
+
   if (!new_design) {
     if (!profile_name.empty()) {
       DCHECK(edit_button_params.has_value());
@@ -698,6 +705,10 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
   label->SetMultiLine(true);
   label->SetHandlesTooltips(false);
 
+  // Required for accessibility tools to read the description together with the
+  // button text.
+  sync_info_container_->GetViewAccessibility().OverrideName(description);
+
   // Add the prominent button at the bottom.
   auto* button =
       sync_info_container_->AddChildView(std::make_unique<views::MdTextButton>(
@@ -763,6 +774,8 @@ void ProfileMenuViewBase::AddFeatureButton(const base::string16& text,
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
     const base::string16& heading) {
+  profile_mgmt_heading_ = heading;
+
   // Add separator before heading.
   profile_mgmt_separator_container_->RemoveAllChildViews(
       /*delete_children=*/true);
@@ -799,6 +812,10 @@ void ProfileMenuViewBase::AddSelectableProfile(
     selectable_profiles_container_->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));
+    // Give the container an accessible name so accessibility tools can provide
+    // context for the buttons inside it.
+    selectable_profiles_container_->GetViewAccessibility().OverrideName(
+        profile_mgmt_heading_);
   }
 
   DCHECK(!image_model.IsEmpty());

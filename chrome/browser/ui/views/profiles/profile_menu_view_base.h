@@ -219,6 +219,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   SyncInfoContainerBackgroundState sync_background_state_ =
       SyncInfoContainerBackgroundState::kNoError;
 
+  // Actual heading string would be set by children classes.
+  base::string16 profile_mgmt_heading_;
+
   DISALLOW_COPY_AND_ASSIGN(ProfileMenuViewBase);
 };
 
