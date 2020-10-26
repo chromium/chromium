@@ -350,8 +350,8 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
     : WebContentsObserver(web_ui->GetWebContents()),
       WebUIController(web_ui),
       webui_load_timer_(web_ui->GetWebContents(),
-                        "Extensions.WebUi.DocumentLoadedInMainFrameTime.MD",
-                        "Extensions.WebUi.LoadCompletedInMainFrame.MD") {
+                        "Extensions.WebUi.DocumentLoadedInMainFrameTime",
+                        "Extensions.WebUi.LoadCompletedInMainFrame") {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = nullptr;
 

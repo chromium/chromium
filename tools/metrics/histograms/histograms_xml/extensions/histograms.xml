@@ -3577,7 +3577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.WebUi.DocumentLoadedInMainFrameTime" units="ms"
-    expires_after="2020-12-01">
+    expires_after="2021-12-01">
   <owner>dpapad@chromium.org</owner>
   <owner>dbeam@chromium.org</owner>
   <summary>
@@ -3588,7 +3588,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.WebUi.LoadCompletedInMainFrame" units="ms"
-    expires_after="2020-12-01">
+    expires_after="2021-12-01">
   <owner>dpapad@chromium.org</owner>
   <owner>dbeam@chromium.org</owner>
   <summary>
