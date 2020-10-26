@@ -2959,6 +2959,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The reason why each key update occured.</summary>
 </histogram>
 
+<histogram name="Net.QuicSession.KeyUpdate.Success.{Group}"
+    enum="QuicKeyUpdateSuccess" expires_after="2021-05-11">
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the success or failure of the last key update for connections where
+    the key update was initiated by the {Group} side. Failure is defined as
+    having sent at least one packet in the new key phase but never receiving an
+    ack for any packet sent in the new key phase before the connection was
+    closed.
+  </summary>
+  <token key="Group">
+    <variant name="Local"/>
+    <variant name="Remote"/>
+  </token>
+</histogram>
+
 <histogram
     name="Net.QuicSession.LastInFlightPacketSentTimeFromHandshakeCompletionWithPublicReset"
     units="ms" expires_after="2021-05-11">

@@ -865,6 +865,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       attempted_zero_rtt_(false),
       num_pings_sent_(0),
       num_migrations_(0),
+      last_key_update_reason_(quic::KeyUpdateReason::kInvalid),
       push_promise_index_(std::move(push_promise_index)) {
   // Make sure connection migration and goaway on path degrading are not turned
   // on at the same time.
@@ -1872,6 +1873,32 @@ void QuicChromiumClientSession::OnConnectionClosed(
     if (config()->KeyUpdateSupportedForConnection()) {
       base::UmaHistogramCounts100("Net.QuicSession.KeyUpdate.PerConnection2",
                                   connection()->GetStats().key_update_count);
+      if (last_key_update_reason_ != quic::KeyUpdateReason::kInvalid) {
+        std::string suffix =
+            last_key_update_reason_ == quic::KeyUpdateReason::kRemote ? "Remote"
+                                                                      : "Local";
+        // These values are persisted to logs. Entries should not be renumbered
+        // and numeric values should never be reused.
+        enum class KeyUpdateSuccess {
+          kInvalid = 0,
+          kSuccess = 1,
+          kFailedInitial = 2,
+          kFailedNonInitial = 3,
+          kMaxValue = kFailedNonInitial,
+        };
+        KeyUpdateSuccess value = KeyUpdateSuccess::kInvalid;
+        if (connection()->HaveSentPacketsInCurrentKeyPhaseButNoneAcked()) {
+          if (connection()->GetStats().key_update_count >= 2) {
+            value = KeyUpdateSuccess::kFailedNonInitial;
+          } else {
+            value = KeyUpdateSuccess::kFailedInitial;
+          }
+        } else {
+          value = KeyUpdateSuccess::kSuccess;
+        }
+        base::UmaHistogramEnumeration(
+            "Net.QuicSession.KeyUpdate.Success." + suffix, value);
+      }
     }
   } else {
     if (error == quic::QUIC_PUBLIC_RESET) {
@@ -2506,6 +2533,8 @@ void QuicChromiumClientSession::OnKeyUpdate(quic::KeyUpdateReason reason) {
                                     quic::KeyUpdateReasonString(reason));
 
   base::UmaHistogramEnumeration("Net.QuicSession.KeyUpdate.Reason", reason);
+
+  last_key_update_reason_ = reason;
 }
 
 void QuicChromiumClientSession::OnProofValid(

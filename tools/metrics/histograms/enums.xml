@@ -61350,6 +61350,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="kLocalKeyUpdateLimitOverride"/>
 </enum>
 
+<enum name="QuicKeyUpdateSuccess">
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kFailedInitial"/>
+  <int value="3" label="kFailedNonInitial"/>
+</enum>
+
 <enum name="QuickofficeErrorTypes">
   <int value="0" label="doc uncaught js exception"/>
   <int value="1" label="docx uncaught js exception"/>

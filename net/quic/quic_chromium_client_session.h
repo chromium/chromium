@@ -933,6 +933,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   size_t num_migrations_;
 
+  // The reason for the last 1-RTT key update on the connection. Will be
+  // kInvalid if no key updates have occurred.
+  quic::KeyUpdateReason last_key_update_reason_;
+
   std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
