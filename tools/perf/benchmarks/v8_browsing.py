@@ -11,6 +11,19 @@ from telemetry.timeline import chrome_trace_config
 from telemetry.web_perf import timeline_based_measurement
 import page_sets
 
+V8_BROWSING_BENCHMARK_UMA = [
+    'V8.WasmCompileModuleMicroSeconds.wasm',
+    'V8.WasmCompileModuleAsyncMicroSeconds',
+    'V8.WasmCompileModuleStreamingMicroSeconds',
+    'V8.WasmFinishModuleStreamingMicroSeconds',
+    'V8.WasmTierUpModuleMicroSeconds',
+    'V8.WasmCompileFunctionMicroSeconds.wasm',
+    'V8.WasmInstantiateModuleMicroSeconds.wasm',
+    'V8.WasmModuleCodeSizeTopTierMiB',
+    'V8.WasmCompileFunctionPeakMemoryBytes',
+    'V8.WasmModuleCodeSizeMiB',
+]
+
 
 def AugmentOptionsForV8BrowsingMetrics(options, enable_runtime_call_stats=True):
   categories = [
@@ -44,14 +57,18 @@ def AugmentOptionsForV8BrowsingMetrics(options, enable_runtime_call_stats=True):
 
   options.config.chrome_trace_config.SetTraceBufferSizeInKb(400 * 1024)
 
+  options.config.chrome_trace_config.EnableUMAHistograms(
+      *V8_BROWSING_BENCHMARK_UMA)
+
   metrics = [
-    'blinkGcMetric',
-    'consoleErrorMetric',
-    'expectedQueueingTimeMetric',
-    'gcMetric',
-    'memoryMetric',
-    'reportedByPageMetric',
-    'wasmMetric',
+      'blinkGcMetric',
+      'consoleErrorMetric',
+      'expectedQueueingTimeMetric',
+      'gcMetric',
+      'memoryMetric',
+      'reportedByPageMetric',
+      'umaMetric',
+      'wasmMetric',
   ]
   options.ExtendTimelineBasedMetric(metrics)
   if enable_runtime_call_stats:
