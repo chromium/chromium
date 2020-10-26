@@ -474,6 +474,8 @@ test("capture_unittests") {
       "video/mac/pixel_buffer_transferer_mac_unittest.mm",
       "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h",
       "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.mm",
+      "video/mac/test/pixel_buffer_test_utils_mac.cc",
+      "video/mac/test/pixel_buffer_test_utils_mac.h",
       "video/mac/test/video_capture_test_utils_mac.h",
       "video/mac/test/video_capture_test_utils_mac.mm",
       "video/mac/video_capture_device_avfoundation_mac_unittest.mm",
