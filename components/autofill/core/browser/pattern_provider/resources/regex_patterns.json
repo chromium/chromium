@@ -7,7 +7,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -19,7 +19,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -29,7 +29,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "pt": [
@@ -39,7 +39,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -51,7 +51,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -63,7 +63,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "de": [
@@ -73,7 +73,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -83,7 +83,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -93,7 +93,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "it": [
@@ -103,7 +103,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -113,7 +113,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ru": [
@@ -123,7 +123,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "zh": [
@@ -133,7 +133,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fa": [
@@ -143,7 +143,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ko": [
@@ -153,7 +153,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -165,7 +165,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "de": [
@@ -175,7 +175,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "es": [
@@ -185,7 +185,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "fr": [
@@ -195,7 +195,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "it": [
@@ -205,7 +205,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "ja": [
@@ -215,7 +215,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "pt": [
@@ -225,7 +225,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "ru": [
@@ -235,7 +235,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "zh": [
@@ -245,7 +245,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "tr": [
@@ -255,7 +255,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "ko": [
@@ -265,7 +265,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ]
   },
@@ -277,7 +277,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "fr": [
@@ -287,7 +287,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "it": [
@@ -297,7 +297,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "ja": [
@@ -307,7 +307,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "zh": [
@@ -317,7 +317,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "tr": [
@@ -327,7 +327,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ],
     "ko": [
@@ -337,7 +337,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 68
+        "match_field_input_types": 17
       }
     ]
   },
@@ -349,7 +349,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "de": [
@@ -359,7 +359,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -369,7 +369,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -379,7 +379,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "it": [
@@ -389,7 +389,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -399,7 +399,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "pt": [
@@ -409,7 +409,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ru": [
@@ -419,7 +419,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "zh": [
@@ -429,7 +429,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ko": [
@@ -439,7 +439,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -451,7 +451,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -461,7 +461,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "it": [
@@ -471,7 +471,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "zh": [
@@ -481,7 +481,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ko": [
@@ -491,7 +491,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 1,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -503,7 +503,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -513,7 +513,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -523,7 +523,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "it": [
@@ -533,7 +533,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -545,7 +545,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -557,7 +557,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "es": [
@@ -567,7 +567,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "de": [
@@ -577,7 +577,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ja": [
@@ -587,7 +587,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "zh": [
@@ -597,7 +597,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ko": [
@@ -607,7 +607,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "tr": [
@@ -617,7 +617,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "fa": [
@@ -627,7 +627,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ]
   },
@@ -639,7 +639,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 544
+        "match_field_input_types": 136
       }
     ]
   },
@@ -651,7 +651,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "de": [
@@ -661,7 +661,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "es": [
@@ -671,7 +671,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "fr": [
@@ -681,7 +681,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "it": [
@@ -691,7 +691,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ja": [
@@ -701,7 +701,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "pt": [
@@ -711,7 +711,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ru": [
@@ -721,7 +721,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "hi": [
@@ -731,7 +731,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ml": [
@@ -741,7 +741,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "zh": [
@@ -751,7 +751,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "tr": [
@@ -761,7 +761,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ko": [
@@ -771,7 +771,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -783,7 +783,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "pt": [
@@ -793,7 +793,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -805,7 +805,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "de": [
@@ -815,7 +815,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "es": [
@@ -825,7 +825,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "fr": [
@@ -835,7 +835,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "it": [
@@ -845,7 +845,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ja": [
@@ -855,7 +855,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "pt": [
@@ -865,7 +865,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ru": [
@@ -875,7 +875,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "zh": [
@@ -885,7 +885,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "fa": [
@@ -895,7 +895,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "hi": [
@@ -905,7 +905,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ml": [
@@ -915,7 +915,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "tr": [
@@ -925,7 +925,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ko": [
@@ -935,7 +935,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ]
   },
@@ -947,7 +947,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ja": [
@@ -957,7 +957,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "pt": [
@@ -967,7 +967,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ru": [
@@ -977,7 +977,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "zh": [
@@ -987,7 +987,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ml": [
@@ -997,7 +997,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "fa": [
@@ -1007,7 +1007,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "hi": [
@@ -1017,7 +1017,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "tr": [
@@ -1027,7 +1027,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ],
     "ko": [
@@ -1037,7 +1037,7 @@
         "positive_score": 1.1,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 548
+        "match_field_input_types": 137
       }
     ]
   },
@@ -1049,7 +1049,7 @@
         "positive_score": 0.8,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 580
+        "match_field_input_types": 145
       }
     ],
     "de": [
@@ -1059,7 +1059,7 @@
         "positive_score": 0.8,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 580
+        "match_field_input_types": 145
       }
     ],
     "zh": [
@@ -1069,7 +1069,7 @@
         "positive_score": 0.8,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 580
+        "match_field_input_types": 145
       }
     ],
     "ja": [
@@ -1079,7 +1079,7 @@
         "positive_score": 0.8,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 580
+        "match_field_input_types": 145
       }
     ],
     "fr": [
@@ -1089,7 +1089,7 @@
         "positive_score": 0.8,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 580
+        "match_field_input_types": 145
       }
     ],
     "pt": [
@@ -1099,7 +1099,7 @@
         "positive_score": 0.8,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 580
+        "match_field_input_types": 145
       }
     ],
     "fa": [
@@ -1109,7 +1109,7 @@
         "positive_score": 0.8,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 580
+        "match_field_input_types": 145
       }
     ],
     "ru": [
@@ -1119,7 +1119,7 @@
         "positive_score": 0.8,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 580
+        "match_field_input_types": 145
       }
     ]
   },
@@ -1131,7 +1131,7 @@
         "positive_score": 0.95,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 868
+        "match_field_input_types": 217
       }
     ],
     "ar": [
@@ -1141,7 +1141,7 @@
         "positive_score": 0.95,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 868
+        "match_field_input_types": 217
       }
     ],
     "fa": [
@@ -1151,7 +1151,7 @@
         "positive_score": 0.95,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 868
+        "match_field_input_types": 217
       }
     ],
     "fr": [
@@ -1161,7 +1161,7 @@
         "positive_score": 0.95,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 868
+        "match_field_input_types": 217
       }
     ]
   },
@@ -1173,7 +1173,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "de": [
@@ -1183,7 +1183,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -1193,7 +1193,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -1203,7 +1203,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "it": [
@@ -1213,7 +1213,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -1223,7 +1223,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ru": [
@@ -1233,7 +1233,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "zh": [
@@ -1243,7 +1243,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -1255,7 +1255,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -1267,7 +1267,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ],
     "de": [
@@ -1277,7 +1277,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ],
     "ja": [
@@ -1287,7 +1287,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ],
     "ru": [
@@ -1297,7 +1297,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ],
     "zh": [
@@ -1307,7 +1307,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ],
     "ko": [
@@ -1317,7 +1317,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ],
     "es": [
@@ -1327,7 +1327,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ],
     "pt": [
@@ -1337,7 +1337,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ],
     "fr": [
@@ -1347,7 +1347,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ]
   },
@@ -1359,7 +1359,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 404
+        "match_field_input_types": 101
       }
     ]
   },
@@ -1371,7 +1371,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "de": [
@@ -1381,7 +1381,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "es": [
@@ -1391,7 +1391,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "fr": [
@@ -1401,7 +1401,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "it": [
@@ -1411,7 +1411,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "ja": [
@@ -1421,7 +1421,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "pt": [
@@ -1431,7 +1431,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "ru": [
@@ -1441,7 +1441,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "zh": [
@@ -1451,7 +1451,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ]
   },
@@ -1463,7 +1463,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "de": [
@@ -1473,7 +1473,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "es": [
@@ -1483,7 +1483,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "it": [
@@ -1493,7 +1493,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "ja": [
@@ -1503,7 +1503,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "pt": [
@@ -1513,7 +1513,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "ru": [
@@ -1523,7 +1523,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "zh": [
@@ -1533,7 +1533,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ]
   },
@@ -1545,7 +1545,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ]
   },
@@ -1557,7 +1557,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ]
   },
@@ -1569,7 +1569,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "de": [
@@ -1579,7 +1579,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "es": [
@@ -1589,7 +1589,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "fr": [
@@ -1599,7 +1599,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "it": [
@@ -1609,7 +1609,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "ja": [
@@ -1619,7 +1619,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "pt": [
@@ -1629,7 +1629,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ],
     "ru": [
@@ -1639,7 +1639,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 948
+        "match_field_input_types": 237
       }
     ]
   },
@@ -1651,7 +1651,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 788
+        "match_field_input_types": 197
       }
     ]
   },
@@ -1663,7 +1663,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 788
+        "match_field_input_types": 197
       }
     ]
   },
@@ -1675,7 +1675,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 788
+        "match_field_input_types": 197
       }
     ]
   },
@@ -1687,7 +1687,7 @@
         "positive_score": 1.0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 36
+        "match_field_input_types": 9
       }
     ]
   },
@@ -1699,7 +1699,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "fr": [
@@ -1709,7 +1709,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "es": [
@@ -1719,7 +1719,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "ja": [
@@ -1729,7 +1729,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "ru": [
@@ -1739,7 +1739,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "zh": [
@@ -1749,7 +1749,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "ml": [
@@ -1759,7 +1759,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "fa": [
@@ -1769,7 +1769,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "hi": [
@@ -1779,7 +1779,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "tr": [
@@ -1789,7 +1789,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ],
     "ko": [
@@ -1799,7 +1799,7 @@
         "positive_score": 1.4,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 12
+        "match_field_input_types": 3
       }
     ]
   },
@@ -1811,7 +1811,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "tr": [
@@ -1821,7 +1821,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "de": [
@@ -1831,7 +1831,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "zh": [
@@ -1841,7 +1841,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ko": [
@@ -1851,7 +1851,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -1863,7 +1863,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -1873,7 +1873,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -1883,7 +1883,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -1893,7 +1893,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "pt": [
@@ -1903,7 +1903,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fa": [
@@ -1913,7 +1913,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "zh": [
@@ -1923,7 +1923,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "tr": [
@@ -1933,7 +1933,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ko": [
@@ -1943,7 +1943,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -1955,7 +1955,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -1965,7 +1965,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "pt": [
@@ -1975,7 +1975,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -1987,7 +1987,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "de": [
@@ -1997,7 +1997,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -2007,7 +2007,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -2017,7 +2017,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -2027,7 +2027,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "pt": [
@@ -2037,7 +2037,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ru": [
@@ -2047,7 +2047,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fa": [
@@ -2057,7 +2057,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ko": [
@@ -2067,7 +2067,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ml": [
@@ -2077,7 +2077,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "tr": [
@@ -2087,7 +2087,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "hi": [
@@ -2097,7 +2097,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2109,7 +2109,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2121,7 +2121,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2133,7 +2133,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "de": [
@@ -2143,7 +2143,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -2153,7 +2153,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -2163,7 +2163,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "it": [
@@ -2173,7 +2173,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -2183,7 +2183,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "pt": [
@@ -2193,7 +2193,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ru": [
@@ -2203,7 +2203,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fa": [
@@ -2213,7 +2213,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "hi": [
@@ -2223,7 +2223,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ml": [
@@ -2233,7 +2233,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "tr": [
@@ -2243,7 +2243,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ko": [
@@ -2253,7 +2253,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2265,7 +2265,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2277,7 +2277,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2289,7 +2289,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "de": [
@@ -2299,7 +2299,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -2309,7 +2309,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "it": [
@@ -2319,7 +2319,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -2329,7 +2329,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ru": [
@@ -2339,7 +2339,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "el": [
@@ -2349,7 +2349,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "tr": [
@@ -2359,7 +2359,7 @@
         "positive_score": 0.9,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2371,7 +2371,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "de": [
@@ -2381,7 +2381,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "es": [
@@ -2391,7 +2391,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "fr": [
@@ -2401,7 +2401,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ja": [
@@ -2411,7 +2411,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "pt": [
@@ -2421,7 +2421,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ru": [
@@ -2431,7 +2431,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "hi": [
@@ -2441,7 +2441,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "tr": [
@@ -2451,7 +2451,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "zh": [
@@ -2461,7 +2461,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ml": [
@@ -2471,7 +2471,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ko": [
@@ -2481,7 +2481,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -2493,7 +2493,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2505,7 +2505,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 308
+        "match_field_input_types": 77
       }
     ]
   },
@@ -2517,7 +2517,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -2529,7 +2529,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "ko": [
@@ -2539,7 +2539,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -2551,7 +2551,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -2563,7 +2563,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -2575,7 +2575,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "fr": [
@@ -2585,7 +2585,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "pt": [
@@ -2595,7 +2595,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -2607,7 +2607,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -2619,7 +2619,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ],
     "pt": [
@@ -2629,7 +2629,7 @@
         "positive_score": 1.3,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 276
+        "match_field_input_types": 69
       }
     ]
   },
@@ -2641,7 +2641,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "fr": [
@@ -2651,7 +2651,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -2661,7 +2661,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -2671,7 +2671,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2683,7 +2683,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -2693,7 +2693,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -2703,7 +2703,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2715,7 +2715,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -2725,7 +2725,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -2735,7 +2735,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2747,7 +2747,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "es": [
@@ -2757,7 +2757,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ],
     "ja": [
@@ -2767,7 +2767,7 @@
         "positive_score": 1.2,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2779,7 +2779,7 @@
         "positive_score": 0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       },
       {
         "pattern_identifier": "en_upi_virtual_payment_address_user@(bank_list)_preserving",
@@ -2787,7 +2787,7 @@
         "positive_score": 0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2799,7 +2799,7 @@
         "positive_score": 0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2811,7 +2811,7 @@
         "positive_score": 0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2823,7 +2823,7 @@
         "positive_score": 0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2835,7 +2835,7 @@
         "positive_score": 0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2847,7 +2847,7 @@
         "positive_score": 0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   },
@@ -2859,7 +2859,7 @@
         "positive_score": 0,
         "negative_pattern": "",
         "match_field_attributes": 3,
-        "match_field_input_types": 4
+        "match_field_input_types": 1
       }
     ]
   }

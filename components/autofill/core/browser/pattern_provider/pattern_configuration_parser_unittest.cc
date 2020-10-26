@@ -94,7 +94,7 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
   ASSERT_EQ("fr", pattern->language);
   ASSERT_NEAR(2.0, pattern->positive_score, 1e-6);
   ASSERT_EQ(2, pattern->match_field_attributes);
-  ASSERT_EQ(3, pattern->match_field_input_types);
+  ASSERT_EQ(3 << 2, pattern->match_field_input_types);
 }
 
 // Test that the parser does not return anything if some |MatchingPattern|

@@ -60,6 +60,10 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
   new_pattern.match_field_input_types = match_field_input_types.value();
   new_pattern.language = language;
 
+  // Shift to the right to match the MatchFieldTypes enum, which temporarily
+  // starts at 1<<2 instead of 1<<0.
+  new_pattern.match_field_input_types <<= 2;
+
   std::vector<MatchingPattern>* pattern_list = &patterns[field_type][language];
   pattern_list->push_back(new_pattern);
 
