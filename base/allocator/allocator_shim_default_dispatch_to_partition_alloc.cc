@@ -36,13 +36,8 @@ namespace {
 std::atomic<bool> g_initialization_lock;
 std::atomic<base::ThreadSafePartitionRoot*> g_root_;
 // Buffer for placement new.
-#if defined(OS_WIN)
-__declspec(align(base::kAlignment)) uint8_t
+alignas(base::ThreadSafePartitionRoot) uint8_t
     g_allocator_buffer[sizeof(base::ThreadSafePartitionRoot)];
-#else
-uint8_t g_allocator_buffer[sizeof(base::ThreadSafePartitionRoot)]
-    __attribute__((aligned(base::kAlignment)))
-#endif
 
 base::ThreadSafePartitionRoot* Allocator() {
   // Double-checked locking.
