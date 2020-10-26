@@ -536,11 +536,11 @@ ExtensionFunction::ResponseValue ExtensionFunction::OneArgument(
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
-    std::unique_ptr<base::Value> arg1,
-    std::unique_ptr<base::Value> arg2) {
+    base::Value arg1,
+    base::Value arg2) {
   base::Value args(base::Value::Type::LIST);
-  args.Append(base::Value::FromUniquePtrValue(std::move(arg1)));
-  args.Append(base::Value::FromUniquePtrValue(std::move(arg2)));
+  args.Append(std::move(arg1));
+  args.Append(std::move(arg2));
   return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
 }
 

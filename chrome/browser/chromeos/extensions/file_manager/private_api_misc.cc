@@ -814,8 +814,9 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
     entry->SetBoolean("fileIsDirectory", true);
     entries->Append(std::move(entry));
   }
-  return RespondNow(TwoArguments(
-      std::move(entries), std::make_unique<base::Value>(first_for_session)));
+  return RespondNow(
+      TwoArguments(base::Value::FromUniquePtrValue(std::move(entries)),
+                   base::Value(first_for_session)));
 }
 
 ExtensionFunction::ResponseAction

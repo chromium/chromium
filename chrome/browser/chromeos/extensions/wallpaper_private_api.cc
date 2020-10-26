@@ -901,6 +901,6 @@ void WallpaperPrivateGetSurpriseMeImageFunction::OnSurpriseMeImageFetched(
 
   extensions::api::wallpaper_private::ImageInfo image_info;
   ParseImageInfo(image, &image_info);
-  Respond(TwoArguments(image_info.ToValue(),
-                       std::make_unique<Value>(next_resume_token)));
+  Respond(TwoArguments(Value::FromUniquePtrValue(image_info.ToValue()),
+                       Value(next_resume_token)));
 }

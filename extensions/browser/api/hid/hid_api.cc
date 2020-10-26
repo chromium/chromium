@@ -260,8 +260,7 @@ void HidReceiveFunction::OnFinished(
     const base::Optional<std::vector<uint8_t>>& buffer) {
   if (success) {
     DCHECK(buffer);
-    Respond(TwoArguments(std::make_unique<base::Value>(report_id),
-                         base::Value::ToUniquePtrValue(base::Value(*buffer))));
+    Respond(TwoArguments(base::Value(report_id), base::Value(*buffer)));
   } else {
     Respond(Error(kErrorTransfer));
   }

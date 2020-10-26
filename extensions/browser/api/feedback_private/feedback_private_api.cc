@@ -414,11 +414,10 @@ void FeedbackPrivateSendFeedbackFunction::OnAllLogsFetched(
 void FeedbackPrivateSendFeedbackFunction::OnCompleted(
     api::feedback_private::LandingPageType type,
     bool success) {
-  Respond(TwoArguments(
-      std::make_unique<base::Value>(feedback_private::ToString(
-          success ? feedback_private::STATUS_SUCCESS
-                  : feedback_private::STATUS_DELAYED)),
-      std::make_unique<base::Value>(feedback_private::ToString(type))));
+  Respond(TwoArguments(base::Value(feedback_private::ToString(
+                           success ? feedback_private::STATUS_SUCCESS
+                                   : feedback_private::STATUS_DELAYED)),
+                       base::Value(feedback_private::ToString(type))));
   if (!success) {
     ExtensionsAPIClient::Get()
         ->GetFeedbackPrivateDelegate()
