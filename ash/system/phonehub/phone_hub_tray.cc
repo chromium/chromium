@@ -49,12 +49,11 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
     : TrayBackgroundView(shelf), ui_controller_(new PhoneHubUiController()) {
   observed_phone_hub_ui_controller_.Add(ui_controller_.get());
 
-  // TODO(tengs): Update icon to spec.
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
   icon->SetImage(CreateVectorIcon(
-      kSystemMenuPhoneIcon,
+      kPhoneHubPhoneIcon,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
 

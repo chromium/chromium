@@ -43,7 +43,8 @@ LocatePhoneQuickActionController::~LocatePhoneQuickActionController() {
 QuickActionItem* LocatePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_LOCATE_PHONE_TITLE,
-                              kSystemMenuPhoneIcon);
+                              kPhoneHubLocatePhoneOnIcon,
+                              kPhoneHubLocatePhoneOffIcon);
   OnPhoneRingingStateChanged();
   return item_;
 }

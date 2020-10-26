@@ -47,7 +47,8 @@ bool SilencePhoneQuickActionController::IsItemEnabled() {
 QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE,
-                              kSystemMenuPhoneIcon);
+                              kPhoneHubSilencePhoneOnIcon,
+                              kPhoneHubSilencePhoneOffIcon);
   OnDndStateChanged();
   return item_;
 }

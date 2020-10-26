@@ -27,7 +27,8 @@ EnableHotspotQuickActionController::~EnableHotspotQuickActionController() {
 QuickActionItem* EnableHotspotQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_TITLE,
-                              kSystemMenuPhoneIcon);
+                              kPhoneHubEnableHotspotOnIcon,
+                              kPhoneHubEnableHotspotOffIcon);
   // When the UI has just opened, scan to see if there is a connection
   // available.
   if (tether_controller_->GetStatus() == Status::kConnectionUnavailable)
