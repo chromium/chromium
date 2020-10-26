@@ -1162,7 +1162,7 @@ class MetaBuildWrapper(object):
     for target in ninja_targets:
       target_type = isolate_map[target]['type']
       label = isolate_map[target]['label']
-      runtime_deps = 'obj/%s.runtime_deps' % label.replace(':', '/')
+      stamp_runtime_deps = 'obj/%s.stamp.runtime_deps' % label.replace(':', '/')
       # TODO(https://crbug.com/876065): 'official_tests' use
       # type='additional_compile_target' to isolate tests. This is not the
       # intended use for 'additional_compile_target'.
@@ -1175,21 +1175,23 @@ class MetaBuildWrapper(object):
       elif fuchsia or ios or target_type == 'generated_script':
         # iOS and Fuchsia targets end up as groups.
         # generated_script targets are always actions.
-        rpaths = [runtime_deps]
+        rpaths = [stamp_runtime_deps]
       elif android:
         # Android targets may be either android_apk or executable. The former
-        # will result in runtime_deps associated with the target, while the
+        # will result in runtime_deps associated with the stamp file, while the
         # latter will result in runtime_deps associated with the executable.
         label = isolate_map[target]['label']
-        rpaths = [target + '.runtime_deps', runtime_deps]
+        rpaths = [
+            target + '.runtime_deps',
+            stamp_runtime_deps]
       elif (target_type == 'script'
             or isolate_map[target].get('label_type') == 'group'):
         # For script targets, the build target is usually a group,
-        # for which gn generates the runtime_deps in the build directory
+        # for which gn generates the runtime_deps next to the stamp file
         # for the label, which lives under the obj/ directory, but it may
         # also be an executable.
         label = isolate_map[target]['label']
-        rpaths = [runtime_deps]
+        rpaths = [stamp_runtime_deps]
         if win:
           rpaths += [ target + '.exe.runtime_deps' ]
         else:
