@@ -1,36 +1,33 @@
-<style>
-  .container,
-  .signin-frame {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    width: 100%;
+<style include="edu-coexistence-css">
+  .buttons {
+     width: 100%;
   }
 
-  .container {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    margin-top: calc(-1 * var(--dialog-top-border-size));
-  }
-
-  .signin-frame {
-    background-color: white;
-    overflow: hidden;
-  }
-
-  paper-spinner-lite {
-    --spinner-size: 25px;
-    display: none;
-    height: var(--spinner-size);
-    width: var(--spinner-size);
-  }
-
-  paper-spinner-lite[active] {
-    display: inline-block;
+  gaia-action-buttons {
+    padding-inline-start: 85%;
   }
 </style>
 
-<div class="container">
-   <webview id="signinFrame" hidden$="[[loading_]]" class="signin-frame" allowscaling></webview>
-</div>
+<edu-coexistence-template>
+  <span slot="main">
+    <div class="container">
+     <webview id="signinFrame" hidden$="[[loading_]]" class="signin-frame"
+              allowscaling></webview>
+    </div>
+  </span>
+  <span slot="buttons">
+    <div class="buttons" hidden$="[[!showGaiaButtons_]]">
+      <div class="action-buttons">
+        <span>
+          <edu-coexistence-button button-type="back"
+            on-go-back="handleGaiaLoginGoBack_">
+          </edu-coexistence-button>
+        </span>
+        <gaia-action-buttons authenticator="[[controller_.authExtHost_]]" 
+          hidden$="[[!showGaiaNextButton_]]">
+        </gaia-action-buttons>
+      </div>
+    </div>
+  </span>
+
+</edu-coexistence-template>

@@ -1,0 +1,19 @@
+<style include="edu-coexistence-css"></style>
+
+<edu-coexistence-template>
+  <span slot="main">
+    <div class="container">
+      <div class="main-padding">
+        <if expr="_google_chrome">
+          <img class="google-full-logo"
+              src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
+        </if>
+        <h1>$i18n{eduCoexistenceNetworkDownHeading}</h1>
+        <p class="secondary">$i18n{eduCoexistenceNetworkDownDescription}</p>
+      </div>
+    </div>
+  </span>
+  <span slot="buttons">
+    <edu-coexistence-button button-type="action">
+  </span>
+</edu-coexistence-template>

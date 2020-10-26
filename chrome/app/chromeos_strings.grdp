@@ -5697,6 +5697,20 @@
     Get highlights from the latest update
   </message>
 
+  <!-- Strings for EDU Coexistence flow -->
+  <message name="IDS_EDU_COEXISTENCE_NETWORK_DOWN_HEADING" desc="Heading string shown in the EDU Coexistence flow when the network is not available.">
+    Can’t connect to the internet
+  </message>
+  <message name="IDS_EDU_COEXISTENCE_NETWORK_DOWN_DESCRIPTION" desc="Description shown in the EDU Coexistence flow when the network is not available.">
+    Check your internet connection
+  </message>
+  <message name="IDS_EDU_COEXISTENCE_ERROR_HEADING" desc="Heading string shown in the EDU Coexistence flow when an unrecoverable error occured.">
+    An error occurred
+  </message>
+  <message name="IDS_EDU_COEXISTENCE_ERROR_DESCRIPTION" desc="Description shown in the EDU Coexistence flow when an unrecoverable error occured.">
+    Please try again later
+  </message>
+
   <!-- Strings for Add Supervision screen -->
   <message name="IDS_ADD_SUPERVISION_PAGE_TITLE" desc="Title for the Chrome OS Add Supervision screen. Since the title bar is not visible, this string is only used by screen readers.">
     Set Up Parental Controls

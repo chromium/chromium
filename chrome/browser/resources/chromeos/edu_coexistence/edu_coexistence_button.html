@@ -1,0 +1,19 @@
+<style>
+  :host([button-type='ok']) cr-button {
+    position: absolute;
+  }
+
+  :host([button-type='back']) cr-button {
+    position: absolute;
+  }
+</style>
+<cr-button class$="[[getClass_(buttonType)]]" on-tap="onTap_"
+    disabled="[[disabled]]">
+  <template is="dom-if" if="[[hasIconBeforeText_(buttonType)]]">
+    <iron-icon icon="[[getIcon_(buttonType)]]"></iron-icon>
+  </template>
+  [[getDisplayName_(buttonType)]]
+  <template is="dom-if" if="[[hasIconAfterText_(buttonType)]]">
+    <iron-icon icon="[[getIcon_(buttonType)]]"></iron-icon>
+  </template>
+</cr-button>

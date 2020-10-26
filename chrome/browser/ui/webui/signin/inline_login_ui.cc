@@ -90,6 +90,16 @@ void AddEduStrings(content::WebUIDataSource* source,
                              IDS_EDU_LOGIN_INFO_COEXISTENCE_TITLE);
   source->AddLocalizedString("coexistenceBody",
                              IDS_EDU_LOGIN_INFO_COEXISTENCE_BODY);
+
+  // Strings for server based EDU Coexistence flow.
+  source->AddLocalizedString("eduCoexistenceNetworkDownHeading",
+                             IDS_EDU_COEXISTENCE_NETWORK_DOWN_HEADING);
+  source->AddLocalizedString("eduCoexistenceNetworkDownDescription",
+                             IDS_EDU_COEXISTENCE_NETWORK_DOWN_DESCRIPTION);
+  source->AddLocalizedString("eduCoexistenceErrorHeading",
+                             IDS_EDU_COEXISTENCE_ERROR_HEADING);
+  source->AddLocalizedString("eduCoexistenceErrorDescription",
+                             IDS_EDU_COEXISTENCE_ERROR_DESCRIPTION);
 }
 #endif  // defined(OS_CHROMEOS)
 
@@ -141,6 +151,14 @@ content::WebUIDataSource* CreateWebUIDataSource() {
      IDR_ADD_SUPERVISION_POST_MESSAGE_API_M_JS},
     {"edu_coexistence_browser_proxy.js",
      IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BROWSER_PROXY_JS},
+    {"edu_coexistence_button.js",
+     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BUTTON_JS},
+    {"edu_coexistence_offline.js",
+     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_OFFLINE_JS},
+    {"edu_coexistence_error.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_ERROR_JS},
+    {"edu_coexistence_template.js",
+     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_TEMPLATE_JS},
+    {"edu_coexistence_css.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CSS_JS},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},

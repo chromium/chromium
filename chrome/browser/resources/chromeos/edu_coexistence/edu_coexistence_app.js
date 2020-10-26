@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './edu_coexistence_css.js';
+import './edu_coexistence_template.js';
+import './edu_coexistence_button.js';
+import './edu_coexistence_error.js';
+import './edu_coexistence_offline.js';
 import './edu_coexistence_ui.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.m.js';
 
@@ -10,11 +15,12 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
-
-// import {EduAccountLoginBrowserProxyImpl} from './browser_proxy.js';
-// import {EduCoexistenceFlowResult, EduLoginErrorType, EduLoginParams,
-// ParentAccount} from './edu_login_util.js';
-//
+/** @enum {string} */
+const Screens = {
+  ONLINE_FLOW: 'edu-coexistence-ui',
+  ERROR: 'edu-coexistence-error',
+  OFFLINE: 'edu-coexistence-offline',
+};
 
 Polymer({
   is: 'edu-coexistence-app',
@@ -32,15 +38,56 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Specifies what the current screen is.
+     * @private {Screens}
+     */
+    currentScreen_: {type: Screens, value: Screens.ONLINE_FLOW},
+  },
+
+  listeners: {
+    'go-error': 'onError_',
+  },
+
+  /**
+   * Displays the error screen.
+   * @private
+   */
+  onError_() {
+    this.switchToScreen_(Screens.ERROR);
+  },
+
+  /**
+   * Switches to the specified screen.
+   * @private
+   * @param {Screens} screen
+   */
+  switchToScreen_(screen) {
+    if (this.currentScreen_ === screen) {
+      return;
+    }
+    this.currentScreen_ = screen;
+    /** @type {CrViewManagerElement} */ (this.$.viewManager)
+        .switchView(this.currentScreen_);
   },
 
   /** @override */
-  created() {},
-
-  /** @override */
   ready() {
-    /** @type {CrViewManagerElement} */ (this.$.viewManager)
-        .switchView('edu-coexistence-ui');
+    window.addEventListener('online', () => {
+      if (this.currentScreen_ !== Screens.ERROR) {
+        this.switchToScreen_(Screens.ONLINE_FLOW);
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      if (this.currentScreen_ !== Screens.ERROR) {
+        this.switchToScreen_(Screens.OFFLINE);
+      }
+    });
+
+    this.switchToScreen_(
+        navigator.onLine ? Screens.ONLINE_FLOW : Screens.OFFLINE);
   },
 
 });
