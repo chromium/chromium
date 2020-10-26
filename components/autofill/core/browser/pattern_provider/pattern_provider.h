@@ -72,12 +72,6 @@ class PatternProvider {
   const Map& patterns() const { return patterns_; }
 
  private:
-  void SortPatternsByScore(std::vector<MatchingPattern>& patterns);
-
-  // Adds the English patterns, restricted to MatchFieldType MATCH_NAME, to
-  // every other language.
-  void EnrichPatternsWithEnVersion();
-
   FRIEND_TEST_ALL_PREFIXES(AutofillPatternProviderPipelineTest,
                            TestParsingEquivalent);
   FRIEND_TEST_ALL_PREFIXES(AutofillPatternProviderPipelineTest,

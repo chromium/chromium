@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -19,9 +20,67 @@ namespace autofill {
 
 namespace {
 const char* kSourceCodeLanguage = "en";
+
+// Adds the English patterns, restricted to MatchFieldType MATCH_NAME, to
+// every other language.
+void EnrichPatternsWithEnVersion(
+    PatternProvider::Map* type_and_lang_to_patterns) {
+  DCHECK(type_and_lang_to_patterns);
+  for (auto& p : *type_and_lang_to_patterns) {
+    std::map<std::string, std::vector<MatchingPattern>>& lang_to_patterns =
+        p.second;
+
+    auto it = lang_to_patterns.find(kSourceCodeLanguage);
+    if (it == lang_to_patterns.end())
+      continue;
+    std::vector<MatchingPattern> en_patterns = it->second;
+    for (MatchingPattern& en_pattern : en_patterns) {
+      en_pattern.match_field_attributes = MATCH_NAME;
+    }
+
+    for (auto& q : lang_to_patterns) {
+      const std::string& page_language = q.first;
+      std::vector<MatchingPattern>& patterns = q.second;
+
+      if (page_language != kSourceCodeLanguage) {
+        patterns.insert(patterns.end(), en_patterns.begin(), en_patterns.end());
+      }
+    }
+  }
+}
+
+// Sorts patterns in descending order by their score.
+void SortPatternsByScore(PatternProvider::Map* type_and_lang_to_patterns) {
+  for (auto& p : *type_and_lang_to_patterns) {
+    std::map<std::string, std::vector<MatchingPattern>>& lang_to_patterns =
+        p.second;
+    for (auto& q : lang_to_patterns) {
+      std::vector<MatchingPattern>& patterns = q.second;
+      std::sort(patterns.begin(), patterns.end(),
+                [](const MatchingPattern& mp1, const MatchingPattern& mp2) {
+                  return mp1.positive_score > mp2.positive_score;
+                });
+    }
+  }
+}
 }
 
 PatternProvider* PatternProvider::g_pattern_provider = nullptr;
+
+// static
+PatternProvider& PatternProvider::GetInstance() {
+  if (!g_pattern_provider) {
+    static base::NoDestructor<PatternProvider> instance;
+    g_pattern_provider = instance.get();
+    field_type_parsing::PopulateFromResourceBundle();
+  }
+  return *g_pattern_provider;
+}
+
+// static
+void PatternProvider::ResetPatternProvider() {
+  g_pattern_provider = nullptr;
+}
 
 PatternProvider::PatternProvider() = default;
 PatternProvider::~PatternProvider() = default;
@@ -35,7 +94,8 @@ void PatternProvider::SetPatterns(PatternProvider::Map patterns,
       (overwrite_equal_version && pattern_version_ == version)) {
     patterns_ = patterns;
     pattern_version_ = version;
-    EnrichPatternsWithEnVersion();
+    EnrichPatternsWithEnVersion(&patterns_);
+    SortPatternsByScore(&patterns_);
   }
 }
 
@@ -77,45 +137,6 @@ const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
   return GetMatchPatterns(pattern_name, page_language);
 }
 
-// static
-PatternProvider& PatternProvider::GetInstance() {
-  if (!g_pattern_provider) {
-    static base::NoDestructor<PatternProvider> instance;
-    g_pattern_provider = instance.get();
-    field_type_parsing::PopulateFromResourceBundle();
-  }
-  return *g_pattern_provider;
-}
-
-// static
-void PatternProvider::ResetPatternProvider() {
-  g_pattern_provider = nullptr;
-}
-
-void PatternProvider::EnrichPatternsWithEnVersion() {
-  for (auto& p : patterns_) {
-    std::map<std::string, std::vector<MatchingPattern>>& lg_to_patterns =
-        p.second;
-
-    auto it = lg_to_patterns.find(kSourceCodeLanguage);
-    if (it == lg_to_patterns.end())
-      continue;
-    std::vector<MatchingPattern> en_patterns = it->second;
-    for (MatchingPattern& en_pattern : en_patterns) {
-      en_pattern.match_field_attributes = MATCH_NAME;
-    }
-
-    for (auto& q : lg_to_patterns) {
-      const std::string& page_language = q.first;
-      std::vector<MatchingPattern>& patterns = q.second;
-
-      if (page_language != kSourceCodeLanguage) {
-        patterns.insert(patterns.end(), en_patterns.begin(), en_patterns.end());
-      }
-    }
-  }
-}
-
 const std::vector<MatchingPattern> PatternProvider::GetAllPatternsByType(
     ServerFieldType type) const {
   std::string type_str = AutofillType(type).ToString();
@@ -130,20 +151,16 @@ const std::vector<MatchingPattern> PatternProvider::GetAllPatternsByType(
   const std::map<std::string, std::vector<MatchingPattern>>& type_patterns =
       it->second;
 
-  size_t en_size = [&type_patterns]() -> size_t {
-    auto jt = type_patterns.find(kSourceCodeLanguage);
-    return jt != type_patterns.end() ? jt->second.size() : 0;
-  }();
-
   std::vector<MatchingPattern> all_language_patterns;
   for (const auto& p : type_patterns) {
     const std::string& page_language = p.first;
     const std::vector<MatchingPattern>& language_patterns = p.second;
-    DCHECK(language_patterns.size() >= en_size);
-    auto end = language_patterns.end() -
-               (page_language == kSourceCodeLanguage ? 0 : en_size);
-    all_language_patterns.insert(all_language_patterns.end(),
-                                 language_patterns.begin(), end);
+    for (const MatchingPattern& mp : language_patterns) {
+      if (page_language == kSourceCodeLanguage ||
+          mp.language != kSourceCodeLanguage) {
+        all_language_patterns.push_back(mp);
+      }
+    }
   }
   return all_language_patterns;
 }

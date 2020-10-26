@@ -12,6 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 #include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
@@ -51,15 +53,23 @@ MatchingPattern GetCompanyPatternDe() {
 class UnitTestPatternProvider : public PatternProvider {
  public:
   UnitTestPatternProvider();
+  UnitTestPatternProvider(const std::vector<MatchingPattern>& de_patterns,
+                          const std::vector<MatchingPattern>& en_patterns);
   ~UnitTestPatternProvider();
 };
 
-UnitTestPatternProvider::UnitTestPatternProvider() {
+UnitTestPatternProvider::UnitTestPatternProvider()
+    : UnitTestPatternProvider({GetCompanyPatternDe()},
+                              {GetCompanyPatternEn()}) {}
+
+UnitTestPatternProvider::UnitTestPatternProvider(
+    const std::vector<MatchingPattern>& de_patterns,
+    const std::vector<MatchingPattern>& en_patterns) {
   PatternProvider::SetPatternProviderForTesting(this);
   Map patterns;
   auto& company_patterns = patterns[AutofillType(COMPANY_NAME).ToString()];
-  company_patterns["en"].push_back(GetCompanyPatternEn());
-  company_patterns["de"].push_back(GetCompanyPatternDe());
+  company_patterns["de"] = de_patterns;
+  company_patterns["en"] = en_patterns;
   SetPatterns(patterns, base::Version(), true);
 }
 
@@ -209,6 +219,33 @@ TEST(AutofillPatternProvider, EnrichPatternsWithEnVersion) {
               std::vector<MatchingPattern>({GetCompanyPatternDe(),
                                             GetCompanyPatternEn()}));
   }
+}
+
+TEST(AutofillPatternProvider, SortPatternsByScore) {
+  base::test::ScopedFeatureList feature;
+  feature.InitWithFeatures(
+      // enabled
+      {features::kAutofillUsePageLanguageToSelectFieldParsingPatterns,
+       features::kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics},
+      // disabled
+      {});
+  std::vector<MatchingPattern> de_input_patterns;
+  de_input_patterns.push_back(GetCompanyPatternDe());
+  de_input_patterns.push_back(GetCompanyPatternDe());
+  de_input_patterns.push_back(GetCompanyPatternDe());
+  de_input_patterns.push_back(GetCompanyPatternDe());
+  de_input_patterns[0].positive_score = 3.0;
+  de_input_patterns[1].positive_score = 1.0;
+  de_input_patterns[2].positive_score = 5.0;
+  de_input_patterns[3].positive_score = 3.0;
+  UnitTestPatternProvider p(de_input_patterns, {});
+  const std::vector<MatchingPattern>& de_patterns =
+      p.GetMatchPatterns(COMPANY_NAME, "de");
+  ASSERT_EQ(de_patterns.size(), de_input_patterns.size());
+  EXPECT_EQ(de_patterns[0].positive_score, 5.0);
+  EXPECT_EQ(de_patterns[1].positive_score, 3.0);
+  EXPECT_EQ(de_patterns[2].positive_score, 3.0);
+  EXPECT_EQ(de_patterns[3].positive_score, 1.0);
 }
 
 }  // namespace autofill
