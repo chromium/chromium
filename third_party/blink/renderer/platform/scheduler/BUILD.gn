@@ -119,6 +119,7 @@ blink_platform_sources("scheduler") {
     "main_thread/web_scoped_virtual_time_pauser.cc",
     "main_thread/widget_scheduler.cc",
     "main_thread/widget_scheduler.h",
+    "public/agent_group_scheduler.h",
     "public/aggregated_metric_reporter.h",
     "public/cooperative_scheduling_manager.h",
     "public/dummy_schedulers.h",

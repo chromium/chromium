@@ -115,6 +115,10 @@
 #endif
 
 namespace blink {
+namespace scheduler {
+class WebAgentGroupScheduler;
+}  // namespace scheduler
+
 class WeakWrapperResourceLoadInfoNotifier;
 class WebComputedAXTree;
 class WebContentDecryptionModule;
@@ -823,6 +827,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // RenderViewTest::CreateFakeWebURLLoaderFactory().
   void SetWebURLLoaderFactoryOverrideForTest(
       std::unique_ptr<blink::WebURLLoaderFactoryForTest> factory);
+
+  blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override;
 
  protected:
   explicit RenderFrameImpl(CreateParams params);

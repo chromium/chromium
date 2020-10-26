@@ -232,13 +232,15 @@ WebViewFrameWidget* CreateWebViewFrameWidget(
     CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool is_for_nested_main_frame,
     bool hidden,
     bool never_composited) {
   return MakeGarbageCollected<MockWebViewFrameWidget>(
       pass_key, client, web_view_impl, std::move(frame_widget_host),
       std::move(frame_widget), std::move(widget_host), std::move(widget),
-      is_for_nested_main_frame, hidden, never_composited);
+      std::move(task_runner), is_for_nested_main_frame, hidden,
+      never_composited);
 }
 
 class WebViewFrameWidgetSimTest : public SimTest {

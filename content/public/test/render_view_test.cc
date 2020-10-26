@@ -423,9 +423,6 @@ void RenderViewTest::SetUp() {
   if (!render_thread_)
     render_thread_ = std::make_unique<MockRenderThread>();
 
-  agent_scheduling_group_ = CreateAgentSchedulingGroup(*render_thread_);
-  render_widget_host_ = CreateRenderWidgetHost();
-
   // Blink needs to be initialized before calling CreateContentRendererClient()
   // because it uses blink internally.
   blink_platform_impl_.Initialize();
@@ -438,6 +435,9 @@ void RenderViewTest::SetUp() {
   SetContentClient(content_client_.get());
   SetBrowserClientForTesting(content_browser_client_.get());
   SetRendererClientForTesting(content_renderer_client_.get());
+
+  agent_scheduling_group_ = CreateAgentSchedulingGroup(*render_thread_);
+  render_widget_host_ = CreateRenderWidgetHost();
 
 #if defined(OS_WIN)
   // This needs to happen sometime before PlatformInitialize.

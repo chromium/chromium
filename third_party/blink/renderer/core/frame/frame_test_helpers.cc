@@ -48,6 +48,7 @@
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -401,7 +402,10 @@ WebRemoteFrameImpl* CreateRemoteChild(
 }
 
 WebViewHelper::WebViewHelper()
-    : web_view_(nullptr), platform_(Platform::Current()) {}
+    : web_view_(nullptr),
+      agent_group_scheduler_(
+          blink::ThreadScheduler::Current()->CreateAgentGroupScheduler()),
+      platform_(Platform::Current()) {}
 
 WebViewHelper::~WebViewHelper() {
   // Close the WebViewImpl before the WebViewClient/WebWidgetClient are
@@ -583,11 +587,13 @@ void WebViewHelper::InitializeWebView(TestWebViewClient* web_view_client,
                                       class WebView* opener) {
   test_web_view_client_ =
       CreateDefaultClientIfNeeded(web_view_client, owned_test_web_view_client_);
-  web_view_ = static_cast<WebViewImpl*>(WebView::Create(
-      test_web_view_client_,
-      /*is_hidden=*/false,
-      /*is_inside_portal=*/false,
-      /*compositing_enabled=*/true, opener, mojo::NullAssociatedReceiver()));
+  web_view_ = static_cast<WebViewImpl*>(
+      WebView::Create(test_web_view_client_,
+                      /*is_hidden=*/false,
+                      /*is_inside_portal=*/false,
+                      /*compositing_enabled=*/true,
+                      /*opener=*/opener, mojo::NullAssociatedReceiver(),
+                      *agent_group_scheduler_));
   // This property must be set at initialization time, it is not supported to be
   // changed afterward, and does nothing.
   web_view_->GetSettings()->SetViewportEnabled(viewport_enabled_);

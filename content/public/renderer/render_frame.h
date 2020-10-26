@@ -29,6 +29,9 @@
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace blink {
+namespace scheduler {
+class WebAgentGroupScheduler;
+}  // namespace scheduler
 namespace web_pref {
 struct WebPreferences;
 }  // namespace web_pref
@@ -324,6 +327,11 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
 
   // Returns the device scale factor of the display the render frame is in.
   virtual float GetDeviceScaleFactor() = 0;
+
+  // Return the dedicated scheduler for the AgentSchedulingGroup associated with
+  // this RenderFrame.
+  virtual blink::scheduler::WebAgentGroupScheduler&
+  GetAgentGroupScheduler() = 0;
 
  protected:
   ~RenderFrame() override {}

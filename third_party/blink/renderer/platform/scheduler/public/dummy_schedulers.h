@@ -12,6 +12,7 @@
 namespace blink {
 class FrameScheduler;
 class PageScheduler;
+class AgentGroupScheduler;
 class ThreadScheduler;
 
 namespace scheduler {
@@ -33,6 +34,8 @@ class WebThreadScheduler;
 
 PLATFORM_EXPORT std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler();
 PLATFORM_EXPORT std::unique_ptr<PageScheduler> CreateDummyPageScheduler();
+PLATFORM_EXPORT std::unique_ptr<AgentGroupScheduler>
+CreateDummyAgentGroupScheduler();
 PLATFORM_EXPORT std::unique_ptr<ThreadScheduler> CreateDummyThreadScheduler();
 PLATFORM_EXPORT std::unique_ptr<WebThreadScheduler>
 CreateDummyWebThreadScheduler();

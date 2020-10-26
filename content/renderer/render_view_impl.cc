@@ -147,7 +147,8 @@ void RenderViewImpl::Initialize(
       params->type == mojom::ViewWidgetType::kPortal ? true : false,
       /*compositing_enabled=*/true,
       opener_frame ? opener_frame->View() : nullptr,
-      std::move(params->blink_page_broadcast));
+      std::move(params->blink_page_broadcast),
+      agent_scheduling_group_.agent_group_scheduler());
 
   g_view_map.Get().insert(std::make_pair(GetWebView(), this));
   g_routing_id_view_map.Get().insert(std::make_pair(GetRoutingID(), this));

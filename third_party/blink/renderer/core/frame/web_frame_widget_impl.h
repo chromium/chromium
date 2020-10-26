@@ -86,6 +86,7 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool hidden,
       bool never_composited);
   ~WebFrameWidgetImpl() override;

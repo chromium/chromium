@@ -391,13 +391,14 @@ WebView* WebView::Create(
     bool compositing_enabled,
     WebView* opener,
     CrossVariantMojoAssociatedReceiver<mojom::PageBroadcastInterfaceBase>
-        page_handle) {
+        page_handle,
+    scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
   return WebViewImpl::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
                 : mojom::blink::PageVisibilityState::kVisible,
       is_inside_portal, compositing_enabled, static_cast<WebViewImpl*>(opener),
-      std::move(page_handle));
+      std::move(page_handle), agent_group_scheduler);
 }
 
 WebViewImpl* WebViewImpl::Create(
@@ -406,12 +407,13 @@ WebViewImpl* WebViewImpl::Create(
     bool is_inside_portal,
     bool compositing_enabled,
     WebViewImpl* opener,
-    mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle) {
+    mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
+    blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
   // Take a self-reference for WebViewImpl that is released by calling Close(),
   // then return a raw pointer to the caller.
   auto web_view = base::AdoptRef(
       new WebViewImpl(client, visibility, is_inside_portal, compositing_enabled,
-                      opener, std::move(page_handle)));
+                      opener, std::move(page_handle), agent_group_scheduler));
   web_view->AddRef();
   return web_view.get();
 }
@@ -464,7 +466,8 @@ WebViewImpl::WebViewImpl(
     bool is_inside_portal,
     bool does_composite,
     WebViewImpl* opener,
-    mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle)
+    mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
+    blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler)
     : web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
       minimum_zoom_level_(PageZoomFactorToZoomLevel(kMinimumPageZoomFactor)),
@@ -477,7 +480,8 @@ WebViewImpl::WebViewImpl(
   Page::PageClients page_clients;
   page_clients.chrome_client = chrome_client_.Get();
   page_ =
-      Page::CreateOrdinary(page_clients, opener ? opener->GetPage() : nullptr);
+      Page::CreateOrdinary(page_clients, opener ? opener->GetPage() : nullptr,
+                           agent_group_scheduler);
   CoreInitializer::GetInstance().ProvideModulesToPage(*page_, web_view_client_);
 
   SetVisibilityState(visibility, /*is_initial_state=*/true);

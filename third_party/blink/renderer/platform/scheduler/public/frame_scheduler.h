@@ -27,6 +27,10 @@ class UkmRecorder;
 
 namespace blink {
 
+namespace scheduler {
+class WebAgentGroupScheduler;
+}  // namespace scheduler
+
 class PageScheduler;
 class WebSchedulingTaskQueue;
 
@@ -124,6 +128,9 @@ class FrameScheduler : public FrameOrWorkerScheduler {
 
   // Returns the parent PageScheduler.
   virtual PageScheduler* GetPageScheduler() const = 0;
+
+  // Returns the parent AgentGroupScheduler.
+  virtual scheduler::WebAgentGroupScheduler* GetAgentGroupScheduler() = 0;
 
   // Returns a WebScopedVirtualTimePauser which can be used to vote for pausing
   // virtual time. Virtual time will be paused if any WebScopedVirtualTimePauser

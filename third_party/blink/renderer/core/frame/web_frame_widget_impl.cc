@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
 namespace blink {
@@ -146,6 +147,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
         util::PassKey<WebFrameWidget>(), *client, web_view_impl,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
+        main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
         is_for_nested_main_frame, hidden, never_composited);
   } else {
     // Note: this isn't a leak, as the object has a self-reference that the
@@ -155,6 +157,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
         util::PassKey<WebFrameWidget>(), *client, web_view_impl,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
+        main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
         is_for_nested_main_frame, hidden, never_composited);
   }
   widget->BindLocalRoot(*main_frame);
@@ -186,8 +189,9 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
   auto* widget = MakeGarbageCollected<WebFrameWidgetImpl>(
       util::PassKey<WebFrameWidget>(), *client,
       std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
-      std::move(mojo_widget_host), std::move(mojo_widget), hidden,
-      never_composited);
+      std::move(mojo_widget_host), std::move(mojo_widget),
+      local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
+      hidden, never_composited);
   widget->BindLocalRoot(*local_root);
   return widget;
 }
@@ -203,6 +207,7 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool hidden,
     bool never_composited)
     : WebFrameWidgetBase(client,
@@ -210,6 +215,7 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
                          std::move(frame_widget),
                          std::move(widget_host),
                          std::move(widget),
+                         std::move(task_runner),
                          hidden,
                          never_composited,
                          /*is_for_child_local_root=*/true),

@@ -116,13 +116,10 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual std::unique_ptr<scheduler::WebAgentGroupScheduler>
   CreateAgentGroupScheduler() = 0;
 
-  // Creates a new PageScheduler for a given Page. Must be called from the
-  // associated WebThread.
-  virtual std::unique_ptr<PageScheduler> CreatePageScheduler(
-      PageScheduler::Delegate*) = 0;
-
-  // Return the current active AgentGroupScheduler.
-  // If there is no active AgentGroupScheduler, it returns nullptr.
+  // The current active AgentGroupScheduler is set when the task gets
+  // started (i.e., OnTaskStarted) and unset when the task gets
+  // finished (i.e., OnTaskCompleted). GetCurrentAgentGroupScheduler()
+  // returns nullptr in task observers.
   virtual scheduler::WebAgentGroupScheduler*
   GetCurrentAgentGroupScheduler() = 0;
 

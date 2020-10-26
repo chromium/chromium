@@ -406,6 +406,9 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   std::unique_ptr<TestWebWidgetClient> owned_test_web_widget_client_;
   TestWebWidgetClient* test_web_widget_client_ = nullptr;
 
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler_;
+
   // The Platform should not change during the lifetime of the test!
   Platform* const platform_;
 

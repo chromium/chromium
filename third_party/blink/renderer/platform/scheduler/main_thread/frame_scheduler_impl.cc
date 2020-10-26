@@ -584,7 +584,7 @@ FrameSchedulerImpl::ControlTaskRunner() {
   return main_thread_scheduler_->ControlTaskRunner();
 }
 
-AgentGroupSchedulerImpl* FrameSchedulerImpl::GetAgentGroupScheduler() {
+WebAgentGroupScheduler* FrameSchedulerImpl::GetAgentGroupScheduler() {
   return parent_page_scheduler_
              ? &parent_page_scheduler_->GetAgentGroupScheduler()
              : nullptr;

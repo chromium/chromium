@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/blink.h"
@@ -215,6 +216,9 @@ class WebViewPlugin : public blink::WebPlugin,
    private:
     WebViewPlugin* plugin_;
     blink::WebNavigationControl* frame_ = nullptr;
+
+    std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+        agent_group_scheduler_;
 
     // Owned by us, deleted via |close()|.
     blink::WebView* web_view_;

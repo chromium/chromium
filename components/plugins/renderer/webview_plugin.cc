@@ -258,13 +258,17 @@ void WebViewPlugin::DidFailLoading(const WebURLError& error) {
 
 WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
                                             const WebPreferences& preferences)
-    : plugin_(plugin) {
+    : plugin_(plugin),
+      agent_group_scheduler_(
+          blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+              ->CreateAgentGroupScheduler()) {
   web_view_ =
       WebView::Create(/*client=*/this,
                       /*is_hidden=*/false,
                       /*is_inside_portal=*/false,
                       /*compositing_enabled=*/false,
-                      /*opener=*/nullptr, mojo::NullAssociatedReceiver());
+                      /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
+                      *agent_group_scheduler_);
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
   // consistent view of our preferences.
   blink::WebView::ApplyWebPreferences(preferences, web_view_);

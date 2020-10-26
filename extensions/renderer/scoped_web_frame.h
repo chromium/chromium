@@ -6,6 +6,7 @@
 #define EXTENSIONS_RENDERER_SCOPED_WEB_FRAME_H_
 
 #include "base/macros.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -24,9 +25,11 @@ public:
 private:
  blink::WebLocalFrameClient frame_client_;
 
- // The webview and the frame are kept alive by the ScopedWebFrame
- // because they are not destructed unless ~ScopedWebFrame explicitly
- // closes the WebView.
+ // The `WebAgentGroupScheduler`, webview and the frame are kept alive by
+ // the ScopedWebFrame because they are not destructed unless
+ // ~ScopedWebFrame explicitly closes the WebView.
+ std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+     agent_group_scheduler_;
  blink::WebView* view_;
  blink::WebLocalFrame* frame_;
 

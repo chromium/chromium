@@ -235,6 +235,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     explicit QueueCreationParams(QueueType queue_type)
         : queue_type(queue_type),
           spec(NameForQueueType(queue_type)),
+          agent_group_scheduler(nullptr),
           frame_scheduler(nullptr),
           freeze_when_keep_active(false) {}
 
@@ -408,7 +409,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // Override base method to notify MainThreadScheduler about shutdown queue.
   void ShutdownTaskQueue() override;
 
-  AgentGroupSchedulerImpl* GetAgentGroupScheduler();
+  WebAgentGroupScheduler* GetAgentGroupScheduler();
 
   FrameSchedulerImpl* GetFrameScheduler() const;
 

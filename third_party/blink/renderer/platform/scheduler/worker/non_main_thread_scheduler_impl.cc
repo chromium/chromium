@@ -77,13 +77,6 @@ NonMainThreadSchedulerImpl::CreateAgentGroupScheduler() {
   return nullptr;
 }
 
-std::unique_ptr<blink::PageScheduler>
-NonMainThreadSchedulerImpl::CreatePageScheduler(
-    PageScheduler::Delegate* delegate) {
-  NOTREACHED();
-  return nullptr;
-}
-
 WebAgentGroupScheduler*
 NonMainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
   NOTREACHED();

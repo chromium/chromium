@@ -267,6 +267,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void UsageCountChromeLoadTimes(const WebString& metric) override;
   bool DispatchedPagehideAndStillHidden() const override;
   FrameScheduler* Scheduler() const override;
+  scheduler::WebAgentGroupScheduler* GetAgentGroupScheduler() const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
   WebInputMethodController* GetInputMethodController() override;
   WebAssociatedURLLoader* CreateAssociatedURLLoader(

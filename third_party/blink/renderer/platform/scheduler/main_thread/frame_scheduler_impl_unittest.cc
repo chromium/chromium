@@ -26,6 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
@@ -60,9 +61,11 @@ constexpr auto kShortDelay = base::TimeDelta::FromMilliseconds(10);
 // returns the PageScheduler as a PageSchedulerImpl.
 std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
     PageScheduler::Delegate* page_scheduler_delegate,
-    MainThreadSchedulerImpl* scheduler) {
+    MainThreadSchedulerImpl* scheduler,
+    WebAgentGroupScheduler& agent_group_scheduler) {
   std::unique_ptr<PageScheduler> page_scheduler =
-      scheduler->CreatePageScheduler(page_scheduler_delegate);
+      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(
+          page_scheduler_delegate);
   std::unique_ptr<PageSchedulerImpl> page_scheduler_impl(
       static_cast<PageSchedulerImpl*>(page_scheduler.release()));
   return page_scheduler_impl;
@@ -205,7 +208,9 @@ class FrameSchedulerImplTest : public testing::Test {
             nullptr, task_environment_.GetMainThreadTaskRunner(),
             task_environment_.GetMockTickClock()),
         base::nullopt);
-    page_scheduler_ = CreatePageScheduler(nullptr, scheduler_.get());
+    agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
+    page_scheduler_ =
+        CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
     frame_scheduler_delegate_ = std::make_unique<
         testing::StrictMock<FrameSchedulerDelegateForTesting>>();
     frame_scheduler_ = CreateFrameScheduler(
@@ -233,6 +238,7 @@ class FrameSchedulerImplTest : public testing::Test {
     throttleable_task_queue_.reset();
     frame_scheduler_.reset();
     page_scheduler_.reset();
+    agent_group_scheduler_.reset();
     scheduler_->Shutdown();
     scheduler_.reset();
     frame_scheduler_delegate_.reset();
@@ -409,6 +415,7 @@ class FrameSchedulerImplTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
+  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
   std::unique_ptr<PageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_;
   std::unique_ptr<testing::StrictMock<FrameSchedulerDelegateForTesting>>
@@ -2874,8 +2881,10 @@ class MockMainThreadScheduler : public MainThreadSchedulerImpl {
 
 TEST_F(FrameSchedulerImplTest, ReportFMPAndFCPForMainFrames) {
   MockMainThreadScheduler mock_main_thread_scheduler{task_environment_};
-  std::unique_ptr<PageSchedulerImpl> page_scheduler =
-      CreatePageScheduler(nullptr, &mock_main_thread_scheduler);
+  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler =
+      mock_main_thread_scheduler.CreateAgentGroupScheduler();
+  std::unique_ptr<PageSchedulerImpl> page_scheduler = CreatePageScheduler(
+      nullptr, &mock_main_thread_scheduler, *agent_group_scheduler);
 
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
       CreateFrameScheduler(page_scheduler.get(), nullptr, nullptr,
@@ -2888,13 +2897,16 @@ TEST_F(FrameSchedulerImplTest, ReportFMPAndFCPForMainFrames) {
 
   main_frame_scheduler = nullptr;
   page_scheduler = nullptr;
+  agent_group_scheduler = nullptr;
   mock_main_thread_scheduler.Shutdown();
 }
 
 TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
   MockMainThreadScheduler mock_main_thread_scheduler{task_environment_};
-  std::unique_ptr<PageSchedulerImpl> page_scheduler =
-      CreatePageScheduler(nullptr, &mock_main_thread_scheduler);
+  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler =
+      mock_main_thread_scheduler.CreateAgentGroupScheduler();
+  std::unique_ptr<PageSchedulerImpl> page_scheduler = CreatePageScheduler(
+      nullptr, &mock_main_thread_scheduler, *agent_group_scheduler);
 
   std::unique_ptr<FrameSchedulerImpl> subframe_scheduler =
       CreateFrameScheduler(page_scheduler.get(), nullptr, nullptr,
@@ -2907,6 +2919,7 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
 
   subframe_scheduler = nullptr;
   page_scheduler = nullptr;
+  agent_group_scheduler = nullptr;
   mock_main_thread_scheduler.Shutdown();
 }
 

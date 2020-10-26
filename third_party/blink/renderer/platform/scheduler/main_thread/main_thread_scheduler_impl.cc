@@ -2348,30 +2348,10 @@ MainThreadSchedulerImpl::CreateAgentGroupScheduler() {
   return agent_group_scheduler;
 }
 
-AgentGroupSchedulerImpl& MainThreadSchedulerImpl::EnsureAgentGroupScheduler() {
-  // TODO(crbug/1113102): Currently, MainThreadSchedulerImpl owns
-  // AgentGroupSchedulerImpl
-  if (!agent_group_scheduler_) {
-    agent_group_scheduler_ = std::make_unique<AgentGroupSchedulerImpl>(*this);
-    AddAgentGroupScheduler(agent_group_scheduler_.get());
-  }
-  return *agent_group_scheduler_.get();
-}
-
 void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
   DCHECK(agent_group_schedulers_.Contains(agent_group_scheduler));
   agent_group_schedulers_.erase(agent_group_scheduler);
-}
-
-std::unique_ptr<PageScheduler> MainThreadSchedulerImpl::CreatePageScheduler(
-    PageScheduler::Delegate* delegate) {
-  // TODO(crbug/1113102): we'll use the singleton AgentGroupScheduler instance
-  // tentatively.
-  auto page_scheduler = std::make_unique<PageSchedulerImpl>(
-      delegate, EnsureAgentGroupScheduler() /* tentative */);
-  AddPageScheduler(page_scheduler.get());
-  return page_scheduler;
 }
 
 WebAgentGroupScheduler*
@@ -2381,7 +2361,7 @@ MainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
 }
 
 void MainThreadSchedulerImpl::SetCurrentAgentGroupScheduler(
-    AgentGroupSchedulerImpl* agent_group_scheduler_impl) {
+    WebAgentGroupScheduler* agent_group_scheduler) {
   helper_.CheckOnValidThread();
   if (current_agent_group_scheduler_) {
     TRACE_EVENT_NESTABLE_ASYNC_END1(
@@ -2393,7 +2373,7 @@ void MainThreadSchedulerImpl::SetCurrentAgentGroupScheduler(
         TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
         "scheduler.thread_scope", this);
   }
-  current_agent_group_scheduler_ = agent_group_scheduler_impl;
+  current_agent_group_scheduler_ = agent_group_scheduler;
   if (current_agent_group_scheduler_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
         TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
@@ -2437,9 +2417,9 @@ const base::TickClock* MainThreadSchedulerImpl::tick_clock() const {
 }
 
 void MainThreadSchedulerImpl::AddAgentGroupScheduler(
-    AgentGroupSchedulerImpl* agent_group_scheduler_impl) {
+    AgentGroupSchedulerImpl* agent_group_scheduler) {
   bool is_new_entry =
-      agent_group_schedulers_.insert(agent_group_scheduler_impl).is_new_entry;
+      agent_group_schedulers_.insert(agent_group_scheduler).is_new_entry;
   DCHECK(is_new_entry);
 }
 

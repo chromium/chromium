@@ -11,6 +11,7 @@
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 
 namespace content {
 
@@ -81,7 +82,11 @@ AgentSchedulingGroup::AgentSchedulingGroup(
     // per-ASG task runners instead of default.
     : render_thread_(render_thread),
       receiver_(*this, std::move(receiver)),
-      host_remote_(std::move(host_remote)) {
+      host_remote_(std::move(host_remote)),
+      agent_group_scheduler_(
+          blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+              ->CreateAgentGroupScheduler()) {
+  DCHECK(agent_group_scheduler_);
   DCHECK(base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
 }
@@ -94,7 +99,11 @@ AgentSchedulingGroup::AgentSchedulingGroup(
     // per-ASG task runners instead of default.
     : render_thread_(render_thread),
       receiver_(*this, std::move(receiver)),
-      host_remote_(std::move(host_remote)) {
+      host_remote_(std::move(host_remote)),
+      agent_group_scheduler_(
+          blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+              ->CreateAgentGroupScheduler()) {
+  DCHECK(agent_group_scheduler_);
   DCHECK(!base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
 }

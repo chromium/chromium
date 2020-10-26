@@ -63,10 +63,6 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
     NOTREACHED();
     return nullptr;
   }
-  std::unique_ptr<PageScheduler> CreatePageScheduler(
-      PageScheduler::Delegate*) override {
-    return nullptr;
-  }
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override {
     return nullptr;
   }

@@ -56,6 +56,10 @@ struct ImeTextSpan;
 
 namespace blink {
 
+namespace scheduler {
+class WebAgentGroupScheduler;
+}  // namespace scheduler
+
 class FrameScheduler;
 class InterfaceRegistry;
 class WebAssociatedURLLoader;
@@ -605,7 +609,11 @@ class WebLocalFrame : public WebFrame {
 
   // Scheduling ---------------------------------------------------------------
 
+  // Returns FrameScheduler
   virtual FrameScheduler* Scheduler() const = 0;
+
+  // Returns AgentGroupScheduler
+  virtual scheduler::WebAgentGroupScheduler* GetAgentGroupScheduler() const = 0;
 
   // Task queues --------------------------------------------------------------
 

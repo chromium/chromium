@@ -48,9 +48,11 @@ void IncrementCounter(int* counter) {
 // returns the PageScheduler as a PageSchedulerImpl.
 std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
     PageScheduler::Delegate* page_scheduler_delegate,
-    MainThreadSchedulerImpl* scheduler) {
+    MainThreadSchedulerImpl* scheduler,
+    WebAgentGroupScheduler& agent_group_scheduler) {
   std::unique_ptr<PageScheduler> page_scheduler =
-      scheduler->CreatePageScheduler(page_scheduler_delegate);
+      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(
+          page_scheduler_delegate);
   std::unique_ptr<PageSchedulerImpl> page_scheduler_impl(
       static_cast<PageSchedulerImpl*>(page_scheduler.release()));
   return page_scheduler_impl;
@@ -114,9 +116,11 @@ class PageSchedulerImplTest : public testing::Test {
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, test_task_runner_, test_task_runner_->GetMockTickClock()),
         base::nullopt);
+    agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_delegate_ = std::make_unique<MockPageSchedulerDelegate>();
     page_scheduler_ =
-        CreatePageScheduler(page_scheduler_delegate_.get(), scheduler_.get());
+        CreatePageScheduler(page_scheduler_delegate_.get(), scheduler_.get(),
+                            *agent_group_scheduler_);
     frame_scheduler_ =
         CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
                              FrameScheduler::FrameType::kSubframe);
@@ -125,6 +129,7 @@ class PageSchedulerImplTest : public testing::Test {
   void TearDown() override {
     frame_scheduler_.reset();
     page_scheduler_.reset();
+    agent_group_scheduler_.reset();
     scheduler_->Shutdown();
     scheduler_.reset();
   }
@@ -271,6 +276,7 @@ class PageSchedulerImplTest : public testing::Test {
 
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
+  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
   std::unique_ptr<PageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_;
   std::unique_ptr<MockPageSchedulerDelegate> page_scheduler_delegate_;
@@ -388,7 +394,7 @@ TEST_F(PageSchedulerImplTest, RepeatingLoadingTask_PageInBackground) {
 
 TEST_F(PageSchedulerImplTest, RepeatingTimers_OneBackgroundOneForeground) {
   std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
-      CreatePageScheduler(nullptr, scheduler_.get());
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
       CreateFrameScheduler(page_scheduler2.get(), nullptr, nullptr,
                            FrameScheduler::FrameType::kSubframe);
@@ -1125,7 +1131,8 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
       budget_background_throttling_enabler(true);
 
   InitializeTrialParams();
-  page_scheduler_ = CreatePageScheduler(nullptr, scheduler_.get());
+  page_scheduler_ =
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   EXPECT_FALSE(page_scheduler_->IsCPUTimeThrottled());
 
   Vector<base::TimeTicks> run_times;
@@ -1189,7 +1196,7 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
 
   InitializeTrialParams();
   std::unique_ptr<PageSchedulerImpl> page_scheduler =
-      CreatePageScheduler(nullptr, scheduler_.get());
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
 
   Vector<base::TimeTicks> run_times;
 
@@ -1371,7 +1378,7 @@ TEST_F(PageSchedulerImplTest, KeepActiveSetForNewPages) {
   scheduler_->SetSchedulerKeepActive(true);
 
   std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
-      CreatePageScheduler(nullptr, scheduler_.get());
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
 
   EXPECT_TRUE(page_scheduler_->KeepActive());
   EXPECT_TRUE(page_scheduler2->KeepActive());

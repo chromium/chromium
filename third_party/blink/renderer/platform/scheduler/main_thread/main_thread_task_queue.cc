@@ -111,6 +111,7 @@ MainThreadTaskQueue::MainThreadTaskQueue(
       freeze_when_keep_active_(params.freeze_when_keep_active),
       web_scheduling_priority_(params.web_scheduling_priority),
       main_thread_scheduler_(main_thread_scheduler),
+      agent_group_scheduler_(params.agent_group_scheduler),
       frame_scheduler_(params.frame_scheduler) {
   if (GetTaskQueueImpl() && spec.should_notify_observers) {
     // TaskQueueImpl may be null for tests.
@@ -187,7 +188,7 @@ void MainThreadTaskQueue::ShutdownTaskQueue() {
   TaskQueue::ShutdownTaskQueue();
 }
 
-AgentGroupSchedulerImpl* MainThreadTaskQueue::GetAgentGroupScheduler() {
+WebAgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
   DCHECK(task_runner()->BelongsToCurrentThread());
   if (agent_group_scheduler_) {
     DCHECK(!frame_scheduler_);

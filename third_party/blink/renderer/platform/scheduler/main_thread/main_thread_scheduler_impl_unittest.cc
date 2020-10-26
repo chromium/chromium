@@ -70,9 +70,11 @@ using InputEventState = WebThreadScheduler::InputEventState;
 // returns the PageScheduler as a PageSchedulerImpl.
 std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
     PageScheduler::Delegate* page_scheduler_delegate,
-    ThreadSchedulerImpl* scheduler) {
+    ThreadSchedulerImpl* scheduler,
+    WebAgentGroupScheduler& agent_group_scheduler) {
   std::unique_ptr<PageScheduler> page_scheduler =
-      scheduler->CreatePageScheduler(page_scheduler_delegate);
+      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(
+          page_scheduler_delegate);
   std::unique_ptr<PageSchedulerImpl> page_scheduler_impl(
       static_cast<PageSchedulerImpl*>(page_scheduler.release()));
   return page_scheduler_impl;
@@ -302,11 +304,12 @@ void AnticipationTestTask(MainThreadSchedulerImpl* scheduler,
 
 class MockPageSchedulerImpl : public PageSchedulerImpl {
  public:
-  explicit MockPageSchedulerImpl(AgentGroupSchedulerImpl& agent_group_scheduler)
+  explicit MockPageSchedulerImpl(MainThreadSchedulerImpl* main_thread_scheduler,
+                                 AgentGroupSchedulerImpl& agent_group_scheduler)
       : PageSchedulerImpl(nullptr, agent_group_scheduler) {
     // This would normally be called by
     // MainThreadSchedulerImpl::CreatePageScheduler.
-    agent_group_scheduler.GetMainThreadScheduler().AddPageScheduler(this);
+    main_thread_scheduler->AddPageScheduler(this);
 
     ON_CALL(*this, IsWaitingForMainFrameContentfulPaint)
         .WillByDefault(Return(true));
@@ -443,8 +446,10 @@ class MainThreadSchedulerImplTest : public testing::Test {
     idle_task_runner_ = scheduler_->IdleTaskRunner();
     v8_task_runner_ = scheduler_->V8TaskQueue()->task_runner();
 
+    agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_ = std::make_unique<NiceMock<MockPageSchedulerImpl>>(
-        scheduler_->EnsureAgentGroupScheduler());
+        scheduler_.get(),
+        static_cast<AgentGroupSchedulerImpl&>(*agent_group_scheduler_));
     main_frame_scheduler_ =
         CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
                              FrameScheduler::FrameType::kMainFrame);
@@ -500,6 +505,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
     widget_scheduler_.reset();
     main_frame_scheduler_.reset();
     page_scheduler_.reset();
+    agent_group_scheduler_.reset();
     scheduler_->Shutdown();
     base::RunLoop().RunUntilIdle();
     scheduler_.reset();
@@ -943,6 +949,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
 
   std::unique_ptr<MainThreadSchedulerImplForTest> scheduler_;
+  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
   std::unique_ptr<MockPageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler_;
   std::unique_ptr<WebWidgetScheduler> widget_scheduler_;
@@ -3169,7 +3176,8 @@ TEST_F(MainThreadSchedulerImplTest, EnableVirtualTime) {
 }
 
 TEST_F(MainThreadSchedulerImplTest, EnableVirtualTimeAfterThrottling) {
-  auto page_scheduler = CreatePageScheduler(nullptr, scheduler_.get());
+  auto page_scheduler =
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler.get(), nullptr, nullptr,
@@ -3299,7 +3307,7 @@ TEST_F(MainThreadSchedulerImplTest, Tracing) {
   // traced value. This test checks that no internal checks fire during this.
 
   std::unique_ptr<PageSchedulerImpl> page_scheduler1 =
-      CreatePageScheduler(nullptr, scheduler_.get());
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   scheduler_->AddPageScheduler(page_scheduler1.get());
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
@@ -3307,7 +3315,7 @@ TEST_F(MainThreadSchedulerImplTest, Tracing) {
                            FrameScheduler::FrameType::kSubframe);
 
   std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
-      CreatePageScheduler(nullptr, scheduler_.get());
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   scheduler_->AddPageScheduler(page_scheduler2.get());
 
   CPUTimeBudgetPool* time_budget_pool =
@@ -3393,10 +3401,12 @@ TEST_F(MainThreadSchedulerImplTest, FreezesCompositorQueueWhenAllPagesFrozen) {
   page_scheduler_.reset();
 
   std::unique_ptr<PageScheduler> sched_1 =
-      scheduler_->CreatePageScheduler(nullptr);
+      agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
+          nullptr);
   sched_1->SetPageVisible(false);
   std::unique_ptr<PageScheduler> sched_2 =
-      scheduler_->CreatePageScheduler(nullptr);
+      agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
+          nullptr);
   sched_2->SetPageVisible(false);
 
   Vector<String> run_order;
@@ -3415,7 +3425,8 @@ TEST_F(MainThreadSchedulerImplTest, FreezesCompositorQueueWhenAllPagesFrozen) {
 
   run_order.clear();
   std::unique_ptr<PageScheduler> sched_3 =
-      scheduler_->CreatePageScheduler(nullptr);
+      agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
+          nullptr);
   sched_3->SetPageVisible(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("C2"));
@@ -3909,7 +3920,8 @@ class DisableNonMainTimerQueuesUntilFMPTest
 };
 
 TEST_F(DisableNonMainTimerQueuesUntilFMPTest, DisablesOnlyNonMainTimerQueue) {
-  auto page_scheduler = CreatePageScheduler(nullptr, scheduler_.get());
+  auto page_scheduler =
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
 
   NiceMock<MockFrameDelegate> frame_delegate{};
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
@@ -3932,7 +3944,8 @@ TEST_F(DisableNonMainTimerQueuesUntilFMPTest, DisablesOnlyNonMainTimerQueue) {
 
 TEST_F(DisableNonMainTimerQueuesUntilFMPTest,
        ShouldNotifyAgentStrategyOnInput) {
-  auto page_scheduler = CreatePageScheduler(nullptr, scheduler_.get());
+  auto page_scheduler =
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
 
   NiceMock<MockFrameDelegate> frame_delegate{};
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
@@ -3973,7 +3986,8 @@ class BestEffortNonMainQueuesUntilOnLoadTest
 };
 
 TEST_F(BestEffortNonMainQueuesUntilOnLoadTest, DeprioritizesAllNonMainQueues) {
-  auto page_scheduler = CreatePageScheduler(nullptr, scheduler_.get());
+  auto page_scheduler =
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
 
   NiceMock<MockFrameDelegate> frame_delegate{};
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
@@ -4006,7 +4020,8 @@ class BestEffortNonMainQueuesUntilOnFMPTimeoutTest
 TEST_F(BestEffortNonMainQueuesUntilOnFMPTimeoutTest,
        DeprioritizesNonMainQueues) {
   auto page_scheduler = CreatePageScheduler(
-      /* page_scheduler_delegate= */ nullptr, scheduler_.get());
+      /* page_scheduler_delegate= */ nullptr, scheduler_.get(),
+      *agent_group_scheduler_);
 
   NiceMock<MockFrameDelegate> frame_delegate{};
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler = CreateFrameScheduler(

@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -116,7 +117,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       bool is_inside_portal,
       bool compositing_enabled,
       WebViewImpl* opener,
-      mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle);
+      mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
 
   // All calls to Create() should be balanced with a call to Close(). This
   // synchronously destroys the WebViewImpl.
@@ -580,7 +582,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       bool is_inside_portal,
       bool does_composite,
       WebViewImpl* opener,
-      mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle);
+      mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
   ~WebViewImpl() override;
 
   HitTestResult HitTestResultForRootFramePos(const FloatPoint&);

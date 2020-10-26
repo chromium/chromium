@@ -51,6 +51,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool is_for_nested_main_frame,
       bool hidden,
       bool never_composited);
@@ -233,6 +234,8 @@ using CreateWebViewFrameWidgetFunction =
                                 widget_host,
                             CrossVariantMojoAssociatedReceiver<
                                 mojom::blink::WidgetInterfaceBase> widget,
+                            scoped_refptr<base::SingleThreadTaskRunner>
+                                task_runner,
                             bool is_for_nested_main_frame,
                             bool hidden,
                             bool never_composited);

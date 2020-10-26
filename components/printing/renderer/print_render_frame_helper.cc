@@ -46,6 +46,8 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_double_size.h"
 #include "third_party/blink/public/platform/web_size.h"
@@ -672,7 +674,7 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
       /*client=*/nullptr,
       /*is_hidden=*/false, /*is_inside_portal=*/false,
       /*compositing_enabled=*/false, /*opener=*/nullptr,
-      mojo::NullAssociatedReceiver());
+      mojo::NullAssociatedReceiver(), *source_frame.GetAgentGroupScheduler());
   web_view->GetSettings()->SetJavaScriptEnabled(true);
 
   class HeaderAndFooterClient final : public blink::WebLocalFrameClient {
@@ -839,6 +841,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   const bool should_print_backgrounds_;
   const bool should_print_selection_only_;
   bool is_printing_started_ = false;
+  blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
 
   base::WeakPtrFactory<PrepareFrameAndViewForPrint> weak_ptr_factory_{this};
 };
@@ -852,7 +855,8 @@ PrepareFrameAndViewForPrint::PrepareFrameAndViewForPrint(
       original_frame_(frame),
       node_to_print_(node),
       should_print_backgrounds_(params.should_print_backgrounds),
-      should_print_selection_only_(params.selection_only) {
+      should_print_selection_only_(params.selection_only),
+      agent_group_scheduler_(*frame->GetAgentGroupScheduler()) {
   TRACE_EVENT0("print", "PrepareFrameAndViewForPrint");
 
   mojom::PrintParamsPtr print_params = params.Clone();
@@ -947,7 +951,8 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*is_hidden=*/false,
       /*is_inside_portal=*/false,
       /*compositing_enabled=*/false,
-      /*opener=*/nullptr, mojo::NullAssociatedReceiver());
+      /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
+      agent_group_scheduler_);
   blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
       web_view, this, nullptr, base::UnguessableToken::Create(), nullptr);

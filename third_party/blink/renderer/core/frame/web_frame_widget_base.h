@@ -75,6 +75,7 @@ class CORE_EXPORT WebFrameWidgetBase
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool hidden,
       bool never_composited,
       bool is_for_child_local_root);

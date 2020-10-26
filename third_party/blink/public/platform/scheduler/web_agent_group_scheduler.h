@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
+class AgentGroupScheduler;
 namespace scheduler {
 
 // WebAgentGroupScheduler schedules per-AgentSchedulingGroup tasks.
@@ -18,7 +19,13 @@ namespace scheduler {
 // run on a different WebAgentGroupScheduler.
 class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
  public:
+  // Create a dummy AgentGroupScheduler only for testing
+  static std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+  CreateForTesting();
+
   virtual ~WebAgentGroupScheduler() = default;
+
+  virtual AgentGroupScheduler& AsAgentGroupScheduler() = 0;
 
   // Default task runner for an AgentSchedulingGroup.
   // Default task runners for different AgentSchedulingGroup would be

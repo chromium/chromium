@@ -166,6 +166,7 @@ WebFrameWidgetBase::WebFrameWidgetBase(
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root)
@@ -176,11 +177,9 @@ WebFrameWidgetBase::WebFrameWidgetBase(
                                                 never_composited,
                                                 is_for_child_local_root)),
       client_(&client) {
-  frame_widget_host_.Bind(
-      std::move(frame_widget_host),
-      ThreadScheduler::Current()->DeprecatedDefaultTaskRunner());
-  receiver_.Bind(std::move(frame_widget),
-                 ThreadScheduler::Current()->DeprecatedDefaultTaskRunner());
+  DCHECK(task_runner);
+  frame_widget_host_.Bind(std::move(frame_widget_host), task_runner);
+  receiver_.Bind(std::move(frame_widget), task_runner);
 }
 
 WebFrameWidgetBase::~WebFrameWidgetBase() {

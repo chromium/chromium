@@ -62,6 +62,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -503,9 +504,17 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   // initialization code between WebView and WebLocalFrame creation.
   frame_test_helpers::TestWebViewClient web_view_client;
   frame_test_helpers::TestWebWidgetClient web_widget_client;
-  WebViewImpl* web_view = static_cast<WebViewImpl*>(WebView::Create(
-      &web_view_client, /*is_hidden=*/false, /*is_inside_portal=*/false,
-      /*compositing_enabled=*/true, nullptr, mojo::NullAssociatedReceiver()));
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler =
+          blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+              ->CreateAgentGroupScheduler();
+  WebViewImpl* web_view = static_cast<WebViewImpl*>(
+      WebView::Create(&web_view_client,
+                      /*is_hidden=*/false,
+                      /*is_inside_portal=*/false,
+                      /*compositing_enabled=*/true,
+                      /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
+                      *agent_group_scheduler));
 
   EXPECT_NE(SK_ColorBLUE, web_view->BackgroundColor());
   // WebView does not have a frame yet, but we should still be able to set the
@@ -2735,9 +2744,14 @@ ExternalDateTimeChooser* WebViewTest::GetExternalDateTimeChooser(
 TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
   // Note: this test doesn't use WebViewHelper since WebViewHelper creates an
   // internal WebViewClient on demand if the supplied WebViewClient is null.
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler =
+          blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+              ->CreateAgentGroupScheduler();
   WebViewImpl* web_view = static_cast<WebViewImpl*>(WebView::Create(
-      nullptr, false, /*is_inside_portal=*/false,
-      /*compositing_enabled=*/false, nullptr, mojo::NullAssociatedReceiver()));
+      /*client=*/nullptr, /*is_hidden=*/false, /*is_inside_portal=*/false,
+      /*compositing_enabled=*/false, /*opener=*/nullptr,
+      mojo::NullAssociatedReceiver(), *agent_group_scheduler));
   frame_test_helpers::TestWebFrameClient web_frame_client;
   frame_test_helpers::TestWebWidgetClient web_widget_client;
   WebLocalFrame* local_frame =
@@ -4188,9 +4202,14 @@ TEST_F(WebViewTest, SetHasTouchEventConsumers) {
   // initialization code between WebView and WebLocalFrame creation.
   frame_test_helpers::TestWebViewClient web_view_client;
   frame_test_helpers::TestWebWidgetClient web_widget_client;
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler =
+          blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+              ->CreateAgentGroupScheduler();
   WebViewImpl* web_view_impl = static_cast<WebViewImpl*>(WebView::Create(
-      &web_view_client, /*is_hidden*/ false, /*is_inside_portal=*/false,
-      /*compositing_enabled=*/true, nullptr, mojo::NullAssociatedReceiver()));
+      &web_view_client, /*is_hidden=*/false, /*is_inside_portal=*/false,
+      /*compositing_enabled=*/true, /*opener=*/nullptr,
+      mojo::NullAssociatedReceiver(), *agent_group_scheduler));
 
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* frame =

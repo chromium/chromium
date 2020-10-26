@@ -112,7 +112,11 @@ class WorkerSchedulerProxyTest : public testing::Test {
                 task_environment_.GetMainThreadTaskRunner(),
                 task_environment_.GetMockTickClock()),
             base::nullopt)),
-        page_scheduler_(main_thread_scheduler_->CreatePageScheduler(nullptr)),
+        agent_group_scheduler_(
+            main_thread_scheduler_->CreateAgentGroupScheduler()),
+        page_scheduler_(
+            agent_group_scheduler_->AsAgentGroupScheduler().CreatePageScheduler(
+                nullptr)),
         frame_scheduler_(page_scheduler_->CreateFrameScheduler(
             nullptr,
             nullptr,
@@ -121,12 +125,14 @@ class WorkerSchedulerProxyTest : public testing::Test {
   ~WorkerSchedulerProxyTest() override {
     frame_scheduler_.reset();
     page_scheduler_.reset();
+    agent_group_scheduler_.reset();
     main_thread_scheduler_->Shutdown();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;
+  std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
   std::unique_ptr<PageScheduler> page_scheduler_;
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 };

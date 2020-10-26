@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 
 namespace IPC {
 class Listener;
@@ -57,6 +58,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   // This is virtual only for unit tests.
   virtual mojom::RouteProvider* GetRemoteRouteProvider();
+
+  blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler() {
+    return *agent_group_scheduler_;
+  }
 
  private:
   // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
@@ -151,6 +156,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
   mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
                               int32_t>
       associated_interface_provider_receivers_;
+
+  // A dedicated scheduler for this AgentSchedulingGroup.
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler_;
 };
 
 }  // namespace content

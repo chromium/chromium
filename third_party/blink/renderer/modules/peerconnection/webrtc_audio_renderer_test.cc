@@ -21,6 +21,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -133,12 +134,16 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
 // Tests crash on Android if these are defined. https://crbug.com/1119689
 #if !defined(OS_ANDROID)
         ,
+        agent_group_scheduler_(
+            blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+                ->CreateAgentGroupScheduler()),
         web_view_(blink::WebView::Create(/*client=*/nullptr,
                                          /*is_hidden=*/false,
                                          /*is_inside_portal=*/false,
                                          /*compositing_enabled=*/false,
-                                         nullptr,
-                                         mojo::NullAssociatedReceiver())),
+                                         /*opener=*/nullptr,
+                                         mojo::NullAssociatedReceiver(),
+                                         *agent_group_scheduler_)),
         web_local_frame_(blink::WebLocalFrame::CreateMainFrame(
             web_view_,
             &web_local_frame_client_,
@@ -205,6 +210,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
     renderer_ = nullptr;
     stream_descriptor_ = nullptr;
     source_.reset();
+    agent_group_scheduler_ = nullptr;
     blink::WebHeap::CollectAllGarbageForTesting();
   }
 
@@ -214,6 +220,8 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
       base::UnguessableToken::Create();
   std::unique_ptr<MockAudioRendererSource> source_;
   Persistent<MediaStreamDescriptor> stream_descriptor_;
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler_;
   WebView* web_view_ = nullptr;
   WebLocalFrameClient web_local_frame_client_;
   WebLocalFrame* web_local_frame_ = nullptr;

@@ -55,6 +55,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
@@ -332,13 +333,20 @@ class WebMediaPlayerImplTest
       private blink::WebTestingSupport::WebScopedMockScrollbars {
  public:
   WebMediaPlayerImplTest()
+      : WebMediaPlayerImplTest(
+            blink::scheduler::WebThreadScheduler::MainThreadScheduler()
+                ->CreateAgentGroupScheduler()) {}
+  explicit WebMediaPlayerImplTest(
+      std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+          agent_group_scheduler)
       : media_thread_("MediaThreadForTest"),
         web_view_(blink::WebView::Create(/*client=*/nullptr,
                                          /*is_hidden=*/false,
                                          /*is_inside_portal=*/false,
                                          /*compositing_enabled=*/false,
-                                         nullptr,
-                                         mojo::NullAssociatedReceiver())),
+                                         /*opener=*/nullptr,
+                                         mojo::NullAssociatedReceiver(),
+                                         *agent_group_scheduler)),
         web_local_frame_(blink::WebLocalFrame::CreateMainFrame(
             web_view_,
             &web_frame_client_,
@@ -348,7 +356,8 @@ class WebMediaPlayerImplTest
         context_provider_(viz::TestContextProvider::Create()),
         audio_parameters_(TestAudioParameters::Normal()),
         memory_dump_manager_(
-            base::trace_event::MemoryDumpManager::CreateInstanceForTesting()) {
+            base::trace_event::MemoryDumpManager::CreateInstanceForTesting()),
+        agent_group_scheduler_(std::move(agent_group_scheduler)) {
     media_thread_.StartAndWaitForTesting();
   }
 
@@ -382,6 +391,8 @@ class WebMediaPlayerImplTest
     CycleThreads();
 
     web_view_->Close();
+
+    agent_group_scheduler_ = nullptr;
   }
 
  protected:
@@ -887,6 +898,9 @@ class WebMediaPlayerImplTest
   std::unique_ptr<WebMediaPlayerImpl> wmpi_;
 
   std::unique_ptr<base::trace_event::MemoryDumpManager> memory_dump_manager_;
+
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebMediaPlayerImplTest);

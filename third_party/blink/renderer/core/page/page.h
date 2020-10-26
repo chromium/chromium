@@ -30,6 +30,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -117,7 +118,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   static Page* CreateNonOrdinary(PageClients& pages_clients);
 
   // An "ordinary" page is a fully-featured page owned by a web view.
-  static Page* CreateOrdinary(PageClients&, Page* opener);
+  static Page* CreateOrdinary(
+      PageClients&,
+      Page* opener,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
 
   explicit Page(PageClients&);
   ~Page() override;
@@ -391,6 +395,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Notify |plugins_changed_observers_| that plugins have changed.
   void NotifyPluginsChanged() const;
 
+  void SetAgentGroupSchedulerForNonOrdinary(
+      std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+          agent_group_scheduler);
   void SetPageScheduler(std::unique_ptr<PageScheduler>);
 
   void InvalidateColorScheme();
@@ -483,6 +490,12 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // A handle to notify the scheduler whether this page has other related
   // pages or not.
   FrameScheduler::SchedulingAffectingFeatureHandle has_related_pages_;
+
+  // A non-ordinary Page has its own AgentGroupScheduler. This field
+  // needs to be declared before |page_scheduler_| to make sure it
+  // outlives it.
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler_for_non_ordinary_;
 
   std::unique_ptr<PageScheduler> page_scheduler_;
 

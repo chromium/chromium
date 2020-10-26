@@ -67,11 +67,6 @@ SimpleThreadScheduler::CreateAgentGroupScheduler() {
   return nullptr;
 }
 
-std::unique_ptr<PageScheduler> SimpleThreadScheduler::CreatePageScheduler(
-    PageScheduler::Delegate* delegate) {
-  return nullptr;
-}
-
 WebAgentGroupScheduler* SimpleThreadScheduler::GetCurrentAgentGroupScheduler() {
   return nullptr;
 }
