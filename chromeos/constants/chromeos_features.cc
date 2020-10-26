@@ -435,6 +435,11 @@ const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
 // ChromeOS Media App. https://crbug.com/996088.
 const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether known extensions for RAW image formats are handled by the ChromeOS
+// Media App.
+const base::Feature kMediaAppHandlesRaw{"MediaAppHandlesRaw",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables a unique URL for each path in CrOS settings.
 // This allows deep linking to individual settings, i.e. in settings search.
 const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",

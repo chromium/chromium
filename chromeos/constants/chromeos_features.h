@@ -196,6 +196,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kLoginDisplayPasswordButton;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kMediaApp;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kMediaAppHandlesRaw;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kMinimumChromeVersion;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOsSettingsDeepLinking;

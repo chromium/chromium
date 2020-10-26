@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/string16.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -16,6 +17,38 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// FileHandler configuration.
+// See https://github.com/WICG/file-handling/blob/master/explainer.md.
+constexpr std::tuple<const char*, const char*> kFileHandlers[] = {
+    {"image/*", ""},
+    {"video/*", ""},
+
+    // Raw images. Note the MIME type doesn't really matter here. MIME sniffing
+    // logic in the files app tends to detect image/tiff, but sniffing is only
+    // done for "local" files, so the extension list is needed in addition to
+    // the "image/*" wildcard above. The MIME type is never sent to the web app.
+    {"image/tiff", ".arw,.cr2,.dng,.nef,.nrw,.orf,.raf,.rw2"},
+};
+
+using AcceptMap = decltype(blink::Manifest::FileHandler::accept);
+
+// Converts the kFileHandlers constexpr into the std::map needed to populate the
+// web app manifest's `accept` property.
+AcceptMap MakeHandlerAccept() {
+  AcceptMap result;
+  const base::string16 separator = base::ASCIIToUTF16(",");
+  for (const auto& handler : kFileHandlers) {
+    result[base::ASCIIToUTF16(std::get<0>(handler))] =
+        base::SplitString(base::ASCIIToUTF16(std::get<1>(handler)), separator,
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  }
+  return result;
+}
+
+}  // namespace
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
@@ -45,8 +78,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   blink::Manifest::FileHandler file_handler;
   file_handler.action = GURL(chromeos::kChromeUIMediaAppURL);
   file_handler.name = base::UTF8ToUTF16("Media File");
-  file_handler.accept[base::UTF8ToUTF16("image/*")] = {};
-  file_handler.accept[base::UTF8ToUTF16("video/*")] = {};
-  info->file_handlers.push_back(file_handler);
+  file_handler.accept = MakeHandlerAccept();
+  info->file_handlers.push_back(std::move(file_handler));
   return info;
 }

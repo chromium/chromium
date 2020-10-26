@@ -47,6 +47,7 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/drive/drive_api_util.h"
 #include "components/prefs/pref_service.h"
@@ -170,6 +171,20 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
   tasks->swap(filtered);
 }
 
+// Returns whether |path| is a RAW image file according to its extension. Note
+// that since none of the extensions of interest are "known" mime types (per
+// net/mime_util.cc), it's enough to simply check the extension rather than
+// using MimeTypeCollector. TODO(crbug/1030935): Remove this.
+bool IsRawImage(const base::FilePath& path) {
+  constexpr const char* kRawExtensions[] = {".arw", ".cr2", ".dng", ".nef",
+                                            ".nrw", ".orf", ".raf", ".rw2"};
+  for (const char* extension : kRawExtensions) {
+    if (path.MatchesExtension(extension))
+      return true;
+  }
+  return false;
+}
+
 // Adjusts |tasks| to reflect the product decision that chrome://media-app
 // should behave more like a user-installed app than a fallback handler.
 // Specifically, only apps set as the default in user prefs should be preferred
@@ -192,13 +207,15 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   if (media_app_task == tasks->end())
     return;
 
-  // TODO(crbug/1030935): Once Media app supports RAW files, delete the
-  // IsRawImage early exit. This is necessary while Gallery is still the
-  // better option for RAW files. The any_non_image check can be removed once
-  // video player functionality of the Media App is fully polished.
+  // TODO(crbug/1030935): Delete the IsRawImage function and early exit when
+  // kMediaAppHandlesRaw is removed. The any_non_image check can be removed once
+  // video player functionality of the Media App is fully polished
+  // (b/171154148).
   bool any_non_image = false;
   for (const auto& entry : entries) {
-    if (IsRawImage(entry.path)) {
+    if (!base::FeatureList::IsEnabled(
+            chromeos::features::kMediaAppHandlesRaw) &&
+        IsRawImage(entry.path)) {
       tasks->erase(media_app_task);
       return;  // Let Gallery handle it.
     }
@@ -912,16 +929,6 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
       return;
     }
   }
-}
-
-bool IsRawImage(const base::FilePath& path) {
-  constexpr const char* kRawExtensions[] = {".arw", ".cr2", ".dng", ".nef",
-                                            ".nrw", ".orf", ".raf", ".rw2"};
-  for (const char* extension : kRawExtensions) {
-    if (path.MatchesExtension(extension))
-      return true;
-  }
-  return false;
 }
 
 bool IsHtmlFile(const base::FilePath& path) {
