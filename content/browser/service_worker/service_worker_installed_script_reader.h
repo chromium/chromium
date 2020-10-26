@@ -30,7 +30,7 @@ class ServiceWorkerInstalledScriptReader
   enum class FinishedReason {
     kNotFinished = 0,
     kSuccess = 1,
-    kNoHttpInfoError = 2,
+    kNoResponseHeadError = 2,
     kCreateDataPipeError = 3,
     kConnectionError = 4,
     kResponseReaderError = 5,

@@ -186,7 +186,8 @@ void ServiceWorkerInstalledScriptsSender::Abort(
     case ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess:
       NOTREACHED();
       return;
-    case ServiceWorkerInstalledScriptReader::FinishedReason::kNoHttpInfoError:
+    case ServiceWorkerInstalledScriptReader::FinishedReason::
+        kNoResponseHeadError:
     case ServiceWorkerInstalledScriptReader::FinishedReason::
         kResponseReaderError:
       owner_->SetStartWorkerStatusCode(

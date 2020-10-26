@@ -112,12 +112,12 @@ void ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete(
   DCHECK(client_);
   TRACE_EVENT0(
       "ServiceWorker",
-      "ServiceWorkerInstalledScriptReader::OnReadResponseInfoComplete");
+      "ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete");
   if (!response_head) {
     DCHECK_LT(result, 0);
     ServiceWorkerMetrics::CountReadResponseResult(
         ServiceWorkerMetrics::READ_HEADERS_ERROR);
-    CompleteSendIfNeeded(FinishedReason::kNoHttpInfoError);
+    CompleteSendIfNeeded(FinishedReason::kNoResponseHeadError);
     return;
   }
 

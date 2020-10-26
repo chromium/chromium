@@ -92,7 +92,7 @@ void ServiceWorkerInstalledScriptLoader::OnFinished(FinishedReason reason) {
     case FinishedReason::kCreateDataPipeError:
       net_error = net::ERR_INSUFFICIENT_RESOURCES;
       break;
-    case FinishedReason::kNoHttpInfoError:
+    case FinishedReason::kNoResponseHeadError:
     case FinishedReason::kResponseReaderError:
       net_error = net::ERR_FILE_NOT_FOUND;
       break;
