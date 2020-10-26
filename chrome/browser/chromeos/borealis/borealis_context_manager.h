@@ -22,6 +22,7 @@ class BorealisContextManager : public KeyedService {
     kMountFailed = 1,
     kDiskImageFailed = 2,
     kStartVmFailed = 3,
+    kAwaitBorealisStartupFailed = 4,
   };
 
   // An attempt to launch borealis. If the launch succeeds, holds a reference to

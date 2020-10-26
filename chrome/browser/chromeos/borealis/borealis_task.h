@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_launch_watcher.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
@@ -82,8 +83,18 @@ class StartBorealisVm : public BorealisTask {
 // Waits for the startup daemon to signal completion.
 class AwaitBorealisStartup : public BorealisTask {
  public:
+  AwaitBorealisStartup(Profile* profile, std::string vm_name);
+  ~AwaitBorealisStartup() override;
   void Run(BorealisContext* context,
            CompletionStatusCallback callback) override;
+  BorealisLaunchWatcher& GetWatcherForTesting();
+
+ private:
+  void OnAwaitBorealisStartup(BorealisContext* context,
+                              CompletionStatusCallback callback,
+                              base::Optional<std::string> container);
+  BorealisLaunchWatcher watcher_;
+  base::WeakPtrFactory<AwaitBorealisStartup> weak_factory_{this};
 };
 
 }  // namespace borealis

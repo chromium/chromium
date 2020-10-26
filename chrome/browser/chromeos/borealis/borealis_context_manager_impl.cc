@@ -23,6 +23,8 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "Disk Image Failed";
     case borealis::BorealisContextManager::kStartVmFailed:
       return stream << "Start VM Failed";
+    case borealis::BorealisContextManager::kAwaitBorealisStartupFailed:
+      return stream << "Await Borealis Startup Failed";
   }
 }
 
@@ -50,11 +52,15 @@ void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
 
 base::queue<std::unique_ptr<BorealisTask>>
 BorealisContextManagerImpl::GetTasks() {
+  // We use a hard-coded name. When multi-instance becomes a feature we'll
+  // need to determine the name instead.
+  context_.set_vm_name("borealis");
   base::queue<std::unique_ptr<BorealisTask>> task_queue;
   task_queue.push(std::make_unique<MountDlc>());
   task_queue.push(std::make_unique<CreateDiskImage>());
   task_queue.push(std::make_unique<StartBorealisVm>());
-  task_queue.push(std::make_unique<AwaitBorealisStartup>());
+  task_queue.push(std::make_unique<AwaitBorealisStartup>(context_.profile(),
+                                                         context_.vm_name()));
   return task_queue;
 }
 

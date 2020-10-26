@@ -48,9 +48,6 @@ CreateDiskImage::~CreateDiskImage() = default;
 
 void CreateDiskImage::Run(BorealisContext* context,
                           CompletionStatusCallback callback) {
-  // We use a hard-coded name. When multi-instance becomes a feature we'll
-  // need to determine the name instead.
-  context->set_vm_name("borealis");
   vm_tools::concierge::CreateDiskImageRequest request;
   request.set_disk_path(context->vm_name());
   request.set_cryptohome_id(
@@ -147,12 +144,32 @@ void StartBorealisVm::OnStartBorealisVm(
           base::NumberToString(response->status()) + ")");
 }
 
+AwaitBorealisStartup::AwaitBorealisStartup(Profile* profile,
+                                           std::string vm_name)
+    : watcher_(profile, vm_name) {}
+AwaitBorealisStartup::~AwaitBorealisStartup() = default;
+
 void AwaitBorealisStartup::Run(BorealisContext* context,
                                CompletionStatusCallback callback) {
-  // TODO(b/170696557): Refactor to use the LaunchWatcher which is not finished
-  // yet. In our case the name is hard-coded, so we can use that.
-  context->set_container_name("penguin");
-  std::move(callback).Run(BorealisContextManager::kSuccess, "");
+  watcher_.AwaitLaunch(
+      base::BindOnce(&AwaitBorealisStartup::OnAwaitBorealisStartup,
+                     weak_factory_.GetWeakPtr(), context, std::move(callback)));
 }
 
+BorealisLaunchWatcher& AwaitBorealisStartup::GetWatcherForTesting() {
+  return watcher_;
+}
+
+void AwaitBorealisStartup::OnAwaitBorealisStartup(
+    BorealisContext* context,
+    CompletionStatusCallback callback,
+    base::Optional<std::string> container) {
+  if (!container) {
+    std::move(callback).Run(BorealisContextManager::kAwaitBorealisStartupFailed,
+                            "Awaiting for Borealis launch failed: timed out");
+    return;
+  }
+  context->set_container_name(container.value());
+  std::move(callback).Run(BorealisContextManager::kSuccess, "");
+}
 }  // namespace borealis
