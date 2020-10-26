@@ -38,6 +38,7 @@ from .callback_interface import generate_callback_interfaces
 from .dictionary import generate_dictionaries
 from .enumeration import generate_enumerations
 from .interface import generate_interfaces
+from .namespace import generate_namespaces
 from .task_queue import TaskQueue
 
 

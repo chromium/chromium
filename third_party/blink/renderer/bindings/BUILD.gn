@@ -225,6 +225,9 @@ generate_bindings("generate_bindings_all") {
                generated_interface_sources_in_modules +
                generated_interface_sources_for_testing_in_core +
                generated_interface_sources_for_testing_in_modules
+    targets += [ "namespace" ]
+    outputs += generated_namespace_sources_in_core +
+               generated_namespace_sources_in_modules
   }
 }
 

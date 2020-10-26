@@ -160,7 +160,7 @@ void V8SetReflectedNullableDOMStringAttribute(
 
 namespace bindings {
 
-void SetupIDLInterfaceTemplates(
+void SetupIDLInterfaceTemplate(
     v8::Isolate* isolate,
     const WrapperTypeInfo* wrapper_type_info,
     v8::Local<v8::ObjectTemplate> instance_template,
@@ -186,7 +186,12 @@ void SetupIDLNamespaceTemplate(
     v8::Isolate* isolate,
     const WrapperTypeInfo* wrapper_type_info,
     v8::Local<v8::ObjectTemplate> interface_template) {
-  // TODO(yukishiino): To be implemented.
+  v8::Local<v8::String> class_string =
+      V8AtomicString(isolate, wrapper_type_info->interface_name);
+
+  interface_template->Set(
+      v8::Symbol::GetToStringTag(isolate), class_string,
+      static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontEnum));
 }
 
 void SetupIDLCallbackInterfaceTemplate(

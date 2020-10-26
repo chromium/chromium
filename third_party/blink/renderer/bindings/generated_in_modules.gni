@@ -2217,6 +2217,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_world_tracking_state.h",
 ]
 
+generated_namespace_sources_in_modules = []
+
 # Direct Sockets
 if (!is_android) {
   generated_dictionary_sources_in_modules += [

@@ -99,7 +99,7 @@ void V8SetReflectedNullableDOMStringAttribute(
 
 namespace bindings {
 
-CORE_EXPORT void SetupIDLInterfaceTemplates(
+CORE_EXPORT void SetupIDLInterfaceTemplate(
     v8::Isolate* isolate,
     const WrapperTypeInfo* wrapper_type_info,
     v8::Local<v8::ObjectTemplate> instance_template,

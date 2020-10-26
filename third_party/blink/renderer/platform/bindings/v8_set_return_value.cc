@@ -43,7 +43,7 @@ v8::Local<v8::Object> CreatePropertyDescriptorObject(
   return object;
 }
 
-v8::Local<v8::Value> GetInterfaceObjectExposedOnGlobal(
+v8::Local<v8::Value> GetExposedInterfaceObject(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
     const WrapperTypeInfo* wrapper_type_info) {
@@ -53,7 +53,35 @@ v8::Local<v8::Value> GetInterfaceObjectExposedOnGlobal(
       ScriptState::From(creation_context->CreationContext());
   if (!script_state->ContextIsValid())
     return v8::Undefined(isolate);
+
   return script_state->PerContextData()->ConstructorForType(wrapper_type_info);
+}
+
+v8::Local<v8::Value> GetExposedNamespaceObject(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> creation_context,
+    const WrapperTypeInfo* wrapper_type_info) {
+  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
+      isolate, "Blink_GetInterfaceObjectExposedOnGlobal");
+  ScriptState* script_state =
+      ScriptState::From(creation_context->CreationContext());
+  if (!script_state->ContextIsValid())
+    return v8::Undefined(isolate);
+
+  v8::Context::Scope v8_context_scope(script_state->GetContext());
+  v8::Local<v8::ObjectTemplate> namespace_template =
+      wrapper_type_info->GetV8ClassTemplate(isolate, script_state->World())
+          .As<v8::ObjectTemplate>();
+  v8::Local<v8::Object> namespace_object =
+      namespace_template->NewInstance(script_state->GetContext())
+          .ToLocalChecked();
+  wrapper_type_info->InstallConditionalFeatures(
+      script_state->GetContext(), script_state->World(),
+      v8::Local<v8::Object>(),  // instance_object
+      v8::Local<v8::Object>(),  // prototype_object
+      namespace_object,         // interface_object
+      namespace_template);
+  return namespace_object;
 }
 
 }  // namespace bindings

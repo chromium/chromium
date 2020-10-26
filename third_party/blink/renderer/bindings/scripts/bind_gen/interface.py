@@ -2024,11 +2024,18 @@ def make_exposed_construct_callback_def(cg_context, function_name):
     func_def = _make_empty_callback_def(cg_context, function_name)
     body = func_def.body
 
+    if (cg_context.exposed_construct.is_interface
+            or cg_context.exposed_construct.is_callback_interface):
+        tag = "bindings::V8ReturnValue::kInterfaceObject"
+    elif cg_context.exposed_construct.is_namespace:
+        tag = "bindings::V8ReturnValue::kNamespaceObject"
+    else:
+        assert False
     v8_set_return_value = _format(
         "bindings::V8SetReturnValue"
-        "(${info}, {}::GetWrapperTypeInfo(), "
-        "bindings::V8ReturnValue::kInterfaceObject);",
-        v8_bridge_class_name(cg_context.exposed_construct))
+        "(${info}, {bridge}::GetWrapperTypeInfo(), {tag});",
+        bridge=v8_bridge_class_name(cg_context.exposed_construct),
+        tag=tag)
     body.extend([
         make_runtime_call_timer_scope(cg_context),
         make_bindings_trace_event(cg_context),
@@ -4215,6 +4222,10 @@ def bind_installer_local_vars(code_node, cg_context):
         ])
     elif cg_context.namespace:
         local_vars.extend([
+            S("namespace_object_template",
+              ("v8::Local<v8::ObjectTemplate> "
+               "${namespace_object_template} = "
+               "${interface_template}.As<v8::ObjectTemplate>();")),
             S("instance_template",
               "v8::Local<v8::Template> ${instance_template};"),
             S("prototype_template",
@@ -5135,7 +5146,7 @@ def make_install_interface_template(cg_context, function_name, class_name,
 
     if cg_context.interface:
         body.extend([
-            T("bindings::SetupIDLInterfaceTemplates("
+            T("bindings::SetupIDLInterfaceTemplate("
               "${isolate}, ${wrapper_type_info}, "
               "${instance_object_template}, "
               "${prototype_object_template}, "
@@ -5147,7 +5158,7 @@ def make_install_interface_template(cg_context, function_name, class_name,
         body.extend([
             T("bindings::SetupIDLNamespaceTemplate("
               "${isolate}, ${wrapper_type_info}, "
-              "${interface_function_template});"),
+              "${namespace_object_template});"),
             EmptyNode(),
         ])
     elif cg_context.callback_interface:
@@ -5508,7 +5519,7 @@ def make_install_properties(cg_context, function_name, class_name,
     ])
 
     if (is_per_context_install
-            and "Global" in cg_context.interface.extended_attributes):
+            and "Global" in cg_context.class_like.extended_attributes):
         body.extend([
             CxxLikelyIfNode(cond="${instance_object}.IsEmpty()",
                             body=[
@@ -5878,7 +5889,7 @@ def make_cross_origin_property_callbacks_and_install_node(
     install_node = SequenceNode()
 
     CROSS_ORIGIN_INTERFACES = ("Window", "Location")
-    if cg_context.interface.identifier not in CROSS_ORIGIN_INTERFACES:
+    if cg_context.class_like.identifier not in CROSS_ORIGIN_INTERFACES:
         return callback_defs, install_node
     props = cg_context.interface.indexed_and_named_properties
 
@@ -6300,6 +6311,9 @@ def make_v8_context_snapshot_api(cg_context, component, attribute_entries,
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(component, web_idl.Component)
 
+    if not cg_context.interface:
+        return None, None
+
     derived_interfaces = cg_context.interface.deriveds
     derived_names = map(lambda interface: interface.identifier,
                         derived_interfaces)
@@ -6472,10 +6486,10 @@ return ${class_name}::{func}(
 # ----------------------------------------------------------------------------
 
 
-def _collect_include_headers(interface):
-    assert isinstance(interface, web_idl.Interface)
+def _collect_include_headers(class_like):
+    assert isinstance(class_like, (web_idl.Interface, web_idl.Namespace))
 
-    headers = set(interface.code_generator_info.blink_headers)
+    headers = set(class_like.code_generator_info.blink_headers)
 
     def collect_from_idl_type(idl_type):
         idl_type.apply_to_all_composing_elements(add_include_headers)
@@ -6493,7 +6507,7 @@ def _collect_include_headers(interface):
                 raise StopIteration(idl_type.syntactic_form)
 
             headers.add(PathManager(type_def_obj).api_path(ext="h"))
-            if isinstance(type_def_obj, web_idl.Interface):
+            if type_def_obj.is_interface or type_def_obj.is_namespace:
                 headers.add(PathManager(type_def_obj).blink_path(ext="h"))
             raise StopIteration(idl_type.syntactic_form)
 
@@ -6501,23 +6515,24 @@ def _collect_include_headers(interface):
         if union_def_obj is not None:
             headers.add(PathManager(union_def_obj).api_path(ext="h"))
 
-    for attribute in interface.attributes:
+    for attribute in class_like.attributes:
         collect_from_idl_type(attribute.idl_type)
-    for constructor in interface.constructors:
+    for constructor in class_like.constructors:
         for argument in constructor.arguments:
             collect_from_idl_type(argument.idl_type)
-    for operation in interface.operations:
+    for operation in class_like.operations:
         collect_from_idl_type(operation.return_type)
         for argument in operation.arguments:
             collect_from_idl_type(argument.idl_type)
 
-    for exposed_construct in interface.exposed_constructs:
-        headers.add(PathManager(exposed_construct).api_path(ext="h"))
-    for legacy_window_alias in interface.legacy_window_aliases:
-        headers.add(
-            PathManager(legacy_window_alias.original).api_path(ext="h"))
+    if class_like.is_interface:
+        for exposed_construct in class_like.exposed_constructs:
+            headers.add(PathManager(exposed_construct).api_path(ext="h"))
+        for legacy_window_alias in class_like.legacy_window_aliases:
+            headers.add(
+                PathManager(legacy_window_alias.original).api_path(ext="h"))
 
-    path_manager = PathManager(interface)
+    path_manager = PathManager(class_like)
     headers.discard(path_manager.api_path(ext="h"))
     headers.discard(path_manager.impl_path(ext="h"))
 
@@ -6525,32 +6540,38 @@ def _collect_include_headers(interface):
     # [ImplementedAs=LocalDOMWindow] instead of [ImplementedAs=DOMWindow], and
     # [CrossOrigin] properties should be implemented specifically with
     # DOMWindow class.  Then, we'll have less hacks.
-    if interface.identifier == "Window":
+    if class_like.identifier == "Window":
         headers.add("third_party/blink/renderer/core/frame/local_dom_window.h")
 
     return headers
 
 
-def generate_interface(interface_identifier):
-    assert isinstance(interface_identifier, web_idl.Identifier)
+def generate_class_like(class_like):
+    assert isinstance(class_like, (web_idl.Interface, web_idl.Namespace))
 
-    web_idl_database = package_initializer().web_idl_database()
-    interface = web_idl_database.find(interface_identifier)
-
-    path_manager = PathManager(interface)
+    path_manager = PathManager(class_like)
     api_component = path_manager.api_component
     impl_component = path_manager.impl_component
     is_cross_components = path_manager.is_cross_components
-    for_testing = interface.code_generator_info.for_testing
+    for_testing = class_like.code_generator_info.for_testing
 
     # Class names
-    api_class_name = v8_bridge_class_name(interface)
+    api_class_name = v8_bridge_class_name(class_like)
     if is_cross_components:
         impl_class_name = "{}::Impl".format(api_class_name)
     else:
         impl_class_name = api_class_name
 
-    cg_context = CodeGenContext(interface=interface, class_name=api_class_name)
+    interface = None
+    namespace = None
+    if class_like.is_interface:
+        interface = class_like
+        cg_context = CodeGenContext(interface=interface,
+                                    class_name=api_class_name)
+    elif class_like.is_namespace:
+        namespace = class_like
+        cg_context = CodeGenContext(namespace=namespace,
+                                    class_name=api_class_name)
 
     # Filepaths
     api_header_path = path_manager.api_path(ext="h")
@@ -6592,13 +6613,13 @@ def generate_interface(interface_identifier):
         cg_context.class_name,
         base_class_names=[
             _format("bindings::V8InterfaceBridge<${class_name}, {}>",
-                    blink_class_name(interface)),
+                    blink_class_name(class_like)),
         ],
         final=True,
         export=component_export(api_component, for_testing))
     api_class_def.set_base_template_vars(cg_context.template_bindings())
     api_class_def.bottom_section.append(
-        TextNode("friend class {};".format(blink_class_name(interface))))
+        TextNode("friend class {};".format(blink_class_name(class_like))))
     if is_cross_components:
         impl_class_def = CxxClassDefNode(impl_class_name,
                                          final=True,
@@ -6615,10 +6636,10 @@ def generate_interface(interface_identifier):
 
     # Constants
     constants_def = None
-    if interface.constants:
+    if class_like.constants:
         constants_def = CxxClassDefNode(name="Constant", final=True)
         constants_def.top_section.append(TextNode("STATIC_ONLY(Constant);"))
-        for constant in interface.constants:
+        for constant in class_like.constants:
             cgc = cg_context.make_copy(constant=constant)
             constants_def.public_section.append(
                 make_constant_constant_def(cgc, constant_name(cgc)))
@@ -6638,11 +6659,11 @@ def generate_interface(interface_identifier):
                 return_type="void",
                 static=True))
 
-    if interface.identifier == "HTMLAllCollection":
+    if class_like.identifier == "HTMLAllCollection":
         add_custom_callback_impl_decl(
             name=name_style.func("LegacyCallCustom"),
             arg_decls=["const v8::FunctionCallbackInfo<v8::Value>&"])
-    for attribute in interface.attributes:
+    for attribute in class_like.attributes:
         custom_values = attribute.extended_attributes.values_of("Custom")
         is_cross_origin = "CrossOrigin" in attribute.extended_attributes
         cross_origin_values = attribute.extended_attributes.values_of(
@@ -6675,12 +6696,12 @@ def generate_interface(interface_identifier):
                         "v8::Local<v8::Value>",
                         "const v8::PropertyCallbackInfo<void>&",
                     ])
-    for operation_group in interface.operation_groups:
+    for operation_group in class_like.operation_groups:
         if "Custom" in operation_group.extended_attributes:
             add_custom_callback_impl_decl(
                 operation_group=operation_group,
                 arg_decls=["const v8::FunctionCallbackInfo<v8::Value>&"])
-    if interface.indexed_and_named_properties:
+    if interface and interface.indexed_and_named_properties:
         props = interface.indexed_and_named_properties
         operation = props.own_named_getter
         if operation and "Custom" in operation.extended_attributes:
@@ -6929,11 +6950,11 @@ def generate_interface(interface_identifier):
             EmptyNode(),
         ])
     api_header_node.accumulator.add_include_headers([
-        interface.code_generator_info.blink_headers[0],
+        class_like.code_generator_info.blink_headers[0],
         component_export_header(api_component, for_testing),
         "third_party/blink/renderer/platform/bindings/v8_interface_bridge.h",
     ])
-    if interface.inherited:
+    if interface and interface.inherited:
         api_source_node.accumulator.add_include_headers(
             [PathManager(interface.inherited).api_path(ext="h")])
     if is_cross_components:
@@ -6951,7 +6972,7 @@ def generate_interface(interface_identifier):
         "third_party/blink/renderer/platform/bindings/v8_binding.h",
     ])
     impl_source_node.accumulator.add_include_headers(
-        _collect_include_headers(interface))
+        _collect_include_headers(class_like))
 
     # Assemble the parts.
     api_header_blink_ns.body.extend([
@@ -7050,6 +7071,15 @@ def generate_interface(interface_identifier):
                                 path_manager.gen_path_to(impl_header_path))
         write_code_node_to_file(impl_source_node,
                                 path_manager.gen_path_to(impl_source_path))
+
+
+def generate_interface(interface_identifier):
+    assert isinstance(interface_identifier, web_idl.Identifier)
+
+    web_idl_database = package_initializer().web_idl_database()
+    interface = web_idl_database.find(interface_identifier)
+
+    generate_class_like(interface)
 
 
 def generate_install_properties_per_feature(function_name,
@@ -7164,25 +7194,27 @@ using InstallFuncType =
     ])
 
     # The public function
-    feature_to_interfaces = {}
-    set_of_interfaces = set()
-    for interface in web_idl_database.interfaces:
-        if interface.code_generator_info.for_testing != for_testing:
+    feature_to_class_likes = {}
+    set_of_class_likes = set()
+    for class_like in itertools.chain(web_idl_database.interfaces,
+                                      web_idl_database.namespaces):
+        if class_like.code_generator_info.for_testing != for_testing:
             continue
 
-        for member in itertools.chain(interface.attributes,
-                                      interface.constants,
-                                      interface.operation_groups,
-                                      interface.exposed_constructs):
+        for member in itertools.chain(class_like.attributes,
+                                      class_like.constants,
+                                      class_like.operation_groups,
+                                      class_like.exposed_constructs):
             features = list(
                 member.exposure.context_dependent_runtime_enabled_features)
             for entry in member.exposure.global_names_and_features:
                 if entry.feature and entry.feature.is_context_dependent:
                     features.append(entry.feature)
             for feature in features:
-                feature_to_interfaces.setdefault(feature, set()).add(interface)
+                feature_to_class_likes.setdefault(feature,
+                                                  set()).add(class_like)
             if features:
-                set_of_interfaces.add(interface)
+                set_of_class_likes.add(class_like)
 
     switch_node = CxxSwitchNode(cond="${feature}")
     switch_node.append(
@@ -7192,13 +7224,13 @@ using InstallFuncType =
             TextNode("return;"),
         ],
         should_add_break=False)
-    for feature, interfaces in sorted(feature_to_interfaces.items()):
+    for feature, class_likes in sorted(feature_to_class_likes.items()):
         entries = [
             TextNode("{{"
                      "{0}::GetWrapperTypeInfo(), "
                      "{0}::InstallContextDependentProperties"
-                     "}}, ".format(v8_bridge_class_name(interface)))
-            for interface in sorted(interfaces, key=lambda x: x.identifier)
+                     "}}, ".format(v8_bridge_class_name(class_like)))
+            for class_like in sorted(class_likes, key=lambda x: x.identifier)
         ]
         table_def = ListNode([
             TextNode("static const std::pair<"
@@ -7225,8 +7257,8 @@ using InstallFuncType =
                  "(${script_state}, ${feature}, selected_wti_list);"),
     ])
 
-    for interface in set_of_interfaces:
-        path_manager = PathManager(interface)
+    for class_like in set_of_class_likes:
+        path_manager = PathManager(class_like)
         source_node.accumulator.add_include_headers(
             [path_manager.api_path(ext="h")])
 
@@ -7302,7 +7334,7 @@ def generate_init_idl_interfaces(function_name,
         name=function_name, arg_decls=[], return_type="void")
     header_bindings_ns.body.extend([
         TextNode("""\
-// Initializes cross-component trampolines of IDL interface implementations.\
+// Initializes cross-component trampolines of IDL interface / namespace.\
 """),
         func_decl,
     ])
@@ -7330,16 +7362,17 @@ def generate_init_idl_interfaces(function_name,
     ])
 
     init_calls = []
-    for interface in web_idl_database.interfaces:
-        if interface.code_generator_info.for_testing != for_testing:
+    for class_like in itertools.chain(web_idl_database.interfaces,
+                                      web_idl_database.namespaces):
+        if class_like.code_generator_info.for_testing != for_testing:
             continue
 
-        path_manager = PathManager(interface)
+        path_manager = PathManager(class_like)
         if path_manager.is_cross_components:
             source_node.accumulator.add_include_headers(
                 [path_manager.impl_path(ext="h")])
 
-            class_name = v8_bridge_class_name(interface)
+            class_name = v8_bridge_class_name(class_like)
             init_calls.append(_format("{}::Impl::Init();", class_name))
     for init_call in sorted(init_calls):
         func_def.body.append(TextNode(init_call))

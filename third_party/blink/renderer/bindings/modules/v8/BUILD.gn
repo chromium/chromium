@@ -26,7 +26,8 @@ blink_modules_sources("v8") {
     sources += generated_dictionary_sources_in_modules
   }
   if (use_blink_v8_binding_new_idl_interface) {
-    sources += generated_interface_sources_in_modules
+    sources += generated_interface_sources_in_modules +
+               generated_namespace_sources_in_modules
   }
 
   deps = [

@@ -110,7 +110,7 @@ class IdlDefinitions(object):
         children = node.GetChildren()
         for child in children:
             child_class = child.GetClass()
-            if child_class == 'Interface':
+            if child_class == 'Interface' or child_class == 'Namespace':
                 interface = IdlInterface(child)
                 self.interfaces[interface.name] = interface
                 if not self.first_name:

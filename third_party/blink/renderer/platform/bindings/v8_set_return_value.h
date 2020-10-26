@@ -44,8 +44,9 @@ struct V8ReturnValue {
   // Main world or not
   enum MainWorld { kMainWorld };
 
-  // Returns the interface object of the given type.
+  // Returns the exposed object of the given type.
   enum InterfaceObject { kInterfaceObject };
+  enum NamespaceObject { kNamespaceObject };
 
   // Selects the appropriate creation context.
   static v8::Local<v8::Object> CreationContext(
@@ -363,8 +364,13 @@ void V8SetReturnValue(const CallbackInfo& info,
       wrappable->Wrap(info.GetIsolate(), creation_context->Global()));
 }
 
-// Interface object
-PLATFORM_EXPORT v8::Local<v8::Value> GetInterfaceObjectExposedOnGlobal(
+// Exposed objects
+PLATFORM_EXPORT v8::Local<v8::Value> GetExposedInterfaceObject(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> creation_context,
+    const WrapperTypeInfo* wrapper_type_info);
+
+PLATFORM_EXPORT v8::Local<v8::Value> GetExposedNamespaceObject(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
     const WrapperTypeInfo* wrapper_type_info);
@@ -372,7 +378,14 @@ PLATFORM_EXPORT v8::Local<v8::Value> GetInterfaceObjectExposedOnGlobal(
 inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
                              const WrapperTypeInfo* wrapper_type_info,
                              V8ReturnValue::InterfaceObject) {
-  info.GetReturnValue().Set(GetInterfaceObjectExposedOnGlobal(
+  info.GetReturnValue().Set(GetExposedInterfaceObject(
+      info.GetIsolate(), info.Holder(), wrapper_type_info));
+}
+
+inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
+                             const WrapperTypeInfo* wrapper_type_info,
+                             V8ReturnValue::NamespaceObject) {
+  info.GetReturnValue().Set(GetExposedNamespaceObject(
       info.GetIsolate(), info.Holder(), wrapper_type_info));
 }
 
