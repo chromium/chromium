@@ -92,7 +92,7 @@ NSString* const NSAccessibilityFocusableAncestorAttribute =
     @"AXFocusableAncestor";
 NSString* const NSAccessibilityGrabbedAttribute = @"AXGrabbed";
 NSString* const NSAccessibilityHasPopupAttribute = @"AXHasPopup";
-NSString* const NSAccessibilityHasPopupValueAttribute = @"AXHasPopupValue";
+NSString* const NSAccessibilityPopupValueAttribute = @"AXPopupValue";
 NSString* const NSAccessibilityHighestEditableAncestorAttribute =
     @"AXHighestEditableAncestor";
 NSString* const NSAccessibilityInvalidAttribute = @"AXInvalid";
@@ -828,7 +828,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityGrabbedAttribute, @"grabbed"},
       {NSAccessibilityHeaderAttribute, @"header"},
       {NSAccessibilityHasPopupAttribute, @"hasPopup"},
-      {NSAccessibilityHasPopupValueAttribute, @"hasPopupValue"},
+      {NSAccessibilityPopupValueAttribute, @"popupValue"},
       {NSAccessibilityHelpAttribute, @"help"},
       {NSAccessibilityHighestEditableAncestorAttribute,
        @"highestEditableAncestor"},
@@ -1388,7 +1388,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   return @(_owner->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup));
 }
 
-- (NSString*)hasPopupValue {
+- (NSString*)popupValue {
   if (![self instanceActive])
     return nil;
   int hasPopup = _owner->GetIntAttribute(ax::mojom::IntAttribute::kHasPopup);
@@ -3551,7 +3551,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
   if (_owner->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup)) {
     [ret addObjectsFromArray:@[
-      NSAccessibilityHasPopupAttribute, NSAccessibilityHasPopupValueAttribute
+      NSAccessibilityHasPopupAttribute, NSAccessibilityPopupValueAttribute
     ]];
   }
 

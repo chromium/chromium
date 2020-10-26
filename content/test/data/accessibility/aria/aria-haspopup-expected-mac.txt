@@ -1,10 +1,10 @@
 AXWebArea
-++AXPopUpButton AXHasPopup=1 AXHasPopupValue='menu'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='menu'
 ++AXPopUpButton
-++AXPopUpButton AXHasPopup=1 AXHasPopupValue='menu'
-++AXPopUpButton AXHasPopup=1 AXHasPopupValue='listbox'
-++AXPopUpButton AXHasPopup=1 AXHasPopupValue='grid'
-++AXPopUpButton AXHasPopup=1 AXHasPopupValue='dialog'
-++AXPopUpButton AXHasPopup=1 AXHasPopupValue='menu'
-++AXPopUpButton AXHasPopup=1 AXHasPopupValue='listbox'
-++AXPopUpButton AXHasPopup=1 AXHasPopupValue='listbox'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='menu'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='listbox'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='grid'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='dialog'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='menu'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='listbox'
+++AXPopUpButton AXHasPopup=1 AXPopupValue='listbox'
