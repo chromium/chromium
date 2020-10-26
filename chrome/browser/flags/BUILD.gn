@@ -11,6 +11,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/flags/CachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
     "android/java/src/org/chromium/chrome/browser/flags/DoubleCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtils.java",
     "android/java/src/org/chromium/chrome/browser/flags/IntCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/StringCachedFieldTrialParameter.java",
   ]
@@ -57,6 +58,7 @@ java_library("flags_junit_tests") {
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithProcessorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithoutProcessorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtilsUnitTest.java",
   ]
   deps = [
     ":java",
