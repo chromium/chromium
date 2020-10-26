@@ -189,7 +189,7 @@ def _TagSuffixes():
   return tag_suffixes
 
 
-def _AddKeystoneKeys(plist, bundle_identifier):
+def _AddKeystoneKeys(plist, bundle_identifier, base_tag):
   """Adds the Keystone keys. This must be called AFTER _AddVersionKeys() and
   also requires the |bundle_identifier| argument (com.example.product)."""
   plist['KSVersion'] = plist['CFBundleShortVersionString']
@@ -197,16 +197,18 @@ def _AddKeystoneKeys(plist, bundle_identifier):
   plist['KSUpdateURL'] = 'https://tools.google.com/service/update2'
 
   _RemoveKeys(plist, 'KSChannelID')
+  if base_tag != '':
+    plist['KSChannelID'] = base_tag
   for tag_suffix in _TagSuffixes():
     if tag_suffix:
-      plist['KSChannelID' + tag_suffix] = tag_suffix
+      plist['KSChannelID' + tag_suffix] = base_tag + tag_suffix
 
 
 def _RemoveKeystoneKeys(plist):
   """Removes any set Keystone keys."""
   _RemoveKeys(plist, 'KSVersion', 'KSProductID', 'KSUpdateURL')
 
-  tag_keys = []
+  tag_keys = ['KSChannelID']
   for tag_suffix in _TagSuffixes():
     tag_keys.append('KSChannelID' + tag_suffix)
   _RemoveKeys(plist, *tag_keys)
@@ -241,6 +243,9 @@ def Main(argv):
                     type='int',
                     default=False,
                     help='Enable Keystone [1 or 0]')
+  parser.add_option('--keystone-base-tag',
+                    default='',
+                    help='Base Keystone tag to set')
   parser.add_option('--scm',
                     dest='add_scm_info',
                     action='store',
@@ -378,7 +383,8 @@ def Main(argv):
     if options.bundle_identifier is None:
       print('Use of Keystone requires the bundle id.', file=sys.stderr)
       return 1
-    _AddKeystoneKeys(plist, options.bundle_identifier)
+    _AddKeystoneKeys(plist, options.bundle_identifier,
+                     options.keystone_base_tag)
   else:
     _RemoveKeystoneKeys(plist)
 
