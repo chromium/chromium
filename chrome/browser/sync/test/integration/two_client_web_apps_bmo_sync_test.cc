@@ -289,16 +289,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
             GetRegistrar(GetProfile(1)).GetAppUserDisplayMode(app_id));
 }
 
-// Although the logic is allowed to be racy, the profiles should still end up
-// with the same web app ids.
-#if defined(OS_WIN)
-// Flaky on windows, https://crbug.com/1111533
-#define MAYBE_DoubleInstallWithUninstall DISABLED_DoubleInstallWithUninstall
-#else
-#define MAYBE_DoubleInstallWithUninstall DoubleInstallWithUninstall
-#endif
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
-                       MAYBE_DoubleInstallWithUninstall) {
+                       DoubleInstallWithUninstall) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
