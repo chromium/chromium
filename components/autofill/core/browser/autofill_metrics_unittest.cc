@@ -361,6 +361,12 @@ class AutofillMetricsTest : public testing::Test {
   // credit card list.
   void AddMaskedServerCreditCardWithNickname();
 
+  void AddMaskedServerCreditCardWithOffer(std::string guid,
+                                          std::string offer_reward_amount,
+                                          GURL url,
+                                          int64_t id,
+                                          bool offer_expired = false);
+
   // If set to true, then user is capable of using FIDO authentication for card
   // unmasking.
   void SetFidoEligibility(bool is_verifiable);
@@ -424,6 +430,8 @@ void AutofillMetricsTest::SetUp() {
           personal_data_.get(), "en-US");
   autofill_client_.set_test_form_data_importer(
       std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
+  autofill_client_.set_autofill_offer_manager(
+      std::make_unique<AutofillOfferManager>(personal_data_.get()));
 
   autofill_manager_ = std::make_unique<TestAutofillManager>(
       autofill_driver_.get(), &autofill_client_, personal_data_.get(),
@@ -444,10 +452,12 @@ void AutofillMetricsTest::SetUp() {
 }
 
 void AutofillMetricsTest::TearDown() {
-  // Order of destruction is important as AutofillManager relies on
-  // PersonalDataManager to be around when it gets destroyed.
+  // Order of destruction is important as AutofillManager and
+  // AutofillOfferManager rely on PersonalDataManager to be around when they
+  // gets destroyed.
   autofill_manager_.reset();
   autofill_driver_.reset();
+  autofill_client_.set_autofill_offer_manager(nullptr);
   personal_data_.reset();
   test_ukm_recorder_->Purge();
 }
@@ -535,16 +545,18 @@ void AutofillMetricsTest::RecreateCreditCards(
   }
   if (include_masked_server_credit_card) {
     CreditCard masked_server_credit_card(CreditCard::MASKED_SERVER_CARD,
-                                         "server_id");
+                                         "server_id_1");
     masked_server_credit_card.set_guid("10000000-0000-0000-0000-000000000002");
+    masked_server_credit_card.set_instrument_id(1);
     masked_server_credit_card.SetNetworkForMaskedCard(kDiscoverCard);
     masked_server_credit_card.SetNumber(ASCIIToUTF16("9424"));
     personal_data_->AddServerCreditCard(masked_server_credit_card);
   }
   if (include_full_server_credit_card) {
     CreditCard full_server_credit_card(CreditCard::FULL_SERVER_CARD,
-                                       "server_id");
+                                       "server_id_2");
     full_server_credit_card.set_guid("10000000-0000-0000-0000-000000000003");
+    full_server_credit_card.set_instrument_id(2);
     personal_data_->AddFullServerCreditCard(full_server_credit_card);
   }
   personal_data_->Refresh();
@@ -554,6 +566,35 @@ void AutofillMetricsTest::AddMaskedServerCreditCardWithNickname() {
   CreditCard masked_server_credit_card =
       test::GetMaskedServerCardWithNickname();
   personal_data_->AddServerCreditCard(masked_server_credit_card);
+  personal_data_->Refresh();
+}
+
+void AutofillMetricsTest::AddMaskedServerCreditCardWithOffer(
+    std::string guid,
+    std::string offer_reward_amount,
+    GURL url,
+    int64_t id,
+    bool offer_expired) {
+  CreditCard masked_server_credit_card(CreditCard::MASKED_SERVER_CARD,
+                                       "server_id_offer");
+  masked_server_credit_card.set_guid(guid);
+  masked_server_credit_card.set_instrument_id(id);
+  masked_server_credit_card.SetNetworkForMaskedCard(kDiscoverCard);
+  masked_server_credit_card.SetNumber(ASCIIToUTF16("9424"));
+  personal_data_->AddServerCreditCard(masked_server_credit_card);
+
+  AutofillOfferData offer_data;
+  offer_data.offer_id = id;
+  offer_data.offer_reward_amount = offer_reward_amount;
+  if (offer_expired) {
+    offer_data.expiry = AutofillClock::Now() - base::TimeDelta::FromDays(2);
+  } else {
+    offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
+  }
+  offer_data.merchant_domain = {url};
+  offer_data.eligible_instrument_id = {
+      masked_server_credit_card.instrument_id()};
+  personal_data_->AddCreditCardOfferData(offer_data);
   personal_data_->Refresh();
 }
 
@@ -6964,6 +7005,260 @@ TEST_F(AutofillMetricsTest, LogServerNicknameSelectionDuration) {
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FormEvents.CreditCard.WithServerNickname.SelectionDuration",
         first_suggestion_delta, 1);
+  }
+}
+
+// Test that we log form events for masked server card with offers.
+TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableOffersInDownstream);
+
+  // Set up our form data.
+  FormData form;
+  form.name = ASCIIToUTF16("TestForm");
+  form.url = GURL("http://example.com/form.html");
+  form.action = GURL("http://example.com/submit.html");
+  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+
+  FormFieldData field;
+  std::vector<ServerFieldType> field_types;
+  test::CreateTestFormField("Month", "card_month", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(CREDIT_CARD_EXP_MONTH);
+  test::CreateTestFormField("Year", "card_year", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(CREDIT_CARD_EXP_2_DIGIT_YEAR);
+  test::CreateTestFormField("Credit card", "card", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(CREDIT_CARD_NUMBER);
+
+  // Creating all kinds of cards. None of them have offers.
+  RecreateCreditCards(true /* include_local_credit_card */,
+                      true /* include_masked_server_credit_card */,
+                      true /* include_full_server_credit_card */);
+
+  // Simulate having seen this form on page load.
+  autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // Simulating activating the autofill popup for the credit card field, new
+    // popup being shown and filling a local card suggestion.
+    base::HistogramTester histogram_tester;
+    autofill_manager_->OnQueryFormFieldAutofill(
+        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form, field);
+    std::string guid("10000000-0000-0000-0000-000000000001");  // local card
+    autofill_manager_->FillOrPreviewForm(
+        AutofillDriver::FORM_DATA_ACTION_FILL, 0, form, form.fields.front(),
+        autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1);
+    // Check that the offer sub-histogram was not recorded.
+    // ExpectBucketCount() can't be used here because it expects the histogram
+    // to exist.
+    EXPECT_EQ(0, histogram_tester.GetTotalCountsForPrefix(
+                     "Autofill.FormEvents.CreditCard")
+                     ["Autofill.FormEvents.CreditCard.WithOffer"]);
+
+    // Ensure offers were not shown.
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Offer.SuggestedCardsHaveOffer",
+        /*suggestions with offers=*/0, 1);
+
+    // Since no offers were shown, we should not track offer selection or
+    // submission.
+    EXPECT_EQ(0, histogram_tester.GetTotalCountsForPrefix(
+                     "Autofill.Offer")["Autofill.Offer.SelectedCardHasOffer"]);
+    EXPECT_EQ(0, histogram_tester.GetTotalCountsForPrefix(
+                     "Autofill.Offer")["Autofill.Offer.SubmittedCardHasOffer"]);
+  }
+
+  // Add another masked server card, this time with a linked offer.
+  std::string guid("12340000-0000-0000-0000-000000000001");
+  AddMaskedServerCreditCardWithOffer(guid, "$4", autofill_client_.form_origin(),
+                                     /*id=*/0x4fff);
+  // Reset the autofill manager state.
+  autofill_manager_->Reset();
+  autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // A masked server card with linked offers.
+    // Simulating activating the autofill popup for the credit card field, new
+    // popup being shown, selecting a masked card server suggestion and
+    // submitting the form. Verify that all related form events are correctly
+    // logged to offer sub-histogram.
+    base::HistogramTester histogram_tester;
+    autofill_manager_->OnQueryFormFieldAutofill(
+        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form, field);
+    // Select the masked server card with the linked offer.
+    autofill_manager_->FillOrPreviewForm(
+        AutofillDriver::FORM_DATA_ACTION_FILL, 0, form, form.fields.back(),
+        autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
+    OnDidGetRealPan(AutofillClient::SUCCESS, "6011000990139424");
+    autofill_manager_->OnFormSubmitted(form, false,
+                                       SubmissionSource::FORM_SUBMISSION);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 1);
+
+    // Ensure we count the correct number of offers shown.
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Offer.SuggestedCardsHaveOffer",
+        /*suggestions with offers=*/1, 1);
+
+    // Should track card was selected and form was submitted with that card.
+    histogram_tester.ExpectUniqueSample("Autofill.Offer.SelectedCardHasOffer",
+                                        /*selected=*/true, 1);
+    histogram_tester.ExpectUniqueSample("Autofill.Offer.SubmittedCardHasOffer",
+                                        /*submitted=*/true, 1);
+  }
+
+  // Reset the autofill manager state.
+  autofill_manager_->Reset();
+  autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // A masked server card with linked offers.
+    // Simulating activating the autofill popup for the credit card field, new
+    // popup being shown, selecting a masked card server suggestion and
+    // submitting the form. Verify that all related form events are correctly
+    // logged to offer sub-histogram.
+    base::HistogramTester histogram_tester;
+    autofill_manager_->OnQueryFormFieldAutofill(
+        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form, field);
+    // Select another card, and still log to offer
+    // sub-histogram because user has another masked server card with offer.
+    guid = "10000000-0000-0000-0000-000000000002";
+    autofill_manager_->FillOrPreviewForm(
+        AutofillDriver::FORM_DATA_ACTION_FILL, 0, form, form.fields.back(),
+        autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
+    OnDidGetRealPan(AutofillClient::SUCCESS, "6011000990139424");
+    autofill_manager_->OnFormSubmitted(form, false,
+                                       SubmissionSource::FORM_SUBMISSION);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard.WithOffer",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 1);
+
+    // Ensure we count the correct number of offers shown.
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Offer.SuggestedCardsHaveOffer",
+        /*suggestions with offers=*/1, 1);
+
+    // Should track card was not selected.
+    histogram_tester.ExpectUniqueSample("Autofill.Offer.SelectedCardHasOffer",
+                                        /*selected=*/false, 1);
+    histogram_tester.ExpectUniqueSample("Autofill.Offer.SubmittedCardHasOffer",
+                                        /*submitted=*/false, 1);
+  }
+
+  // Recreate cards and add card that is linked to an expired offer.
+  RecreateCreditCards(true /* include_local_credit_card */,
+                      true /* include_masked_server_credit_card */,
+                      true /* include_full_server_credit_card */);
+  guid = "12340000-0000-0000-0000-000000000002";
+  AddMaskedServerCreditCardWithOffer(guid, "$4", autofill_client_.form_origin(),
+                                     /*id=*/0x3fff, /*expired=*/true);
+
+  // Reset the autofill manager state.
+  autofill_manager_->Reset();
+  autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // Simulating activating the autofill popup for the credit card field,
+    // new popup being shown and filling a local card suggestion.
+    base::HistogramTester histogram_tester;
+    autofill_manager_->OnQueryFormFieldAutofill(
+        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form, field);
+    // Select the card with linked offer, though metrics should not record it
+    // since the offer is expired.
+    autofill_manager_->FillOrPreviewForm(
+        AutofillDriver::FORM_DATA_ACTION_FILL, 0, form, form.fields.back(),
+        autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
+    OnDidGetRealPan(AutofillClient::SUCCESS, "6011000990139424");
+    autofill_manager_->OnFormSubmitted(form, false,
+                                       SubmissionSource::FORM_SUBMISSION);
+    // Histograms without ".WithOffer" should be recorded.
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SUBMITTED_ONCE, 1);
+
+    // Check that the offer sub-histogram was not recorded.
+    // ExpectBucketCount() can't be used here because it expects the
+    // histogram to exist.
+    EXPECT_EQ(0, histogram_tester.GetTotalCountsForPrefix(
+                     "Autofill.FormEvents.CreditCard")
+                     ["Autofill.FormEvents.CreditCard.WithOffer"]);
+
+    // Ensure offers were not shown.
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Offer.SuggestedCardsHaveOffer",
+        /*suggestions with offers=*/0, 1);
+
+    // Since no offers were shown, we should not track offer selection or
+    // submission.
+    EXPECT_EQ(0, histogram_tester.GetTotalCountsForPrefix(
+                     "Autofill.Offer")["Autofill.Offer.SelectedCardHasOffer"]);
+    EXPECT_EQ(0, histogram_tester.GetTotalCountsForPrefix(
+                     "Autofill.Offer")["Autofill.Offer.SubmittedCardHasOffer"]);
   }
 }
 

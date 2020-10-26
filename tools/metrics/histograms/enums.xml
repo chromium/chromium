@@ -4608,6 +4608,21 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="NotShown, invalid legal message"/>
 </enum>
 
+<enum name="AutofillCreditCardOfferSelection">
+  <int value="0" label="Selected card without offer"/>
+  <int value="1" label="Selected card with offer"/>
+</enum>
+
+<enum name="AutofillCreditCardOfferSubmission">
+  <int value="0" label="Submitted card without offer"/>
+  <int value="1" label="Submitted card with offer"/>
+</enum>
+
+<enum name="AutofillCreditCardOfferSuggestion">
+  <int value="0" label="No cards with offer suggested"/>
+  <int value="1" label="Card with offer suggested"/>
+</enum>
+
 <enum name="AutofillCreditCardPreflightCallEvent">
   <int value="0" label="Preflight returned first"/>
   <int value="1" label="Card chosen first"/>

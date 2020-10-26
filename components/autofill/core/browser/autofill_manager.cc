@@ -2023,6 +2023,8 @@ std::vector<Suggestion> AutofillManager::GetCreditCardSuggestions(
     suggestions[i].frontend_id =
         MakeFrontendID(suggestions[i].backend_id, std::string());
   }
+
+  credit_card_form_event_logger_->set_suggestions(suggestions);
   return suggestions;
 }
 
