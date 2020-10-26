@@ -316,6 +316,7 @@ IPC_STRUCT_TRAITS_BEGIN(blink::mojom::RendererPreferences)
   IPC_STRUCT_TRAITS_MEMBER(caret_browsing_enabled)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   IPC_STRUCT_TRAITS_MEMBER(system_font_family_name)
+  IPC_STRUCT_TRAITS_MEMBER(selection_clipboard_buffer_available)
 #endif
 #if defined(OS_WIN)
   IPC_STRUCT_TRAITS_MEMBER(caption_font_family_name)
