@@ -944,7 +944,8 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     } else {
       value = smt.ColumnString(3);
     }
-    std::unique_ptr<CanonicalCookie> cc(std::make_unique<CanonicalCookie>(
+    // Returns nullptr if the resulting cookie is not canonical.
+    std::unique_ptr<net::CanonicalCookie> cc = CanonicalCookie::FromStorage(
         smt.ColumnString(2),                           // name
         value,                                         // value
         smt.ColumnString(1),                           // domain
@@ -958,10 +959,10 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
             static_cast<DBCookieSameSite>(smt.ColumnInt(9))),  // samesite
         DBCookiePriorityToCookiePriority(
             static_cast<DBCookiePriority>(smt.ColumnInt(13))),  // priority
-        DBToCookieSourceScheme(smt.ColumnInt(14))));            // source_scheme
-    DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
-        << L"CreationDate too recent";
-    if (cc->IsCanonical()) {
+        DBToCookieSourceScheme(smt.ColumnInt(14)));             // source_scheme
+    if (cc) {
+      DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
+          << L"CreationDate too recent";
       cookies->push_back(std::move(cc));
     } else {
       RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_NON_CANONICAL);
