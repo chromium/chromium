@@ -4623,17 +4623,18 @@ crbug.com/1074441 external/wpt/cookies/samesite/iframe.https.html [ Skip ]
 crbug.com/1074441 virtual/legacy-samesite/external/wpt/cookies/samesite/iframe-reload.https.html?legacy-samesite [ Skip ]
 crbug.com/1074441 virtual/legacy-samesite/external/wpt/cookies/samesite/iframe.https.html?legacy-samesite [ Skip ]
 
-# Tentative Schemeful Same-Site tests shouldn't pass while the feature is disabled.
-crbug.com/1127348 external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Failure ]
-crbug.com/1127348 external/wpt/cookies/schemeful-same-site/schemeful-iframe-subresource.tentative.html [ Failure ]
-crbug.com/1127348 external/wpt/cookies/schemeful-same-site/schemeful-subresource.tentative.html [ Failure ]
-crbug.com/1127348 external/wpt/cookies/schemeful-same-site/schemeful-navigation.tentative.html [ Failure ]
-# Mark the virtual versions as passing so that we're informed about regressions.
-crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Pass ]
-crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-iframe-subresource.tentative.html [ Pass ]
-crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-subresource.tentative.html [ Pass ]
-crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-navigation.tentative.html [ Pass ]
+# The virtual tests run with Schemeful Same-Site disabled. These should fail to ensure the disabled feature code paths work.
+crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Failure ]
+crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-iframe-subresource.tentative.html [ Failure ]
+crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-subresource.tentative.html [ Failure ]
+crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-navigation.tentative.html [ Failure ]
 
+# These tests fail with Schemeful Same-Site due to their cross-schemeness. Skip them until there's a more permanent solution.
+crbug.com/1141909 external/wpt/websockets/cookies/001.html?wss [ Skip ]
+crbug.com/1141909 external/wpt/websockets/cookies/002.html?wss [ Skip ]
+crbug.com/1141909 external/wpt/websockets/cookies/003.html?wss [ Skip ]
+crbug.com/1141909 external/wpt/websockets/cookies/005.html?wss [ Skip ]
+crbug.com/1141909 external/wpt/websockets/cookies/007.html?wss [ Skip ]
 
 # Sheriff failures 2017-11-15
 crbug.com/785179 [ Win7 Debug ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Skip ]

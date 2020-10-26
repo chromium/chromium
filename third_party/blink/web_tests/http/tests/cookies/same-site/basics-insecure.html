@@ -16,10 +16,9 @@ promise_test(_ => {
     return fetch("https://" + window.location.hostname + ":8443/cookies/resources/echo-json.php", {"credentials": "include"})
         .then(r => r.json())
         .then(j => {
-            assert_equals(j[STRICT_DOM], "2", "strict");
-            assert_equals(j[LAX_DOM], "2", "lax");
-            assert_equals(j[UNSPECIFIED_DOM], "2", "unspecified");
+            assert_false(STRICT_DOM in j);
+            assert_false(LAX_DOM in j);
+            assert_false(UNSPECIFIED_DOM in j);
         });
-}, "HTTPS is same-site with HTTP.");
+}, "HTTPS is not same-site with HTTP.");
 </script>
-

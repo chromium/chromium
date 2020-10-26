@@ -1,1 +1,1 @@
-This suite runs inspector protocol networks tests with SchemefulSameSite enabled.
+This suite runs inspector protocol networks tests with SchemefulSameSite disabled.

@@ -241,11 +241,8 @@
   },
   {
     "prefix": "schemeful-same-site",
-    "bases": ["external/wpt/cookies",
-              "http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js",
-              "http/tests/inspector-protocol/network/same-site-issue-warn-cookie-lax-subresource-context-downgrade.js",
-              "http/tests/inspector-protocol/network/same-site-issue-warn-cookie-navigation-context-downgrade.js"],
-    "args": ["--enable-features=SchemefulSameSite"]
+    "bases": ["external/wpt/cookies"],
+    "args": ["--disable-features=SchemefulSameSite"]
   },
   {
     "prefix": "layout_ng_block_frag",
