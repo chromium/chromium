@@ -29,7 +29,8 @@ _API_LEVEL_VERSION_CODE = [
     (29, 'Q'),
     (30, 'R'),
 ]
-_CHECKDISCARD_RE = re.compile(r'^\s*-checkdiscard[\s\S]*?}', re.MULTILINE)
+_CHECKDISCARD_RE = re.compile(r'^[ \t\r\f\v]*-checkdiscard[^\n{]*({[\s\S]*?})?',
+                              re.MULTILINE)
 _DIRECTIVE_RE = re.compile(r'^\s*-', re.MULTILINE)
 
 

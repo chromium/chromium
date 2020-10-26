@@ -24,8 +24,13 @@ import gn_helpers
 
 
 # Regular expression to extract -checkdiscard / -check* lines.
+# Example patterns:
+# -checkdiscard @com.Foo class *
+# -checkdiscard class ** {
+#  ...
+# }
 # Does not support nested comments with "}" in them (oh well).
-_CHECKDISCARD_PATTERN = re.compile(r'^\s*?-check.*?}\s*',
+_CHECKDISCARD_PATTERN = re.compile(r'^[ \t\r\f\v]*-check[^{\n]*({.*?})?\s*',
                                    re.DOTALL | re.MULTILINE)
 
 _PROGUARD_TXT = 'proguard.txt'
