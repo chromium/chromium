@@ -6234,6 +6234,53 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
             security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
 }
 
+// Visits a page that displays an insecure form inside an iframe, attempts to
+// submit the form, and checks an interstitial is not shown (submissions of
+// mixed forms inside iframes are separately blocked, and that behavior is
+// tested in mixed_content_navigation_throttle_unittest.cc).
+IN_PROC_BROWSER_TEST_F(
+    SSLUITestWithInsecureFormsWarningEnabled,
+    TestDoesNotDisplayInsecureFormSubmissionWarningInIframe) {
+  ChromeContentBrowserClientForMixedContentTest browser_client;
+  browser_client.SetMixedContentSettings(
+      false, /* allow_running_insecure_content */
+      false, /* strict_mixed_content_checking */
+      false /*strictly_block_blockable_mixed_content */);
+  content::ContentBrowserClient* old_browser_client =
+      content::SetBrowserClientForTesting(&browser_client);
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  tab->OnWebPreferencesChanged();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_insecure_form_in_iframe.html",
+      https_server_.host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  content::TestNavigationObserver nav_observer(tab, 1);
+  content::WebContentsConsoleObserver console_observer(tab);
+  console_observer.SetPattern(
+      "Mixed Content: The page at * was loaded over a secure connection, but "
+      "contains a form that targets an insecure endpoint "
+      "'http://does-not-exist.test/ssl/google_files/logo.gif'. This endpoint "
+      "should be made available over a secure connection.");
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+
+  // We shouldn't be displaying an interstitial.
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_FALSE(helper);
+
+  // Check console message was printed.
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+
+  content::SetBrowserClientForTesting(old_browser_client);
+}
+
 // Checks insecure form warning works for forms that submit on a new tab.
 IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
                        TestDisplaysInsecureFormSubmissionWarningTargetBlank) {
