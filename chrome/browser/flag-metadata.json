@@ -4515,6 +4515,11 @@
     "expiry_milestone": 85
   },
   {
+    "name": "toolbar-iph-android",
+    "owners": [ "skym", "wenyufu" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "top-chrome-touch-ui",
     "owners": [ "pbos", "chrome-desktop-ui-sea@google.com" ],
     // This flag is used to easily swap into touch-mode for UI development where

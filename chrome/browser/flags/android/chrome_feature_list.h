@@ -120,6 +120,7 @@ extern const base::Feature kTabbedAppOverflowMenuRegroup;
 extern const base::Feature kTabbedAppOverflowMenuThreeButtonActionbar;
 extern const base::Feature kTestDefaultDisabled;
 extern const base::Feature kTestDefaultEnabled;
+extern const base::Feature kToolbarIphAndroid;
 extern const base::Feature kTrustedWebActivityLocationDelegation;
 extern const base::Feature kTrustedWebActivityNewDisclosure;
 extern const base::Feature kTrustedWebActivityPostMessage;

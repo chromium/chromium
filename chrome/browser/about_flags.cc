@@ -3424,6 +3424,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReengagementNotificationName,
      flag_descriptions::kReengagementNotificationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReengagementNotification)},
+    {"toolbar-iph-android", flag_descriptions::kToolbarIphAndroidName,
+     flag_descriptions::kToolbarIphAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kToolbarIphAndroid)},
 #endif  // OS_ANDROID
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,
