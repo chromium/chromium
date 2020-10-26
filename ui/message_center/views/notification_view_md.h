@@ -167,6 +167,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   enum ViewId {
     // We start from 1 because 0 is the default view ID.
     kHeaderRow = 1,
+    kActionButtonsRow,
+    kInlineReply,
   };
 
   explicit NotificationViewMD(const Notification& notification);

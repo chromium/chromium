@@ -640,11 +640,13 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
       views::BoxLayout::Orientation::kHorizontal, kActionsRowPadding,
       kActionsRowHorizontalSpacing));
   action_buttons_row_->SetVisible(false);
+  action_buttons_row_->SetID(kActionButtonsRow);
   actions_row_->AddChildView(action_buttons_row_);
 
   // |inline_reply_| is a container for an inline textfield.
   inline_reply_ = new NotificationInputContainerMD(this);
   inline_reply_->SetVisible(false);
+  inline_reply_->SetID(kInlineReply);
   actions_row_->AddChildView(inline_reply_);
 
   CreateOrUpdateViews(notification);

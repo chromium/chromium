@@ -17,6 +17,7 @@ class Notification;
 }  // namespace chromeos
 
 namespace message_center {
+class MessageView;
 class Notification;
 }  // namespace message_center
 
@@ -39,6 +40,9 @@ class ASH_EXPORT PhoneHubNotificationController
   void SetManager(chromeos::phonehub::NotificationManager* manager);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
+                           ReplyBrieflyDisabled);
+
   class NotificationDelegate;
 
   // chromeos::phonehub::NotificationManager::Observer:
@@ -65,6 +69,10 @@ class ASH_EXPORT PhoneHubNotificationController
       const chromeos::phonehub::Notification* notification,
       const std::string& cros_id,
       NotificationDelegate* delegate);
+
+  static std::unique_ptr<message_center::MessageView>
+  CreateCustomNotificationView(
+      const message_center::Notification& notification);
 
   chromeos::phonehub::NotificationManager* manager_ = nullptr;
   std::unordered_map<int64_t, std::unique_ptr<NotificationDelegate>>

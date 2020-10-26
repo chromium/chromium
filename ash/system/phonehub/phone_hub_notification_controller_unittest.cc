@@ -18,6 +18,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/views/notification_view_md.h"
 
 namespace ash {
 
@@ -35,6 +36,12 @@ const char kPackageName[] = "com.google.testapp";
 const char kTitle[] = "Test notification";
 const char kTextContent[] = "This is a test notification";
 
+const char kNotificationCustomViewType[] = "phonehub";
+
+// Time to wait until we enable the reply button
+constexpr base::TimeDelta kWaitForEnableButton =
+    base::TimeDelta::FromSeconds(1);
+
 chromeos::phonehub::Notification CreateNotification(int64_t id) {
   return chromeos::phonehub::Notification(
       id,
@@ -48,7 +55,8 @@ chromeos::phonehub::Notification CreateNotification(int64_t id) {
 
 class PhoneHubNotificationControllerTest : public AshTestBase {
  public:
-  PhoneHubNotificationControllerTest() = default;
+  PhoneHubNotificationControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~PhoneHubNotificationControllerTest() override = default;
 
   // AshTestBase:
@@ -244,6 +252,39 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
   EXPECT_EQ(contact_image, cros_notification->icon());
   EXPECT_EQ(icon, cros_notification->small_image());
   EXPECT_EQ(shared_image, cros_notification->image());
+}
+
+TEST_F(PhoneHubNotificationControllerTest, NotificationHasCustomViewType) {
+  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  auto* notification =
+      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+
+  // Notification should have a correct customize type.
+  EXPECT_EQ(kNotificationCustomViewType, notification->custom_view_type());
+}
+
+TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
+  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  auto* notification =
+      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+
+  auto notification_view =
+      PhoneHubNotificationController::CreateCustomNotificationView(
+          *notification);
+  auto* notification_view_md =
+      static_cast<message_center::NotificationViewMD*>(notification_view.get());
+  views::View* action_buttons_row = notification_view_md->GetViewByID(
+      message_center::NotificationViewMD::kActionButtonsRow);
+  views::View* reply_button = action_buttons_row->children()[0];
+
+  // Initially, reply button should be disabled after replied.
+  const base::string16 kInlineReply0 = base::UTF8ToUTF16("inline reply 0");
+  notification_view_md->OnNotificationInputSubmit(0, kInlineReply0);
+  EXPECT_FALSE(reply_button->GetEnabled());
+
+  // After a brief moment, it should be enabled.
+  task_environment()->FastForwardBy(kWaitForEnableButton);
+  EXPECT_TRUE(reply_button->GetEnabled());
 }
 
 }  // namespace ash

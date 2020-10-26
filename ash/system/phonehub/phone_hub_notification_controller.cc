@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/timer/timer.h"
 #include "chromeos/components/phonehub/notification.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -23,6 +24,7 @@
 #include "ui/message_center/views/message_view_factory.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view_md.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
 
@@ -33,21 +35,75 @@ const char kNotificationCustomViewType[] = "phonehub";
 const int kReplyButtonIndex = 0;
 const int kCancelButtonIndex = 1;
 
-std::unique_ptr<message_center::MessageView> CreateCustomNotificationView(
-    const message_center::Notification& notification) {
-  DCHECK_EQ(kNotificationCustomViewType, notification.custom_view_type());
+// The amount of time the reply button is disabled after sending an inline
+// reply. This is used to make sure that all the replies are received by the
+// phone in a correct order (a reply sent right after another could cause it to
+// be received before the former one).
+constexpr base::TimeDelta kInlineReplyDisableTime =
+    base::TimeDelta::FromSeconds(1);
 
-  std::unique_ptr<message_center::NotificationViewMD> notification_view =
-      std::make_unique<message_center::NotificationViewMD>(notification);
-  message_center::NotificationHeaderView* header_row =
-      static_cast<message_center::NotificationHeaderView*>(
-          notification_view->GetViewByID(
-              message_center::NotificationViewMD::kHeaderRow));
-  header_row->SetSummaryText(l10n_util::GetStringUTF16(
-      IDS_ASH_PHONE_HUB_NOTIFICATION_FROM_PHONE_TITLE));
+class PhoneHubNotificationView : public message_center::NotificationViewMD {
+ public:
+  explicit PhoneHubNotificationView(
+      const message_center::Notification& notification)
+      : message_center::NotificationViewMD(notification) {
+    // Add customized header.
+    message_center::NotificationHeaderView* header_row =
+        static_cast<message_center::NotificationHeaderView*>(
+            GetViewByID(message_center::NotificationViewMD::kHeaderRow));
+    header_row->SetSummaryText(l10n_util::GetStringUTF16(
+        IDS_ASH_PHONE_HUB_NOTIFICATION_FROM_PHONE_TITLE));
 
-  return notification_view;
-}
+    action_buttons_row_ =
+        GetViewByID(message_center::NotificationViewMD::kActionButtonsRow);
+    if (!action_buttons_row_->children().empty())
+      reply_button_ = static_cast<message_center::NotificationMdTextButton*>(
+          action_buttons_row_->children()[kReplyButtonIndex]);
+
+    inline_reply_ = static_cast<message_center::NotificationInputContainerMD*>(
+        GetViewByID(message_center::NotificationViewMD::kInlineReply));
+  }
+
+  ~PhoneHubNotificationView() override = default;
+  PhoneHubNotificationView(const PhoneHubNotificationView&) = delete;
+  PhoneHubNotificationView& operator=(const PhoneHubNotificationView&) = delete;
+
+  // message_center::NotificationViewMD:
+  void OnNotificationInputSubmit(size_t index,
+                                 const base::string16& text) override {
+    message_center::NotificationViewMD::OnNotificationInputSubmit(index, text);
+
+    DCHECK(reply_button_);
+
+    // After sending a reply, take the UI back to action buttons and clear out
+    // text input.
+    inline_reply_->SetVisible(false);
+    action_buttons_row_->SetVisible(true);
+    inline_reply_->textfield()->SetText(base::string16());
+
+    // Briefly disable reply button.
+    reply_button_->SetEnabled(false);
+    enable_reply_timer_ = std::make_unique<base::OneShotTimer>();
+    enable_reply_timer_->Start(
+        FROM_HERE, kInlineReplyDisableTime,
+        base::BindOnce(&PhoneHubNotificationView::EnableReplyButton,
+                       base::Unretained(this)));
+  }
+
+  void EnableReplyButton() {
+    reply_button_->SetEnabled(true);
+    enable_reply_timer_.reset();
+  }
+
+ private:
+  // Owned by view hierarchy.
+  views::View* action_buttons_row_ = nullptr;
+  message_center::NotificationMdTextButton* reply_button_ = nullptr;
+  message_center::NotificationInputContainerMD* inline_reply_ = nullptr;
+
+  // Timer that fires to enable reply button after a brief period of time.
+  std::unique_ptr<base::OneShotTimer> enable_reply_timer_;
+};
 
 }  // namespace
 
@@ -130,7 +186,8 @@ PhoneHubNotificationController::PhoneHubNotificationController() {
 
   message_center::MessageViewFactory::SetCustomNotificationViewFactory(
       kNotificationCustomViewType,
-      base::BindRepeating(&CreateCustomNotificationView));
+      base::BindRepeating(
+          &PhoneHubNotificationController::CreateCustomNotificationView));
 }
 
 PhoneHubNotificationController::~PhoneHubNotificationController() {
@@ -283,6 +340,14 @@ PhoneHubNotificationController::CreateNotification(
       notification_type, cros_id, title, message, icon, display_source,
       /*origin_url=*/GURL(), notifier_id, optional_fields,
       delegate->AsScopedRefPtr());
+}
+
+// static
+std::unique_ptr<message_center::MessageView>
+PhoneHubNotificationController::CreateCustomNotificationView(
+    const message_center::Notification& notification) {
+  DCHECK_EQ(kNotificationCustomViewType, notification.custom_view_type());
+  return std::make_unique<PhoneHubNotificationView>(notification);
 }
 
 }  // namespace ash
