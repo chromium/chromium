@@ -2133,6 +2133,7 @@ android_library("base_module_java") {
     "//ui/android:ui_no_recycler_view_java",
 
     # Deps needed for child processes.
+    "//components/version_info/android:version_constants_java",
     "//components/viz/service:service_java",
     "//content/public/android:content_java",
 
