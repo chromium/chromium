@@ -2858,4 +2858,23 @@ TEST_F(ControllerTest, NotifyRuntimeManagerOnUiStateChange) {
   EXPECT_CALL(mock_runtime_manager_, SetUIState(UIState::kNotShown)).Times(1);
   controller_->SetUiShown(false);
 }
+
+TEST_F(ControllerTest, OnGetScriptsFailedWillShutdown) {
+  EXPECT_CALL(mock_observer_, OnStatusMessageChanged(l10n_util::GetStringFUTF8(
+                                  IDS_AUTOFILL_ASSISTANT_LOADING,
+                                  base::UTF8ToUTF16("initialurl.com"))))
+      .Times(1);
+  EXPECT_CALL(*mock_service_, OnGetScriptsForUrl(_, _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_NOT_FOUND, ""));
+  EXPECT_CALL(mock_observer_, OnStatusMessageChanged(l10n_util::GetStringUTF8(
+                                  IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR)))
+      .Times(1);
+  EXPECT_CALL(mock_client_, HasHadUI()).WillOnce(Return(false));
+  EXPECT_CALL(mock_client_,
+              Shutdown(Metrics::DropOutReason::GET_SCRIPTS_FAILED))
+      .Times(1);
+
+  Start();
+  EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
+}
 }  // namespace autofill_assistant
