@@ -56,7 +56,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/shell.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "ui/base/ui_base_features.h"
 #endif  // defined(OS_CHROMEOS)
 
@@ -234,16 +233,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 #if defined(OS_CHROMEOS)
       screen_id = content::DesktopMediaID::RegisterNativeWindow(
           content::DesktopMediaID::TYPE_SCREEN,
-          primary_root_window_for_testing_
-              ? primary_root_window_for_testing_
-              : ash::Shell::Get()->GetPrimaryRootWindow());
-      if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(
-              screen_id)) {
-        std::move(callback).Run(
-            devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-            std::move(ui));
-        return;
-      }
+          ash::Shell::Get()->GetPrimaryRootWindow());
 #else   // defined(OS_CHROMEOS)
       screen_id = content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
                                           webrtc::kFullDesktopScreenId);
@@ -378,16 +368,6 @@ void DesktopCaptureAccessHandler::HandleRequest(
         std::move(ui));
     return;
   }
-#if defined(OS_CHROMEOS)
-  {
-    if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(media_id)) {
-      std::move(callback).Run(
-          devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-          std::move(ui));
-      return;
-    }
-  }
-#endif
 #if defined(OS_MAC)
   if (media_id.type != content::DesktopMediaID::TYPE_WEB_CONTENTS &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
