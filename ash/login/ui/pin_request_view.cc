@@ -100,6 +100,7 @@ class PinRequestView::FocusableLabelButton : public views::LabelButton {
       : views::LabelButton(listener, text) {
     SetInstallFocusRingOnFocus(true);
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+    SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 
   FocusableLabelButton(const FocusableLabelButton&) = delete;
@@ -366,7 +367,6 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   help_button_->layer()->SetFillsBoundsOpaquely(false);
   help_button_->SetTextSubpixelRenderingEnabled(false);
   help_button_->SetEnabledTextColors(kTextColor);
-  help_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   help_button_->SetVisible(request.help_button_enabled);
   footer->AddChildView(help_button_);
 
