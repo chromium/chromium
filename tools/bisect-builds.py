@@ -80,7 +80,6 @@ CREDENTIAL_ERROR_MESSAGE = ('You are attempting to access protected data with '
 ###############################################################################
 
 import glob
-import httplib
 import json
 import optparse
 import os
@@ -91,10 +90,14 @@ import subprocess
 import sys
 import tempfile
 import threading
-import urllib
 from distutils.version import LooseVersion
 from xml.etree import ElementTree
 import zipfile
+
+if sys.version_info[0] == 3:
+  import urllib.request as urllib
+else:
+  import urllib
 
 
 class PathContext(object):
@@ -525,7 +528,7 @@ def UnzipFilenameToDir(filename, directory):
       out.write(zf.read(name))
       out.close()
     # Set permissions. Permission info in external_attr is shifted 16 bits.
-    os.chmod(name, info.external_attr >> 16L)
+    os.chmod(name, info.external_attr >> 16)
   os.chdir(cwd)
 
 
@@ -652,9 +655,12 @@ def AskIsGoodBuild(rev, exit_status, stdout, stderr):
     print('Chrome exit_status: %d. Use s to see output' % exit_status)
   # Loop until we get a response that we can parse.
   while True:
-    response = raw_input('Revision %s is '
-                         '[(g)ood/(b)ad/(r)etry/(u)nknown/(s)tdout/(q)uit]: ' %
-                         str(rev))
+    prompt = ('Revision %s is '
+              '[(g)ood/(b)ad/(r)etry/(u)nknown/(s)tdout/(q)uit]: ' % str(rev))
+    if sys.version_info[0] == 3:
+      response = input(prompt)
+    else:
+      response = raw_input(prompt)
     if response in ('g', 'b', 'r', 'u'):
       return response
     if response == 'q':
@@ -730,7 +736,7 @@ class DownloadJob(object):
     print('Downloading revision %s...' % str(self.rev))
     self.progress_event.set()  # Display progress of download.
     try:
-      while self.thread.isAlive():
+      while self.thread.is_alive():
         # The parameter to join is needed to keep the main thread responsive to
         # signals. Without it, the program will not respond to interruptions.
         self.thread.join(1)
@@ -748,8 +754,8 @@ def VerifyEndpoint(fetch, context, rev, profile, num_runs, command, try_args,
     while answer == 'r':
       (exit_status, stdout, stderr) = RunRevision(
           context, rev, fetch.zip_file, profile, num_runs, command, try_args)
-      answer = evaluate(rev, exit_status, stdout, stderr);
-  except Exception, e:
+      answer = evaluate(rev, exit_status, stdout, stderr)
+  except Exception as e:
     print(e, file=sys.stderr)
     raise SystemExit
   if (answer != expected_answer):
@@ -815,7 +821,7 @@ def Bisect(context,
   # Figure out our bookends and first pivot point; fetch the pivot revision.
   minrev = 0
   maxrev = len(revlist) - 1
-  pivot = maxrev / 2
+  pivot = int(maxrev / 2)
   rev = revlist[pivot]
   fetch = DownloadJob(context, 'initial_fetch', rev, _GetDownloadPath(rev))
   fetch.Start()
@@ -886,7 +892,7 @@ def Bisect(context,
     try:
       (exit_status, stdout, stderr) = RunRevision(
           context, rev, fetch.zip_file, profile, num_runs, command, try_args)
-    except Exception, e:
+    except Exception as e:
       print(e, file=sys.stderr)
 
     # Call the evaluate function to see if the current revision is good or bad.
