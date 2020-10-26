@@ -164,7 +164,7 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     // Populate 4 suggestion chips.
     for (size_t i = 0; i < 4; i++) {
       auto search_result_chip = std::make_unique<SearchResult>();
-      search_result_chip->set_display_type(SearchResultDisplayType::kTile);
+      search_result_chip->set_display_type(SearchResultDisplayType::kChip);
       search_result_chip->set_is_recommendation(true);
       search_model_->results()->Add(std::move(search_result_chip));
     }

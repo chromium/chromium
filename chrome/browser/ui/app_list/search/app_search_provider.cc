@@ -481,7 +481,8 @@ void AppSearchProvider::RefreshAppsAndUpdateResultsDeferred() {
 void AppSearchProvider::UpdateRecommendedResults(
     const base::flat_map<std::string, uint16_t>& id_to_app_list_index) {
   SearchProvider::Results new_results;
-  std::set<std::string> seen_or_filtered_apps;
+  std::set<std::string> seen_or_filtered_tile_apps;
+  std::set<std::string> seen_or_filtered_chip_apps;
   const uint16_t apps_size = apps_.size();
   new_results.reserve(apps_size);
 
@@ -544,7 +545,18 @@ void AppSearchProvider::UpdateRecommendedResults(
       result->set_relevance(0.0f);
     }
 
-    MaybeAddResult(&new_results, std::move(result), &seen_or_filtered_apps);
+    // Create a second result to the display in the launcher chips, that is
+    // otherwise identical to |result|.
+    std::unique_ptr<AppResult> chip_result =
+        app->data_source()->CreateResult(app->id(), list_controller_, true);
+    chip_result->SetMetadata(result->CloneMetadata());
+    chip_result->SetDisplayType(ChromeSearchResult::DisplayType::kChip);
+    chip_result->set_relevance(result->relevance());
+
+    MaybeAddResult(&new_results, std::move(result),
+                   &seen_or_filtered_tile_apps);
+    MaybeAddResult(&new_results, std::move(chip_result),
+                   &seen_or_filtered_chip_apps);
   }
   PublishQueriedResultsOrRecommendation(false, &new_results);
 }

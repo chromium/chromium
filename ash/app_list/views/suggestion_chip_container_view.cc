@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/suggestion_chip_container_view.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/app_list/app_list_util.h"
@@ -121,19 +122,15 @@ int SuggestionChipContainerView::DoUpdate() {
     previous_index = current_index;
   }
 
-  // Need to filter out kArcAppShortcut since it will be confusing to users
-  // if shortcuts are displayed as suggestion chips. Also filter out any
-  // duplicate policy chip results.
-  auto filter_reinstall_and_shortcut = [](const SearchResult& r) -> bool {
-    return (r.display_type() == SearchResultDisplayType::kChip ||
-            r.display_type() == SearchResultDisplayType::kTile) &&
-           r.result_type() != AppListSearchResultType::kPlayStoreReinstallApp &&
-           r.result_type() != AppListSearchResultType::kArcAppShortcut &&
+  // Filter to only kChip results. Also filter out all policy chips to prevent
+  // duplicates.
+  auto filter_chip_and_policy = [](const SearchResult& r) -> bool {
+    return r.display_type() == SearchResultDisplayType::kChip &&
            !IsPolicySuggestionChip(r);
   };
   std::vector<SearchResult*> display_results =
       SearchModel::FilterSearchResultsByFunction(
-          results(), base::BindRepeating(filter_reinstall_and_shortcut),
+          results(), base::BindRepeating(filter_chip_and_policy),
           AppListConfig::instance().num_start_page_tiles() -
               requested_index_results.size());
 

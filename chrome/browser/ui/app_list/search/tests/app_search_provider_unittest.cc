@@ -169,8 +169,11 @@ class AppSearchProviderTest : public AppListTestBase {
       sorted_results.emplace_back(result.get());
     std::sort(sorted_results.begin(), sorted_results.end(), &MoreRelevant);
 
+    // If the query is empty, every other result is a chip result identical to
+    // the tile result. Skip these.
+    const int increment = query.empty() ? 2 : 1;
     std::string result_str;
-    for (size_t i = 0; i < sorted_results.size(); ++i) {
+    for (size_t i = 0; i < sorted_results.size(); i += increment) {
       if (!result_str.empty())
         result_str += ',';
 
@@ -203,8 +206,12 @@ class AppSearchProviderTest : public AppListTestBase {
                                    priority_results.end());
     }
 
+    // If the query is empty, every other result is a chip result identical to
+    // the tile result. Skip these.
+    const int increment = query.empty() ? 2 : 1;
     std::string result_str;
-    for (auto* result : non_relevance_results) {
+    for (size_t i = 0; i < non_relevance_results.size(); i += increment) {
+      auto* result = non_relevance_results[i];
       if (!result_str.empty())
         result_str += ',';
 

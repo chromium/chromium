@@ -142,7 +142,7 @@ bool IsViewVisibleOnScreen(views::View* view) {
 class TestStartPageSearchResult : public TestSearchResult {
  public:
   TestStartPageSearchResult() {
-    set_display_type(ash::SearchResultDisplayType::kTile);
+    set_display_type(ash::SearchResultDisplayType::kChip);
     set_is_recommendation(true);
   }
   ~TestStartPageSearchResult() override = default;

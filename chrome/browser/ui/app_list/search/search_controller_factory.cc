@@ -56,8 +56,9 @@ constexpr size_t kGenericMaxResults = 10;
 
 // Some app results may be blocklisted (e.g. continue reading) for rendering
 // in some UI, so we need to allow returning more results than actual maximum
-// number of results to be displayed in UI.
-constexpr size_t kMaxAppsGroupResults = 7;
+// number of results to be displayed in UI. This also accounts for two results
+// (tile and chip) being created for each app.
+constexpr size_t kMaxAppsGroupResults = 14;
 constexpr size_t kMaxLauncherSearchResults = 4;
 // We need twice as many ZeroState and Drive file results as we need
 // duplicates of these results for the suggestion chips.
@@ -68,7 +69,8 @@ constexpr size_t kMaxAppReinstallSearchResults = 1;
 // be filtered out because they may correspond to already installed Web apps. So
 // we request twice as many Play Store apps as we can show. Note that this still
 // doesn't guarantee that all 6 positions will be filled, as we might in theory
-// filter out more than half of results.
+// filter out more than half of results. Double this again to account for two
+// results (tile and chip) being created for each app.
 // TODO(753947): Consider progressive algorithm of getting Play Store results.
 constexpr size_t kMaxPlayStoreResults = 12;
 

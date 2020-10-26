@@ -69,6 +69,9 @@ void ArcAppShortcutsSearchProvider::UpdateRecommendedResults(
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
   DCHECK(arc_prefs);
 
+  // All ArcAppShortcutSearchResults have display type kList, so they are shown
+  // in the zero-state results list, but not in the suggestion chips.
+
   // Maps app IDs to their score according to |ranker_|
   SearchProvider::Results search_results;
   for (auto& item : shortcut_items) {
