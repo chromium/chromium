@@ -31,10 +31,12 @@ class X509Certificate;
 
 typedef std::vector<scoped_refptr<X509Certificate> > CertificateList;
 
-// X509Certificate represents a X.509 certificate, which is comprised a
-// particular identity or end-entity certificate, such as an SSL server
-// identity or an SSL client certificate, and zero or more intermediate
-// certificates that may be used to build a path to a root certificate.
+// A X.509 certificate represents a particular identity or end-entity
+// certificate, such as an SSL server identity or an SSL client certificate. An
+// X509Certificate contains this leaf certificate accessible via cert_buffer().
+// An X509Certificate may also contain 0 or more intermediary X.509 certificates
+// that are used to build a path to a root certificate. These are accessed via
+// intermediate_buffers().
 class NET_EXPORT X509Certificate
     : public base::RefCountedThreadSafe<X509Certificate> {
  public:
