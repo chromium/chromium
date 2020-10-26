@@ -16,6 +16,8 @@ class FakeDataTransferManagerInterop;
 // for the Share contract.
 class ScopedFakeDataTransferManagerInterop {
  public:
+  static bool IsSupportedEnvironment();
+
   ScopedFakeDataTransferManagerInterop();
   ScopedFakeDataTransferManagerInterop(
       const ScopedFakeDataTransferManagerInterop&) = delete;
@@ -23,11 +25,15 @@ class ScopedFakeDataTransferManagerInterop {
       const ScopedFakeDataTransferManagerInterop&) = delete;
   ~ScopedFakeDataTransferManagerInterop();
 
+  // Initializes this component, creating test failures if anything does not
+  // succeed. Intended to be called from a test's SetUp function, after having
+  // verified this is a supported environment.
+  void SetUp();
+
   FakeDataTransferManagerInterop& instance();
 
  private:
-  void Initialize();
-
+  bool set_up_ = false;
   Microsoft::WRL::ComPtr<FakeDataTransferManagerInterop> instance_;
 };
 

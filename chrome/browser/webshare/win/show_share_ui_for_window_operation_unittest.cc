@@ -18,6 +18,7 @@
 #include "chrome/browser/webshare/win/fake_data_transfer_manager_interop.h"
 #include "chrome/browser/webshare/win/scoped_fake_data_transfer_manager_interop.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequest;
@@ -40,14 +41,13 @@ class ShowShareUIForWindowOperationTest : public ::testing::Test {
   enum TestCallbackState { NotRun = 0, RunWithoutValue, RunWithValue };
 
   bool IsSupportedEnvironment() {
-    return base::win::ResolveCoreWinRTDelayload() &&
-           base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
+    return ScopedFakeDataTransferManagerInterop::IsSupportedEnvironment();
   }
 
   void SetUp() override {
     if (!IsSupportedEnvironment())
       return;
-    scoped_interop_ = std::make_unique<ScopedFakeDataTransferManagerInterop>();
+    ASSERT_NO_FATAL_FAILURE(scoped_interop_.SetUp());
     auto weak_ptr = weak_factory_.GetWeakPtr();
     test_callback_ = base::BindOnce(
         [](base::WeakPtr<ShowShareUIForWindowOperationTest> weak_ptr,
@@ -71,11 +71,11 @@ class ShowShareUIForWindowOperationTest : public ::testing::Test {
   }
 
   FakeDataTransferManagerInterop& fake_interop() {
-    return scoped_interop_->instance();
+    return scoped_interop_.instance();
   }
 
   const HWND hwnd_ = reinterpret_cast<HWND>(1);
-  std::unique_ptr<ScopedFakeDataTransferManagerInterop> scoped_interop_;
+  ScopedFakeDataTransferManagerInterop scoped_interop_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   DataRequestedCallback test_callback_;

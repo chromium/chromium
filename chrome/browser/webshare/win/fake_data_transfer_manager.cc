@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/win/core_winrt_util.h"
+#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webshare {
@@ -268,6 +270,15 @@ class FakeDataRequestedEventArgs
 };
 
 }  // namespace
+
+// static
+bool FakeDataTransferManager::IsSupportedEnvironment() {
+  if (base::win::ResolveCoreWinRTDelayload() &&
+      base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
+    return true;
+  EXPECT_LT(base::win::GetVersion(), base::win::Version::WIN8);
+  return false;
+}
 
 FakeDataTransferManager::FakeDataTransferManager() = default;
 FakeDataTransferManager::~FakeDataTransferManager() = default;

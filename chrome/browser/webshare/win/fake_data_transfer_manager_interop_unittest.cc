@@ -55,8 +55,7 @@ class DataRequestedTestCallback {
 class FakeDataTransferManagerInteropTest : public ::testing::Test {
  protected:
   bool IsSupportedEnvironment() {
-    return base::win::ResolveCoreWinRTDelayload() &&
-           base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
+    return FakeDataTransferManagerInterop::IsSupportedEnvironment();
   }
 
   void SetUp() override {

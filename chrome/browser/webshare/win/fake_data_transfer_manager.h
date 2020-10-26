@@ -19,6 +19,8 @@ class FakeDataTransferManager
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>,
           ABI::Windows::ApplicationModel::DataTransfer::IDataTransferManager> {
  public:
+  static bool IsSupportedEnvironment();
+
   FakeDataTransferManager();
   FakeDataTransferManager(const FakeDataTransferManager&) = delete;
   FakeDataTransferManager& operator=(const FakeDataTransferManager&) = delete;

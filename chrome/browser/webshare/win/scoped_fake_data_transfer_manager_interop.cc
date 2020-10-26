@@ -38,26 +38,25 @@ static HRESULT FakeRoGetActivationFactory(HSTRING class_id,
 
 }  // namespace
 
-ScopedFakeDataTransferManagerInterop::ScopedFakeDataTransferManagerInterop() {
-  // Initialization work is done in an independent function so that the
-  // various test macros can be used.
-  Initialize();
+// static
+bool ScopedFakeDataTransferManagerInterop::IsSupportedEnvironment() {
+  return FakeDataTransferManagerInterop::IsSupportedEnvironment();
 }
+
+ScopedFakeDataTransferManagerInterop::ScopedFakeDataTransferManagerInterop() =
+    default;
 
 ScopedFakeDataTransferManagerInterop::~ScopedFakeDataTransferManagerInterop() {
-  g_current_fake_interop = nullptr;
-  ShowShareUIForWindowOperation::SetRoGetActivationFactoryFunctionForTesting(
-      &base::win::RoGetActivationFactory);
+  if (set_up_) {
+    g_current_fake_interop = nullptr;
+    ShowShareUIForWindowOperation::SetRoGetActivationFactoryFunctionForTesting(
+        &base::win::RoGetActivationFactory);
+  }
 }
 
-FakeDataTransferManagerInterop&
-ScopedFakeDataTransferManagerInterop::instance() {
-  return *(instance_.Get());
-}
-
-void ScopedFakeDataTransferManagerInterop::Initialize() {
-  ASSERT_TRUE(base::win::ResolveCoreWinRTDelayload());
-  ASSERT_TRUE(base::win::ScopedHString::ResolveCoreWinRTStringDelayload());
+void ScopedFakeDataTransferManagerInterop::SetUp() {
+  ASSERT_FALSE(set_up_);
+  ASSERT_TRUE(IsSupportedEnvironment());
   base::win::AssertComInitialized();
 
   instance_ = Microsoft::WRL::Make<FakeDataTransferManagerInterop>();
@@ -68,6 +67,14 @@ void ScopedFakeDataTransferManagerInterop::Initialize() {
   g_current_fake_interop = instance_.Get();
   ShowShareUIForWindowOperation::SetRoGetActivationFactoryFunctionForTesting(
       &FakeRoGetActivationFactory);
+
+  set_up_ = true;
+}
+
+FakeDataTransferManagerInterop&
+ScopedFakeDataTransferManagerInterop::instance() {
+  EXPECT_TRUE(set_up_);
+  return *(instance_.Get());
 }
 
 }  // namespace webshare
