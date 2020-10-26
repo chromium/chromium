@@ -16,6 +16,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
 import org.chromium.chrome.test.pagecontroller.controllers.tabswitcher.TabSwitcherController;
 import org.chromium.chrome.test.pagecontroller.controllers.tabswitcher.TabSwitcherMenuController;
@@ -76,6 +77,7 @@ public class TabSwitcherControllerTest {
         Assert.assertTrue(NewTabPageController.getInstance().isCurrentPageThis());
     }
 
+    @DisabledTest(message = "https://crbug.com/1140998")
     @Test
     public void testOpenMenu() {
         mController.clickMenu();
