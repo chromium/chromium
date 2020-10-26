@@ -3123,11 +3123,6 @@ TEST_P(QuicNetworkTransactionTest,
 // Verify that if a QUIC connection times out, the QuicHttpStream will
 // return QUIC_PROTOCOL_ERROR.
 TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->idle_connection_timeout = base::TimeDelta::FromSeconds(5);
 
@@ -3152,27 +3147,50 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
 
   if (VersionUsesHttp3(version_.transport_version)) {
-    // TLP 1
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 1
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
-    // TLP 2
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 2
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         2, packet_num++, true));
-    // RTO 1
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 3
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        2, packet_num++, true));
-    // RTO 2
+
+    quic_data.AddWrite(SYNCHRONOUS,
+                       client_maker_->MakeConnectionClosePacket(
+                           packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
+                           "No recent network activity after 4s. Timeout:4s"));
+  } else if (version_.UsesTls()) {
+    // Settings were sent in the request packet so there is only 1 packet to
+    // retransmit.
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 1
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        2, packet_num++, true));
-    // RTO 3
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 2
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 3
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        2, packet_num++, true));
+                                        1, packet_num++, true));
 
     quic_data.AddWrite(SYNCHRONOUS,
                        client_maker_->MakeConnectionClosePacket(
@@ -3322,11 +3340,6 @@ TEST_P(QuicNetworkTransactionTest, ProtocolErrorAfterHandshakeConfirmed) {
 // connection times out, then QUIC will be marked as broken and the request
 // retried over TCP.
 TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
-  if (version_.UsesTls()) {
-    // QUIC with TLS1.3 handshake doesn't support 0-rtt.
-    return;
-  }
-
   context_.params()->idle_connection_timeout = base::TimeDelta::FromSeconds(5);
 
   // The request will initially go out over QUIC.
@@ -3349,27 +3362,52 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
 
   client_maker_->SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
   if (VersionUsesHttp3(version_.transport_version)) {
-    // TLP 1
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 1
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
-    // TLP 2
+
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 2
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         2, packet_num++, true));
-    // RTO 1
+
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 3
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        2, packet_num++, true));
-    // RTO 2
+
+    quic_data.AddWrite(SYNCHRONOUS,
+                       client_maker_->MakeConnectionClosePacket(
+                           packet_num++, true, quic::QUIC_NETWORK_IDLE_TIMEOUT,
+                           "No recent network activity after 4s. Timeout:4s"));
+  } else if (version_.UsesTls()) {
+    // Settings were sent in the request packet so there is only 1 packet to
+    // retransmit.
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 1
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
-    quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        2, packet_num++, true));
-    // RTO 3
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 2
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
                                         1, packet_num++, true));
+    // QuicConnection::OnRetransmissionTimeout skips a packet number when
+    // sending PTO packets.
+    packet_num++;
+    // PTO 3
     quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeRetransmissionPacket(
-                                        2, packet_num++, true));
+                                        1, packet_num++, true));
 
     quic_data.AddWrite(SYNCHRONOUS,
                        client_maker_->MakeConnectionClosePacket(
