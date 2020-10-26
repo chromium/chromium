@@ -53,7 +53,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   def testSymbolizeMinidump(self):
     # Wait for the browser to restart fully before crashing
     self._LoadPageThenWait('var sam = "car";', 'sam')
-    self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=5)
+    self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
     crash_minidump_path = self._browser.GetRecentMinidumpPathWithTimeout()
     self.assertIsNotNone(crash_minidump_path)
 
@@ -98,13 +98,13 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   def testMultipleCrashMinidumps(self):
     # Wait for the browser to restart fully before crashing
     self._LoadPageThenWait('var cat = "dog";', 'cat')
-    self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=5)
+    self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
     first_crash_path = self._browser.GetRecentMinidumpPathWithTimeout()
 
     self.assertIsNotNone(first_crash_path)
     if first_crash_path is not None:
-      logging.info('testMultipleCrashMinidumps: first crash most recent path'
-          + first_crash_path)
+      logging.info('testMultipleCrashMinidumps: first crash most recent path ' +
+                   first_crash_path)
     all_paths = self._browser.GetAllMinidumpPaths()
     if all_paths is not None:
       logging.info('testMultipleCrashMinidumps: first crash all paths: '
@@ -123,12 +123,13 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
           'paths: ' + ''.join(all_unsymbolized_paths))
 
     # Restart the browser and then crash a second time
+    logging.info('Restarting the browser')
     self._RestartBrowser()
 
     # Start a new tab in the restarted browser
     self._LoadPageThenWait('var foo = "bar";', 'foo')
 
-    self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=5)
+    self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
     # Make the oldest allowable timestamp slightly after the first dump's
     # timestamp so we don't get the first one returned to us again
     oldest_ts = os.path.getmtime(first_crash_path) + 1
@@ -136,8 +137,9 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
         oldest_ts=oldest_ts)
     self.assertIsNotNone(second_crash_path)
     if second_crash_path is not None:
-      logging.info('testMultipleCrashMinidumps: second crash most recent path'
-          + second_crash_path)
+      logging.info(
+          'testMultipleCrashMinidumps: second crash most recent path ' +
+          second_crash_path)
     second_crash_all_paths = self._browser.GetAllMinidumpPaths()
     if second_crash_all_paths is not None:
       logging.info('testMultipleCrashMinidumps: second crash all paths: '
@@ -195,7 +197,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     """
     self._LoadPageThenWait('var cat = "dog";', 'cat')
     try:
-      self._browser.tabs[-1].Navigate('chrome://hang', timeout=5)
+      self._browser.tabs[-1].Navigate('chrome://hang', timeout=10)
     except exceptions.Error:
       # We expect the navigate to time out due to the hang.
       pass
@@ -205,7 +207,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       # try to evaluate something to trigger that.
       # The timeout provided is the same one used for crashing the processes, so
       # don't make it too short.
-      self._browser.tabs[-1].EvaluateJavaScript('var cat = "dog";', timeout=5)
+      self._browser.tabs[-1].EvaluateJavaScript('var cat = "dog";', timeout=10)
     except exceptions.AppCrashException as e:
       self.assertTrue(e.is_valid_dump)
       # We should get one minidump from the GPU process (gl::Crash()) and one
