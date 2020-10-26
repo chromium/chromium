@@ -23,6 +23,7 @@
 #include "chrome/browser/autofill/mock_password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -36,9 +37,11 @@ using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessoryTabType;
 using autofill::mojom::FocusedFieldType;
+using base::ASCIIToUTF16;
 using testing::_;
 using testing::AnyNumber;
 using testing::NiceMock;
+using testing::SaveArg;
 using testing::StrictMock;
 using testing::WithArgs;
 using FillingSource = ManualFillingController::FillingSource;
@@ -47,6 +50,16 @@ AccessorySheetData empty_passwords_sheet() {
   constexpr char kTitle[] = "Example title";
   return AccessorySheetData(AccessoryTabType::PASSWORDS,
                             base::ASCIIToUTF16(kTitle));
+}
+
+AccessorySheetData filled_passwords_sheet() {
+  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                     ASCIIToUTF16("Pwds"))
+      .AddUserInfo("example.com", autofill::UserInfo::IsPslMatch(false))
+      .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false, true)
+      .AppendField(ASCIIToUTF16("S3cur3"), ASCIIToUTF16("Ben's PW"), true,
+                   false)
+      .Build();
 }
 
 AccessorySheetData populate_sheet(AccessoryTabType type) {
@@ -273,6 +286,22 @@ TEST_F(ManualFillingControllerTest, OnFillingTriggeredFillsAndClosesSheet) {
   EXPECT_CALL(mock_pwd_controller_, OnFillingTriggered(field));
   EXPECT_CALL(*view(), SwapSheetWithKeyboard());
   controller()->OnFillingTriggered(AccessoryTabType::PASSWORDS, field);
+}
+
+TEST_F(ManualFillingControllerTest, RefreshingUpdatesCache) {
+  // First, focus a field for which suggestions exist.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
+  controller()->RefreshSuggestions(populate_sheet(AccessoryTabType::PASSWORDS));
+
+  // Now, focus a field (e.g. in an iframe) with different suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
+  controller()->RefreshSuggestions(filled_passwords_sheet());
+
+  // Triggering a subsequent (independent) update must reuse the latest sheet.
+  AccessorySheetData cached(AccessoryTabType::PASSWORDS, base::string16());
+  EXPECT_CALL(*view(), OnItemsAvailable).WillOnce(SaveArg<0>(&cached));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
+  EXPECT_EQ(cached, filled_passwords_sheet());
 }
 
 TEST_F(ManualFillingControllerTest, ForwardsPasswordManagingToController) {

@@ -109,8 +109,8 @@ void ManualFillingControllerImpl::OnAutomaticGenerationStatusChanged(
 void ManualFillingControllerImpl::RefreshSuggestions(
     const AccessorySheetData& accessory_sheet_data) {
   view_->OnItemsAvailable(accessory_sheet_data);
-  available_sheets_.emplace(GetSourceForTab(accessory_sheet_data),
-                            accessory_sheet_data);
+  available_sheets_.insert_or_assign(GetSourceForTab(accessory_sheet_data),
+                                     accessory_sheet_data);
   UpdateSourceAvailability(GetSourceForTab(accessory_sheet_data),
                            !accessory_sheet_data.user_info_list().empty());
 }
