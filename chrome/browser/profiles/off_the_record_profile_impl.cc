@@ -149,10 +149,10 @@ void OffTheRecordProfileImpl::Init() {
       this);
 
   // Incognito is not available for ephemeral Guest profiles.
-  CHECK(!profile_->IsEphemeralGuestProfile());
+  CHECK(!IsIncognitoProfile() || !profile_->IsEphemeralGuestProfile());
 
   // Always crash when incognito is not available.
-  CHECK(!profile_->IsIncognitoProfile() ||
+  CHECK(!IsIncognitoProfile() ||
         IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
             IncognitoModePrefs::DISABLED);
 
