@@ -50,8 +50,7 @@ public class PermissionInfoTest {
 
     private void setGeolocation(
             String origin, String embedder, @ContentSettingValues int setting, boolean incognito) {
-        PermissionInfo info =
-                new PermissionInfo(ContentSettingsType.GEOLOCATION, origin, embedder, incognito);
+        PermissionInfo info = new PermissionInfo(ContentSettingsType.GEOLOCATION, origin, embedder);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> info.setContentSetting(getProfile(incognito), setting));
     }
@@ -59,8 +58,8 @@ public class PermissionInfoTest {
     private @ContentSettingValues int getGeolocation(
             String origin, String embedder, boolean incognito) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PermissionInfo info = new PermissionInfo(
-                    ContentSettingsType.GEOLOCATION, origin, embedder, incognito);
+            PermissionInfo info =
+                    new PermissionInfo(ContentSettingsType.GEOLOCATION, origin, embedder);
             return info.getContentSetting(getProfile(incognito));
         });
     }
@@ -68,7 +67,7 @@ public class PermissionInfoTest {
     private void setNotifications(
             String origin, String embedder, @ContentSettingValues int setting, boolean incognito) {
         PermissionInfo info =
-                new PermissionInfo(ContentSettingsType.NOTIFICATIONS, origin, embedder, incognito);
+                new PermissionInfo(ContentSettingsType.NOTIFICATIONS, origin, embedder);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> info.setContentSetting(getProfile(incognito), setting));
     }
@@ -76,8 +75,8 @@ public class PermissionInfoTest {
     private @ContentSettingValues int getNotifications(
             String origin, String embedder, boolean incognito) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PermissionInfo info = new PermissionInfo(
-                    ContentSettingsType.NOTIFICATIONS, origin, embedder, incognito);
+            PermissionInfo info =
+                    new PermissionInfo(ContentSettingsType.NOTIFICATIONS, origin, embedder);
             return info.getContentSetting(getProfile(incognito));
         });
     }

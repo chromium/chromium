@@ -16,22 +16,19 @@ import java.io.Serializable;
  * Permission information for a given origin.
  */
 public class PermissionInfo implements Serializable {
-    private final boolean mIsIncognito;
     private final boolean mIsEmbargoed;
     private final String mEmbedder;
     private final String mOrigin;
     private final @ContentSettingsType int mContentSettingsType;
 
-    public PermissionInfo(
-            @ContentSettingsType int type, String origin, String embedder, boolean isIncognito) {
-        this(type, origin, embedder, isIncognito, false);
+    public PermissionInfo(@ContentSettingsType int type, String origin, String embedder) {
+        this(type, origin, embedder, false);
     }
 
-    public PermissionInfo(@ContentSettingsType int type, String origin, String embedder,
-            boolean isIncognito, boolean isEmbargoed) {
+    public PermissionInfo(
+            @ContentSettingsType int type, String origin, String embedder, boolean isEmbargoed) {
         mOrigin = origin;
         mEmbedder = embedder;
-        mIsIncognito = isIncognito;
         mContentSettingsType = type;
         mIsEmbargoed = isEmbargoed;
     }
@@ -46,10 +43,6 @@ public class PermissionInfo implements Serializable {
 
     public String getEmbedder() {
         return mEmbedder;
-    }
-
-    public boolean isIncognito() {
-        return mIsIncognito;
     }
 
     public String getEmbedderSafe() {

@@ -85,7 +85,7 @@ public class WebsitePreferenceBridge {
                 }
             }
         }
-        list.add(new PermissionInfo(type, origin, embedder, false, isEmbargoed));
+        list.add(new PermissionInfo(type, origin, embedder, isEmbargoed));
     }
 
     @CalledByNative
