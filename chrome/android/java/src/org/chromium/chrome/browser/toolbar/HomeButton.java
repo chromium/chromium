@@ -56,8 +56,11 @@ public class HomeButton extends ChromeImageButton
      * @param isHomepageManagedByPolicy Supplier that tells if homepage is managed by policy.
      */
     public void init(ObservableSupplier<Boolean> homepageVisibility,
-            Callback<Context> onMenuClickCallback, Supplier<Boolean> isHomepageManagedByPolicy) {
-        homepageVisibility.addObserver((visible) -> updateContextMenuListener());
+            Callback<Context> onMenuClickCallback,
+            ObservableSupplier<Boolean> isHomepageManagedByPolicy) {
+        Callback<Boolean> contextUpdateCallback = (visible) -> updateContextMenuListener();
+        homepageVisibility.addObserver(contextUpdateCallback);
+        isHomepageManagedByPolicy.addObserver(contextUpdateCallback);
         mOnMenuClickCallback = onMenuClickCallback;
         mIsManagedByPolicySupplier = isHomepageManagedByPolicy;
         updateContextMenuListener();

@@ -30,7 +30,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
@@ -85,9 +84,10 @@ public class HomeButtonTest extends DummyUiActivityTestCase {
 
             mIdHomeButton = View.generateViewId();
             mHomeButton = new HomeButton(getActivity(), null);
+            ObservableSupplierImpl<Boolean> homepagePolicySupplier = new ObservableSupplierImpl<>();
+            homepagePolicySupplier.set(false);
             mHomeButton.init(new ObservableSupplierImpl<Boolean>(),
-                    HomepageManager.getInstance()::onMenuClick,
-                    HomepagePolicyManager::isHomepageManagedByPolicy);
+                    HomepageManager.getInstance()::onMenuClick, homepagePolicySupplier);
             mHomeButton.setId(mIdHomeButton);
             HomepageManager.getInstance().setSettingsLauncherForTesting(mSettingsLauncher);
             HomeButton.setSaveContextMenuForTests(true);

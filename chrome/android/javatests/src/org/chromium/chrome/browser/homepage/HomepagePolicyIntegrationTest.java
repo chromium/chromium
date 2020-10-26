@@ -92,7 +92,7 @@ public class HomepagePolicyIntegrationTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        if (mTestServer != null) mTestServer.stopAndDestroyServer();
     }
 
     @Test
@@ -138,22 +138,24 @@ public class HomepagePolicyIntegrationTest {
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
 
+        CriteriaHelper.pollUiThread(() -> {
+            ToolbarManager toolbarManager = mActivityTestRule.getActivity().getToolbarManager();
+            Criteria.checkThat(toolbarManager, Matchers.notNullValue());
+
+            HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
+            Criteria.checkThat(homeButton, Matchers.notNullValue());
+            Criteria.checkThat("Home Button should be visible", homeButton.getVisibility(),
+                    Matchers.is(View.VISIBLE));
+            Criteria.checkThat("Long press for home button should be disabled",
+                    homeButton.isLongClickable(), Matchers.is(false));
+        });
+
         ChromeTabUtils.waitForTabPageLoaded(
                 mActivityTestRule.getActivity().getActivityTab(), TEST_URL, () -> {
                     ToolbarManager toolbarManager =
                             mActivityTestRule.getActivity().getToolbarManager();
-                    if (toolbarManager != null) {
-                        HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
-                        if (homeButton != null) {
-                            Assert.assertEquals("Home Button should be visible", View.VISIBLE,
-                                    homeButton.getVisibility());
-
-                            // Context menu is disabled by checking long clickable
-                            Assert.assertFalse("Long press for home button should be disabled",
-                                    homeButton.isLongClickable());
-                            TouchCommon.singleClickView(homeButton);
-                        }
-                    }
+                    HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
+                    TouchCommon.singleClickView(homeButton);
                 });
 
         Assert.assertEquals("After clicking HomeButton, URL should be back to Homepage", TEST_URL,

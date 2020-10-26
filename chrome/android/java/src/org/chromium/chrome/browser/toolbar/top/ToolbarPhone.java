@@ -51,7 +51,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -476,8 +475,6 @@ public class ToolbarPhone extends ToolbarLayout
                 return getMenuButtonCoordinator().onEnterKeyPress();
             }
         });
-
-        onHomeButtonUpdate(HomepageManager.isHomepageEnabled());
 
         updateVisualsForLocationBarState();
     }

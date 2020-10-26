@@ -29,7 +29,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.NavigationPopup;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -270,9 +269,6 @@ public class ToolbarTablet extends ToolbarLayout
                 return getMenuButtonCoordinator().onEnterKeyPress();
             }
         });
-        if (HomepageManager.isHomepageEnabled()) {
-            mHomeButton.setVisibility(VISIBLE);
-        }
 
         mSaveOfflineButton.setOnClickListener(this);
         mSaveOfflineButton.setOnLongClickListener(this);

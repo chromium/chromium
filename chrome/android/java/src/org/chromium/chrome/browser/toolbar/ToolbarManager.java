@@ -56,8 +56,8 @@ import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.LocationBar;
-import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
@@ -131,6 +131,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final FullscreenManager.Observer mFullscreenObserver;
     private final ObservableSupplierImpl<Boolean> mHomeButtonVisibilitySupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHomepageManagedByPolicySupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier =
             new ObservableSupplierImpl<>();
@@ -675,9 +677,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 ()
                         -> identityDiscController.getForStartSurface(mStartSurfaceState),
                 startSurfaceSupplier);
-        mHomepageStateListener =
-                () -> mHomeButtonVisibilitySupplier.set(HomepageManager.isHomepageEnabled());
+        mHomepageStateListener = () -> {
+            mHomeButtonVisibilitySupplier.set(HomepageManager.isHomepageEnabled());
+            mHomepageManagedByPolicySupplier.set(HomepagePolicyManager.isHomepageManagedByPolicy());
+        };
         HomepageManager.getInstance().addListener(mHomepageStateListener);
+        mHomepageStateListener.onHomepageStateUpdated();
+
         if (toolbarLayout instanceof ToolbarPhone
                 && StartSurfaceConfiguration.isStartSurfaceEnabled()) {
             identityDiscController.addObserver(
@@ -686,8 +692,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         HomeButton homeButton = mActivity.findViewById(R.id.home_button);
         if (homeButton != null) {
             homeButton.init(mHomeButtonVisibilitySupplier,
-                    HomepageManager.getInstance()::onMenuClick,
-                    HomepagePolicyManager::isHomepageManagedByPolicy);
+                    HomepageManager.getInstance()::onMenuClick, mHomepageManagedByPolicySupplier);
         }
         return toolbar;
     }
