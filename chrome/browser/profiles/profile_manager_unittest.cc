@@ -617,7 +617,13 @@ TEST_P(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
 
   Profile* profile = profile_manager->GetLastUsedProfileAllowedByPolicy();
   ASSERT_TRUE(profile);
-  EXPECT_TRUE(profile->IsOffTheRecord());
+  if (IsEphemeral()) {
+    EXPECT_TRUE(profile->IsEphemeralGuestProfile());
+    EXPECT_FALSE(profile->IsOffTheRecord());
+  } else {
+    EXPECT_TRUE(profile->IsGuestSession());
+    EXPECT_TRUE(profile->IsOffTheRecord());
+  }
 }
 
 #if defined(OS_CHROMEOS)

@@ -640,6 +640,10 @@ Profile* TestingProfile::GetOffTheRecordProfile(
   if (IsOffTheRecord())
     return original_profile_->GetOffTheRecordProfile(otr_profile_id);
 
+  // Ephemeral Guest profiles do not support Incognito.
+  if (IsEphemeralGuestProfile() && otr_profile_id == OTRProfileID::PrimaryID())
+    return nullptr;
+
   if (!HasOffTheRecordProfile(otr_profile_id)) {
     TestingProfile::Builder builder;
     if (IsGuestSession() && otr_profile_id == OTRProfileID::PrimaryID())
@@ -979,7 +983,11 @@ bool TestingProfile::WasCreatedByVersionOrLater(const std::string& version) {
 }
 
 bool TestingProfile::IsGuestSession() const {
-  return guest_session_;
+  return guest_session_ && !IsEphemeralGuestProfileEnabled();
+}
+
+bool TestingProfile::IsEphemeralGuestProfile() const {
+  return guest_session_ && IsEphemeralGuestProfileEnabled();
 }
 
 bool TestingProfile::IsNewProfile() const {
