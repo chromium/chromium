@@ -5,15 +5,18 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.ui.widget.Toast;
 
@@ -30,6 +33,8 @@ public class ToggleTabStackButton
     private TabCountProvider mTabCountProvider;
     private OnClickListener mTabSwitcherListener;
     private OnLongClickListener mTabSwitcherLongClickListener;
+    private PulseDrawable mHighlightDrawable;
+    private Drawable mNormalBackground;
 
     public ToggleTabStackButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -130,6 +135,31 @@ public class ToggleTabStackButton
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         try (TraceEvent e = TraceEvent.scoped("ToggleTabStackButton.onLayout")) {
             super.onLayout(changed, left, top, right, bottom);
+        }
+    }
+
+    // Approach copied from menu_button/MenuButton.java. Needed because ViewHighlighter centers on
+    // the bounding box, while this button is slightly askew.
+    public void setHighlightDrawable(boolean highlighting) {
+        // TODO(https://crbug.com/1130752): Setting mNormalBackground is done here to keep this new
+        // logic implicitly flag guarded. After merged, move this to #onFinishInflate().
+        if (mNormalBackground == null) {
+            mNormalBackground = getBackground();
+        }
+
+        if (highlighting) {
+            if (mHighlightDrawable == null) {
+                mHighlightDrawable = PulseDrawable.createCircle(getContext());
+                mHighlightDrawable.setInset(ViewCompat.getPaddingStart(this), this.getPaddingTop(),
+                        ViewCompat.getPaddingEnd(this), this.getPaddingBottom());
+            }
+            boolean useLightDrawables = getDrawable() == mTabSwitcherButtonDrawableLight;
+            mHighlightDrawable.setUseLightPulseColor(
+                    getContext().getResources(), useLightDrawables);
+            setBackground(mHighlightDrawable);
+            mHighlightDrawable.start();
+        } else {
+            setBackground(mNormalBackground);
         }
     }
 }

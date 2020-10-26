@@ -623,6 +623,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mUndoBarPopupController.initialize();
 
             OnClickListener tabSwitcherClickHandler = v -> {
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
+                    Profile profile = mTabModelProfileSupplier.get();
+                    if (profile != null) {
+                        TrackerFactory.getTrackerForProfile(profile).notifyEvent(
+                                EventConstants.TAB_SWITCHER_BUTTON_CLICKED);
+                    }
+                }
+
                 if (getFullscreenManager().getPersistentFullscreenMode()) {
                     return;
                 }

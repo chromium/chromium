@@ -53,6 +53,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsTapToSeeAnotherTabFeature,
     &kIPHTabGroupsYourTabsAreTogetherFeature,
     &kIPHTabGroupsDragAndDropFeature,
+    &kIPHTabSwitcherButtonFeature,
     &kIPHTranslateMenuButtonFeature,
     &kIPHVideoTutorialNTPChromeIntroFeature,
     &kIPHVideoTutorialNTPDownloadFeature,

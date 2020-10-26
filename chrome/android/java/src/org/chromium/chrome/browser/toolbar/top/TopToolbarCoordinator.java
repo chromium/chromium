@@ -640,6 +640,18 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
+     * Sets the highlight on the new tab button shown during overview mode.
+     * @param highlight If the new tab button should be highlighted.
+     */
+    public void setNewTabButtonHighlight(boolean highlight) {
+        if (mTabSwitcherModeCoordinatorPhone != null) {
+            mTabSwitcherModeCoordinatorPhone.setNewTabButtonHighlight(highlight);
+        } else if (mStartSurfaceToolbarCoordinator != null) {
+            mStartSurfaceToolbarCoordinator.setNewTabButtonHighlight(highlight);
+        }
+    }
+
+    /**
      * @return The {@link ToolbarLayout} that constitutes the toolbar.
      */
     @VisibleForTesting

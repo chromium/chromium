@@ -86,6 +86,8 @@ import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator;
+import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
+import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -183,6 +185,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private HomepageManager.HomepageStateListener mHomepageStateListener;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
+    private ToggleTabStackButtonCoordinator mToggleTabStackButtonCoordinator;
 
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -858,6 +861,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     new HomeButtonCoordinator(mActivity, homeButton, mActivityTabProvider,
                             userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
                             mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier);
+            ToggleTabStackButton toggleTabStackButton =
+                    mControlContainer.findViewById(R.id.tab_switcher_button);
+            mToggleTabStackButtonCoordinator = new ToggleTabStackButtonCoordinator(mActivity,
+                    toggleTabStackButton, mActivityTabProvider, userEducationHelper,
+                    mIncognitoStateProvider::isIncognitoSelected, mIntentMetadataOneshotSupplier,
+                    mPromoShownOneshotSupplier, mOverviewModeBehaviorSupplier,
+                    mToolbar::setNewTabButtonHighlight);
         }
 
         TraceEvent.end("ToolbarManager.initializeWithNative");
@@ -996,6 +1006,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (mHomeButtonCoordinator != null) {
             mHomeButtonCoordinator.destroy();
             mHomeButtonCoordinator = null;
+        }
+        if (mToggleTabStackButtonCoordinator != null) {
+            mToggleTabStackButtonCoordinator.destroy();
+            mToggleTabStackButtonCoordinator = null;
         }
 
         if (mCallbackController != null) {

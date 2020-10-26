@@ -37,8 +37,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
         FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
         FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
-        FeatureConstants.FEED_CARD_MENU_FEATURE, FeatureConstants.IDENTITY_DISC_FEATURE,
-        FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
+        FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE, FeatureConstants.FEED_CARD_MENU_FEATURE,
+        FeatureConstants.IDENTITY_DISC_FEATURE, FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
         FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
         FeatureConstants.HOMEPAGE_PROMO_CARD_FEATURE, FeatureConstants.FEED_HEADER_MENU_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
@@ -133,6 +133,9 @@ public @interface FeatureConstants {
      * An IPH feature to show on tab switcher cards with multiple tab thumbnails.
      */
     String TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE = "IPH_TabGroupsYourTabsTogether";
+
+    /** An IPH feature to prompt users to open the tab switcher after a navigation. */
+    String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";
 
     /**
      * An IPH feature to show a card item on grid tab switcher to educate drag-and-drop.

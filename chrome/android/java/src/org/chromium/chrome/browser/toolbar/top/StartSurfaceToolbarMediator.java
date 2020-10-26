@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_AT_START;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
 
@@ -237,6 +238,13 @@ class StartSurfaceToolbarMediator {
             }
         };
         mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+    }
+
+    /**
+     * @param highlight If the new tab button should be highlighted.
+     */
+    void setNewTabButtonHighlight(boolean highlight) {
+        mPropertyModel.set(NEW_TAB_BUTTON_HIGHLIGHT, highlight);
     }
 
     private void updateLogoVisibility(boolean isGoogleSearchEngine) {

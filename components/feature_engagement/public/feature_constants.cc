@@ -101,6 +101,8 @@ const base::Feature kIPHTabGroupsYourTabsAreTogetherFeature{
     "IPH_TabGroupsYourTabsTogether", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHTabGroupsDragAndDropFeature{
     "IPH_TabGroupsDragAndDrop", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHTabSwitcherButtonFeature{
+    "IPH_TabSwitcherButton", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHTranslateMenuButtonFeature{
     "IPH_TranslateMenuButton", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHVideoTutorialNTPChromeIntroFeature{

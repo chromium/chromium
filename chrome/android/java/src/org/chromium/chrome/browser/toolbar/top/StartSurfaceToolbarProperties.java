@@ -46,6 +46,8 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey BUTTONS_CLICKABLE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_BUTTON_HIGHLIGHT =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     /** When set to true, move identity disc to the start of the toolbar. Can only set to true. */
     public static final PropertyModel.WritableBooleanPropertyKey IDENTITY_DISC_AT_START =
@@ -69,5 +71,5 @@ class StartSurfaceToolbarProperties {
             ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE, NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE,
             IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE, NEW_TAB_BUTTON_AT_START,
             IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER, IDENTITY_DISC_IMAGE,
-            IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE};
+            IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE, NEW_TAB_BUTTON_HIGHLIGHT};
 }

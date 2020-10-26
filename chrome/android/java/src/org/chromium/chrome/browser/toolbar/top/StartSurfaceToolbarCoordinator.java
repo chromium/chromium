@@ -229,6 +229,13 @@ public class StartSurfaceToolbarCoordinator {
         mToolbarMediator.onNativeLibraryReady();
     }
 
+    /**
+     * @param highlight If the new tab button should be highlighted.
+     */
+    void setNewTabButtonHighlight(boolean highlight) {
+        mToolbarMediator.setNewTabButtonHighlight(highlight);
+    }
+
     private void inflate() {
         mStub.setLayoutResource(R.layout.start_top_toolbar);
         mView = (StartSurfaceToolbarView) mStub.inflate();

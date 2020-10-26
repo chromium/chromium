@@ -202,4 +202,12 @@ class TabSwitcherModeTTCoordinatorPhone {
                                    "tab_grid_layout_android_new_tab")
                            .equals("NewTabVariation");
     }
+
+    /**
+     * @param highlight If the new tab button should be highlighted.
+     */
+    void setNewTabButtonHighlight(boolean highlight) {
+        assert mTabSwitcherModeToolbar != null;
+        mTabSwitcherModeToolbar.setNewTabButtonHighlight(highlight);
+    }
 }

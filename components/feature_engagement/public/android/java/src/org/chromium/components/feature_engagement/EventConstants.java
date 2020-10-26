@@ -178,6 +178,8 @@ public final class EventConstants {
     public static final String NTP_SHOWN = "ntp_shown";
     public static final String NTP_HOME_BUTTON_CLICKED = "ntp_homebutton_clicked";
 
+    public static final String TAB_SWITCHER_BUTTON_CLICKED = "tab_switcher_button_clicked";
+
     /** Video tutorial related events. */
     public static final String VIDEO_TUTORIAL_DISMISSED_SUMMARY =
             "video_tutorial_iph_dismissed_summary";

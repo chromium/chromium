@@ -99,6 +99,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kWebNfc,
     &feature_engagement::kIPHHomepagePromoCardFeature,
     &feature_engagement::kIPHNewTabPageHomeButtonFeature,
+    &feature_engagement::kIPHTabSwitcherButtonFeature,
     &feed::kInterestFeedV1ClicksAndViewsConditionalUpload,
     &feed::kInterestFeedContentSuggestions,
     &feed::kInterestFeedV2,
