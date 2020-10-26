@@ -1,11 +1,6 @@
 #define IN_LIBEXSLT
 #include "libexslt/libexslt.h"
 
-#include <libxml/xmlversion.h>
-
-#include "config.h"
-
-#include <libxslt/xsltconfig.h>
 #include <libxslt/extensions.h>
 
 #include <libexslt/exsltconfig.h>

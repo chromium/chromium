@@ -178,9 +178,21 @@ xsltDocumentFunctionLoadDocument(xmlXPathParserContextPtr ctxt, xmlChar* URI)
 	goto out_fragment;
     }
 
+#if LIBXML_VERSION >= 20911 || \
+    defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+    xptrctxt->opLimit = ctxt->context->opLimit;
+    xptrctxt->opCount = ctxt->context->opCount;
+    xptrctxt->depth = ctxt->context->depth;
+
     resObj = xmlXPtrEval(fragment, xptrctxt);
-    xmlXPathFreeContext(xptrctxt);
+
+    ctxt->context->opCount = xptrctxt->opCount;
+#else
+    resObj = xmlXPtrEval(fragment, xptrctxt);
 #endif
+
+    xmlXPathFreeContext(xptrctxt);
+#endif /* LIBXML_XPTR_ENABLED */
 
     if (resObj == NULL)
 	goto out_fragment;

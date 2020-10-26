@@ -30,8 +30,8 @@ import tempfile
 # 2. On Linux:
 #    a. sudo apt-get install libicu-dev
 #    b. git clone https://gitlab.gnome.org/GNOME/libxslt.git somewhere
-# 3. On Mac, install these MacPorts:
-#    autoconf automake libtool pkgconfig icu
+# 3. On Mac, install these packages with brew:
+#      autoconf automake libtool pkgconfig icu4c
 #
 # Procedure:
 #
@@ -67,6 +67,7 @@ import tempfile
 PATCHES = [
     'get-file-attributes-a.patch',
     'xslt-locale.patch',
+    'remove-crypto.patch',
 ]
 
 
@@ -274,6 +275,12 @@ def prepare_libxslt_distribution(src_path, libxslt_repo_path, temp_dir):
             shell=True)
     with WorkingDir(temp_src_path):
         os.remove('.gitignore')
+        for patch in PATCHES:
+            print('applying %s' % patch)
+            subprocess.check_call(
+                'patch -p1 --fuzz=0 < %s' % os.path.join(
+                    src_path, THIRD_PARTY_LIBXSLT_SRC, '..', 'chromium', patch),
+                shell=True)
     with WorkingDir(temp_config_path):
         subprocess.check_call(['../src/autogen.sh'] + XSLT_CONFIGURE_OPTIONS +
                               libxml_path_option(src_path))
@@ -313,11 +320,6 @@ def roll_libxslt_linux(src_path, repo_path):
             sed_in_place('../README.chromium',
                          's/Version: .*$/Version: %s/' % commit)
             check_copying()
-
-            for patch in PATCHES:
-                subprocess.check_call(
-                    'cat ../chromium/%s | patch -p1 --fuzz=0' % patch,
-                    shell=True)
 
             with WorkingDir('../linux'):
                 subprocess.check_call(['../src/configure'] +

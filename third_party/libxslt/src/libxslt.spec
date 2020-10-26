@@ -128,5 +128,5 @@ rm -fr %{buildroot}
 %doc python/tests/*.xsl
 
 %changelog
-* Fri Nov  8 2019 Daniel Veillard <veillard@redhat.com>
+* Fri Oct 23 2020 Daniel Veillard <veillard@redhat.com>
 - upstream release 1.1.34 see http://xmlsoft.org/XSLT/news.html

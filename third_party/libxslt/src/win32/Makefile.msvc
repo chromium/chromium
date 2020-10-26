@@ -73,6 +73,11 @@ LDFLAGS = $(LDFLAGS) /DEBUG
 CFLAGS = $(CFLAGS) /D "NDEBUG" /O2 
 !endif
 
+# append CFLAGS etc. passed on command line
+CPPFLAGS = $(CPPFLAGS) $(EXTRA_CPPFLAGS)
+CFLAGS = $(CFLAGS) $(EXTRA_CFLAGS)
+LDFLAGS = $(LDFLAGS) $(EXTRA_LDFLAGS)
+
 # Libxslt object files.
 XSLT_OBJS = $(XSLT_INTDIR)\attributes.obj\
 	$(XSLT_INTDIR)\documents.obj\

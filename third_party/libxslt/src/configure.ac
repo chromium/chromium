@@ -272,17 +272,17 @@ except: print 0"`
 	   -d $with_python/lib/python$PYTHON_VERSION/site-packages
 	then
 	    PYTHON_INCLUDES=$with_python/include/python$PYTHON_VERSION
-	    PYTHON_SITE_PACKAGES='$(libdir)/python$(PYTHON_VERSION)/site-packages'
+	    PYTHON_SITE_PACKAGES=$libdir/python$PYTHON_VERSION/site-packages
 	else
 	    if test -r $prefix/include/python$PYTHON_VERSION/Python.h
 	    then
 	        PYTHON_INCLUDES=$prefix/include/python$PYTHON_VERSION
-		PYTHON_SITE_PACKAGES='$(libdir)/python$(PYTHON_VERSION)/site-packages'
+		PYTHON_SITE_PACKAGES=$libdir/python$PYTHON_VERSION/site-packages
 	    else
 		if test -r /usr/include/python$PYTHON_VERSION/Python.h
 		then
 		    PYTHON_INCLUDES=/usr/include/python$PYTHON_VERSION
-		    PYTHON_SITE_PACKAGES='$(libdir)/python$(PYTHON_VERSION)/site-packages'
+		    PYTHON_SITE_PACKAGES=$libdir/python$PYTHON_VERSION/site-packages
 		else
 		    echo could not find python$PYTHON_VERSION/Python.h
 		fi
@@ -296,9 +296,9 @@ except: print 0"`
     fi
     if test "$with_python" != ""
     then
-        pythondir='$(PYTHON_SITE_PACKAGES)'
+        pythondir=$PYTHON_SITE_PACKAGES
     else
-        pythondir='$(libdir)/python$(PYTHON_VERSION)/site-packages'
+        pythondir=$libdir/python$PYTHON_VERSION/site-packages
     fi
 fi
 AM_CONDITIONAL(WITH_PYTHON, test "$PYTHON_INCLUDES" != "")
@@ -474,7 +474,7 @@ if test "${GCC}" != "yes" ; then
                ;;
     esac
 else
-    CFLAGS="${CFLAGS} -Wall -Wextra -Wformat=2 -Wmissing-format-attribute"
+    CFLAGS="${CFLAGS} -Wall -Wextra -Wformat=2 -Wmissing-format-attribute -Wshadow"
     case "${host}" in
           alpha*-*-linux* )
 	       CFLAGS="${CFLAGS} -mieee"
@@ -491,6 +491,7 @@ dnl
 
 build_shared_libs="yes"
 build_static_libs="yes"
+xml_config_dynamic=
 
 if test "$enable_shared" = "no"; then
     build_shared_libs="no"
@@ -515,10 +516,11 @@ if test "x$LIBXML_SRC" != "x"; then
         XML_CONFIG="${LIBXML_SRC}/xml2-config"
         LIBXML_CFLAGS="-I${LIBXML_SRC}/include"
         if test "$build_static_libs" = "no"; then
-            LIBXML_LIBS="-L${LIBXML_SRC} `$XML_CONFIG --libs --dynamic`"
-        else
-            LIBXML_LIBS="-L${LIBXML_SRC} `$XML_CONFIG --libs`"
+            if $XML_CONFIG --help | grep -q '\--dynamic'; then
+                xml_config_dynamic=--dynamic
+            fi
         fi
+        LIBXML_LIBS="-L${LIBXML_SRC} `$XML_CONFIG --libs $xml_config_dynamic`"
         WITH_MODULES="`$XML_CONFIG --modules`"
         cd $CWD
     else
@@ -546,7 +548,7 @@ dnl make sure xml2-config is executable,
 dnl test version and init our variables
 dnl
 
-if test "x$LIBXML_LIBS" = "x" && ${XML_CONFIG} --libs print > /dev/null 2>&1
+if test "x$LIBXML_LIBS" = "x" && ${XML_CONFIG} --libs > /dev/null 2>&1
 then
     AC_MSG_CHECKING(for libxml libraries >= $LIBXML_REQUIRED_VERSION)
     XMLVERS=`$XML_CONFIG --version`
@@ -557,12 +559,13 @@ then
     fi
 
     if test "$build_static_libs" = "no"; then
-        LIBXML_LIBS="`$XML_CONFIG --libs --dynamic`"
-    else
-        LIBXML_LIBS="`$XML_CONFIG --libs`"
+        if $XML_CONFIG --help | grep -q '\--dynamic'; then
+            xml_config_dynamic=--dynamic
+        fi
     fi
-	LIBXML_CFLAGS="`$XML_CONFIG --cflags`"
-        WITH_MODULES="`$XML_CONFIG --modules`"
+    LIBXML_LIBS="`$XML_CONFIG --libs $xml_config_dynamic`"
+    LIBXML_CFLAGS="`$XML_CONFIG --cflags`"
+    WITH_MODULES="`$XML_CONFIG --modules`"
 fi
 
 if test "x$LIBXML_LIBS" = "x"
@@ -712,6 +715,10 @@ doc/Makefile
 xslt-config
 libxslt.spec
 ])
+if test "$CRYPTO_TESTDIR" != ""
+then
+  AC_CONFIG_FILES(["tests/exslt/$CRYPTO_TESTDIR/Makefile"])
+fi
 AC_CONFIG_LINKS([tests/fuzz/xpath.xml:tests/fuzz/xpath.xml])
 AC_CONFIG_LINKS([tests/fuzz/xslt.xml:tests/fuzz/xslt.xml])
 
