@@ -204,6 +204,27 @@ class MetaBuildWrapper(object):
                       help='path to goma directory')
     subp.set_defaults(func=self.CmdExport)
 
+    subp = subps.add_parser('get-swarming-command',
+                            description='Get the command needed to run the '
+                            'binary under swarming')
+    AddCommonOptions(subp)
+    subp.add_argument('--no-build',
+                      dest='build',
+                      default=True,
+                      action='store_false',
+                      help='Do not build, just isolate')
+    subp.add_argument('--as-list',
+                      action='store_true',
+                      help='return the command line as a JSON-formatted '
+                      'list of strings instead of single string')
+    subp.add_argument('path',
+                      help=('path to generate build into (or use).'
+                            ' This can be either a regular path or a '
+                            'GN-style source-relative path like '
+                            '//out/Default.'))
+    subp.add_argument('target', help='ninja target to build and run')
+    subp.set_defaults(func=self.CmdGetSwarmingCommand)
+
     subp = subps.add_parser('train',
                             description='Writes the expanded configuration '
                             'for each builder as JSON files to a configured '
@@ -427,6 +448,15 @@ class MetaBuildWrapper(object):
     vals = self.Lookup()
     return self.RunGNGen(vals)
 
+  def CmdGetSwarmingCommand(self):
+    vals = self.GetConfig()
+    command, _ = self.GetSwarmingCommand(self.args.target, vals)
+    if self.args.as_list:
+      self.Print(json.dumps(command))
+    else:
+      self.Print(' '.join(command))
+    return 0
+
   def CmdIsolateEverything(self):
     vals = self.Lookup()
     return self.RunGNGenAllIsolates(vals)
@@ -544,7 +574,7 @@ class MetaBuildWrapper(object):
 
     self.Print('')
     if self.args.swarmed:
-      cmd, _ = self.GetIsolateCommand(self.args.target, vals)
+      cmd, _ = self.GetSwarmingCommand(self.args.target, vals)
       return self._RunUnderSwarming(self.args.path, self.args.target, cmd)
     else:
       return self._RunLocallyIsolated(self.args.path, self.args.target)
@@ -1132,7 +1162,7 @@ class MetaBuildWrapper(object):
       if not found_one:
         raise MBErr('Did not find any of %s' % ', '.join(rpaths))
 
-      command, extra_files = self.GetIsolateCommand(target, vals)
+      command, extra_files = self.GetSwarmingCommand(target, vals)
       runtime_deps = self.ReadFile(path_to_use).splitlines()
 
       canonical_target = target.replace(':','_').replace('/','_')
@@ -1216,7 +1246,7 @@ class MetaBuildWrapper(object):
 
     build_dir = self.args.path
 
-    command, extra_files = self.GetIsolateCommand(target, vals)
+    command, extra_files = self.GetSwarmingCommand(target, vals)
 
     # Any warning for an unused arg will get interleaved into the cmd's
     # stdout. When that happens, the isolate step below will fail with an
@@ -1432,7 +1462,7 @@ class MetaBuildWrapper(object):
 
     return '\n'.join(args_gn_lines)
 
-  def GetIsolateCommand(self, target, vals):
+  def GetSwarmingCommand(self, target, vals):
     isolate_map = self.ReadIsolateMap()
 
     is_android = 'target_os="android"' in vals['gn_args']
