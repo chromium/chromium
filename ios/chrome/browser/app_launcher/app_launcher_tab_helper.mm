@@ -144,7 +144,7 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
       if (!delegate_)
         return;
       delegate_->ShowRepeatedAppLaunchAlert(
-          this, base::BindOnce(^(BOOL user_allowed) {
+          this, base::BindOnce(^(bool user_allowed) {
             if (!weak_this.get())
               return;
             if (user_allowed && weak_this->delegate()) {
