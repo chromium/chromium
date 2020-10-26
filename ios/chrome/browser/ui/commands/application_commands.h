@@ -119,16 +119,6 @@ enum class KeyRetrievalTriggerForUMA;
                                      sender:(UserFeedbackSender)sender;
 
 // Shows the Report an Issue UI, presenting from |baseViewController|, using
-// |specificProductData| for additional product data to be sent in the report
-// and UserFeedbackSender::ToolsMenu sender.
-// TODO(crbug.com/1138523): Remove this method after Downstream code stop using
-// it.
-- (void)
-    showReportAnIssueFromViewController:(UIViewController*)baseViewController
-                    specificProductData:(NSDictionary<NSString*, NSString*>*)
-                                            specificProductData;
-
-// Shows the Report an Issue UI, presenting from |baseViewController|, using
 // |specificProductData| for additional product data to be sent in the report.
 - (void)
     showReportAnIssueFromViewController:(UIViewController*)baseViewController

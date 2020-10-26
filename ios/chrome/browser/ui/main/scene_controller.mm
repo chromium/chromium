@@ -992,15 +992,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)
     showReportAnIssueFromViewController:(UIViewController*)baseViewController
-                    specificProductData:(NSDictionary<NSString*, NSString*>*)
-                                            specificProductData {
-  [self showReportAnIssueFromViewController:baseViewController
-                                     sender:UserFeedbackSender::ToolsMenu
-                        specificProductData:specificProductData];
-}
-
-- (void)
-    showReportAnIssueFromViewController:(UIViewController*)baseViewController
                                  sender:(UserFeedbackSender)sender
                     specificProductData:(NSDictionary<NSString*, NSString*>*)
                                             specificProductData {
