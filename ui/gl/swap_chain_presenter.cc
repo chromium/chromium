@@ -212,14 +212,6 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
   if (content_is_hdr)
     return DXGI_FORMAT_R10G10B10A2_UNORM;
 
-  // For software protected video, BGRA swap chain is preferred if hardware
-  // overlay is not supported for better power efficiency.
-  // Currently, software protected video is the only case that overlay swap
-  // chain is used when hardware overlay is not supported.
-  if (protected_video_type == gfx::ProtectedVideoType::kSoftwareProtected &&
-      !DirectCompositionSurfaceWin::AreOverlaysSupported())
-    return DXGI_FORMAT_B8G8R8A8_UNORM;
-
   if (failed_to_create_yuv_swapchain_)
     return DXGI_FORMAT_B8G8R8A8_UNORM;
 
@@ -786,10 +778,7 @@ bool SwapChainPresenter::PresentToSwapChain(
   }
 
   bool swap_chain_resized = swap_chain_size_ != swap_chain_size;
-  // Give it another chance to try YUV again when the size changes.
-  if (swap_chain_resized) {
-    presentation_history_.Clear();
-  }
+
   DXGI_FORMAT swap_chain_format =
       GetSwapChainFormat(params.protected_video_type, content_is_hdr);
   bool swap_chain_format_changed = swap_chain_format != swap_chain_format_;
@@ -800,8 +789,7 @@ bool SwapChainPresenter::PresentToSwapChain(
   if (!swap_chain_ || swap_chain_resized || swap_chain_format_changed ||
       toggle_protected_video) {
     if (!ReallocateSwapChain(swap_chain_size, swap_chain_format,
-                             params.protected_video_type, params.z_order,
-                             content_is_hdr)) {
+                             params.protected_video_type)) {
       ReleaseSwapChainResources();
       return false;
     }
@@ -1119,9 +1107,7 @@ void SwapChainPresenter::ReleaseSwapChainResources() {
 bool SwapChainPresenter::ReallocateSwapChain(
     const gfx::Size& swap_chain_size,
     DXGI_FORMAT swap_chain_format,
-    gfx::ProtectedVideoType protected_video_type,
-    bool z_order,
-    bool content_is_hdr) {
+    gfx::ProtectedVideoType protected_video_type) {
   bool use_yuv_swap_chain = IsYUVSwapChainFormat(swap_chain_format);
 
   TRACE_EVENT2("gpu", "SwapChainPresenter::ReallocateSwapChain", "size",

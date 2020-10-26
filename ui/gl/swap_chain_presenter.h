@@ -103,9 +103,7 @@ class SwapChainPresenter : public base::PowerObserver {
   // |protected_video_type|. Returns true on success.
   bool ReallocateSwapChain(const gfx::Size& swap_chain_size,
                            DXGI_FORMAT swap_chain_format,
-                           gfx::ProtectedVideoType protected_video_type,
-                           bool z_order,
-                           bool content_is_hdr);
+                           gfx::ProtectedVideoType protected_video_type);
 
   // Returns DXGI format that swap chain uses.
   // This changes over time based on stats recorded in |presentation_history|.
