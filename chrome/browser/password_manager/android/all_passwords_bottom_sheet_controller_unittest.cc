@@ -92,6 +92,11 @@ PasswordForm MakeSavedPassword(const std::string& signon_realm,
 class AllPasswordsBottomSheetControllerTest : public testing::Test {
  protected:
   AllPasswordsBottomSheetControllerTest() {
+    createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
+  }
+
+  void createAllPasswordsController(
+      autofill::mojom::FocusedFieldType focused_field_type) {
     std::unique_ptr<MockAllPasswordsBottomSheetView> mock_view_unique_ptr =
         std::make_unique<MockAllPasswordsBottomSheetView>();
     mock_view_ = mock_view_unique_ptr.get();
@@ -99,8 +104,7 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
         std::make_unique<AllPasswordsBottomSheetController>(
             util::PassKey<AllPasswordsBottomSheetControllerTest>(),
             std::move(mock_view_unique_ptr), driver_.AsWeakPtr(), store_.get(),
-            dissmissal_callback_.Get(),
-            FocusedFieldType::kFillablePasswordField,
+            dissmissal_callback_.Get(), focused_field_type,
             mock_pwd_manager_client_.get());
   }
 
@@ -174,6 +178,15 @@ TEST_F(AllPasswordsBottomSheetControllerTest, OnDismiss) {
 TEST_F(AllPasswordsBottomSheetControllerTest,
        OnCredentialSelectedTriggersPhishGuard) {
   EXPECT_CALL(client(), OnPasswordSelected(base::UTF8ToUTF16(kPassword)));
+
+  all_passwords_controller()->OnCredentialSelected(
+      base::UTF8ToUTF16(kUsername1), base::UTF8ToUTF16(kPassword));
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       PhishGuardIsNotCalledForUsername) {
+  createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
+  EXPECT_CALL(client(), OnPasswordSelected).Times(0);
 
   all_passwords_controller()->OnCredentialSelected(
       base::UTF8ToUTF16(kUsername1), base::UTF8ToUTF16(kPassword));

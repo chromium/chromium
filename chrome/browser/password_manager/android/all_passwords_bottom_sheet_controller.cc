@@ -80,16 +80,16 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
   DCHECK(driver_);
   if (is_password_field) {
     driver_->FillIntoFocusedField(is_password_field, password);
+
+    // `client_` is guaranteed to be valid here.
+    // Both the `client_` and `PasswordAccessoryController` are attached to
+    // WebContents. And AllPasswordBottomSheetController is owned by
+    // PasswordAccessoryController.
+    DCHECK(client_);
+    client_->OnPasswordSelected(password);
   } else {
     driver_->FillIntoFocusedField(is_password_field, username);
   }
-
-  // `client_` is guaranteed to be valid here.
-  // Both the `client_` and `PasswordAccessoryController` are attached to
-  // WebContents. And AllPasswordBottomSheetController is owned by
-  // PasswordAccessoryController.
-  DCHECK(client_);
-  client_->OnPasswordSelected(password);
 
   // Consumes the dismissal callback to destroy the native controller and java
   // controller after the user selects a credential.
