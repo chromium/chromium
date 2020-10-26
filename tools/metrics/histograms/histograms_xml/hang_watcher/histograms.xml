@@ -1,0 +1,50 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of HangWatcher histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="ProcessType">
+  <variant name="BrowserProcess"/>
+  <variant name="RendererProcess"/>
+</variants>
+
+<histogram name="HangWatcher.SleepDrift.{ProcessType}" units="microseconds"
+    expires_after="2021-10-23">
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    HangWatcher is a class that periodically checks on watched threads to see if
+    they are making progress or if they are hung. This metric is recorded when
+    the HangWatcher resumes from sleeping for its next watch time. The value is
+    the time difference between when the HangWatcher woke up and the planned
+    wake-up time. Not waking up in time is a bad state. It could be caused by an
+    overloaded machine or another problem like system sleep. Knowing whether the
+    HangWatcher wakes up in a timely manner in the average case can help analyse
+    trial results and is interesting to track over time. An increasing value for
+    this histogram could hint at a larger problem and would prevent
+    missinterpreting a reduced inflow of hang reports as a improvement when it
+    is in fact caused by hindered capabilities.
+  </summary>
+  <token key="ProcessType" variants="ProcessType"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

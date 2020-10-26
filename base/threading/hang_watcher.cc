@@ -14,6 +14,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -332,6 +333,9 @@ void HangWatcher::Wait() {
     const base::TimeDelta wait_time = time_after_wait - time_before_wait;
     const bool wait_was_normal =
         wait_time <= (monitor_period_ + kWaitDriftTolerance);
+
+    UMA_HISTOGRAM_TIMES("HangWatcher.SleepDrift.BrowserProcess",
+                        wait_time - monitor_period_);
 
     if (!wait_was_normal) {
       // If the time spent waiting was too high it might indicate the machine is
