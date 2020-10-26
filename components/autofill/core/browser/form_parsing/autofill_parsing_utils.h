@@ -57,11 +57,6 @@ struct MatchingPattern {
   std::string language;
 };
 
-// Use these functions instead of storing "non standats type" constants that
-// bots might complaining over.
-MatchingPattern GetCompanyPatternEn();
-MatchingPattern GetCompanyPatternDe();
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_PARSING_UTILS_H_

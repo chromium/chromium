@@ -13,31 +13,4 @@ MatchingPattern& MatchingPattern::operator=(const MatchingPattern& mp) =
 
 MatchingPattern::~MatchingPattern() = default;
 
-autofill::MatchingPattern GetCompanyPatternEn() {
-  autofill::MatchingPattern m_p;
-  m_p.pattern_identifier = "kCompanyPatternEn";
-  m_p.positive_pattern = "company|business|organization|organisation";
-  m_p.positive_score = 1.1f;
-  m_p.negative_pattern = "";
-  m_p.match_field_attributes = MATCH_NAME;
-  m_p.match_field_input_types = MATCH_TEXT;
-  m_p.language = "en";
-
-  return m_p;
-}
-
-autofill::MatchingPattern GetCompanyPatternDe() {
-  autofill::MatchingPattern m_p;
-
-  m_p.pattern_identifier = "kCompanyPatternDe";
-  m_p.positive_pattern = "|(?<!con)firma|firmenname";
-  m_p.positive_score = 1.1f;
-  m_p.negative_pattern = "";
-  m_p.match_field_attributes = MATCH_LABEL | MATCH_NAME;
-  m_p.match_field_input_types = MATCH_TEXT;
-  m_p.language = "de";
-
-  return m_p;
-}
-
 }  // namespace autofill

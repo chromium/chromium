@@ -23,6 +23,30 @@ namespace autofill {
 
 namespace {
 
+MatchingPattern GetCompanyPatternEn() {
+  autofill::MatchingPattern m_p;
+  m_p.pattern_identifier = "kCompanyPatternEn";
+  m_p.positive_pattern = "company|business|organization|organisation";
+  m_p.positive_score = 1.1f;
+  m_p.negative_pattern = "";
+  m_p.match_field_attributes = MATCH_NAME;
+  m_p.match_field_input_types = MATCH_TEXT;
+  m_p.language = "en";
+  return m_p;
+}
+
+MatchingPattern GetCompanyPatternDe() {
+  autofill::MatchingPattern m_p;
+  m_p.pattern_identifier = "kCompanyPatternDe";
+  m_p.positive_pattern = "|(?<!con)firma|firmenname";
+  m_p.positive_score = 1.1f;
+  m_p.negative_pattern = "";
+  m_p.match_field_attributes = MATCH_LABEL | MATCH_NAME;
+  m_p.match_field_input_types = MATCH_TEXT;
+  m_p.language = "de";
+  return m_p;
+}
+
 // Pattern Provider with custom values set for testing.
 class UnitTestPatternProvider : public PatternProvider {
  public:
@@ -31,11 +55,12 @@ class UnitTestPatternProvider : public PatternProvider {
 };
 
 UnitTestPatternProvider::UnitTestPatternProvider() {
-  auto& company_patterns = patterns_[AutofillType(COMPANY_NAME).ToString()];
-  company_patterns["EN"].push_back(GetCompanyPatternEn());
-  company_patterns["DE"].push_back(GetCompanyPatternDe());
-
   PatternProvider::SetPatternProviderForTesting(this);
+  Map patterns;
+  auto& company_patterns = patterns[AutofillType(COMPANY_NAME).ToString()];
+  company_patterns["en"].push_back(GetCompanyPatternEn());
+  company_patterns["de"].push_back(GetCompanyPatternDe());
+  SetPatterns(patterns, base::Version(), true);
 }
 
 UnitTestPatternProvider::~UnitTestPatternProvider() {
@@ -69,7 +94,7 @@ TEST(AutofillPatternProvider, Single_Match) {
   MatchingPattern kCompanyPatternEn = GetCompanyPatternEn();
   MatchingPattern kCompanyPatternDe = GetCompanyPatternDe();
   UnitTestPatternProvider* pattern_provider = new UnitTestPatternProvider();
-  auto pattern_store = pattern_provider->GetMatchPatterns("COMPANY_NAME", "EN");
+  auto pattern_store = pattern_provider->GetMatchPatterns("COMPANY_NAME", "en");
 
   ASSERT_EQ(pattern_store.size(), 1u);
   EXPECT_EQ(pattern_store[0], kCompanyPatternEn);
@@ -110,21 +135,83 @@ TEST(AutofillPatternProviderPipelineTest, TestParsingEquivalent) {
             test_pattern_provider.patterns_);
 }
 
-TEST(AutofillPatternProvider, Based_On_Type_Match) {
-  MatchingPattern kCompanyPatternEn = GetCompanyPatternEn();
-  MatchingPattern kCompanyPatternDe = GetCompanyPatternDe();
-  std::vector<MatchingPattern> match_vector;
-  match_vector.push_back(kCompanyPatternDe);
-  match_vector.push_back(kCompanyPatternEn);
+TEST(AutofillPatternProvider, BasedOnMatchType) {
+  UnitTestPatternProvider p;
+  ASSERT_GT(p.GetAllPatternsBaseOnType("COMPANY_NAME").size(), 0u);
+  EXPECT_EQ(p.GetAllPatternsBaseOnType("COMPANY_NAME"),
+            std::vector<MatchingPattern>({GetCompanyPatternDe(),
+                                          GetCompanyPatternEn(),
+                                          GetCompanyPatternEn()}));
+  EXPECT_EQ(p.GetAllPatternsBaseOnType("COMPANY_NAME").size(), 3u);
+}
 
-  UnitTestPatternProvider* pattern_provider = new UnitTestPatternProvider();
+TEST(AutofillPatternProvider, UnknownLanguages) {
+  {
+    base::test::ScopedFeatureList feature;
+    feature.InitWithFeatures(
+        // enabled
+        {features::kAutofillUsePageLanguageToSelectFieldParsingPatterns},
+        // disabled
+        {features::
+             kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics});
+    UnitTestPatternProvider p;
+    EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", ""),
+              p.GetAllPatternsBaseOnType("COMPANY_NAME"));
+    EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "blabla"),
+              p.GetAllPatternsBaseOnType("COMPANY_NAME"));
+  }
 
-  ASSERT_GT(pattern_provider->GetAllPatternsBaseOnType("COMPANY_NAME").size(),
-            0u);
-  EXPECT_EQ(pattern_provider->GetAllPatternsBaseOnType("COMPANY_NAME"),
-            match_vector);
-  EXPECT_EQ(pattern_provider->GetAllPatternsBaseOnType("COMPANY_NAME").size(),
-            2u);
+  {
+    base::test::ScopedFeatureList feature;
+    feature.InitWithFeatures(
+        // enabled
+        {features::
+             kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics},
+        // disabled
+        {features::kAutofillUsePageLanguageToSelectFieldParsingPatterns});
+    UnitTestPatternProvider p;
+    EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", ""),
+              p.GetAllPatternsBaseOnType("COMPANY_NAME"));
+    EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "blabla"),
+              p.GetAllPatternsBaseOnType("COMPANY_NAME"));
+  }
+}
+
+TEST(AutofillPatternProvider, EnrichPatternsWithEnVersion) {
+  {
+    base::test::ScopedFeatureList feature;
+    feature.InitWithFeatures(
+        // enabled
+        {features::kAutofillUsePageLanguageToSelectFieldParsingPatterns},
+        // disabled
+        {features::
+             kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics});
+    UnitTestPatternProvider p;
+    EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "en"),
+              std::vector<MatchingPattern>{GetCompanyPatternEn()});
+    EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "de"),
+              std::vector<MatchingPattern>(
+                  {GetCompanyPatternDe(), GetCompanyPatternEn()}));
+  }
+
+  {
+    base::test::ScopedFeatureList feature;
+    feature.InitWithFeatures(
+        // enabled
+        {features::
+             kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics},
+        // disabled
+        {features::kAutofillUsePageLanguageToSelectFieldParsingPatterns});
+    UnitTestPatternProvider p;
+    EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "en"),
+              std::vector<MatchingPattern>({GetCompanyPatternDe(),
+                                            GetCompanyPatternEn(),
+                                            GetCompanyPatternEn()}));
+    EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "de"),
+              std::vector<MatchingPattern>({GetCompanyPatternDe(),
+                                            GetCompanyPatternEn(),
+                                            GetCompanyPatternEn()}));
+  }
 }
 
 }  // namespace autofill
