@@ -152,24 +152,6 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
   });
 
 
-  test('imp. content flash disable click triggers update', async function() {
-    const enabledPref = createPref(
-        ContentSettingsTypes.PLUGINS, ContentSetting.IMPORTANT_CONTENT);
-
-    await testCategoryEnabled(
-        testElement, browserProxy, enabledPref, ContentSettingsTypes.PLUGINS,
-        true, ContentSetting.IMPORTANT_CONTENT);
-  });
-
-  test('block flash enable click triggers update', async function() {
-    const disabledPref =
-        createPref(ContentSettingsTypes.PLUGINS, ContentSetting.BLOCK);
-
-    await testCategoryEnabled(
-        testElement, browserProxy, disabledPref, ContentSettingsTypes.PLUGINS,
-        false, ContentSetting.IMPORTANT_CONTENT);
-  });
-
   test('radio group is disabled when pref is enforced', async function() {
     const enforcedPrefs = createSiteSettingsPrefs(
         [createContentSettingTypeToValuePair(

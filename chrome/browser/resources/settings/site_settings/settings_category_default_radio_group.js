@@ -113,9 +113,6 @@ Polymer({
       case ContentSettingsTypes.WINDOW_PLACEMENT:
         // "Ask" vs "Blocked".
         return ContentSetting.ASK;
-      case ContentSettingsTypes.PLUGINS:
-        // "Run important content" vs. "Block".
-        return ContentSetting.IMPORTANT_CONTENT;
       default:
         assertNotReached('Invalid category: ' + this.category);
         return ContentSetting.ALLOW;

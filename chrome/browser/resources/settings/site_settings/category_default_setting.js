@@ -194,13 +194,6 @@ Polymer({
             this.category,
             this.categoryEnabled ? ContentSetting.ASK : ContentSetting.BLOCK);
         break;
-      case ContentSettingsTypes.PLUGINS:
-        // "Run important content" vs. "Block".
-        this.browserProxy.setDefaultValueForContentType(
-            this.category,
-            this.categoryEnabled ? ContentSetting.IMPORTANT_CONTENT :
-                                   ContentSetting.BLOCK);
-        break;
       default:
         assertNotReached('Invalid category: ' + this.category);
     }

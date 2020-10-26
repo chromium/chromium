@@ -447,10 +447,6 @@ void SiteSettingsHandler::RegisterMessages() {
       base::BindRepeating(&SiteSettingsHandler::HandleSetOriginPermissions,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "clearFlashPref",
-      base::BindRepeating(&SiteSettingsHandler::HandleClearFlashPref,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "resetCategoryPermissionForPattern",
       base::BindRepeating(
           &SiteSettingsHandler::HandleResetCategoryPermissionForPattern,

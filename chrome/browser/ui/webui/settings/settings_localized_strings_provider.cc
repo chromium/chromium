@@ -386,7 +386,6 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       {"clearCookiesSummarySignedIn",
        IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_WITH_EXCEPTION},
       {"clearCookiesCounter", IDS_DEL_COOKIES_COUNTER},
-      {"clearCookiesFlash", IDS_SETTINGS_CLEAR_COOKIES_FLASH},
       {"clearPasswords", IDS_SETTINGS_CLEAR_PASSWORDS},
       {"clearFormData", IDS_SETTINGS_CLEAR_FORM_DATA},
       {"clearHostedAppData", IDS_SETTINGS_CLEAR_HOSTED_APP_DATA},
@@ -1066,22 +1065,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SIGNED_OUT_USER_HAS_COMPROMISED_CREDENTIALS_LABEL,
           base::ASCIIToUTF16(chrome::kSyncLearnMoreURL)));
-  // The warning message that will be shown if there is a content setting
-  // pattern with a wildcard in it. The check for wildcards is done on the js
-  // side.
-  base::string16 flash_warning_message;
-  if (base::FeatureList::IsEnabled(
-          content_settings::kDisallowExtensionsToSetPluginContentSettings)) {
-    flash_warning_message = l10n_util::GetStringFUTF16(
-        IDS_SETTINGS_SITE_SETTINGS_FLASH_WILDCARD_UNSUPPORTED_IN_POLICIES,
-        base::UTF8ToUTF16(chrome::kChromeFlashRoadmapURL));
-  } else {
-    flash_warning_message = l10n_util::GetStringFUTF16(
-        IDS_SETTINGS_SITE_SETTINGS_FLASH_WILDCARD_UNSUPPORTED,
-        base::UTF8ToUTF16(chrome::kChromeFlashRoadmapURL));
-  }
-  html_source->AddString("warningAboutIgnoredWildcardedPatternsForFlash",
-                         flash_warning_message);
 
   bool is_guest_mode = false;
 #if defined(OS_CHROMEOS)
@@ -1717,13 +1700,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
     {"siteSettingsSoundAllowRecommended",
      IDS_SETTINGS_SITE_SETTINGS_SOUND_ALLOW_RECOMMENDED},
     {"siteSettingsSoundBlock", IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCK},
-    {"siteSettingsFlash", IDS_SETTINGS_SITE_SETTINGS_FLASH},
-    {"siteSettingsFlashAskFirst", IDS_SETTINGS_SITE_SETTINGS_ASK_FIRST},
-    {"siteSettingsFlashBlock", IDS_SETTINGS_SITE_SETTINGS_FLASH_BLOCK},
-    {"siteSettingsFlashBlockRecommended",
-     IDS_SETTINGS_SITE_SETTINGS_FLASH_BLOCK_RECOMMENDED},
-    {"siteSettingsFlashPermissionsEphemeral",
-     IDS_SETTINGS_SITE_SETTINGS_FLASH_PERMISSIONS_ARE_EPHEMERAL},
     {"siteSettingsPdfDocuments", IDS_SETTINGS_SITE_SETTINGS_PDF_DOCUMENTS},
     {"siteSettingsPdfDownloadPdfs",
      IDS_SETTINGS_SITE_SETTINGS_PDF_DOWNLOAD_PDFS},
@@ -1979,7 +1955,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
     {"handlerIsDefault", IDS_SETTINGS_SITE_SETTINGS_HANDLER_IS_DEFAULT},
     {"handlerSetDefault", IDS_SETTINGS_SITE_SETTINGS_HANDLER_SET_DEFAULT},
     {"handlerRemove", IDS_SETTINGS_SITE_SETTINGS_REMOVE},
-    {"adobeFlashStorage", IDS_SETTINGS_SITE_SETTINGS_ADOBE_FLASH_SETTINGS},
     {"incognitoSiteOnly", IDS_SETTINGS_SITE_SETTINGS_INCOGNITO_ONLY},
     {"incognitoSiteExceptionDesc",
      IDS_SETTINGS_SITE_SETTINGS_INCOGNITO_SITE_EXCEPTION_DESC},
@@ -2129,14 +2104,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_ALLOWED_EXCEPTIONS},
     {"siteSettingsPaymentHandlersBlockedExceptions",
      IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_BLOCKED_EXCEPTIONS},
-    {"siteSettingsFlashDescription",
-     IDS_SETTINGS_SITE_SETTINGS_FLASH_DESCRIPTION},
-    {"siteSettingsFlashAllowed", IDS_SETTINGS_SITE_SETTINGS_FLASH_ALLOWED},
-    {"siteSettingsFlashBlocked", IDS_SETTINGS_SITE_SETTINGS_FLASH_BLOCKED},
-    {"siteSettingsFlashAllowedExceptions",
-     IDS_SETTINGS_SITE_SETTINGS_FLASH_ALLOWED_EXCEPTIONS},
-    {"siteSettingsFlashBlockedExceptions",
-     IDS_SETTINGS_SITE_SETTINGS_FLASH_BLOCKED_EXCEPTIONS},
     {"siteSettingsPopupsDescription",
      IDS_SETTINGS_SITE_SETTINGS_POPUPS_DESCRIPTION},
     {"siteSettingsPopupsAllowed", IDS_SETTINGS_SITE_SETTINGS_POPUPS_ALLOWED},

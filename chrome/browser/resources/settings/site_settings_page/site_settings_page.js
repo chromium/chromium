@@ -229,14 +229,6 @@ function getCategoryItemMap() {
       icon: 'settings:pdf',
     },
     {
-      route: routes.SITE_SETTINGS_FLASH,
-      id: Id.PLUGINS,
-      label: 'siteSettingsFlash',
-      icon: 'cr:extension',
-      enabledLabel: 'siteSettingsFlashAskFirst',
-      disabledLabel: 'siteSettingsFlashBlock',
-    },
-    {
       route: routes.SITE_SETTINGS_POPUPS,
       id: Id.POPUPS,
       label: 'siteSettingsPopups',
@@ -394,7 +386,6 @@ Polymer({
           contentBasic: buildItemListFromIds([
             Id.COOKIES,
             Id.JAVASCRIPT,
-            Id.PLUGINS,
             Id.IMAGES,
             Id.POPUPS,
           ]),

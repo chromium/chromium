@@ -93,7 +93,7 @@ make use of the `this.browserProxy` object which allows you to communicate with
 the browser.
 
 The class is declared in
-[site_settings_prefs_browser_proxy.js](https://cs.chromium.org/chromium/src/chrome/browser/resources/settings/site_settings/site_settings_prefs_browser_proxy.js?q=clearFlashPref&dr=CSs&l=236)
+[site_settings_prefs_browser_proxy.js](https://cs.chromium.org/chromium/src/chrome/browser/resources/settings/site_settings/site_settings_prefs_browser_proxy.js)
 and the browser implementation resides in
 [site_settings_handler.h](https://cs.chromium.org/chromium/src/chrome/browser/ui/webui/settings/site_settings_handler.h?type=cs&g=0).
 Make sure to

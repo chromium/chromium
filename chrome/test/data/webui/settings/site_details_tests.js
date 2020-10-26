@@ -77,11 +77,6 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.SOUND,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.PLUGINS,
-              [createRawSiteException('https://foo.com:443', {
-                source: SiteSettingSource.EXTENSION,
-              })]),
-          createContentSettingTypeToValuePair(
               ContentSettingsTypes.POPUPS,
               [createRawSiteException('https://foo.com:443', {
                 setting: ContentSetting.BLOCK,
@@ -393,8 +388,6 @@ suite('SiteDetails', function() {
                 // update expected values.
                 if (siteDetailsPermission.category ===
                         ContentSettingsTypes.NOTIFICATIONS ||
-                    siteDetailsPermission.category ===
-                        ContentSettingsTypes.PLUGINS ||
                     siteDetailsPermission.category ===
                         ContentSettingsTypes.JAVASCRIPT ||
                     siteDetailsPermission.category ===

@@ -32,7 +32,6 @@ export const ContentSettingsTypes = {
   MIXEDSCRIPT: 'mixed-script',
   NOTIFICATIONS: 'notifications',
   PAYMENT_HANDLER: 'payment-handler',
-  PLUGINS: 'plugins',  // AKA Flash.
   POPUPS: 'popups',
   PROTECTED_CONTENT: 'protected-content',
   PROTOCOL_HANDLERS: 'register-protocol-handler',

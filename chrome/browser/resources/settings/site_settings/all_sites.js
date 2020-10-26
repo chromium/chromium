@@ -644,9 +644,6 @@ Polymer({
     const contentSettingsTypes = this.getCategoryList();
     this.browserProxy.setOriginPermissions(
         origin, contentSettingsTypes, ContentSetting.DEFAULT);
-    if (contentSettingsTypes.includes(ContentSettingsTypes.PLUGINS)) {
-      this.browserProxy.clearFlashPref(origin);
-    }
   },
 
   /**

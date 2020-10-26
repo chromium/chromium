@@ -56,7 +56,6 @@ import {Route} from './router.m.js';
  *   SITE_SETTINGS_CLIPBOARD: !Route,
  *   SITE_SETTINGS_COOKIES: !Route,
  *   SITE_SETTINGS_DATA_DETAILS: !Route,
- *   SITE_SETTINGS_FLASH: !Route,
  *   SITE_SETTINGS_FONT_ACCESS: !Route,
  *   SITE_SETTINGS_HANDLERS: !Route,
  *   SITE_SETTINGS_HID_DEVICES: !Route,

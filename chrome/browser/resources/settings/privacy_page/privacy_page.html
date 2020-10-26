@@ -627,69 +627,6 @@
           </template>
         </settings-subpage>
       </template>
-      <template is="dom-if" route-path="/content/flash" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsFlash}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <div class="cr-row first no-outline">
-            $i18n{siteSettingsFlashPermissionsEphemeral}
-          </div>
-          <div class="cr-row-gap cr-secondary-text"
-              hidden="[[!pluginsHasDiscardedExceptions_]]">
-            $i18nRaw{warningAboutIgnoredWildcardedPatternsForFlash}
-          </div>
-          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsFlashDescription}</h2>
-            </div>
-            <settings-category-default-radio-group
-                category="[[ContentSettingsTypes.PLUGINS]]"
-                allow-option-label="$i18n{siteSettingsFlashAllowed}"
-                allow-option-icon="cr:extension"
-                block-option-label="$i18n{siteSettingsFlashBlocked}"
-                block-option-icon="settings:block">
-            </settings-category-default-radio-group>
-          </template>
-          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-            <category-default-setting
-                category="[[ContentSettingsTypes.PLUGINS]]"
-                toggle-off-label="$i18n{siteSettingsFlashBlockRecommended}"
-                toggle-on-label="$i18n{siteSettingsFlashAskFirst}">
-            </category-default-setting>
-          </template>
-<if expr="chromeos">
-          <a class="cr-row inherit-color no-outline" tabindex="-1"
-              target="_blank"
-              href="https://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager07.html">
-            <div class="flex">$i18n{adobeFlashStorage}</div>
-            <cr-icon-button class="icon-external"
-                aria-label="$i18n{adobeFlashStorage}"></cr-icon-button>
-          </a>
-</if>
-          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.PLUGINS]]"
-                allow-header="$i18n{siteSettingsFlashAllowedExceptions}"
-                block-header="$i18n{siteSettingsFlashBlockedExceptions}"
-                read-only-list
-                search-filter="[[searchFilter_]]"
-                site-lists-have-discarded-exceptions=
-                    "{{pluginsHasDiscardedExceptions_}}">
-            </category-setting-exceptions>
-          </template>
-          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.PLUGINS]]"
-                block-header="$i18n{siteSettingsBlock}"
-                allow-header="$i18n{siteSettingsAllow}"
-                read-only-list
-                search-filter="[[searchFilter_]]"
-                site-lists-have-discarded-exceptions=
-                    "{{pluginsHasDiscardedExceptions_}}">
-            </category-setting-exceptions>
-          </template>
-        </settings-subpage>
-      </template>
       <template is="dom-if" route-path="/content/popups" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryPopups}"
             search-label="$i18n{siteSettingsAllSitesSearch}"

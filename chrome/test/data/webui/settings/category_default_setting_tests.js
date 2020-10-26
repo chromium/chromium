@@ -123,44 +123,6 @@ suite('CategoryDefaultSetting', function() {
         false, ContentSetting.ASK);
   });
 
-  test('test Flash content setting in DETECT/ASK setting', function() {
-    const prefsFlash = createSiteSettingsPrefs(
-        [createContentSettingTypeToValuePair(
-            ContentSettingsTypes.PLUGINS, createDefaultContentSetting({
-              setting: ContentSetting.IMPORTANT_CONTENT,
-            }))],
-        []);
-
-    return testCategoryEnabled(
-        testElement, ContentSettingsTypes.PLUGINS, prefsFlash, true,
-        ContentSetting.IMPORTANT_CONTENT);
-  });
-
-  test('test Flash content setting in legacy ALLOW setting', function() {
-    const prefsFlash = createSiteSettingsPrefs(
-        [createContentSettingTypeToValuePair(
-            ContentSettingsTypes.PLUGINS, createDefaultContentSetting({
-              setting: ContentSetting.ALLOW,
-            }))],
-        []);
-
-    return testCategoryEnabled(
-        testElement, ContentSettingsTypes.PLUGINS, prefsFlash, true,
-        ContentSetting.IMPORTANT_CONTENT);
-  });
-
-  test('test Flash content setting in BLOCK setting', function() {
-    const prefsFlash = createSiteSettingsPrefs(
-        [createContentSettingTypeToValuePair(
-            ContentSettingsTypes.PLUGINS, createDefaultContentSetting({
-              setting: ContentSetting.BLOCK,
-            }))],
-        []);
-
-    return testCategoryEnabled(
-        testElement, ContentSettingsTypes.PLUGINS, prefsFlash, false,
-        ContentSetting.IMPORTANT_CONTENT);
-  });
 
   test('test content setting from extension', function() {
     testElement.category = ContentSettingsTypes.MIC;

@@ -295,9 +295,6 @@ Polymer({
   onResetSettings_(e) {
     this.browserProxy.setOriginPermissions(
         this.origin_, this.getCategoryList(), ContentSetting.DEFAULT);
-    if (this.getCategoryList().includes(ContentSettingsTypes.PLUGINS)) {
-      this.browserProxy.clearFlashPref(this.origin_);
-    }
 
     this.onCloseDialog_(e);
   },

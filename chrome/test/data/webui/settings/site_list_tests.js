@@ -33,12 +33,6 @@ let prefsGeolocation;
 let prefsGeolocationEmpty;
 
 /**
- * An example of prefs controlledBy policy.
- * @type {SiteSettingsPref}
- */
-let prefsControlled;
-
-/**
  * An example pref with mixed schemes (present and absent).
  * @type {SiteSettingsPref}
  */
@@ -106,10 +100,6 @@ let prefsChromeExtension;
  */
 let prefsEmbargo;
 
-/**
- * An example prefs with 1 discarded content setting.
- */
-let prefsDiscarded;
 
 /**
  * Creates all the test |SiteSettingsPref|s that are needed for the tests in
@@ -132,14 +122,6 @@ function populateTestExceptions() {
         ]),
   ]);
 
-  prefsControlled = createSiteSettingsPrefs(
-      [], [createContentSettingTypeToValuePair(
-              ContentSettingsTypes.PLUGINS,
-              [createRawSiteException('http://foo-block.com', {
-                embeddingOrigin: '',
-                setting: ContentSetting.BLOCK,
-                source: SiteSettingSource.POLICY,
-              })])]);
 
   prefsMixedSchemes = createSiteSettingsPrefs([], [
     createContentSettingTypeToValuePair(
@@ -295,16 +277,6 @@ function populateTestExceptions() {
           isEmbargoed: true,
         })]),
   ]);
-
-  prefsDiscarded = createSiteSettingsPrefs([], [
-    createContentSettingTypeToValuePair(
-        ContentSettingsTypes.PLUGINS,
-        [createRawSiteException('https://[*.]example.com:443', {
-          embeddingOrigin: '',
-          setting: ContentSetting.BLOCK,
-          isDiscarded: true,
-        })]),
-  ]);
 }
 
 suite('SiteListProperties', function() {
@@ -386,14 +358,6 @@ suite('SiteListProperties', function() {
             .querySelectorAll('site-list-entry')[0]
             .$$('#siteDescription')
             .innerHTML);
-  });
-
-  test('Discarded setting', async function() {
-    setUpCategory(
-        ContentSettingsTypes.PLUGINS, ContentSetting.BLOCK, prefsDiscarded);
-    const result = await browserProxy.whenCalled('getExceptionList');
-    flush();
-    assertTrue(testElement.hasDiscardedExceptions);
   });
 });
 
@@ -662,43 +626,6 @@ suite('SiteList', function() {
           assertMenu(['Allow', 'Block', 'Edit', 'Remove']);
 
           assertFalse(testElement.$$('#category').hidden);
-        });
-  });
-
-  test('update lists for incognito', function() {
-    const contentType = ContentSettingsTypes.PLUGINS;
-    const categorySubtype = ContentSetting.BLOCK;
-    setUpCategory(contentType, categorySubtype, prefsControlled);
-    const list = testElement.$$('#listContainer');
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(actualContentType) {
-          flush();
-          assertEquals(1, list.querySelector('iron-list').items.length);
-          assertFalse(hasAnIncognito(list));
-          browserProxy.resetResolver('getExceptionList');
-          browserProxy.setIncognito(true);
-          return browserProxy.whenCalled('getExceptionList');
-        })
-        .then(function() {
-          flush();
-          assertEquals(2, list.querySelector('iron-list').items.length);
-          assertTrue(hasAnIncognito(list));
-          browserProxy.resetResolver('getExceptionList');
-          browserProxy.setIncognito(false);
-          return browserProxy.whenCalled('getExceptionList');
-        })
-        .then(function() {
-          flush();
-          assertEquals(1, list.querySelector('iron-list').items.length);
-          assertFalse(hasAnIncognito(list));
-          browserProxy.resetResolver('getExceptionList');
-          browserProxy.setIncognito(true);
-          return browserProxy.whenCalled('getExceptionList');
-        })
-        .then(function() {
-          flush();
-          assertEquals(2, list.querySelector('iron-list').items.length);
-          assertTrue(hasAnIncognito(list));
         });
   });
 

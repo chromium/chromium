@@ -214,38 +214,6 @@ TEST_F(ContentSettingsDefaultProviderTest,
           website_settings->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD)
               ->default_value_pref_name()));
 }
-
-TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePluginsAllow) {
-  PrefService* prefs = profile_.GetPrefs();
-  const std::string& plugins_pref_path = WebsiteSettingsRegistry::GetInstance()
-                                             ->Get(ContentSettingsType::PLUGINS)
-                                             ->default_value_pref_name();
-
-  // The ALLOW value of the plugins content setting should be discarded.
-  {
-    prefs->SetInteger(plugins_pref_path, CONTENT_SETTING_ALLOW);
-    DefaultProvider provider(prefs, false);
-    EXPECT_FALSE(prefs->HasPrefPath(plugins_pref_path));
-  }
-
-  // Other values of the plugins content setting should be preserved.
-  {
-    prefs->SetInteger(plugins_pref_path, CONTENT_SETTING_BLOCK);
-    DefaultProvider provider(prefs, false);
-    EXPECT_TRUE(prefs->HasPrefPath(plugins_pref_path));
-    EXPECT_EQ(CONTENT_SETTING_BLOCK, prefs->GetInteger(plugins_pref_path));
-  }
-
-  {
-    prefs->SetInteger(plugins_pref_path,
-                      CONTENT_SETTING_DETECT_IMPORTANT_CONTENT);
-    DefaultProvider provider(prefs, false);
-
-    EXPECT_TRUE(prefs->HasPrefPath(plugins_pref_path));
-    EXPECT_EQ(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
-              prefs->GetInteger(plugins_pref_path));
-  }
-}
 #endif  // !defined(OS_ANDROID)
 
 TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
