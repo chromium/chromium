@@ -52,6 +52,11 @@ GITHASH_TO_SVN_URL = {
     'blink': BLINK_GITHASH_TO_SVN_URL,
 }
 
+VERSION_HISTORY_URL = ('https://versionhistory.googleapis.com/v1/chrome'
+                       '/platforms/win/channels/stable/versions/all/releases')
+
+OMAHA_REVISIONS_URL = ('https://omahaproxy.appspot.com/deps.json?version=%s')
+
 # Search pattern to be matched in the JSON output from
 # CHROMIUM_GITHASH_TO_SVN_URL to get the chromium revision (svn revision).
 CHROMIUM_SEARCH_PATTERN_OLD = (
@@ -1041,6 +1046,48 @@ def GetChromiumRevision(context, url):
     print('Could not determine latest revision. This could be bad...')
     return 999999999
 
+
+def GetRevision(revision_text):
+  """Translates from a text description of a revision to an integral revision
+  number. Currently supported formats are a number (i.e.; '782793') or a
+  milestone specifier (i.e.; 'M85') or a full version string
+  (i.e. '85.0.4183.121')."""
+
+  # Check if we already have a revision number, such as when -g or -b is
+  # omitted.
+  if type(revision_text) == type(0):
+    return revision_text
+
+  # Translate from stable milestone name to the latest version number released
+  # for that milestone, i.e.; 'M85' to '85.0.4183.121'.
+  if revision_text[:1].upper() == 'M':
+    milestone = revision_text[1:]
+    response = urllib.urlopen(VERSION_HISTORY_URL)
+    version_history = json.loads(response.read())
+    version_matcher = re.compile(
+        '.*versions/(\d*)\.(\d*)\.(\d*)\.(\d*)/releases.*')
+    for version in version_history['releases']:
+      match = version_matcher.match(version['name'])
+      # There will be multiple versions of each milestone, but we just grab the
+      # first one that we see which will be the most recent version. If you need
+      # more granularity then specify a full version number or revision number.
+      if match and match.groups()[0] == milestone:
+        revision_text = '.'.join(match.groups())
+        break
+    if revision_text[:1].upper() == 'M':
+      raise Exception('No stable release matching %s found.' % revision_text)
+
+  # Translate from version number to commit position, also known as revision
+  # number.
+  if len(revision_text.split('.')) == 4:
+    response = urllib.urlopen(OMAHA_REVISIONS_URL % revision_text)
+    revision_details = json.loads(response.read())
+    revision_text = revision_details['chromium_base_position']
+
+  # Translate from text commit position to integer commit position.
+  return int(revision_text)
+
+
 def GetGitHashFromSVNRevision(svn_revision):
   crrev_url = CRREV_URL + str(svn_revision)
   url = urllib.urlopen(crrev_url)
@@ -1088,11 +1135,14 @@ def main():
                     choices=choices,
                     help='The buildbot archive to bisect [%s].' %
                          '|'.join(choices))
-  parser.add_option('-b', '--bad',
+  parser.add_option('-b',
+                    '--bad',
                     type='str',
                     help='A bad revision to start bisection. '
-                         'May be earlier or later than the good revision. '
-                         'Default is HEAD.')
+                    'May be earlier or later than the good revision. '
+                    'Default is HEAD. Can be a revision number, milestone '
+                    'name (eg. M85, matches the most recent stable release of '
+                    'that milestone) or version number (eg. 85.0.4183.121)')
   parser.add_option('-f', '--flash_path',
                     type='str',
                     help='Absolute path to a recent Adobe Pepper Flash '
@@ -1100,11 +1150,14 @@ def main():
                          'on Windows C:\...\pepflashplayer.dll and on Linux '
                          '/opt/google/chrome/PepperFlash/'
                          'libpepflashplayer.so).')
-  parser.add_option('-g', '--good',
+  parser.add_option('-g',
+                    '--good',
                     type='str',
                     help='A good revision to start bisection. ' +
-                         'May be earlier or later than the bad revision. ' +
-                         'Default is 0.')
+                    'May be earlier or later than the bad revision. ' +
+                    'Default is 0. Can be a revision number, milestone '
+                    'name (eg. M85, matches the most recent stable release of '
+                    'that milestone) or version number (eg. 85.0.4183.121)')
   parser.add_option('-p', '--profile', '--user-data-dir',
                     type='str',
                     default='profile',
@@ -1195,8 +1248,8 @@ def main():
     msg = 'Could not find Flash binary at %s' % opts.flash_path
     assert os.path.exists(opts.flash_path), msg
 
-  context.good_revision = int(context.good_revision)
-  context.bad_revision = int(context.bad_revision)
+  context.good_revision = GetRevision(context.good_revision)
+  context.bad_revision = GetRevision(context.bad_revision)
 
   if opts.times < 1:
     print('Number of times to run (%d) must be greater than or equal to 1.' %
@@ -1215,6 +1268,9 @@ def main():
   # after the bisect.
   good_rev = context.good_revision
   bad_rev = context.bad_revision
+
+  print('Scanning from %d to %d (%d revisions).' %
+        (good_rev, bad_rev, abs(good_rev - bad_rev)))
 
   (min_chromium_rev, max_chromium_rev, context) = Bisect(
       context, opts.times, opts.command, args, opts.profile,
