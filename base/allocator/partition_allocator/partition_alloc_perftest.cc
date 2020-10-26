@@ -45,7 +45,7 @@ constexpr int kMultiBucketIncrement = 13;
 // Final size is 24 + (13 * 22) = 310 bytes.
 constexpr int kMultiBucketRounds = 22;
 
-constexpr char kMetricPrefixMemoryAllocation[] = "MemoryAllocation";
+constexpr char kMetricPrefixMemoryAllocation[] = "MemoryAllocation.";
 constexpr char kMetricThroughput[] = "throughput";
 constexpr char kMetricTimePerAllocation[] = "time_per_allocation";
 
@@ -330,7 +330,7 @@ void RunTest(int thread_count,
   }
 
   std::string name =
-      base::StringPrintf("%s.%s_%s_%d", kMetricPrefixMemoryAllocation,
+      base::StringPrintf("%s%s_%s_%d", kMetricPrefixMemoryAllocation,
                          story_base_name, alloc_type_str, thread_count);
 
   DisplayResults(name + "_total", total_laps_per_second);
