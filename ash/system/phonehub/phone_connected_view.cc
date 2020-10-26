@@ -43,8 +43,6 @@ PhoneConnectedView::PhoneConnectedView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(0, 0, 0, 0)));
   layout->SetDefaultFlex(1);
 
-  AddSeparator();
-
   chromeos::phonehub::NotificationAccessManager* access_manager =
       phone_hub_manager->GetNotificationAccessManager();
   bool should_show_notification_setup_ui =
@@ -57,8 +55,6 @@ PhoneConnectedView::PhoneConnectedView(
 
   setup_layered_view(
       AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager)));
-
-  AddSeparator();
 
   auto* phone_model = phone_hub_manager->GetPhoneModel();
   if (phone_model) {

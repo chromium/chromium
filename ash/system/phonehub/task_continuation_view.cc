@@ -10,6 +10,7 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -19,24 +20,33 @@ using BrowserTabsModel = chromeos::phonehub::BrowserTabsModel;
 
 namespace {
 
-constexpr int kTaskContinuationHeaderSpacing = 8;
-constexpr gfx::Insets kTaskContinuationViewPadding(12, 4);
-constexpr gfx::Insets kPhoneHubSubHeaderPadding(4, 32);
-constexpr gfx::Size kTaskContinuationChipSize(170, 80);
+// Appearance constants in dip.
+constexpr gfx::Insets kTaskContinuationViewPadding(12, 0, 16, 0);
+constexpr gfx::Size kTaskContinuationChipSize(176, 96);
 constexpr int kTaskContinuationChipsInRow = 2;
 constexpr int kTaskContinuationChipSpacing = 8;
-constexpr int kTaskContinuationChipVerticalPadding = 5;
+constexpr int kTaskContinuationChipHorizontalPadding = 4;
+constexpr int kTaskContinuationChipVerticalPadding = 4;
+constexpr int kHeaderLabelLineHeight = 48;
 
-class HeaderView : public views::View {
+// Typography.
+constexpr int kHeaderTextFontSizeDip = 15;
+
+class HeaderView : public views::Label {
  public:
   HeaderView() {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, kPhoneHubSubHeaderPadding));
-    auto* header_label = AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TASK_CONTINUATION_TITLE)));
-    header_label->SetAutoColorReadabilityEnabled(false);
-    header_label->SetSubpixelRenderingEnabled(false);
-    header_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+    SetText(
+        l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TASK_CONTINUATION_TITLE));
+    SetLineHeight(kHeaderLabelLineHeight);
+    SetFontList(font_list()
+                    .DeriveWithSizeDelta(kHeaderTextFontSizeDip -
+                                         font_list().GetFontSize())
+                    .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
+    SetAutoColorReadabilityEnabled(false);
+    SetSubpixelRenderingEnabled(false);
+    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
@@ -58,8 +68,7 @@ TaskContinuationView::TaskContinuationView(
   phone_model_->AddObserver(this);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kTaskContinuationViewPadding,
-      kTaskContinuationHeaderSpacing));
+      views::BoxLayout::Orientation::kVertical, kTaskContinuationViewPadding));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
@@ -94,13 +103,15 @@ void TaskContinuationView::TaskChipsView::AddTaskChip(views::View* task_chip) {
 // views::View:
 gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
   int width = kTaskContinuationChipSize.width() * kTaskContinuationChipsInRow +
-              kTaskContinuationChipSpacing;
+              kTaskContinuationChipSpacing +
+              2 * kTaskContinuationChipHorizontalPadding;
   int rows_num =
       std::ceil((double)task_chips_.view_size() / kTaskContinuationChipsInRow);
   int height = (kTaskContinuationChipSize.height() +
                 kTaskContinuationChipVerticalPadding) *
                    std::max(0, rows_num - 1) +
-               kTaskContinuationChipSize.height();
+               kTaskContinuationChipSize.height() +
+               2 * kTaskContinuationChipHorizontalPadding;
   return gfx::Size(width, height);
 }
 
@@ -126,10 +137,12 @@ gfx::Point TaskContinuationView::TaskChipsView::GetButtonPosition(int index) {
   int row = index / kTaskContinuationChipsInRow;
   int column = index % kTaskContinuationChipsInRow;
   int x = (kTaskContinuationChipSize.width() + kTaskContinuationChipSpacing) *
-          column;
+              column +
+          kTaskContinuationChipHorizontalPadding;
   int y = (kTaskContinuationChipSize.height() +
            kTaskContinuationChipVerticalPadding) *
-          row;
+              row +
+          kTaskContinuationChipVerticalPadding;
   return gfx::Point(x, y);
 }
 

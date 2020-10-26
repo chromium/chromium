@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
@@ -37,10 +38,12 @@ using PhoneStatusModel = chromeos::phonehub::PhoneStatusModel;
 
 namespace {
 
+// Appearance in Dip.
 constexpr int kTitleContainerSpacing = 16;
-constexpr int kStatusSpacing = 6;
-constexpr gfx::Size kStatusIconSize(16, 16);
+constexpr int kStatusSpacing = 4;
+constexpr gfx::Size kStatusIconSize(18, 18);
 constexpr int kSeparatorHeight = 18;
+constexpr int kPhoneNameLabelWidthMax = 160;
 
 int GetSignalStrengthAsInt(PhoneStatusModel::SignalStrength signal_strength) {
   switch (signal_strength) {
@@ -79,6 +82,7 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model)
   TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::SUB_HEADER,
                            true /* use_unified_theme */);
   style.SetupLabel(phone_name_label_);
+  phone_name_label_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
   AddView(TriView::Container::CENTER, phone_name_label_);
 
   AddView(TriView::Container::END, signal_icon_);
@@ -130,8 +134,11 @@ void PhoneStatusView::OnModelChanged() {
 }
 
 void PhoneStatusView::Update() {
+  // Set phone name text and elide it if needed.
   phone_name_label_->SetText(
-      phone_model_->phone_name().value_or(base::string16()));
+      gfx::ElideText(phone_model_->phone_name().value_or(base::string16()),
+                     phone_name_label_->font_list(), kPhoneNameLabelWidthMax,
+                     gfx::ELIDE_TAIL));
 
   // Clear the phone status if the status model returns null when the phone is
   // disconnected.
