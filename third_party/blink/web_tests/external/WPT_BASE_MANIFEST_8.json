@@ -44768,6 +44768,34 @@
       ]
      }
     },
+    "composite-bgcolor-animation": {
+     "bg-color-with-gradient.html": [
+      "7ef5d611bcf2c131dbeef8e72877328ef1be7710",
+      [
+       null,
+       [
+        [
+         "/css/composite-bgcolor-animation/bg-color-with-gradient-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "simple-bg-color.html": [
+      "07bea44d21964b832cd9e4b4f32098ec41a2c206",
+      [
+       null,
+       [
+        [
+         "/css/composite-bgcolor-animation/simple-bg-color-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
     "compositing": {
      "background-blending": {
       "background-blend-mode-gradient-image.html": [
@@ -177853,6 +177881,16 @@
      "5cb26179b8dbe4423885bcc7c8d687bab224df91",
      []
     ],
+    "composite-bgcolor-animation": {
+     "bg-color-with-gradient-ref.html": [
+      "5c76f3408aebe6e2964215af3f98745e833e190e",
+      []
+     ],
+     "simple-bg-color-ref.html": [
+      "d8003b58e3ac1c5e917500a59b60c0d2e56287a3",
+      []
+     ]
+    },
     "compositing": {
      "Blending_in_a_group_with_filter-ref.html": [
       "ad512028adae91920814b79714ea99ec51de4dc2",
@@ -215266,6 +215304,10 @@
      ],
      "window-tests-blob.js": [
       "0d6db5399118372da9ca783eeb2551e435ea85d7",
+      []
+     ],
+     "window-tests-chooser.js": [
+      "bb9e0bf128c7885ae2b3c32ceb98f28947460209",
       []
      ],
      "window-tests-enumeration.js": [
@@ -306046,6 +306088,20 @@
        {}
       ]
      ],
+     "scroll-overflow-clip-quirks-001.html": [
+      "ae70083ac32af4e89dc15d6dca9192c827f36ac3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scroll-overflow-clip-quirks-002.html": [
+      "8909125649a0f8731898d203593d591f8b2da41b",
+      [
+       null,
+       {}
+      ]
+     ],
      "scrollIntoView-horizontal-partially-visible.html": [
       "1e8bc50071f080a89b9e19bbad9f6c4fbda1cc29",
       [
@@ -306194,7 +306250,7 @@
       ]
      ],
      "scrollingElement.html": [
-      "84d313741ce88f5e3ae77e5c85f79a88348caddc",
+      "408fa47be9a3330aff88ef01e9b8be90fd4008ce",
       [
        null,
        {}
@@ -330349,6 +330405,32 @@
         [
          "script",
          "resources/window-tests-blob.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "font_access-chooser.tentative.https.window.js": [
+     "047521a7f7ab86ddddeb8f95ee711757f81bccf4",
+     [
+      "font-access/font_access-chooser.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "resources/test-expectations.js"
+        ],
+        [
+         "script",
+         "resources/window-tests-chooser.js"
         ]
        ]
       }
