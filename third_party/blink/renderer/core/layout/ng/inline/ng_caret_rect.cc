@@ -120,7 +120,7 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
   const ComputedStyle& block_style = fragment.Style();
   bool should_align_caret_right =
       ShouldAlignCaretRight(block_style.GetTextAlign(is_last_line),
-                            block_style.Direction()) &&
+                            line_box.Current().BaseDirection()) &&
       (style.GetUnicodeBidi() != UnicodeBidi::kPlaintext ||
        IsLtr(cursor.Current().ResolvedDirection()));
 
