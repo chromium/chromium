@@ -232231,6 +232231,10 @@
        "751e02b0c9a246f233693d6a045692c6a5e4f349",
        []
       ],
+      "attribute-mapping-002-expected.txt": [
+       "e947f70455890f895827a40ddd2c48ff16ff3388",
+       []
+      ],
       "blur-filter-ref.html": [
        "21fc165b7da477a619933185c2f45df3c3e9ab09",
        []
@@ -249539,7 +249543,7 @@
       []
      ],
      "requirements.txt": [
-      "1eba114a31c21f3e48aafae5e9466cefbe741288",
+      "7567e81ada590486bda300e484564700c373d11a",
       []
      ],
      "requirements_android_webview.txt": [
@@ -372770,7 +372774,7 @@
        ]
       ],
       "attribute-mapping-002.html": [
-       "e4532321e4a5b20944ff4181b2ad9b967ee31213",
+       "1fe9b34f98189c12683e13df931f63c572e00fdf",
        [
         null,
         {}
