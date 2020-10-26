@@ -606,7 +606,7 @@ public class TabsTest {
      *
      */
     @Test
-    @FlakyTest
+    @LargeTest
     public void testOpenManyTabsQuickly() {
         int startCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
         for (int i = 1; i <= STRESSFUL_TAB_COUNT; ++i) {
