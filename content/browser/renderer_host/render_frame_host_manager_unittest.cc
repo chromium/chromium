@@ -285,11 +285,16 @@ class RenderDocumentFeatureTest : public testing::Test {
                                        GetRenderDocumentLevelName(level));
   }
 
+  void DisableRenderDocument() {
+    feature_list_.InitAndDisableFeature(features::kRenderDocument);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RenderDocumentFeatureTest, FeatureDisabled) {
+  DisableRenderDocument();
   EXPECT_FALSE(ShouldCreateNewHostForCrashedFrame());
   EXPECT_FALSE(ShouldCreateNewHostForSameSiteSubframe());
 }

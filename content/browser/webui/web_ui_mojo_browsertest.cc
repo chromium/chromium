@@ -404,6 +404,9 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, ChromeSendAvailable_AfterCrash) {
   // available.
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_TRUE(EvalJs(shell(), "isChromeSendAvailable()").ExtractBool());
+  // The RenderFrameHost has been replaced after the crash, so get web_ui again.
+  web_ui = static_cast<WebUIImpl*>(
+      shell()->web_contents()->GetMainFrame()->GetWebUI());
   EXPECT_TRUE(web_ui->GetRemoteForTest().is_bound());
 }
 

@@ -535,7 +535,7 @@ const base::Feature kReloadHiddenTabsWithCrashedSubframes {
 
 // Enable using the RenderDocument.
 const base::Feature kRenderDocument{"RenderDocument",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 const base::Feature kSkipEarlyCommitPendingForCrashedFrame{

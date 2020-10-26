@@ -526,9 +526,6 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        CoopPageCrashIntoNonCoop) {
-  // TODO(http://crbug.com/1066376): Remove this when the test case passes.
-  if (ShouldCreateNewHostForCrashedFrame())
-    return;
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   GURL non_coop_page(https_server()->GetURL("a.com", "/title1.html"));
   GURL coop_page = https_server()->GetURL(

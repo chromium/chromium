@@ -3813,6 +3813,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // 5) Let the navigation finish and make sure it is succeeded.
   manager.WaitForNavigationFinished();
   EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  // The RenderFrameHost has been replaced after the crash, so get it again.
+  current_rfh = root->render_manager()->current_frame_host();
   EXPECT_EQ(LifecycleState::kActive, current_rfh->lifecycle_state());
 }
 
