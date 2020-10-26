@@ -179,6 +179,11 @@
              "--mse-video-buffer-size-limit-mb=1"]
   },
   {
+    "prefix": "composite-bgcolor-animation",
+    "bases": ["external/wpt/css/composite-bgcolor-animation"],
+    "args": ["--enable-blink-features=CompositeBGColorAnimation"]
+  },
+  {
     "prefix": "composite-after-paint",
     "bases": ["compositing",
               "paint",

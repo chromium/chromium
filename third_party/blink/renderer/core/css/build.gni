@@ -380,6 +380,8 @@ blink_core_sources_css = [
   "media_values_dynamic.h",
   "media_values_initial_viewport.cc",
   "media_values_initial_viewport.h",
+  "native_paint_image_generator.cc",
+  "native_paint_image_generator.h",
   "offscreen_font_selector.cc",
   "offscreen_font_selector.h",
   "page_rule_collector.cc",

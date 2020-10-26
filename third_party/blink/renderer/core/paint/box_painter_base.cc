@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 
 #include "base/optional.h"
+#include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -318,6 +319,9 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   should_paint_color =
       is_bottom_layer && color.Alpha() &&
       (!should_paint_image || !layer.ImageOccludesNextLayers(doc, style));
+  should_paint_color_with_paint_worklet_image =
+      should_paint_color &&
+      RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled();
 }
 
 namespace {
@@ -478,6 +482,21 @@ void DrawTiledBackground(GraphicsContext& context,
                          respect_orientation);
 }
 
+void FillRectWithPaintWorklet(const BoxPainterBase::FillLayerInfo& info,
+                              Node* node,
+                              const FloatRoundedRect& dest_rect,
+                              GraphicsContext& context) {
+  FloatRect src_rect = dest_rect.Rect();
+  std::unique_ptr<NativePaintImageGenerator> generator =
+      NativePaintImageGenerator::Create();
+  scoped_refptr<Image> paint_worklet_image =
+      generator->Paint(src_rect.Size(), SkColor(info.color));
+  context.DrawImageRRect(
+      paint_worklet_image.get(), Image::kSyncDecode, dest_rect, src_rect,
+      node && node->ComputedStyleRef().HasFilterInducingProperty(),
+      SkBlendMode::kSrcOver, info.respect_image_orientation);
+}
+
 inline bool PaintFastBottomLayer(Node* node,
                                  const PaintInfo& paint_info,
                                  const BoxPainterBase::FillLayerInfo& info,
@@ -563,8 +582,13 @@ inline bool PaintFastBottomLayer(Node* node,
   }
 
   // Paint the color if needed.
-  if (info.should_paint_color)
-    context.FillRoundedRect(color_border, info.color);
+  if (info.should_paint_color) {
+    if (info.should_paint_color_with_paint_worklet_image) {
+      FillRectWithPaintWorklet(info, node, color_border, context);
+    } else {
+      context.FillRoundedRect(color_border, info.color);
+    }
+  }
 
   // Paint the image if needed.
   if (!info.should_paint_image || !image || image_tile.IsEmpty())
@@ -737,7 +761,12 @@ void PaintFillLayerBackground(GraphicsContext& context,
   // painting area.
   if (info.is_bottom_layer && info.color.Alpha() && info.should_paint_color) {
     IntRect background_rect(PixelSnappedIntRect(scrolled_paint_rect));
-    context.FillRect(background_rect, info.color);
+    if (info.should_paint_color_with_paint_worklet_image) {
+      FillRectWithPaintWorklet(info, node, FloatRoundedRect(background_rect),
+                               context);
+    } else {
+      context.FillRect(background_rect, info.color);
+    }
   }
 
   // No progressive loading of the background image.
