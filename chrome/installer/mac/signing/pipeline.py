@@ -172,9 +172,8 @@ def _component_property_path(paths, dist_config):
 
 
 def _productbuild_distribution_path(paths, dist_config, component_pkg_path):
-    """Creates a distribution XML file for use by `productbuild`. This specifies
-    that an x64 machine is required, and copies the OS requirement from the copy
-    of Chrome being packaged.
+    """Creates a distribution XML file for use by `productbuild`. This copies
+    the OS requirement from the copy of Chrome being packaged.
 
     Args:
         paths: A |model.Paths| object.
@@ -197,7 +196,7 @@ def _productbuild_distribution_path(paths, dist_config, component_pkg_path):
 
     <!-- Top-level info about the distribution. -->
     <title>{app_product}</title>
-    <options customize="never" require-scripts="false" hostArchitectures="x86_64"/>
+    <options customize="never" require-scripts="false"/>
     <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true"/>
     <volume-check>
         <allowed-os-versions>
