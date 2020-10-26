@@ -61,16 +61,20 @@ gfx::Size RoundedImageView::CalculatePreferredSize() const {
 
 void RoundedImageView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
-  gfx::Rect image_bounds(size());
-  image_bounds.ClampToCenteredSize(GetPreferredSize());
-  image_bounds.Inset(GetInsets());
+  gfx::Rect drawn_image_bounds(size());
+  drawn_image_bounds.Inset(GetInsets());
+
+  // It handles the situation that the size of the drawing space is greater
+  // than that of the image to draw.
+  drawn_image_bounds.ClampToCenteredSize(GetImageSize());
+
   const SkScalar kRadius[8] = {
       SkIntToScalar(corner_radius_[0]), SkIntToScalar(corner_radius_[0]),
       SkIntToScalar(corner_radius_[1]), SkIntToScalar(corner_radius_[1]),
       SkIntToScalar(corner_radius_[2]), SkIntToScalar(corner_radius_[2]),
       SkIntToScalar(corner_radius_[3]), SkIntToScalar(corner_radius_[3])};
   SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(image_bounds), kRadius);
+  path.addRoundRect(gfx::RectToSkRect(drawn_image_bounds), kRadius);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
 
@@ -80,15 +84,24 @@ void RoundedImageView::OnPaint(gfx::Canvas* canvas) {
       image_to_draw = resized_image_;
       break;
     case Alignment::kCenter:
-      gfx::Rect preferred_size(GetImageSize());
-      preferred_size.ClampToCenteredSize(image_bounds.size());
-      image_to_draw = gfx::ImageSkiaOperations::ExtractSubset(resized_image_,
-                                                              preferred_size);
+      gfx::Rect image_size(GetImageSize());
+
+      // It handles the situation that the size of the image to draw is greater
+      // than that of the drawing space.
+      image_size.ClampToCenteredSize(drawn_image_bounds.size());
+
+      image_to_draw =
+          gfx::ImageSkiaOperations::ExtractSubset(resized_image_, image_size);
       break;
   }
 
-  canvas->DrawImageInPath(image_to_draw, image_bounds.x(), image_bounds.y(),
-                          path, flags);
+  // The size of the area to paint `image_to_draw` should be no greater than
+  // that of `image_to_draw`. Otherwise, `image_to_draw` will be tiled.
+  DCHECK_LE(drawn_image_bounds.width(), image_to_draw.width());
+  DCHECK_LE(drawn_image_bounds.height(), image_to_draw.height());
+
+  canvas->DrawImageInPath(image_to_draw, drawn_image_bounds.x(),
+                          drawn_image_bounds.y(), path, flags);
 }
 
 const char* RoundedImageView::GetClassName() const {
