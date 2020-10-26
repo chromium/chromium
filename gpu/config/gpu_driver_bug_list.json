@@ -2915,15 +2915,16 @@
     },
     {
       "id": 304,
-      "cr_bugs": [911349],
-      "description": "Video processor blit to swap chain results in column of black pixels on older NVIDIA drivers at certain scaling factors",
+      "cr_bugs": [911349, 1113893],
+      "description": "Per NVIDIA, software and hardware overlays don't work properly prior to this driver.",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x10de",
       "driver_version": {
+        "schema": "nvidia_driver",
         "op": "<",
-        "value": "25.21.14.1900"
+        "value": "456.38"
       },
       "features": [
         "disable_direct_composition_video_overlays"

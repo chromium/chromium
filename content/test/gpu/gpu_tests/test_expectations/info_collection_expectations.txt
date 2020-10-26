@@ -1,5 +1,5 @@
 # tags: [ win ]
-# tags: [ intel-0x3e92 intel-0x5912 ]
+# tags: [ intel-0x3e92 intel-0x5912 nvidia ]
 # results: [ Failure ]
 
 # Incorrectly reporting SCALING instead of DIRECT on Win10 w/ UHD 630 GPUs.
@@ -8,3 +8,6 @@ crbug.com/1079393 [ win intel-0x3e92 ] InfoCollection_direct_composition [ Failu
 # Incorrectly reporting SOFTWARE instead of SCALING for nv12_overlay_support on
 # Win10 w/ HD 630 GPUs and driver 26.20.100.8141
 crbug.com/1079393 [ win intel-0x5912 ] InfoCollection_direct_composition [ Failure ]
+
+# NVIDIA bots need 456.38+ drivers to use SOFTWARE overlays.
+crbug.com/1113893 [ win nvidia ] InfoCollection_direct_composition [ Failure ]
