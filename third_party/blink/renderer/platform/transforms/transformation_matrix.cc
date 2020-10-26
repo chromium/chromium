@@ -1038,7 +1038,9 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double x,
   TransformationMatrix mat;
 
   // Optimize cases where the axis is along a major axis
-  if (x == 1.0 && y == 0.0 && z == 0.0) {
+  // Since we've already normalized the vector we don't need to check that the
+  // other two dimensions are zero
+  if (x == 1.0) {
     mat.matrix_[0][0] = 1.0;
     mat.matrix_[0][1] = 0.0;
     mat.matrix_[0][2] = 0.0;
@@ -1051,7 +1053,7 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double x,
     mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
     mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
     mat.matrix_[3][3] = 1.0;
-  } else if (x == 0.0 && y == 1.0 && z == 0.0) {
+  } else if (y == 1.0) {
     mat.matrix_[0][0] = cos_theta;
     mat.matrix_[0][1] = 0.0;
     mat.matrix_[0][2] = -sin_theta;
@@ -1064,7 +1066,7 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double x,
     mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
     mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
     mat.matrix_[3][3] = 1.0;
-  } else if (x == 0.0 && y == 0.0 && z == 1.0) {
+  } else if (z == 1.0) {
     mat.matrix_[0][0] = cos_theta;
     mat.matrix_[0][1] = sin_theta;
     mat.matrix_[0][2] = 0.0;
