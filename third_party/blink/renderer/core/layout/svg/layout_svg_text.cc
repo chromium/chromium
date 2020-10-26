@@ -161,6 +161,24 @@ static inline void CheckDescendantTextNodeConsistency(
 #endif
 }
 
+void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
+  if (StyleRef().SvgStyle().VectorEffect() == VE_NON_SCALING_STROKE) {
+    SetTransformAffectsVectorEffect(true);
+    return;
+  }
+
+  SetTransformAffectsVectorEffect(false);
+  for (LayoutObject* descendant = FirstChild(); descendant;
+       descendant = descendant->NextInPreOrder(this)) {
+    if (descendant->IsSVGInline() &&
+        descendant->StyleRef().SvgStyle().VectorEffect() ==
+            VE_NON_SCALING_STROKE) {
+      SetTransformAffectsVectorEffect(true);
+      break;
+    }
+  }
+}
+
 void LayoutSVGText::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
@@ -269,6 +287,8 @@ void LayoutSVGText::UpdateLayout() {
   // If our bounds changed, notify the parents.
   if (update_parent_boundaries)
     LayoutSVGBlock::SetNeedsBoundariesUpdate();
+
+  UpdateTransformAffectsVectorEffect();
 
   DCHECK(!needs_reordering_);
   DCHECK(!needs_transform_update_);

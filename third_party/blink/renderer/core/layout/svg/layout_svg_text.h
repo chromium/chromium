@@ -108,6 +108,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
   RootInlineBox* CreateRootInlineBox() override;
 
   void SubtreeStructureChanged(LayoutInvalidationReasonForTracing);
+  void UpdateTransformAffectsVectorEffect();
 
   bool needs_reordering_ : 1;
   bool needs_positioning_values_update_ : 1;

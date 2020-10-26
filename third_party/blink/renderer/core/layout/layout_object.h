@@ -3309,6 +3309,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return true;
   }
 
+  bool TransformAffectsVectorEffect() const {
+    NOT_DESTROYED();
+    return bitfields_.TransformAffectsVectorEffect();
+  }
+
  protected:
   // Identifiers for each of LayoutObject subclasses.
   // The identifier name for blink::LayoutFoo should be kLayoutObjectFoo.
@@ -3532,6 +3537,12 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // object is really in the first line which is unknown before layout.
   const ComputedStyle* FirstLineStyleWithoutFallback() const;
 
+  void SetTransformAffectsVectorEffect(bool b) {
+    NOT_DESTROYED();
+    DCHECK(IsSVGChild());
+    bitfields_.SetTransformAffectsVectorEffect(b);
+  }
+
  private:
   bool LocalToAncestorRectFastPath(const PhysicalRect& rect,
                                    const LayoutBoxModelObject* ancestor,
@@ -3734,6 +3745,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           being_destroyed_(false),
           is_layout_ng_object_for_list_marker_image_(false),
           is_table_column_constraints_dirty_(false),
+          transform_affects_vector_effect_(false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
@@ -4039,6 +4051,14 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     // When this flag is set, any cached constraints are invalid.
     ADD_BOOLEAN_BITFIELD(is_table_column_constraints_dirty_,
                          IsTableColumnsConstraintsDirty);
+
+    // For transformable SVG child objects, indicates if this object or any
+    // descendant has special vector effect that is affected by transform on
+    // this object. For an SVG child object having special vector effect, this
+    // flag is set on all transformable ancestors up to the SVG root (not
+    // included).
+    ADD_BOOLEAN_BITFIELD(transform_affects_vector_effect_,
+                         TransformAffectsVectorEffect);
 
    private:
     // This is the cached 'position' value of this object

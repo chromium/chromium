@@ -847,9 +847,9 @@ CompositorAnimations::CheckCanStartTransformAnimationOnCompositorForSVG(
       // TODO(crbug.com/1134775): Similarly, composited animation would also
       // remove the additional translation of LayoutSVGTransformableContainer.
       reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
-    } else if (svg_element.ComputedStyleRef().SvgStyle().VectorEffect()) {
-      // If vector-effect is set so something other than none, transform
-      // affects paint thus animation can not be composited.
+    } else if (layout_object->TransformAffectsVectorEffect()) {
+      // If the subtree has vector effect, transform affects paint thus
+      // animation can not be composited.
       reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
     }
   }

@@ -84,6 +84,16 @@ void LayoutSVGContainer::UpdateLayout() {
     LayoutSVGModelObject::SetNeedsBoundariesUpdate();
   }
 
+  if (!IsSVGHiddenContainer()) {
+    SetTransformAffectsVectorEffect(false);
+    for (auto* child = FirstChild(); child; child = child->NextSibling()) {
+      if (child->TransformAffectsVectorEffect()) {
+        SetTransformAffectsVectorEffect(true);
+        break;
+      }
+    }
+  }
+
   DCHECK(!needs_boundaries_update_);
   ClearNeedsLayout();
 }

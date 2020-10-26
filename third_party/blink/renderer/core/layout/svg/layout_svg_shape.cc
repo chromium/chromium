@@ -83,6 +83,8 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
       stroke_path_cache_.reset();
     }
   }
+
+  SetTransformAffectsVectorEffect(HasNonScalingStroke());
 }
 
 void LayoutSVGShape::WillBeDestroyed() {

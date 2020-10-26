@@ -2234,6 +2234,9 @@ TEST_P(AnimationCompositorAnimationsTest,
       </rect>
       <rect id="rect-effect" class="animate"
             vector-effect="non-scaling-stroke"/>
+      <g id="g-effect" class="animate">
+        <rect class="animate" vector-effect="non-scaling-stroke"/>
+      </g>
       <svg id="nested-svg" class="animate"/>
       <foreignObject id="foreign" class="animate"/>
       <foreignObject id="foreign-zoomed" class="animate"
@@ -2253,6 +2256,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_FALSE(CanStartAnimation("rect-useref"));
   EXPECT_FALSE(CanStartAnimation("rect-smil"));
   EXPECT_FALSE(CanStartAnimation("rect-effect"));
+  EXPECT_FALSE(CanStartAnimation("g-effect"));
   EXPECT_FALSE(CanStartAnimation("nested-svg"));
   EXPECT_TRUE(CanStartAnimation("foreign"));
   EXPECT_FALSE(CanStartAnimation("foreign-zoomed"));
