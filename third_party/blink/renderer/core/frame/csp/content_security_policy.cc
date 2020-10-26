@@ -1451,21 +1451,10 @@ void ContentSecurityPolicy::ReportContentSecurityPolicyIssue(
           mojom::blink::InspectorIssueCode::kContentSecurityPolicyIssue,
           std::move(details));
 
-  // TODO(crbug.com/1082628): Add handling of other CSP violation types later as
-  // they'll need more work.
-  if (violation_type == blink::ContentSecurityPolicy::
-                            ContentSecurityPolicyViolationType::kURLViolation ||
-      violation_type ==
-          blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-              kInlineViolation ||
-      violation_type ==
-          blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-              kEvalViolation) {
-    if (frame_ancestor)
-      frame_ancestor->AddInspectorIssue(std::move(info));
-    else if (delegate_)
-      delegate_->AddInspectorIssue(std::move(info));
-  }
+  if (frame_ancestor)
+    frame_ancestor->AddInspectorIssue(std::move(info));
+  else if (delegate_)
+    delegate_->AddInspectorIssue(std::move(info));
 }
 
 void ContentSecurityPolicy::LogToConsole(ConsoleMessage* console_message,
