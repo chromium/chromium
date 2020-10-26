@@ -42,10 +42,10 @@ This pattern relies on two important facts about [base::RunLoop]:
 That means that if your code does this:
 
 ```c++
-  base::RunLoop loop;
-  maybe-asynchronously { loop.Quit(); }
-  loop.Run();
-  LOG(INFO) << "Hello!";
+base::RunLoop loop;
+maybe-asynchronously { loop.Quit(); }
+loop.Run();
+LOG(INFO) << "Hello!";
 ```
 
 then regardless of whether the maybe-asynchronous `loop.Quit()` is executed
@@ -59,44 +59,44 @@ before the `Run`, the `Run` will be a no-op; if the `Quit` happens after the
 If the asynchronous thing in question takes a completion callback:
 
 ```c++
-  base::RunLoop run_loop;
-  Reply reply;
-  DoThingAndReply(
-      base::BindLambdaForTesting([&](const Reply& r) {
-          reply = r;
-          run_loop.Quit();
-      }));
-  run_loop.Run();
+base::RunLoop run_loop;
+Reply reply;
+DoThingAndReply(
+    base::BindLambdaForTesting([&](const Reply& r) {
+        reply = r;
+        run_loop.Quit();
+    }));
+run_loop.Run();
 ```
 
 or perhaps even just:
 
 ```c++
-  base::RunLoop run_loop;
-  DoThing(run_loop.QuitClosure());
-  run_loop.Run();
+base::RunLoop run_loop;
+DoThing(run_loop.QuitClosure());
+run_loop.Run();
 ```
 
 If there exists a GizmoObserver interface with an OnThingDone event:
 
 ```c++
-  class TestGizmoObserver : public GizmoObserver {
-   public:
-    TestGizmoObserver(base::RunLoop* loop, Gizmo* thing)
-        : GizmoObserver(thing), loop_(loop) {}
+class TestGizmoObserver : public GizmoObserver {
+ public:
+  TestGizmoObserver(base::RunLoop* loop, Gizmo* thing)
+      : GizmoObserver(thing), loop_(loop) {}
 
-    // GizmoObserver:
-    void OnThingStarted(Gizmo* observed_gizmo) override { ... }
-    void OnThingProgressed(Gizmo* observed_gizmo) override { ... }
-    void OnThingDone(Gizmo* observed_gizmo) override {
-      loop_->Quit();
-    }
-  };
+  // GizmoObserver:
+  void OnThingStarted(Gizmo* observed_gizmo) override { ... }
+  void OnThingProgressed(Gizmo* observed_gizmo) override { ... }
+  void OnThingDone(Gizmo* observed_gizmo) override {
+    loop_->Quit();
+  }
+};
 
-  base::RunLoop run_loop;
-  TestGizmoObserver observer(&run_loop, gizmo);
-  gizmo->StartDoingThing();
-  run_loop.Run();
+base::RunLoop run_loop;
+TestGizmoObserver observer(&run_loop, gizmo);
+gizmo->StartDoingThing();
+run_loop.Run();
 ```
 
 This is sometimes wrapped up into a helper class that internally constructs the
@@ -104,26 +104,26 @@ RunLoop like so, if all you need to do is wait for the event but don't care
 about observing any intermediate states too:
 
 ```c++
-  class ThingDoneWaiter : public GizmoObserver {
-   public:
-    ThingDoneWaiter(Gizmo* thing) : GizmoObserver(thing) {}
+class ThingDoneWaiter : public GizmoObserver {
+ public:
+  ThingDoneWaiter(Gizmo* thing) : GizmoObserver(thing) {}
 
-    void Wait() {
-      run_loop_.Run();
-    }
+  void Wait() {
+    run_loop_.Run();
+  }
 
-    // GizmoObserver:
-    void OnThingDone(Gizmo* observed_gizmo) {
-      run_loop_.Quit();
-    }
+  // GizmoObserver:
+  void OnThingDone(Gizmo* observed_gizmo) {
+    run_loop_.Quit();
+  }
 
-   private:
-    RunLoop run_loop_;
-  };
+ private:
+  RunLoop run_loop_;
+};
 
-  ThingDoneWaiter waiter(gizmo);
-  gizmo->StartDoingThing();
-  waiter.Wait();
+ThingDoneWaiter waiter(gizmo);
+gizmo->StartDoingThing();
+waiter.Wait();
 ```
 
 ## Events vs States
@@ -141,29 +141,29 @@ The following is an example of a Waiter helper class that waits for a state, as
 opposed to an event:
 
 ```c++
-  class GizmoReadyWaiter : public GizmoObserver {
-   public:
-    GizmoReadyObserver(Gizmo* gizmo)
-        : gizmo_(gizmo) {}
-    ~GizmoReadyObserver() override = default;
+class GizmoReadyWaiter : public GizmoObserver {
+ public:
+  GizmoReadyObserver(Gizmo* gizmo)
+      : gizmo_(gizmo) {}
+  ~GizmoReadyObserver() override = default;
 
-    void WaitForGizmoReady() {
-      if (!gizmo_->ready()) {
-        gizmo_observer_.Add(gizmo_);
-        run_loop_.Run();
-      }
+  void WaitForGizmoReady() {
+    if (!gizmo_->ready()) {
+      gizmo_observer_.Add(gizmo_);
+      run_loop_.Run();
     }
+  }
 
-    // GizmoObserver:
-    void OnGizmoReady(Gizmo* observed_gizmo) {
-      run_loop_.Quit();
-    }
+  // GizmoObserver:
+  void OnGizmoReady(Gizmo* observed_gizmo) {
+    run_loop_.Quit();
+  }
 
-   private:
-    RunLoop run_loop_;
-    Gizmo* gizmo_;
-    ScopedObserver<Gizmo, GizmoObserver> gizmo_observer_{this};
-  };
+ private:
+  RunLoop run_loop_;
+  Gizmo* gizmo_;
+  ScopedObserver<Gizmo, GizmoObserver> gizmo_observer_{this};
+};
 ```
 
 ## Sharp edges
@@ -173,27 +173,27 @@ opposed to an event:
 A common mis-use of this pattern is like so:
 
 ```c++
-  gizmo->StartDoingThing();
-  base::RunLoop run_loop;
-  TestGizmoObserver observer(&run_loop, gizmo);
-  run_loop.Run();
+gizmo->StartDoingThing();
+base::RunLoop run_loop;
+TestGizmoObserver observer(&run_loop, gizmo);
+run_loop.Run();
 ```
 
 This looks tempting because it seems that you can write a helper function:
 
 ```c++
-  void TerribleHorribleNoGoodVeryBadWaitForThing(Gizmo* gizmo) {
-    base::RunLoop run_loop;
-    TestGizmoObserver observer(&run_loop, gizmo);
-    run_loop.Run();
-  }
+void TerribleHorribleNoGoodVeryBadWaitForThing(Gizmo* gizmo) {
+  base::RunLoop run_loop;
+  TestGizmoObserver observer(&run_loop, gizmo);
+  run_loop.Run();
+}
 ```
 
 and then your test code can simply read:
 
 ```c++
-  gizmo->StartDoingThing();
-  TerribleHorribleNoGoodVeryBadWaitForThing(gizmo);
+gizmo->StartDoingThing();
+TerribleHorribleNoGoodVeryBadWaitForThing(gizmo);
 ```
 
 However, this is a recipe for a flaky test: if `gizmo->StartDoingThing()`
@@ -210,18 +210,18 @@ If you still really want a helper function, perhaps you just want to inline the
 start:
 
 ```c++
-  void NiceFriendlyDoThingAndWait(Gizmo* gizmo) {
-    base::RunLoop run_loop;
-    TestGizmoObserver observer(&run_loop, gizmo);
-    gizmo->StartDoingThing();
-    run_loop.Run();
-  }
+void NiceFriendlyDoThingAndWait(Gizmo* gizmo) {
+  base::RunLoop run_loop;
+  TestGizmoObserver observer(&run_loop, gizmo);
+  gizmo->StartDoingThing();
+  run_loop.Run();
+}
 ```
 
 with the test code being:
 
 ```c++
-  NiceFriendlyDoThingAndWait(gizmo);
+NiceFriendlyDoThingAndWait(gizmo);
 ```
 
 Note that this is not an issue when waiting on a *state*, since the observer can
@@ -233,17 +233,17 @@ Sometimes, there's no easy way to observe completion of an event. In that case,
 if the code under test looks like this:
 
 ```c++
-  void StartDoingThing() { PostTask(&StepOne); }
-  void StepOne() { PostTask(&StepTwo); }
-  void StepTwo() { /* done! */ }
+void StartDoingThing() { PostTask(&StepOne); }
+void StepOne() { PostTask(&StepTwo); }
+void StepTwo() { /* done! */ }
 ```
 
 it can be tempting to do:
 
 ```c++
-  gizmo->StartDoingThing();
-  base::RunLoop().RunUntilIdle();
-  /* now it's done! */
+gizmo->StartDoingThing();
+base::RunLoop().RunUntilIdle();
+/* now it's done! */
 ```
 
 However, doing this is adding dependencies to your test code on the exact async
@@ -301,43 +301,43 @@ gracefully.
 
 
 ```c++
-  class GizmoReadyWaiter : public GizmoObserver {
-   public:
-    GizmoReadyObserver(Gizmo* gizmo)
-        : gizmo_(gizmo) {}
-    ~GizmoReadyObserver() override = default;
+class GizmoReadyWaiter : public GizmoObserver {
+ public:
+  GizmoReadyObserver(Gizmo* gizmo)
+      : gizmo_(gizmo) {}
+  ~GizmoReadyObserver() override = default;
 
-    void WaitForGizmoReady() {
-      ASSERT_TRUE(gizmo_)
-          << "Trying to call Wait() after the Gizmo was destroyed!";
-      if (!gizmo_->ready()) {
-        gizmo_observer_.Add(gizmo_);
-        run_loop_.Run();
-      }
+  void WaitForGizmoReady() {
+    ASSERT_TRUE(gizmo_)
+        << "Trying to call Wait() after the Gizmo was destroyed!";
+    if (!gizmo_->ready()) {
+      gizmo_observer_.Add(gizmo_);
+      run_loop_.Run();
     }
+  }
 
-    // GizmoObserver:
-    void OnGizmoReady(Gizmo* observed_gizmo) {
-      gizmo_observer_.Remove(observed_gizmo);
-      run_loop_.Quit();
-    }
-    void OnGizmoDestroying(Gizmo* observed_gizmo) {
-      DCHECK_EQ(gizmo_, observed_gizmo);
-      gizmo_ = nullptr;
-      // Remove the observer now, to avoid a UAF in the destructor.
-      gizmo_observer_.Remove(observed_gizmo);
-      // Bail out so we don't time out in the test waiting for a ready state
-      // that will never come.
-      run_loop_.Quit();
-      // Was this a possible expected outcome? If not, consider:
-      // ADD_FAILURE() << "The Gizmo was destroyed before it was ready!";
-    }
+  // GizmoObserver:
+  void OnGizmoReady(Gizmo* observed_gizmo) {
+    gizmo_observer_.Remove(observed_gizmo);
+    run_loop_.Quit();
+  }
+  void OnGizmoDestroying(Gizmo* observed_gizmo) {
+    DCHECK_EQ(gizmo_, observed_gizmo);
+    gizmo_ = nullptr;
+    // Remove the observer now, to avoid a UAF in the destructor.
+    gizmo_observer_.Remove(observed_gizmo);
+    // Bail out so we don't time out in the test waiting for a ready state
+    // that will never come.
+    run_loop_.Quit();
+    // Was this a possible expected outcome? If not, consider:
+    // ADD_FAILURE() << "The Gizmo was destroyed before it was ready!";
+  }
 
-   private:
-    RunLoop run_loop_;
-    Gizmo* gizmo_;
-    ScopedObserver<Gizmo, GizmoObserver> gizmo_observer_{this};
-  };
+ private:
+  RunLoop run_loop_;
+  Gizmo* gizmo_;
+  ScopedObserver<Gizmo, GizmoObserver> gizmo_observer_{this};
+};
 ```
 
 [base::RunLoop]: ../../base/run_loop.h

@@ -10,7 +10,7 @@ constructed by specific other classes, and requiring an instance of that passkey
 class to be passed in when calling methods you wish to restrict the use of. It
 is used like this:
 
-```
+```cpp
 class Foo {
  public:
   Foo();

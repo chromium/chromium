@@ -8,51 +8,57 @@ or library (often called clients) to customize the behavior of the framework.
 Examples in this document will be given by extending or modifying this example
 API, which is hopefully self-explanatory:
 
-    class StringKVStore {
-     public:
-      StringKVStore();
-      virtual ~StringKVStore();
+```cpp
+class StringKVStore {
+ public:
+  StringKVStore();
+  virtual ~StringKVStore();
 
-      using KeyPredicate = base::RepeatingCallback<bool(const string&)>;
+  using KeyPredicate = base::RepeatingCallback<bool(const string&)>;
 
-      void Put(const string& key, const string& value);
-      void Remove(const string& key);
-      void Clear();
+  void Put(const string& key, const string& value);
+  void Remove(const string& key);
+  void Clear();
 
-      string Get(const string& key) const;
-      set<string> GetKeys() const;
-      set<string> GetKeysMatching(const KeyPredicate& predicate) const;
+  string Get(const string& key) const;
+  set<string> GetKeys() const;
+  set<string> GetKeysMatching(const KeyPredicate& predicate) const;
 
-      void SaveToPersistentStore();
-    };
+  void SaveToPersistentStore();
+};
+```
 
 ### What is inversion of control?
 
 Normally, client code calls into the library to do operations, so control flows
 from a high-level class to a low-level class:
 
-    void YourFunction() {
-      // GetKeys() calls into the StringKVStore library
-      for (const auto& key : kv_store_.GetKeys()) {
-        ...
-      }
-    }
+```cpp
+void YourFunction() {
+  // GetKeys() calls into the StringKVStore library
+  for (const auto& key : kv_store_.GetKeys()) {
+    ...
+  }
+}
+```
 
 In "inverted" control flow, the library calls back into your code after you
 call into it, so control flows back from a low-level class to a high-level
 class:
 
-    bool IsKeyInteresting(const string& key) { ... }
+```cpp
+bool IsKeyInteresting(const string& key) { ... }
 
-    void YourFunction() {
-      StringKVStore::KeyPredicate predicate =
-          base::BindRepeating(&IsKeyInteresting);
-      // GetKeysMatching() calls into the StringKVStore library, but it calls
-      // back into IsKeyInteresting defined in this file!
-      for (const auto& key : kv_store_.GetKeysMatching(predicate)) {
-        ...
-      }
-    }
+void YourFunction() {
+  StringKVStore::KeyPredicate predicate =
+      base::BindRepeating(&IsKeyInteresting);
+  // GetKeysMatching() calls into the StringKVStore library, but it calls
+  // back into IsKeyInteresting defined in this file!
+  for (const auto& key : kv_store_.GetKeysMatching(predicate)) {
+    ...
+  }
+}
+```
 
 It is also often inverted in the Chromium dependency sense. For example, in
 Chromium, code in //content can't call, link against, or generally be aware of
@@ -85,81 +91,93 @@ Callbacks are one of the simplest ways to do inversion of control, and often are
 all you need. Callbacks can be used to split out part of the framework's logic
 into the client, like so:
 
-    void StringKVStore::GetKeysMatching(const KeyPredicate& predicate) {
-      set<string> keys;
-      for (const auto& key : internal_keys()) {
-        if (predicate.Run(key))
-          keys.insert(key);
-      }
-      return keys;
-    }
+```cpp
+void StringKVStore::GetKeysMatching(const KeyPredicate& predicate) {
+  set<string> keys;
+  for (const auto& key : internal_keys()) {
+    if (predicate.Run(key))
+      keys.insert(key);
+  }
+  return keys;
+}
+```
 
 where `predicate` was supplied by the client of
 `StringKVStore::GetKeysMatching`. They can also be used for the framework
 library to notify clients of events, like so:
 
-    void StringKVStore::Put(const string& key, const string& value) {
-      ...
-      // In real code you would use CallbackList instead, but for explanatory
-      // purposes:
-      for (const auto& callback : key_changed_callbacks_)
-        callback.Run(...);
-    }
+```cpp
+void StringKVStore::Put(const string& key, const string& value) {
+  ...
+  // In real code you would use CallbackList instead, but for explanatory
+  // purposes:
+  for (const auto& callback : key_changed_callbacks_)
+    callback.Run(...);
+}
+```
 
 making use of [Subscription].
 
 Callbacks can also be used to supply an implementation of something deliberately
 omitted, like so:
 
-    class StringKVStore {
-      using SaveCallback = base::RepeatingCallback<void(string, string)>;
-      void SaveToPersistentStore(const SaveCallback& callback);
-    };
+```cpp
+class StringKVStore {
+  using SaveCallback = base::RepeatingCallback<void(string, string)>;
+  void SaveToPersistentStore(const SaveCallback& callback);
+};
+```
 
 ### Observers
 
 An "observer" receives notifications of events happening on an object. For
 example, an interface like this might exist:
 
-    class StringKVStore::Observer {
-     public:
-      virtual void OnKeyChanged(StringKVStore* store,
-                                const string& key,
-                                const string& from_value,
-                                const string& to_value) {}
-      virtual void OnKeyRemoved(StringKVStore* store,
-                                const string& key,
-                                const string& old_value) {}
-      ...
-    }
+```cpp
+class StringKVStore::Observer {
+ public:
+  virtual void OnKeyChanged(StringKVStore* store,
+                            const string& key,
+                            const string& from_value,
+                            const string& to_value) {}
+  virtual void OnKeyRemoved(StringKVStore* store,
+                            const string& key,
+                            const string& old_value) {}
+  ...
+}
+```
 
 and then on the StringKVStore class:
 
-    class StringKVStore {
-     public:
-      ...
-      void AddObserver(Observer* observer);
-      void RemoveObserver(Observer* observer);
-    }
+```cpp
+class StringKVStore {
+ public:
+  ...
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+}
+```
 
 So an example of a `StringKVStore::Observer` might be:
 
-    class HelloKeyWatcher : public StringKVStore::Observer {
-     public:
-      void OnKeyChanged(StringKVStore* store,
-                        const string& key,
-                        const string& from_value,
-                        const string& to_value) override {
-        if (key == "hello")
-          ++hello_changes_;
-      }
-      void OnKeyRemoved(StringKVStore* store,
-                        const string& key,
-                        const string& old_value) override {
-        if (key == "hello")
-          hello_changes_ = 0;
-      }
-    }
+```cpp
+class HelloKeyWatcher : public StringKVStore::Observer {
+ public:
+  void OnKeyChanged(StringKVStore* store,
+                    const string& key,
+                    const string& from_value,
+                    const string& to_value) override {
+    if (key == "hello")
+      ++hello_changes_;
+  }
+  void OnKeyRemoved(StringKVStore* store,
+                    const string& key,
+                    const string& old_value) override {
+    if (key == "hello")
+      hello_changes_ = 0;
+  }
+}
+```
 
 where the `StringKVStore` arranges to call the relevant method on each
 `StringKVStore::Observer` that has been added to it whenever a matching event
@@ -180,10 +198,12 @@ instead, use a plain [Callback].
 
 Here's an example:
 
-    class StringKVStore::ClearListener {
-     public:
-      virtual void OnCleared(StringKVStore* store) = 0;
-    }
+```cpp
+class StringKVStore::ClearListener {
+ public:
+  virtual void OnCleared(StringKVStore* store) = 0;
+}
+```
 
 Use a listener when:
 
@@ -200,29 +220,35 @@ active.
 One very common use of delegates is to allow clients to make policy decisions,
 like so:
 
-    class StringKVStore::Delegate {
-     public:
-      virtual bool ShouldPersistKey(StringKVStore* store, const string& key);
-      virtual bool IsValidValueForKey(StringKVStore* store,
-                                      const string& key,
-                                      const string& proposed_value);
-    };
+```cpp
+class StringKVStore::Delegate {
+ public:
+  virtual bool ShouldPersistKey(StringKVStore* store, const string& key);
+  virtual bool IsValidValueForKey(StringKVStore* store,
+                                  const string& key,
+                                  const string& proposed_value);
+};
+```
 
 Another common use is to allow clients to inject their own subclasses of
 framework objects that need to be constructed by the framework, by putting
 a factory method on the delegate:
 
-    class StringKVStore::Delegate {
-     public:
-      virtual unique_ptr<StringKVStoreBackend>
-          CreateBackend(StringKVStore* store);
-    }
+```cpp
+class StringKVStore::Delegate {
+ public:
+  virtual unique_ptr<StringKVStoreBackend>
+      CreateBackend(StringKVStore* store);
+}
+```
 
 And then these might exist:
 
-    class MemoryBackedStringKVStoreDelegate : public StringKVStore::Delegate;
-    class DiskBackedStringKVStoreDelegate : public StringKVStore::Delegate;
-    ...
+```cpp
+class MemoryBackedStringKVStoreDelegate : public StringKVStore::Delegate;
+class DiskBackedStringKVStoreDelegate : public StringKVStore::Delegate;
+...
+```
 
 Use a delegate when:
 
@@ -342,9 +368,11 @@ Inverted control can be harder to reason about, and more expensive at runtime,
 than other approaches. In particular, beware of using delegates when static data
 would be appropriate. For example, consider this hypothetical interface:
 
-    class StringKVStore::Delegate {
-      virtual bool ShouldSaveAtDestruction() { return true; }
-    }
+```cpp
+class StringKVStore::Delegate {
+  virtual bool ShouldSaveAtDestruction() { return true; }
+}
+```
 
 It should be clear from the naming that this method will only be called once per
 StringKVStore instance and that its value cannot meaningfully change within the
