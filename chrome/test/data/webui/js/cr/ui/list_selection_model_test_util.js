@@ -8,7 +8,7 @@
  * @param {number} end The last number in the range inclusive.
  * @return {!Array<number>}
  */
-function range(start, end) {
+/* #export */ function range(start, end) {
   var a = [];
   for (var i = start; i <= end; i++) {
     a.push(i);
@@ -23,7 +23,7 @@ function range(start, end) {
  * @param {number} removed Number of entries to remove from the list.
  * @param {number} added Number of entries to add to the list.
  */
-function adjust(model, index, removed, added) {
+/* #export */ function adjust(model, index, removed, added) {
   var permutation = [];
   for (var i = 0; i < index; i++) {
     permutation.push(i);

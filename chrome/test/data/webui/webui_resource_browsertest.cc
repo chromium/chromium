@@ -153,13 +153,32 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelTest) {
   LoadTestUrl("js/cr/ui/list_selection_model_test.html");
 }
 
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModeModulelTest) {
+  LoadTestUrl("?module=js/cr/ui/list_selection_model_test.m.js");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSingleSelectionModelTest) {
   LoadTestUrl("js/cr/ui/list_single_selection_model_test.html");
 }
 
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest,
+                       ListSingleSelectionModelModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/list_single_selection_model_test.m.js");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuTest) {
   LoadTestUrl("js/cr/ui/menu_test.html");
 }
+
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/menu_test.m.js");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
   LoadTestUrl("mock_timer_test.html");
@@ -172,6 +191,12 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ParseHtmlSubsetTest) {
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilTest) {
   LoadTestUrl("js/cr/ui/position_util_test.html");
 }
+
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/position_util_test.m.js");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandTest) {
   LoadTestUrl("js/cr/ui/command_test.html");
@@ -197,9 +222,21 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonTest) {
   LoadTestUrl("js/cr/ui/menu_button_test.html");
 }
 
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/menu_button_test.m.js");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterTest) {
   LoadTestUrl("js/cr/ui/splitter_test.html");
 }
+
+#if defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterModuleTest) {
+  LoadTestUrl("?module=js/cr/ui/splitter_test.m.js");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, UtilTest) {
   LoadTestUrl("util_test.html");

@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+// #import {adjust, range} from './list_selection_model_test_util.m.js';
+// clang-format on
+
 function createSelectionModel(len, opt_dependentLeadItem) {
   var sm = new cr.ui.ListSelectionModel(len);
   sm.independentLeadItem_ = !opt_dependentLeadItem;
   return sm;
 }
 
-function testAdjust1() {
+/* #export */ function testAdjust1() {
   var sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
@@ -19,7 +24,7 @@ function testAdjust1() {
   assertEquals(90, sm.selectedIndex);
 }
 
-function testAdjust2() {
+/* #export */ function testAdjust2() {
   var sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 50;
@@ -30,7 +35,7 @@ function testAdjust2() {
   assertEquals(50, sm.selectedIndex);
 }
 
-function testAdjust3() {
+/* #export */ function testAdjust3() {
   var sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
@@ -41,7 +46,7 @@ function testAdjust3() {
   assertEquals(110, sm.selectedIndex);
 }
 
-function testAdjust4() {
+/* #export */ function testAdjust4() {
   var sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = 100;
@@ -54,7 +59,7 @@ function testAdjust4() {
   assertArrayEquals(range(95, 105), sm.selectedIndexes);
 }
 
-function testAdjust5() {
+/* #export */ function testAdjust5() {
   var sm = createSelectionModel(100);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 99;
@@ -66,7 +71,7 @@ function testAdjust5() {
   assertArrayEquals([98], sm.selectedIndexes);
 }
 
-function testAdjust6() {
+/* #export */ function testAdjust6() {
   var sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = 105;
@@ -80,7 +85,7 @@ function testAdjust6() {
   assertArrayEquals(range(100, 105), sm.selectedIndexes);
 }
 
-function testAdjust7() {
+/* #export */ function testAdjust7() {
   var sm = createSelectionModel(1);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 0;
@@ -92,7 +97,7 @@ function testAdjust7() {
   assertArrayEquals([10], sm.selectedIndexes);
 }
 
-function testAdjust8() {
+/* #export */ function testAdjust8() {
   var sm = createSelectionModel(100);
 
   sm.leadIndex = sm.anchorIndex = 50;
@@ -105,7 +110,7 @@ function testAdjust8() {
   assertArrayEquals(range(0, 19), sm.selectedIndexes);
 }
 
-function testAdjust9() {
+/* #export */ function testAdjust9() {
   var sm = createSelectionModel(10);
 
   sm.leadIndex = sm.anchorIndex = 5;
@@ -119,7 +124,7 @@ function testAdjust9() {
   assertArrayEquals([], sm.selectedIndexes);
 }
 
-function testAdjust10() {
+/* #export */ function testAdjust10() {
   var sm = createSelectionModel(10);
 
   sm.leadIndex = sm.anchorIndex = 5;
@@ -132,7 +137,7 @@ function testAdjust10() {
   assertArrayEquals([5], sm.selectedIndexes);
 }
 
-function testAdjust11() {
+/* #export */ function testAdjust11() {
   var sm = createSelectionModel(20);
 
   sm.leadIndex = sm.anchorIndex = 10;
@@ -145,7 +150,7 @@ function testAdjust11() {
   assertArrayEquals(range(0, 4), sm.selectedIndexes);
 }
 
-function testAdjust12() {
+/* #export */ function testAdjust12() {
   var sm = createSelectionModel(20, true);
 
   sm.selectAll();
@@ -158,7 +163,7 @@ function testAdjust12() {
   assertArrayEquals(range(0, 4), sm.selectedIndexes);
 }
 
-function testAdjust13() {
+/* #export */ function testAdjust13() {
   var sm = createSelectionModel(20, true);
 
   sm.selectAll();
@@ -171,7 +176,7 @@ function testAdjust13() {
   assertArrayEquals(range(0, 14), sm.selectedIndexes);
 }
 
-function testAdjust14() {
+/* #export */ function testAdjust14() {
   var sm = createSelectionModel(5, true);
 
   sm.selectedIndexes = [2, 3];
@@ -184,7 +189,7 @@ function testAdjust14() {
   assertArrayEquals(range(2, 2), sm.selectedIndexes);
 }
 
-function testAdjust15() {
+/* #export */ function testAdjust15() {
   var sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
@@ -199,7 +204,7 @@ function testAdjust15() {
   assertArrayEquals(range(3, 3), sm.selectedIndexes);
 }
 
-function testAdjust16() {
+/* #export */ function testAdjust16() {
   var sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
@@ -214,7 +219,7 @@ function testAdjust16() {
   assertArrayEquals(range(3, 3), sm.selectedIndexes);
 }
 
-function testAdjust17() {
+/* #export */ function testAdjust17() {
   var sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
@@ -229,7 +234,7 @@ function testAdjust17() {
   assertArrayEquals(range(3, 3), sm.selectedIndexes);
 }
 
-function testLeadAndAnchor1() {
+/* #export */ function testLeadAndAnchor1() {
   var sm = createSelectionModel(20, true);
 
   sm.selectAll();
@@ -239,7 +244,7 @@ function testLeadAndAnchor1() {
   assertEquals(10, sm.anchorIndex, 'anchor');
 }
 
-function testLeadAndAnchor2() {
+/* #export */ function testLeadAndAnchor2() {
   var sm = createSelectionModel(20, true);
 
   sm.leadIndex = sm.anchorIndex = 10;
@@ -249,7 +254,7 @@ function testLeadAndAnchor2() {
   assertEquals(0, sm.anchorIndex, 'anchor');
 }
 
-function testSelectAll() {
+/* #export */ function testSelectAll() {
   var sm = createSelectionModel(10);
 
   var changes = null;
@@ -265,7 +270,7 @@ function testSelectAll() {
   }));
 }
 
-function testSelectAllOnEmptyList() {
+/* #export */ function testSelectAllOnEmptyList() {
   var sm = createSelectionModel(0);
 
   var changes = null;
@@ -278,3 +283,27 @@ function testSelectAllOnEmptyList() {
   assertArrayEquals([], sm.selectedIndexes);
   assertEquals(null, changes);
 }
+
+Object.assign(window, {
+  testAdjust1,
+  testAdjust2,
+  testAdjust3,
+  testAdjust4,
+  testAdjust5,
+  testAdjust6,
+  testAdjust7,
+  testAdjust8,
+  testAdjust9,
+  testAdjust10,
+  testAdjust11,
+  testAdjust12,
+  testAdjust13,
+  testAdjust14,
+  testAdjust15,
+  testAdjust16,
+  testAdjust17,
+  testLeadAndAnchor1,
+  testLeadAndAnchor2,
+  testSelectAll,
+  testSelectAllOnEmptyList,
+});

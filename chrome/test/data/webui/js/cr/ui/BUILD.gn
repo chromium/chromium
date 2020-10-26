@@ -7,11 +7,18 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [
-    "grid_test.js",
     "array_data_model_test.js",
     "command_test.js",
     "context_menu_handler_test.js",
+    "grid_test.js",
+    "list_selection_model_test.js",
+    "list_selection_model_test_util.js",
+    "list_single_selection_model_test.js",
     "list_test.js",
+    "menu_button_test.js",
+    "menu_test.js",
+    "position_util_test.js",
+    "splitter_test.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

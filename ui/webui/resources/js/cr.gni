@@ -34,6 +34,7 @@ cr_namespace_rewrites = [
   "cr.ui.positionPopupAtPoint|positionPopupAtPoint",
   "cr.ui.swallowDoubleClick|swallowDoubleClick",
   "cr.ui.Size|Size",
+  "cr.ui.Splitter|Splitter",
   "cr.ui.StoreObserver|StoreObserver",
   "cr.ui.Tab|Tab",
   "cr.ui.Tree|Tree",

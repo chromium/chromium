@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function testMenuShowAndHideEvents() {
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {MenuButton} from 'chrome://resources/js/cr/ui/menu_button.m.js';
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+
+/* #export */ function testMenuShowAndHideEvents() {
   var menu = document.createElement('div');
   cr.ui.decorate(menu, cr.ui.Menu);
   document.body.appendChild(menu);
@@ -51,7 +55,7 @@ function testMenuShowAndHideEvents() {
   assertFalse(menuButton.classList.contains('using-mouse'));
 }
 
-function testFocusMoves() {
+/* #export */ function testFocusMoves() {
   var menu = document.createElement('div');
   var otherButton = document.createElement('button');
   cr.ui.decorate(menu, cr.ui.Menu);
@@ -101,3 +105,8 @@ function testFocusMoves() {
   // Focus should be still on the menu button.
   assertEquals(menuButton, document.activeElement);
 }
+
+Object.assign(window, {
+  testMenuShowAndHideEvents,
+  testFocusMoves,
+});

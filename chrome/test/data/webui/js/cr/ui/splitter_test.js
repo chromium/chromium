@@ -2,7 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function testSplitter_IgnoresRightMouse() {
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.m.js';
+
+/* #export */ function setUp() {
+  const html = `
+    <div id="previous"></div>
+    <div id="splitter"></div>
+    <div id="next"></div>
+  `;
+  document.body.innerHTML = html;
+}
+
+/* #export */ function testSplitter_IgnoresRightMouse() {
   var splitter = document.getElementById('splitter');
   cr.ui.decorate(splitter, cr.ui.Splitter);
 
@@ -15,7 +27,7 @@ function testSplitter_IgnoresRightMouse() {
   assertTrue(downLeft.defaultPrevented);
 }
 
-function testSplitter_ResizePreviousElement() {
+/* #export */ function testSplitter_ResizePreviousElement() {
   var splitter = document.getElementById('splitter');
   cr.ui.decorate(splitter, cr.ui.Splitter);
   splitter.resizeNextElement = false;
@@ -44,7 +56,7 @@ function testSplitter_ResizePreviousElement() {
   assertEquals(100, afterWidth - beforeWidth);
 }
 
-function testSplitter_ResizeNextElement() {
+/* #export */ function testSplitter_ResizeNextElement() {
   var splitter = document.getElementById('splitter');
   cr.ui.decorate(splitter, cr.ui.Splitter, true);
   splitter.resizeNextElement = true;
@@ -69,3 +81,10 @@ function testSplitter_ResizeNextElement() {
   var afterWidth = parseFloat(nextElement.style.width);
   assertEquals(100, afterWidth - beforeWidth);
 }
+
+Object.assign(window, {
+  setUp,
+  testSplitter_IgnoresRightMouse,
+  testSplitter_ResizePreviousElement,
+  testSplitter_ResizeNextElement,
+});

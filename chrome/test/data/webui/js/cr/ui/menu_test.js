@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+
 /** @type {cr.ui.Menu} */
 var menu;
 
@@ -21,11 +26,11 @@ function mouseUpAt(x, y) {
   return menu.dispatchEvent(mouseUpEvent);
 }
 
-function setUp() {
+/* #export */ function setUp() {
   menu = new cr.ui.Menu;
 }
 
-function testHandleMouseOver() {
+/* #export */ function testHandleMouseOver() {
   var called = false;
   menu.findMenuItem_ = function() {
     called = true;
@@ -39,7 +44,7 @@ function testHandleMouseOver() {
   assertTrue(called);
 }
 
-function testHandleMouseUp() {
+/* #export */ function testHandleMouseUp() {
   var realNow = Date.now;
   Date.now = function() {
     return 10;
@@ -62,7 +67,7 @@ function testHandleMouseUp() {
   Date.now = realNow;
 }
 
-function testShowViaKeyboardIgnoresMouseUps() {
+/* #export */ function testShowViaKeyboardIgnoresMouseUps() {
   menu.show();
   assertTrue(mouseUpAt(0, 0));
 }
@@ -71,7 +76,7 @@ function testShowViaKeyboardIgnoresMouseUps() {
  * Tests that if the command attributes are spacified, they are copied to the
  * corresponding menuitem.
  */
-function testCommandMenuItem() {
+/* #export */ function testCommandMenuItem() {
   // Test 1: The case that the command label is set and other attributes copied.
   var command = new cr.ui.Command();
   command.id = 'the-command';
@@ -135,7 +140,7 @@ function runSeparatorTest(items, hiddenItems, expectedSeparators) {
  * non-separator item on both sides of it. Further, ensure that multiple
  * separators will not be displayed adjacent to each other.
  */
-function testSeparators() {
+/* #export */ function testSeparators() {
   const menuItems = [];
   menu.addSeparator();
   menuItems.push(menu.addMenuItem({label: 'a'}));
@@ -158,7 +163,7 @@ function testSeparators() {
 /**
  * Tests that focusSelectedItem() ignores hidden and disabled items.
  */
-function testFocusSelectedItems() {
+/* #export */ function testFocusSelectedItems() {
   const menu = document.createElement('div');
   cr.ui.decorate(menu, cr.ui.Menu);
   const item1 = menu.addMenuItem({label: 'item1'});
@@ -210,7 +215,7 @@ function testFocusSelectedItems() {
 /**
  * Tests that cr.ui.MenuItem defaults to tabindex=-1.
  */
-function testMenuItemTabIndex() {
+/* #export */ function testMenuItemTabIndex() {
   // Defaults to -1.
   const item1 = menu.addMenuItem({label: 'item 1'});
   assertEquals('-1', item1.getAttribute('tabindex'));
@@ -227,3 +232,14 @@ function testMenuItemTabIndex() {
   assertTrue(separator.isSeparator());
   assertFalse(separator.hasAttribute('tabindex'));
 }
+
+Object.assign(window, {
+  setUp,
+  testHandleMouseOver,
+  testHandleMouseUp,
+  testShowViaKeyboardIgnoresMouseUps,
+  testCommandMenuItem,
+  testSeparators,
+  testFocusSelectedItems,
+  testMenuItemTabIndex,
+});
