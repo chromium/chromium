@@ -288,6 +288,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "safetyCheckChromeCleanerChildEnabled",
       base::FeatureList::IsEnabled(features::kSafetyCheckChromeCleanerChild));
+
+  html_source->AddBoolean(
+      "chromeCleanupScanCompletedNotificationEnabled",
+      base::FeatureList::IsEnabled(
+          features::kChromeCleanupScanCompletedNotification));
 #endif
 
 #if defined(OS_CHROMEOS)

@@ -42379,6 +42379,8 @@ from previous Chrome versions.
   <int value="-1374048865" label="CpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-1373942769" label="WebAuthenticationCtap2:disabled"/>
   <int value="-1373705581" label="ManualSaving:enabled"/>
+  <int value="-1373048294"
+      label="ChromeCleanupScanCompletedNotification:enabled"/>
   <int value="-1372926635" label="AndroidManagedByMenuItem:disabled"/>
   <int value="-1371984027" label="CrostiniWebUIUpgrader:disabled"/>
   <int value="-1371239786" label="EnablePasswordsAccountStorage:enabled"/>
@@ -44839,6 +44841,8 @@ from previous Chrome versions.
   <int value="1101421005" label="DownloadLater:disabled"/>
   <int value="1102780374" label="ClickToCallDetectionV2:disabled"/>
   <int value="1104948452" label="manual-enhanced-bookmarks-optout"/>
+  <int value="1105182444"
+      label="ChromeCleanupScanCompletedNotification:disabled"/>
   <int value="1105439588" label="enable-swipe-selection"/>
   <int value="1106307305" label="AutofillPrimaryInfoStyleExperiment:enabled"/>
   <int value="1106579567" label="ProfilesUIRevamp:enabled"/>

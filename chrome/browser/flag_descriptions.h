@@ -1979,6 +1979,9 @@ extern const char kTabFreezeDescription[];
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];
 
+extern const char kChromeCleanupScanCompletedNotificationName[];
+extern const char kChromeCleanupScanCompletedNotificationDescription[];
+
 extern const char kCloudPrintXpsName[];
 extern const char kCloudPrintXpsDescription[];
 

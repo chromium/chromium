@@ -6383,6 +6383,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSafetyCheckChromeCleanerChild)},
 #endif  // !defined(OS_WIN)
 
+#if defined(OS_WIN)
+    {"chrome-cleanup-scan-completed-notification",
+     flag_descriptions::kChromeCleanupScanCompletedNotificationName,
+     flag_descriptions::kChromeCleanupScanCompletedNotificationDescription,
+     kOsWin,
+     FEATURE_VALUE_TYPE(features::kChromeCleanupScanCompletedNotification)},
+#endif  // !defined(OS_WIN)
+
 #if defined(OS_CHROMEOS)
     {"enable-launcher-app-paging",
      flag_descriptions::kNewDragSpecInLauncherName,
