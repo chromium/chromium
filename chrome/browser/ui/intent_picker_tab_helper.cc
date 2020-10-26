@@ -32,7 +32,7 @@ apps::mojom::AppType GetAppType(apps::PickerEntryType picker_entry_type) {
       app_type = apps::mojom::AppType::kWeb;
       break;
     case apps::PickerEntryType::kMacOs:
-      app_type = apps::mojom::AppType::kMacNative;
+      app_type = apps::mojom::AppType::kMacOs;
       break;
   }
   return app_type;

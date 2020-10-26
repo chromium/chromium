@@ -92,7 +92,7 @@ enum AppType {
   kCrostini,   // Linux (via Crostini) app.
   kExtension,  // Extension-backed app.
   kWeb,        // Web app.
-  kMacNative,  // Native Mac app.
+  kMacOs,      // Mac OS app.
   kPluginVm,   // Plugin VM app, see go/pluginvm.
   kLacros,     // Lacros browser app, see //docs/lacros.md.
   kRemote,     // Remote app.

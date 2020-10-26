@@ -125,7 +125,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
       return ash::REMOTE_APP;
     case apps::mojom::AppType::kBorealis:
       return ash::BOREALIS_APP;
-    case apps::mojom::AppType::kMacNative:
+    case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kUnknown:
       NOTREACHED();
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;

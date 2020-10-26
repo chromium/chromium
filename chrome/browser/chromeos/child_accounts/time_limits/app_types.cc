@@ -29,8 +29,8 @@ std::string AppTypeToString(apps::mojom::AppType app_type) {
       return "Built in";
     case apps::mojom::AppType::kCrostini:
       return "Crostini";
-    case apps::mojom::AppType::kMacNative:
-      return "Mac native";
+    case apps::mojom::AppType::kMacOs:
+      return "Mac OS";
     case apps::mojom::AppType::kPluginVm:
       return "Plugin VM";
     case apps::mojom::AppType::kLacros:

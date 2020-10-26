@@ -45,7 +45,7 @@ apps::PickerEntryType GetPickerEntryType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kWeb:
       picker_entry_type = apps::PickerEntryType::kWeb;
       break;
-    case apps::mojom::AppType::kMacNative:
+    case apps::mojom::AppType::kMacOs:
       picker_entry_type = apps::PickerEntryType::kMacOs;
       break;
   }

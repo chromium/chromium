@@ -318,8 +318,8 @@ api::autotest_private::AppType GetAppType(apps::mojom::AppType type) {
       return api::autotest_private::AppType::APP_TYPE_WEB;
     case apps::mojom::AppType::kUnknown:
       return api::autotest_private::AppType::APP_TYPE_NONE;
-    case apps::mojom::AppType::kMacNative:
-      return api::autotest_private::AppType::APP_TYPE_MACNATIVE;
+    case apps::mojom::AppType::kMacOs:
+      return api::autotest_private::AppType::APP_TYPE_MACOS;
     case apps::mojom::AppType::kLacros:
       return api::autotest_private::AppType::APP_TYPE_LACROS;
     case apps::mojom::AppType::kRemote:

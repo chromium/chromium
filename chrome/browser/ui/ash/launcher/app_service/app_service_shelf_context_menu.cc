@@ -552,7 +552,7 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       // Type kUnknown is used for "unregistered" Crostini apps, which do not
       // have a .desktop file and can only be closed, not pinned.
       return false;
-    case apps::mojom::AppType::kMacNative:
+    case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
       NOTREACHED() << "Type " << app_type_ << " should not appear in shelf.";

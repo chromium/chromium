@@ -35,7 +35,7 @@ namespace autotestPrivate {
     Crostini,
     Extension,
     Web,
-    MacNative,
+    MacOS,
     PluginVm,
     Lacros,
     Remote,

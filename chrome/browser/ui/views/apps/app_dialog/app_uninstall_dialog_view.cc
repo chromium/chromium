@@ -147,7 +147,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
   switch (app_type) {
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kBuiltIn:
-    case apps::mojom::AppType::kMacNative:
+    case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kLacros:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
