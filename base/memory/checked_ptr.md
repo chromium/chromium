@@ -164,6 +164,24 @@ and with `CheckedPtr`, then both overloads might be needed:
     }
 ```
 
+#### Global scope
+
+`-Wexit-time-destructors` disallows triggering custom destructors
+when global variables are destroyed.
+Since `CheckedPtr` has a custom destructor,
+it cannot be used as a field of structs that are used as global variables.
+If a pointer needs to be used in a global variable
+(directly or indirectly - e.g. embedded in an array or struct),
+then the only solution is avoiding `CheckedPtr`.
+
+Build error:
+
+```build
+error: declaration requires an exit-time destructor
+[-Werror,-Wexit-time-destructors]
+```
+
+
 #### No `constexpr` for non-null values
 
 `constexpr` raw pointers can be initialized with pointers to string literals
@@ -180,6 +198,14 @@ If any member of a union has a non-trivial destructor, then the union
 will not have a destructor.  Because of this `CheckedPtr<T>` usually cannot be
 used to replace the type of union members, because `CheckedPtr<T>` has
 a non-trivial destructor.
+
+Build error:
+
+```build
+error: attempt to use a deleted function
+note: destructor of 'SomeUnion' is implicitly deleted because variant
+field 'checked_ptr' has a non-trivial destructor
+```
 
 
 ### Runtime errors

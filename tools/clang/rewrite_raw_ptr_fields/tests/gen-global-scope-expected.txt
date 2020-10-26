@@ -1,0 +1,20 @@
+==== BEGIN EDITS ====
+include-user-header:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::-1:::-1:::base/memory/checked_ptr.h
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::1715:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::1865:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::2091:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::2343:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::2639:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::2935:::3:::CheckedPtr<T> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::3351:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-global-scope-actual.cc:::3493:::10:::CheckedPtr<MyStruct> 
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+global_variables_test::MyStruct::ptr  # global-scope
+global_variables_test::MyStruct::ptr2  # global-scope
+nested_in_array_test::MyStruct::ptr  # global-scope
+nested_struct_test::MyStruct::ptr  # global-scope
+nested_template_test::MyStruct::ptr  # global-scope
+pointer_nesting_test::MyOuterStruct::inner_struct  # global-scope
+static_variables_test::MyStruct::ptr  # global-scope
+==== END FIELD FILTERS ====

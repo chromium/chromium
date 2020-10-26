@@ -34,6 +34,10 @@ struct MyStruct {
   // Expected to be emitted in automated-fields-to-ignore.txt, because
   // of |g_struct| below.
   int* ptr;
+
+  // Verification that *all* fields of a struct are covered (e.g. that the
+  // |forEach| matcher is used instead of the |has| matcher).
+  int* ptr2;
 };
 
 MyStruct g_struct;
@@ -69,6 +73,35 @@ struct MyOuterStruct {
 static MyOuterStruct g_outer_struct;
 
 }  // namespace nested_struct_test
+
+namespace nested_in_array_test {
+
+struct MyStruct {
+  // Expected to be emitted in automated-fields-to-ignore.txt, because
+  // of |g_outer_array| below.
+  int* ptr;
+};
+
+static MyStruct g_outer_struct[] = {nullptr, nullptr, nullptr};
+
+}  // namespace nested_in_array_test
+
+namespace nested_template_test {
+
+template <typename T>
+struct MyStruct {
+  // Expected to be emitted in automated-fields-to-ignore.txt, because
+  // of |g_outer_struct| below.
+  T* ptr;
+};
+
+struct MyOuterStruct {
+  MyStruct<int> inner_struct;
+};
+
+static MyOuterStruct g_outer_struct;
+
+}  // namespace nested_template_test
 
 namespace pointer_nesting_test {
 

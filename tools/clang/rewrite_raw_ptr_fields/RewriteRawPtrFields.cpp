@@ -673,18 +673,35 @@ AST_MATCHER(clang::FieldDecl, overlapsOtherDeclsWithinRecordDecl) {
   return has_sibling_with_overlapping_location;
 }
 
-// Matches RecordDecl if
-// 1) it has a FieldDecl that matches the InnerMatcher
+// Matches clang::Type if
+// 1) it represents a RecordDecl with a FieldDecl that matches the InnerMatcher
+//    (*all* such FieldDecls will be matched)
 // or
-// 2) it has a FieldDecl that hasType of a RecordDecl that matches the
-//    InnerMatcher (this recurses to any depth).
-AST_MATCHER_P(clang::RecordDecl,
-              hasNestedFieldDecl,
+// 2) it represents an array or a RecordDecl that nests the case #1
+//    (this recurses to any depth).
+AST_MATCHER_P(clang::QualType,
+              typeWithEmbeddedFieldDecl,
               clang::ast_matchers::internal::Matcher<clang::FieldDecl>,
               InnerMatcher) {
-  auto matcher = recordDecl(has(fieldDecl(anyOf(
-      InnerMatcher, hasType(recordDecl(hasNestedFieldDecl(InnerMatcher)))))));
-  return matcher.matches(Node, Finder, Builder);
+  const clang::Type* type =
+      Node.getDesugaredType(Finder->getASTContext()).getTypePtrOrNull();
+  if (!type)
+    return false;
+
+  if (const clang::CXXRecordDecl* record_decl = type->getAsCXXRecordDecl()) {
+    auto matcher = recordDecl(forEach(fieldDecl(hasExplicitFieldDecl(anyOf(
+        InnerMatcher, hasType(typeWithEmbeddedFieldDecl(InnerMatcher)))))));
+    return matcher.matches(*record_decl, Finder, Builder);
+  }
+
+  if (type->isArrayType()) {
+    const clang::ArrayType* array_type =
+        Finder->getASTContext().getAsArrayType(Node);
+    auto matcher = typeWithEmbeddedFieldDecl(InnerMatcher);
+    return matcher.matches(array_type->getElementType(), Finder, Builder);
+  }
+
+  return false;
 }
 
 // Rewrites |SomeClass* field| (matched as "affectedFieldDecl") into
@@ -1080,11 +1097,10 @@ int main(int argc, const char* argv[]) {
                           &char_ptr_field_decl_writer);
 
   // See the testcases in tests/gen-global-destructor-test.cc.
-  auto global_destructor_matcher = varDecl(
-      allOf(hasGlobalStorage(),
-            hasType(recordDecl(hasNestedFieldDecl(field_decl_matcher)))));
-  FilteredExprWriter global_destructor_writer(&output_helper,
-                                              "global-destructor");
+  auto global_destructor_matcher =
+      varDecl(allOf(hasGlobalStorage(),
+                    hasType(typeWithEmbeddedFieldDecl(field_decl_matcher))));
+  FilteredExprWriter global_destructor_writer(&output_helper, "global-scope");
   match_finder.addMatcher(global_destructor_matcher, &global_destructor_writer);
 
   // Matches rewritable fields in generated code - see the testcase in
