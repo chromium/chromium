@@ -9,6 +9,7 @@ import "chromeos/services/nearby/public/mojom/webrtc.mojom";
 import "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom";
 import "device/bluetooth/public/mojom/adapter.mojom";
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "services/network/public/mojom/mdns_responder.mojom";
 import "services/network/public/mojom/p2p.mojom";
 
@@ -298,7 +299,8 @@ interface NearbyConnections {
   // Possible return values include:
   //   Status::kSuccess if file is registered successfully.
   //   Status::kError if file is not opened correctly.
-  RegisterPayloadFile(int64 payload_id, mojo_base.mojom.File input_file,
+  RegisterPayloadFile(int64 payload_id,
+                      mojo_base.mojom.ReadOnlyFile input_file,
                       mojo_base.mojom.File output_file)
       => (Status status);
 };
