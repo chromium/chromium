@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
+#include "components/prefs/pref_registry_simple.h"
 
 class Profile;
 
@@ -219,6 +220,9 @@ class ChromeCleanerController {
  private:
   DISALLOW_COPY_AND_ASSIGN(ChromeCleanerController);
 };
+
+// Registers the reporter scan completion time preference.
+void RegisterChromeCleanerScanCompletionTimePref(PrefRegistrySimple* registry);
 
 //  These are used for debug output in tests.
 std::ostream& operator<<(std::ostream& out,

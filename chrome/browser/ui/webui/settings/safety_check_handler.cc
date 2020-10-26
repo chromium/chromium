@@ -12,11 +12,13 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/version_ui.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -165,7 +167,16 @@ base::Time TimestampDelegate::GetSystemTime() {
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 base::Time TimestampDelegate::FetchChromeCleanerScanCompletionTimestamp() {
-  // Read scan completion timestamp from registry.
+  // TODO(crbug.com/1139806): The cleaner scan completion timestamp is not
+  // always written to the registry. As a workaround, it is also written to a
+  // pref. This ensures that the timestamp is preserved in case Chrome is still
+  // opened when the scan completes. Remove this workaround once the timestamp
+  // is written to the registry in all cases.
+  const base::Time end_time_from_prefs =
+      g_browser_process->local_state()->GetTime(
+          prefs::kChromeCleanerScanCompletionTime);
+
+  // Read the scan completion timestamp from the registry, if it exists there.
   base::win::RegKey reporter_key;
   int64_t end_time = 0;
   if (reporter_key.Open(HKEY_CURRENT_USER,
@@ -173,11 +184,27 @@ base::Time TimestampDelegate::FetchChromeCleanerScanCompletionTimestamp() {
                         KEY_QUERY_VALUE | KEY_SET_VALUE) != ERROR_SUCCESS ||
       reporter_key.ReadInt64(chrome_cleaner::kEndTimeValueName, &end_time) !=
           ERROR_SUCCESS) {
+    // TODO(crbug.com/1139806): Part of the above workaround. If the registry
+    // does not contain the timestamp but the pref does, then return the one
+    // from the pref.
+    if (!end_time_from_prefs.is_null()) {
+      return end_time_from_prefs;
+    }
     // Reading failed. Return 'null' time.
     return base::Time();
   }
-  return base::Time::FromDeltaSinceWindowsEpoch(
+
+  // TODO(crbug.com/1139806): Part of the above workaround. If the timestamp in
+  // prefs is null or older than the one from the registry, then return the one
+  // from the registry. Otherwise return the one from prefs.
+  base::Time end_time_from_registry = base::Time::FromDeltaSinceWindowsEpoch(
       base::TimeDelta::FromMicroseconds(end_time));
+  if (end_time_from_prefs.is_null() ||
+      end_time_from_prefs < end_time_from_registry) {
+    return end_time_from_registry;
+  } else {
+    return end_time_from_prefs;
+  }
 }
 #endif
 

@@ -373,6 +373,7 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/settings_resetter_win.h"
 #include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_prefs_manager.h"
 #endif
@@ -722,6 +723,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       policy::policy_prefs::kNativeWindowOcclusionEnabled, true);
   component_updater::RegisterPrefsForSwReporter(registry);
+  safe_browsing::RegisterChromeCleanerScanCompletionTimePref(registry);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   IncompatibleApplicationsUpdater::RegisterLocalStatePrefs(registry);
   ModuleDatabase::RegisterLocalStatePrefs(registry);

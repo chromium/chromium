@@ -20,7 +20,9 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//chrome/common:constants",
     "//components/chrome_cleaner/public/constants",
+    "//components/prefs:prefs",
     "//components/variations",
     "//url",
   ]

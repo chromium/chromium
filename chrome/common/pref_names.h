@@ -36,6 +36,7 @@ extern const char kProfileCreationTime[];
 #if defined(OS_WIN)
 extern const char kLastProfileResetTimestamp[];
 extern const char kChromeCleanerResetPending[];
+extern const char kChromeCleanerScanCompletionTime[];
 #endif
 extern const char kNewTabPageLocationOverride[];
 extern const char kProfileIconVersion[];

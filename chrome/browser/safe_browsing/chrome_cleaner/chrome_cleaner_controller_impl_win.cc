@@ -36,6 +36,7 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_client_info_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/installer/util/scoped_token_privilege.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
@@ -340,12 +341,20 @@ void ChromeCleanerControllerImpl::OnReporterSequenceDone(
       break;
 
     case SwReporterInvocationResult::kNothingFound:
+    case SwReporterInvocationResult::kCleanupNotOffered: {
+      // TODO(crbug.com/1139806): The scan completion timestamp is not always
+      // written to the registry. As a workaround, write the completion
+      // timestamp also to a pref. This ensures that the timestamp is preserved
+      // in case Chrome is still opened when the scan completes. Remove this
+      // workaround once the timestamp is written to the registry in all cases.
+      PrefService* pref_service = g_browser_process->local_state();
+      if (pref_service) {
+        pref_service->SetTime(prefs::kChromeCleanerScanCompletionTime,
+                              base::Time::Now());
+      }
       idle_reason_ = IdleReason::kReporterFoundNothing;
       break;
-
-    case SwReporterInvocationResult::kCleanupNotOffered:
-      idle_reason_ = IdleReason::kReporterFoundNothing;
-      break;
+    }
 
     case SwReporterInvocationResult::kCleanupToBeOffered:
       // A request to scan will immediately follow this message, so no state
@@ -652,6 +661,15 @@ void ChromeCleanerControllerImpl::OnPromptUser(
     idle_reason_ = IdleReason::kScanningFoundNothing;
     SetStateAndNotifyObservers(State::kIdle);
     RecordPromptNotShownWithReasonHistogram(NO_PROMPT_REASON_NOTHING_FOUND);
+
+    // TODO(crbug.com/1139806): The scan completion timestamp is not always
+    // written to the registry. As a workaround, write the completion
+    // timestamp also to a pref. This ensures that the timestamp is preserved
+    // in case Chrome is still opened when the scan completes. Remove this
+    // workaround once the timestamp is written to the registry in all cases.
+    g_browser_process->local_state()->SetTime(
+        prefs::kChromeCleanerScanCompletionTime, base::Time::Now());
+
     return;
   }
 

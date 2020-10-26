@@ -73,6 +73,11 @@ const char kLastProfileResetTimestamp[] = "profile.last_reset_timestamp";
 // A boolean indicating if settings should be reset for this profile once a
 // run of the Chrome Cleanup Tool has completed.
 const char kChromeCleanerResetPending[] = "chrome_cleaner.reset_pending";
+
+// The last time the Chrome cleaner scan completed without finding anything,
+// while Chrome was opened.
+const char kChromeCleanerScanCompletionTime[] =
+    "chrome_cleaner.scan_completion_time";
 #endif
 
 // The URL to open the new tab page to. Only set by Group Policy.
