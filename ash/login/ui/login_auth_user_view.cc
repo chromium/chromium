@@ -996,7 +996,6 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   DCHECK(callbacks.on_remove_warning_shown);
   DCHECK(callbacks.on_remove);
   DCHECK(callbacks.on_easy_unlock_icon_hovered);
-  DCHECK(callbacks.on_easy_unlock_icon_tapped);
   DCHECK_NE(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 
   // Build child views.

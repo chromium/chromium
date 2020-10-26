@@ -27,9 +27,6 @@ class VIEWS_EXPORT MenuButton : public LabelButton {
   explicit MenuButton(PressedCallback callback = PressedCallback(),
                       const base::string16& text = base::string16(),
                       int button_context = style::CONTEXT_BUTTON);
-  explicit MenuButton(ButtonListener* listener,
-                      const base::string16& text = base::string16(),
-                      int button_context = style::CONTEXT_BUTTON);
   ~MenuButton() override;
 
   MenuButtonController* button_controller() const {

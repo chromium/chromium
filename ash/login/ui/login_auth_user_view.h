@@ -109,7 +109,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView,
   using OnAuthCallback =
       base::RepeatingCallback<void(bool auth_success,
                                    bool display_error_messages)>;
-  using OnEasyUnlockIconTapped = base::RepeatingClosure;
   using OnEasyUnlockIconHovered = base::RepeatingClosure;
 
   struct Callbacks {
@@ -130,7 +129,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView,
     // Called when the easy unlock icon is hovered.
     OnEasyUnlockIconHovered on_easy_unlock_icon_hovered;
     // Called when the easy unlock icon is tapped.
-    OnEasyUnlockIconTapped on_easy_unlock_icon_tapped;
+    views::Button::PressedCallback on_easy_unlock_icon_tapped;
   };
 
   LoginAuthUserView(const LoginUserInfo& user, const Callbacks& callbacks);

@@ -224,9 +224,6 @@ ToggleImageButton::ToggleImageButton(PressedCallback callback)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
-ToggleImageButton::ToggleImageButton(ButtonListener* listener)
-    : ToggleImageButton(PressedCallback(listener, this)) {}
-
 ToggleImageButton::~ToggleImageButton() = default;
 
 bool ToggleImageButton::GetToggled() const {

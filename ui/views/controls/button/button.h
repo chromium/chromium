@@ -87,13 +87,12 @@ class VIEWS_EXPORT Button : public InkDropHostView,
     DISALLOW_COPY_AND_ASSIGN(DefaultButtonControllerDelegate);
   };
 
-  // PressedCallback wraps a one-arg callback type with a variety of
-  // constructors, both to aid conversion from ButtonListener and to allow
-  // callers to specify a RepeatingClosure if they don't care about the callback
-  // arg.
-  // TODO(crbug.com/772945): Remove ButtonListener constructor, then re-evaluate
-  // if this class can/should be converted to a type alias + various helpers or
-  // overloads to support the RepeatingClosure case.
+  // PressedCallback wraps a one-arg callback type with multiple constructors to
+  // allow callers to specify a RepeatingClosure if they don't care about the
+  // callback arg.
+  // TODO(crbug.com/772945): Re-evaluate if this class can/should be converted
+  // to a type alias + various helpers or overloads to support the
+  // RepeatingClosure case.
   class VIEWS_EXPORT PressedCallback {
    public:
     using Callback = base::RepeatingCallback<void(const ui::Event& event)>;

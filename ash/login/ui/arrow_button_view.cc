@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/arrow_button_view.h"
 
+#include <utility>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
@@ -50,8 +52,8 @@ void PaintLoadingArc(gfx::Canvas* canvas,
 
 }  // namespace
 
-ArrowButtonView::ArrowButtonView(views::ButtonListener* listener, int size)
-    : LoginButton(listener), size_(size) {
+ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
+    : LoginButton(std::move(callback)), size_(size) {
   SetPreferredSize(gfx::Size(size, size));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
@@ -70,6 +72,9 @@ ArrowButtonView::ArrowButtonView(views::ButtonListener* listener, int size)
       std::make_unique<views::FixedSizeCircleHighlightPathGenerator>(
           kArrowIconBackroundRadius));
 }
+
+ArrowButtonView::ArrowButtonView(views::ButtonListener* listener, int size)
+    : ArrowButtonView(PressedCallback(listener, this), size) {}
 
 ArrowButtonView::~ArrowButtonView() = default;
 

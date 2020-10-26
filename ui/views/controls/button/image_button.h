@@ -132,7 +132,6 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   METADATA_HEADER(ToggleImageButton);
 
   explicit ToggleImageButton(PressedCallback callback = PressedCallback());
-  explicit ToggleImageButton(ButtonListener* listener);
   ~ToggleImageButton() override;
 
   // Change the toggled state.

@@ -121,6 +121,11 @@ LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
   return LoginMetricsRecorder::ShelfButtonClickTarget::kTargetCount;
 }
 
+void ButtonPressed(int id, base::RepeatingClosure callback) {
+  UserMetricsRecorder::RecordUserClickOnShelfButton(GetUserClickTarget(id));
+  std::move(callback).Run();
+}
+
 // The margins of the button contents.
 constexpr int kButtonMarginTopDp = 18;
 constexpr int kButtonMarginLeftDp = 18;
@@ -166,10 +171,11 @@ SkPath GetButtonHighlightPath(const views::View* view) {
 
 class LoginShelfButton : public views::LabelButton {
  public:
-  LoginShelfButton(views::ButtonListener* listener,
+  LoginShelfButton(PressedCallback callback,
                    int text_resource_id,
                    const gfx::VectorIcon& icon)
-      : LabelButton(listener, l10n_util::GetStringUTF16(text_resource_id)),
+      : LabelButton(std::move(callback),
+                    l10n_util::GetStringUTF16(text_resource_id)),
         text_resource_id_(text_resource_id),
         icon_(icon) {
     SetAccessibleName(GetText());
@@ -273,11 +279,6 @@ class LoginShelfButton : public views::LabelButton {
   DISALLOW_COPY_AND_ASSIGN(LoginShelfButton);
 };
 
-void StartAddUser() {
-  Shell::Get()->login_screen_controller()->ShowGaiaSignin(
-      EmptyAccountId() /*prefilled_account*/);
-}
-
 bool ShutdownButtonHidden(OobeDialogState state) {
   return state == OobeDialogState::MIGRATION ||
          state == OobeDialogState::ENROLLMENT ||
@@ -289,12 +290,17 @@ bool ShutdownButtonHidden(OobeDialogState state) {
 }  // namespace
 
 class KioskAppsButton : public views::MenuButton,
-                        public views::ButtonListener,
                         public ui::SimpleMenuModel,
                         public ui::SimpleMenuModel::Delegate {
  public:
   KioskAppsButton()
-      : MenuButton(this, l10n_util::GetStringUTF16(IDS_ASH_SHELF_APPS_BUTTON)),
+      : MenuButton(base::BindRepeating(
+                       [](KioskAppsButton* button) {
+                         if (button->is_launch_enabled_)
+                           button->DisplayMenu();
+                       },
+                       this),
+                   l10n_util::GetStringUTF16(IDS_ASH_SHELF_APPS_BUTTON)),
         ui::SimpleMenuModel(this) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetInstallFocusRingOnFocus(true);
@@ -354,7 +360,7 @@ class KioskAppsButton : public views::MenuButton,
 
     // If the menu is being shown, update it.
     if (menu_runner_ && menu_runner_->IsRunning()) {
-      DisplayMenu(this);
+      DisplayMenu();
     }
   }
 
@@ -401,23 +407,15 @@ class KioskAppsButton : public views::MenuButton,
     SchedulePaint();
   }
 
-  void DisplayMenu(Button* source) {
-    const gfx::Point point = source->GetMenuPosition();
-    const gfx::Point origin(point.x() - source->width(),
-                            point.y() - source->height());
+  void DisplayMenu() {
+    const gfx::Point point = GetMenuPosition();
+    const gfx::Point origin(point.x() - width(), point.y() - height());
     menu_runner_.reset(
         new views::MenuRunner(this, views::MenuRunner::HAS_MNEMONICS));
-    menu_runner_->RunMenuAt(source->GetWidget()->GetTopLevelWidget(),
+    menu_runner_->RunMenuAt(GetWidget()->GetTopLevelWidget(),
                             button_controller(), gfx::Rect(origin, gfx::Size()),
                             views::MenuAnchorPosition::kTopLeft,
                             ui::MENU_SOURCE_NONE);
-  }
-
-  // views::ButtonListener:
-  void ButtonPressed(Button* source, const ui::Event& event) override {
-    if (!is_launch_enabled_)
-      return;
-    DisplayMenu(source);
   }
 
   // ui::SimpleMenuModel:
@@ -490,28 +488,73 @@ LoginShelfView::LoginShelfView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 
-  auto add_button = [this](ButtonId id, int text_resource_id,
-                           const gfx::VectorIcon& icon) {
-    LoginShelfButton* button =
-        new LoginShelfButton(this, text_resource_id, icon);
+  auto add_button = [this](ButtonId id, base::RepeatingClosure callback,
+                           int text_resource_id, const gfx::VectorIcon& icon) {
+    LoginShelfButton* button = new LoginShelfButton(
+        base::BindRepeating(&ButtonPressed, id, std::move(callback)),
+        text_resource_id, icon);
     button->SetID(id);
     AddChildView(button);
   };
-  add_button(kShutdown, IDS_ASH_SHELF_SHUTDOWN_BUTTON,
-             kShelfShutdownButtonIcon);
-  add_button(kRestart, IDS_ASH_SHELF_RESTART_BUTTON, kShelfShutdownButtonIcon);
-  add_button(kSignOut, IDS_ASH_SHELF_SIGN_OUT_BUTTON, kShelfSignOutButtonIcon);
+  const auto shutdown_restart_callback = base::BindRepeating(
+      &LockStateController::RequestShutdown,
+      base::Unretained(Shell::Get()->lock_state_controller()),
+      ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
+  add_button(kShutdown, shutdown_restart_callback,
+             IDS_ASH_SHELF_SHUTDOWN_BUTTON, kShelfShutdownButtonIcon);
+  add_button(kRestart, std::move(shutdown_restart_callback),
+             IDS_ASH_SHELF_RESTART_BUTTON, kShelfShutdownButtonIcon);
+  add_button(
+      kSignOut, base::BindRepeating([]() {
+        base::RecordAction(base::UserMetricsAction("ScreenLocker_Signout"));
+        Shell::Get()->session_controller()->RequestSignOut();
+      }),
+      IDS_ASH_SHELF_SIGN_OUT_BUTTON, kShelfSignOutButtonIcon);
   kiosk_apps_button_ = new KioskAppsButton();
   kiosk_apps_button_->SetID(kApps);
   AddChildView(kiosk_apps_button_);
-  add_button(kCloseNote, IDS_ASH_SHELF_UNLOCK_BUTTON, kShelfUnlockButtonIcon);
-  add_button(kCancel, IDS_ASH_SHELF_CANCEL_BUTTON, kShelfCancelButtonIcon);
-  add_button(kBrowseAsGuest, IDS_ASH_BROWSE_AS_GUEST_BUTTON,
-             kShelfBrowseAsGuestButtonIcon);
-  add_button(kAddUser, IDS_ASH_ADD_USER_BUTTON, kShelfAddPersonButtonIcon);
-  add_button(kParentAccess, IDS_ASH_PARENT_ACCESS_BUTTON, kPinRequestLockIcon);
-  add_button(kEnterpriseEnrollment, IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON,
-             kLoginScreenEnterpriseIcon);
+  add_button(kCloseNote,
+             base::BindRepeating(
+                 &TrayAction::CloseLockScreenNote,
+                 base::Unretained(Shell::Get()->tray_action()),
+                 mojom::CloseLockScreenNoteReason::kUnlockButtonPressed),
+             IDS_ASH_SHELF_UNLOCK_BUTTON, kShelfUnlockButtonIcon);
+  add_button(kCancel,
+             base::BindRepeating(
+                 [](LoginShelfView* shelf) {
+                   // If the Cancel button has focus, clear it. Otherwise the
+                   // shelf within active session may still be focused.
+                   shelf->GetFocusManager()->ClearFocus();
+                   Shell::Get()->login_screen_controller()->CancelAddUser();
+                 },
+                 this),
+             IDS_ASH_SHELF_CANCEL_BUTTON, kShelfCancelButtonIcon);
+  add_button(kBrowseAsGuest,
+             base::BindRepeating(
+                 &LoginScreenController::LoginAsGuest,
+                 base::Unretained(Shell::Get()->login_screen_controller())),
+             IDS_ASH_BROWSE_AS_GUEST_BUTTON, kShelfBrowseAsGuestButtonIcon);
+  add_button(kAddUser,
+             base::BindRepeating(
+                 &LoginScreenController::ShowGaiaSignin,
+                 base::Unretained(Shell::Get()->login_screen_controller()),
+                 EmptyAccountId()),
+             IDS_ASH_ADD_USER_BUTTON, kShelfAddPersonButtonIcon);
+  add_button(kParentAccess, base::BindRepeating([]() {
+               // TODO(https://crbug.com/999387): Remove this when handling
+               // touch cancellation is fixed for system modal windows.
+               base::ThreadTaskRunnerHandle::Get()->PostTask(
+                   FROM_HERE, base::BindOnce([]() {
+                     LockScreen::Get()->ShowParentAccessDialog();
+                   }));
+             }),
+             IDS_ASH_PARENT_ACCESS_BUTTON, kPinRequestLockIcon);
+  add_button(kEnterpriseEnrollment,
+             base::BindRepeating(
+                 &LoginScreenController::HandleAccelerator,
+                 base::Unretained(Shell::Get()->login_screen_controller()),
+                 ash::LoginAcceleratorAction::kStartEnrollment),
+             IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON, kLoginScreenEnterpriseIcon);
 
   // Adds observers for states that affect the visiblity of different buttons.
   tray_action_observer_.Add(Shell::Get()->tray_action());
@@ -570,70 +613,9 @@ void LoginShelfView::Layout() {
   UpdateButtonUnionBounds();
 }
 
-void LoginShelfView::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
-  UserMetricsRecorder::RecordUserClickOnShelfButton(
-      GetUserClickTarget(sender->GetID()));
-  switch (sender->GetID()) {
-    case kShutdown:
-    case kRestart:
-      // |ShutdownController| will further distinguish the two cases based on
-      // shutdown policy.
-      Shell::Get()->lock_state_controller()->RequestShutdown(
-          ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
-      break;
-    case kSignOut:
-      base::RecordAction(base::UserMetricsAction("ScreenLocker_Signout"));
-      Shell::Get()->session_controller()->RequestSignOut();
-      break;
-    case kCloseNote:
-      Shell::Get()->tray_action()->CloseLockScreenNote(
-          mojom::CloseLockScreenNoteReason::kUnlockButtonPressed);
-      break;
-    case kCancel:
-      // If the Cancel button has focus, clear it. Otherwise the shelf within
-      // active session may still be focused.
-      GetFocusManager()->ClearFocus();
-      Shell::Get()->login_screen_controller()->CancelAddUser();
-      break;
-    case kBrowseAsGuest:
-      Shell::Get()->login_screen_controller()->LoginAsGuest();
-      break;
-    case kAddUser:
-      StartAddUser();
-      break;
-    case kParentAccess:
-      // TODO(https://crbug.com/999387): Remove this when handling touch
-      // cancellation is fixed for system modal windows.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce([]() {
-            LockScreen::Get()->ShowParentAccessDialog();
-          }));
-      break;
-    case kEnterpriseEnrollment:
-      Shell::Get()->login_screen_controller()->HandleAccelerator(
-          ash::LoginAcceleratorAction::kStartEnrollment);
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
 bool LoginShelfView::LaunchAppForTesting(const std::string& app_id) {
   return kiosk_apps_button_->GetEnabled() &&
          kiosk_apps_button_->LaunchAppForTesting(app_id);
-}
-
-bool LoginShelfView::SimulateButtonPressedForTesting(
-    LoginShelfView::ButtonId button_id) {
-  views::View* button = GetViewByID(button_id);
-  if (!button->GetEnabled())
-    return false;
-
-  ButtonPressed(static_cast<LoginShelfButton*>(button),
-                ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
-                               gfx::PointF(), base::TimeTicks(), 0, 0));
-  return true;
 }
 
 void LoginShelfView::InstallTestUiUpdateDelegate(

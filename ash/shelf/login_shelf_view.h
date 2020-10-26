@@ -41,7 +41,6 @@ class KioskAppsButton;
 // LoginShelfView contains the shelf buttons visible outside of an active user
 // session. ShelfView and LoginShelfView should never be shown together.
 class ASH_EXPORT LoginShelfView : public views::View,
-                                  public views::ButtonListener,
                                   public TrayActionObserver,
                                   public LockScreenActionBackgroundObserver,
                                   public ShutdownControllerImpl::Observer,
@@ -113,15 +112,11 @@ class ASH_EXPORT LoginShelfView : public views::View,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   gfx::Rect get_button_union_bounds() const { return button_union_bounds_; }
 
   // Test API. Returns true if request was successful (i.e. button was
   // clickable).
   bool LaunchAppForTesting(const std::string& app_id);
-  bool SimulateButtonPressedForTesting(ButtonId button);
 
   // Adds test delegate. Delegate will become owned by LoginShelfView.
   void InstallTestUiUpdateDelegate(

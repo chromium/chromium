@@ -39,8 +39,7 @@ constexpr gfx::Size kSpacerPreferredSize = gfx::Size(5, 5);
 }  // namespace
 
 MediaControlsHeaderView::MediaControlsHeaderView(
-    base::OnceClosure close_button_cb)
-    : close_button_cb_(std::move(close_button_cb)) {
+    views::Button::PressedCallback close_button_cb) {
   const views::FlexSpecification kAppNameFlex =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred)
@@ -86,7 +85,7 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
   AddChildView(std::move(spacer));
 
-  auto close_button = CreateVectorImageButton(this);
+  auto close_button = CreateVectorImageButton(std::move(close_button_cb));
   close_button->SetPreferredSize(kCloseButtonSize);
   close_button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   base::string16 close_button_label(
@@ -118,11 +117,6 @@ void MediaControlsHeaderView::SetCloseButtonVisibility(bool visible) {
 
 void MediaControlsHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(app_name_view_->GetText());
-}
-
-void MediaControlsHeaderView::ButtonPressed(views::Button* sender,
-                                            const ui::Event& event) {
-  std::move(close_button_cb_).Run();
 }
 
 const base::string16& MediaControlsHeaderView::app_name_for_testing() const {

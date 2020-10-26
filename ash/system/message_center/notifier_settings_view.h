@@ -29,7 +29,6 @@ namespace ash {
 // A class to show the list of notifier extensions / URL patterns and allow
 // users to customize the settings.
 class ASH_EXPORT NotifierSettingsView : public views::View,
-                                        public views::ButtonListener,
                                         public NotifierSettingsObserver {
  public:
   explicit NotifierSettingsView();
@@ -53,11 +52,9 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest, TestLearnMoreButton);
   FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest, TestEmptyNotifierView);
 
-  class ASH_EXPORT NotifierButton : public views::Button,
-                                    public views::ButtonListener {
+  class ASH_EXPORT NotifierButton : public views::Button {
    public:
-    NotifierButton(const NotifierMetadata& notifier,
-                   views::ButtonListener* listener);
+    explicit NotifierButton(const NotifierMetadata& notifier);
     ~NotifierButton() override;
 
     void UpdateIconImage(const gfx::ImageSkia& icon);
@@ -66,12 +63,12 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
     const message_center::NotifierId& notifier_id() const {
       return notifier_id_;
     }
+
     // views::Button:
     const char* GetClassName() const override;
 
    private:
-    // Overridden from views::ButtonListener:
-    void ButtonPressed(views::Button* button, const ui::Event& event) override;
+    // views::Button:
     void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
     // Helper function to reset the layout when the view has substantially
@@ -93,15 +90,16 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
 
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // Utility function that creates a row containing a toggle button, label,
   // and icon. All passed in views will be added to the returned row view.
   std::unique_ptr<views::View> CreateToggleButtonRow(
       std::unique_ptr<views::ImageView> icon,
       std::unique_ptr<views::Label> label,
       std::unique_ptr<views::ToggleButton> toggle_button);
+
+  void AppBadgingTogglePressed();
+  void QuietModeTogglePressed();
+  void NotifierButtonPressed(NotifierButton* button);
 
   views::ToggleButton* app_badging_toggle_ = nullptr;
   views::ImageView* quiet_mode_icon_ = nullptr;

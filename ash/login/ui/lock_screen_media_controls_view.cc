@@ -243,7 +243,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   // |header_row_| contains the app icon and source title of the current media
   // session. It also contains the close button.
   header_row_ = contents_view_->AddChildView(
-      std::make_unique<MediaControlsHeaderView>(base::BindOnce(
+      std::make_unique<MediaControlsHeaderView>(base::BindRepeating(
           &LockScreenMediaControlsView::Dismiss, base::Unretained(this))));
 
   // |artwork_row| contains the session artwork, artist and track info.

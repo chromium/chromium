@@ -69,9 +69,6 @@ Checkbox::Checkbox(const base::string16& label, PressedCallback callback)
   views::InstallEmptyHighlightPathGenerator(this);
 }
 
-Checkbox::Checkbox(const base::string16& label, ButtonListener* listener)
-    : Checkbox(label, PressedCallback(listener, this)) {}
-
 Checkbox::~Checkbox() = default;
 
 void Checkbox::SetChecked(bool checked) {

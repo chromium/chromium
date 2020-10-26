@@ -12,6 +12,7 @@
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/strings/string16.h"
+#include "ui/views/controls/button/button.h"
 
 namespace views {
 class ButtonListener;
@@ -104,6 +105,9 @@ class TrayPopupUtils {
   static views::ImageView* CreateMainImageView();
 
   // Returns a ToggleButton that has been configured for system menu layout.
+  static views::ToggleButton* CreateToggleButton(
+      views::Button::PressedCallback callback,
+      int accessible_name_id);
   static views::ToggleButton* CreateToggleButton(
       views::ButtonListener* listener,
       int accessible_name_id);

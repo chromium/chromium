@@ -30,7 +30,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   explicit Checkbox(const base::string16& label = base::string16(),
                     PressedCallback callback = PressedCallback());
-  Checkbox(const base::string16& label, ButtonListener* listener);
   ~Checkbox() override;
 
   // Sets/Gets whether or not the checkbox is checked.

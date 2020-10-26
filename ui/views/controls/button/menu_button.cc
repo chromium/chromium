@@ -30,11 +30,6 @@ MenuButton::MenuButton(PressedCallback callback,
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
-MenuButton::MenuButton(ButtonListener* listener,
-                       const base::string16& text,
-                       int button_context)
-    : MenuButton(PressedCallback(listener, this), text, button_context) {}
-
 MenuButton::~MenuButton() = default;
 
 bool MenuButton::Activate(const ui::Event* event) {

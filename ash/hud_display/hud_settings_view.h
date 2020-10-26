@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/hud_display/hud_constants.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -17,7 +16,7 @@ namespace hud_display {
 
 class HUDCheckboxHandler;
 
-class HUDSettingsView : public views::ButtonListener, public views::View {
+class HUDSettingsView : public views::View {
  public:
   METADATA_HEADER(HUDSettingsView);
 
@@ -26,9 +25,6 @@ class HUDSettingsView : public views::ButtonListener, public views::View {
 
   HUDSettingsView(const HUDSettingsView&) = delete;
   HUDSettingsView& operator=(const HUDSettingsView&) = delete;
-
-  // views::ButtonListener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Shows/hides the view.
   void ToggleVisibility();

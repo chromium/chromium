@@ -365,7 +365,7 @@ void AuthDialogContentsView::InitPasswordView() {
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinView::OnPasswordTextChanged,
                           base::Unretained(pin_view_)),
-      base::DoNothing(), base::DoNothing());
+      base::DoNothing(), views::Button::PressedCallback());
 }
 
 void AuthDialogContentsView::AddVerticalSpacing(int height) {

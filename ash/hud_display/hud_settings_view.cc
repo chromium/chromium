@@ -37,24 +37,17 @@ class HUDCheckboxHandler {
  public:
   HUDCheckboxHandler(
       views::Checkbox* checkbox,
-      base::RepeatingCallback<void(views::Checkbox*)> update_state,
-      base::RepeatingCallback<void(views::Checkbox*)> handle_click)
-      : checkbox_(checkbox),
-        update_state_(update_state),
-        handle_click_(handle_click) {}
+      base::RepeatingCallback<void(views::Checkbox*)> update_state)
+      : checkbox_(checkbox), update_state_(update_state) {}
 
   HUDCheckboxHandler(const HUDCheckboxHandler&) = delete;
   HUDCheckboxHandler& operator=(const HUDCheckboxHandler&) = delete;
 
   void UpdateState() const { update_state_.Run(checkbox_); }
-  void HandleClick() const { handle_click_.Run(checkbox_); }
-
-  const views::Checkbox* checkbox() const { return checkbox_; }
 
  private:
   views::Checkbox* const checkbox_;  // not owned.
   base::RepeatingCallback<void(views::Checkbox*)> update_state_;
-  base::RepeatingCallback<void(views::Checkbox*)> handle_click_;
 };
 
 namespace {
@@ -124,8 +117,8 @@ class SettingsCheckbox : public views::Checkbox {
  public:
   METADATA_HEADER(SettingsCheckbox);
 
-  SettingsCheckbox(const base::string16& label, views::ButtonListener* listener)
-      : views::Checkbox(label, listener) {}
+  explicit SettingsCheckbox(const base::string16& label)
+      : views::Checkbox(label, views::Button::PressedCallback()) {}
   SettingsCheckbox(const SettingsCheckbox& other) = delete;
   SettingsCheckbox operator=(const SettingsCheckbox& other) = delete;
 
@@ -360,64 +353,58 @@ HUDSettingsView::HUDSettingsView() {
   // not want the buttons to extend past the minimum size. To overcome the
   // default horizontal stretch we put them into a separate container with
   // default left alignment.
-  views::View* checkbox_contaner =
+  views::View* checkbox_container =
       AddChildView(std::make_unique<views::View>());
-  checkbox_contaner
+  checkbox_container
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
 
-  auto add_checkbox = [](HUDSettingsView* self, views::View* container,
-                         const base::string16& text) -> views::Checkbox* {
-    views::Checkbox* checkbox =
-        container->AddChildView(std::make_unique<SettingsCheckbox>(text, self));
-    checkbox->SetEnabledTextColors(kHUDDefaultColor);
-    checkbox->SetProperty(kHUDClickHandler, HTCLIENT);
-    return checkbox;
-  };
+  auto add_checkbox =
+      [](HUDSettingsView* self, views::View* container,
+         const base::string16& text,
+         base::RepeatingCallback<void(views::Checkbox*)> callback) {
+        views::Checkbox* checkbox =
+            container->AddChildView(std::make_unique<SettingsCheckbox>(text));
+        checkbox->SetCallback(
+            base::BindRepeating(std::move(callback), checkbox));
+        checkbox->SetEnabledTextColors(kHUDDefaultColor);
+        checkbox->SetProperty(kHUDClickHandler, HTCLIENT);
+        return checkbox;
+      };
 
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
-      add_checkbox(this, checkbox_contaner,
-                   base::ASCIIToUTF16("Tint composited content")),
+      add_checkbox(this, checkbox_container,
+                   base::ASCIIToUTF16("Tint composited content"),
+                   GetVisDebugHandleClickCallback(
+                       &viz::DebugRendererSettings::tint_composited_content)),
       GetVisDebugUpdateStateCallback(
-          &viz::DebugRendererSettings::tint_composited_content),
-      GetVisDebugHandleClickCallback(
           &viz::DebugRendererSettings::tint_composited_content)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
-      add_checkbox(this, checkbox_contaner,
-                   base::ASCIIToUTF16("Show overdraw feedback")),
+      add_checkbox(this, checkbox_container,
+                   base::ASCIIToUTF16("Show overdraw feedback"),
+                   GetVisDebugHandleClickCallback(
+                       &viz::DebugRendererSettings::show_overdraw_feedback)),
       GetVisDebugUpdateStateCallback(
-          &viz::DebugRendererSettings::show_overdraw_feedback),
-      GetVisDebugHandleClickCallback(
           &viz::DebugRendererSettings::show_overdraw_feedback)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
-      add_checkbox(this, checkbox_contaner,
-                   base::ASCIIToUTF16("Show aggregated damage")),
+      add_checkbox(this, checkbox_container,
+                   base::ASCIIToUTF16("Show aggregated damage"),
+                   GetVisDebugHandleClickCallback(
+                       &viz::DebugRendererSettings::show_aggregated_damage)),
       GetVisDebugUpdateStateCallback(
-          &viz::DebugRendererSettings::show_aggregated_damage),
-      GetVisDebugHandleClickCallback(
           &viz::DebugRendererSettings::show_aggregated_damage)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
-      add_checkbox(this, checkbox_contaner,
-                   base::ASCIIToUTF16("Show paint rect.")),
-      GetCCDebugUpdateStateCallback(&cc::LayerTreeDebugState::show_paint_rects),
-      GetCCDebugHandleClickCallback(
+      add_checkbox(this, checkbox_container,
+                   base::ASCIIToUTF16("Show paint rect."),
+                   GetCCDebugHandleClickCallback(
+                       &cc::LayerTreeDebugState::show_paint_rects)),
+      GetCCDebugUpdateStateCallback(
           &cc::LayerTreeDebugState::show_paint_rects)));
   AddChildView(std::make_unique<AnimationSpeedControl>());
 }
 
 HUDSettingsView::~HUDSettingsView() = default;
-
-void HUDSettingsView::ButtonPressed(views::Button* sender,
-                                    const ui::Event& /*event*/) {
-  for (const auto& handler : checkbox_handlers_) {
-    if (sender != handler->checkbox())
-      continue;
-
-    handler->HandleClick();
-    break;
-  }
-}
 
 void HUDSettingsView::ToggleVisibility() {
   const bool is_shown = !GetVisible();

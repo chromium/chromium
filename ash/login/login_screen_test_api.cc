@@ -32,6 +32,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -76,6 +77,21 @@ LoginBigUserView* GetBigUserView(const AccountId& account_id) {
   LockContentsView::TestApi lock_contents_test(
       lock_screen_test.contents_view());
   return lock_contents_test.FindBigUser(account_id);
+}
+
+bool SimulateButtonPressedForTesting(LoginShelfView::ButtonId button_id) {
+  LoginShelfView* shelf_view = GetLoginShelfView();
+  if (!shelf_view)
+    return false;
+
+  views::View* button = shelf_view->GetViewByID(button_id);
+  if (!button->GetEnabled())
+    return false;
+
+  views::test::ButtonTestApi(static_cast<views::Button*>(button))
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+                                  gfx::PointF(), base::TimeTicks(), 0, 0));
+  return true;
 }
 
 }  // anonymous namespace
@@ -426,29 +442,22 @@ bool LoginScreenTestApi::LaunchApp(const std::string& app_id) {
 
 // static
 bool LoginScreenTestApi::ClickAddUserButton() {
-  LoginShelfView* view = GetLoginShelfView();
-  return view &&
-         view->SimulateButtonPressedForTesting(LoginShelfView::kAddUser);
+  return SimulateButtonPressedForTesting(LoginShelfView::kAddUser);
 }
 
 // static
 bool LoginScreenTestApi::ClickCancelButton() {
-  LoginShelfView* view = GetLoginShelfView();
-  return view && view->SimulateButtonPressedForTesting(LoginShelfView::kCancel);
+  return SimulateButtonPressedForTesting(LoginShelfView::kCancel);
 }
 
 // static
 bool LoginScreenTestApi::ClickGuestButton() {
-  LoginShelfView* view = GetLoginShelfView();
-  return view &&
-         view->SimulateButtonPressedForTesting(LoginShelfView::kBrowseAsGuest);
+  return SimulateButtonPressedForTesting(LoginShelfView::kBrowseAsGuest);
 }
 
 // static
 bool LoginScreenTestApi::ClickEnterpriseEnrollmentButton() {
-  LoginShelfView* view = GetLoginShelfView();
-  return view && view->SimulateButtonPressedForTesting(
-                     LoginShelfView::kEnterpriseEnrollment);
+  return SimulateButtonPressedForTesting(LoginShelfView::kEnterpriseEnrollment);
 }
 
 // static

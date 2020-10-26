@@ -30,8 +30,6 @@ CreateVectorImageButtonWithNativeTheme(Button::PressedCallback callback,
 // for applying a vector icon with SetImageFromVectorIcon below.
 VIEWS_EXPORT std::unique_ptr<ImageButton> CreateVectorImageButton(
     Button::PressedCallback callback);
-VIEWS_EXPORT std::unique_ptr<ImageButton> CreateVectorImageButton(
-    ButtonListener* listener);
 
 // Creates a ToggleImageButton with an ink drop and a centered image in
 // preparation for applying a vector icon from SetImageFromVectorIcon below.

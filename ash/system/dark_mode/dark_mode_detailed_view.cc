@@ -23,12 +23,11 @@ namespace {
 
 class TrayRadioButton : public views::RadioButton {
  public:
-  TrayRadioButton(views::ButtonListener* listener,
-                  const base::string16& button_label)
+  TrayRadioButton(PressedCallback callback, const base::string16& button_label)
       : views::RadioButton(button_label) {
+    SetCallback(std::move(callback));
     SetBorder(views::CreateEmptyBorder(kTrayRadioButtonPadding));
     SetImageLabelSpacing(kTrayRadioButtonInterSpacing);
-    SetCallback(views::Button::PressedCallback(listener, this));
   }
 
   // views::RadioButton:
@@ -76,16 +75,20 @@ void DarkModeDetailedView::CreateItems() {
 
   themed_mode_button_ =
       scroll_content()->AddChildView(std::make_unique<TrayRadioButton>(
-          this, l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_TITLE)));
+          base::BindRepeating(&AshColorProvider::UpdateColorModeThemed,
+                              base::Unretained(AshColorProvider::Get()), true),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_TITLE)));
   TrayPopupUtils::SetupTraySubLabel(scroll_content()->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_DESCRIPTION))));
 
   neutral_mode_button_ =
       scroll_content()->AddChildView(std::make_unique<TrayRadioButton>(
-          this, l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_TITLE)));
+          base::BindRepeating(&AshColorProvider::UpdateColorModeThemed,
+                              base::Unretained(AshColorProvider::Get()), false),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_TITLE)));
   TrayPopupUtils::SetupTraySubLabel(scroll_content()->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_DESCRIPTION))));
@@ -111,13 +114,7 @@ void DarkModeDetailedView::UpdateCheckedButton(bool is_themed) {
 
 void DarkModeDetailedView::HandleButtonPressed(views::Button* sender,
                                                const ui::Event& event) {
-  auto* ash_color_provider = AshColorProvider::Get();
-  if (sender == toggle_)
-    ash_color_provider->ToggleColorMode();
-  else if (sender == themed_mode_button_)
-    ash_color_provider->UpdateColorModeThemed(/*is_themed=*/true);
-  else if (sender == neutral_mode_button_)
-    ash_color_provider->UpdateColorModeThemed(/*is_themed=*/false);
+  AshColorProvider::Get()->ToggleColorMode();
 }
 
 }  // namespace ash

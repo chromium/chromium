@@ -135,9 +135,6 @@ ToggleButton::ToggleButton(PressedCallback callback)
   SetHasInkDropActionOnClick(true);
 }
 
-ToggleButton::ToggleButton(ButtonListener* listener)
-    : ToggleButton(PressedCallback(listener, this)) {}
-
 ToggleButton::~ToggleButton() {
   // Destroying ink drop early allows ink drop layer to be properly removed,
   SetInkDropMode(InkDropMode::OFF);
