@@ -3406,9 +3406,7 @@ TEST_P(PasswordManagerTest,
   EXPECT_CALL(driver_, FormEligibleForGenerationFound(_))
       .WillOnce(SaveArg<0>(&form_generation_data));
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
-#if !defined(OS_IOS)
   EXPECT_EQ(password_field_id, form_generation_data.new_password_renderer_id);
-#endif
 }
 
 // Checks that username is saved on username first flow.
@@ -3712,10 +3710,8 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
       .WillOnce(SaveArg<0>(&form_generation_data));
   // The change is discovered by PasswordManager.
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
-#if !defined(OS_IOS)
   EXPECT_EQ(new_password_field.unique_renderer_id,
             form_generation_data.new_password_renderer_id);
-#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, testing::Bool());
