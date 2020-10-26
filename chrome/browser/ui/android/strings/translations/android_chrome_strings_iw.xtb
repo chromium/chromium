@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">כרטיסיית הגלישה בסתר שנבחרה</translation>
 <translation id="2987620471460279764">טקסט ששותף ממכשיר אחר</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
+<translation id="2992473221983447149">תיאורי תמונות</translation>
 <translation id="2996291259634659425">יצירת ביטוי סיסמה</translation>
 <translation id="2996809686854298943">דרושה כתובת אתר</translation>
 <translation id="3006881078666935414">אין נתוני שימוש</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימניה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}many{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
 <translation id="3089395242580810162">פתיחה בכרטיסיית גלישה בסתר</translation>
+<translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">הודעות</translation>
 <translation id="3137521801621304719">צא ממצב גלישה בסתר</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">נקה את כל הנתונים</translation>
 <translation id="6560414384669816528">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="656065428026159829">אפשרויות נוספות</translation>
+<translation id="6565959834589222080">‏המכשיר יתחבר לרשת Wi-Fi כאשר תהיה זמינה</translation>
 <translation id="6566259936974865419">‏Chrome חסך לך ‎<ph name="GIGABYTES" /> GB</translation>
 <translation id="6573096386450695060">אני רוצה לאפשר תמיד</translation>
 <translation id="6573431926118603307">‏כרטיסיות שפתחת ב-Chrome במכשירים האחרים שלך יופיעו כאן.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">פתח מחדש את הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="8798449543960971550">נקראו</translation>
 <translation id="8812260976093120287">באתרים מסוימים ניתן לשלם דרך המכשיר באמצעות אפליקציות התשלום הנתמכות שמופיעות למעלה.</translation>
+<translation id="881688628773363275">לא ניתן לצפות בתוכן של כרטיסיית 'התצוגה המקדימה'.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="883806473910249246">אירעה שגיאה בזמן הורדת התוכן.</translation>
 <translation id="8840953339110955557">ייתכן שהדף הזה שונה מהגירסה המקוונת.</translation>

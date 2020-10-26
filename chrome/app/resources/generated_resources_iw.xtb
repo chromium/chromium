@@ -448,6 +448,7 @@
 <translation id="1509281256533087115">‏גישה לכל מכשיר של <ph name="DEVICE_NAME_AND_VENDOR" /> באמצעות USB</translation>
 <translation id="1509960214886564027">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו כראוי</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
+<translation id="151070646350206700">אתרים לא יכולים להפריע לך ולהציג בקשות לשליחת התראות</translation>
 <translation id="1510785804673676069">‏אם אתה משתמש בשרת proxy, בדוק את הגדרות שרת ה-proxy או צור קשר עם מנהל הרשת כדי לוודא ששרת ה-proxy פועל. אם אינך סבור שעליך להשתמש בשרת proxy, שנה את <ph name="LINK_START" />הגדרות שרת ה-proxy שלך<ph name="LINK_END" />.</translation>
 <translation id="1511997356770098059">אי אפשר לאחסן פרטי כניסה במפתח האבטחה הזה</translation>
 <translation id="1512210426710821809">הדרך היחידה לבטל את הפעולה זו היא להתקין מחדש את <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
@@ -931,6 +932,7 @@
 <translation id="205560151218727633">‏הלוגו של Google Assistant</translation>
 <translation id="2058456167109518507">אותר מכשיר</translation>
 <translation id="2059913712424898428">אזור זמן</translation>
+<translation id="2060375639911876205">‏הסרת פרופיל של eSIM</translation>
 <translation id="2065405795449409761">‏Chrome נשלט על-ידי תוכנת בדיקה אוטומטית.</translation>
 <translation id="2071393345806050157">אין קובץ יומן מקומי.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{יש ללחוץ כדי להתקין את התוסף}two{יש ללחוץ כדי להתקין את התוספים האלה}many{יש ללחוץ כדי להתקין את התוספים האלה}other{יש ללחוץ כדי להתקין את התוספים האלה}}</translation>
@@ -2726,6 +2728,7 @@
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="413193092008917129">תרחישים של אבחון רשת</translation>
 <translation id="4132183752438206707">‏חיפוש אפליקציות בחנות Google Play</translation>
+<translation id="4132364317545104286">‏שינוי שם של פרופיל eSIM</translation>
 <translation id="4133076602192971179">כדי לשנות את הסיסמה, יש לפתוח את האפליקציה</translation>
 <translation id="4136203100490971508">תאורת הלילה תכבה באופן אוטומטי בשעת הזריחה</translation>
 <translation id="41365691917097717">‏בחירה להמשיך תגרום להפעלת ניפוי באגים באמצעות ADB במהלך היצירה והבדיקה של אפליקציות ל-Android. חשוב לשים לב שהפעולה הזו מאפשרת את ההתקנה של אפליקציות ל-Android שלא אומתו על ידי Google. כדי להשבית את התכונה, יש לאפס את המכשיר להגדרות המקוריות.</translation>
@@ -3239,6 +3242,7 @@
 <translation id="4778644898150334464">שימוש בסיסמה אחרת</translation>
 <translation id="4779083564647765204">מרחק מתצוגה</translation>
 <translation id="4779136857077979611">אוניגירי</translation>
+<translation id="4779766576531456629">‏שינוי שם של הרשת הסלולרית של eSIM</translation>
 <translation id="4780321648949301421">שמירת הדף בשם...</translation>
 <translation id="4785719467058219317">בחרת להשתמש במפתח אבטחה שלא רשום עבור האתר הזה</translation>
 <translation id="4788092183367008521">כדאי לבדוק את החיבור לרשת ולנסות שוב.</translation>
@@ -3682,6 +3686,7 @@
 <translation id="5324780743567488672">היעזרות במיקום להגדרה אוטומטית של אזור הזמן</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5327570636534774768">המכשיר הזה מסומן כמנוהל על ידי דומיין אחר. צריך לבטל את ניהול התצורה שלו מהדומיין הזה לפני ההגדרה של מצב ההדגמה.</translation>
+<translation id="5327912693242073631">תכונות שצריכות התראות לא יפעלו</translation>
 <translation id="532943162177641444">הקש על ההודעה בטלפון <ph name="PHONE_NAME" /> כדי להגדיר את הנקודה לשיתוף אינטרנט בנייד שבה המכשיר הזה יכול להשתמש.</translation>
 <translation id="5329858601952122676">&amp;מחיקה</translation>
 <translation id="5331069282670671859">אין לך אישורים בקטגוריה הזו</translation>
@@ -3733,6 +3738,7 @@
 <translation id="5390112241331447203">‏הכללה של הקובץ system_logs.txt שנשלח בדוחות המשוב.</translation>
 <translation id="5390677308841849479">אדום כהה וכתום</translation>
 <translation id="5390743329570580756">שלח עבור</translation>
+<translation id="5392192690789334093">מורשים לשלוח התראות</translation>
 <translation id="5397794290049113714">אתה</translation>
 <translation id="5398497406011404839">סימניות מוסתרות</translation>
 <translation id="5398572795982417028">התייחסות לדף מחוץ לטווח, המגבלה היא <ph name="MAXIMUM_PAGE" /></translation>
@@ -4035,6 +4041,7 @@
 <translation id="5739235828260127894">בהמתנה לאימות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">גדול מאוד</translation>
 <translation id="5740328398383587084">שיתוף בקרבת מקום</translation>
+<translation id="5740820643029013514">שימוש במצב שקט יותר של העברת הודעות (מומלץ)</translation>
 <translation id="574104302965107104">שיקוף מסך</translation>
 <translation id="574209121243317957">גובה צליל</translation>
 <translation id="5746169159649715125">‏שמור כקובץ PDF</translation>
@@ -4254,6 +4261,7 @@
 <translation id="6002210667729577411">העברת הקבוצה לחלון חדש</translation>
 <translation id="6002452033851752583">‏הסיסמה נמחקה מחשבון Google שלך</translation>
 <translation id="6002458620803359783">קולות מועדפים</translation>
+<translation id="6003143259071779217">‏הסרת הרשת הסלולרית של eSIM</translation>
 <translation id="6006484371116297560">קלאסי</translation>
 <translation id="6007240208646052708">לא ניתן לבצע חיפוש קולי בשפה שלך.</translation>
 <translation id="6009781704028455063">חיישן מובנה</translation>
@@ -4522,6 +4530,7 @@
 <translation id="6308937455967653460">שמור קישור&amp; בשם...</translation>
 <translation id="6309443618838462258">שיטת הקלט הזו לא מאושרת על ידי מנהל המערכת</translation>
 <translation id="6309510305002439352">המיקרופון מושבת</translation>
+<translation id="6310472381159916879">הסרת הפרופיל</translation>
 <translation id="6311220991371174222">‏לא ניתן להפעיל את Chrome מכיוון שמשהו השתבש בפתיחת הפרופיל שלך. יש לנסות להפעיל מחדש את Chrome.</translation>
 <translation id="6312403991423642364">שגיאת רשת לא ידועה</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{בדיקת הבטיחות פעלה לפני יום אחד}two{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}many{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}other{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}}</translation>
@@ -4711,6 +4720,7 @@
 <translation id="6532663472409656417">רשום בארגון</translation>
 <translation id="6535331821390304775">תמיד יש לאפשר ל-<ph name="ORIGIN" /> לפתוח קישורים מהסוג הזה באפליקציה המשויכת להם</translation>
 <translation id="6537613839935722475">שם יכול לכלול אותיות, מספרים ומקפים (-)</translation>
+<translation id="6537880577641744343">Commander</translation>
 <translation id="6538635548667167211">ההגדרה הנוכחית של השימוש בחבילת הגלישה היא 'נתונים'</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> הפעל אפשרות זו רק אם אתה בטוח בכך, או אם התבקשת לעשות זאת, משום שאיסוף נתונים עלול לפגוע בביצועים.</translation>
 <translation id="6541638731489116978">גישת האתר לחיישני תנועה נחסמה.</translation>
@@ -5841,6 +5851,7 @@
 <translation id="7855678561139483478">העברת כרטיסייה לחלון חדש</translation>
 <translation id="7857117644404132472">להוספת מקרה חריג</translation>
 <translation id="7857949311770343000">האם זהו דף הכרטיסייה החדשה שציפית לראות?</translation>
+<translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="785948723952233770">לא תהיה תמיכה באפשרות הזו אחרי דצמבר. עליך לפנות למנהל המערכת שלך.</translation>
 <translation id="786073089922909430">שירות: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;הורדות</translation>
@@ -6165,6 +6176,7 @@
 <translation id="8236917170563564587">שיתוף הכרטיסייה הזו</translation>
 <translation id="8237647586961940482">ורוד כהה ואדום</translation>
 <translation id="8239032431519548577">‏ההרשמה ל-Enterprise הושלמה</translation>
+<translation id="8239932336306009582">לא מורשים לשלוח התראות</translation>
 <translation id="8241040075392580210">מוצל</translation>
 <translation id="8241806945692107836">קביעת תצורת המכשיר...</translation>
 <translation id="8241868517363889229">לקרוא ולשנות את הסימניות שלך</translation>
@@ -6294,6 +6306,7 @@
 <translation id="8386091599636877289">המדיניות לא נמצאה.</translation>
 <translation id="8386903983509584791">הסריקה הושלמה</translation>
 <translation id="8387361103813440603">לא מורשים לראות את המיקום</translation>
+<translation id="8389264703141926739">חסימת התראות</translation>
 <translation id="8389416080014625855">‏יצירת קוד QR לדף הזה</translation>
 <translation id="8389492867173948260">מתן הרשאה לתוסף הזה לקרוא ולשנות את כל הנתונים שלך באתרים שאליהם נכנסת:</translation>
 <translation id="8390449457866780408">השרת אינו זמין.</translation>
@@ -6503,6 +6516,7 @@
 <translation id="8645354835496065562">המשך התרת הגישה לחיישנים</translation>
 <translation id="8645920082661222035">המערכת חוזה אירועים מסוכנים ומזהירה אותך לגביהם לפני שהם מתרחשים</translation>
 <translation id="8646209145740351125">השבתת סנכרון</translation>
+<translation id="864637694230589560">בדרך כלל, אתרים שולחים התראות כדי לאפשר לך להתעדכן במבזקי החדשות או לקבל הודעות בצ'אט</translation>
 <translation id="8647834505253004544">כתובת האינטרנט לא חוקית</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> או <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">טמפרטורת הצבע של תאורת לילה</translation>

@@ -133,6 +133,7 @@
 <translation id="1145292499998999162">Փլագինն արգելափակված է</translation>
 <translation id="1145593918056169051">Տպիչի աշխատանքն ընդհատվեց</translation>
 <translation id="114721135501989771">Google-ի տեխնոլոգիաներ Chrome-ում</translation>
+<translation id="1147322039136785890">Այժմ <ph name="SUPERVISED_USER_NAME" />-ի հերթն է</translation>
 <translation id="1147991416141538220">Օգտագործելու թույլտվություն խնդրելու համար կապվեք այս սարքի ադմինիստրատորի հետ:</translation>
 <translation id="1149401351239820326">Ժամկետի սպառման ամիսը</translation>
 <translation id="1149725087019908252">«<ph name="FILE_NAME" />» ֆայլի ստուգում</translation>
@@ -449,7 +450,7 @@
 <translation id="1509281256533087115">Մուտք գործեք ցանկացած <ph name="DEVICE_NAME_AND_VENDOR" /> սարք USB-ի միջոցով</translation>
 <translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
-<translation id="151070646350206700">Կայքերը չեն ընդհատի ձեր աշխատանքը՝ ծանուցումներ ուղարկելու հարցումներով</translation>
+<translation id="151070646350206700">Կայքերը չեն ընդհատի ձեր աշխատանքը ծանուցումներ ուղարկելու հարցումներով</translation>
 <translation id="1510785804673676069">Եթե դուք օգտվում եք միջնորդ սերվերից, ստուգեք նրա կարգավորումները
     կամ խնդրեք ցանցի ադմինիստրատորին
     կարգավորել այն: Եթե միջնորդ սերվեր չեք օգտագործում, կարգաբերեք ձեր
@@ -2082,6 +2083,7 @@
 <translation id="3428419049384081277">Դուք մուտք եք գործել</translation>
 <translation id="3428747202529429621">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ</translation>
 <translation id="3428800329481094896">Բեռնվում են Լինուքսի կոնտեյների SSH բանալիները</translation>
+<translation id="3429271624041785769">Վեբ բովանդակության լեզուներ</translation>
 <translation id="3429275422858276529">Էջանշեք այս կայքէջը՝ ավելի ուշ այն հեշտությամբ գտնելու համար</translation>
 <translation id="3432227430032737297">Հեռացնել բոլոր ցուցադրվածները</translation>
 <translation id="3432757130254800023">Ուղարկել աուդիո և վիդեո ֆայլերը տեղային ցանցի սարքերին</translation>
@@ -2508,6 +2510,7 @@
 <translation id="3879748587602334249">Ներբեռնման կառավարիչ</translation>
 <translation id="3881478300875776315">Ցույց տալ ավելի քիչ տողեր</translation>
 <translation id="3882165008614329320">Տեսանյութ տեսախցիկից կամ ֆայլից</translation>
+<translation id="3884152383786131369">Տարբեր լեզուներով հասանելի վեբ բովանդակությունը կօգտագործի ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Այս կայք մուտք գործելու ձեր հարցումն ուղարկվել է <ph name="NAME" />-ին</translation>
 <translation id="3888550877729210209">Կատարեք նշումներ <ph name="LOCK_SCREEN_APP_NAME" />-ի միջոցով</translation>
 <translation id="3890064827463908288">Միացրեք Chrome Sync-ը՝ Wi-Fi համաժամացումն օգտագործելու համար։</translation>
@@ -4369,6 +4372,7 @@
 <translation id="6112727384379533756">Ավելացնել տոմս</translation>
 <translation id="6112931163620622315">Ստուգեք հեռախոսը</translation>
 <translation id="6112952769866305444">Փոփոխել պրոֆիլը <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Ընտրեք կանխադրված որոնողական համակարգ Chrome դիտարկիչի և <ph name="DEVICE_TYPE" />-ի գործարկիչի համար</translation>
 <translation id="6113942107547980621">Smart Lock-ն օգտագործելու համար ձեր հեռախոսում անցեք հիմնական օգտատիրոջ պրոֆիլ</translation>
 <translation id="6116921718742659598">Փոխել լեզուն և ներածման կարգավորումները</translation>
 <translation id="6120205520491252677">Ամրացնել այս էջը մեկնարկի էկրանին…</translation>
@@ -5235,6 +5239,7 @@
 <translation id="7140928199327930795">Այլ մատչելի սարքեր չկան:</translation>
 <translation id="7141105143012495934">Մուտքը չհաջողվեց, քանի որ ձեր հաշվի տվյալները չհաջողվեց առբերել: Կապվեք ադմինիստրատորի հետ կամ նորից փորձեք:</translation>
 <translation id="7143207342074048698">Միացում</translation>
+<translation id="7143358760238281735">Հավելվածներ չկան</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
@@ -5706,6 +5711,7 @@
 <translation id="7707922173985738739">Օգտագործել բջջային ինտերնետ</translation>
 <translation id="7709152031285164251">Չհաջողվեց՝ <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Հեռարձակել...</translation>
+<translation id="7712739869553853093">Տպել նախադիտման պատուհանը</translation>
 <translation id="7712836429117959503"><ph name="EXTENSION_ID" /> ID-ով անհայտ ընդլայնում</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> կայքի քուքիները թույլատրված են</translation>
 <translation id="7714464543167945231">Վկայագիր</translation>
@@ -6606,6 +6612,7 @@
 <translation id="8736288397686080465">Այս կայքը թարմացվել է հետին պլանում:</translation>
 <translation id="8737685506611670901">Բացել <ph name="PROTOCOL" /> -ի հղումները <ph name="REPLACED_HANDLER_TITLE" />-ի փոխարեն</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Դուք կարող եք տալ այս Chromebook-ը <ph name="SUPERVISED_USER_NAME" />-ին։ Կարգավորումը գրեթե ավարտված է։ Սարքը շուտով պատրաստ կլինի օգտագործման։</translation>
 <translation id="8742998548129056176">Սրանք ընդհանուր տեղեկություններ են ձեր սարքի և դրա օգտագործման (օրինակ՝ մարտկոցի լիցքի, համակարգի ու հավելվածների օգտագործման և սխալների) մասին։ Տեղեկություններն օգտագործվելու են Android-ի ծառայությունների աշխատանքը բարելավելու համար։ Տվյալների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար և կօգնի բարելավել նաև նրանց հավելվածներն ու արտադրանքները։</translation>
 <translation id="8743390665131937741">Լիաէկրան խոշորացույցի մասշտաբը՝</translation>
 <translation id="8743864605301774756">Թարմացվել է 1 ժամ առաջ</translation>

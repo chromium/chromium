@@ -448,7 +448,7 @@
 <translation id="1509281256533087115">透過 USB 存取任何 <ph name="DEVICE_NAME_AND_VENDOR" /></translation>
 <translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
 <translation id="1510238584712386396">啟動器</translation>
-<translation id="151070646350206700">網站無法要求傳送通知，以免對你造成干擾</translation>
+<translation id="151070646350206700">網站傳送的通知不會打擾使用者</translation>
 <translation id="1510785804673676069">如果你使用 Proxy 伺服器，請檢查你的 Proxy 設定或
     與網路管理員聯絡，確認 Proxy 伺服器是否運作正
     常。如果你不是使用 Proxy 伺服器，請調整你的

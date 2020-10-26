@@ -133,6 +133,7 @@
 <translation id="1145292499998999162">Plug-in blocked</translation>
 <translation id="1145593918056169051">Printer has stopped</translation>
 <translation id="114721135501989771">Get Google smarts in Chrome</translation>
+<translation id="1147322039136785890">Now it's <ph name="SUPERVISED_USER_NAME" />'s turn</translation>
 <translation id="1147991416141538220">To ask for access, contact the administrator of this device.</translation>
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1149725087019908252">Scanning <ph name="FILE_NAME" /></translation>
@@ -2081,6 +2082,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3428419049384081277">You're signed in!</translation>
 <translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3428800329481094896">Fetching the Linux container SSH keys</translation>
+<translation id="3429271624041785769">Web content languages</translation>
 <translation id="3429275422858276529">Bookmark this page to easily find it later</translation>
 <translation id="3432227430032737297">Remove all shown</translation>
 <translation id="3432757130254800023">Send audio and video to displays on the local network</translation>
@@ -2507,6 +2509,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3881478300875776315">Show fewer lines</translation>
 <translation id="3882165008614329320">Existing video from camera or file</translation>
+<translation id="3884152383786131369">Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Your request to access this site has been sent to <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Taking notes with <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Turn on Chrome Sync to use Wi-Fi Sync</translation>
@@ -4365,6 +4368,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6112727384379533756">Add a ticket</translation>
 <translation id="6112931163620622315">Check your phone</translation>
 <translation id="6112952769866305444">Edit person, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">To use Smart Lock, switch to the primary user profile on your phone</translation>
 <translation id="6116921718742659598">Change language and input settings</translation>
 <translation id="6120205520491252677">Pin this page to Start screen...</translation>
@@ -5231,6 +5235,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7140928199327930795">No other available devices.</translation>
 <translation id="7141105143012495934">Sign-in failed because your account details could not be retrieved. Please contact your administrator or try again.</translation>
 <translation id="7143207342074048698">Connecting</translation>
+<translation id="7143358760238281735">No apps available</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="714876143603641390">LAN connectivity</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
@@ -5702,6 +5707,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7707922173985738739">Use mobile data</translation>
 <translation id="7709152031285164251">Failed - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
+<translation id="7712739869553853093">Print preview dialogue</translation>
 <translation id="7712836429117959503">Unknown extension with ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Cookies from <ph name="DOMAIN" /> allowed</translation>
 <translation id="7714464543167945231">Certificate</translation>
@@ -6604,6 +6610,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8736288397686080465">This site has been updated in the background.</translation>
 <translation id="8737685506611670901">Open <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME" />. Setup is almost done, then it's time to explore.</translation>
 <translation id="8742998548129056176">This is general information about your device and how you use it (such as battery level, system and app activity, and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, to make their apps and products better.</translation>
 <translation id="8743390665131937741">Full-screen zoom level:</translation>
 <translation id="8743864605301774756">Updated 1hr ago</translation>

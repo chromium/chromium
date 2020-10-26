@@ -448,7 +448,7 @@
 <translation id="1509281256533087115">Truy cập mọi <ph name="DEVICE_NAME_AND_VENDOR" /> qua USB</translation>
 <translation id="1509960214886564027">Các tính năng trên nhiều trang web có thể hoạt động không đúng cách</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
-<translation id="151070646350206700">Trang web không được phép làm phiền bạn bằng cách đề nghị gửi thông báo</translation>
+<translation id="151070646350206700">Các trang web không thể làm phiền bạn bằng cách đề nghị gửi thông báo</translation>
 <translation id="1510785804673676069">Nếu bạn sử dụng máy chủ proxy, hãy kiểm tra cài đặt proxy của bạn hoặc
     liên hệ với quản trị viên mạng để kiểm tra xem máy chủ proxy
     có đang hoạt động không. Nếu bạn cho rằng mình không cần sử dụng
@@ -3244,7 +3244,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4778644898150334464">Dùng mật khẩu khác</translation>
 <translation id="4779083564647765204">Thu phóng</translation>
 <translation id="4779136857077979611">Cơm nắm Onigiri</translation>
-<translation id="4779766576531456629">Đổi tên mạng di động eSIM</translation>
+<translation id="4779766576531456629">Đổi tên mạng di động của eSIM</translation>
 <translation id="4780321648949301421">Lưu trang làm...</translation>
 <translation id="4785719467058219317">Bạn đang sử dụng một khóa bảo mật chưa đăng ký với trang web này</translation>
 <translation id="4788092183367008521">Vui lòng kiểm tra kết nối mạng và thử lại.</translation>
@@ -4043,7 +4043,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5739235828260127894">Đang chờ xác minh. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Rất lớn</translation>
 <translation id="5740328398383587084">Chia sẻ lân cận</translation>
-<translation id="5740820643029013514">Dùng thông báo nhẹ nhàng hơn (khuyên dùng)</translation>
+<translation id="5740820643029013514">Dùng thông báo yên tĩnh hơn (khuyên dùng)</translation>
 <translation id="574104302965107104">Phản chiếu màn hình</translation>
 <translation id="574209121243317957">Cao độ</translation>
 <translation id="5746169159649715125">Lưu dưới dạng PDF</translation>
@@ -4263,7 +4263,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6002210667729577411">Di chuyển nhóm sang cửa sổ mới</translation>
 <translation id="6002452033851752583">Đã xóa mật khẩu khỏi Tài khoản Google của bạn</translation>
 <translation id="6002458620803359783">Giọng nói ưu tiên</translation>
-<translation id="6003143259071779217">Xóa mạng di động eSIM</translation>
+<translation id="6003143259071779217">Xóa mạng di động của eSIM</translation>
 <translation id="6006484371116297560">Cổ điển</translation>
 <translation id="6007240208646052708">Chưa có dịch vụ tìm kiếm bằng giọng nói cho ngôn ngữ của bạn.</translation>
 <translation id="6009781704028455063">Cảm biến tích hợp</translation>

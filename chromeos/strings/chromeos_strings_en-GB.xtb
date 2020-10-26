@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Printed</translation>
 <translation id="1979103255016296513">Password change overdue</translation>
 <translation id="2049639323467105390">This device is managed by <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Turn on Bluetooth to discover nearby devices</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> attempts left</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} attempt left}other{<ph name="ERROR_MESSAGE" /> {0} attempts left}}</translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Shut down</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Choose a new one immediately</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> manages this user and may remotely manage settings and monitor user activity.</translation>
 <translation id="520299634122159966">No available scanners</translation>
 <translation id="5212543919916444558">I can't find anything on your screen that I can help with.
 Try tapping the mic to ask me anything.</translation>

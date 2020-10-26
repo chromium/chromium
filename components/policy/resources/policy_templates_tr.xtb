@@ -411,6 +411,11 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       URL kalıpları, https://www.chromium.org/administrators/url-blacklist-filter-format adresinde bulabileceğiniz '<ph name="URL_BLOCKLIST_POLICY_NAME" />' politikasıyla aynı biçimdedir.
       </translation>
 <translation id="1645793986494086629">Şema:</translation>
+<translation id="1647558381546345298">Politika ayarlanırsa önbelleğe alınan medya dosyalarının diskte depolanması için <ph name="PRODUCT_NAME" /> tarafından kullanılan önbellek boyutu (kullanıcıların --media-cache-size flag'ini belirtip belirtmemesinden bağımsız olarak) yapılandırılır. Bu politikada belirtilen değer kesin bir sınır değil, daha ziyade önbellek sistemi için bir öneridir. Birkaç megabaytın altındaki değerler yukarı yuvarlanır.
+
+      Politika değeri 0 olarak ayarlanırsa varsayılan önbellek boyutu kullanılır ve kullanıcılar bunu değiştiremez.
+
+      Politika ayarlanmadan bırakılırsa varsayılan önbellek boyutu kullanılır ve kullanıcılar --media-cache-size flag'ini belirterek bunu değiştirebilir.</translation>
 <translation id="1648816843164517573">HSTS politika kontrolünü atlayacak olan isimlerin listesi</translation>
 <translation id="1654087023995670109">Tarayıcı misafir modunu zorunlu tut</translation>
 <translation id="1655229863189977773">Disk önbelleği boyutunu bayt olarak ayarla</translation>
@@ -1317,6 +1322,7 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
       Politika ayarlanmadan bırakılırsa (veya geçersiz bir URL'ye ayarlanırsa) <ph name="PRODUCT_NAME" />, politikayı tarayıcılar arasında geçiş yapmak için bir kural kaynağı olarak kullanmaz.
 
       Not: Bu politika, <ph name="IE_PRODUCT_NAME" /> tarayıcısının <ph name="IEEM_SITELIST_POLICY" /> politikasıyla aynı biçimde bir XML dosyasına yönlendirir. Bu politika, bir XML dosyasından kurallar yükler, ancak bu kuralları <ph name="IE_PRODUCT_NAME" /> ile paylaşmaz. <ph name="IE_PRODUCT_NAME" /> tarayıcısının <ph name="IEEM_SITELIST_POLICY" /> politikası hakkında daha fazla bilgi edinin ( https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2949765875529121431">Politika ayarlanırsa istekleri HTTP'den HTTPS'ye yükseltilebilecek HSTS politika kontrolünden muaf tutulan ana makine adlarının bir listesi belirtilir. Bu politikada yalnızca tek etiketli ana makine adlarına izin verilir. Ana makine adları standartlaştırılmalıdır: Tüm IDN'ler, A-etiket biçimine dönüştürülmeli ve tüm ASCII harfleri küçük harf olmalıdır. Bu politika yalnızca belirtilen spesifik ana makine adları için geçerlidir; bu adların alt alanları için geçerli değildir.</translation>
 <translation id="2952347049958405264">Kısıtlamalar:</translation>
 <translation id="2957047180944828740">Güvenli olmayan web sitelerinin, daha özel ağ uç noktalarına istekte bulunmasına izin verilip verilmeyeceğini belirtir</translation>
 <translation id="2957506574938329824">Hiçbir sitenin Web Bluetooth API'sı aracılığıyla Bluetooth hizmetlerine erişim istemesine izin verme</translation>
@@ -1425,6 +1431,9 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
 
       Bu politikanın ayarlansa da ayarlanmasa da, WPAD optimizasyonu ayarı kullanıcılar tarafından değiştirilemez.</translation>
 <translation id="3072045631333522102">Perakende modunda oturum açma ekranında kullanılacak ekran koruyucu</translation>
+<translation id="3072788420987305247">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa medya içeriği oynatılırken kullanıcıların cihazı kilitlemesi halinde medya denetimleri kilit ekranında görüntülenir.
+
+      Politika, Devre Dışı değerine ayarlanırsa medya denetimleri kilit ekranında devre dışı bırakılır.</translation>
 <translation id="3072847235228302527">Bir cihaz yerel hesabı için Hizmet Şartları'nı ayarlama</translation>
 <translation id="3086995894968271156">Cast Receiver'ı <ph name="PRODUCT_NAME" /> ürününde yapılandırın.</translation>
 <translation id="3091832372132789233">Öncelikle harici bir güç kaynağına bağlı cihazlar için pili şarj edin.</translation>
@@ -1505,6 +1514,11 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
         * 4 olarak ayarlanırsa <ph name="TPM_FIRMWARE_UPDATE_TPM" /> donanım yazılımı kayıt işleminden sonra, kullanıcı oturum açmadan önce güncellenir.
 
       Politika ayarlanmadan bırakılırsa <ph name="TPM_FIRMWARE_UPDATE_TPM" /> donanım yazılımı güncellemesi kullanılamaz.</translation>
+<translation id="3235677869770186098">Politikanın ayarlanması, giriş ekranında sağlanan tedarikçi ve ürün kimliklerine sahip USB cihazlarına erişmesine otomatik olarak izin verilen siteleri belirten URL kalıplarının listesini oluşturmanıza olanak tanır. Politikanın geçerli olabilmesi için listedeki her öğenin hem "cihazlar" hem de "URL'ler" alanı olması gerekir. "Cihazlar" alanındaki her öğe, "vendor_id" ve "product_id" alanı içerebilir. "Vendor_id" alanının atlanması her cihazla eşleşen bir politika oluşturur. "Product_id" alanının atlanması belirtilen satıcı kimliğiyle her cihazla eşleşen bir politika oluşturur. "Product_id" alanı olup "vendor_id" alanı olmayan politika geçersizdir.
+
+      USB izin modeli, istekte bulunan URL'nin USB cihazına erişmesine izin vermek için istekte bulunan URL'yi ve yerleştirme URL'sini kullanır. İstekte bulunan site bir iFrame içinde yüklendiğinde, istekte bulunan URL yerleştirme URL'sinden farklı olabilir. Dolayısıyla, URL'ler alanı, sırasıyla istekte bulunan URL'yi ve yerleştirme URL'sini belirtmek için virgülle sınırlandırılmış en fazla 2 URL dizesi içerebilir. Yalnızca bir URL belirtilirse yerleştirme durumundan bağımsız olarak bu URL ile eşleşen istekte bulunan sitenin URL'sine karşılık gelen USB cihazlarına erişim izni verilir. URL'ler geçerli olmalıdır; aksi halde, politika yok sayılır.
+
+      Politika ayarlanmadan bırakılırsa genel varsayılan değer tüm siteler için kullanılır (otomatik erişim olmaz).</translation>
 <translation id="3236046242843493070">Uzantı, uygulama ve kullanıcı komut dosyası yüklemelerine izin veren URL kalıpları</translation>
 <translation id="3240609035816615922">Yazıcı yapılandırması erişim politikası.</translation>
 <translation id="324062325008698789">Yazıcılar listesini yapılandırır</translation>
@@ -2162,6 +2176,11 @@ False (yanlış) olarak ayarlanırsa veya hiç ayarlanmazsa, hiçbir sertifika o
 <translation id="4157003184375321727">İşletim sistemi ve donanım yazılımı sürümünü rapor et</translation>
 <translation id="4157594634940419685">Yerel CUPS yazıcılarına erişim izni ver</translation>
 <translation id="4160962198980004898">Yuvaya yerleştirildiğinde cihaz MAC adresi kaynağı</translation>
+<translation id="4166174702671320480">Politika, Etkin değerine ayarlanırsa bir atom grubundan gelen ve o gruptaki en yüksek öncelikle aynı kaynağı paylaşmayan politikalar yok sayılır.
+
+      Politika, Devre Dışı değerine ayarlanırsa hiçbir politika, kaynağı yüzünden yok sayılmaz. Politikalar yalnızca bir çakışma olduğunda ve o politika en yüksek önceliğe sahip olmadığında yok sayılır.
+
+      Bu politika bir bulut kaynağından ayarlanırsa belirli bir kullanıcıyı hedefleyemez.</translation>
 <translation id="4169692397912242417">Giriş ekranında sözlü geri bildirim erişilebilirlik özelliğini etkinleştirin.
 
           Bu politika true (doğru) değerine ayarlanırsa giriş ekranında sözlü geri bildirim her zaman etkinleştirilir.
@@ -3362,6 +3381,9 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="5951418260805607969">Disk alanı azaldığında bildirim göster</translation>
 <translation id="5961137303188584693">Cihazın dahili NIC MAC adresi</translation>
 <translation id="5966615072639944554">Uzaktan doğrulama API'sını kullanmasına izin verilen uzantılar</translation>
+<translation id="5975765799383881158">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar Menü &gt; Yardım &gt; Sorun Bildirin adımlarını veya tuş kombinasyonunu kullanarak Google'a geri bildirim gönderebilir.
+
+      Politika, Devre Dışı değerine ayarlanırsa kullanıcılar Google'a geri bildirim gönderemez.</translation>
 <translation id="5997543603646547632">Varsayılan olarak 24 saatlik saat biçimini kullan</translation>
 <translation id="5997846976342452720">Eklenti bulucunun devre dışı bırakılıp bırakılmayacağını belirt (kullanımdan kaldırıldı)</translation>
 <translation id="5998198091336830580">Bu politika, aşağıdaki atom grubunun bir parçasıdır (yalnızca grupta bulunan en yüksek öncelikli kaynaktan gelen politikalar geçerlidir):</translation>
@@ -3961,6 +3983,11 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Politikayı Devre dışı değerine ayarlanırsa bunun yerine bir hata mesajı gösterilir.</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" /> ve "Google Drive'a kaydet" hedefleri</translation>
+<translation id="682408981080798691">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa Oluşturucu Kod Bütünlüğü etkinleştirilir.
+
+      Bilinmeyen ve zararlı olabilecek kod, <ph name="PRODUCT_NAME" /> ürününün oluşturucu işlemlerine yüklenebileceğinden, politikanın Devre Dışı değerine ayarlanması, <ph name="PRODUCT_NAME" /> ürününün güvenliğini ve kararlılığını olumsuz yönde etkiler. Politika yalnızca <ph name="PRODUCT_NAME" /> ürününün oluşturucu işlemlerinin içinde çalışması gereken üçüncü taraf yazılımı ile uyumluluk sorunları varsa devre dışı bırakılmalıdır.
+
+      Not: İşlem çözüm politikaları hakkında daha fazla bilgi edinin (https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="6833023569065717572">Politikayı Doğru değerine ayarlarsanız cihazın oturum açma ekranında 24 saatlik saat biçimi kullanılır.
 
       Politikayı Yanlış değerine ayarlarsanız cihazın oturum açma ekranında 12 saatlik saat biçimi kullanılır.

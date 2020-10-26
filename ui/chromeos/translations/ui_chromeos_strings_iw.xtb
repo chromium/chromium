@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">מקלדת אנגלית (ארה"ב)</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> פריטים נמחקו</translation>
+<translation id="2541377937973966830">התכנים בתיקייה הזו הם לקריאה בלבד. לא ניתן לבצע פעולות מסוימות.</translation>
 <translation id="2542049655219295786">‏טבלה של Google</translation>
 <translation id="2547921442987553570">הוספה אל <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">ארה"ב - בינלאומית</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4527800702232535228">‏התיקייה הזו משותפת עם Parallels Desktop</translation>
 <translation id="4552678318981539154">קנה עוד שטח אחסון</translation>
+<translation id="4559318885353833501">בוצעה מחיקה של <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">טשטוש</translation>
 <translation id="4572815280350369984">קובץ <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">עוד...</translation>
@@ -513,6 +515,7 @@
 <translation id="6356685157277930264">חלון משוב לגבי קבצים</translation>
 <translation id="6358884629796491903">דרקון</translation>
 <translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה שונה. עבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי לראות אותו.</translation>
+<translation id="6394388407447716302">לקריאה בלבד</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> פריטים</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="642282551015776456">ייתכן שלא ניתן להשתמש בשם זה כשם קובץ או תיקייה</translation>

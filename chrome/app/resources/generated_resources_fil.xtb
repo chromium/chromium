@@ -133,6 +133,7 @@
 <translation id="1145292499998999162">Na-block ang plugin</translation>
 <translation id="1145593918056169051">Huminto ang printer</translation>
 <translation id="114721135501989771">Magkaroon ng mga smart na feature ng Google sa Chrome</translation>
+<translation id="1147322039136785890">Si <ph name="SUPERVISED_USER_NAME" /> naman</translation>
 <translation id="1147991416141538220">Para humiling ng access, makipag-ugnayan sa administrator ng device na ito.</translation>
 <translation id="1149401351239820326">Buwan ng pag-expire</translation>
 <translation id="1149725087019908252">Sina-scan ang <ph name="FILE_NAME" /></translation>
@@ -2081,6 +2082,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3428419049384081277">Naka-sign in ka!</translation>
 <translation id="3428747202529429621">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
 <translation id="3428800329481094896">Kinukuha ang mga ssh key ng Linux container</translation>
+<translation id="3429271624041785769">Mga wika ng content sa web</translation>
 <translation id="3429275422858276529">I-bookmark ang page na ito upang madali itong mahanap sa ibang pagkakaton</translation>
 <translation id="3432227430032737297">Alisin ang Lahat ng Ipinapakita</translation>
 <translation id="3432757130254800023">Magpadala ng audio at video sa mga display sa lokal na network</translation>
@@ -2507,6 +2509,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3881478300875776315">Magpakita ng mas kaunting linya</translation>
 <translation id="3882165008614329320">Kasalukuyang video mula sa camera o file</translation>
+<translation id="3884152383786131369">Gagamitin ng content sa web na nasa maraming wika ang unang sinusuportahang wika mula sa listahang ito. Naka-sync ang mga kagustuhang ito sa iyong mga setting ng browser. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Ipinadala ang iyong kahilingang i-access ang site na ito kay <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Nagtatala gamit ang <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">I-on ang Chrome Sync para gamitin ang Wi-Fi Sync</translation>
@@ -4365,6 +4368,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="6112727384379533756">Magdagdag ng ticket</translation>
 <translation id="6112931163620622315">Tingnan ang iyong telepono</translation>
 <translation id="6112952769866305444">I-edit ang tao, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Itakda ang iyong default na search engine para sa Chrome browser at <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">Para gamitin ang Smart Lock, lumipat sa profile ng pangunahing user sa iyong telepono</translation>
 <translation id="6116921718742659598">Baguhin ang mga setting ng wika at input</translation>
 <translation id="6120205520491252677">I-pin ang pahinang ito screen ng Simula...</translation>
@@ -5231,6 +5235,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7140928199327930795">Walang ibang available na mga device.</translation>
 <translation id="7141105143012495934">Hindi nakapag-sign dahil hindi maibalik ang mga detalye ng iyong account. Mangyaring makipag-ugnayan sa iyong administrator o subukang muli.</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
+<translation id="7143358760238281735">Walang available na app</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>
 <translation id="7149893636342594995">Nakalipas na 24 na oras</translation>
@@ -5702,6 +5707,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7707922173985738739">Gumamit ng mobile data</translation>
 <translation id="7709152031285164251">Nabigo - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
+<translation id="7712739869553853093">Dialog ng preview ng pag-print</translation>
 <translation id="7712836429117959503">Hindi kilalang extension na may ID na <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Pinapayagan ang cookies mula sa <ph name="DOMAIN" /></translation>
 <translation id="7714464543167945231">Certificate</translation>
@@ -6605,6 +6611,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8736288397686080465">Na-update ang site na ito sa background.</translation>
 <translation id="8737685506611670901">Buksan ang mga link ng <ph name="PROTOCOL" /> sa halip na ang <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8740247629089392745">Puwede mong ibigay ang Chromebook na ito kay <ph name="SUPERVISED_USER_NAME" />. Malapit nang matapos ang pag-set up, puwede nang mag-explore pagkatapos nito.</translation>
 <translation id="8742998548129056176">Ito ay pangkalahatang impormasyon tungkol sa iyong device at kung paano mo ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para mapahusay ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na mapahusay ang kanilang mga app at produkto.</translation>
 <translation id="8743390665131937741">Antas ng fullscreen na pag-zoom:</translation>
 <translation id="8743864605301774756">Na-update 1 oras ang nakalipas</translation>
