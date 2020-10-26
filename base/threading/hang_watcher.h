@@ -334,8 +334,9 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   base::MemoryPressureListener memory_pressure_listener_;
 
   // The last time at which a critical memory pressure signal was received, or
-  // null if no signal was ever received.
-  base::TimeTicks last_critical_memory_pressure_;
+  // null if no signal was ever received. Atomic because it's set and read from
+  // different threads.
+  std::atomic<base::TimeTicks> last_critical_memory_pressure_;
 
   // The time after which all deadlines in |watch_states_| need to be for a hang
   // to be reported.
