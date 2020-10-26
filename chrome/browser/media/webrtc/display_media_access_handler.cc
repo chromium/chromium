@@ -30,6 +30,10 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#endif  // defined(OS_CHROMEOS)
+
 #if defined(OS_MAC)
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
@@ -249,6 +253,15 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
       request_result =
           blink::mojom::MediaStreamRequestResult::TAB_CAPTURE_FAILURE;
     }
+#if defined(OS_CHROMEOS)
+    if (request_result == blink::mojom::MediaStreamRequestResult::OK) {
+      if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(
+              media_id)) {
+        request_result =
+            blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
+      }
+    }
+#endif
     if (request_result == blink::mojom::MediaStreamRequestResult::OK) {
       const auto& visible_url = url_formatter::FormatUrlForSecurityDisplay(
           web_contents->GetLastCommittedURL(),

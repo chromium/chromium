@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_window_observer.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
+#include "content/public/browser/desktop_media_id.h"
 
 class GURL;
 struct ScreenshotArea;
@@ -59,6 +60,10 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // Returns whether printing should be restricted.
   bool IsPrintingRestricted(content::WebContents* web_contents) const;
+
+  // Returns whether screen capture of the defined content should be restricted.
+  virtual bool IsScreenCaptureRestricted(
+      const content::DesktopMediaID& media_id) const;
 
   // Called when video capturing for |area| is started.
   // |stop_callback| will be called when restricted content will appear there.

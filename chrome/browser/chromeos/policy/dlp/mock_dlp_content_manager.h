@@ -24,6 +24,8 @@ class MockDlpContentManager : public DlpContentManager {
                      DlpContentRestrictionSet(const GURL&));
   MOCK_METHOD1(OnVisibilityChanged, void(content::WebContents*));
   MOCK_CONST_METHOD1(IsScreenshotRestricted, bool(const ScreenshotArea& area));
+  MOCK_CONST_METHOD1(IsScreenCaptureRestricted,
+                     bool(const content::DesktopMediaID& media_id));
 };
 
 }  // namespace policy
