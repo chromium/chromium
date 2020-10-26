@@ -30,6 +30,7 @@ class WebContents;
 namespace weblayer {
 class BrowserContextImpl;
 class CookieManagerImpl;
+class PrerenderControllerImpl;
 
 class ProfileImpl : public Profile {
  public:
@@ -91,6 +92,7 @@ class ProfileImpl : public Profile {
   void SetDownloadDirectory(const base::FilePath& directory) override;
   void SetDownloadDelegate(DownloadDelegate* delegate) override;
   CookieManager* GetCookieManager() override;
+  PrerenderController* GetPrerenderController() override;
   void GetBrowserPersistenceIds(
       base::OnceCallback<void(base::flat_set<std::string>)> callback) override;
   void RemoveBrowserPersistenceStorage(
@@ -123,6 +125,7 @@ class ProfileImpl : public Profile {
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& directory);
   jlong GetCookieManager(JNIEnv* env);
+  jlong GetPrerenderController(JNIEnv* env);
   void EnsureBrowserContextInitialized(JNIEnv* env);
   void SetBooleanSetting(JNIEnv* env, jint j_type, jboolean j_value);
   jboolean GetBooleanSetting(JNIEnv* env, jint j_type);
@@ -176,6 +179,7 @@ class ProfileImpl : public Profile {
   std::unique_ptr<i18n::LocaleChangeSubscription> locale_change_subscription_;
 
   std::unique_ptr<CookieManagerImpl> cookie_manager_;
+  std::unique_ptr<PrerenderControllerImpl> prerender_controller_;
 
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_profile_;

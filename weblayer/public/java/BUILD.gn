@@ -77,6 +77,7 @@ android_library("java") {
     "org/chromium/weblayer/NewTabCallback.java",
     "org/chromium/weblayer/NewTabType.java",
     "org/chromium/weblayer/ObserverList.java",
+    "org/chromium/weblayer/PrerenderController.java",
     "org/chromium/weblayer/Profile.java",
     "org/chromium/weblayer/RemoteFragment.java",
     "org/chromium/weblayer/ScrollNotificationType.java",

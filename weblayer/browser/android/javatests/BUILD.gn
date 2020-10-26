@@ -28,6 +28,7 @@ android_library("weblayer_java_tests") {
     "src/org/chromium/weblayer/test/NavigationTest.java",
     "src/org/chromium/weblayer/test/NewTabCallbackTest.java",
     "src/org/chromium/weblayer/test/OnTabRemovedTabListCallbackImpl.java",
+    "src/org/chromium/weblayer/test/PrerenderControllerTest.java",
     "src/org/chromium/weblayer/test/ProfileTest.java",
     "src/org/chromium/weblayer/test/RenderingTest.java",
     "src/org/chromium/weblayer/test/ScrollOffsetCallbackTest.java",

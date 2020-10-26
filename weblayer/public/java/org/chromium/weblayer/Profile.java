@@ -66,18 +66,25 @@ public class Profile {
     private IProfile mImpl;
     private DownloadCallbackClientImpl mDownloadCallbackClient;
     private final CookieManager mCookieManager;
+    private final PrerenderController mPrerenderController;
 
     // Constructor for test mocking.
     protected Profile() {
         mName = null;
         mImpl = null;
         mCookieManager = null;
+        mPrerenderController = null;
     }
 
     private Profile(String name, IProfile impl) {
         mName = name;
         mImpl = impl;
         mCookieManager = CookieManager.create(impl);
+        if (WebLayer.getSupportedMajorVersionInternal() >= 87) {
+            mPrerenderController = PrerenderController.create(impl);
+        } else {
+            mPrerenderController = null;
+        }
 
         sProfiles.put(name, this);
     }
@@ -196,6 +203,21 @@ public class Profile {
         ThreadCheck.ensureOnUiThread();
 
         return mCookieManager;
+    }
+
+    /**
+     * Gets the prerender controller for this profile.
+     *
+     * @since 88
+     */
+    @NonNull
+    public PrerenderController getPrerenderController() {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
+            throw new UnsupportedOperationException();
+        }
+
+        ThreadCheck.ensureOnUiThread();
+        return mPrerenderController;
     }
 
     /**

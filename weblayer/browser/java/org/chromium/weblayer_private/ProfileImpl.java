@@ -21,6 +21,7 @@ import org.chromium.weblayer_private.interfaces.BrowsingDataType;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IPrerenderController;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
@@ -41,6 +42,7 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
     private final String mName;
     private long mNativeProfile;
     private CookieManagerImpl mCookieManager;
+    private PrerenderControllerImpl mPrerenderController;
     private Runnable mOnDestroyCallback;
     private boolean mBeingDeleted;
     private boolean mDownloadsInitialized;
@@ -61,6 +63,8 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
         mNativeProfile = ProfileImplJni.get().createProfile(name, ProfileImpl.this);
         mCookieManager =
                 new CookieManagerImpl(ProfileImplJni.get().getCookieManager(mNativeProfile));
+        mPrerenderController = new PrerenderControllerImpl(
+                ProfileImplJni.get().getPrerenderController(mNativeProfile));
         mOnDestroyCallback = onDestroyCallback;
         mDownloadCallbackProxy = new DownloadCallbackProxy(mName, mNativeProfile);
     }
@@ -74,6 +78,11 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
         if (mCookieManager != null) {
             mCookieManager.destroy();
             mCookieManager = null;
+        }
+
+        if (mPrerenderController != null) {
+            mPrerenderController.destroy();
+            mPrerenderController = null;
         }
     }
 
@@ -186,6 +195,13 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
     }
 
     @Override
+    public IPrerenderController getPrerenderController() {
+        StrictModeWorkaround.apply();
+        checkNotDestroyed();
+        return mPrerenderController;
+    }
+
+    @Override
     public void getBrowserPersistenceIds(@NonNull IObjectWrapper callback) {
         StrictModeWorkaround.apply();
         checkNotDestroyed();
@@ -293,6 +309,7 @@ public final class ProfileImpl extends IProfile.Stub implements BrowserContextHa
                 long fromMillis, long toMillis, Runnable callback);
         void setDownloadDirectory(long nativeProfileImpl, String directory);
         long getCookieManager(long nativeProfileImpl);
+        long getPrerenderController(long nativeProfileImpl);
         void ensureBrowserContextInitialized(long nativeProfileImpl);
         void setBooleanSetting(long nativeProfileImpl, int type, boolean value);
         boolean getBooleanSetting(long nativeProfileImpl, int type);

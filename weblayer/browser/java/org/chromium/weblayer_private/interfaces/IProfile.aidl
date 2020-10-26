@@ -8,6 +8,7 @@ import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IPrerenderController;
 
 interface IProfile {
   void destroy() = 0;
@@ -44,4 +45,5 @@ interface IProfile {
 
   // Added in Version 87.
   void setUserIdentityCallbackClient(IUserIdentityCallbackClient client) = 13;
+  IPrerenderController getPrerenderController() = 15;
 }
