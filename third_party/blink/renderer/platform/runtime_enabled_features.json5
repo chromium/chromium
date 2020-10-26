@@ -868,6 +868,12 @@
       // be enabled to make the whole feature work.
     },
     {
+      name: "FontAccessChooser",
+      // TODO(crbug.com/1000486): Add when the Origin Trial dependency bug is fixed.
+      // depends_on: ["FontAccess"],
+      status: "experimental",
+    },
+    {
       name: "FontSrcLocalMatching",
       // No status, as the web platform runtime enabled feature is controlled by
       // a Chromium level feature.

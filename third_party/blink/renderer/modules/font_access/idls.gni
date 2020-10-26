@@ -9,6 +9,9 @@ modules_idl_files = [
   "font_manager.idl",
 ]
 
-modules_dictionary_idl_files = [ "font_iterator_entry.idl" ]
+modules_dictionary_idl_files = [
+  "font_iterator_entry.idl",
+  "query_options.idl",
+]
 
 modules_dependency_idl_files = [ "navigator_fonts.idl" ]

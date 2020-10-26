@@ -2205,8 +2205,13 @@ crbug.com/626703 [ Win ] external/wpt/html/editing/dnd/events/historical-manual.
 # Remove from virtual tests when FontAccess is turned on by default.
 external/wpt/font-access/font_access-blob.tentative.https.window.html [ Skip ]
 external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ Skip ]
+external/wpt/font-access/font_access-chooser.tentative.https.window.html [ Skip ]
 virtual/font-access/external/wpt/font-access/font_access-blob.tentative.https.window.html [ Pass ]
+virtual/font-access/external/wpt/font-access/font_access-chooser.tentative.https.window.html [ Skip ]
 virtual/font-access/external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ Pass ]
+virtual/font-access-chooser/external/wpt/font-access/font_access-blob.tentative.https.window.html [ Skip ]
+virtual/font-access-chooser/external/wpt/font-access/font_access-chooser.tentative.https.window.html [ Pass ]
+virtual/font-access-chooser/external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ Skip ]
 
 # text-orientation:upright
 crbug.com/1005518 external/wpt/css/css-writing-modes/table-progression-vlr-003.html [ Skip ]

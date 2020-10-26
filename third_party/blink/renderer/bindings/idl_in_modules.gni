@@ -251,6 +251,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/font_access/font_metadata.idl",
           "//third_party/blink/renderer/modules/font_access/font_table_map.idl",
           "//third_party/blink/renderer/modules/font_access/navigator_fonts.idl",
+          "//third_party/blink/renderer/modules/font_access/query_options.idl",
           "//third_party/blink/renderer/modules/gamepad/gamepad.idl",
           "//third_party/blink/renderer/modules/gamepad/gamepad_axis_event.idl",
           "//third_party/blink/renderer/modules/gamepad/gamepad_axis_event_init.idl",

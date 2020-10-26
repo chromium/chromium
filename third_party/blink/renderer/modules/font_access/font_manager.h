@@ -14,6 +14,8 @@ namespace blink {
 
 class ScriptState;
 class ScriptValue;
+class ScriptPromise;
+class QueryOptions;
 
 class FontManager final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -25,7 +27,9 @@ class FontManager final : public ScriptWrappable {
   FontManager(const FontManager&) = delete;
   FontManager operator=(const FontManager&) = delete;
 
+  // FontManager IDL interface implementation.
   ScriptValue query(ScriptState*, ExceptionState&);
+  ScriptPromise showFontChooser(ScriptState*, const QueryOptions* options);
 
   void Trace(blink::Visitor*) const override;
 };

@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/font_access/font_iterator.h"
@@ -44,6 +45,14 @@ ScriptValue FontManager::query(ScriptState* script_state,
     return ScriptValue();
   }
   return ScriptValue(script_state->GetIsolate(), result);
+}
+
+ScriptPromise FontManager::showFontChooser(ScriptState* script_state,
+                                           const QueryOptions* options) {
+  return ScriptPromise::RejectWithDOMException(
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                         "Not implemented yet"));
 }
 
 void FontManager::Trace(blink::Visitor* visitor) const {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(https://crbug.com/1062766): Update spec documents with objects as implemented.
 // https://wicg.github.io/local-font-access/
 [
     Exposed=(Window,Worker),
@@ -10,4 +9,5 @@
     RuntimeEnabled=FontAccess
 ] interface FontManager {
     [CallWith=ScriptState, RaisesException, Measure] object query();
+    [CallWith=ScriptState, RuntimeEnabled=FontAccessChooser] Promise<FontIterator> showFontChooser(optional QueryOptions options = {});
 };

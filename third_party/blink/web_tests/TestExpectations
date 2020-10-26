@@ -1269,6 +1269,7 @@ crbug.com/626703 external/wpt/css/css-text/text-transform/math/text-transform-ma
 crbug.com/626703 external/wpt/css/css-text/text-transform/math/text-transform-math-sans-serif-001.tentative.html [ Failure ]
 crbug.com/1043295 [ Fuchsia ] virtual/font-access/external/wpt/font-access/font_access-blob.tentative.https.window.html [ Skip ]
 crbug.com/1043295 [ Fuchsia ] virtual/font-access/external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ Skip ]
+crbug.com/1043295 [ Fuchsia ] virtual/font-access-chooser/external/wpt/font-access/font_access-chooser.tentative.https.window.html [ Skip ]
 
 # ====== Style team owned tests from here ======
 
