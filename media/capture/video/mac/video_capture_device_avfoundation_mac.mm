@@ -162,6 +162,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver {
   if ((self = [super init])) {
     _mainThreadTaskRunner = base::ThreadTaskRunnerHandle::Get();
+    _sampleQueue.reset(
+        dispatch_queue_create("org.chromium.VideoCaptureDeviceAVFoundation."
+                              "SampleDeliveryDispatchQueue",
+                              DISPATCH_QUEUE_SERIAL),
+        base::scoped_policy::ASSUME);
     DCHECK(frameReceiver);
     _weakPtrFactoryForTakePhoto =
         std::make_unique<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>(
@@ -177,6 +182,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   [self stopCapture];
   _weakPtrFactoryForTakePhoto = nullptr;
   _mainThreadTaskRunner = nullptr;
+  _sampleQueue.reset();
   [super dealloc];
 }
 
@@ -242,10 +248,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
   [_captureVideoDataOutput setAlwaysDiscardsLateVideoFrames:true];
 
-  [_captureVideoDataOutput
-      setSampleBufferDelegate:self
-                        queue:dispatch_get_global_queue(
-                                  DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
+  [_captureVideoDataOutput setSampleBufferDelegate:self queue:_sampleQueue];
   [_captureSession addOutput:_captureVideoDataOutput];
 
   return YES;

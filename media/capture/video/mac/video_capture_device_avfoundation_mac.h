@@ -8,7 +8,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 
-#import "base/mac/scoped_nsobject.h"
+#include "base/mac/scoped_dispatch_object.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_protocol_mac.h"
@@ -41,6 +42,10 @@ CAPTURE_EXPORT
 
   // The capture format that best matches the above attributes.
   base::scoped_nsobject<AVCaptureDeviceFormat> _bestCaptureFormat;
+
+  // A serial queue to deliver frames on, ensuring frames are delivered in
+  // order.
+  base::ScopedDispatchObject<dispatch_queue_t> _sampleQueue;
 
   // Protects concurrent setting and using |frameReceiver_|. Note that the
   // GUARDED_BY decoration below does not have any effect.
