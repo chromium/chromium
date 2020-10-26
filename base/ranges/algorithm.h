@@ -694,8 +694,23 @@ constexpr auto adjacent_find(ForwardIterator first,
                              ForwardIterator last,
                              Pred pred = {},
                              Proj proj = {}) {
-  return std::adjacent_find(
-      first, last, internal::ProjectedBinaryPredicate(pred, proj, proj));
+  // Implementation inspired by cppreference.com:
+  // https://en.cppreference.com/w/cpp/algorithm/adjacent_find
+  //
+  // A reimplementation is required, because std::adjacent_find is not constexpr
+  // prior to C++20. Once we have C++20, we should switch to standard library
+  // implementation.
+  if (first == last)
+    return last;
+
+  for (ForwardIterator next = first; ++next != last; ++first) {
+    if (base::invoke(pred, base::invoke(proj, *first),
+                     base::invoke(proj, *next))) {
+      return first;
+    }
+  }
+
+  return last;
 }
 
 // Let `E(i)` be `bool(invoke(pred, invoke(proj, *i), invoke(proj, *(i + 1))))`.
@@ -2890,44 +2905,6 @@ constexpr auto partial_sort_copy(Range1&& range,
 // [is.sorted] is_sorted
 // Reference: https://wg21.link/is.sorted
 
-// Returns: Whether the range `[first, last)` is sorted with respect to `comp`
-// and `proj`.
-//
-// Complexity: Linear.
-//
-// Reference: https://wg21.link/is.sorted#:~:text=ranges::is_sorted(I
-template <typename ForwardIterator,
-          typename Comp = ranges::less,
-          typename Proj = identity,
-          typename = internal::iterator_category_t<ForwardIterator>,
-          typename = indirect_result_t<Comp&,
-                                       projected<ForwardIterator, Proj>,
-                                       projected<ForwardIterator, Proj>>>
-constexpr auto is_sorted(ForwardIterator first,
-                         ForwardIterator last,
-                         Comp comp = {},
-                         Proj proj = {}) {
-  return std::is_sorted(first, last,
-                        internal::ProjectedBinaryPredicate(comp, proj, proj));
-}
-
-// Returns: Whether `range` is sorted with respect to `comp` and `proj`.
-//
-// Complexity: Linear.
-//
-// Reference: https://wg21.link/is.sorted#:~:text=ranges::is_sorted(R
-template <typename Range,
-          typename Comp = ranges::less,
-          typename Proj = identity,
-          typename = internal::range_category_t<Range>,
-          typename = indirect_result_t<Comp&,
-                                       projected<iterator_t<Range>, Proj>,
-                                       projected<iterator_t<Range>, Proj>>>
-constexpr auto is_sorted(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::is_sorted(ranges::begin(range), ranges::end(range),
-                           std::move(comp), std::move(proj));
-}
-
 // Returns: The last iterator `i` in `[first, last]` for which the range
 // `[first, i)` is sorted with respect to `comp` and `proj`.
 //
@@ -2945,8 +2922,23 @@ constexpr auto is_sorted_until(ForwardIterator first,
                                ForwardIterator last,
                                Comp comp = {},
                                Proj proj = {}) {
-  return std::is_sorted_until(
-      first, last, internal::ProjectedBinaryPredicate(comp, proj, proj));
+  // Implementation inspired by cppreference.com:
+  // https://en.cppreference.com/w/cpp/algorithm/is_sorted_until
+  //
+  // A reimplementation is required, because std::is_sorted_until is not
+  // constexpr prior to C++20. Once we have C++20, we should switch to standard
+  // library implementation.
+  if (first == last)
+    return last;
+
+  for (ForwardIterator next = first; ++next != last; ++first) {
+    if (base::invoke(comp, base::invoke(proj, *next),
+                     base::invoke(proj, *first))) {
+      return next;
+    }
+  }
+
+  return last;
 }
 
 // Returns: The last iterator `i` in `[begin(range), end(range)]` for which the
@@ -2965,6 +2957,44 @@ template <typename Range,
 constexpr auto is_sorted_until(Range&& range, Comp comp = {}, Proj proj = {}) {
   return ranges::is_sorted_until(ranges::begin(range), ranges::end(range),
                                  std::move(comp), std::move(proj));
+}
+
+// Returns: Whether the range `[first, last)` is sorted with respect to `comp`
+// and `proj`.
+//
+// Complexity: Linear.
+//
+// Reference: https://wg21.link/is.sorted#:~:text=ranges::is_sorted(I
+template <typename ForwardIterator,
+          typename Comp = ranges::less,
+          typename Proj = identity,
+          typename = internal::iterator_category_t<ForwardIterator>,
+          typename = indirect_result_t<Comp&,
+                                       projected<ForwardIterator, Proj>,
+                                       projected<ForwardIterator, Proj>>>
+constexpr auto is_sorted(ForwardIterator first,
+                         ForwardIterator last,
+                         Comp comp = {},
+                         Proj proj = {}) {
+  return ranges::is_sorted_until(first, last, std::move(comp),
+                                 std::move(proj)) == last;
+}
+
+// Returns: Whether `range` is sorted with respect to `comp` and `proj`.
+//
+// Complexity: Linear.
+//
+// Reference: https://wg21.link/is.sorted#:~:text=ranges::is_sorted(R
+template <typename Range,
+          typename Comp = ranges::less,
+          typename Proj = identity,
+          typename = internal::range_category_t<Range>,
+          typename = indirect_result_t<Comp&,
+                                       projected<iterator_t<Range>, Proj>,
+                                       projected<iterator_t<Range>, Proj>>>
+constexpr auto is_sorted(Range&& range, Comp comp = {}, Proj proj = {}) {
+  return ranges::is_sorted(ranges::begin(range), ranges::end(range),
+                           std::move(comp), std::move(proj));
 }
 
 // [alg.nth.element] Nth element

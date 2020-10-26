@@ -255,15 +255,19 @@ TEST(RangesTest, FindFirstOf) {
 }
 
 TEST(RangesTest, AdjacentFind) {
-  int array[] = {1, 2, 3, 3};
-  EXPECT_EQ(array + 2, ranges::adjacent_find(array, ranges::end(array)));
-  EXPECT_EQ(array,
-            ranges::adjacent_find(array, ranges::end(array), ranges::less{}));
+  constexpr int array[] = {1, 2, 3, 3};
+  static_assert(array + 2 == ranges::adjacent_find(array, ranges::end(array)),
+                "");
+  static_assert(
+      array == ranges::adjacent_find(array, ranges::end(array), ranges::less{}),
+      "");
 
-  Int ints[] = {{6}, {6}, {5}, {4}};
-  EXPECT_EQ(ints, ranges::adjacent_find(ints, ranges::equal_to{}, &Int::value));
-  EXPECT_EQ(ranges::end(ints),
-            ranges::adjacent_find(ints, ranges::less{}, &Int::value));
+  constexpr Int ints[] = {{6}, {6}, {5}, {4}};
+  static_assert(
+      ints == ranges::adjacent_find(ints, ranges::equal_to{}, &Int::value), "");
+  static_assert(ranges::end(ints) ==
+                    ranges::adjacent_find(ints, ranges::less{}, &Int::value),
+                "");
 }
 
 TEST(RangesTest, Count) {
@@ -899,27 +903,29 @@ TEST(RangesTest, PartialSortCopy) {
 }
 
 TEST(RangesTest, IsSorted) {
-  int input[] = {3, 1, 2, 0, 4};
-  EXPECT_TRUE(ranges::is_sorted(input + 1, input + 3));
-  EXPECT_FALSE(ranges::is_sorted(input + 1, input + 4));
-  EXPECT_TRUE(ranges::is_sorted(input, input + 2, ranges::greater()));
+  constexpr int input[] = {3, 1, 2, 0, 4};
+  static_assert(ranges::is_sorted(input + 1, input + 3), "");
+  static_assert(!ranges::is_sorted(input + 1, input + 4), "");
+  static_assert(ranges::is_sorted(input, input + 2, ranges::greater()), "");
 
-  Int ints[] = {0, 1, 2, 3, 4};
-  EXPECT_TRUE(ranges::is_sorted(ints, {}, &Int::value));
-  EXPECT_FALSE(ranges::is_sorted(ints, ranges::greater(), &Int::value));
+  constexpr Int ints[] = {0, 1, 2, 3, 4};
+  static_assert(ranges::is_sorted(ints, {}, &Int::value), "");
+  static_assert(!ranges::is_sorted(ints, ranges::greater(), &Int::value), "");
 }
 
 TEST(RangesTest, IsSortedUntil) {
-  int input[] = {3, 1, 2, 0, 4};
-  EXPECT_EQ(input + 3, ranges::is_sorted_until(input + 1, input + 3));
-  EXPECT_EQ(input + 3, ranges::is_sorted_until(input + 1, input + 4));
-  EXPECT_EQ(input + 2,
-            ranges::is_sorted_until(input, input + 2, ranges::greater()));
+  constexpr int input[] = {3, 1, 2, 0, 4};
+  static_assert(input + 3 == ranges::is_sorted_until(input + 1, input + 3), "");
+  static_assert(input + 3 == ranges::is_sorted_until(input + 1, input + 4), "");
+  static_assert(
+      input + 2 == ranges::is_sorted_until(input, input + 2, ranges::greater()),
+      "");
 
-  Int ints[] = {0, 1, 2, 3, 4};
-  EXPECT_EQ(ints + 5, ranges::is_sorted_until(ints, {}, &Int::value));
-  EXPECT_EQ(ints + 1,
-            ranges::is_sorted_until(ints, ranges::greater(), &Int::value));
+  constexpr Int ints[] = {0, 1, 2, 3, 4};
+  static_assert(ints + 5 == ranges::is_sorted_until(ints, {}, &Int::value), "");
+  static_assert(
+      ints + 1 == ranges::is_sorted_until(ints, ranges::greater(), &Int::value),
+      "");
 }
 
 TEST(RangesTest, NthElement) {
