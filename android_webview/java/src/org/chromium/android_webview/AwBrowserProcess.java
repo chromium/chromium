@@ -32,6 +32,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.base.PowerMonitor;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -154,6 +155,8 @@ public final class AwBrowserProcess {
                     BrowserStartupController.getInstance().startBrowserProcessesSync(
                             LibraryProcessType.PROCESS_WEBVIEW, !multiProcess);
                 }
+
+                PowerMonitor.create();
             });
         }
     }

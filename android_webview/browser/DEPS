@@ -27,6 +27,7 @@ include_rules = [
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/policy/content",
+  "+components/power_metrics",
   "+components/pref_registry",
   "+components/printing/browser",
   "+components/printing/common",
