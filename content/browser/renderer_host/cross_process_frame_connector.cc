@@ -487,12 +487,31 @@ bool CrossProcessFrameConnector::MaybeLogCrash(CrashVisibility visibility) {
   // Actually log the UMA.
   UMA_HISTOGRAM_ENUMERATION("Stability.ChildFrameCrash.Visibility", visibility);
 
+  if (child_frame_crash_shown_closure_for_testing_)
+    std::move(child_frame_crash_shown_closure_for_testing_).Run();
+
   return true;
 }
 
 void CrossProcessFrameConnector::MaybeLogShownCrash(
     ShownAfterCrashingReason reason) {
-  if (!MaybeLogCrash(CrashVisibility::kShownAfterCrashing))
+  // Check if an ancestor frame has a pending cross-document navigation.  If
+  // so, log the sad frame visibility differently, since the sad frame is
+  // expected to go away shortly.  Note that this also handles the common case
+  // of a hidden tab with a sad frame being auto-reloaded when it becomes
+  // shown.
+  bool has_pending_navigation = false;
+  for (auto* parent = current_child_frame_host()->GetParent(); parent;
+       parent = parent->GetParent()) {
+    if (parent->frame_tree_node()->HasPendingCrossDocumentNavigation()) {
+      has_pending_navigation = true;
+      break;
+    }
+  }
+  auto crash_visibility = has_pending_navigation
+                              ? CrashVisibility::kShownWhileAncestorIsLoading
+                              : CrashVisibility::kShownAfterCrashing;
+  if (!MaybeLogCrash(crash_visibility))
     return;
 
   // Identify cases where the sad frame was initially in a hidden tab, then the

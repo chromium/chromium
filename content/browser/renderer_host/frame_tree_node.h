@@ -291,6 +291,9 @@ class CONTENT_EXPORT FrameTreeNode {
   // Returns true if this node is in a loading state.
   bool IsLoading() const;
 
+  // Returns true if this node has a cross-document navigation in progress.
+  bool HasPendingCrossDocumentNavigation() const;
+
   NavigationRequest* navigation_request() { return navigation_request_.get(); }
 
   // Transfers the ownership of the NavigationRequest to |render_frame_host|.

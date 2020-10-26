@@ -13761,6 +13761,18 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
     shown afterwards (e.g. until eventually being discarded when the whole tab
     is navigated away).
   </int>
+  <int value="3" label="ShownWhileAncestorIsLoading">
+    The renderer crashed while the subframe was hidden, and the frame became
+    visible while an ancestor frame had a pending load. This form of sad frame
+    is not as bad for user experience as ShownAfterCrashing, since the sad frame
+    is expected to disappear shortly when the ancestor frame finishes
+    navigation.
+
+    One common case where this is expected to happen is when a crashed subframe
+    appears on a hidden tab, which will mark the tab for reload, and then the
+    user switches to this tab. The tab will start reloading, but the crashed
+    subframe may become visible momentarily before the reload completes.
+  </int>
 </enum>
 
 <enum name="CreatePersistentHistogramResult">

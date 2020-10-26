@@ -681,8 +681,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void set_nav_entry_id(int nav_entry_id) { nav_entry_id_ = nav_entry_id; }
 
   // Return true if this contains at least one NavigationRequest waiting to
-  // commit in this RenderFrameHost.
+  // commit in this RenderFrameHost. This includes both same-document and
+  // cross-document NavigationRequests.
   bool HasPendingCommitNavigation() const;
+
+  // Return true if this contains at least one NavigationRequest waiting to
+  // commit in this RenderFrameHost, excluding same-document navigations.
+  bool HasPendingCommitForCrossDocumentNavigation() const;
 
   // Return true if Unload() was called on the frame or one of its ancestors.
   // If true, this corresponds either to unload handlers running for this

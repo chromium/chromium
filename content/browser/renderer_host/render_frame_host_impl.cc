@@ -3009,8 +3009,12 @@ GlobalFrameRoutingId RenderFrameHostImpl::GetGlobalFrameRoutingId() {
 }
 
 bool RenderFrameHostImpl::HasPendingCommitNavigation() const {
-  return navigation_request_ || same_document_navigation_request_ ||
-         !navigation_requests_.empty();
+  return HasPendingCommitForCrossDocumentNavigation() ||
+         same_document_navigation_request_;
+}
+
+bool RenderFrameHostImpl::HasPendingCommitForCrossDocumentNavigation() const {
+  return navigation_request_ || !navigation_requests_.empty();
 }
 
 void RenderFrameHostImpl::ResetNavigationRequests() {

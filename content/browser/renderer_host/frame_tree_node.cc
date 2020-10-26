@@ -424,6 +424,23 @@ bool FrameTreeNode::IsLoading() const {
   return current_frame_host->is_loading();
 }
 
+bool FrameTreeNode::HasPendingCrossDocumentNavigation() const {
+  // Having a |navigation_request_| on FrameTreeNode implies that there's an
+  // ongoing navigation that hasn't reached the ReadyToCommit state.  If the
+  // navigation is between ReadyToCommit and DidCommitNavigation, the
+  // NavigationRequest will be held by RenderFrameHost, which is checked below.
+  if (navigation_request_ && !navigation_request_->IsSameDocument())
+    return true;
+
+  // Having a speculative RenderFrameHost should imply a cross-document
+  // navigation.
+  if (render_manager_.speculative_frame_host())
+    return true;
+
+  return render_manager_.current_frame_host()
+      ->HasPendingCommitForCrossDocumentNavigation();
+}
+
 bool FrameTreeNode::CommitFramePolicy(
     const blink::FramePolicy& new_frame_policy) {
   bool did_change_flags = new_frame_policy.sandbox_flags !=

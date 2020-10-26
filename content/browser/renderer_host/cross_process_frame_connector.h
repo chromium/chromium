@@ -150,7 +150,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector
     kCrashedWhileVisible = 0,
     kShownAfterCrashing = 1,
     kNeverVisibleAfterCrash = 2,
-    kMaxValue = kNeverVisibleAfterCrash
+    kShownWhileAncestorIsLoading = 3,
+    kMaxValue = kShownWhileAncestorIsLoading
   };
 
   enum class ShownAfterCrashingReason {
@@ -172,6 +173,11 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   void DelegateWasShown();
 
   blink::mojom::FrameVisibility visibility() const { return visibility_; }
+
+  void set_child_frame_crash_shown_closure_for_testing(
+      base::OnceClosure closure) {
+    child_frame_crash_shown_closure_for_testing_ = std::move(closure);
+  }
 
  private:
   friend class MockCrossProcessFrameConnector;
@@ -234,6 +240,10 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   // The last zoom level received from parent renderer, which is used to check
   // if a new surface is created in case of zoom level change.
   double last_received_zoom_level_ = 0.0;
+
+  // Closure that will be run whenever a sad frame is shown and its visibility
+  // metrics have been logged. Used for testing only.
+  base::OnceClosure child_frame_crash_shown_closure_for_testing_;
 
   DISALLOW_COPY_AND_ASSIGN(CrossProcessFrameConnector);
 };

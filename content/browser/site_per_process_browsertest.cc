@@ -199,6 +199,8 @@ namespace content {
 
 namespace {
 
+using CrashVisibility = CrossProcessFrameConnector::CrashVisibility;
+
 // Helper function to send a postMessage and wait for a reply message.  The
 // |post_message_script| is executed on the |sender_ftn| frame, and the sender
 // frame is expected to post |reply_status| from the DOMAutomationController
@@ -631,6 +633,27 @@ void GenerateTapDownGesture(RenderWidgetHost* rwh) {
   gesture_tap_down.is_source_touch_event_set_non_blocking = true;
   rwh->ForwardGestureEvent(gesture_tap_down);
 }
+
+// Helper class to wait for the next sad frame to be shown in a specific
+// FrameTreeNode.  This can be used to wait for sad frame visibility metrics to
+// be logged.
+class SadFrameShownObserver {
+ public:
+  explicit SadFrameShownObserver(FrameTreeNode* ftn) {
+    RenderFrameProxyHost* proxy_to_parent =
+        ftn->render_manager()->GetProxyToParent();
+    proxy_to_parent->cross_process_frame_connector()
+        ->set_child_frame_crash_shown_closure_for_testing(
+            run_loop_.QuitClosure());
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+
+  DISALLOW_COPY_AND_ASSIGN(SadFrameShownObserver);
+};
 
 }  // namespace
 
@@ -13656,9 +13679,23 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   histograms.ExpectTotalCount("Stability.ChildFrameCrash.Visibility", 0);
 }
 
+// Disable the feature to mark hidden tabs with sad frames for reload, for use
+// in tests where this feature interferes with the behavior being tested.
+class SitePerProcessBrowserTestWithoutSadFrameTabReload
+    : public SitePerProcessBrowserTest {
+ public:
+  SitePerProcessBrowserTestWithoutSadFrameTabReload() {
+    feature_list_.InitAndDisableFeature(
+        features::kReloadHiddenTabsWithCrashedSubframes);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test is flaky (crbug.com/1097060)
 IN_PROC_BROWSER_TEST_P(
-    SitePerProcessBrowserTest,
+    SitePerProcessBrowserTestWithoutSadFrameTabReload,
     DISABLED_ChildFrameCrashMetrics_KilledWhileHiddenThenShown) {
   // Set-up a frame tree that helps verify what the metrics tracks:
   // 1) frames (12 frames are affected if B process gets killed) or
@@ -13804,20 +13841,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       1);
 }
 
-class SitePerProcessBrowserTestWithoutSadFrameTabReload
-    : public SitePerProcessBrowserTest {
- public:
-  SitePerProcessBrowserTestWithoutSadFrameTabReload() {
-    // Disable the feature to mark hidden tabs with sad frames for reload, since
-    // it makes the scenario for which this test collects metrics impossible.
-    feature_list_.InitAndDisableFeature(
-        features::kReloadHiddenTabsWithCrashedSubframes);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSadFrameTabReload,
                        ChildFrameCrashMetrics_ScrolledIntoViewAfterTabIsShown) {
   // Start on a page that has a single iframe, which is positioned out of
@@ -13958,10 +13981,119 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   EXPECT_TRUE(root->child_at(0)->current_frame_host()->IsRenderFrameLive());
 }
 
+// Verify that when a tab is reloaded because it was previously marked for
+// reload due to having a sad frame, we log the sad frame as shown during a tab
+// reload, rather than being shown to the user directly, since the sad frame is
+// expected to go away shortly. See https://crbug.com/1132938.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
+                       CrashedSubframeVisibilityMetricsDuringTabReload) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+
+  // Hide the WebContents (UpdateWebContentsVisibility is called twice to avoid
+  // hitting the |!did_first_set_visible_| case).
+  RenderWidgetHostVisibilityObserver hide_observer(
+      root->child_at(0)->current_frame_host()->GetRenderWidgetHost(),
+      false /* became_visible */);
+  web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  web_contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  EXPECT_EQ(Visibility::HIDDEN, web_contents()->GetVisibility());
+  hide_observer.WaitUntilSatisfied();
+
+  // Kill the b.com subframe's process.  This should mark the hidden
+  // WebContents for reload.
+  CrashProcess(root->child_at(0));
+  auto& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_TRUE(controller.NeedsReload());
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  // Show the WebContents. This should trigger a reload of the main frame.  Sad
+  // frame visibility metrics should indicate that the sad frame is shown while
+  // the tab is being reloaded.  Because the tab reload will wipe out the sad
+  // frame, this isn't as bad as kShownAfterCrashing.
+  {
+    base::HistogramTester histograms;
+    SadFrameShownObserver sad_frame_observer(root->child_at(0));
+    TestNavigationManager manager(web_contents(), main_url);
+    web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+    EXPECT_TRUE(manager.WaitForRequestStart());
+    sad_frame_observer.Wait();
+
+    histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
+                                  CrashVisibility::kShownWhileAncestorIsLoading,
+                                  1);
+
+    // Ensure no new metrics are logged after the reload completes.
+    manager.WaitForNavigationFinished();
+    EXPECT_TRUE(manager.was_successful());
+    EXPECT_FALSE(controller.NeedsReload());
+    EXPECT_EQ(1, controller.GetEntryCount());
+    histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
+                                  CrashVisibility::kShownWhileAncestorIsLoading,
+                                  1);
+  }
+}
+
+// Verify that a sad frame shown when its parent frame is loading is logged
+// with appropriate metrics, namely as kShownWhileAncestorIsLoading rather than
+// kShownAfterCrashing. See https://crbug.com/1132938.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
+                       CrashedSubframeVisibilityMetricsDuringParentLoad) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child = root->child_at(0);
+  FrameTreeNode* grandchild = child->child_at(0);
+
+  // Hide the grandchild frame.
+  RenderWidgetHostVisibilityObserver hide_observer(
+      grandchild->current_frame_host()->GetRenderWidgetHost(),
+      false /* became_visible */);
+  EXPECT_TRUE(ExecuteScript(
+      child, "document.querySelector('iframe').style.display = 'none'"));
+  hide_observer.WaitUntilSatisfied();
+
+  // Kill the c.com grandchild process.
+  CrashProcess(grandchild);
+
+  // Start a navigation in the b.com frame, but don't commit.
+  GURL url_d(embedded_test_server()->GetURL("d.com", "/title1.html"));
+  TestNavigationManager manager(web_contents(), url_d);
+  EXPECT_TRUE(ExecuteScript(child, JsReplace("location.href = $1", url_d)));
+  EXPECT_TRUE(manager.WaitForRequestStart());
+
+  // Make the grandchild iframe with the sad frame visible again.  This should
+  // get logged as kShownWhileAncestorIsLoading, because its parent is
+  // currently loading.
+  {
+    base::HistogramTester histograms;
+    SadFrameShownObserver sad_frame_observer(grandchild);
+    EXPECT_TRUE(ExecuteScript(
+        child, "document.querySelector('iframe').style.display = 'block'"));
+    sad_frame_observer.Wait();
+
+    histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
+                                  CrashVisibility::kShownWhileAncestorIsLoading,
+                                  1);
+
+    // Ensure no new metrics are logged after the navigation completes.
+    manager.WaitForNavigationFinished();
+    EXPECT_TRUE(manager.was_successful());
+    histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
+                                  CrashVisibility::kShownWhileAncestorIsLoading,
+                                  1);
+  }
+}
+
 // Verify the feature where hidden tabs with crashed subframes are marked for
 // reload. This avoids showing crashed subframes if a hidden tab is eventually
 // shown. Similar to the test above, except that the crashed subframe is
 // scrolled out of view.
+// Disabled for being flaky: https://crbug.com/1135072.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
                        DISABLED_ReloadHiddenTabWithCrashedSubframeOutOfView) {
   // Set WebContents to VISIBLE to avoid hitting the |!did_first_set_visible_|
