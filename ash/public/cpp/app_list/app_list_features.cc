@@ -38,7 +38,7 @@ const base::Feature kEnableSuggestedFiles{"EnableSuggestedFiles",
 // change it until fully launched. It is used to redirect Launcher search to
 // Assistant search.
 const base::Feature kEnableAssistantSearch{"EnableEmbeddedAssistantUI",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableAppGridGhost{"EnableAppGridGhost",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
@@ -60,10 +60,7 @@ const base::Feature kEnableOmniboxRichEntities{
     "EnableOmniboxRichEntities", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAnswerCardEnabled() {
-  // Not using local static variable to allow tests to change this value.
-  // Do not show answer card if Assistant search is enabled.
-  return base::FeatureList::IsEnabled(kEnableAnswerCard) &&
-         !IsAssistantSearchEnabled();
+  return base::FeatureList::IsEnabled(kEnableAnswerCard);
 }
 
 bool IsAppDataSearchEnabled() {
