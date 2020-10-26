@@ -99,6 +99,7 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @Features.DisableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
     public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
         mAccountManagerTestRule.addAccount(mAccountManagerTestRule.createProfileDataFromName(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL));

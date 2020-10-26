@@ -165,8 +165,10 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
-    @DisableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID})
-    public void testRenderDifferentSignedInStates() throws IOException {
+    @DisableFeatures(
+            {ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+    public void
+    testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
         View view = mSettingsActivityTestRule.getActivity()
                             .findViewById(android.R.id.content)
@@ -184,6 +186,7 @@ public class MainSettingsFragmentTest {
     @Feature({"RenderTest"})
     @EnableFeatures(
             {ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
+    @DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void
     testRenderDifferentSignedInStatesWithSafetyCheck() throws IOException {
         launchSettingsActivity();
@@ -207,6 +210,7 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.PASSWORD_CHECK, ChromeFeatureList.SAFETY_CHECK_ANDROID})
+    @DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testStartup() {
         launchSettingsActivity();
 
@@ -367,6 +371,7 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
     public void testAccountSignIn() {
         launchSettingsActivity();
 
