@@ -490,10 +490,6 @@ class TabStrip : public views::View,
   // button and the frame grab area.
   int GetRightSideReservedWidth() const;
 
-  // Returns the X coordinate the new tab button should be placed at.  Requires
-  // |tabs_| to have correct ideal bounds.
-  int GetNewTabButtonIdealX() const;
-
   // Returns the last tab in the strip that's actually visible.  This will be
   // the actual last tab unless the strip is in the overflow node_data.
   const Tab* GetLastVisibleTab() const;
