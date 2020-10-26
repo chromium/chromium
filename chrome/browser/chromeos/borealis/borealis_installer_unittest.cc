@@ -196,6 +196,33 @@ TEST_F(BorealisInstallerTest, InstallationInProgess) {
       BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
 }
 
+TEST_F(BorealisInstallerTest, CancelledThenSuccessfulInstallation) {
+  feature_list_.InitAndEnableFeature(features::kBorealis);
+  fake_dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+
+  EXPECT_CALL(*observer_, OnCancelInitiated());
+
+  installer_->Cancel();
+  task_environment_.RunUntilIdle();
+
+  UpdateCurrentDlcs();
+  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 0);
+  EXPECT_FALSE(
+      BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
+
+  ExpectObserverEventsUntil(InstallingState::kInstallingDlc);
+  EXPECT_CALL(*observer_, OnInstallationEnded(InstallationResult::kCompleted));
+
+  installer_->Start();
+  task_environment_.RunUntilIdle();
+
+  UpdateCurrentDlcs();
+  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 1);
+  EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
+  EXPECT_TRUE(
+      BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
+}
+
 // Note that we don't check if the DLC has/hasn't been installed, since the
 // mocked DLC service will always suceeed, so we only care about how the error
 // code returned by the service is handled by the installer.

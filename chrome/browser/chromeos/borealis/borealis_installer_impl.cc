@@ -46,7 +46,9 @@ void BorealisInstallerImpl::Start() {
 }
 
 void BorealisInstallerImpl::Cancel() {
-  state_ = State::kCancelling;
+  if (state_ != State::kIdle) {
+    state_ = State::kCancelling;
+  }
   for (auto& observer : observers_) {
     observer.OnCancelInitiated();
   }

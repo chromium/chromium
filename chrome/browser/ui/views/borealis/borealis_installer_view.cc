@@ -166,6 +166,9 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
 
 BorealisInstallerView::~BorealisInstallerView() {
   borealis_installer_->RemoveObserver(this);
+  if (state_ == State::kConfirmInstall || state_ == State::kInstalling) {
+    borealis_installer_->Cancel();
+  }
   g_borealis_installer_view = nullptr;
 }
 
@@ -203,10 +206,6 @@ bool BorealisInstallerView::Accept() {
 }
 
 bool BorealisInstallerView::Cancel() {
-  if (state_ == State::kConfirmInstall || state_ == State::kInstalling) {
-    borealis_installer_->Cancel();
-  }
-
   return true;
 }
 
