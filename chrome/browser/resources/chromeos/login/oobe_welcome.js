@@ -82,6 +82,8 @@ Polymer({
     'onInputMethodIdSetFromBackend',
     'refreshA11yInfo',
     'showDemoModeConfirmationDialog',
+    'showEditRequisitionDialog',
+    'showRemoraRequisitionDialog',
   ],
 
   /**
@@ -418,6 +420,49 @@ Polymer({
 
   onSetupDemoModeGesture() {
     this.userActed('setupDemoModeGesture');
+  },
+
+  /**
+   * Shows the device requisition prompt.
+   */
+  showEditRequisitionDialog(requisition) {
+    if (!this.deviceRequisitionDialog_) {
+      this.deviceRequisitionDialog_ =
+          new cr.ui.dialogs.PromptDialog(document.body);
+      this.deviceRequisitionDialog_.setOkLabel(
+          loadTimeData.getString('deviceRequisitionPromptOk'));
+      this.deviceRequisitionDialog_.setCancelLabel(
+          loadTimeData.getString('deviceRequisitionPromptCancel'));
+    }
+    this.deviceRequisitionDialog_.show(
+        loadTimeData.getString('deviceRequisitionPromptText'), requisition,
+        function(value) {
+          chrome.send(
+              'WelcomeScreen.setDeviceRequisition',
+              [value == '' ? 'none' : value]);
+        });
+  },
+
+  /**
+   * Shows the special remora/shark device requisition prompt.
+   */
+  showRemoraRequisitionDialog() {
+    if (!this.deviceRequisitionRemoraDialog_) {
+      this.deviceRequisitionRemoraDialog_ =
+          new cr.ui.dialogs.ConfirmDialog(document.body);
+      this.deviceRequisitionRemoraDialog_.setOkLabel(
+          loadTimeData.getString('deviceRequisitionRemoraPromptOk'));
+      this.deviceRequisitionRemoraDialog_.setCancelLabel(
+          loadTimeData.getString('deviceRequisitionRemoraPromptCancel'));
+    }
+    this.deviceRequisitionRemoraDialog_.show(
+        loadTimeData.getString('deviceRequisitionRemoraPromptText'),
+        function() {  // onShow
+          chrome.send('WelcomeScreen.setDeviceRequisition', ['remora']);
+        },
+        function() {  // onCancel
+          chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
+        });
   },
 
   onKeyboardsChanged_() {

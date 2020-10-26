@@ -12,7 +12,6 @@
  *   resetAllowed: (boolean|undefined),
  *   startEnrollmentAllowed: (boolean|undefined),
  *   toggleKioskAllowed: (boolean|undefined),
- *   changeRequisitonProhibited: (boolean|undefined),
  * }}
  */
 var DisplayManagerScreenAttributes = {};
@@ -34,12 +33,6 @@ DisplayManagerScreenAttributes.startEnrollmentAllowed;
  * @type {boolean|undefined}
  */
 DisplayManagerScreenAttributes.toggleKioskAllowed;
-
-/**
- * True if "enroll hangouts meet" accelerator is prohibited.
- * @type {boolean|undefined}
- */
-DisplayManagerScreenAttributes.changeRequisitonProhibited;
 
 /**
  * Possible types of UI.

@@ -177,7 +177,6 @@ Polymer({
 
   ready() {
     this.initializeLoginScreen('OAuthEnrollmentScreen', {
-      changeRequisitonProhibited: true,
       resetAllowed: true,
     });
 

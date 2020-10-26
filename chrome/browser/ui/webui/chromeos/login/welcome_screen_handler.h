@@ -48,6 +48,8 @@ class WelcomeView {
 
   // Shows dialog to confirm starting Demo mode.
   virtual void ShowDemoModeConfirmationDialog() = 0;
+  virtual void ShowEditRequisitionDialog(const std::string& requisition) = 0;
+  virtual void ShowRemoraRequisitionDialog() = 0;
 };
 
 // WebUI implementation of WelcomeScreenView. It is used to interact with
@@ -68,6 +70,8 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void ReloadLocalizedContent() override;
   void SetInputMethodId(const std::string& input_method_id) override;
   void ShowDemoModeConfirmationDialog() override;
+  void ShowEditRequisitionDialog(const std::string& requisition) override;
+  void ShowRemoraRequisitionDialog() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
@@ -88,6 +92,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void HandleEnableSpokenFeedback(bool /* enabled */);
   void HandleEnableSelectToSpeak(bool /* enabled */);
   void HandleEnableDockedMagnifier(bool /* enabled */);
+  void HandleSetDeviceRequisition(const std::string& requisition);
 
   // Notification of a change in the accessibility settings.
   void OnAccessibilityStatusChanged(

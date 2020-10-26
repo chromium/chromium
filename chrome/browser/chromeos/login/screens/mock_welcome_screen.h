@@ -45,6 +45,8 @@ class MockWelcomeView : public WelcomeView {
   MOCK_METHOD(void, SetInputMethodId, (const std::string& input_method_id));
   MOCK_METHOD(void, SetTimezoneId, (const std::string& timezone_id));
   MOCK_METHOD(void, ShowDemoModeConfirmationDialog, ());
+  MOCK_METHOD(void, ShowEditRequisitionDialog, (const std::string&));
+  MOCK_METHOD(void, ShowRemoraRequisitionDialog, ());
 
  private:
   WelcomeScreen* screen_ = nullptr;

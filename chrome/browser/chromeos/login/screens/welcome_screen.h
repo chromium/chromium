@@ -97,6 +97,8 @@ class WelcomeScreen : public BaseScreen,
   void SetTimezone(const std::string& timezone_id);
   std::string GetTimezone() const;
 
+  void SetDeviceRequisition(const std::string& requisition);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

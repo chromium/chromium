@@ -113,6 +113,15 @@ void WelcomeScreenHandler::ShowDemoModeConfirmationDialog() {
   CallJS("login.WelcomeScreen.showDemoModeConfirmationDialog");
 }
 
+void WelcomeScreenHandler::ShowEditRequisitionDialog(
+    const std::string& requisition) {
+  CallJS("login.WelcomeScreen.showEditRequisitionDialog", requisition);
+}
+
+void WelcomeScreenHandler::ShowRemoraRequisitionDialog() {
+  CallJS("login.WelcomeScreen.showRemoraRequisitionDialog");
+}
+
 // WelcomeScreenHandler, BaseScreenHandler implementation: --------------------
 
 void WelcomeScreenHandler::DeclareLocalizedValues(
@@ -184,6 +193,8 @@ void WelcomeScreenHandler::DeclareJSCallbacks() {
               &WelcomeScreenHandler::HandleSetInputMethodId);
   AddCallback("WelcomeScreen.setTimezoneId",
               &WelcomeScreenHandler::HandleSetTimezoneId);
+  AddCallback("WelcomeScreen.setDeviceRequisition",
+              &WelcomeScreenHandler::HandleSetDeviceRequisition);
 }
 
 void WelcomeScreenHandler::GetAdditionalParameters(
@@ -268,6 +279,12 @@ void WelcomeScreenHandler::HandleSetInputMethodId(
 void WelcomeScreenHandler::HandleSetTimezoneId(const std::string& timezone_id) {
   if (screen_)
     screen_->SetTimezone(timezone_id);
+}
+
+void WelcomeScreenHandler::HandleSetDeviceRequisition(
+    const std::string& requisition) {
+  if (screen_)
+    screen_->SetDeviceRequisition(requisition);
 }
 
 void WelcomeScreenHandler::OnAccessibilityStatusChanged(

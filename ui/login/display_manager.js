@@ -50,9 +50,6 @@
 /** @const */ var ACCELERATOR_KIOSK_ENABLE = 'kiosk_enable';
 /** @const */ var ACCELERATOR_VERSION = 'version';
 /** @const */ var ACCELERATOR_RESET = 'reset';
-/** @const */ var ACCELERATOR_DEVICE_REQUISITION = 'device_requisition';
-/** @const */ var ACCELERATOR_DEVICE_REQUISITION_REMORA =
-    'device_requisition_remora';
 /** @const */ var ACCELERATOR_APP_LAUNCH_BAILOUT = 'app_launch_bailout';
 /** @const */ var ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG =
     'app_launch_network_config';
@@ -402,13 +399,6 @@ cr.define('cr.ui.login', function() {
             RESET_AVAILABLE_SCREEN_GROUP.indexOf(currentStepId) != -1) {
           chrome.send('toggleResetScreen');
         }
-      } else if (name == ACCELERATOR_DEVICE_REQUISITION) {
-        if (this.isOobeUI())
-          this.showDeviceRequisitionPrompt_();
-      } else if (name == ACCELERATOR_DEVICE_REQUISITION_REMORA) {
-        if (this.isOobeUI() && !attributes.changeRequisitonProhibited)
-          this.showDeviceRequisitionRemoraPrompt_(
-              'deviceRequisitionRemoraPromptText', 'remora');
       } else if (name == ACCELERATOR_APP_LAUNCH_BAILOUT) {
         if (currentStepId == SCREEN_APP_LAUNCH_SPLASH)
           chrome.send('cancelAppLaunch');
@@ -767,34 +757,6 @@ cr.define('cr.ui.login', function() {
     },
 
     /**
-     * Shows the device requisition prompt.
-     */
-    showDeviceRequisitionPrompt_: function() {
-      if (!this.deviceRequisitionDialog_) {
-        this.deviceRequisitionDialog_ =
-            new cr.ui.dialogs.PromptDialog(document.body);
-        this.deviceRequisitionDialog_.setOkLabel(
-            loadTimeData.getString('deviceRequisitionPromptOk'));
-        this.deviceRequisitionDialog_.setCancelLabel(
-            loadTimeData.getString('deviceRequisitionPromptCancel'));
-      }
-      this.deviceRequisitionDialog_.show(
-          loadTimeData.getString('deviceRequisitionPromptText'),
-          this.deviceRequisition_,
-          this.onConfirmDeviceRequisitionPrompt_.bind(this));
-    },
-
-    /**
-     * Confirmation handle for the device requisition prompt.
-     * @param {string} value The value entered by the user.
-     * @private
-     */
-    onConfirmDeviceRequisitionPrompt_: function(value) {
-      this.deviceRequisition_ = value;
-      chrome.send('setDeviceRequisition', [value == '' ? 'none' : value]);
-    },
-
-    /**
      * Called when window size changed. Notifies current screen about
      * change.
      * @private
@@ -805,38 +767,6 @@ cr.define('cr.ui.login', function() {
         if (screen.onWindowResize)
           screen.onWindowResize();
       }
-    },
-
-    /*
-     * Updates the device requisition string shown in the requisition
-     * prompt.
-     * @param {string} requisition The device requisition.
-     */
-    updateDeviceRequisition: function(requisition) {
-      this.deviceRequisition_ = requisition;
-    },
-
-    /**
-     * Shows the special remora/shark device requisition prompt.
-     * @private
-     */
-    showDeviceRequisitionRemoraPrompt_: function(promptText, requisition) {
-      if (!this.deviceRequisitionRemoraDialog_) {
-        this.deviceRequisitionRemoraDialog_ =
-            new cr.ui.dialogs.ConfirmDialog(document.body);
-        this.deviceRequisitionRemoraDialog_.setOkLabel(
-            loadTimeData.getString('deviceRequisitionRemoraPromptOk'));
-        this.deviceRequisitionRemoraDialog_.setCancelLabel(
-            loadTimeData.getString('deviceRequisitionRemoraPromptCancel'));
-      }
-      this.deviceRequisitionRemoraDialog_.show(
-          loadTimeData.getString(promptText),
-          function() {  // onShow
-            chrome.send('setDeviceRequisition', [requisition]);
-          },
-          function() {  // onCancel
-            chrome.send('setDeviceRequisition', ['none']);
-          });
     },
 
     /**

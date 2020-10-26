@@ -154,7 +154,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleHideOobeDialog();
   void HandleInitialized();
   void HandleUpdateCurrentScreen(const std::string& screen);
-  void HandleSetDeviceRequisition(const std::string& requisition);
   void HandleSkipToLoginForTesting();
   void HandleSkipToUpdateForTesting();
   void HandleLaunchHelpApp(double help_topic_id);
@@ -183,9 +182,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Updates label with specified id with specified text.
   void UpdateLabel(const std::string& id, const std::string& text);
-
-  // Updates the device requisition string on the UI side.
-  void UpdateDeviceRequisition();
 
   // Updates client area size based on the primary screen size.
   void UpdateClientAreaSize();
