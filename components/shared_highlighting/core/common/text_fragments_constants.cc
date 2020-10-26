@@ -10,4 +10,9 @@ const char kFragmentsUrlDelimiter[] = ":~:";
 
 const char kFragmentParameterName[] = "text=";
 
+const char kFragmentPrefixKey[] = "prefix";
+const char kFragmentTextStartKey[] = "textStart";
+const char kFragmentTextEndKey[] = "textEnd";
+const char kFragmentSuffixKey[] = "suffix";
+
 }  // namespace shared_highlighting

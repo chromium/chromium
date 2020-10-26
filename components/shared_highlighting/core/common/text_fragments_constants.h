@@ -13,6 +13,13 @@ extern const char kFragmentsUrlDelimiter[];
 // Parameter name for a single text fragment in a URL.
 extern const char kFragmentParameterName[];
 
+// These values correspond to the keys used to store text fragment's values
+// in a dictionary Value.
+extern const char kFragmentPrefixKey[];
+extern const char kFragmentTextStartKey[];
+extern const char kFragmentTextEndKey[];
+extern const char kFragmentSuffixKey[];
+
 }  // namespace shared_highlighting
 
 #endif  // COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_TEXT_FRAGMENTS_CONSTANTS_H_

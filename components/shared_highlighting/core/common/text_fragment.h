@@ -7,11 +7,16 @@
 
 #include <string>
 
+#include "base/optional.h"
+#include "base/values.h"
+
 namespace shared_highlighting {
 
 // Class representing a text fragment.
 class TextFragment {
  public:
+  // Constructors for TextFragment instances. Special characters in the string
+  // parameters must not be escaped.
   explicit TextFragment(const std::string& text_start);
   TextFragment(const std::string& text_start,
                const std::string& text_end,
@@ -20,17 +25,29 @@ class TextFragment {
   TextFragment(const TextFragment& other);
   ~TextFragment();
 
+  // Returns a TextFragment instance created from a |fragment_string| whose
+  // special characters have been escaped. The given string is expected to have
+  // the traditional text fragment format:
+  // [prefix-,]textStart[,textEnd][,-suffix]
+  // Returns |base::nullopt| if parsing failed.
+  static base::Optional<TextFragment> FromEscapedString(
+      std::string escaped_string);
+
   const std::string text_start() const { return text_start_; }
   const std::string text_end() const { return text_end_; }
   const std::string prefix() const { return prefix_; }
   const std::string suffix() const { return suffix_; }
 
-  // Converts the current fragment to its URL parameter format:
+  // Converts the current fragment to its escaped URL parameter format:
   // text=[prefix-,]textStart[,textEnd][,-suffix]
   // Returns an empty string if |text_start| does not have a value.
-  std::string ToString();
+  std::string ToEscapedString();
+
+  // Converts the current fragment to a dictionary Value.
+  base::Value ToValue();
 
  private:
+  // Values of a fragment, stored unescaped.
   std::string text_start_;
   std::string text_end_;
   std::string prefix_;

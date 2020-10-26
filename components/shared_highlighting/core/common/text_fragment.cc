@@ -6,13 +6,15 @@
 
 #include <sstream>
 
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/shared_highlighting/core/common/text_fragments_constants.h"
 #include "net/base/escape.h"
 
 namespace {
 
-std::string Escape(std::string str) {
+// Escapes any special character such that the fragment can be added to a URL.
+std::string Escape(const std::string& str) {
   std::string escaped = net::EscapeQueryParamValue(str, /*usePlus=*/false);
 
   // Hyphens must also be escaped since they are used to indicate prefix/suffix
@@ -20,6 +22,12 @@ std::string Escape(std::string str) {
   std::string final_string;
   base::ReplaceChars(escaped, "-", "%2D", &final_string);
   return final_string;
+}
+
+// Unescapes any special character from a fragment which may be coming from a
+// URL.
+std::string Unescape(const std::string& str) {
+  return base::UnescapeBinaryURLComponent(str);
 }
 
 }  // namespace
@@ -46,7 +54,56 @@ TextFragment::TextFragment(const TextFragment& other)
 
 TextFragment::~TextFragment() = default;
 
-std::string TextFragment::ToString() {
+base::Optional<TextFragment> TextFragment::FromEscapedString(
+    std::string escaped_string) {
+  // Text fragments have the format: [prefix-,]textStart[,textEnd][,-suffix]
+  // That is, textStart is the only required param, all params are separated by
+  // commas, and prefix/suffix have a trailing/leading hyphen.
+  // Any commas, ampersands, or hyphens inside of these values must be
+  // URL-encoded.
+
+  // First, try to extract the optional prefix and suffix params. These have a
+  // '-' as their last or first character, respectively, which should not be
+  // carried over to the final dict.
+  std::string prefix = "";
+  size_t prefix_delimiter_pos = escaped_string.find("-,");
+  if (prefix_delimiter_pos != std::string::npos) {
+    prefix = escaped_string.substr(0, prefix_delimiter_pos);
+    escaped_string.erase(0, prefix_delimiter_pos + 2);
+  }
+
+  std::string suffix = "";
+  size_t suffix_delimiter_pos = escaped_string.rfind(",-");
+  if (suffix_delimiter_pos != std::string::npos) {
+    suffix = escaped_string.substr(suffix_delimiter_pos + 2);
+    escaped_string.erase(suffix_delimiter_pos);
+  }
+
+  std::vector<std::string> pieces = base::SplitString(
+      escaped_string, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (pieces.size() > 2 || pieces.empty() || pieces[0].empty()) {
+    // Malformed if no piece is left for the textStart
+    return base::nullopt;
+  }
+
+  std::string text_start = pieces[0];
+  std::string text_end = pieces.size() == 2 ? pieces[1] : "";
+
+  if (prefix.find_first_of("&-,") != std::string::npos ||
+      text_start.find_first_of("&-,") != std::string::npos ||
+      text_end.find_first_of("&-,") != std::string::npos ||
+      suffix.find_first_of("&-,") != std::string::npos) {
+    // Malformed if any of the pieces contain characters that are supposed to be
+    // URL-encoded.
+    return base::nullopt;
+  }
+
+  return TextFragment(Unescape(text_start), Unescape(text_end),
+                      Unescape(prefix), Unescape(suffix));
+}
+
+std::string TextFragment::ToEscapedString() {
   if (text_start_.empty()) {
     return std::string();
   }
@@ -68,6 +125,23 @@ std::string TextFragment::ToString() {
   }
 
   return ss.str();
+}
+
+base::Value TextFragment::ToValue() {
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  if (prefix_.size())
+    dict.SetKey(kFragmentPrefixKey, base::Value(prefix_));
+
+  dict.SetKey(kFragmentTextStartKey, base::Value(text_start_));
+
+  if (text_end_.size())
+    dict.SetKey(kFragmentTextEndKey, base::Value(text_end_));
+
+  if (suffix_.size())
+    dict.SetKey(kFragmentSuffixKey, base::Value(suffix_));
+
+  return dict;
 }
 
 }  // namespace shared_highlighting
