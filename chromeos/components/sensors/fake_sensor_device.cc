@@ -4,11 +4,11 @@
 
 #include "chromeos/components/sensors/fake_sensor_device.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace chromeos {
@@ -21,34 +21,54 @@ FakeSensorDevice::ChannelData& FakeSensorDevice::ChannelData::operator=(
     const FakeSensorDevice::ChannelData&) = default;
 FakeSensorDevice::ChannelData::~ChannelData() = default;
 
-FakeSensorDevice::FakeSensorDevice() {
+FakeSensorDevice::FakeSensorDevice(const std::vector<ChannelData>& channels)
+    : channels_(channels) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& client : clients_)
+    client.second.channels_enabled.assign(channels_.size(), false);
 }
 
 FakeSensorDevice::~FakeSensorDevice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool FakeSensorDevice::is_bound() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return receiver_.is_bound();
-}
-
-void FakeSensorDevice::Bind(
+mojo::ReceiverId FakeSensorDevice::AddReceiver(
     mojo::PendingReceiver<mojom::SensorDevice> pending_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_bound());
 
-  receiver_.Bind(std::move(pending_receiver));
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &FakeSensorDevice::OnDeviceDisconnect, base::Unretained(this)));
+  auto id = receiver_set_.Add(this, std::move(pending_receiver));
+  DCHECK(clients_.find(id) == clients_.end());
+  clients_[id].channels_enabled.assign(channels_.size(), false);
+
+  return id;
 }
 
-void FakeSensorDevice::OnDeviceDisconnect() {
+void FakeSensorDevice::RemoveReceiver(mojo::ReceiverId id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(receiver_set_.HasReceiver(id));
+
+  clients_.erase(id);
+  receiver_set_.Remove(id);
+}
+
+void FakeSensorDevice::ClearReceivers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  receiver_.reset();
+  clients_.clear();
+  receiver_set_.Clear();
+}
+
+bool FakeSensorDevice::HasReceivers() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return !receiver_set_.empty();
+}
+
+size_t FakeSensorDevice::SizeOfReceivers() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return receiver_set_.size();
 }
 
 void FakeSensorDevice::SetAttribute(const std::string& attr_name,
@@ -58,12 +78,14 @@ void FakeSensorDevice::SetAttribute(const std::string& attr_name,
   attributes_[attr_name] = attr_value;
 }
 
-void FakeSensorDevice::SetChannels(const std::vector<ChannelData>& channels) {
+void FakeSensorDevice::ResetObserverRemote(mojo::ReceiverId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(channels_.empty());
 
-  channels_ = channels;
-  channels_enabled_.assign(channels_.size(), false);
+  auto it = clients_.find(id);
+  if (it == clients_.end())
+    return;
+
+  it->second.observer.reset();
 }
 
 void FakeSensorDevice::GetAttributes(const std::vector<std::string>& attr_names,
@@ -91,19 +113,23 @@ void FakeSensorDevice::SetFrequency(double frequency,
   if (frequency < 0.0)
     frequency = 0.0;
 
-  frequency_ = frequency;
+  auto& client = clients_[receiver_set_.current_receiver()];
+
+  client.frequency = frequency;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(frequency)));
 
-  if (ReadyToSendSample())
-    SendSample();
+  SendSampleIfReady(client);
 }
 
 void FakeSensorDevice::StartReadingSamples(
     mojo::PendingRemote<mojom::SensorDeviceSamplesObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (observer_.is_bound()) {
+  auto id = receiver_set_.current_receiver();
+  auto& client = clients_[id];
+
+  if (client.observer.is_bound()) {
     mojo::Remote<mojom::SensorDeviceSamplesObserver> remote(
         std::move(observer));
     remote->OnErrorOccurred(mojom::ObserverErrorType::ALREADY_STARTED);
@@ -111,27 +137,30 @@ void FakeSensorDevice::StartReadingSamples(
     return;
   }
 
-  observer_.Bind(std::move(observer));
-  // Reuse StopReadingSamples to reset |observer_|.
-  observer_.set_disconnect_handler(base::BindOnce(
-      &FakeSensorDevice::StopReadingSamples, base::Unretained(this)));
+  client.observer.Bind(std::move(observer));
+  client.observer.set_disconnect_handler(base::BindOnce(
+      &FakeSensorDevice::ResetObserverRemote, base::Unretained(this), id));
 
-  if (!frequency_.has_value() || frequency_.value() <= 0.0) {
-    observer_->OnErrorOccurred(mojom::ObserverErrorType::FREQUENCY_INVALID);
+  if (!client.frequency.has_value() || client.frequency.value() <= 0.0) {
+    client.observer->OnErrorOccurred(
+        mojom::ObserverErrorType::FREQUENCY_INVALID);
+    return;
   }
 
-  if (!std::any_of(channels_enabled_.begin(), channels_enabled_.end(),
-                   [](bool en) { return en; }))
-    observer_->OnErrorOccurred(mojom::ObserverErrorType::NO_ENABLED_CHANNELS);
+  if (base::ranges::none_of(client.channels_enabled,
+                            [](bool enabled) { return enabled; })) {
+    client.observer->OnErrorOccurred(
+        mojom::ObserverErrorType::NO_ENABLED_CHANNELS);
+    return;
+  }
 
-  if (ReadyToSendSample())
-    SendSample();
+  SendSampleIfReady(client);
 }
 
 void FakeSensorDevice::StopReadingSamples() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  observer_.reset();
+  clients_[receiver_set_.current_receiver()].observer.reset();
 }
 
 void FakeSensorDevice::GetAllChannelIds(GetAllChannelIdsCallback callback) {
@@ -151,22 +180,23 @@ void FakeSensorDevice::SetChannelsEnabled(
     SetChannelsEnabledCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto& client = clients_[receiver_set_.current_receiver()];
+
   std::vector<int32_t> failed_indices;
   for (int32_t index : iio_chn_indices) {
-    if (static_cast<size_t>(index) >= channels_enabled_.size()) {
+    if (static_cast<size_t>(index) >= client.channels_enabled.size()) {
       failed_indices.push_back(index);
       continue;
     }
 
-    channels_enabled_[index] = en;
+    client.channels_enabled[index] = en;
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(failed_indices)));
 
-  if (ReadyToSendSample())
-    SendSample();
+  SendSampleIfReady(client);
 }
 
 void FakeSensorDevice::GetChannelsEnabled(
@@ -174,14 +204,16 @@ void FakeSensorDevice::GetChannelsEnabled(
     GetChannelsEnabledCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto& client = clients_[receiver_set_.current_receiver()];
+
   std::vector<bool> enabled;
   for (int32_t index : iio_chn_indices) {
-    if (static_cast<size_t>(index) >= channels_enabled_.size()) {
+    if (static_cast<size_t>(index) >= client.channels_enabled.size()) {
       enabled.push_back(false);
       continue;
     }
 
-    enabled.push_back(channels_enabled_[index]);
+    enabled.push_back(client.channels_enabled[index]);
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -210,33 +242,31 @@ void FakeSensorDevice::GetChannelsAttributes(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(attrs)));
 }
 
-bool FakeSensorDevice::ReadyToSendSample() {
+FakeSensorDevice::ClientData::ClientData() = default;
+FakeSensorDevice::ClientData::~ClientData() = default;
+
+void FakeSensorDevice::SendSampleIfReady(ClientData& client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(channels_.size(), client.channels_enabled.size());
 
-  if (!observer_.is_bound())
-    return false;
+  if (!client.observer.is_bound())
+    return;
 
-  if (!frequency_.has_value() || frequency_.value() <= 0.0)
-    return false;
-
-  return std::any_of(channels_enabled_.begin(), channels_enabled_.end(),
-                     [](bool en) { return en; });
-}
-
-void FakeSensorDevice::SendSample() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ReadyToSendSample());
-  CHECK_EQ(channels_.size(), channels_enabled_.size());
+  if (!client.frequency.has_value() || client.frequency.value() <= 0.0)
+    return;
 
   base::flat_map<int32_t, int64_t> sample;
   for (size_t i = 0; i < channels_.size(); ++i) {
-    if (!channels_enabled_[i])
+    if (!client.channels_enabled[i])
       continue;
 
     sample[i] = channels_[i].sample_data;
   }
 
-  observer_->OnSampleUpdated(std::move(sample));
+  if (sample.empty())
+    return;
+
+  client.observer->OnSampleUpdated(std::move(sample));
 }
 
 }  // namespace sensors

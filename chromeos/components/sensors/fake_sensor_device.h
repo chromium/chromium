@@ -13,7 +13,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -32,19 +32,23 @@ class FakeSensorDevice final : public mojom::SensorDevice {
     int64_t sample_data;
   };
 
-  FakeSensorDevice();
+  explicit FakeSensorDevice(const std::vector<ChannelData>& channels);
   FakeSensorDevice(const FakeSensorDevice&) = delete;
   FakeSensorDevice& operator=(const FakeSensorDevice&) = delete;
   ~FakeSensorDevice() override;
 
-  bool is_bound();
-  void Bind(mojo::PendingReceiver<mojom::SensorDevice> pending_receiver);
-  void OnDeviceDisconnect();
+  mojo::ReceiverId AddReceiver(
+      mojo::PendingReceiver<mojom::SensorDevice> pending_receiver);
+  void RemoveReceiver(mojo::ReceiverId id);
+
+  void ClearReceivers();
+  bool HasReceivers() const;
+  size_t SizeOfReceivers() const;
 
   void SetAttribute(const std::string& attr_name,
                     const std::string& attr_value);
 
-  void SetChannels(const std::vector<ChannelData>& channels);
+  void ResetObserverRemote(mojo::ReceiverId id);
 
   // Implementation of mojom::SensorDevice.
   void SetTimeout(uint32_t timeout) override {}
@@ -66,17 +70,25 @@ class FakeSensorDevice final : public mojom::SensorDevice {
                              GetChannelsAttributesCallback callback) override;
 
  private:
-  bool ReadyToSendSample();
-  void SendSample();
+  struct ClientData {
+    ClientData();
+    ~ClientData();
+
+    base::Optional<double> frequency;
+    std::vector<bool> channels_enabled;
+    mojo::Remote<mojom::SensorDeviceSamplesObserver> observer;
+  };
+
+  void SendSampleIfReady(ClientData& client);
 
   std::map<std::string, std::string> attributes_;
-  base::Optional<double> frequency_;
-  std::vector<ChannelData> channels_;
-  std::vector<bool> channels_enabled_;
+  const std::vector<ChannelData> channels_;
 
-  mojo::Remote<mojom::SensorDeviceSamplesObserver> observer_;
+  mojo::ReceiverSet<mojom::SensorDevice> receiver_set_;
 
-  mojo::Receiver<mojom::SensorDevice> receiver_{this};
+  // First is the client's id from |receiver_set_|, second is the client's
+  // states and observer remote.
+  std::map<mojo::ReceiverId, ClientData> clients_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

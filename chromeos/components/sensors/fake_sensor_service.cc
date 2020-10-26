@@ -94,7 +94,7 @@ void FakeSensorService::GetDevice(
   if (it == devices_.end())
     return;
 
-  it->second.sensor_device->Bind(std::move(device_request));
+  it->second.sensor_device->AddReceiver(std::move(device_request));
 }
 
 FakeSensorService::DeviceData::DeviceData() = default;
