@@ -36,6 +36,9 @@ class MockPooledTaskRunnerDelegate : public PooledTaskRunnerDelegate {
   MOCK_METHOD2(UpdatePriority,
                void(scoped_refptr<TaskSource> task_source,
                     TaskPriority priority));
+  MOCK_METHOD2(UpdateJobPriority,
+               void(scoped_refptr<TaskSource> task_source,
+                    TaskPriority priority));
 };
 
 class ThreadPoolJobTaskSourceTest : public testing::Test {

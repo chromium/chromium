@@ -54,6 +54,8 @@ ThreadGroupNative::~ThreadGroupNative() {
 }
 
 void ThreadGroupNative::Start(WorkerEnvironment worker_environment) {
+  ThreadGroup::Start();
+
   worker_environment_ = worker_environment;
 
   StartImpl();

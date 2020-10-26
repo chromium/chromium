@@ -145,7 +145,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   virtual size_t GetRemainingConcurrency() const = 0;
 
   // Returns a TaskSourceSortKey representing the priority of the TaskSource.
-  virtual TaskSourceSortKey GetSortKey() const = 0;
+  virtual TaskSourceSortKey GetSortKey(bool disable_fair_scheduling) const = 0;
 
   // Support for IntrusiveHeap.
   void SetHeapHandle(const HeapHandle& handle);

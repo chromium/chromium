@@ -28,7 +28,8 @@ class BASE_EXPORT PriorityQueue {
   PriorityQueue& operator=(PriorityQueue&& other);
 
   // Inserts |task_source| in the PriorityQueue with |task_source_sort_key|.
-  void Push(TransactionWithRegisteredTaskSource transaction_with_task_source);
+  void Push(RegisteredTaskSource task_source,
+            TaskSourceSortKey task_source_sort_key);
 
   // Returns a reference to the TaskSourceSortKey representing the priority of
   // the highest pending task in this PriorityQueue. The reference becomes

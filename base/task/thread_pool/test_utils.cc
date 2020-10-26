@@ -204,7 +204,7 @@ void MockPooledTaskRunnerDelegate::PostTaskWithSequenceNow(
 }
 
 bool MockPooledTaskRunnerDelegate::ShouldYield(const TaskSource* task_source) {
-  return thread_group_->ShouldYield(task_source->GetSortKey());
+  return thread_group_->ShouldYield(task_source->GetSortKey(false));
 }
 
 bool MockPooledTaskRunnerDelegate::EnqueueJobTaskSource(
@@ -235,6 +235,12 @@ void MockPooledTaskRunnerDelegate::UpdatePriority(
   auto transaction = task_source->BeginTransaction();
   transaction.UpdatePriority(priority);
   thread_group_->UpdateSortKey(std::move(transaction));
+}
+
+void MockPooledTaskRunnerDelegate::UpdateJobPriority(
+    scoped_refptr<TaskSource> task_source,
+    TaskPriority priority) {
+  UpdatePriority(std::move(task_source), priority);
 }
 
 void MockPooledTaskRunnerDelegate::SetThreadGroup(ThreadGroup* thread_group) {

@@ -176,6 +176,8 @@ class BASE_EXPORT ThreadGroup {
   const TrackedRef<TaskTracker> task_tracker_;
   const TrackedRef<Delegate> delegate_;
 
+  void Start();
+
   // Returns the number of workers required of workers to run all queued
   // BEST_EFFORT task sources allowed to run by the current CanRunPolicy.
   size_t GetNumAdditionalWorkersForBestEffortTaskSourcesLockRequired() const
@@ -220,6 +222,8 @@ class BASE_EXPORT ThreadGroup {
   // and schedule work, only simple data structure manipulations are allowed
   // within its scope (no thread creation or wake up).
   mutable CheckedLock lock_;
+
+  bool disable_fair_scheduling_ GUARDED_BY(lock_){false};
 
   // PriorityQueue from which all threads of this ThreadGroup get work.
   PriorityQueue priority_queue_ GUARDED_BY(lock_);

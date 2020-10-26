@@ -26,7 +26,6 @@
 #include "base/sequence_token.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/threading/platform_thread.h"
@@ -375,8 +374,12 @@ void ThreadGroupImpl::Start(
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,
     Optional<TimeDelta> may_block_threshold) {
+  ThreadGroup::Start();
+
   DCHECK(!replacement_thread_group_);
 
+  in_start().wakeup_after_getwork = FeatureList::IsEnabled(kWakeUpAfterGetWork);
+  in_start().wakeup_strategy = kWakeUpStrategyParam.Get();
   in_start().may_block_without_delay =
       FeatureList::IsEnabled(kMayBlockWithoutDelay);
   in_start().may_block_threshold =
@@ -587,8 +590,12 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   // Use this opportunity, before assigning work to this worker, to create/wake
   // additional workers if needed (doing this here allows us to reduce
   // potentially expensive create/wake directly on PostTask()).
-  outer_->EnsureEnoughWorkersLockRequired(&executor);
-  executor.FlushWorkerCreation(&outer_->lock_);
+  if (!outer_->after_start().wakeup_after_getwork &&
+      outer_->after_start().wakeup_strategy !=
+          WakeUpStrategy::kCentralizedWakeUps) {
+    outer_->EnsureEnoughWorkersLockRequired(&executor);
+    executor.FlushWorkerCreation(&outer_->lock_);
+  }
 
   if (!CanGetWorkLockRequired(&executor, worker))
     return nullptr;
@@ -618,6 +625,12 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   outer_->IncrementTasksRunningLockRequired(priority);
   DCHECK(!outer_->idle_workers_stack_.Contains(worker));
   write_worker().current_task_priority = priority;
+
+  if (outer_->after_start().wakeup_after_getwork &&
+      outer_->after_start().wakeup_strategy !=
+          WakeUpStrategy::kCentralizedWakeUps) {
+    outer_->EnsureEnoughWorkersLockRequired(&executor);
+  }
 
   return task_source;
 }
@@ -1015,7 +1028,12 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
 
   size_t num_workers_to_wake_up =
       ClampSub(desired_num_awake_workers, num_awake_workers);
-  num_workers_to_wake_up = std::min(num_workers_to_wake_up, size_t(2U));
+  if (after_start().wakeup_strategy == WakeUpStrategy::kExponentialWakeUps) {
+    num_workers_to_wake_up = std::min(num_workers_to_wake_up, size_t(2U));
+  } else if (after_start().wakeup_strategy ==
+             WakeUpStrategy::kSerializedWakeUps) {
+    num_workers_to_wake_up = std::min(num_workers_to_wake_up, size_t(1U));
+  }
 
   // Wake up the appropriate number of workers.
   for (size_t i = 0; i < num_workers_to_wake_up; ++i) {

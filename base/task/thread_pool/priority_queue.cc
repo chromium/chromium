@@ -97,13 +97,10 @@ PriorityQueue::~PriorityQueue() {
 
 PriorityQueue& PriorityQueue::operator=(PriorityQueue&& other) = default;
 
-void PriorityQueue::Push(
-    TransactionWithRegisteredTaskSource transaction_with_task_source) {
-  auto task_source_sort_key =
-      transaction_with_task_source.task_source->GetSortKey();
+void PriorityQueue::Push(RegisteredTaskSource task_source,
+                         TaskSourceSortKey task_source_sort_key) {
   container_.insert(
-      TaskSourceAndSortKey(std::move(transaction_with_task_source.task_source),
-                           task_source_sort_key));
+      TaskSourceAndSortKey(std::move(task_source), task_source_sort_key));
   IncrementNumTaskSourcesForPriority(task_source_sort_key.priority());
 }
 

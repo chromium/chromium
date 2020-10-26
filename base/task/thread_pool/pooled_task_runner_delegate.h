@@ -56,6 +56,8 @@ class BASE_EXPORT PooledTaskRunnerDelegate {
   // thread group.
   virtual void UpdatePriority(scoped_refptr<TaskSource> task_source,
                               TaskPriority priority) = 0;
+  virtual void UpdateJobPriority(scoped_refptr<TaskSource> task_source,
+                                 TaskPriority priority) = 0;
 };
 
 }  // namespace internal

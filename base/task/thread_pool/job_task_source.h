@@ -68,7 +68,8 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // TaskSource:
   ExecutionEnvironment GetExecutionEnvironment() override;
   size_t GetRemainingConcurrency() const override;
-  TaskSourceSortKey GetSortKey() const override;
+  TaskSourceSortKey GetSortKey(
+      bool disable_fair_scheduling = false) const override;
 
   bool IsCompleted() const;
   size_t GetWorkerCount() const;

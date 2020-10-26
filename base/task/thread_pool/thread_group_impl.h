@@ -22,6 +22,7 @@
 #include "base/strings/string_piece.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/task_features.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/thread_group.h"
@@ -246,6 +247,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
     // Optional observer notified when a worker enters and exits its main.
     WorkerThreadObserver* worker_thread_observer = nullptr;
 
+    WakeUpStrategy wakeup_strategy;
+    bool wakeup_after_getwork;
     bool may_block_without_delay;
 
     // Threshold after which the max tasks is increased to compensate for a

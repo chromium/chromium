@@ -50,8 +50,9 @@ class PriorityQueueWithSequencesTest : public testing::Test {
   }
 
   void Push(scoped_refptr<TaskSource> task_source) {
-    pq.Push(TransactionWithRegisteredTaskSource::FromTaskSource(
-        RegisteredTaskSource::CreateForTesting(std::move(task_source))));
+    auto sort_key = task_source->GetSortKey(false);
+    pq.Push(RegisteredTaskSource::CreateForTesting(std::move(task_source)),
+            sort_key);
   }
 
   test::TaskEnvironment task_environment{
@@ -59,19 +60,19 @@ class PriorityQueueWithSequencesTest : public testing::Test {
 
   scoped_refptr<TaskSource> sequence_a =
       MakeSequenceWithTraitsAndTask(TaskTraits(TaskPriority::USER_VISIBLE));
-  TaskSourceSortKey sort_key_a = sequence_a->GetSortKey();
+  TaskSourceSortKey sort_key_a = sequence_a->GetSortKey(false);
 
   scoped_refptr<TaskSource> sequence_b =
       MakeSequenceWithTraitsAndTask(TaskTraits(TaskPriority::USER_BLOCKING));
-  TaskSourceSortKey sort_key_b = sequence_b->GetSortKey();
+  TaskSourceSortKey sort_key_b = sequence_b->GetSortKey(false);
 
   scoped_refptr<TaskSource> sequence_c =
       MakeSequenceWithTraitsAndTask(TaskTraits(TaskPriority::USER_BLOCKING));
-  TaskSourceSortKey sort_key_c = sequence_c->GetSortKey();
+  TaskSourceSortKey sort_key_c = sequence_c->GetSortKey(false);
 
   scoped_refptr<TaskSource> sequence_d =
       MakeSequenceWithTraitsAndTask(TaskTraits(TaskPriority::BEST_EFFORT));
-  TaskSourceSortKey sort_key_d = sequence_d->GetSortKey();
+  TaskSourceSortKey sort_key_d = sequence_d->GetSortKey(false);
 
   PriorityQueue pq;
 };
@@ -193,7 +194,7 @@ TEST_F(PriorityQueueWithSequencesTest, UpdateSortKey) {
     auto sequence_b_transaction = sequence_b->BeginTransaction();
     sequence_b_transaction.UpdatePriority(TaskPriority::BEST_EFFORT);
 
-    pq.UpdateSortKey(*sequence_b, sequence_b->GetSortKey());
+    pq.UpdateSortKey(*sequence_b, sequence_b->GetSortKey(false));
     EXPECT_EQ(sort_key_c, pq.PeekSortKey());
     ExpectNumSequences(2U, 1U, 1U);
   }
@@ -205,7 +206,7 @@ TEST_F(PriorityQueueWithSequencesTest, UpdateSortKey) {
     auto sequence_c_transaction = sequence_c->BeginTransaction();
     sequence_c_transaction.UpdatePriority(TaskPriority::USER_BLOCKING);
 
-    pq.UpdateSortKey(*sequence_c, sequence_c->GetSortKey());
+    pq.UpdateSortKey(*sequence_c, sequence_c->GetSortKey(false));
     ExpectNumSequences(2U, 1U, 1U);
 
     // Note: |sequence_c| is popped for comparison as |sort_key_c| becomes
@@ -222,7 +223,7 @@ TEST_F(PriorityQueueWithSequencesTest, UpdateSortKey) {
     auto sequence_d_and_transaction = sequence_d->BeginTransaction();
     sequence_d_and_transaction.UpdatePriority(TaskPriority::USER_BLOCKING);
 
-    pq.UpdateSortKey(*sequence_d, sequence_d->GetSortKey());
+    pq.UpdateSortKey(*sequence_d, sequence_d->GetSortKey(false));
     ExpectNumSequences(1U, 1U, 1U);
 
     // Note: |sequence_d| is popped for comparison as |sort_key_d| becomes
@@ -235,7 +236,7 @@ TEST_F(PriorityQueueWithSequencesTest, UpdateSortKey) {
   }
 
   {
-    pq.UpdateSortKey(*sequence_d, sequence_d->GetSortKey());
+    pq.UpdateSortKey(*sequence_d, sequence_d->GetSortKey(false));
     ExpectNumSequences(1U, 1U, 0U);
     EXPECT_EQ(sequence_a, pq.PopTaskSource().Unregister());
     ExpectNumSequences(1U, 0U, 0U);
@@ -245,7 +246,7 @@ TEST_F(PriorityQueueWithSequencesTest, UpdateSortKey) {
 
   {
     // No-op if UpdateSortKey() is called on an empty PriorityQueue.
-    pq.UpdateSortKey(*sequence_b, sequence_b->GetSortKey());
+    pq.UpdateSortKey(*sequence_b, sequence_b->GetSortKey(false));
     EXPECT_TRUE(pq.IsEmpty());
     ExpectNumSequences(0U, 0U, 0U);
   }

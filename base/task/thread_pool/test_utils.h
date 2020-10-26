@@ -66,6 +66,8 @@ class MockPooledTaskRunnerDelegate : public PooledTaskRunnerDelegate {
   bool ShouldYield(const TaskSource* task_source) override;
   void UpdatePriority(scoped_refptr<TaskSource> task_source,
                       TaskPriority priority) override;
+  void UpdateJobPriority(scoped_refptr<TaskSource> task_source,
+                         TaskPriority priority) override;
 
   void SetThreadGroup(ThreadGroup* thread_group);
 

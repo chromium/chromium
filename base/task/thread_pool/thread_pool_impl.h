@@ -108,6 +108,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   void RemoveJobTaskSource(scoped_refptr<JobTaskSource> task_source) override;
   void UpdatePriority(scoped_refptr<TaskSource> task_source,
                       TaskPriority priority) override;
+  void UpdateJobPriority(scoped_refptr<TaskSource> task_source,
+                         TaskPriority priority) override;
 
   // Returns the TimeTicks of the next task scheduled on ThreadPool (Now() if
   // immediate, nullopt if none). This is thread-safe, i.e., it's safe if tasks
@@ -166,6 +168,10 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
 
   std::unique_ptr<ThreadGroup> foreground_thread_group_;
   std::unique_ptr<ThreadGroupImpl> background_thread_group_;
+
+  bool disable_job_yield_ = false;
+  bool disable_fair_scheduling_ = false;
+  std::atomic<bool> disable_job_update_priority_{false};
 
   // Whether this TaskScheduler was started. Access controlled by
   // |sequence_checker_|.

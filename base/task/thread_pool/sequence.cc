@@ -108,7 +108,8 @@ bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
   return true;
 }
 
-TaskSourceSortKey Sequence::GetSortKey() const {
+TaskSourceSortKey Sequence::GetSortKey(
+    bool /* disable_fair_scheduling */) const {
   return TaskSourceSortKey(priority_racy(),
                            ready_time_.load(std::memory_order_relaxed));
 }

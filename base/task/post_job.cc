@@ -81,7 +81,7 @@ bool JobHandle::IsCompleted() const {
 }
 
 void JobHandle::UpdatePriority(TaskPriority new_priority) {
-  task_source_->delegate()->UpdatePriority(task_source_, new_priority);
+  task_source_->delegate()->UpdateJobPriority(task_source_, new_priority);
 }
 
 void JobHandle::NotifyConcurrencyIncrease() {
