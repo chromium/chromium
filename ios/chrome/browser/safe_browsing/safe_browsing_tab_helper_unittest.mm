@@ -790,7 +790,7 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeMainFrameRequestCancelsPrerendering) {
       PrerenderServiceFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_.GetBrowserState()));
   prerender_service->StartPrerender(unsafe_url, web::Referrer(),
-                                    ui::PAGE_TRANSITION_LINK,
+                                    ui::PAGE_TRANSITION_LINK, &web_state_,
                                     /*immediately=*/true);
 
   EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_url).ShouldAllowNavigation());
@@ -820,7 +820,7 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeSubframeRequestCancelsPrerendering) {
       PrerenderServiceFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_.GetBrowserState()));
   prerender_service->StartPrerender(main_frame_item->GetURL(), web::Referrer(),
-                                    ui::PAGE_TRANSITION_LINK,
+                                    ui::PAGE_TRANSITION_LINK, &web_state_,
                                     /*immediately=*/true);
 
   EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_url, /*for_main_frame=*/false)
@@ -864,7 +864,7 @@ TEST_P(SafeBrowsingTabHelperTest,
       PrerenderServiceFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_.GetBrowserState()));
   prerender_service->StartPrerender(safe_url, web::Referrer(),
-                                    ui::PAGE_TRANSITION_LINK,
+                                    ui::PAGE_TRANSITION_LINK, &web_state_,
                                     /*immediately=*/true);
 
   EXPECT_TRUE(ShouldAllowRequestUrl(safe_url).ShouldAllowNavigation());
@@ -891,7 +891,7 @@ TEST_P(SafeBrowsingTabHelperTest,
       PrerenderServiceFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_.GetBrowserState()));
   prerender_service->StartPrerender(main_frame_item->GetURL(), web::Referrer(),
-                                    ui::PAGE_TRANSITION_LINK,
+                                    ui::PAGE_TRANSITION_LINK, &web_state_,
                                     /*immediately=*/true);
 
   EXPECT_TRUE(ShouldAllowRequestUrl(safe_url, /*for_main_frame=*/false)

@@ -118,6 +118,7 @@ TEST_F(PreloadControllerTest, DontPreloadNonWebURLs) {
   [controller_ prerenderURL:GURL()
                    referrer:kReferrer
                  transition:kTransition
+            currentWebState:nil
                 immediately:YES];
   EXPECT_FALSE([controller_ releasePrerenderContents]);
 
@@ -126,6 +127,7 @@ TEST_F(PreloadControllerTest, DontPreloadNonWebURLs) {
   [controller_ prerenderURL:GURL("chrome://newtab")
                    referrer:kReferrer
                  transition:kTransition
+            currentWebState:nil
                 immediately:YES];
   EXPECT_FALSE([controller_ releasePrerenderContents]);
 
@@ -134,6 +136,7 @@ TEST_F(PreloadControllerTest, DontPreloadNonWebURLs) {
   [controller_ prerenderURL:GURL("about:flags")
                    referrer:kReferrer
                  transition:kTransition
+            currentWebState:nil
                 immediately:YES];
   EXPECT_FALSE([controller_ releasePrerenderContents]);
 }

@@ -29,9 +29,14 @@ class PrerenderService : public KeyedService {
   // Prerenders the given |url| with the given |transition|.  Normally,
   // prerender requests are fulfilled after a short delay, to prevent
   // unnecessary prerenders while the user is typing.  If |immediately| is YES,
-  // this method starts prerendering immediately, with no delay.  |immediately|
-  // should be set to YES only when there is a very high confidence that the
-  // user will navigate to the given |url|.
+  // this method starts prerendering immediately, with no delay.
+  // |web_state_to_replace| is provided so that the new prerendered web state
+  // can have the same session data.  |immediately| should be set to YES only
+  // when there is a very high confidence that the user will navigate to the
+  // given |url|.
+  // TODO(crbug.com/1140583): passing |web_state_to_replace| is a workaround for
+  // not having prerender service per browser, remove it once prerenderService
+  // is a browser agent.
   //
   // If there is already an existing request for |url|, this method does nothing
   // and does not reset the delay timer.  If there is an existing request for a
@@ -40,6 +45,7 @@ class PrerenderService : public KeyedService {
   virtual void StartPrerender(const GURL& url,
                               const web::Referrer& referrer,
                               ui::PageTransition transition,
+                              web::WebState* web_state_to_replace,
                               bool immediately) = 0;
 
   // If |url| is prerendered, loads the prerendered web state into
