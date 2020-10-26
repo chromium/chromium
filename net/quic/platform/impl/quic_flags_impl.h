@@ -20,6 +20,11 @@
 #include "net/quic/quic_flags_list.h"
 #undef QUIC_FLAG
 
+#define QUIC_PROTOCOL_FLAG(type, flag, ...) \
+  QUIC_EXPORT_PRIVATE extern type FLAGS_##flag;
+#include "net/third_party/quiche/src/quic/core/quic_protocol_flags_list.h"
+#undef QUIC_PROTOCOL_FLAG
+
 namespace base {
 class CommandLine;
 template <typename T>
@@ -32,9 +37,6 @@ inline bool GetQuicFlagImpl(bool flag) {
   return flag;
 }
 inline int32_t GetQuicFlagImpl(int32_t flag) {
-  return flag;
-}
-inline uint32_t GetQuicFlagImpl(uint32_t flag) {
   return flag;
 }
 inline int64_t GetQuicFlagImpl(int64_t flag) {

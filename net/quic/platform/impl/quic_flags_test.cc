@@ -221,28 +221,22 @@ TEST_F(QuicFlagsTest, SetQuicFlagByName_int64_t_invalid) {
   EXPECT_EQ(100, FLAGS_quic_max_tracked_packet_count);
 }
 
-TEST_F(QuicFlagsTest, SetQuicFlagByName_uint32_t) {
-  FLAGS_quic_send_buffer_max_data_slice_size = 4096;
-  SetQuicFlagByName("FLAGS_quic_send_buffer_max_data_slice_size", "1024");
-  EXPECT_EQ(1024u, FLAGS_quic_send_buffer_max_data_slice_size);
+TEST_F(QuicFlagsTest, SetQuicFlagByName_uint64_t) {
+  FLAGS_quic_key_update_confidentiality_limit = 100;
+  SetQuicFlagByName("FLAGS_quic_key_update_confidentiality_limit", "5");
+  EXPECT_EQ(5u, FLAGS_quic_key_update_confidentiality_limit);
 }
 
-TEST_F(QuicFlagsTest, SetQuicFlagByName_uint32_t_invalid) {
-  FLAGS_quic_send_buffer_max_data_slice_size = 4096;
-  SetQuicFlagByName("FLAGS_quic_send_buffer_max_data_slice_size", "false");
-  EXPECT_EQ(4096u, FLAGS_quic_send_buffer_max_data_slice_size);
+TEST_F(QuicFlagsTest, SetQuicFlagByName_uint64_t_invalid) {
+  FLAGS_quic_key_update_confidentiality_limit = 100;
+  SetQuicFlagByName("FLAGS_quic_key_update_confidentiality_limit", "false");
+  EXPECT_EQ(100u, FLAGS_quic_key_update_confidentiality_limit);
 }
 
-TEST_F(QuicFlagsTest, SetQuicFlagByName_uint32_t_negative) {
-  FLAGS_quic_send_buffer_max_data_slice_size = 4096;
-  SetQuicFlagByName("FLAGS_quic_send_buffer_max_data_slice_size", "-1");
-  EXPECT_EQ(4096u, FLAGS_quic_send_buffer_max_data_slice_size);
-}
-
-TEST_F(QuicFlagsTest, SetQuicFlagByName_uint32_t_too_large) {
-  FLAGS_quic_send_buffer_max_data_slice_size = 4096;
-  SetQuicFlagByName("FLAGS_quic_send_buffer_max_data_slice_size", "4294967297");
-  EXPECT_EQ(4096u, FLAGS_quic_send_buffer_max_data_slice_size);
+TEST_F(QuicFlagsTest, SetQuicFlagByName_uint64_t_negative) {
+  FLAGS_quic_key_update_confidentiality_limit = 4096;
+  SetQuicFlagByName("FLAGS_quic_key_update_confidentiality_limit", "-1");
+  EXPECT_EQ(4096u, FLAGS_quic_key_update_confidentiality_limit);
 }
 
 TEST_F(QuicFlagsTest, SetQuicFlagByName_int32_t) {

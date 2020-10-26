@@ -10,21 +10,6 @@
 
 // This file contains the list of QUIC protocol flags.
 
-// Time period for which a given connection_id should live in the time-wait
-// state.
-QUIC_FLAG(int64_t, FLAGS_quic_time_wait_list_seconds, 200)
-
-// Currently, this number is quite conservative.  The max QPS limit for an
-// individual server silo is currently set to 1000 qps, though the actual max
-// that we see in the wild is closer to 450 qps.  Regardless, this means that
-// the longest time-wait list we should see is 200 seconds * 1000 qps, 200000.
-// Of course, there are usually many queries per QUIC connection, so we allow a
-// factor of 3 leeway.
-//
-// Maximum number of connections on the time-wait list. A negative value implies
-// no configured limit.
-QUIC_FLAG(int64_t, FLAGS_quic_time_wait_list_max_connections, 600000)
-
 // If true, require handshake confirmation for QUIC connections, functionally
 // disabling 0-rtt handshakes.
 // TODO(rtenneti): Enable this flag after CryptoServerTest's are fixed.
@@ -32,22 +17,9 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_require_handshake_confirmation,
           false)
 
-// If true, disable pacing in QUIC.
-QUIC_FLAG(bool, FLAGS_quic_disable_pacing_for_perf_tests, false)
-
-// If true, enforce that QUIC CHLOs fit in one packet.
-QUIC_FLAG(bool, FLAGS_quic_enforce_single_packet_chlo, true)
-
-// If true, allows packets to be buffered in anticipation of a future CHLO, and
-// allow CHLO packets to be buffered until next iteration of the event loop.
-QUIC_FLAG(bool, FLAGS_quic_allow_chlo_buffering, true)
-
 // If greater than zero, mean RTT variation is multiplied by the specified
 // factor and added to the congestion window limit.
 QUIC_FLAG(double, FLAGS_quic_bbr_rtt_variation_weight, 0.0f)
-
-// Congestion window gain for QUIC BBR during PROBE_BW phase.
-QUIC_FLAG(double, FLAGS_quic_bbr_cwnd_gain, 2.0f)
 
 // When true, defaults to BBR congestion control instead of Cubic.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_default_to_bbr, false)
@@ -56,36 +28,12 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_default_to_bbr, false)
 // Takes precedence over --quic_default_to_bbr.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_default_to_bbr_v2, false)
 
-// If buffered data in QUIC stream is less than this threshold, buffers all
-// provided data or asks upper layer for more data.
-QUIC_FLAG(uint32_t, FLAGS_quic_buffered_data_threshold, 8192u)
-
-// Max size of data slice in bytes for QUIC stream send buffer.
-QUIC_FLAG(uint32_t, FLAGS_quic_send_buffer_max_data_slice_size, 4096u)
-
-// Anti-amplification factor. Before address validation, server will
-// send no more than factor times bytes received.
-QUIC_FLAG(int32_t, FLAGS_quic_anti_amplification_factor, 3)
-
 // When true, set the initial congestion control window from connection options
 // in QuicSentPacketManager rather than TcpCubicSenderBytes.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_unified_iw_options, false)
 
-// Number of packets that the pacing sender allows in bursts during pacing.
-QUIC_FLAG(int32_t, FLAGS_quic_lumpy_pacing_size, 2)
-
-// Congestion window fraction that the pacing sender allows in bursts during
-// pacing.
-QUIC_FLAG(double, FLAGS_quic_lumpy_pacing_cwnd_fraction, 0.25f)
-
 // If true, QUIC offload pacing when using USPS as egress method.
 QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_offload_pacing_to_usps2, false)
-
-// Max time that QUIC can pace packets into the future in ms.
-QUIC_FLAG(int32_t, FLAGS_quic_max_pace_time_into_future_ms, 10)
-
-// Smoothed RTT fraction that a connection can pace packets into the future.
-QUIC_FLAG(double, FLAGS_quic_pace_time_into_future_srtt_fraction, 0.125f)
 
 // Mechanism to override version label and ALPN for IETF interop.
 QUIC_FLAG(int32_t, FLAGS_quic_ietf_draft_version, 0)
@@ -117,73 +65,15 @@ QUIC_FLAG(bool,
 // If true, set burst token to 2 in cwnd bootstrapping experiment.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_conservative_bursts, false)
 
-// If true, export number of packets written per write operation histogram.")
-QUIC_FLAG(bool, FLAGS_quic_export_server_num_packets_per_write_histogram, false)
-
 // If true, uses conservative cwnd gain and pacing gain.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_conservative_cwnd_and_pacing_gains,
           false)
 
-// If true, use predictable version negotiation versions.
-QUIC_FLAG(bool, FLAGS_quic_disable_version_negotiation_grease_randomness, false)
-
-// Maximum number of tracked packets.
-QUIC_FLAG(int64_t, FLAGS_quic_max_tracked_packet_count, 10000)
-
-// If true, HTTP request header names sent from QuicSpdyClientBase(and
-// descendents) will be automatically converted to lower case.
-QUIC_FLAG(bool, FLAGS_quic_client_convert_http_header_name_to_lowercase, true)
-
 // If true, allow client to enable BBRv2 on server via connection option 'B2ON'.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_allow_client_enabled_bbr_v2,
           false)
-
-// The maximum amount of CRYPTO frame data that can be buffered.
-QUIC_FLAG(int32_t, FLAGS_quic_max_buffered_crypto_bytes, 16 * 1024)
-
-// If the bandwidth during ack aggregation is smaller than (estimated
-// bandwidth * this flag), consider the current aggregation completed
-// and starts a new one.
-QUIC_FLAG(double, FLAGS_quic_ack_aggregation_bandwidth_threshold, 1.0)
-
-// Maximum number of consecutive pings that can be sent with the aggressive
-// initial retransmittable on the wire timeout if there is no new stream data
-// received. After this limit, the timeout will be doubled each ping until it
-// exceeds the default ping timeout.
-QUIC_FLAG(int32_t,
-          FLAGS_quic_max_aggressive_retransmittable_on_wire_ping_count,
-          5)
-
-// Maximum number of pings that can be sent with the retransmittable on the wire
-// timeout, over the lifetime of a connection. After this limit, the timeout
-// will be the default ping timeout.
-QUIC_FLAG(int32_t, FLAGS_quic_max_retransmittable_on_wire_ping_count, 1000)
-
-// The maximum congestion window in packets.
-QUIC_FLAG(int32_t, FLAGS_quic_max_congestion_window, 2000)
-
-// The default minimum duration for BBRv2-native probes, in milliseconds.
-QUIC_FLAG(int32_t, FLAGS_quic_bbr2_default_probe_bw_base_duration_ms, 2000)
-
-// The default upper bound of the random amount of BBRv2-native
-// probes, in milliseconds.
-QUIC_FLAG(int32_t, FLAGS_quic_bbr2_default_probe_bw_max_rand_duration_ms, 1000)
-
-// The default period for entering PROBE_RTT, in milliseconds.
-QUIC_FLAG(int32_t, FLAGS_quic_bbr2_default_probe_rtt_period_ms, 10000)
-
-// The default loss threshold for QUIC BBRv2, should be a value
-// between 0 and 1.
-QUIC_FLAG(double, FLAGS_quic_bbr2_default_loss_threshold, 0.02)
-
-// The default minimum number of loss marking events to exit STARTUP.
-QUIC_FLAG(int32_t, FLAGS_quic_bbr2_default_startup_full_loss_count, 8)
-
-// The default fraction of unutilized headroom to try to leave in path
-// upon high loss.
-QUIC_FLAG(double, FLAGS_quic_bbr2_default_inflight_hi_headroom, 0.01)
 
 // If true, disable QUIC version Q043.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_q043, false)
@@ -206,29 +96,14 @@ QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_testonly_default_false, false)
 // A testonly restart flag that will always default to true.
 QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_testonly_default_true, true)
 
-// The default initial value of the max ack height filter's window length.
-QUIC_FLAG(int32_t, FLAGS_quic_bbr2_default_initial_ack_height_filter_window, 10)
-
-// The default minimum number of loss marking events to exit PROBE_UP phase.
-QUIC_FLAG(double, FLAGS_quic_bbr2_default_probe_bw_full_loss_count, 2)
-
 // When true, ensure the ACK delay is never less than the alarm granularity when
 // ACK decimation is enabled.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_ack_delay_alarm_granularity,
           false)
 
-// If true, use predictable grease settings identifiers and values.
-QUIC_FLAG(bool, FLAGS_quic_enable_http3_grease_randomness, true)
-
 // If true, disable QUIC version h3-27.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_draft_27, true)
-
-// If true, server push will be allowed in QUIC versions using HTTP/3.
-QUIC_FLAG(bool, FLAGS_quic_enable_http3_server_push, false)
-
-// The divisor that controls how often MAX_STREAMS frames are sent.
-QUIC_FLAG(int32_t, FLAGS_quic_max_streams_window_divisor, 2)
 
 // If true, QUIC BBRv2\'s PROBE_BW mode will not reduce cwnd below
 // BDP+ack_height.
@@ -495,10 +370,6 @@ QUIC_FLAG(
     FLAGS_quic_reloadable_flag_quic_bbr2_no_exit_startup_on_loss_with_bw_growth,
     false)
 
-// If non-zero and key update is allowed, the maximum number of packets sent for
-// each key phase before initiating a key update.
-QUIC_FLAG(int64_t, FLAGS_quic_key_update_confidentiality_limit, 0)
-
 // Honor the AEAD confidentiality and integrity limits by initiating key update
 // (if enabled) and/or closing the connection, as necessary.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_enable_aead_limits, false)
@@ -534,5 +405,10 @@ QUIC_FLAG(bool,
           FLAGS_quic_restart_flag_quic_session_tickets_always_enabled,
           false)
 
-// If true, QUIC client with TLS will not try 0-RTT.
-QUIC_FLAG(bool, FLAGS_quic_disable_client_tls_zero_rtt, false)
+// If true and B2SL connection option is set, when QUIC BBR2 exits STARTUP due
+// to loss, it will set the inflight_hi to the max of bdp and
+// max_bytes_delivered_in_round.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_bbr2_startup_loss_exit_use_max_delivered,
+    false)
