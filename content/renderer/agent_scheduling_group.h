@@ -77,10 +77,12 @@ class CONTENT_EXPORT AgentSchedulingGroup
    public:
     MaybeAssociatedReceiver(
         AgentSchedulingGroup& impl,
-        mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver);
+        mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
     MaybeAssociatedReceiver(
         AgentSchedulingGroup& impl,
-        mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
+        mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
     ~MaybeAssociatedReceiver();
 
    private:
@@ -92,10 +94,12 @@ class CONTENT_EXPORT AgentSchedulingGroup
   class MaybeAssociatedRemote {
    public:
     explicit MaybeAssociatedRemote(
-        mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote);
+        mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
     explicit MaybeAssociatedRemote(
         mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-            host_remote);
+            host_remote,
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
     ~MaybeAssociatedRemote();
     mojom::AgentSchedulingGroupHost* get();
 
@@ -133,6 +137,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
       mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
           receiver) override;
 
+  // A dedicated scheduler for this AgentSchedulingGroup.
+  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler_;
+
   RenderThread& render_thread_;
 
   // Implementation of `mojom::AgentSchedulingGroup`, used for responding to
@@ -156,10 +164,6 @@ class CONTENT_EXPORT AgentSchedulingGroup
   mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
                               int32_t>
       associated_interface_provider_receivers_;
-
-  // A dedicated scheduler for this AgentSchedulingGroup.
-  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
-      agent_group_scheduler_;
 };
 
 }  // namespace content

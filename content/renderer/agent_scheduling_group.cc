@@ -38,33 +38,41 @@ RenderThreadImpl& ToImpl(RenderThread& render_thread) {
 // MaybeAssociatedReceiver:
 AgentSchedulingGroup::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
     AgentSchedulingGroup& impl,
-    PendingReceiver<mojom::AgentSchedulingGroup> receiver)
+    PendingReceiver<mojom::AgentSchedulingGroup> receiver,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : receiver_(absl::in_place_type<Receiver<mojom::AgentSchedulingGroup>>,
                 &impl,
-                std::move(receiver)) {}
+                std::move(receiver),
+                task_runner) {}
 
 AgentSchedulingGroup::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
     AgentSchedulingGroup& impl,
-    PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver)
+    PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : receiver_(
           absl::in_place_type<AssociatedReceiver<mojom::AgentSchedulingGroup>>,
           &impl,
-          std::move(receiver)) {}
+          std::move(receiver),
+          task_runner) {}
 
 AgentSchedulingGroup::MaybeAssociatedReceiver::~MaybeAssociatedReceiver() =
     default;
 
 // MaybeAssociatedRemote:
 AgentSchedulingGroup::MaybeAssociatedRemote::MaybeAssociatedRemote(
-    PendingRemote<mojom::AgentSchedulingGroupHost> host_remote)
+    PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : remote_(absl::in_place_type<Remote<mojom::AgentSchedulingGroupHost>>,
-              std::move(host_remote)) {}
+              std::move(host_remote),
+              task_runner) {}
 
 AgentSchedulingGroup::MaybeAssociatedRemote::MaybeAssociatedRemote(
-    PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote)
+    PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : remote_(absl::in_place_type<
                   AssociatedRemote<mojom::AgentSchedulingGroupHost>>,
-              std::move(host_remote)) {}
+              std::move(host_remote),
+              task_runner) {}
 
 AgentSchedulingGroup::MaybeAssociatedRemote::~MaybeAssociatedRemote() = default;
 
@@ -78,14 +86,15 @@ AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
     PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
     PendingReceiver<mojom::AgentSchedulingGroup> receiver)
-    // TODO(crbug.com/1111231): Mojo interfaces should be associated with
-    // per-ASG task runners instead of default.
-    : render_thread_(render_thread),
-      receiver_(*this, std::move(receiver)),
-      host_remote_(std::move(host_remote)),
-      agent_group_scheduler_(
+    : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-              ->CreateAgentGroupScheduler()) {
+              ->CreateAgentGroupScheduler()),
+      render_thread_(render_thread),
+      receiver_(*this,
+                std::move(receiver),
+                agent_group_scheduler_->DefaultTaskRunner()),
+      host_remote_(std::move(host_remote),
+                   agent_group_scheduler_->DefaultTaskRunner()) {
   DCHECK(agent_group_scheduler_);
   DCHECK(base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
@@ -95,14 +104,15 @@ AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
     PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote,
     PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver)
-    // TODO(crbug.com/1111231): Mojo interfaces should be associated with
-    // per-ASG task runners instead of default.
-    : render_thread_(render_thread),
-      receiver_(*this, std::move(receiver)),
-      host_remote_(std::move(host_remote)),
-      agent_group_scheduler_(
+    : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-              ->CreateAgentGroupScheduler()) {
+              ->CreateAgentGroupScheduler()),
+      render_thread_(render_thread),
+      receiver_(*this,
+                std::move(receiver),
+                agent_group_scheduler_->DefaultTaskRunner()),
+      host_remote_(std::move(host_remote),
+                   agent_group_scheduler_->DefaultTaskRunner()) {
   DCHECK(agent_group_scheduler_);
   DCHECK(!base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
