@@ -20,12 +20,12 @@ namespace {
   EXPECT_EQ(expected_count, iterator.RepeatCount());                        \
   EXPECT_EQ(expected_start + expected_count - 1, iterator.RangeTrackEnd()); \
   EXPECT_TRUE(iterator.IsRangeCollapsed());
-#define EXPECT_GRID_AREA(area, expected_row_start, expected_row_end, \
-                         expected_column_start, expected_column_end) \
-  EXPECT_EQ(area.rows.StartLine(), expected_row_start);              \
-  EXPECT_EQ(area.rows.EndLine(), expected_row_end);                  \
-  EXPECT_EQ(area.columns.StartLine(), expected_column_start);        \
-  EXPECT_EQ(area.columns.EndLine(), expected_column_end);
+#define EXPECT_GRID_AREA(area, expected_column_start, expected_column_end, \
+                         expected_row_start, expected_row_end)             \
+  EXPECT_EQ(area.columns.StartLine(), expected_column_start);              \
+  EXPECT_EQ(area.columns.EndLine(), expected_column_end);                  \
+  EXPECT_EQ(area.rows.StartLine(), expected_row_start);                    \
+  EXPECT_EQ(area.rows.EndLine(), expected_row_end);
 }  // namespace
 class NGGridLayoutAlgorithmTest
     : public NGBaseLayoutAlgorithmTest,
@@ -810,9 +810,166 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
   ASSERT_EQ(grid_positions.size(), 4U);
 
   EXPECT_GRID_AREA(grid_positions[0], 1U, 2U, 1U, 2U);
-  EXPECT_GRID_AREA(grid_positions[1], 0U, 1U, 1U, 2U);
-  EXPECT_GRID_AREA(grid_positions[2], 1U, 2U, 0U, 1U);
+  EXPECT_GRID_AREA(grid_positions[1], 1U, 2U, 0U, 1U);
+  EXPECT_GRID_AREA(grid_positions[2], 0U, 1U, 1U, 2U);
   EXPECT_GRID_AREA(grid_positions[3], 0U, 1U, 0U, 1U);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoDense) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #grid {
+        display: grid;
+        grid-auto-flow: dense;
+        grid-template-columns: repeat(10, 40px);
+        grid-template-rows: repeat(10, 40px);
+      }
+
+      .item {
+        display: block;
+        font: 40px/1 Ahem;
+        border: 2px solid black;
+        width: 100%;
+        height: 100%;
+      }
+      .auto-one {
+        border: 2px solid red;
+      }
+      .auto-both {
+        border: 2px solid blue;
+      }
+      .a {
+        grid-column: 1 / 3;
+        grid-row: 1 / 3;
+      }
+      .b {
+        grid-column: 4 / 8;
+        grid-row: 1 / 4;
+      }
+      .c {
+        grid-column: 9 / 11;
+        grid-row: 1 / 2;
+      }
+      .d {
+        grid-column: 1 / 3;
+        grid-row: 4 / 6;
+      }
+      .e {
+        grid-column: 4 / 6;
+        grid-row: 4 / 5;
+      }
+      .f {
+        grid-column: 7 / 10;
+        grid-row: 5 / 6;
+      }
+      .g {
+        grid-column: 6 / 7;
+        grid-row: 8 / 9;
+      }
+      .h {
+        grid-column: 6 / 8;
+        grid-row-end: span 2;
+      }
+      .i {
+        grid-row: 4 / 5;
+        grid-column-end: span 2;
+      }
+      .j {
+        grid-column: 6 / 7;
+      }
+      .u {
+        grid-column-end: span 5;
+        grid-row-end: span 5;
+      }
+      .v {
+        grid-row-end: span 9;
+      }
+      .w {
+        grid-column-end: span 2;
+        grid-row-end: span 3;
+      }
+      .x {
+        grid-row-end: span 5;
+      }
+
+    </style>
+    <div id="wrapper">
+      <div id="grid">
+        <div class="item a">a</div>
+        <div class="item b">b</div>
+        <div class="item c">c</div>
+        <div class="item d">d</div>
+        <div class="item e">e</div>
+        <div class="item f">f</div>
+        <div class="item g">g</div>
+        <div class="auto-one item h">h</div>
+        <div class="auto-one item i">i</div>
+        <div class="auto-one item j">j</div>
+        <div class="auto-both item u">u</div>
+        <div class="auto-both item v">v</div>
+        <div class="auto-both item w">w</div>
+        <div class="auto-both item x">x</div>
+        <div class="auto-both item y">y</div>
+        <div class="auto-both item z">z</div>
+      </div>
+    </div>
+
+  )HTML");
+
+  NGBlockNode node(ToLayoutBox(GetLayoutObjectByElementId("grid")));
+
+  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      WritingMode::kHorizontalTb, TextDirection::kLtr,
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)), false, true);
+
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  EXPECT_EQ(GridItemCount(algorithm), 0U);
+  algorithm.Layout();
+  EXPECT_EQ(GridItemCount(algorithm), 16U);
+
+  Vector<GridArea> grid_positions = GridItemGridAreas(algorithm);
+  ASSERT_EQ(grid_positions.size(), 16U);
+
+  // Expected placements:
+  //   0 1 2 3 4 5 6 7 8 9
+  // 0 a a x b b b b y c c
+  // 1 a a x b b b b w w v
+  // 2 z * x b b b b w w v
+  // 3 d d x e e i i w w v
+  // 4 d d x * * j f f f v
+  // 5 u u u u u h h * * v
+  // 6 u u u u u h h * * v
+  // 7 u u u u u g * * * v
+  // 8 u u u u u * * * * v
+  // 9 u u u u u * * * * v
+
+  // Fixed positions: a-g
+  EXPECT_GRID_AREA(grid_positions[0], 0U, 2U, 0U, 2U);
+  EXPECT_GRID_AREA(grid_positions[1], 3U, 7U, 0U, 3U);
+  EXPECT_GRID_AREA(grid_positions[2], 8U, 10U, 0U, 1U);
+  EXPECT_GRID_AREA(grid_positions[3], 0U, 2U, 3U, 5U);
+  EXPECT_GRID_AREA(grid_positions[4], 3U, 5U, 3U, 4U);
+  EXPECT_GRID_AREA(grid_positions[5], 6U, 9U, 4U, 5U);
+  EXPECT_GRID_AREA(grid_positions[6], 5U, 6U, 7U, 8U);
+
+  // Fixed on single axis positions: h-j
+  EXPECT_GRID_AREA(grid_positions[7], 5U, 7U, 5U, 7U);
+  EXPECT_GRID_AREA(grid_positions[8], 5U, 7U, 3U, 4U);
+  EXPECT_GRID_AREA(grid_positions[9], 5U, 6U, 4U, 5U);
+
+  // Auto on both axis: u-z
+  EXPECT_GRID_AREA(grid_positions[10], 0U, 5U, 5U, 10U);
+  EXPECT_GRID_AREA(grid_positions[11], 9U, 10U, 1U, 10U);
+  EXPECT_GRID_AREA(grid_positions[12], 7U, 9U, 1U, 4U);
+  EXPECT_GRID_AREA(grid_positions[13], 2U, 3U, 0U, 5U);
+  EXPECT_GRID_AREA(grid_positions[14], 7U, 8U, 0U, 1U);
+  EXPECT_GRID_AREA(grid_positions[15], 0U, 1U, 2U, 3U);
 }
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {

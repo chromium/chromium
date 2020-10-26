@@ -122,8 +122,7 @@ NGGridLayoutAlgorithm::RowTrackCollection() const {
 NGGridLayoutAlgorithm::GridItemData::GridItemData(const NGBlockNode node)
     : node(node) {}
 
-NGGridLayoutAlgorithm::AutoPlacementType
-NGGridLayoutAlgorithm::GridItemData::AutoPlacement(
+AutoPlacementType NGGridLayoutAlgorithm::GridItemData::AutoPlacement(
     GridTrackSizingDirection flow_direction) const {
   bool is_major_indefinite = Span(flow_direction).IsIndefinite();
   bool is_minor_indefinite =
@@ -131,13 +130,13 @@ NGGridLayoutAlgorithm::GridItemData::AutoPlacement(
           .IsIndefinite();
 
   if (is_minor_indefinite && is_major_indefinite)
-    return NGGridLayoutAlgorithm::AutoPlacementType::kBoth;
+    return AutoPlacementType::kBoth;
   else if (is_minor_indefinite)
-    return NGGridLayoutAlgorithm::AutoPlacementType::kMinor;
+    return AutoPlacementType::kMinor;
   else if (is_major_indefinite)
-    return NGGridLayoutAlgorithm::AutoPlacementType::kMajor;
+    return AutoPlacementType::kMajor;
 
-  return NGGridLayoutAlgorithm::AutoPlacementType::kNotNeeded;
+  return AutoPlacementType::kNotNeeded;
 }
 
 wtf_size_t NGGridLayoutAlgorithm::GridItemData::StartLine(

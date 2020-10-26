@@ -58,19 +58,12 @@ void NGGridPlacement::RunAutoPlacementAlgorithm() {
   for (NGGridLayoutAlgorithm::GridItemData* grid_item :
        items_not_locked_to_major_axis_) {
     DCHECK(grid_item);
-    switch (packing_behavior_) {
-      case PackingBehavior::kSparse:
-        if (grid_item->AutoPlacement(major_direction_) ==
-            NGGridLayoutAlgorithm::AutoPlacementType::kMajor) {
-          PlaceAutoMajorAxisGridItem(*grid_item);
-        } else if (grid_item->AutoPlacement(major_direction_) ==
-                   NGGridLayoutAlgorithm::AutoPlacementType::kBoth) {
-          PlaceAutoBothAxisGridItem(*grid_item);
-        }
-        break;
-      case PackingBehavior::kDense:
-        // TODO(janewman): implement auto placement for dense packing.
-        break;
+    const AutoPlacementType item_placement_type =
+        grid_item->AutoPlacement(major_direction_);
+    if (item_placement_type == AutoPlacementType::kMajor) {
+      PlaceAutoMajorAxisGridItem(*grid_item);
+    } else if (item_placement_type == AutoPlacementType::kBoth) {
+      PlaceAutoBothAxisGridItem(*grid_item);
     }
   }
 }
@@ -101,59 +94,59 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis() {
   // auto-placed item's position inserted on that track. This is needed to
   // implement "sparse" packing for items locked to a given track.
   // See https://drafts.csswg.org/css-grid/#auto-placement-algo
-  HashMap<wtf_size_t, wtf_size_t> minor_axis_cursors;
+  HashMap<wtf_size_t, wtf_size_t> minor_cursors;
   for (NGGridLayoutAlgorithm::GridItemData* grid_item :
        items_locked_to_major_axis_) {
     DCHECK(grid_item);
     DCHECK_EQ(grid_item->AutoPlacement(major_direction_),
-              NGGridLayoutAlgorithm::AutoPlacementType::kMinor);
-    switch (packing_behavior_) {
-      case PackingBehavior::kSparse: {
-        wtf_size_t minor_axis_start;
-        if (minor_axis_cursors.Contains(grid_item->StartLine(major_direction_) +
-                                        1)) {
-          minor_axis_start =
-              minor_axis_cursors.at(grid_item->StartLine(major_direction_) + 1);
-        } else {
-          minor_axis_start = ExplicitStart(minor_direction_);
-        }
-        wtf_size_t minor_span_size =
-            GridPositionsResolver::SpanSizeForAutoPlacedItem(
-                grid_item->node.Style(), minor_direction_);
-        while (DoesItemOverlap(grid_item->StartLine(major_direction_),
-                               grid_item->EndLine(major_direction_),
-                               minor_axis_start,
-                               minor_axis_start + minor_span_size)) {
-          minor_axis_start++;
-        }
-        wtf_size_t minor_axis_end = minor_axis_start + minor_span_size;
-        minor_axis_cursors.Set(grid_item->StartLine(major_direction_) + 1,
-                               minor_axis_start);
-        minor_max_end_line_ =
-            std::max<wtf_size_t>(minor_max_end_line_, minor_axis_end);
+              AutoPlacementType::kMinor);
+    wtf_size_t minor_start;
+    if (packing_behavior_ == PackingBehavior::kSparse &&
+        minor_cursors.Contains(grid_item->StartLine(major_direction_) + 1)) {
+      minor_start =
+          minor_cursors.at(grid_item->StartLine(major_direction_) + 1);
+    } else {
+      minor_start = ExplicitStart(minor_direction_);
+    }
 
-        // Update placement and ensure track coverage.
-        UpdatePlacementAndEnsureTrackCoverage(
-            GridSpan::TranslatedDefiniteGridSpan(minor_axis_start,
-                                                 minor_axis_end),
-            minor_direction_, *grid_item);
-      } break;
-      case PackingBehavior::kDense:
-        // TODO(janewman): implement auto placement for dense packing.
-        break;
+    wtf_size_t minor_span_size =
+        GridPositionsResolver::SpanSizeForAutoPlacedItem(
+            grid_item->node.Style(), minor_direction_);
+    while (DoesItemOverlap(grid_item->StartLine(major_direction_),
+                           grid_item->EndLine(major_direction_), minor_start,
+                           minor_start + minor_span_size)) {
+      minor_start++;
+    }
+    wtf_size_t minor_end = minor_start + minor_span_size;
+    if (packing_behavior_ == PackingBehavior::kSparse) {
+      minor_cursors.Set(grid_item->StartLine(major_direction_) + 1,
+                        minor_start);
+    }
+    minor_max_end_line_ = std::max<wtf_size_t>(minor_max_end_line_, minor_end);
+
+    // Update placement and ensure track coverage.
+    UpdatePlacementAndEnsureTrackCoverage(
+        GridSpan::TranslatedDefiniteGridSpan(minor_start, minor_end),
+        minor_direction_, *grid_item);
     }
   }
-}
 
 void NGGridPlacement::PlaceAutoMajorAxisGridItem(
     NGGridLayoutAlgorithm::GridItemData& grid_item) {
   wtf_size_t major_span_size = GridPositionsResolver::SpanSizeForAutoPlacedItem(
       grid_item.node.Style(), major_direction_);
-  // Set the minor position of the cursor to the grid item’s minor starting
-  // line. If this is less than the previous column position of the cursor,
-  // increment the major position by 1.
-  if (grid_item.StartLine(minor_direction_) < placement_cursor_minor) {
-    placement_cursor_major++;
+  switch (packing_behavior_) {
+    case PackingBehavior::kSparse:
+      // Set the minor position of the cursor to the grid item’s minor starting
+      // line. If this is less than the previous column position of the cursor,
+      // increment the major position by 1.
+      if (grid_item.StartLine(minor_direction_) < placement_cursor_minor) {
+        placement_cursor_major++;
+      }
+      break;
+    case PackingBehavior::kDense:
+      placement_cursor_major = ExplicitStart(major_direction_);
+      break;
   }
 
   placement_cursor_minor = grid_item.StartLine(minor_direction_);
@@ -175,6 +168,12 @@ void NGGridPlacement::PlaceAutoMajorAxisGridItem(
 
 void NGGridPlacement::PlaceAutoBothAxisGridItem(
     NGGridLayoutAlgorithm::GridItemData& grid_item) {
+  if (packing_behavior_ == PackingBehavior::kDense) {
+    // Set the cursor’s major and minor positions to start-most row and column
+    // lines in the implicit grid.
+    placement_cursor_major = ExplicitStart(major_direction_);
+    placement_cursor_minor = ExplicitStart(minor_direction_);
+  }
   wtf_size_t major_span_size = GridPositionsResolver::SpanSizeForAutoPlacedItem(
       grid_item.node.Style(), major_direction_);
   wtf_size_t minor_span_size = GridPositionsResolver::SpanSizeForAutoPlacedItem(

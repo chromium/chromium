@@ -25,14 +25,13 @@ enum class NGGridItemContributionType {
   kForMaxContentMaximums
 };
 
+enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
+
 class CORE_EXPORT NGGridLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  // TODO(janewman): Move this enum out of |NGGridLayoutAlgorithm| to be
-  // consistent with |NGGridItemContributionType|.
-  enum class AutoPlacementType { kNotNeeded, kMajor, kMinor, kBoth };
 
   struct GridItemData {
     explicit GridItemData(const NGBlockNode node);
