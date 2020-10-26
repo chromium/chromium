@@ -29304,7 +29304,9 @@
       {
         "args": [
           "BrowserMinidumpTest",
-          "--browser=android-chromium"
+          "--browser=android-chromium",
+          "-v",
+          "--passthrough"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
@@ -37441,7 +37443,9 @@
       {
         "args": [
           "BrowserMinidumpTest",
-          "--browser=android-chromium"
+          "--browser=android-chromium",
+          "-v",
+          "--passthrough"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
@@ -37466,7 +37470,9 @@
       {
         "args": [
           "BrowserMinidumpTest",
-          "--browser=android-chromium-monochrome"
+          "--browser=android-chromium-monochrome",
+          "-v",
+          "--passthrough"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {

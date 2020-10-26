@@ -5427,7 +5427,9 @@
       },
       {
         "args": [
-          "BrowserMinidumpTest"
+          "BrowserMinidumpTest",
+          "-v",
+          "--passthrough"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
@@ -7657,7 +7659,9 @@
       },
       {
         "args": [
-          "BrowserMinidumpTest"
+          "BrowserMinidumpTest",
+          "-v",
+          "--passthrough"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {

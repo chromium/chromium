@@ -4212,6 +4212,8 @@
         'args': [
           'BrowserMinidumpTest',
           '--browser=android-chromium',
+          '-v',
+          '--passthrough',
         ],
         'isolate_name': 'telemetry_perf_unittests',
       },
@@ -4219,6 +4221,8 @@
         'args': [
           'BrowserMinidumpTest',
           '--browser=android-chromium-monochrome',
+          '-v',
+          '--passthrough',
         ],
         'isolate_name': 'telemetry_perf_unittests',
       },
@@ -4229,6 +4233,8 @@
       'telemetry_desktop_minidump_unittests': {
         'args': [
           'BrowserMinidumpTest',
+          '-v',
+          '--passthrough',
         ],
         'isolate_name': 'telemetry_perf_unittests',
       },
