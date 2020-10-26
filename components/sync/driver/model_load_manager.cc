@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/driver/model_association_manager.h"
-
-#include <stddef.h>
-#include <stdint.h>
+#include "components/sync/driver/model_load_manager.h"
 
 #include <map>
 #include <utility>
@@ -26,8 +23,10 @@ static const ModelType kStartOrder[] = {
     DEVICE_INFO,
     PROXY_TABS,  //  Listed for completeness.
 
-    // Kick off the association of the non-UI types first so they can associate
-    // in parallel with the UI types.
+    // Kick off the loading of the non-UI types first so they can load in
+    // parallel with the UI types.
+    // TODO(crbug.com/1102837): Evaluate whether this still makes sense. Loading
+    // is non-blocking, so the order of kicking things off shouldn't matter.
     PASSWORDS, AUTOFILL, AUTOFILL_PROFILE, AUTOFILL_WALLET_DATA,
     AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER, EXTENSION_SETTINGS,
     APP_SETTINGS, TYPED_URLS, HISTORY_DELETE_DIRECTIVES,
@@ -50,16 +49,16 @@ static_assert(base::size(kStartOrder) ==
 
 }  // namespace
 
-ModelAssociationManager::ModelAssociationManager(
+ModelLoadManager::ModelLoadManager(
     const DataTypeController::TypeMap* controllers,
-    ModelAssociationManagerDelegate* processor)
+    ModelLoadManagerDelegate* processor)
     : controllers_(controllers), delegate_(processor) {}
 
-ModelAssociationManager::~ModelAssociationManager() = default;
+ModelLoadManager::~ModelLoadManager() = default;
 
-void ModelAssociationManager::Initialize(ModelTypeSet desired_types,
-                                         ModelTypeSet preferred_types,
-                                         const ConfigureContext& context) {
+void ModelLoadManager::Initialize(ModelTypeSet desired_types,
+                                  ModelTypeSet preferred_types,
+                                  const ConfigureContext& context) {
   // |desired_types| must be a subset of |preferred_types|.
   DCHECK(preferred_types.HasAll(desired_types));
 
@@ -80,12 +79,12 @@ void ModelAssociationManager::Initialize(ModelTypeSet desired_types,
     }
   }
 
-  DVLOG(1) << "ModelAssociationManager: Initializing for "
+  DVLOG(1) << "ModelLoadManager: Initializing for "
            << ModelTypeSetToString(desired_types_);
 
   notified_about_ready_for_configure_ = false;
 
-  DVLOG(1) << "ModelAssociationManager: Stopping disabled types.";
+  DVLOG(1) << "ModelLoadManager: Stopping disabled types.";
   std::map<DataTypeController*, ShutdownReason> types_to_stop;
   for (const auto& type_and_dtc : *controllers_) {
     DataTypeController* dtc = type_and_dtc.second.get();
@@ -117,22 +116,21 @@ void ModelAssociationManager::Initialize(ModelTypeSet desired_types,
   // TODO(mastiz): Add test coverage to this waiting logic, including the
   // case where the datatype is STOPPING when this function is called.
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      types_to_stop.size(),
-      base::BindOnce(&ModelAssociationManager::LoadDesiredTypes,
-                     weak_ptr_factory_.GetWeakPtr()));
+      types_to_stop.size(), base::BindOnce(&ModelLoadManager::LoadDesiredTypes,
+                                           weak_ptr_factory_.GetWeakPtr()));
 
   for (const auto& dtc_and_reason : types_to_stop) {
     DataTypeController* dtc = dtc_and_reason.first;
     const ShutdownReason reason = dtc_and_reason.second;
-    DVLOG(1) << "ModelAssociationManager: stop " << dtc->name() << " due to "
+    DVLOG(1) << "ModelLoadManager: stop " << dtc->name() << " due to "
              << ShutdownReasonToString(reason);
     StopDatatypeImpl(SyncError(), reason, dtc, barrier_closure);
   }
 }
 
-void ModelAssociationManager::StopDatatype(ModelType type,
-                                           ShutdownReason shutdown_reason,
-                                           SyncError error) {
+void ModelLoadManager::StopDatatype(ModelType type,
+                                    ShutdownReason shutdown_reason,
+                                    SyncError error) {
   DCHECK(error.IsSet());
   desired_types_.Remove(type);
 
@@ -146,7 +144,7 @@ void ModelAssociationManager::StopDatatype(ModelType type,
   NotifyDelegateIfReadyForConfigure();
 }
 
-void ModelAssociationManager::StopDatatypeImpl(
+void ModelLoadManager::StopDatatypeImpl(
     const SyncError& error,
     ShutdownReason shutdown_reason,
     DataTypeController* dtc,
@@ -162,7 +160,7 @@ void ModelAssociationManager::StopDatatypeImpl(
   dtc->Stop(shutdown_reason, std::move(callback));
 }
 
-void ModelAssociationManager::LoadDesiredTypes() {
+void ModelLoadManager::LoadDesiredTypes() {
   // Load in kStartOrder.
   for (ModelType type : kStartOrder) {
     if (!desired_types_.Has(type))
@@ -174,17 +172,16 @@ void ModelAssociationManager::LoadDesiredTypes() {
     DCHECK_NE(DataTypeController::STOPPING, dtc->state());
     if (dtc->state() == DataTypeController::NOT_RUNNING) {
       DCHECK(!loaded_types_.Has(dtc->type()));
-      dtc->LoadModels(
-          configure_context_,
-          base::BindRepeating(&ModelAssociationManager::ModelLoadCallback,
-                              weak_ptr_factory_.GetWeakPtr()));
+      dtc->LoadModels(configure_context_,
+                      base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
+                                          weak_ptr_factory_.GetWeakPtr()));
     }
   }
   // It's possible that all models are already loaded.
   NotifyDelegateIfReadyForConfigure();
 }
 
-void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
+void ModelLoadManager::Stop(ShutdownReason shutdown_reason) {
   // Ignore callbacks from controllers.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -196,7 +193,7 @@ void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
       // We don't really wait until all datatypes have been fully stopped, which
       // is only required (and in fact waited for) when Initialize() is called.
       StopDatatypeImpl(SyncError(), shutdown_reason, dtc, base::DoNothing());
-      DVLOG(1) << "ModelAssociationManager: Stopped " << dtc->name();
+      DVLOG(1) << "ModelLoadManager: Stopped " << dtc->name();
     }
   }
 
@@ -204,13 +201,13 @@ void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
   loaded_types_.Clear();
 }
 
-void ModelAssociationManager::ModelLoadCallback(ModelType type,
-                                                const SyncError& error) {
-  DVLOG(1) << "ModelAssociationManager: ModelLoadCallback for "
+void ModelLoadManager::ModelLoadCallback(ModelType type,
+                                         const SyncError& error) {
+  DVLOG(1) << "ModelLoadManager: ModelLoadCallback for "
            << ModelTypeToString(type);
 
   if (error.IsSet()) {
-    DVLOG(1) << "ModelAssociationManager: Type encountered an error.";
+    DVLOG(1) << "ModelLoadManager: Type encountered an error.";
     desired_types_.Remove(type);
     DataTypeController* dtc = controllers_->find(type)->second.get();
     StopDatatypeImpl(error, STOP_SYNC, dtc, base::DoNothing());
@@ -228,7 +225,7 @@ void ModelAssociationManager::ModelLoadCallback(ModelType type,
   NotifyDelegateIfReadyForConfigure();
 }
 
-void ModelAssociationManager::NotifyDelegateIfReadyForConfigure() {
+void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
   if (notified_about_ready_for_configure_)
     return;
 

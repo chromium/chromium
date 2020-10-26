@@ -70,7 +70,7 @@ DataTypeManagerImpl::DataTypeManagerImpl(
       state_(DataTypeManager::STOPPED),
       needs_reconfigure_(false),
       debug_info_listener_(debug_info_listener),
-      model_association_manager_(controllers, this),
+      model_load_manager_(controllers, this),
       observer_(observer),
       encryption_handler_(encryption_handler),
       download_started_(false) {
@@ -127,14 +127,14 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
       break;
 
     case DataTypeController::PreconditionState::kMustStopAndClearData:
-      model_association_manager_.StopDatatype(
+      model_load_manager_.StopDatatype(
           type, DISABLE_SYNC,
           SyncError(FROM_HERE, syncer::SyncError::DATATYPE_POLICY_ERROR,
                     "Datatype preconditions not met.", type));
       break;
 
     case DataTypeController::PreconditionState::kMustStopAndKeepData:
-      model_association_manager_.StopDatatype(
+      model_load_manager_.StopDatatype(
           type, STOP_SYNC,
           SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
                     "Data type is unready.", type));
@@ -336,7 +336,7 @@ void DataTypeManagerImpl::Restart() {
   association_types_queue_ = base::queue<AssociationTypesInfo>();
 
   download_started_ = false;
-  model_association_manager_.Initialize(
+  model_load_manager_.Initialize(
       /*desired_types=*/last_enabled_types_,
       /*preferred_types=*/last_requested_types_, last_requested_context_);
 }
@@ -729,7 +729,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
       needs_reconfigure_ = true;
       last_requested_context_.reason =
           GetReasonForProgrammaticReconfigure(last_requested_context_.reason);
-      // Do this asynchronously so the ModelAssociationManager has a chance to
+      // Do this asynchronously so the ModelLoadManager has a chance to
       // finish stopping this type, otherwise DeactivateDataType() and Stop()
       // end up getting called twice on the controller.
       base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -804,7 +804,7 @@ void DataTypeManagerImpl::StopImpl(ShutdownReason reason) {
 
   // Stop all data types. This may trigger association callback but the
   // callback will do nothing because state is set to STOPPING above.
-  model_association_manager_.Stop(reason);
+  model_load_manager_.Stop(reason);
 
   // Individual data type controllers might still be STOPPING, but we don't
   // reflect that in |state_| because, for all practical matters, the manager is

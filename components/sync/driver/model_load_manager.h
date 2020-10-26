@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_DRIVER_MODEL_ASSOCIATION_MANAGER_H__
-#define COMPONENTS_SYNC_DRIVER_MODEL_ASSOCIATION_MANAGER_H__
+#ifndef COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_
+#define COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -15,38 +15,36 @@ namespace syncer {
 
 struct ConfigureContext;
 
-// Interface for ModelAssociationManager to pass the results of async operations
+// Interface for ModelLoadManager to pass the results of async operations
 // back to DataTypeManager.
-class ModelAssociationManagerDelegate {
+class ModelLoadManagerDelegate {
  public:
   // Called when all desired types are loaded, i.e. are ready to be configured
   // with ModelTypeConfigurer. A data type is ready when its progress marker is
   // available, which is the case once the local model has been loaded.
   // This function is called at most once after each call to
-  // ModelAssociationManager::Initialize().
+  // ModelLoadManager::Initialize().
   virtual void OnAllDataTypesReadyForConfigure() = 0;
 
-  // Called when the ModelAssociationManager has decided it must stop |type|,
-  // likely because it is no longer a desired data type, sync is shutting down,
-  // or some error occurred during loading.
+  // Called when the ModelLoadManager has decided it must stop |type|, likely
+  // because it is no longer a desired data type, sync is shutting down, or some
+  // error occurred during loading.
   virtual void OnSingleDataTypeWillStop(ModelType type,
                                         const SyncError& error) = 0;
 
-  virtual ~ModelAssociationManagerDelegate() = default;
+  virtual ~ModelLoadManagerDelegate() = default;
 };
 
-// |ModelAssociationManager| instructs DataTypeControllers to load models and
-// to stop (DataTypeManager is responsible for activating/deactivating data
-// types). Since the operations are async it uses an interface to inform
-// DataTypeManager of the results of the operations.
+// |ModelLoadManager| instructs DataTypeControllers to load models and to stop
+// (DataTypeManager is responsible for activating/deactivating data types).
+// Since the operations are async it uses an interface to inform DataTypeManager
+// of the results of the operations.
 // This class is owned by DataTypeManager.
-// TODO(crbug.com/1102837): Association was a Directory concept, this class
-// should disappear or be refactored.
-class ModelAssociationManager {
+class ModelLoadManager {
  public:
-  ModelAssociationManager(const DataTypeController::TypeMap* controllers,
-                          ModelAssociationManagerDelegate* delegate);
-  virtual ~ModelAssociationManager();
+  ModelLoadManager(const DataTypeController::TypeMap* controllers,
+                   ModelLoadManagerDelegate* delegate);
+  virtual ~ModelLoadManager();
 
   // Stops any data types that are *not* in |desired_types|, then kicks off
   // loading of all |desired_types|.
@@ -87,8 +85,8 @@ class ModelAssociationManager {
   // Set of all registered controllers.
   const DataTypeController::TypeMap* const controllers_;
 
-  // The delegate in charge of handling model association results.
-  ModelAssociationManagerDelegate* const delegate_;
+  // The delegate in charge of handling model load results.
+  ModelLoadManagerDelegate* const delegate_;
 
   ConfigureContext configure_context_;
 
@@ -100,11 +98,11 @@ class ModelAssociationManager {
 
   bool notified_about_ready_for_configure_ = false;
 
-  base::WeakPtrFactory<ModelAssociationManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ModelLoadManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ModelAssociationManager);
+  DISALLOW_COPY_AND_ASSIGN(ModelLoadManager);
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_DRIVER_MODEL_ASSOCIATION_MANAGER_H__
+#endif  // COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_

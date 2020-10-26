@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/configure_context.h"
-#include "components/sync/driver/model_association_manager.h"
+#include "components/sync/driver/model_load_manager.h"
 #include "components/sync/engine/model_type_configurer.h"
 
 namespace syncer {
@@ -30,7 +30,7 @@ class DataTypeManagerObserver;
 struct DataTypeConfigurationStats;
 
 class DataTypeManagerImpl : public DataTypeManager,
-                            public ModelAssociationManagerDelegate {
+                            public ModelLoadManagerDelegate {
  public:
   DataTypeManagerImpl(
       ModelTypeSet initial_types,
@@ -55,16 +55,10 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeSet GetPurgedDataTypes() const override;
   State state() const override;
 
-  // |ModelAssociationManagerDelegate| implementation.
+  // |ModelLoadManagerDelegate| implementation.
   void OnAllDataTypesReadyForConfigure() override;
   void OnSingleDataTypeWillStop(ModelType type,
                                 const SyncError& error) override;
-
-  // Used by unit tests. TODO(sync) : This would go away if we made
-  // this class be able to do Dependency injection. crbug.com/129212.
-  ModelAssociationManager* GetModelAssociationManagerForTesting() {
-    return &model_association_manager_;
-  }
 
  protected:
   // Returns the priority types (control + priority user types).
@@ -96,7 +90,7 @@ class DataTypeManagerImpl : public DataTypeManager,
     // Those types that were already downloaded and didn't have an error at
     // configuration time. Corresponds with AssociationTypesInfo's
     // |ready_types|. These types can start associating as soon as the
-    // ModelAssociationManager is not busy.
+    // ModelLoadManager is not busy.
     READY_AT_CONFIG,
     // All other types, including first time sync types and those that have
     // encountered an error. These types must wait until the syncer has done
@@ -193,7 +187,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ConfigureContext last_requested_context_;
 
   // A set of types that were enabled at the time initialization with the
-  // |model_association_manager_| was last attempted.
+  // |model_load_manager_| was last attempted.
   ModelTypeSet last_enabled_types_;
 
   // A set of types that should be redownloaded even if initial sync is
@@ -215,7 +209,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   const WeakHandle<DataTypeDebugInfoListener> debug_info_listener_;
 
   // The manager that handles the model association of the individual types.
-  ModelAssociationManager model_association_manager_;
+  ModelLoadManager model_load_manager_;
 
   // DataTypeManager must have only one observer -- the ProfileSyncService that
   // created it and manages its lifetime.
@@ -267,7 +261,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   // Association and time stats of data type configuration.
   std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;
 
-  // Configuration process is started when ModelAssociationManager notifies
+  // Configuration process is started when ModelLoadManager notifies
   // DataTypeManager that all types are ready for configure.
   // This flag ensures that this process is started only once.
   bool download_started_;

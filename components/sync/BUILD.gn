@@ -410,7 +410,7 @@ source_set("unit_tests") {
     "driver/backend_migrator_unittest.cc",
     "driver/data_type_manager_impl_unittest.cc",
     "driver/glue/sync_engine_impl_unittest.cc",
-    "driver/model_association_manager_unittest.cc",
+    "driver/model_load_manager_unittest.cc",
     "driver/model_type_controller_unittest.cc",
     "driver/passphrase_type_metrics_provider_unittest.cc",
     "driver/profile_sync_service_startup_unittest.cc",

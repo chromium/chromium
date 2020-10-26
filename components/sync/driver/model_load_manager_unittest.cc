@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/driver/model_association_manager.h"
+#include "components/sync/driver/model_load_manager.h"
 
 #include <memory>
 
@@ -29,11 +29,10 @@ ConfigureContext BuildConfigureContext(SyncMode sync_mode = SyncMode::kFull) {
 
 }  // namespace
 
-class MockModelAssociationManagerDelegate
-    : public ModelAssociationManagerDelegate {
+class MockModelLoadManagerDelegate : public ModelLoadManagerDelegate {
  public:
-  MockModelAssociationManagerDelegate() = default;
-  ~MockModelAssociationManagerDelegate() override = default;
+  MockModelLoadManagerDelegate() = default;
+  ~MockModelLoadManagerDelegate() override = default;
   MOCK_METHOD(void, OnAllDataTypesReadyForConfigure, (), (override));
   MOCK_METHOD(void,
               OnSingleDataTypeWillStop,
@@ -41,9 +40,9 @@ class MockModelAssociationManagerDelegate
               (override));
 };
 
-class SyncModelAssociationManagerTest : public testing::Test {
+class SyncModelLoadManagerTest : public testing::Test {
  public:
-  SyncModelAssociationManagerTest() = default;
+  SyncModelLoadManagerTest() = default;
 
   FakeDataTypeController* GetController(ModelType model_type) {
     auto it = controllers_.find(model_type);
@@ -56,16 +55,16 @@ class SyncModelAssociationManagerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-  testing::NiceMock<MockModelAssociationManagerDelegate> delegate_;
+  testing::NiceMock<MockModelLoadManagerDelegate> delegate_;
   DataTypeController::TypeMap controllers_;
 };
 
-// Start a type and make sure ModelAssociationManager callst the |Start|
+// Start a type and make sure ModelLoadManager callst the |Start|
 // method and calls the callback when it is done.
-TEST_F(SyncModelAssociationManagerTest, SimpleModelStart) {
+TEST_F(SyncModelLoadManagerTest, SimpleModelStart) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types(BOOKMARKS, APPS);
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
@@ -73,9 +72,9 @@ TEST_F(SyncModelAssociationManagerTest, SimpleModelStart) {
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
 
   // Initialize() kicks off model loading.
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -83,53 +82,53 @@ TEST_F(SyncModelAssociationManagerTest, SimpleModelStart) {
 }
 
 // Start a type, let it finish and then call stop.
-TEST_F(SyncModelAssociationManagerTest, StopAfterFinish) {
+TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types;
   types.Put(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
 
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
 
-  model_association_manager.Stop(STOP_SYNC);
+  model_load_manager.Stop(STOP_SYNC);
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
 // Test that model that failed to load between initialization and association
 // is reported and stopped properly.
-TEST_F(SyncModelAssociationManagerTest, ModelLoadFailBeforeAssociationStart) {
+TEST_F(SyncModelLoadManagerTest, ModelLoadFailBeforeAssociationStart) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   GetController(BOOKMARKS)->model()->SimulateModelError(
       ModelError(FROM_HERE, "Test error"));
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types;
   types.Put(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
 
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
 
   EXPECT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 }
 
 // Test that a runtime error is handled by stopping the type.
-TEST_F(SyncModelAssociationManagerTest, StopAfterConfiguration) {
+TEST_F(SyncModelLoadManagerTest, StopAfterConfiguration) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types;
   types.Put(BOOKMARKS);
 
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -142,22 +141,22 @@ TEST_F(SyncModelAssociationManagerTest, StopAfterConfiguration) {
 
 // Test that OnAllDataTypesReadyForConfigure is called when all datatypes that
 // require LoadModels before configuration are loaded.
-TEST_F(SyncModelAssociationManagerTest, OnAllDataTypesReadyForConfigure) {
+TEST_F(SyncModelLoadManagerTest, OnAllDataTypesReadyForConfigure) {
   // Create two controllers with delayed model load.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
   GetController(APPS)->model()->EnableManualModelStart();
 
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types(BOOKMARKS, APPS);
   // OnAllDataTypesReadyForConfigure shouldn't be called, APPS data type is not
   // loaded yet.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure()).Times(0);
 
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_STARTING);
@@ -177,7 +176,7 @@ TEST_F(SyncModelAssociationManagerTest, OnAllDataTypesReadyForConfigure) {
             DataTypeController::MODEL_LOADED);
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
 
-  // Call ModelAssociationManager::Initialize with reduced set of datatypes.
+  // Call ModelLoadManager::Initialize with reduced set of datatypes.
   // All datatypes in reduced set are already loaded.
   // OnAllDataTypesReadyForConfigure() should be called.
   testing::Mock::VerifyAndClearExpectations(&delegate_);
@@ -185,9 +184,9 @@ TEST_F(SyncModelAssociationManagerTest, OnAllDataTypesReadyForConfigure) {
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
   ModelTypeSet reduced_types(APPS);
-  model_association_manager.Initialize(/*desired_types=*/reduced_types,
-                                       /*preferred_types=*/reduced_types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/reduced_types,
+                                /*preferred_types=*/reduced_types,
+                                BuildConfigureContext());
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
@@ -196,20 +195,20 @@ TEST_F(SyncModelAssociationManagerTest, OnAllDataTypesReadyForConfigure) {
 
 // Test that OnAllDataTypesReadyForConfigure() is called correctly after
 // LoadModels fails for one of datatypes.
-TEST_F(SyncModelAssociationManagerTest,
+TEST_F(SyncModelLoadManagerTest,
        OnAllDataTypesReadyForConfigure_FailedLoadModels) {
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
   GetController(APPS)->model()->EnableManualModelStart();
 
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types(APPS);
   // OnAllDataTypesReadyForConfigure shouldn't be called, APPS data type is not
   // loaded yet.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure()).Times(0);
 
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
 
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_STARTING);
 
@@ -225,7 +224,7 @@ TEST_F(SyncModelAssociationManagerTest,
 
 // Test that if one of the types fails while another is still being loaded then
 // OnAllDataTypesReadyForConfgiure is still called correctly.
-TEST_F(SyncModelAssociationManagerTest,
+TEST_F(SyncModelLoadManagerTest,
        OnAllDataTypesReadyForConfigure_TypeFailedAfterLoadModels) {
   // Create two controllers with delayed model load. Both should block
   // configuration.
@@ -234,16 +233,16 @@ TEST_F(SyncModelAssociationManagerTest,
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
   GetController(APPS)->model()->EnableManualModelStart();
 
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types(BOOKMARKS, APPS);
 
   // Apps will finish loading but bookmarks won't.
   // OnAllDataTypesReadyForConfigure shouldn't be called.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure()).Times(0);
 
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
 
   GetController(APPS)->model()->SimulateModelStartFinished();
 
@@ -271,44 +270,44 @@ TEST_F(SyncModelAssociationManagerTest,
 }
 
 // Test that Stop clears metadata for disabled type.
-TEST_F(SyncModelAssociationManagerTest, StopClearMetadata) {
+TEST_F(SyncModelLoadManagerTest, StopClearMetadata) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
   ModelTypeSet types(BOOKMARKS);
 
   // Initialize() kicks off model loading.
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(/*desired_types=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
 
-  model_association_manager.Stop(DISABLE_SYNC);
+  model_load_manager.Stop(DISABLE_SYNC);
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
 // Test that stopping a single type clears the metadata for the disabled type.
-TEST_F(SyncModelAssociationManagerTest, StopDataType) {
+TEST_F(SyncModelLoadManagerTest, StopDataType) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
   // Initialize() kicks off model loading.
-  model_association_manager.Initialize(
+  model_load_manager.Initialize(
       /*desired_types=*/ModelTypeSet(BOOKMARKS),
       /*preferred_types=*/ModelTypeSet(BOOKMARKS), BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
 
-  model_association_manager.StopDatatype(
+  model_load_manager.StopDatatype(
       BOOKMARKS, DISABLE_SYNC,
       SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
                 "Data type is unready.", BOOKMARKS));
@@ -318,13 +317,13 @@ TEST_F(SyncModelAssociationManagerTest, StopDataType) {
 }
 
 // Test that stopping a single type is ignored when the type is not running.
-TEST_F(SyncModelAssociationManagerTest, StopDataType_NotRunning) {
+TEST_F(SyncModelLoadManagerTest, StopDataType_NotRunning) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
-  model_association_manager.StopDatatype(
+  model_load_manager.StopDatatype(
       BOOKMARKS, DISABLE_SYNC,
       SyncError(FROM_HERE, syncer::SyncError::UNREADY_ERROR,
                 "Data type is unready.", BOOKMARKS));
@@ -335,18 +334,18 @@ TEST_F(SyncModelAssociationManagerTest, StopDataType_NotRunning) {
 
 // Test that Initialize stops controllers with KEEP_METADATA for preferred
 // types.
-TEST_F(SyncModelAssociationManagerTest, KeepsMetadataForPreferredDataType) {
+TEST_F(SyncModelLoadManagerTest, KeepsMetadataForPreferredDataType) {
   // Associate model with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet preferred_types(BOOKMARKS, APPS);
   ModelTypeSet desired_types = preferred_types;
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_association_manager.Initialize(desired_types, preferred_types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(desired_types, preferred_types,
+                                BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -359,8 +358,8 @@ TEST_F(SyncModelAssociationManagerTest, KeepsMetadataForPreferredDataType) {
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(APPS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_association_manager.Initialize(desired_types, preferred_types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(desired_types, preferred_types,
+                                BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -370,18 +369,18 @@ TEST_F(SyncModelAssociationManagerTest, KeepsMetadataForPreferredDataType) {
 
 // Test that Initialize stops controllers with CLEAR_METADATA for
 // no-longer-preferred types.
-TEST_F(SyncModelAssociationManagerTest, ClearsMetadataForNotPreferredDataType) {
+TEST_F(SyncModelLoadManagerTest, ClearsMetadataForNotPreferredDataType) {
   // Associate model with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet preferred_types(BOOKMARKS, APPS);
   ModelTypeSet desired_types = preferred_types;
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_association_manager.Initialize(desired_types, preferred_types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(desired_types, preferred_types,
+                                BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -395,8 +394,8 @@ TEST_F(SyncModelAssociationManagerTest, ClearsMetadataForNotPreferredDataType) {
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(APPS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_association_manager.Initialize(desired_types, preferred_types,
-                                       BuildConfigureContext());
+  model_load_manager.Initialize(desired_types, preferred_types,
+                                BuildConfigureContext());
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -404,15 +403,14 @@ TEST_F(SyncModelAssociationManagerTest, ClearsMetadataForNotPreferredDataType) {
   EXPECT_EQ(1, GetController(APPS)->model()->clear_metadata_call_count());
 }
 
-TEST_F(SyncModelAssociationManagerTest,
-       SwitchFromOnDiskToInMemoryRestartsTypes) {
+TEST_F(SyncModelLoadManagerTest, SwitchFromOnDiskToInMemoryRestartsTypes) {
   // Associate model with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(
       BOOKMARKS, /*enable_transport_only_model=*/true);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(
       APPS, /*enable_transport_only_model=*/true);
 
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet preferred_types(BOOKMARKS, APPS);
   ModelTypeSet desired_types = preferred_types;
 
@@ -422,8 +420,8 @@ TEST_F(SyncModelAssociationManagerTest,
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_association_manager.Initialize(desired_types, preferred_types,
-                                       configure_context);
+  model_load_manager.Initialize(desired_types, preferred_types,
+                                configure_context);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -440,8 +438,8 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_association_manager.Initialize(desired_types, preferred_types,
-                                       configure_context);
+  model_load_manager.Initialize(desired_types, preferred_types,
+                                configure_context);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -451,7 +449,7 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_EQ(0, GetController(APPS)->model()->clear_metadata_call_count());
 }
 
-TEST_F(SyncModelAssociationManagerTest,
+TEST_F(SyncModelLoadManagerTest,
        SwitchFromTransportOnlyToFullSyncRestartsTypes) {
   // Associate model with two data types.
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(
@@ -459,7 +457,7 @@ TEST_F(SyncModelAssociationManagerTest,
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(
       APPS, /*enable_transport_only_model=*/true);
 
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet preferred_types(BOOKMARKS, APPS);
   ModelTypeSet desired_types = preferred_types;
 
@@ -469,8 +467,8 @@ TEST_F(SyncModelAssociationManagerTest,
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_association_manager.Initialize(desired_types, preferred_types,
-                                       configure_context);
+  model_load_manager.Initialize(desired_types, preferred_types,
+                                configure_context);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
@@ -487,8 +485,8 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  model_association_manager.Initialize(desired_types, preferred_types,
-                                       configure_context);
+  model_load_manager.Initialize(desired_types, preferred_types,
+                                configure_context);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
