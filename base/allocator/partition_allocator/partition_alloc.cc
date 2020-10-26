@@ -19,6 +19,7 @@
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"

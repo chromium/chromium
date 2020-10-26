@@ -1316,8 +1316,10 @@ component("base") {
     }
 
     if (use_allocator == "partition") {
-      sources +=
-          [ "allocator/allocator_shim_default_dispatch_to_partition_alloc.cc" ]
+      sources += [
+        "allocator/allocator_shim_default_dispatch_to_partition_alloc.cc",
+        "allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
+      ]
     } else if (use_allocator == "tcmalloc") {
       sources += [ "allocator/allocator_shim_default_dispatch_to_tcmalloc.cc" ]
       deps += [ "//base/allocator:tcmalloc" ]
@@ -1781,6 +1783,8 @@ component("base") {
         "allocator/partition_allocator/partition_ref_count.cc",
         "allocator/partition_allocator/partition_ref_count.h",
         "allocator/partition_allocator/partition_root.h",
+        "allocator/partition_allocator/partition_stats.cc",
+        "allocator/partition_allocator/partition_stats.h",
         "allocator/partition_allocator/partition_tag.h",
         "allocator/partition_allocator/partition_tag_bitmap.h",
         "allocator/partition_allocator/partition_tls.h",

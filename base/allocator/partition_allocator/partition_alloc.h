@@ -262,8 +262,6 @@ static OomFunction g_oom_handling_function = nullptr;
 
 }  // namespace internal
 
-class PartitionStatsDumper;
-
 enum PartitionPurgeFlags {
   // Decommitting the ring list of empty slot spans is reasonably fast.
   PartitionPurgeDecommitEmptySlotSpans = 1 << 0,
@@ -272,57 +270,6 @@ enum PartitionPurgeFlags {
   // size. It often frees a similar amount of memory to decommitting the empty
   // slot spans, though.
   PartitionPurgeDiscardUnusedSystemPages = 1 << 1,
-};
-
-// Struct used to retrieve total memory usage of a partition. Used by
-// PartitionStatsDumper implementation.
-struct PartitionMemoryStats {
-  size_t total_mmapped_bytes;    // Total bytes mmaped from the system.
-  size_t total_committed_bytes;  // Total size of commmitted pages.
-  size_t total_resident_bytes;   // Total bytes provisioned by the partition.
-  size_t total_active_bytes;     // Total active bytes in the partition.
-  size_t total_decommittable_bytes;  // Total bytes that could be decommitted.
-  size_t total_discardable_bytes;    // Total bytes that could be discarded.
-
-  bool has_thread_cache;
-  internal::ThreadCacheStats current_thread_cache_stats;
-  internal::ThreadCacheStats all_thread_caches_stats;
-};
-
-// Struct used to retrieve memory statistics about a partition bucket. Used by
-// PartitionStatsDumper implementation.
-struct PartitionBucketMemoryStats {
-  bool is_valid;       // Used to check if the stats is valid.
-  bool is_direct_map;  // True if this is a direct mapping; size will not be
-                       // unique.
-  uint32_t bucket_slot_size;          // The size of the slot in bytes.
-  uint32_t allocated_slot_span_size;  // Total size the slot span allocated
-                                      // from the system (committed pages).
-  uint32_t active_bytes;              // Total active bytes used in the bucket.
-  uint32_t resident_bytes;            // Total bytes provisioned in the bucket.
-  uint32_t decommittable_bytes;       // Total bytes that could be decommitted.
-  uint32_t discardable_bytes;         // Total bytes that could be discarded.
-  uint32_t num_full_slot_spans;       // Number of slot spans with all slots
-                                      // allocated.
-  uint32_t num_active_slot_spans;     // Number of slot spans that have at least
-                                      // one provisioned slot.
-  uint32_t num_empty_slot_spans;      // Number of slot spans that are empty
-                                      // but not decommitted.
-  uint32_t num_decommitted_slot_spans;  // Number of slot spans that are empty
-                                        // and decommitted.
-};
-
-// Interface that is passed to PartitionDumpStats and
-// PartitionDumpStats for using the memory statistics.
-class BASE_EXPORT PartitionStatsDumper {
- public:
-  // Called to dump total memory used by partition, once per partition.
-  virtual void PartitionDumpTotals(const char* partition_name,
-                                   const PartitionMemoryStats*) = 0;
-
-  // Called to dump stats about buckets, for each bucket.
-  virtual void PartitionsDumpBucketStats(const char* partition_name,
-                                         const PartitionBucketMemoryStats*) = 0;
 };
 
 namespace {

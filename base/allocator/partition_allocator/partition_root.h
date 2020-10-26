@@ -10,14 +10,13 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
+#include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/pcscan.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/optional.h"
 
 namespace base {
-
-class PartitionStatsDumper;
 
 // Options struct used to configure PartitionRoot and PartitionAllocator.
 struct PartitionOptions {

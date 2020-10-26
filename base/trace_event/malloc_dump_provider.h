@@ -6,6 +6,7 @@
 #define BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 
 #include "base/memory/singleton.h"
+#include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -13,6 +14,10 @@
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
     defined(OS_WIN) || defined(OS_MAC)
 #define MALLOC_MEMORY_TRACING_SUPPORTED
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+#include "base/allocator/partition_allocator/partition_stats.h"
 #endif
 
 namespace base {
@@ -49,6 +54,14 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   bool emit_metrics_on_memory_dump_ = true;
   base::Lock emit_metrics_on_memory_dump_lock_;
 };
+
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+class MemoryAllocatorDump;
+
+BASE_EXPORT void ReportPartitionAllocThreadCacheStats(
+    MemoryAllocatorDump* dump,
+    const internal::ThreadCacheStats& stats);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace trace_event
 }  // namespace base

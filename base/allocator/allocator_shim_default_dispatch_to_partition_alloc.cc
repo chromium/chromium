@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/bits.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -35,7 +38,7 @@ std::atomic<base::ThreadSafePartitionRoot*> g_root_;
 // Buffer for placement new.
 uint8_t g_allocator_buffer[sizeof(base::ThreadSafePartitionRoot)];
 
-base::ThreadSafePartitionRoot& Allocator() {
+base::ThreadSafePartitionRoot* Allocator() {
   // Double-checked locking.
   //
   // The proper way to proceed is:
@@ -64,7 +67,7 @@ base::ThreadSafePartitionRoot& Allocator() {
   // initialization before any other thread is created).
   auto* root = g_root_.load(std::memory_order_acquire);
   if (LIKELY(root))
-    return *root;
+    return root;
 
   bool expected = false;
   // Semantically equivalent to base::Lock::Acquire().
@@ -78,7 +81,7 @@ base::ThreadSafePartitionRoot& Allocator() {
   if (root) {
     // Semantically equivalent to base::Lock::Release().
     g_initialization_lock.store(false, std::memory_order_release);
-    return *root;
+    return root;
   }
 
   auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot(
@@ -89,26 +92,26 @@ base::ThreadSafePartitionRoot& Allocator() {
 
   // Semantically equivalent to base::Lock::Release().
   g_initialization_lock.store(false, std::memory_order_release);
-  return *new_root;
+  return new_root;
 }
 
 using base::allocator::AllocatorDispatch;
 
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
-  return Allocator().AllocFlagsNoHooks(0, size);
+  return Allocator()->AllocFlagsNoHooks(0, size);
 }
 
 void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                size_t size,
                                void* context) {
-  return Allocator().AllocFlagsNoHooks(base::PartitionAllocReturnNull, size);
+  return Allocator()->AllocFlagsNoHooks(base::PartitionAllocReturnNull, size);
 }
 
 void* PartitionCalloc(const AllocatorDispatch*,
                       size_t n,
                       size_t size,
                       void* context) {
-  return Allocator().AllocFlagsNoHooks(base::PartitionAllocZeroFill, n * size);
+  return Allocator()->AllocFlagsNoHooks(base::PartitionAllocZeroFill, n * size);
 }
 
 base::ThreadSafePartitionRoot* AlignedAllocator() {
@@ -177,8 +180,8 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* address,
                        size_t size,
                        void* context) {
-  return Allocator().ReallocFlags(base::PartitionAllocNoHooks, address, size,
-                                  "");
+  return Allocator()->ReallocFlags(base::PartitionAllocNoHooks, address, size,
+                                   "");
 }
 
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
@@ -192,27 +195,23 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
   return base::ThreadSafePartitionRoot::GetUsableSize(address);
 }
 
-class PartitionStatsDumperImpl : public base::PartitionStatsDumper {
- public:
-  PartitionStatsDumperImpl() = default;
-
-  void PartitionDumpTotals(
-      const char* partition_name,
-      const base::PartitionMemoryStats* memory_stats) override {
-    stats_ = *memory_stats;
-  }
-
-  void PartitionsDumpBucketStats(
-      const char* partition_name,
-      const base::PartitionBucketMemoryStats*) override {}
-
-  const base::PartitionMemoryStats& stats() const { return stats_; }
-
- private:
-  base::PartitionMemoryStats stats_;
-};
-
 }  // namespace
+
+namespace base {
+namespace internal {
+
+// static
+ThreadSafePartitionRoot* PartitionAllocMalloc::Allocator() {
+  return ::Allocator();
+}
+
+// static
+ThreadSafePartitionRoot* PartitionAllocMalloc::AlignedAllocator() {
+  return ::AlignedAllocator();
+}
+
+}  // namespace internal
+}  // namespace base
 
 namespace base {
 namespace allocator {
@@ -221,7 +220,7 @@ namespace allocator {
 void EnablePCScanIfNeeded() {
   if (!features::IsPartitionAllocPCScanEnabled())
     return;
-  Allocator().EnablePCScan();
+  Allocator()->EnablePCScan();
   AlignedAllocator()->EnablePCScan();
 }
 #endif
@@ -265,10 +264,10 @@ SHIM_ALWAYS_EXPORT int mallopt(int cmd, int value) __THROW {
 
 #if defined(OS_POSIX)
 SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
-  PartitionStatsDumperImpl allocator_dumper;
-  Allocator().DumpStats("malloc", true, &allocator_dumper);
+  base::SimplePartitionStatsDumper allocator_dumper;
+  Allocator()->DumpStats("malloc", true, &allocator_dumper);
 
-  PartitionStatsDumperImpl aligned_allocator_dumper;
+  base::SimplePartitionStatsDumper aligned_allocator_dumper;
   AlignedAllocator()->DumpStats("posix_memalign", true,
                                 &aligned_allocator_dumper);
 

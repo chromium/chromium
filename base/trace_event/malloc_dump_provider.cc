@@ -24,6 +24,10 @@
 #include <windows.h>
 #endif
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+#endif
+
 namespace base {
 namespace trace_event {
 
@@ -59,6 +63,27 @@ void WinHeapMemoryDumpImpl(WinHeapInfo* crt_heap_info) {
   CHECK(::HeapUnlock(crt_heap) == TRUE);
 }
 #endif  // defined(OS_WIN)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+void ReportDetailedPartitionAllocStats(ProcessMemoryDump* pmd) {
+  SimplePartitionStatsDumper allocator_dumper;
+  internal::PartitionAllocMalloc::Allocator()->DumpStats("malloc", false,
+                                                         &allocator_dumper);
+
+  if (allocator_dumper.stats().has_thread_cache) {
+    const auto& stats = allocator_dumper.stats().all_thread_caches_stats;
+    auto* thread_cache_dump = pmd->CreateAllocatorDump("malloc/thread_cache");
+    ReportPartitionAllocThreadCacheStats(thread_cache_dump, stats);
+    const auto& main_thread_stats =
+        allocator_dumper.stats().current_thread_cache_stats;
+    auto* main_thread_cache_dump =
+        pmd->CreateAllocatorDump("malloc/thread_cache/main_thread");
+    ReportPartitionAllocThreadCacheStats(main_thread_cache_dump,
+                                         main_thread_stats);
+  }
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 }  // namespace
 
 // static
@@ -87,6 +112,12 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   size_t resident_size = 0;
   size_t allocated_objects_size = 0;
   size_t allocated_objects_count = 0;
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::DETAILED) {
+    ReportDetailedPartitionAllocStats(pmd);
+  }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 #if BUILDFLAG(USE_TCMALLOC)
   bool res =
       allocator::GetNumericProperty("generic.heap_size", &total_virtual_size);
@@ -182,6 +213,29 @@ void MallocDumpProvider::DisableMetrics() {
   base::AutoLock auto_lock(emit_metrics_on_memory_dump_lock_);
   emit_metrics_on_memory_dump_ = false;
 }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+void ReportPartitionAllocThreadCacheStats(
+    MemoryAllocatorDump* dump,
+    const internal::ThreadCacheStats& stats) {
+  dump->AddScalar("alloc_count", "scalar", stats.alloc_count);
+  dump->AddScalar("alloc_hits", "scalar", stats.alloc_hits);
+  dump->AddScalar("alloc_misses", "scalar", stats.alloc_misses);
+
+  dump->AddScalar("alloc_miss_empty", "scalar", stats.alloc_miss_empty);
+  dump->AddScalar("alloc_miss_too_large", "scalar", stats.alloc_miss_too_large);
+
+  dump->AddScalar("cache_fill_count", "scalar", stats.cache_fill_count);
+  dump->AddScalar("cache_fill_hits", "scalar", stats.cache_fill_hits);
+  dump->AddScalar("cache_fill_misses", "scalar", stats.cache_fill_misses);
+  dump->AddScalar("cache_fill_bucket_full", "scalar",
+                  stats.cache_fill_bucket_full);
+  dump->AddScalar("cache_fill_too_large", "scalar", stats.cache_fill_too_large);
+
+  dump->AddScalar("size", "bytes", stats.bucket_total_memory);
+  dump->AddScalar("metadata_overhead", "bytes", stats.metadata_overhead);
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace trace_event
 }  // namespace base
