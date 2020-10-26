@@ -24,7 +24,8 @@ namespace base {
 
 namespace {
 
-// Compile test.
+// If IMMEDIATE_CRASH() is not treated as noreturn by the compiler, the compiler
+// will complain that not all paths through this function return a value.
 int ALLOW_UNUSED_TYPE TestImmediateCrashTreatedAsNoReturn() {
   IMMEDIATE_CRASH();
 }
@@ -201,8 +202,20 @@ std::vector<Instruction> MaybeSkipCoverageHook(
 
 }  // namespace
 
-// Checks that the IMMEDIATE_CRASH() macro produces specific instructions; see
-// comments in immediate_crash.h for the requirements.
+// Attempts to verify the actual instructions emitted by IMMEDIATE_CRASH().
+// While the test results are highly implementation-specific, this allows macro
+// changes (e.g. CLs like https://crrev.com/671123) to be verified using the
+// trybots/waterfall, without having to build and disassemble Chrome on
+// multiple platforms. This makes it easier to evaluate changes to
+// IMMEDIATE_CRASH() against its requirements (e.g. size of emitted sequence,
+// whether or not multiple IMMEDIATE_CRASH sequences can be folded together, et
+// cetera). Please see immediate_crash.h for more details about the
+// requirements.
+//
+// Note that C++ provides no way to get the size of a function. Instead, the
+// test relies on a shared library which defines only two functions and assumes
+// the two functions will be laid out contiguously as a heuristic for finding
+// the size of the function.
 TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   std::vector<Instruction> body;
   ASSERT_NO_FATAL_FAILURE(GetTestFunctionInstructions(&body));
