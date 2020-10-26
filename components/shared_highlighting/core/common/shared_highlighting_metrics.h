@@ -21,11 +21,14 @@ enum class LinkGenerationError {
   kEmptySelection = 5,
 
   // Android specific.
-  kTabHidden = 5,
-  kOmniboxNavigation = 6,
-  kTabCrash = 7,
+  kTabHidden = 6,
+  kOmniboxNavigation = 7,
+  kTabCrash = 8,
 
-  kMaxValue = kTabCrash
+  // Catch-all bucket.
+  kUnknown = 9,
+
+  kMaxValue = kUnknown
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
