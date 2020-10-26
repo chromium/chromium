@@ -55,6 +55,23 @@ export class InkController {
     this.tool_ = null;
   }
 
+  /**
+   * @return {boolean}
+   * @override
+   */
+  get isActive() {
+    // TODO(crbug.com/1134208): Implement when InkController is a singleton.
+    return false;
+  }
+
+  /**
+   * @param {boolean} isActive
+   * @override
+   */
+  set isActive(isActive) {
+    // TODO(crbug.com/1134208): Implement when InkController is a singleton.
+  }
+
   /** @return {!EventTarget} */
   getEventTarget() {
     return this.eventTarget_;

@@ -103,9 +103,6 @@ export class PDFViewerBaseElement extends PolymerElement {
     /** @private {?Viewport} */
     this.viewport_ = null;
 
-    /** @private {?PluginController} */
-    this.pluginController_ = null;
-
     /** @private {?HTMLEmbedElement} */
     this.plugin_ = null;
 
@@ -226,7 +223,7 @@ export class PDFViewerBaseElement extends PolymerElement {
 
     // Parse open pdf parameters.
     this.paramsParser = new OpenPdfParamsParser(destination => {
-      return this.pluginController_.getNamedDestination(destination);
+      return PluginController.getInstance().getNamedDestination(destination);
     });
 
     // Can only reload if we are in a normal tab.
@@ -274,12 +271,16 @@ export class PDFViewerBaseElement extends PolymerElement {
     // Create the plugin.
     this.plugin_ = this.createPlugin_(pdfViewerUpdateEnabled);
     this.getContent().appendChild(this.plugin_);
-    this.pluginController_ = new PluginController(
+
+    const pluginController = PluginController.getInstance();
+    pluginController.init(
         this.plugin_, this.viewport_, () => this.isUserInitiatedEvent,
         () => this.loaded);
-    this.currentController = this.pluginController_;
+    pluginController.isActive = true;
+    this.currentController = pluginController;
+
     this.tracker.add(
-        this.pluginController_.getEventTarget(), 'plugin-message',
+        pluginController.getEventTarget(), 'plugin-message',
         e => this.handlePluginMessage(e));
 
     document.body.addEventListener('change-page-and-xy', e => {
@@ -447,14 +448,6 @@ export class PDFViewerBaseElement extends PolymerElement {
   /** @return {!Viewport} */
   get viewport() {
     return assert(this.viewport_);
-  }
-
-  /**
-   * @return {!PluginController}
-   * @protected
-   */
-  get pluginController() {
-    return assert(this.pluginController_);
   }
 
   /**

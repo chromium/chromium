@@ -121,6 +121,7 @@ js_library("controller") {
   deps = [
     ":viewport",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:promise_resolver.m",
     "//ui/webui/resources/js/cr:event_target.m",

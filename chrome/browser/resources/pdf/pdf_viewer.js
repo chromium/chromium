@@ -24,6 +24,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
 import {Attachment, FittingType, Point, SaveRequestType} from './constants.js';
+import {PluginController} from './controller.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 import {ViewerThumbnailElement} from './elements/viewer-thumbnail.js';
@@ -381,6 +382,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   init(browserApi) {
     super.init(browserApi);
 
+    /** @private {?PluginController} */
+    this.pluginController_ = PluginController.getInstance();
+
     // <if expr="chromeos">
     this.inkController_ = new InkController(
         this.viewport, /** @type {!HTMLDivElement} */ (this.getContent()));
@@ -480,7 +484,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     switch (e.key) {
       case 'a':
         if (e.ctrlKey || e.metaKey) {
-          this.pluginController.selectAll();
+          this.pluginController_.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();
         }
@@ -559,7 +563,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     const annotationMode = e.detail;
     if (annotationMode) {
       // Enter annotation mode.
-      assert(this.currentController === this.pluginController);
+      assert(this.pluginController_.isActive);
       // TODO(dstockwell): set plugin read-only, begin transition
       this.updateProgress(0);
 
@@ -574,7 +578,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
       // TODO(dstockwell): handle save failure
       const saveResult =
-          await this.pluginController.save(SaveRequestType.ANNOTATION);
+          await this.pluginController_.save(SaveRequestType.ANNOTATION);
       // Data always exists when save is called with requestType = ANNOTATION.
       const result = /** @type {!RequiredSaveResult} */ (saveResult);
       if (result.hasUnsavedChanges) {
@@ -595,11 +599,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       this.updateProgress(50);
       await this.inkController_.load(result.fileName, result.dataToSave);
       this.currentController = this.inkController_;
-      this.pluginController.unload();
+      this.pluginController_.unload();
       this.updateProgress(100);
     } else {
       // Exit annotation mode.
       PDFMetrics.record(UserAction.EXIT_ANNOTATION_MODE);
+      assert(!this.pluginController_.isActive);
       assert(this.currentController === this.inkController_);
       // TODO(dstockwell): set ink read-only, begin transition
       this.updateProgress(0);
@@ -607,7 +612,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       // This runs separately to allow other consumers of `loaded` to queue
       // up after this task.
       this.loaded.then(() => {
-        this.currentController = this.pluginController;
+        this.currentController = this.pluginController_;
         this.inkController_.unload();
       });
       // TODO(dstockwell): handle save failure
@@ -618,9 +623,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       if (this.pdfViewerUpdateEnabled_) {
         await this.restoreSidenav_();
       }
-      await this.pluginController.load(result.fileName, result.dataToSave);
+      await this.pluginController_.load(result.fileName, result.dataToSave);
       // Ensure the plugin gets the initial viewport.
-      this.pluginController.afterZoom();
+      this.pluginController_.afterZoom();
     }
   }
 
@@ -654,9 +659,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   onScroll_(e) {
-    if (this.currentController === this.pluginController &&
-        !this.annotationMode_) {
-      this.pluginController.updateScroll(
+    if (this.pluginController_.isActive && !this.annotationMode_) {
+      this.pluginController_.updateScroll(
           e.target.scrollLeft, e.target.scrollTop);
     }
   }
@@ -742,7 +746,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   onPasswordSubmitted_(event) {
-    this.pluginController.getPasswordComplete(event.detail.password);
+    this.pluginController_.getPasswordComplete(event.detail.password);
   }
 
   /** @override */
@@ -785,21 +789,21 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     switch (message.data.type.toString()) {
       case 'getSelectedText':
-        this.pluginController.getSelectedText().then(
+        this.pluginController_.getSelectedText().then(
             this.handleSelectedTextReply.bind(this));
         break;
       case 'getThumbnail':
         const getThumbnailData =
             /** @type {GetThumbnailMessageData} */ (message.data);
         const page = getThumbnailData.page;
-        this.pluginController.requestThumbnail(page).then(
+        this.pluginController_.requestThumbnail(page).then(
             this.sendScriptingMessage.bind(this));
         break;
       case 'print':
-        this.pluginController.print();
+        this.pluginController_.print();
         break;
       case 'selectAll':
-        this.pluginController.selectAll();
+        this.pluginController_.selectAll();
         break;
     }
   }
@@ -1088,10 +1092,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   onPaintThumbnail_(e) {
-    assert(this.currentController === this.pluginController);
+    assert(this.pluginController_.isActive);
     assert(!this.annotationMode_);
     const thumbnail = e.detail;
-    this.pluginController.requestThumbnail(thumbnail.pageNumber)
+    this.pluginController_.requestThumbnail(thumbnail.pageNumber)
         .then(response => {
           const array = new Uint8ClampedArray(response.imageData);
           const imageData = new ImageData(array, response.width);

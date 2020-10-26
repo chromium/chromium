@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -66,6 +67,12 @@ function createToken() {
 export class ContentController {
   constructor() {}
 
+  /** @return {boolean} */
+  get isActive() {}
+
+  /** @param {boolean} isActive */
+  set isActive(isActive) {}
+
   beforeZoom() {}
 
   afterZoom() {}
@@ -121,9 +128,10 @@ export class ContentController {
 }
 
 /**
- * PDF plugin controller, responsible for communicating with the embedded plugin
- * element. Dispatches a 'plugin-message' event containing the message from the
- * plugin, if a message type not handled by this controller is received.
+ * PDF plugin controller singleton, responsible for communicating with the
+ * embedded plugin element. Dispatches a 'plugin-message' event containing the
+ * message from the plugin, if a message type not handled by this controller is
+ * received.
  * @implements {ContentController}
  */
 export class PluginController {
@@ -133,7 +141,10 @@ export class PluginController {
    * @param {function():boolean} getIsUserInitiatedCallback
    * @param {function():?Promise} getLoadedCallback
    */
-  constructor(plugin, viewport, getIsUserInitiatedCallback, getLoadedCallback) {
+  init(plugin, viewport, getIsUserInitiatedCallback, getLoadedCallback) {
+    /** @private {boolean} */
+    this.isActive_ = false;
+
     /** @private {!HTMLEmbedElement} */
     this.plugin_ = plugin;
 
@@ -162,6 +173,23 @@ export class PluginController {
 
     /** @private {!Map<string, !PromiseResolver>} */
     this.requestResolverMap_ = new Map();
+  }
+
+  /**
+   * @return {boolean}
+   * @override
+   */
+  get isActive() {
+    // Check whether `plugin_` is defined as a signal that `init()` was called.
+    return !!this.plugin_ && this.isActive_;
+  }
+
+  /**
+   * @param {boolean} isActive
+   * @override
+   */
+  set isActive(isActive) {
+    this.isActive_ = isActive;
   }
 
   /**
@@ -401,6 +429,7 @@ export class PluginController {
     this.plugin_.style.display = 'block';
     try {
       await this.getLoadedCallback_();
+      this.isActive = true;
     } finally {
       URL.revokeObjectURL(url);
     }
@@ -409,6 +438,7 @@ export class PluginController {
   /** @override */
   unload() {
     this.plugin_.style.display = 'none';
+    this.isActive = false;
   }
 
   /**
@@ -496,3 +526,5 @@ export class PluginController {
     resolver.resolve(messageData);
   }
 }
+
+addSingletonGetter(PluginController);
