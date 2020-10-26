@@ -157,6 +157,8 @@ void V8PerIsolateData::WillBeDestroyed(v8::Isolate* isolate) {
     data->profiler_group_ = nullptr;
   }
 
+  data->ClearScriptRegexpContext();
+
   // Detach V8's garbage collector.
   // Need to finalize an already running garbage collection as otherwise
   // callbacks are missing and state gets out of sync.
@@ -320,8 +322,10 @@ v8::Local<v8::Context> V8PerIsolateData::EnsureScriptRegexpContext() {
 }
 
 void V8PerIsolateData::ClearScriptRegexpContext() {
-  if (script_regexp_script_state_)
+  if (script_regexp_script_state_) {
     script_regexp_script_state_->DisposePerContextData();
+    script_regexp_script_state_->DissociateContext();
+  }
   script_regexp_script_state_ = nullptr;
 }
 
