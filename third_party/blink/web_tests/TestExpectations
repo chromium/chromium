@@ -869,8 +869,6 @@ crbug.com/591099 external/wpt/css/css-text/boundary-shaping/boundary-shaping-009
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-009.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-010.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-011.html [ Failure ]
-crbug.com/1012294 external/wpt/css/css-lists/list-style-type-string-003.html [ Failure ]
-crbug.com/1012294 external/wpt/css/css-lists/list-style-type-string-007.html [ Failure ]
 crbug.com/591099 fast/backgrounds/quirks-mode-line-box-backgrounds.html [ Failure ]
 crbug.com/591099 fast/borders/inline-mask-overlay-image-outset-vertical-rl.html [ Failure ]
 crbug.com/835484 fast/css/outline-narrowLine.html [ Failure ]

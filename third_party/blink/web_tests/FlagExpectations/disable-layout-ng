@@ -358,10 +358,8 @@ crbug.com/953479 external/wpt/css/cssom-view/offsetTopLeft-leading-space-inline.
 crbug.com/591099 external/wpt/css/filter-effects/filtered-inline-applies-to-float.html [ Failure ]
 
 ### external/wpt/css/css-lists/
-crbug.com/1012294 external/wpt/css/css-lists/list-style-type-string-003.html [ Pass ]
 crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-005a.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-006.html [ Failure ]
-crbug.com/1012294 external/wpt/css/css-lists/list-style-type-string-007.html [ Pass ]
 
 ### external/wpt/css/css-content/
 crbug.com/591099 external/wpt/css/css-content/quotes-033.html [ Failure ]
