@@ -93,6 +93,10 @@ class VideoTrackRecorderTest
     source_ = MakeGarbageCollected<MediaStreamSource>(
         track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/);
     source_->SetPlatformSource(base::WrapUnique(mock_source_));
+    EXPECT_CALL(*mock_source_, OnRequestRefreshFrame())
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(*mock_source_, OnCapturingLinkSecured(_))
+        .Times(testing::AnyNumber());
     component_ = MakeGarbageCollected<MediaStreamComponent>(source_);
 
     track_ = new MediaStreamVideoTrack(

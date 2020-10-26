@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/vea_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/vpx_encoder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -246,7 +247,6 @@ VideoTrackRecorderImpl::Encoder::Encoder(
 }
 
 VideoTrackRecorderImpl::Encoder::~Encoder() {
-  main_task_runner_->DeleteSoon(FROM_HERE, video_renderer_.release());
   if (origin_task_runner_ && !origin_task_runner_->BelongsToCurrentThread()) {
     origin_task_runner_->DeleteSoon(FROM_HERE,
                                     std::move(num_frames_in_encode_));
@@ -282,8 +282,8 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
        video_frame->storage_type() !=
            media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
     PostCrossThreadTask(
-        *main_task_runner_.get(), FROM_HERE,
-        CrossThreadBindOnce(&Encoder::RetrieveFrameOnMainThread,
+        *encoding_task_runner_.get(), FROM_HERE,
+        CrossThreadBindOnce(&Encoder::RetrieveFrameOnEncodingTaskRunner,
                             WrapRefCounted(this), std::move(video_frame),
                             capture_timestamp));
 
@@ -313,18 +313,34 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
                           WrapRefCounted(this), frame, capture_timestamp));
 }
 
-void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnMainThread(
+void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
     scoped_refptr<VideoFrame> video_frame,
     base::TimeTicks capture_timestamp) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(encoding_task_runner_->BelongsToCurrentThread());
 
   scoped_refptr<media::VideoFrame> frame;
 
-  // |context_provider| is null if the GPU process has crashed or isn't there
-  std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
-      Platform::Current()->CreateSharedOffscreenGraphicsContext3DProvider();
+  // |encoder_thread_context_| is null if the GPU process has crashed or isn't
+  // there
+  if (!encoder_thread_context_) {
+    // PaintCanvasVideoRenderer requires these settings to work.
+    Platform::ContextAttributes attributes;
+    attributes.enable_raster_interface = true;
+    attributes.support_grcontext = true;
 
-  if (!context_provider) {
+    Platform::GraphicsInfo info;
+    bool using_gpu_compositing = true;
+    encoder_thread_context_ = CreateContextProviderOnWorkerThread(
+        attributes, &info, &using_gpu_compositing,
+        KURL("chrome://VideoTrackRecorderImpl"));
+
+    if (encoder_thread_context_ &&
+        !encoder_thread_context_->BindToCurrentThread()) {
+      encoder_thread_context_ = nullptr;
+    }
+  }
+
+  if (!encoder_thread_context_) {
     // Send black frames (yuv = {0, 127, 127}).
     frame = media::VideoFrame::CreateColorFrame(
         video_frame->visible_rect().size(), 0u, 0x80, 0x80,
@@ -367,10 +383,10 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnMainThread(
       canvas_ = std::make_unique<cc::SkiaPaintCanvas>(bitmap_);
     }
     if (!video_renderer_)
-      video_renderer_.reset(new media::PaintCanvasVideoRenderer);
+      video_renderer_ = std::make_unique<media::PaintCanvasVideoRenderer>();
 
-    context_provider->CopyVideoFrame(video_renderer_.get(), video_frame.get(),
-                                     canvas_.get());
+    encoder_thread_context_->CopyVideoFrame(video_renderer_.get(),
+                                            video_frame.get(), canvas_.get());
 
     SkPixmap pixmap;
     if (!bitmap_.peekPixels(&pixmap)) {
@@ -409,10 +425,7 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnMainThread(
     }
   }
 
-  PostCrossThreadTask(
-      *encoding_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(&Encoder::EncodeOnEncodingTaskRunner,
-                          WrapRefCounted(this), frame, capture_timestamp));
+  EncodeOnEncodingTaskRunner(std::move(frame), capture_timestamp);
 }
 
 // static

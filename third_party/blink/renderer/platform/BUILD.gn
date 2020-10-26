@@ -1130,6 +1130,8 @@ component("platform") {
     "graphics/video_frame_resource_provider.h",
     "graphics/video_frame_submitter.cc",
     "graphics/video_frame_submitter.h",
+    "graphics/web_graphics_context_3d_provider_util.cc",
+    "graphics/web_graphics_context_3d_provider_util.h",
     "graphics/web_graphics_context_3d_provider_wrapper.cc",
     "graphics/web_graphics_context_3d_provider_wrapper.h",
     "heap_observer_set.h",

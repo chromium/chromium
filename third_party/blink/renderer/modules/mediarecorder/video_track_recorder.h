@@ -68,6 +68,7 @@ namespace blink {
 
 class MediaStreamVideoTrack;
 class Thread;
+class WebGraphicsContext3DProvider;
 
 // Base class serving as interface for eventually saving encoded frames stemming
 // from media from a source.
@@ -148,12 +149,13 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // call will also trigger an encode configuration upon first frame arrival
     // or parameter change, and an EncodeOnEncodingTaskRunner() to actually
     // encode the frame. If the |frame|'s data is not directly available (e.g.
-    // it's a texture) then RetrieveFrameOnMainThread() is called, and if even
-    // that fails, black frames are sent instead.
+    // it's a texture) then RetrieveFrameOnEncoderThread() is called, and if
+    // even that fails, black frames are sent instead.
     void StartFrameEncode(scoped_refptr<media::VideoFrame> frame,
                           base::TimeTicks capture_timestamp);
-    void RetrieveFrameOnMainThread(scoped_refptr<media::VideoFrame> video_frame,
-                                   base::TimeTicks capture_timestamp);
+    void RetrieveFrameOnEncodingTaskRunner(
+        scoped_refptr<media::VideoFrame> video_frame,
+        base::TimeTicks capture_timestamp);
 
     using OnEncodedVideoInternalCB = WTF::CrossThreadFunction<void(
         const media::WebmMuxer::VideoParameters& params,
@@ -239,6 +241,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     std::unique_ptr<media::PaintCanvasVideoRenderer> video_renderer_;
     SkBitmap bitmap_;
     std::unique_ptr<cc::PaintCanvas> canvas_;
+    std::unique_ptr<WebGraphicsContext3DProvider> encoder_thread_context_;
 
     media::VideoFramePool frame_pool_;
 

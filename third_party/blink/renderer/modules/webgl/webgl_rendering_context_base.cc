@@ -115,6 +115,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -594,54 +595,6 @@ static String ExtractWebGLContextCreationError(
                           builder);
   builder.Append('.');
   return builder.ToString();
-}
-
-struct ContextProviderCreationInfo {
-  // Inputs.
-  Platform::ContextAttributes context_attributes;
-  Platform::GraphicsInfo* gl_info;
-  KURL url;
-  // Outputs.
-  std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
-  bool* using_gpu_compositing;
-};
-
-static void CreateContextProviderOnMainThread(
-    ContextProviderCreationInfo* creation_info,
-    base::WaitableEvent* waitable_event) {
-  DCHECK(IsMainThread());
-  // Ask for gpu compositing mode when making the context. The context will be
-  // lost if the mode changes.
-  *creation_info->using_gpu_compositing =
-      !Platform::Current()->IsGpuCompositingDisabled();
-  creation_info->created_context_provider =
-      Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
-          creation_info->context_attributes, creation_info->url,
-          creation_info->gl_info);
-  waitable_event->Signal();
-}
-
-static std::unique_ptr<WebGraphicsContext3DProvider>
-CreateContextProviderOnWorkerThread(
-    Platform::ContextAttributes context_attributes,
-    Platform::GraphicsInfo* gl_info,
-    bool* using_gpu_compositing,
-    const KURL& url) {
-  base::WaitableEvent waitable_event;
-  ContextProviderCreationInfo creation_info;
-  creation_info.context_attributes = context_attributes;
-  creation_info.gl_info = gl_info;
-  creation_info.url = url.Copy();
-  creation_info.using_gpu_compositing = using_gpu_compositing;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::MainThread()->GetTaskRunner();
-  PostCrossThreadTask(
-      *task_runner, FROM_HERE,
-      CrossThreadBindOnce(&CreateContextProviderOnMainThread,
-                          CrossThreadUnretained(&creation_info),
-                          CrossThreadUnretained(&waitable_event)));
-  waitable_event.Wait();
-  return std::move(creation_info.created_context_provider);
 }
 
 bool WebGLRenderingContextBase::SupportOwnOffscreenSurface(
