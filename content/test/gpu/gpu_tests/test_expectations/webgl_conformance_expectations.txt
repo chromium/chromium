@@ -442,16 +442,9 @@ crbug.com/angleproject/4986 [ mac passthrough ] conformance/textures/misc/gl-tex
 # Mac / Passthrough command decoder / OpenGL
 crbug.com/989194 [ mac passthrough angle-opengl ] conformance/extensions/oes-texture-half-float.html [ Failure ]
 
-# Mac / Passthrough command decoder / OpenGL / AMD
-crbug.com/angleproject/3767 [ mac passthrough amd angle-opengl ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
-
-# Mac Pro (AMD) / Passthrough command decoder / OpenGL
-crbug.com/992231 [ mac passthrough amd-0x679e angle-opengl ] conformance/context/context-size-change.html [ Failure ]
-
 # Mac / Passthrough command decoder / OpenGL / NVIDIA
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/tex-input-validation.html [ Failure ]
-crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 
 # Mac ASAN flakes
 crbug.com/1059760 [ mac asan ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
