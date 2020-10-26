@@ -21,6 +21,12 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
+#if defined(OS_CHROMEOS)
+namespace aura {
+class Window;
+}
+#endif
+
 namespace extensions {
 class Extension;
 }
@@ -98,6 +104,10 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
   bool display_notification_;
   RequestsQueues pending_requests_;
   content::NotificationRegistrar notifications_registrar_;
+
+#if defined(OS_CHROMEOS)
+  aura::Window* primary_root_window_for_testing_ = nullptr;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(DesktopCaptureAccessHandler);
 };

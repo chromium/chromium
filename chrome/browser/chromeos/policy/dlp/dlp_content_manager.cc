@@ -76,6 +76,40 @@ bool DlpContentManager::IsPrintingRestricted(
       .HasRestriction(DlpContentRestriction::kPrint);
 }
 
+bool DlpContentManager::IsScreenCaptureRestricted(
+    const content::DesktopMediaID& media_id) const {
+  if (media_id.type == content::DesktopMediaID::Type::TYPE_SCREEN) {
+    return GetOnScreenPresentRestrictions().HasRestriction(
+        DlpContentRestriction::kScreenShare);
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(
+              media_id.web_contents_id.render_process_id,
+              media_id.web_contents_id.main_render_frame_id));
+
+  if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+    return GetConfidentialRestrictions(web_contents)
+        .HasRestriction(DlpContentRestriction::kScreenShare);
+  }
+
+  DCHECK_EQ(media_id.type, content::DesktopMediaID::Type::TYPE_WINDOW);
+  aura::Window* window = content::DesktopMediaID::GetNativeWindowById(media_id);
+  if (!window) {
+    return false;
+  }
+  for (auto& entry : confidential_web_contents_) {
+    aura::Window* web_contents_window = entry.first->GetNativeView();
+    if (entry.second.HasRestriction(DlpContentRestriction::kScreenShare) &&
+        window->Contains(web_contents_window)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void DlpContentManager::OnVideoCaptureStarted(const ScreenshotArea& area,
                                               base::OnceClosure stop_callback) {
   if (IsVideoCaptureRestricted(area)) {

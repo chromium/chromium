@@ -12,15 +12,19 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_media_capture_id.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-TabCaptureAccessHandler::TabCaptureAccessHandler() {
-}
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#endif  // defined(OS_CHROMEOS)
 
-TabCaptureAccessHandler::~TabCaptureAccessHandler() {
-}
+TabCaptureAccessHandler::TabCaptureAccessHandler() = default;
+
+TabCaptureAccessHandler::~TabCaptureAccessHandler() = default;
 
 bool TabCaptureAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,
@@ -63,6 +67,23 @@ void TabCaptureAccessHandler::HandleRequest(
         std::move(ui));
     return;
   }
+
+#if defined(OS_CHROMEOS)
+  if (request.video_type ==
+      blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE) {
+    content::DesktopMediaID media_id(
+        content::DesktopMediaID::TYPE_WEB_CONTENTS, /*id=*/0,
+        content::WebContentsMediaCaptureId(request.render_process_id,
+                                           request.render_frame_id));
+    if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(media_id)) {
+      std::move(callback).Run(
+          devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+          std::move(ui));
+      return;
+    }
+  }
+#endif
+
   // |extension| may be null if the tabCapture starts with
   // tabCapture.getMediaStreamId().
   // TODO(crbug.com/831722): Deprecate tabCaptureRegistry soon.

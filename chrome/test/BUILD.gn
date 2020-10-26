@@ -4383,6 +4383,7 @@ test("unit_tests") {
       "../browser/media/webrtc/display_media_access_handler_unittest.cc",
       "../browser/media/webrtc/media_capture_devices_dispatcher_unittest.cc",
       "../browser/media/webrtc/media_stream_capture_indicator_unittest.cc",
+      "../browser/media/webrtc/tab_capture_access_handler_unittest.cc",
       "../browser/media/webrtc/tab_desktop_media_list_unittest.cc",
       "../browser/media/webrtc/webrtc_event_log_manager_common_unittest.cc",
       "../browser/media/webrtc/webrtc_event_log_manager_unittest.cc",
