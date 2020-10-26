@@ -12,8 +12,10 @@ namespace {
 
 class V8Module : public base::ModuleCache::Module {
  public:
-  explicit V8Module(const v8::MemoryRange& memory_range)
-      : memory_range_(memory_range) {}
+  enum CodeRangeType { kEmbedded, kNonEmbedded };
+
+  V8Module(const v8::MemoryRange& memory_range, CodeRangeType code_range_type)
+      : memory_range_(memory_range), code_range_type_(code_range_type) {}
 
   V8Module(const V8Module&) = delete;
   V8Module& operator=(const V8Module&) = delete;
@@ -24,13 +26,15 @@ class V8Module : public base::ModuleCache::Module {
   }
 
   std::string GetId() const override {
-    // We don't want to distinguish V8 code by memory region so we use the same
-    // synthetic build id for all V8Modules.
-    return V8Unwinder::kV8CodeRangeBuildId;
+    return code_range_type_ == kEmbedded
+               ? V8Unwinder::kV8EmbeddedCodeRangeBuildId
+               : V8Unwinder::kV8CodeRangeBuildId;
   }
 
   base::FilePath GetDebugBasename() const override {
-    return base::FilePath().AppendASCII("V8 Code Range");
+    return base::FilePath().AppendASCII(code_range_type_ == kEmbedded
+                                            ? "V8 Embedded Code Range"
+                                            : "V8 Code Range");
   }
 
   size_t GetSize() const override { return memory_range_.length_in_bytes; }
@@ -39,6 +43,7 @@ class V8Module : public base::ModuleCache::Module {
 
  private:
   const v8::MemoryRange memory_range_;
+  const CodeRangeType code_range_type_;
 };
 
 // Heterogeneous comparator for MemoryRanges and Modules. Compares on both
@@ -65,12 +70,32 @@ struct MemoryRangeModuleCompare {
   }
 };
 
+v8::MemoryRange GetEmbeddedCodeRange(v8::Isolate* isolate) {
+  v8::MemoryRange range;
+  isolate->GetEmbeddedCodeRange(&range.start, &range.length_in_bytes);
+  return range;
+}
+
 }  // namespace
 
 V8Unwinder::V8Unwinder(v8::Isolate* isolate)
-    : isolate_(isolate), js_entry_stubs_(isolate->GetJSEntryStubs()) {}
+    : isolate_(isolate),
+      js_entry_stubs_(isolate->GetJSEntryStubs()),
+      embedded_code_range_(GetEmbeddedCodeRange(isolate)) {}
 
 V8Unwinder::~V8Unwinder() = default;
+
+void V8Unwinder::AddInitialModules(base::ModuleCache* module_cache) {
+  // This function must be called only once.
+  DCHECK(modules_.empty());
+
+  // Add a module for the embedded code range.
+  std::vector<std::unique_ptr<const base::ModuleCache::Module>> new_module;
+  new_module.push_back(
+      std::make_unique<V8Module>(embedded_code_range_, V8Module::kEmbedded));
+  modules_.insert(new_module.front().get());
+  module_cache->UpdateNonNativeModules({}, std::move(new_module));
+}
 
 // IMPORTANT NOTE: to avoid deadlock this function must not invoke any
 // non-reentrant code that is also invoked by the target thread. In particular,
@@ -83,8 +108,19 @@ void V8Unwinder::OnStackCapture() {
       std::min(required_code_ranges_capacity_, code_ranges_.capacity()));
 }
 
+// Update the modules based on what was recorded in |code_ranges_|. The singular
+// embedded code range was already added in in AddInitialModules(). It is
+// preserved by the algorithm below, which is why kNonEmbedded is
+// unconditionally passed when creating new modules.
 void V8Unwinder::UpdateModules(base::ModuleCache* module_cache) {
   MemoryRangeModuleCompare less_than;
+
+  const auto is_embedded_code_range_module =
+      [this](const base::ModuleCache::Module* module) {
+        return module->GetBaseAddress() ==
+                   reinterpret_cast<uintptr_t>(embedded_code_range_.start) &&
+               module->GetSize() == embedded_code_range_.length_in_bytes;
+      };
 
   std::vector<std::unique_ptr<const base::ModuleCache::Module>> new_modules;
   std::vector<const base::ModuleCache::Module*> defunct_modules;
@@ -97,14 +133,23 @@ void V8Unwinder::UpdateModules(base::ModuleCache* module_cache) {
   DCHECK(std::is_sorted(code_ranges_start, code_ranges_end, less_than));
   v8::MemoryRange* range_it = code_ranges_start;
   auto modules_it = modules_.begin();
+
   while (range_it != code_ranges_end && modules_it != modules_.end()) {
     if (less_than(*range_it, *modules_it)) {
-      new_modules.push_back(std::make_unique<V8Module>(*range_it));
+      new_modules.push_back(
+          std::make_unique<V8Module>(*range_it, V8Module::kNonEmbedded));
       modules_.insert(modules_it, new_modules.back().get());
       ++range_it;
     } else if (less_than(*modules_it, *range_it)) {
-      defunct_modules.push_back(*modules_it);
-      modules_it = modules_.erase(modules_it);
+      // Avoid deleting the embedded code range module if it wasn't provided in
+      // |code_ranges_|. This could happen if |code_ranges_| had insufficient
+      // capacity when the code pages were copied.
+      if (!is_embedded_code_range_module(*modules_it)) {
+        defunct_modules.push_back(*modules_it);
+        modules_it = modules_.erase(modules_it);
+      } else {
+        ++modules_it;
+      }
     } else {
       // The range already has a module, so there's nothing to do.
       ++range_it;
@@ -113,14 +158,19 @@ void V8Unwinder::UpdateModules(base::ModuleCache* module_cache) {
   }
 
   while (range_it != code_ranges_end) {
-    new_modules.push_back(std::make_unique<V8Module>(*range_it));
+    new_modules.push_back(
+        std::make_unique<V8Module>(*range_it, V8Module::kNonEmbedded));
     modules_.insert(modules_it, new_modules.back().get());
     ++range_it;
   }
 
   while (modules_it != modules_.end()) {
-    defunct_modules.push_back(*modules_it);
-    modules_it = modules_.erase(modules_it);
+    if (!is_embedded_code_range_module(*modules_it)) {
+      defunct_modules.push_back(*modules_it);
+      modules_it = modules_.erase(modules_it);
+    } else {
+      ++modules_it;
+    }
   }
 
   module_cache->UpdateNonNativeModules(defunct_modules, std::move(new_modules));
@@ -179,9 +229,12 @@ size_t V8Unwinder::CopyCodePages(size_t capacity, v8::MemoryRange* code_pages) {
   return isolate_->CopyCodePages(capacity, code_pages);
 }
 
-// Synthetic build id to use for V8 modules.
-const char V8Unwinder::kV8CodeRangeBuildId[] =
+// Synthetic build ids to use for V8 modules. The difference is in the digit
+// after the leading 5's.
+const char V8Unwinder::kV8EmbeddedCodeRangeBuildId[] =
     "5555555507284E1E874EFA4EB754964B999";
+const char V8Unwinder::kV8CodeRangeBuildId[] =
+    "5555555517284E1E874EFA4EB754964B999";
 
 V8Unwinder::MemoryRanges::MemoryRanges()
     : capacity_(v8::Isolate::kMinCodePagesBufferSize),

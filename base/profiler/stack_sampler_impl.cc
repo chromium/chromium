@@ -93,10 +93,16 @@ void StackSamplerImpl::Initialize() {
 
   for (const auto& unwinder : unwinders_)
     unwinder->AddInitialModules(module_cache_);
+
+  was_initialized_ = true;
 }
 
 void StackSamplerImpl::AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) {
-  unwinder->AddInitialModules(module_cache_);
+  // Initialize() invokes AddInitialModules() on the unwinders that are present
+  // at the time. If it hasn't occurred yet, we allow it to add the initial
+  // modules, otherwise we do it here.
+  if (was_initialized_)
+    unwinder->AddInitialModules(module_cache_);
   unwinders_.push_front(std::move(unwinder));
 }
 

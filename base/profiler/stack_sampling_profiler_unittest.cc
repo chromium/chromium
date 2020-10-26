@@ -474,12 +474,19 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Basic) {
 // A simple unwinder that always generates one frame then aborts the stack walk.
 class TestAuxUnwinder : public Unwinder {
  public:
-  TestAuxUnwinder(const Frame& frame_to_report)
-      : frame_to_report_(frame_to_report) {}
+  TestAuxUnwinder(const Frame& frame_to_report,
+                  base::RepeatingClosure add_initial_modules_callback)
+      : frame_to_report_(frame_to_report),
+        add_initial_modules_callback_(std::move(add_initial_modules_callback)) {
+  }
 
   TestAuxUnwinder(const TestAuxUnwinder&) = delete;
   TestAuxUnwinder& operator=(const TestAuxUnwinder&) = delete;
 
+  void AddInitialModules(ModuleCache* module_cache) override {
+    if (add_initial_modules_callback_)
+      add_initial_modules_callback_.Run();
+  }
   bool CanUnwindFrom(const Frame& current_frame) const override { return true; }
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
@@ -492,6 +499,7 @@ class TestAuxUnwinder : public Unwinder {
 
  private:
   const Frame frame_to_report_;
+  base::RepeatingClosure add_initial_modules_callback_;
 };
 
 // Checks that the profiler handles stacks containing dynamically-allocated
@@ -1285,6 +1293,12 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
 
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
 
+  int add_initial_modules_invocation_count = 0;
+  const auto add_initial_modules_callback =
+      [&add_initial_modules_invocation_count]() {
+        ++add_initial_modules_invocation_count;
+      };
+
   Profile profile;
   WithTargetThread(
       &scenario,
@@ -1303,11 +1317,14 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
                       sampling_thread_completed.Signal();
                     })),
                 CreateCoreUnwindersFactoryForTesting(module_cache()));
-            profiler.AddAuxUnwinder(
-                std::make_unique<TestAuxUnwinder>(Frame(23, nullptr)));
+            profiler.AddAuxUnwinder(std::make_unique<TestAuxUnwinder>(
+                Frame(23, nullptr),
+                BindLambdaForTesting(add_initial_modules_callback)));
             profiler.Start();
             sampling_thread_completed.Wait();
           }));
+
+  ASSERT_EQ(1, add_initial_modules_invocation_count);
 
   // The sample should have one frame from the context values and one from the
   // TestAuxUnwinder.
@@ -1326,6 +1343,12 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
 
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
 
+  int add_initial_modules_invocation_count = 0;
+  const auto add_initial_modules_callback =
+      [&add_initial_modules_invocation_count]() {
+        ++add_initial_modules_invocation_count;
+      };
+
   Profile profile;
   WithTargetThread(
       &scenario,
@@ -1345,10 +1368,13 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
                     })),
                 CreateCoreUnwindersFactoryForTesting(module_cache()));
             profiler.Start();
-            profiler.AddAuxUnwinder(
-                std::make_unique<TestAuxUnwinder>(Frame(23, nullptr)));
+            profiler.AddAuxUnwinder(std::make_unique<TestAuxUnwinder>(
+                Frame(23, nullptr),
+                BindLambdaForTesting(add_initial_modules_callback)));
             sampling_thread_completed.Wait();
           }));
+
+  ASSERT_EQ(1, add_initial_modules_invocation_count);
 
   // The sample should have one frame from the context values and one from the
   // TestAuxUnwinder.
@@ -1387,8 +1413,8 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStop) {
                 CreateCoreUnwindersFactoryForTesting(module_cache()));
             profiler.Start();
             profiler.Stop();
-            profiler.AddAuxUnwinder(
-                std::make_unique<TestAuxUnwinder>(Frame(23, nullptr)));
+            profiler.AddAuxUnwinder(std::make_unique<TestAuxUnwinder>(
+                Frame(23, nullptr), base::RepeatingClosure()));
             sampling_thread_completed.Wait();
           }));
 
