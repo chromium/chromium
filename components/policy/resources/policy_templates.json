@@ -1826,6 +1826,7 @@
       'supported_on': ['chrome.*:14-16', 'chrome_os:14-16'],
       'features': {
         'dynamic_refresh': True,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       # Mark this 'removed' when https://crbug.com/100216 is resolved.
       'deprecated': True,
@@ -1849,13 +1850,14 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'deprecated': True,
       'example_value': 'my-awesome-domain.com',
       'id': 316,
       'caption': '''Configure the required domain name for remote access clients''',
       'tags': [],
-      'desc': '''This policy is deprecated. Please use RemoteAccessHostClientDomainList instead.''',
+      'desc': '''This policy is deprecated. Please use <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME">RemoteAccessHostClientDomainList</ph> instead.''',
     },
     {
       'name': 'RemoteAccessHostClientDomainList',
@@ -1869,6 +1871,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'example_value': ['my-awesome-domain.com', 'my-auxiliary-domain.com'],
       'id': 369,
@@ -1880,9 +1883,9 @@
 
           If this setting is disabled, not set, or set to an empty list, then the default policy for the connection type is applied. For remote assistance, this allows clients from any domain to connect to the host; for anytime remote access, only the host owner can connect.
 
-          This setting will override RemoteAccessHostClientDomain, if present.
+          This setting will override <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME">RemoteAccessHostClientDomain</ph>, if present.
 
-          See also RemoteAccessHostDomainList.''',
+          See also <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME">RemoteAccessHostDomainList</ph>.''',
     },
     {
       'name': 'RemoteAccessHostFirewallTraversal',
@@ -1893,6 +1896,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'example_value': False,
       'id': 95,
@@ -1915,13 +1919,14 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'deprecated': True,
       'example_value': 'my-awesome-domain.com',
       'id': 154,
       'caption': '''Configure the required domain name for remote access hosts''',
       'tags': [],
-      'desc': '''This policy is deprecated. Please use RemoteAccessHostDomainList instead.''',
+      'desc': '''This policy is deprecated. Please use <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME">RemoteAccessHostDomainList</ph> instead.''',
     },
     {
       'name': 'RemoteAccessHostDomainList',
@@ -1935,6 +1940,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'example_value': ['my-awesome-domain.com', 'my-auxiliary-domain.com'],
       'id': 368,
@@ -1946,9 +1952,9 @@
 
           If this setting is disabled, not set, or set to an empty list, then hosts can be shared using any account.
 
-          This setting will override RemoteAccessHostDomain, if present.
+          This setting will override <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME">RemoteAccessHostDomain</ph>, if present.
 
-          See also RemoteAccessHostClientDomainList.''',
+          See also <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME">RemoteAccessHostClientDomainList</ph>.''',
     },
     {
       'name': 'RemoteAccessHostRequireTwoFactor',
@@ -1959,6 +1965,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       # Mark this 'removed' when https://crbug.com/100216 is resolved.
       'deprecated': True,
@@ -1981,6 +1988,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'deprecated': True,
       'example_value': 'chromoting-host',
@@ -2006,6 +2014,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': False,
       'id': 157,
@@ -2026,6 +2035,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': False,
       'id': 234,
@@ -2043,7 +2053,9 @@
       'supported_on': ['chrome.*:35-'],
       'features': {
         'dynamic_refresh': True,
+        'internal_only': True,  # Not available outside of Google.
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': True,
       'id': 257,
@@ -2051,7 +2063,9 @@
       'tags': [],
       'desc': '''If this setting is enabled, then gnubby authentication requests will be proxied across a remote host connection.
 
-          If this setting is disabled or not configured, gnubby authentication requests will not be proxied.''',
+          Note that this feature requires additional components which are not available outside of the Google network environment in order to work properly.
+
+          If this setting is disabled, gnubby authentication requests will not be proxied.''',
     },
     {
       'name': 'RemoteAccessHostAllowRelayedConnection',
@@ -2062,6 +2076,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'example_value': False,
       'id': 263,
@@ -2084,6 +2099,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'example_value': '12400-12409',
       'id': 264,
@@ -2102,6 +2118,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': False,
       'id': 285,
@@ -2119,7 +2136,9 @@
       'supported_on': ['chrome.*:28-'],
       'features': {
         'dynamic_refresh': True,
+        'internal_only': True,  # Not available outside of Google.
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': 'https://example.com/issue',
       'id': 286,
@@ -2137,7 +2156,9 @@
       'supported_on': ['chrome.*:28-'],
       'features': {
         'dynamic_refresh': True,
+        'internal_only': True,  # Not available outside of Google.
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': 'https://example.com/validate',
       'id': 287,
@@ -2155,7 +2176,9 @@
       'supported_on': ['chrome.*:28-'],
       'features': {
         'dynamic_refresh': True,
+        'internal_only': True,  # Not available outside of Google.
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': 'Example Certificate Authority',
       'id': 288,
@@ -2174,6 +2197,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
       },
       'deprecated': True,
       'example_value': '{ "RemoteAccessHostMatchUsername": true }',
@@ -2193,6 +2217,7 @@
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': True,
       'id': 344,
@@ -2211,6 +2236,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
       },
       'example_value': False,
       'id': 534,
