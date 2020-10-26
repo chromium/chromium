@@ -47,6 +47,7 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
   void StartHost(const std::string& host_id,
                  const std::string& host_name,
                  const std::string& host_pin,
+                 const std::string& host_owner,
                  bool consent_to_data_collection,
                  const std::string& auth_code,
                  const std::string& redirect_url,
@@ -106,6 +107,7 @@ class HostStarter : public gaia::GaiaOAuthClient::Delegate,
   std::string xmpp_login_;
   scoped_refptr<remoting::RsaKeyPair> key_pair_;
   std::string host_id_;
+  bool auth_code_exchanged_ = false;
 
   // True if the host was not started and unregistration was requested. If this
   // is set and a network/OAuth error occurs during unregistration, this will

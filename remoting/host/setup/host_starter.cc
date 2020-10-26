@@ -11,6 +11,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
@@ -49,6 +50,7 @@ std::unique_ptr<HostStarter> HostStarter::Create(
 void HostStarter::StartHost(const std::string& host_id,
                             const std::string& host_name,
                             const std::string& host_pin,
+                            const std::string& host_owner,
                             bool consent_to_data_collection,
                             const std::string& auth_code,
                             const std::string& redirect_url,
@@ -59,6 +61,7 @@ void HostStarter::StartHost(const std::string& host_id,
   host_id_ = host_id;
   host_name_ = host_name;
   host_pin_ = host_pin;
+  host_owner_ = host_owner;
   consent_to_data_collection_ = consent_to_data_collection;
   on_done_ = std::move(on_done);
   oauth_client_info_.client_id =
@@ -117,10 +120,26 @@ void HostStarter::OnGetUserEmailResponse(const std::string& user_email) {
     return;
   }
 
-  if (host_owner_.empty()) {
-    // This is the first callback, with the host owner credentials. Store the
-    // owner's email, and register the host.
-    host_owner_ = user_email;
+  if (!auth_code_exchanged_) {
+    // This is the first callback, with the host owner credentials.
+    auth_code_exchanged_ = true;
+
+    // If a host owner was not provided via the command line, then we just use
+    // the user_email for the account which generated the auth_code.
+    // Otherwise we want to verify user_email matches the host_owner provided.
+    // Note that the auth_code has been exchanged at this point so the user
+    // can't just re-run the command with the same nonce and a different
+    // host_owner to get the command to succeed.
+    if (host_owner_.empty()) {
+      host_owner_ = user_email;
+    } else if (!base::EqualsCaseInsensitiveASCII(host_owner_, user_email)) {
+      LOG(ERROR) << "User email from auth_code (" << user_email << ") does not "
+                 << "match the host owner provided (" << host_owner_ << ")";
+      std::move(on_done_).Run(OAUTH_ERROR);
+      return;
+    }
+
+    // Now register the host with the Directory.
     if (host_id_.empty())
       host_id_ = base::GenerateGUID();
     key_pair_ = RsaKeyPair::Generate();
