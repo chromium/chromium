@@ -7738,18 +7738,6 @@
     ]
   },
 
-  "UnsafeEventsReportingEnabled": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "UnsafeEventsReportingEnabled": false
-        },
-        "prefs": { "safebrowsing.unsafe_events_reporting": { "local_state": true } }
-      }
-    ]
-  },
-
   "BlockLargeFileTransfer": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_test": [

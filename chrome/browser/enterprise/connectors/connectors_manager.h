@@ -46,8 +46,8 @@ class ConnectorsManager {
   static ConnectorsManager* GetInstance();
 
   // Validates which settings should be applied to a reporting event
-  // against cached policies. This function will prioritize new connector
-  // policies over legacy ones if they are set.
+  // against cached policies. Cache the policy value the first time this is
+  // called for every different connector.
   base::Optional<ReportingSettings> GetReportingSettings(
       ReportingConnector connector);
 

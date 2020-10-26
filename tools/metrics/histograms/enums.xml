@@ -22104,7 +22104,6 @@ Called by update_document_policy_enum.py.-->
   <int value="581" label="LockScreenMediaPlaybackEnabled"/>
   <int value="582" label="DnsOverHttpsMode"/>
   <int value="584" label="PolicyAtomicGroupsEnabled"/>
-  <int value="585" label="UnsafeEventsReportingEnabled"/>
   <int value="586" label="BlockLargeFileTransfer"/>
   <int value="587" label="DelayDeliveryUntilVerdict"/>
   <int value="588" label="AllowPasswordProtectedFiles"/>

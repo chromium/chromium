@@ -20936,29 +20936,6 @@
       Setting the policy to Disabled turns media controls on the lock screen off.'''
     },
     {
-      'name': 'UnsafeEventsReportingEnabled',
-      'owners': ['rogerta@chromium.org', 'mad@chromium.org'],
-      'type': 'main',
-      'schema': {
-        'type': 'boolean',
-      },
-      'example_value': True,
-      'features': {
-        'dynamic_refresh': True,
-        'per_profile': False,
-        'cloud_only': True,
-      },
-      'id': 585,
-      'supported_on': ['chrome.*:78-', 'chrome_os:81-'],
-      'future': True,
-      'caption': '''Allows Chrome to report unsafe events to Google''',
-      'tags': [],
-      'desc': '''When this policy is set to enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> reports unsafe events such as password reuse, malware downloads, interstitials, sensitive data protection rule violations etc. to Google for analysis.  Some unsafe events such as sensitive data protection rule violations depend on other policies that enable such checks.
-
-      If this policy is set to disabled or not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not report unsafe events.
-      '''
-    },
-    {
       'name': 'BlockLargeFileTransfer',
       'owners': ['rogerta@chromium.org', 'mad@chromium.org'],
       'type': 'int-enum',
@@ -24514,7 +24491,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 589],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 589],
   'deleted_atomic_policy_group_ids': [19],
   'highest_id_currently_used': 800,
   'highest_atomic_group_id_currently_used': 40
