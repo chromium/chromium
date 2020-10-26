@@ -229,19 +229,23 @@ class Cache::BarrierCallbackForPutResponse final
 
   void FailedResponse() {
     ScriptState* state = resolver_->GetScriptState();
-    ScriptState::Scope scope(state);
-    resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
-        state->GetIsolate(), DOMExceptionCode::kNetworkError,
-        method_name_ + " encountered a network error"));
+    if (state->ContextIsValid()) {
+      ScriptState::Scope scope(state);
+      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
+          state->GetIsolate(), DOMExceptionCode::kNetworkError,
+          method_name_ + " encountered a network error"));
+    }
     Stop();
   }
 
   void AbortedResponse() {
     ScriptState* state = resolver_->GetScriptState();
-    ScriptState::Scope scope(state);
-    resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
-        state->GetIsolate(), DOMExceptionCode::kAbortError,
-        method_name_ + " was aborted"));
+    if (state->ContextIsValid()) {
+      ScriptState::Scope scope(state);
+      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
+          state->GetIsolate(), DOMExceptionCode::kAbortError,
+          method_name_ + " was aborted"));
+    }
     Stop();
   }
 
@@ -461,6 +465,8 @@ class Cache::BarrierCallbackForPutComplete final
       return;
     completed_ = true;
     ScriptState* state = resolver_->GetScriptState();
+    if (!state->ContextIsValid())
+      return;
     ScriptState::Scope scope(state);
     resolver_->Reject(
         V8ThrowException::CreateTypeError(state->GetIsolate(), error_message));
@@ -471,6 +477,8 @@ class Cache::BarrierCallbackForPutComplete final
       return;
     completed_ = true;
     ScriptState* state = resolver_->GetScriptState();
+    if (!state->ContextIsValid())
+      return;
     ScriptState::Scope scope(state);
     resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
         state->GetIsolate(), DOMExceptionCode::kAbortError,
