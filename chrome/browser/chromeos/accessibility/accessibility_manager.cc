@@ -561,32 +561,7 @@ void AccessibilityManager::OnTwoFingerTouchStop() {
 }
 
 bool AccessibilityManager::ShouldToggleSpokenFeedbackViaTouch() {
-#if 1
-  // Temporarily disabling this feature until UI feedback is fixed.
-  // http://crbug.com/662501
   return false;
-#else
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (!connector)
-    return false;
-
-  if (!connector->IsEnterpriseManaged())
-    return false;
-
-  const policy::DeviceCloudPolicyManagerChromeOS* const
-      device_cloud_policy_manager = connector->GetDeviceCloudPolicyManager();
-  if (!device_cloud_policy_manager)
-    return false;
-
-  if (!device_cloud_policy_manager->IsRemoraRequisition())
-    return false;
-
-  KioskAppManager* manager = KioskAppManager::Get();
-  KioskAppManager::App app;
-  CHECK(manager->GetApp(manager->GetAutoLaunchApp(), &app));
-  return app.was_auto_launched_with_zero_delay;
-#endif
 }
 
 bool AccessibilityManager::PlaySpokenFeedbackToggleCountdown(int tick_count) {
