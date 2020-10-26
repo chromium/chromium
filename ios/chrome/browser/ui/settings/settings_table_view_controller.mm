@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/ui/settings/bandwidth_management_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings_table_view_controller.h"
@@ -80,7 +81,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -565,11 +565,11 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 }
 
 - (TableViewItem*)googleServicesCellItem {
-  TableViewImageItem* googleServicesItem =
-      [[TableViewImageItem alloc] initWithType:ItemTypeGoogleServices];
+  SettingsImageDetailTextItem* googleServicesItem =
+      [[SettingsImageDetailTextItem alloc] initWithType:ItemTypeGoogleServices];
   googleServicesItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
-  googleServicesItem.title =
+  googleServicesItem.text =
       l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE);
   googleServicesItem.accessibilityIdentifier = kSettingsGoogleServicesCellId;
   googleServicesItem.image =
@@ -594,11 +594,12 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 - (TableViewItem*)syncAndGoogleServicesCellItem {
   // TODO(crbug.com/805214): This branded icon image needs to come from
   // BrandedImageProvider.
-  TableViewImageItem* googleServicesItem =
-      [[TableViewImageItem alloc] initWithType:ItemTypeSyncAndGoogleServices];
+  SettingsImageDetailTextItem* googleServicesItem =
+      [[SettingsImageDetailTextItem alloc]
+          initWithType:ItemTypeSyncAndGoogleServices];
   googleServicesItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
-  googleServicesItem.title =
+  googleServicesItem.text =
       l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SYNC_SETTINGS_TITLE);
   googleServicesItem.accessibilityIdentifier =
       kSettingsGoogleSyncAndServicesCellId;
@@ -1294,7 +1295,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 // Updates the Sync & Google services item to display the right icon and status
 // message in the detail text of the cell.
 - (void)updateSyncAndGoogleServicesItem:
-    (TableViewImageItem*)googleServicesItem {
+    (SettingsImageDetailTextItem*)googleServicesItem {
   googleServicesItem.detailTextColor = nil;
   syncer::SyncService* syncService =
       ProfileSyncServiceFactory::GetForBrowserState(_browserState);
@@ -1396,8 +1397,8 @@ NSString* kDevViewSourceKey = @"DevViewSource";
     NSIndexPath* googleServicesCellIndexPath =
         [self.tableViewModel indexPathForItemType:ItemTypeSyncAndGoogleServices
                                 sectionIdentifier:SectionIdentifierAccount];
-    TableViewImageItem* googleServicesItem =
-        base::mac::ObjCCast<TableViewImageItem>(
+    SettingsImageDetailTextItem* googleServicesItem =
+        base::mac::ObjCCast<SettingsImageDetailTextItem>(
             [self.tableViewModel itemAtIndexPath:googleServicesCellIndexPath]);
     DCHECK(googleServicesItem);
     [self updateSyncAndGoogleServicesItem:googleServicesItem];

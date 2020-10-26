@@ -86,6 +86,7 @@ source_set("unit_tests") {
     "passphrase_error_item_unittest.mm",
     "search_engine_item_unittest.mm",
     "settings_check_item_unittest.mm",
+    "settings_image_detail_text_item_unittest.mm",
     "settings_multiline_detail_item_unittest.mm",
     "version_item_unittest.mm",
   ]

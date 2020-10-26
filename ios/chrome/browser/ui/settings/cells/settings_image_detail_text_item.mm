@@ -30,6 +30,10 @@
   cell.detailTextLabel.text = self.detailText;
   DCHECK(self.image);
   cell.image = self.image;
+
+  if (self.detailTextColor) {
+    cell.detailTextLabel.textColor = self.detailTextColor;
+  }
 }
 
 @end

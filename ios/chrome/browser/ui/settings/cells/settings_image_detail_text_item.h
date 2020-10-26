@@ -28,6 +28,10 @@
 // The detail text to display.
 @property(nonatomic, copy) NSString* detailText;
 
+// UIColor for the cell's detailTextLabel. If not set,
+// UIColor.cr_secondaryLabelColor is used.
+@property(nonatomic, strong) UIColor* detailTextColor;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_IMAGE_DETAIL_TEXT_ITEM_H_
