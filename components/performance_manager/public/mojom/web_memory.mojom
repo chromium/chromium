@@ -1,0 +1,65 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module performance_manager.mojom;
+
+// All WebMemory* structs below are used for reporting the memory usage of the
+// page via the performance.measureMemory Web API. These structs roughly follow
+// the structs defined by the specification of the API:
+// https://wicg.github.io/performance-measure-memory/
+//
+// The renderer process invokes the OnWebMemoryMeasurementRequested method of
+// DocumentCoordinationUnit from coordination_unit.mojom to send a memory
+// measurement request to the browser process. The result of the measurement
+// is provided in WebMemoryMeasurement, which attributes the memory usage of
+// the page to ExecutionContexts (iframes and workers).
+//
+// The main invariant is that only the following ExecutionContexts can ever
+// appear in the result:
+// - same-origin contexts, i.e. those that have the same origin as the context
+//   that called the MeasureMemory function.
+// - cross-origin contexts with same-origin parent contexts, i.e. iframes that
+//   are *immediately* embedded in a same-origin context.
+//
+// The invariant is important to ensure that cross-origin contexts embedded
+// in other cross-origin contexts are not observable to the calling origin.
+
+// Information about ExecutionContext reported in the memory usage breakdown.
+struct WebMemoryAttribution {
+  // Specifies the scope (or type) of the context.
+  // The invariant mentioned above ensures that cross-origin contexts have
+  // type kWindow corresponding to iframes and that information is already
+  // known to the calling origin because it created the iframe.
+  enum Scope {
+    kWindow,
+    // TODO(1085129): Add worker scopes once they are implemented.
+  };
+  Scope scope;
+  // The current URL of the context. It is null for cross-origin contexts.
+  string? url;
+
+  // TODO(1085129): Add src and id fields once they are implemented.
+};
+
+// Describes a memory region and attributes it to a set of contexts.
+// Usually the set consists of a single context. If there are multiple
+// contexts then this means that the memory may be owned by any of them.
+struct WebMemoryBreakdownEntry {
+  uint64 bytes;
+  array<WebMemoryAttribution> attribution;
+
+  // TODO(1085129): Add memory types once they are implemented.
+};
+
+// The result of the MeasureMemory function.
+struct WebMemoryMeasurement {
+  // By default a memory measurement may be performed after some delay because
+  // it is folded into the next garbage collection. The eager mode is used for
+  // testing to force the measurement right away.
+  enum Mode {
+    kDefault,
+    kEager
+  };
+  array<WebMemoryBreakdownEntry> breakdown;
+};

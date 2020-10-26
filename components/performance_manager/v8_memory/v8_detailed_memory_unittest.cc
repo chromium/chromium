@@ -22,6 +22,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/global_routing_id.h"
@@ -1927,6 +1928,59 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShot) {
 
   doomed_request.reset();
   task_environment()->RunUntilIdle();
+}
+
+// TODO(1085129): Move this test to web_memory_aggregator_unittest.cc
+// after extracting the testing infrastructure.
+TEST_F(V8DetailedMemoryRequestAnySeqTest, WebMeasureMemory) {
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  SetContents(CreateTestWebContents());
+
+  // Create a page with a single frame.
+  content::RenderFrameHost* main_frame =
+      content::NavigationSimulator::NavigateAndCommitFromBrowser(
+          web_contents(), GURL("http://foo.com/"));
+  const RenderProcessHostId process_id(main_frame->GetProcess()->GetID());
+
+  blink::LocalFrameToken frame_token =
+      blink::LocalFrameToken(main_frame->GetFrameToken());
+
+  // Call WebMemory::Measure on the performance manager sequence and verify
+  // that the result matches the data provided by the mock reporter.
+  base::WeakPtr<FrameNode> frame_node_wrapper =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame);
+  bool measurement_done = false;
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindLambdaForTesting([&frame_node_wrapper, &measurement_done]() {
+        ASSERT_TRUE(frame_node_wrapper);
+        FrameNode* frame_node = frame_node_wrapper.get();
+        WebMeasureMemory(
+            frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
+            base::BindLambdaForTesting(
+                [&measurement_done](mojom::WebMemoryMeasurementPtr result) {
+                  EXPECT_EQ(1u, result->breakdown.size());
+                  const auto& entry = result->breakdown[0];
+                  EXPECT_EQ(1u, entry->attribution.size());
+                  EXPECT_EQ("http://foo.com/", *(entry->attribution[0]->url));
+                  EXPECT_EQ(1001u, entry->bytes);
+                  measurement_done = true;
+                }));
+      }));
+
+  // Set up and bind the mock reporter.
+  MockV8DetailedMemoryReporter mock_reporter;
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
+    ExpectBindAndRespondToQuery(&mock_reporter, std::move(data), process_id);
+  }
+
+  // Finally, run all tasks and verify that the memory measurement callback
+  // was actually invoked.
+  task_environment()->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter);
+  EXPECT_TRUE(measurement_done);
 }
 
 }  // namespace v8_memory

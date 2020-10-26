@@ -13,6 +13,7 @@ mojom_component("mojom") {
   sources = [
     "coordination_unit.mojom",
     "lifecycle.mojom",
+    "web_memory.mojom",
   ]
 
   public_deps = [

@@ -292,6 +292,10 @@ class V8DetailedMemoryFrameData {
   static const V8DetailedMemoryFrameData* ForFrameNode(const FrameNode* node);
 
  private:
+  friend class WebMemoryAggregatorTest;
+  // Creates frame data for the given node.
+  static V8DetailedMemoryFrameData* CreateForTesting(const FrameNode* node);
+
   uint64_t v8_bytes_used_ = 0;
 };
 

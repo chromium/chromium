@@ -7,6 +7,7 @@ module performance_manager.mojom;
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "components/performance_manager/public/mojom/lifecycle.mojom";
+import "components/performance_manager/public/mojom/web_memory.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Any new type here needs to be mirrored between coordination_unit_types.h and
@@ -68,6 +69,11 @@ interface DocumentCoordinationUnit {
   // or if the content is even visible. It will fire at most once for a given
   // frame. It will only fire for main-frame nodes.
   OnFirstContentfulPaint(mojo_base.mojom.TimeDelta time_since_navigation_start);
+
+  // Invoked when JS in the renderer requests a memory measurement via
+  // the performance.measureMemory API.
+  OnWebMemoryMeasurementRequested(WebMemoryMeasurement.Mode mode) =>
+      (WebMemoryMeasurement measurement);
 };
 
 interface ProcessCoordinationUnit {

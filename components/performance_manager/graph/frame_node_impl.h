@@ -15,6 +15,8 @@
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
+#include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
+#include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -92,6 +94,9 @@ class FrameNodeImpl
   void OnFirstContentfulPaint(
       base::TimeDelta time_since_navigation_start) override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
+  void OnWebMemoryMeasurementRequested(
+      mojom::WebMemoryMeasurement::Mode mode,
+      OnWebMemoryMeasurementRequestedCallback callback) override;
 
   // Partial FrameNodbase::TimeDelta time_since_navigatione implementation:
   bool IsMainFrame() const override;

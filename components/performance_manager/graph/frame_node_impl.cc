@@ -12,6 +12,8 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/v8_memory/web_memory.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace performance_manager {
 
@@ -696,6 +698,14 @@ void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
   origin_trial_freeze_policy.SetAndMaybeNotify(
       frame_node, mojom::InterventionPolicy::kDefault);
   had_form_interaction.SetAndMaybeNotify(frame_node, false);
+}
+
+void FrameNodeImpl::OnWebMemoryMeasurementRequested(
+    mojom::WebMemoryMeasurement::Mode mode,
+    OnWebMemoryMeasurementRequestedCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kWebMeasureMemoryViaPerformanceManager));
+  v8_memory::WebMeasureMemory(this, mode, std::move(callback));
 }
 
 }  // namespace performance_manager

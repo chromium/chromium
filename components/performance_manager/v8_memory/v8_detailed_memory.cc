@@ -195,6 +195,7 @@ class NodeAttachedFrameData
 
  private:
   friend class NodeAttachedProcessData;
+  friend class performance_manager::v8_memory::V8DetailedMemoryFrameData;
 
   V8DetailedMemoryFrameData data_;
   bool data_available_ = false;
@@ -387,9 +388,6 @@ void NodeAttachedProcessData::StartMeasurement(MeasurementMode mode) {
       mojo_mode = blink::mojom::V8DetailedMemoryReporter::Mode::DEFAULT;
       break;
     case MeasurementMode::kEagerForTesting:
-#if DCHECK_IS_ON()
-      DCHECK(g_test_eager_measurement_requests_enabled);
-#endif
       mojo_mode = blink::mojom::V8DetailedMemoryReporter::Mode::EAGER;
       break;
   }
@@ -612,10 +610,6 @@ V8DetailedMemoryRequest::V8DetailedMemoryRequest(
     : min_time_between_requests_(base::TimeDelta()), mode_(mode) {
   // Do not forward to the standard constructor because it disallows the empty
   // TimeDelta.
-#if DCHECK_IS_ON()
-  DCHECK(mode != MeasurementMode::kEagerForTesting ||
-         g_test_eager_measurement_requests_enabled);
-#endif
 }
 
 V8DetailedMemoryRequest::~V8DetailedMemoryRequest() {
@@ -824,6 +818,13 @@ const V8DetailedMemoryFrameData* V8DetailedMemoryFrameData::ForFrameNode(
     const FrameNode* node) {
   auto* node_data = NodeAttachedFrameData::Get(node);
   return node_data ? node_data->data() : nullptr;
+}
+
+V8DetailedMemoryFrameData* V8DetailedMemoryFrameData::CreateForTesting(
+    const FrameNode* node) {
+  auto* node_data = NodeAttachedFrameData::GetOrCreate(node);
+  node_data->data_available_ = true;
+  return &node_data->data_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
