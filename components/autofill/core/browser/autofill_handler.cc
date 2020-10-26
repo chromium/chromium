@@ -30,6 +30,10 @@ const size_t kAutofillHandlerMaxFormCacheSize = 100;
 // if not found.
 AutofillField* FindAutofillFillField(const FormStructure& form,
                                      const FormFieldData& field) {
+  for (const auto& f : form) {
+    if (field.unique_renderer_id == f->unique_renderer_id)
+      return f.get();
+  }
   for (const auto& cur_field : form) {
     if (cur_field->SameFieldAs(field)) {
       return cur_field.get();

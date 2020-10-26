@@ -2125,6 +2125,60 @@ TEST_P(AutofillManagerStructuredProfileTest,
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 }
 
+// Test that the correct section is filled.
+TEST_F(AutofillManagerTest, FillTriggeredSection) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  size_t index_of_trigger_field = form.fields.size();
+  test::CreateTestAddressFormData(&form);
+  FormsSeen({form});
+
+  // Check that the form has been parsed into two sections.
+  ASSERT_NE(form.fields.size(), 0u);
+  ASSERT_EQ(index_of_trigger_field, form.fields.size() / 2);
+  {
+    FormStructure* form_structure;
+    AutofillField* autofill_field;
+    bool found = autofill_manager_->GetCachedFormAndField(
+        form, form.fields[index_of_trigger_field], &form_structure,
+        &autofill_field);
+    ASSERT_TRUE(found);
+    for (size_t i = 0; i < form.fields.size() / 2; ++i) {
+      size_t j = form.fields.size() / 2 + i;
+      ASSERT_EQ(form_structure->field(i)->name, form_structure->field(j)->name);
+      ASSERT_NE(form_structure->field(i)->section,
+                form_structure->field(j)->section);
+      ASSERT_TRUE(form_structure->field(i)->SameFieldAs(form.fields[j]));
+      ASSERT_TRUE(form_structure->field(j)->SameFieldAs(form.fields[i]));
+    }
+  }
+
+  const char guid[] = "00000000-0000-0000-0000-000000000001";
+  AutofillProfile* profile = personal_data_.GetProfileWithGUID(guid);
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(1U, profile->use_count());
+  EXPECT_NE(base::Time(), profile->use_date());
+
+  int response_page_id = 0;
+  FormData response_data;
+  FillAutofillFormDataAndSaveResults(
+      kDefaultPageID, form, form.fields[index_of_trigger_field],
+      MakeFrontendID(std::string(), guid), &response_page_id, &response_data);
+  // Extract the sections into individual forms to reduce boiler plate code.
+  size_t mid = response_data.fields.size() / 2;
+  FormData section1 = response_data;
+  FormData section2 = response_data;
+  section1.fields.erase(section1.fields.begin() + mid, section1.fields.end());
+  section2.fields.erase(section2.fields.begin(), section2.fields.end() - mid);
+  // First section should be empty, second should be filled.
+  ExpectFilledForm(response_page_id, section1, kDefaultPageID, "", "", "", "",
+                   "", "", "", "", "", "", "", "", "", "", "", true, false,
+                   false);
+  ExpectFilledAddressFormElvis(response_page_id, section2, kDefaultPageID,
+                               false);
+}
+
 // Tests that AutofillManager ignores loss of focus events sent from the
 // renderer if the renderer did not have a previously-interacted form.
 // TODO(crbug.com/1140473): Remove this test when workaround is no longer
