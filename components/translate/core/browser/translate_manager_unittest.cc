@@ -969,7 +969,13 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
   translate_manager_->GetLanguageState()->LanguageDetermined(
       translate::kUnknownLanguageCode, true);
 
+  // Translation of unknown source language pages is supported on desktop
+  // platforms, but not mobile.
+#if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+#else
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+#endif
 }
 
 TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {

@@ -203,9 +203,14 @@ bool TranslateManager::CanManuallyTranslate() {
     return false;
 
   const std::string source_language = language_state_.original_language();
-  if (source_language.empty() ||
-      source_language == translate::kUnknownLanguageCode)
+  if (source_language.empty())
     return false;
+  // Translation of unknown source language pages is supported on desktop
+  // platforms, but not mobile.
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  if (source_language == translate::kUnknownLanguageCode)
+    return false;
+#endif
 
   std::unique_ptr<TranslatePrefs> translate_prefs(
       translate_client_->GetTranslatePrefs());
