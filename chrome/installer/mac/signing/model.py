@@ -209,6 +209,14 @@ class Distribution(object):
             package_as_pkg: If True, then a .pkg file will be created containing
                 the product.
         """
+        if channel_customize:
+            # Side-by-side channels must have a distinct names and creator
+            # codes, as well as keep their user data in separate locations.
+            assert channel
+            assert app_name_fragment
+            assert product_dirname
+            assert creator_code
+
         self.channel = channel
         self.branding_code = branding_code
         self.app_name_fragment = app_name_fragment

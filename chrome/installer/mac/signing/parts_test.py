@@ -39,6 +39,9 @@ class TestGetParts(unittest.TestCase):
     def test_get_parts_customize(self):
         config = model.Distribution(
             channel='canary',
+            app_name_fragment='Canary',
+            product_dirname='canary',
+            creator_code='cana',
             channel_customize=True).to_config(test_config.TestConfig())
         all_parts = parts.get_parts(config)
         self.assertEqual('test.signing.bundle_id.canary',

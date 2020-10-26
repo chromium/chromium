@@ -95,7 +95,10 @@ class TestDistribution(unittest.TestCase):
     def test_channel_customize(self):
         base_config = TestConfig()
         config = model.Distribution(
-            channel='beta', app_name_fragment='Beta',
+            channel='beta',
+            app_name_fragment='Beta',
+            product_dirname='beta',
+            creator_code='beta',
             channel_customize=True).to_config(base_config)
         self.assertEqual('App Product Beta', config.app_product)
         self.assertEqual(base_config.product, config.product)
@@ -122,6 +125,8 @@ class TestDistribution(unittest.TestCase):
             channel='dev',
             app_name_fragment='Dev',
             packaging_name_fragment='Dev',
+            product_dirname='dev',
+            creator_code='dev ',
             channel_customize=True)
         config = dist.to_config(TestConfig())
         self.assertEqual('App Product Dev', config.app_product)

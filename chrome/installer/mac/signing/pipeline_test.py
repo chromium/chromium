@@ -122,7 +122,9 @@ class TestPipelineHelpers(unittest.TestCase):
         dist = model.Distribution(
             channel_customize=True,
             channel='canary',
-            app_name_fragment='Canary')
+            app_name_fragment='Canary',
+            product_dirname='canary',
+            creator_code='cana')
         config = test_config.TestConfig()
         dist_config = dist.to_config(config)
         paths = self.paths.replace_work('/$W')
@@ -181,7 +183,9 @@ class TestPipelineHelpers(unittest.TestCase):
         channel_dist = model.Distribution(
             channel_customize=True,
             channel='canary',
-            app_name_fragment='Canary')
+            app_name_fragment='Canary',
+            product_dirname='canary',
+            creator_code='cana')
         channel_dist_config = channel_dist.to_config(config)
         paths = self.paths.replace_work('/$W')
 
@@ -264,7 +268,9 @@ class TestPipelineHelpers(unittest.TestCase):
         dist = model.Distribution(
             channel_customize=True,
             channel='canary',
-            app_name_fragment='Canary')
+            app_name_fragment='Canary',
+            product_dirname='canary',
+            creator_code='cana')
         paths = self.paths.replace_work('/$W')
 
         pipeline._staple_chrome(paths, dist.to_config(test_config.TestConfig()))
@@ -584,7 +590,9 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         dist = model.Distribution(
             channel_customize=True,
             channel='canary',
-            app_name_fragment='Canary')
+            app_name_fragment='Canary',
+            product_dirname='canary',
+            creator_code='cana')
         config = dist.to_config(test_config.TestConfig())
         paths = self.paths.replace_work('/$W')
 
