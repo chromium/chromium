@@ -19,13 +19,61 @@ ModifierState ModifierStateToProto(mojom::ModifierStatePtr modifier_state) {
   return result;
 }
 
+InputFieldInfo::InputFieldType InputFieldTypeToProto(
+    mojom::InputFieldType input_field_type) {
+  switch (input_field_type) {
+    case mojom::InputFieldType::kNoIME:
+      return InputFieldInfo::INPUT_FIELD_TYPE_NO_IME;
+    case mojom::InputFieldType::kText:
+      return InputFieldInfo::INPUT_FIELD_TYPE_TEXT;
+    case mojom::InputFieldType::kSearch:
+      return InputFieldInfo::INPUT_FIELD_TYPE_SEARCH;
+    case mojom::InputFieldType::kTelephone:
+      return InputFieldInfo::INPUT_FIELD_TYPE_TELEPHONE;
+    case mojom::InputFieldType::kURL:
+      return InputFieldInfo::INPUT_FIELD_TYPE_URL;
+    case mojom::InputFieldType::kEmail:
+      return InputFieldInfo::INPUT_FIELD_TYPE_EMAIL;
+    case mojom::InputFieldType::kNumber:
+      return InputFieldInfo::INPUT_FIELD_TYPE_NUMBER;
+    case mojom::InputFieldType::kPassword:
+      return InputFieldInfo::INPUT_FIELD_TYPE_PASSWORD;
+  }
+}
+
+InputFieldInfo::AutocorrectMode AutocorrectModeToProto(
+    mojom::AutocorrectMode autocorrect_mode) {
+  switch (autocorrect_mode) {
+    case mojom::AutocorrectMode::kDisabled:
+      return InputFieldInfo::AUTOCORRECT_MODE_DISABLED;
+    case mojom::AutocorrectMode::kEnabled:
+      return InputFieldInfo::AUTOCORRECT_MODE_ENABLED;
+  }
+}
+
+InputFieldInfo::PersonalizationMode PersonalizationModeToProto(
+    mojom::PersonalizationMode personalization_mode) {
+  switch (personalization_mode) {
+    case mojom::PersonalizationMode::kDisabled:
+      return InputFieldInfo::PERSONALIZATION_MODE_DISABLED;
+    case mojom::PersonalizationMode::kEnabled:
+      return InputFieldInfo::PERSONALIZATION_MODE_ENABLED;
+  }
+}
+
 }  // namespace
 
-ime::PublicMessage OnFocusToProto(uint64_t seq_id) {
+ime::PublicMessage OnFocusToProto(uint64_t seq_id,
+                                  mojom::InputFieldInfoPtr input_field_info) {
   ime::PublicMessage message;
   message.set_seq_id(seq_id);
 
-  *message.mutable_on_focus() = ime::OnFocus();
+  ime::InputFieldInfo& proto_info = *message.mutable_on_focus()->mutable_info();
+  proto_info.set_type(InputFieldTypeToProto(input_field_info->type));
+  proto_info.set_autocorrect(
+      AutocorrectModeToProto(input_field_info->autocorrect));
+  proto_info.set_personalization(
+      PersonalizationModeToProto(input_field_info->personalization));
   return message;
 }
 

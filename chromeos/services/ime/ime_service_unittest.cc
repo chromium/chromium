@@ -55,7 +55,7 @@ class TestClientChannel : mojom::InputChannel {
   MOCK_METHOD2(ProcessMessage,
                void(const std::vector<uint8_t>& message,
                     ProcessMessageCallback));
-  MOCK_METHOD0(OnFocus, void());
+  MOCK_METHOD1(OnFocus, void(mojom::InputFieldInfoPtr input_field_info));
   MOCK_METHOD0(OnBlur, void());
   MOCK_METHOD2(ProcessKeypressForRulebased,
                void(const mojom::PhysicalKeyEventPtr event,

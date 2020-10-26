@@ -107,7 +107,7 @@ void InputEngine::ProcessMessage(const std::vector<uint8_t>& message,
   NOTIMPLEMENTED();  // Protobuf message is not used in the rulebased engine.
 }
 
-void InputEngine::OnFocus() {
+void InputEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info) {
   NOTIMPLEMENTED();  // Not used in the rulebased engine.
 }
 

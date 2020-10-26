@@ -92,6 +92,48 @@ struct SelectionRange {
    uint32 focus;
 };
 
+// Type of input field.
+// Based off ui::TextInputType in ui/base/ime/text_input_type.h.
+enum InputFieldType {
+  // Does not support IME editing. IMEs should only send physical key events,
+  // and not perform complex operations such as composition.
+  kNoIME = 0,
+  // Supports general text input.
+  kText = 1,
+  kSearch = 2,
+  kTelephone = 3,
+  kURL = 4,
+  kEmail = 5,
+  kNumber = 6,
+  // Input represents a password. IMEs should ensure the password is not stored
+  // without the user's permission.
+  kPassword = 7,
+};
+
+enum AutocorrectMode {
+  // The IME must not perform autocorrect.
+  kDisabled = 0,
+  // The IME may perform autocorrect as the user is typing.
+  kEnabled = 1,
+};
+
+enum PersonalizationMode {
+  // The IME should not use anything from the input field to update any
+  // personalized data (e.g. to improve suggestions quality). Personalization
+  // may be disabled if the content is privacy-sensitive (e.g. incognito mode in
+  // Chrome browser), or if using personalization does not make sense (e.g.
+  // playing a typing game may pollute the IME dictionary with uncommon words).
+  kDisabled = 0,
+  // The IME may use the input field contents for personalization.
+  kEnabled = 1,
+};
+
+struct InputFieldInfo {
+  InputFieldType type;
+  AutocorrectMode autocorrect;
+  PersonalizationMode personalization;
+};
+
 // Manages access to a set of IME engines, implemented by the IME service
 // itself. The IME framework in the browser process is responsible for brokering
 // the connection between the IME service and the IME extension, but does not
@@ -123,7 +165,7 @@ interface InputChannel {
   ProcessMessage(array<uint8> message) => (array<uint8> result);
 
   // Called when there's a new focused input field.
-  OnFocus();
+  OnFocus(InputFieldInfo input_field_info);
 
   // Called when the input field loses focus.
   OnBlur();

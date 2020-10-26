@@ -46,7 +46,7 @@ class InputEngine : public mojom::InputChannel {
   // mojom::InputChannel overrides:
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
-  void OnFocus() override;
+  void OnFocus(mojom::InputFieldInfoPtr input_field_info) override;
   void OnBlur() override;
   void OnSurroundingTextChanged(
       const std::string& text,

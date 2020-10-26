@@ -38,10 +38,42 @@ message PublicMessage {
   }
 }
 
+// Protobuf version of the reply from InputEngine::InputFieldInfo in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message InputFieldInfo {
+  enum InputFieldType {
+    INPUT_FIELD_TYPE_UNSPECIFIED = 0;  // Reserved
+    INPUT_FIELD_TYPE_NO_IME = 1;
+    INPUT_FIELD_TYPE_TEXT = 2;
+    INPUT_FIELD_TYPE_SEARCH = 3;
+    INPUT_FIELD_TYPE_TELEPHONE = 4;
+    INPUT_FIELD_TYPE_URL = 5;
+    INPUT_FIELD_TYPE_EMAIL = 6;
+    INPUT_FIELD_TYPE_NUMBER = 7;
+    INPUT_FIELD_TYPE_PASSWORD = 8;
+  }
+
+  enum AutocorrectMode {
+    AUTOCORRECT_MODE_UNSPECIFIED = 0;  // Reserved
+    AUTOCORRECT_MODE_DISABLED = 1;
+    AUTOCORRECT_MODE_ENABLED = 2;
+  }
+
+  enum PersonalizationMode {
+    PERSONALIZATION_MODE_UNSPECIFIED = 0;  // Reserved
+    PERSONALIZATION_MODE_DISABLED = 1;
+    PERSONALIZATION_MODE_ENABLED = 2;
+  }
+
+  optional InputFieldType type = 1;
+  optional AutocorrectMode autocorrect = 2;
+  optional PersonalizationMode personalization = 3;
+}
+
 // Protobuf version of InputEngine::OnFocus in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message OnFocus {
-  // TODO(crbug/1019541): Add information about the input field.
+  optional InputFieldInfo info = 1;
 }
 
 // Protobuf version of InputEngine::OnBlur in

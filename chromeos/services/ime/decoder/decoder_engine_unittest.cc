@@ -53,7 +53,7 @@ class StubInputChannel : public mojom::InputChannel {
                       ProcessMessageCallback callback) final {
     std::move(callback).Run({});
   }
-  void OnFocus() final {}
+  void OnFocus(mojom::InputFieldInfoPtr input_field_info) final {}
   void OnBlur() final {}
   void ProcessKeypressForRulebased(
       ime::mojom::PhysicalKeyEventPtr event,
@@ -110,12 +110,18 @@ TEST_F(DecoderEngineTest, OnFocusSendsMessageToSharedLib) {
   mojo::Remote<mojom::InputChannel> client;
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
                                  receiver.BindNewPipeAndPassRemote(), {}));
+
+  auto info = mojom::InputFieldInfo::New(mojom::InputFieldType::kNumber,
+                                         mojom::AutocorrectMode::kEnabled,
+                                         mojom::PersonalizationMode::kEnabled);
+
   ime::Wrapper expected_proto;
-  *expected_proto.mutable_public_message() = OnFocusToProto(/*seq_id=*/0);
+  *expected_proto.mutable_public_message() =
+      OnFocusToProto(/*seq_id=*/0, info.Clone());
 
   EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
 
-  client->OnFocus();
+  client->OnFocus(info.Clone());
   client.FlushForTesting();
 }
 
