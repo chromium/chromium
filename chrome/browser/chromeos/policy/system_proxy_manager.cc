@@ -207,6 +207,11 @@ void SystemProxyManager::OnArcEnabledChanged() {
     return;
   }
 
+  if (local_state_->GetBoolean(prefs::kKerberosEnabled)) {
+    SendKerberosAuthenticationDetails();
+    return;
+  }
+
   system_proxy::SetAuthenticationDetailsRequest request;
   request.set_traffic_type(system_proxy::TrafficOrigin::USER);
   chromeos::SystemProxyClient::Get()->SetAuthenticationDetails(
@@ -235,7 +240,9 @@ void SystemProxyManager::SendUserAuthenticationCredentials(
   user_credentials.set_password(password);
 
   system_proxy::SetAuthenticationDetailsRequest request;
-  request.set_traffic_type(system_proxy::TrafficOrigin::ALL);
+  request.set_traffic_type(IsArcEnabled()
+                               ? system_proxy::TrafficOrigin::ALL
+                               : system_proxy::TrafficOrigin::SYSTEM);
   *request.mutable_credentials() = user_credentials;
   *request.mutable_protection_space() = protection_space;
 
@@ -250,7 +257,9 @@ void SystemProxyManager::SendKerberosAuthenticationDetails() {
   }
 
   system_proxy::SetAuthenticationDetailsRequest request;
-  request.set_traffic_type(system_proxy::TrafficOrigin::SYSTEM);
+  request.set_traffic_type(IsArcEnabled()
+                               ? system_proxy::TrafficOrigin::ALL
+                               : system_proxy::TrafficOrigin::SYSTEM);
   request.set_kerberos_enabled(
       local_state_->GetBoolean(prefs::kKerberosEnabled));
   if (primary_profile_) {

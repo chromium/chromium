@@ -160,22 +160,35 @@ TEST_F(SystemProxyManagerTest, ShutDownDaemon) {
 // Tests that |SystemProxyManager| sends the correct Kerberos details and
 // updates to System-proxy.
 TEST_F(SystemProxyManagerTest, KerberosConfig) {
+  int expected_set_auth_details_call_count = 0;
   SetPolicy(true /* system_proxy_enabled */, "" /* system_services_username */,
             "" /* system_services_password */);
+  EXPECT_EQ(++expected_set_auth_details_call_count,
+            client_test_interface()->GetSetAuthenticationDetailsCallCount());
+
   local_state_.Get()->SetBoolean(prefs::kKerberosEnabled, true);
-  EXPECT_EQ(2, client_test_interface()->GetSetAuthenticationDetailsCallCount());
+  EXPECT_EQ(++expected_set_auth_details_call_count,
+            client_test_interface()->GetSetAuthenticationDetailsCallCount());
 
   system_proxy::SetAuthenticationDetailsRequest request =
       client_test_interface()->GetLastAuthenticationDetailsRequest();
   EXPECT_FALSE(request.has_credentials());
   EXPECT_TRUE(request.kerberos_enabled());
+  EXPECT_EQ(request.traffic_type(), system_proxy::TrafficOrigin::SYSTEM);
 
   // Set an active principal name.
   profile_->GetPrefs()->SetString(prefs::kKerberosActivePrincipalName,
                                   kKerberosActivePrincipalName);
-  EXPECT_EQ(3, client_test_interface()->GetSetAuthenticationDetailsCallCount());
+  EXPECT_EQ(++expected_set_auth_details_call_count,
+            client_test_interface()->GetSetAuthenticationDetailsCallCount());
+
+  profile_->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, true);
+  EXPECT_EQ(++expected_set_auth_details_call_count,
+            client_test_interface()->GetSetAuthenticationDetailsCallCount());
+
   request = client_test_interface()->GetLastAuthenticationDetailsRequest();
   EXPECT_EQ(kKerberosActivePrincipalName, request.active_principal_name());
+  EXPECT_EQ(request.traffic_type(), system_proxy::TrafficOrigin::ALL);
 
   // Remove the active principal name.
   profile_->GetPrefs()->SetString(prefs::kKerberosActivePrincipalName, "");
@@ -269,6 +282,16 @@ TEST_F(SystemProxyManagerTest, UserCredentialsRequestedFromNetworkService) {
   ASSERT_TRUE(request.has_credentials());
   EXPECT_EQ(kBrowserUsername, request.credentials().username());
   EXPECT_EQ(kBrowserPassword, request.credentials().password());
+  EXPECT_EQ(request.traffic_type(), system_proxy::TrafficOrigin::SYSTEM);
+
+  // Enable ARC and verify that the credentials are sent both for user and
+  // system traffic.
+  profile_->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, true);
+  task_environment_.RunUntilIdle();
+  client_test_interface()->SendAuthenticationRequiredSignal(details);
+  task_environment_.RunUntilIdle();
+  request = client_test_interface()->GetLastAuthenticationDetailsRequest();
+  EXPECT_EQ(request.traffic_type(), system_proxy::TrafficOrigin::ALL);
 }
 
 // Tests that |SystemProxyManager| sends requests to start and shut down the
