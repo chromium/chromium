@@ -223,13 +223,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BrowsersRememberFocus) {
 }
 
 // Tabs remember focus.
-#if defined(THREAD_SANITIZER)
-// TODO(crbug.com/995181): This test is flaky on Linux TSan.
-#define MAYBE_TabsRememberFocus DISABLED_TabsRememberFocus
-#else
-#define MAYBE_TabsRememberFocus TabsRememberFocus
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_TabsRememberFocus) {
+IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocus) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   const GURL url = embedded_test_server()->GetURL(kSimplePage);
   ui_test_utils::NavigateToURL(browser(), url);
