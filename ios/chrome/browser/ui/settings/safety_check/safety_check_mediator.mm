@@ -736,6 +736,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
         break;
       }
     }
+    __weak __typeof__(self) weakSelf = self;
     // This handles a discrepancy between password check and safety check.  In
     // password check a user cannot start a check if they have no passwords, but
     // in safety check they can, but the |passwordCheckManager| won't even start
@@ -749,9 +750,9 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
           dispatch_get_main_queue(), ^{
             // Check if the check was cancelled while waiting, we do not want to
             // push a completed state to the UI if the check was cancelled.
-            if (self.checksRemaining) {
-              self.passwordCheckRowState = PasswordCheckRowStateDisabled;
-              [self reconfigurePasswordCheckItem];
+            if (weakSelf.checksRemaining) {
+              weakSelf.passwordCheckRowState = PasswordCheckRowStateDisabled;
+              [weakSelf reconfigurePasswordCheckItem];
 
               base::UmaHistogramEnumeration(
                   kSafetyCheckMetricsPasswords,
@@ -768,8 +769,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
         dispatch_get_main_queue(), ^{
           // Check if the check was cancelled while waiting, we do not want to
           // push a completed state to the UI if the check was cancelled.
-          if (self.checksRemaining)
-            [self checkAndReconfigureSafeBrowsingState];
+          if (weakSelf.checksRemaining)
+            [weakSelf checkAndReconfigureSafeBrowsingState];
         });
   }
   return;
@@ -853,15 +854,16 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   double minDelay = kUpdateRowMinDelay;
   if (secondsSinceStart < minDelay) {
     // Want to show the loading wheel for minimum time.
+    __weak __typeof__(self) weakSelf = self;
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW,
                       (int64_t)((minDelay - secondsSinceStart) * NSEC_PER_SEC)),
         dispatch_get_main_queue(), ^{
           // Check if the check was cancelled while waiting, we do not want to
           // push a completed state to the UI if the check was cancelled.
-          if (self.checksRemaining) {
-            self.updateCheckRowState = newRowState;
-            [self reconfigureUpdateCheckItem];
+          if (weakSelf.checksRemaining) {
+            weakSelf.updateCheckRowState = newRowState;
+            [weakSelf reconfigureUpdateCheckItem];
           }
         });
   } else {
