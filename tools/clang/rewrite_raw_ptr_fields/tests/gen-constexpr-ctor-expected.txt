@@ -1,0 +1,10 @@
+==== BEGIN EDITS ====
+include-user-header:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-constexpr-ctor-actual.cc:::-1:::-1:::base/memory/checked_ptr.h
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-constexpr-ctor-actual.cc:::1045:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-constexpr-ctor-actual.cc:::1153:::5:::CheckedPtr<int> 
+r:::/usr/local/google/home/lukasza/src/chromium4/src/tools/clang/rewrite_raw_ptr_fields/tests/gen-constexpr-ctor-actual.cc:::1271:::5:::CheckedPtr<int> 
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+Foo::ptr2_  # constexpr-ctor-initializer
+Foo::ptr_  # constexpr-ctor-initializer
+==== END FIELD FILTERS ====

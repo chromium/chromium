@@ -1050,6 +1050,18 @@ int main(int argc, const char* argv[]) {
   match_finder.addMatcher(overlapping_field_decl_matcher,
                           &overlapping_field_decl_writer);
 
+  // Matches fields initialized with a non-nullptr value in a constexpr
+  // constructor.  See also the testcase in tests/gen-constexpr-ctor-test.cc.
+  auto constexpr_ctor_initialized_field_matcher = cxxConstructorDecl(allOf(
+      isConstexpr(),
+      forEachConstructorInitializer(allOf(
+          forField(field_decl_matcher), withInitializer(unless(ignoringImplicit(
+                                            cxxNullPtrLiteralExpr())))))));
+  FilteredExprWriter constexpr_ctor_initialized_field_writer(
+      &output_helper, "constexpr-ctor-initializer");
+  match_finder.addMatcher(constexpr_ctor_initialized_field_matcher,
+                          &constexpr_ctor_initialized_field_writer);
+
   // See the doc comment for the isInMacroLocation matcher
   // and the testcases in tests/gen-macro-test.cc.
   auto macro_field_decl_matcher =
