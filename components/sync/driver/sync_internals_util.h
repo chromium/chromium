@@ -39,6 +39,7 @@ extern const char kSyncNodeBrowserJS[];
 extern const char kSyncSearchJS[];
 extern const char kUserEventsJS[];
 extern const char kTrafficLogJS[];
+extern const char kInvalidationsJS[];
 
 // Message handlers.
 // Must match the constants used in the resource files.
@@ -66,6 +67,7 @@ extern const char kOnProtocolEvent[];
 extern const char kOnReceivedIncludeSpecificsInitialState[];
 extern const char kOnReceivedListOfTypes[];
 extern const char kTypes[];
+extern const char kOnInvalidationReceived[];
 
 using IncludeSensitiveData =
     util::StrongAlias<class IncludeSensitiveDataTag, bool>;

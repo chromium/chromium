@@ -51,6 +51,8 @@ content::WebUIDataSource* CreateSyncInternalsHTMLSource() {
        IDR_SYNC_DRIVER_SYNC_INTERNALS_USER_EVENTS_JS},
       {syncer::sync_ui_util::kTrafficLogJS,
        IDR_SYNC_DRIVER_SYNC_INTERNALS_TRAFFIC_LOG_JS},
+      {syncer::sync_ui_util::kInvalidationsJS,
+       IDR_SYNC_DRIVER_SYNC_INTERNALS_INVALIDATIONS_JS},
   };
   webui::AddResourcePathsBulk(source, kResources);
 

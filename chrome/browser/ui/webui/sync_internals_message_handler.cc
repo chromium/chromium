@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/model_type.h"
@@ -21,8 +22,10 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/events/protocol_event.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/js/js_event_details.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
@@ -30,6 +33,7 @@
 using base::DictionaryValue;
 using base::ListValue;
 using base::Value;
+using syncer::SyncInvalidationsService;
 using syncer::SyncService;
 
 namespace {
@@ -174,6 +178,13 @@ void SyncInternalsMessageHandler::HandleRegisterForEvents(
     service->AddProtocolEventObserver(this);
     js_controller_ = service->GetJsController();
     js_controller_->AddJsEventHandler(this);
+
+    SyncInvalidationsService* invalidations_service =
+        GetSyncInvalidationsService();
+    if (invalidations_service) {
+      invalidations_service->AddListener(this);
+    }
+
     is_registered_ = true;
   }
 }
@@ -342,6 +353,27 @@ void SyncInternalsMessageHandler::OnProtocolEvent(
   DispatchEvent(syncer::sync_ui_util::kOnProtocolEvent, *value);
 }
 
+void SyncInternalsMessageHandler::OnInvalidationReceived(
+    const std::string& payload) {
+  sync_pb::SyncInvalidationsPayload payload_message;
+  if (!payload_message.ParseFromString(payload)) {
+    return;
+  }
+
+  base::ListValue data_types_list;
+  for (const auto& data_type_invalidation :
+       payload_message.data_type_invalidations()) {
+    const int field_number = data_type_invalidation.data_type_id();
+    syncer::ModelType type =
+        syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
+    if (IsRealDataType(type)) {
+      data_types_list.Append(syncer::ModelTypeToString(type));
+    }
+  }
+
+  DispatchEvent(syncer::sync_ui_util::kOnInvalidationReceived, data_types_list);
+}
+
 void SyncInternalsMessageHandler::HandleJsEvent(
     const std::string& name,
     const syncer::JsEventDetails& details) {
@@ -358,6 +390,12 @@ void SyncInternalsMessageHandler::SendAboutInfo() {
 
 SyncService* SyncInternalsMessageHandler::GetSyncService() {
   return ProfileSyncServiceFactory::GetForProfile(
+      Profile::FromWebUI(web_ui())->GetOriginalProfile());
+}
+
+SyncInvalidationsService*
+SyncInternalsMessageHandler::GetSyncInvalidationsService() {
+  return SyncInvalidationsServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui())->GetOriginalProfile());
 }
 
@@ -380,6 +418,13 @@ void SyncInternalsMessageHandler::UnregisterModelNotifications() {
     service->RemoveProtocolEventObserver(this);
     js_controller_->RemoveJsEventHandler(this);
     js_controller_ = nullptr;
+
+    SyncInvalidationsService* invalidations_service =
+        GetSyncInvalidationsService();
+    if (invalidations_service) {
+      invalidations_service->RemoveListener(this);
+    }
+
     is_registered_ = false;
   }
 }

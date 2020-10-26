@@ -47,6 +47,7 @@ const char kSyncNodeBrowserJS[] = "sync_node_browser.js";
 const char kSyncSearchJS[] = "sync_search.js";
 const char kUserEventsJS[] = "user_events.js";
 const char kTrafficLogJS[] = "traffic_log.js";
+const char kInvalidationsJS[] = "invalidations.js";
 
 // Message handlers.
 const char kDispatchEvent[] = "chrome.sync.dispatchEvent";
@@ -75,6 +76,7 @@ const char kOnReceivedIncludeSpecificsInitialState[] =
     "onReceivedIncludeSpecificsInitialState";
 const char kOnReceivedListOfTypes[] = "onReceivedListOfTypes";
 const char kTypes[] = "types";
+const char kOnInvalidationReceived[] = "onInvalidationReceived";
 
 namespace {
 

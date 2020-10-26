@@ -19,6 +19,7 @@ js_type_check("closure_compile") {
 
     #":sync_node_browser",
     #":sync_search",
+    ":invalidations",
     ":traffic_log",
     ":user_events",
   ]
@@ -93,4 +94,8 @@ js_library("user_events") {
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:util",
   ]
+}
+
+js_library("invalidations") {
+  deps = [ "//ui/webui/resources/js:cr" ]
 }

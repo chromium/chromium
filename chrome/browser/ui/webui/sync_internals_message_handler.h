@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/engine/events/protocol_event_observer.h"
+#include "components/sync/invalidations/invalidations_listener.h"
 #include "components/sync/js/js_controller.h"
 #include "components/sync/js/js_event_handler.h"
 #include "components/version_info/channel.h"
@@ -20,13 +21,15 @@
 
 namespace syncer {
 class SyncService;
+class SyncInvalidationsService;
 }  //  namespace syncer
 
 // The implementation for the chrome://sync-internals page.
 class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
                                     public syncer::JsEventHandler,
                                     public syncer::SyncServiceObserver,
-                                    public syncer::ProtocolEventObserver {
+                                    public syncer::ProtocolEventObserver,
+                                    public syncer::InvalidationsListener {
  public:
   SyncInternalsMessageHandler();
   ~SyncInternalsMessageHandler() override;
@@ -86,6 +89,9 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   // syncer::ProtocolEventObserver implementation.
   void OnProtocolEvent(const syncer::ProtocolEvent& e) override;
 
+  // syncer::InvalidationsListener implementation.
+  void OnInvalidationReceived(const std::string& payload) override;
+
  protected:
   using AboutSyncDataDelegate =
       base::RepeatingCallback<std::unique_ptr<base::DictionaryValue>(
@@ -102,8 +108,12 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   void SendAboutInfo();
 
   // Gets the ProfileSyncService of the underlying original profile. May return
-  // nullptr (e.g., if sync is disabled on the command line).
+  // nullptr (e.g. if sync is disabled on the command line).
   syncer::SyncService* GetSyncService();
+
+  // Gets the SyncInvalidationsService of the underlying original profile. May
+  // return nullptr (e.g. if sync invalidations are not enabled).
+  syncer::SyncInvalidationsService* GetSyncInvalidationsService();
 
   // Sends a dispatch event to the UI. Javascript must be enabled.
   void DispatchEvent(const std::string& name, const base::Value& details_value);

@@ -22,6 +22,7 @@
       <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_SEARCH_JS" file="resources/search.js" type="BINDATA" />
       <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_USER_EVENTS_JS" file="resources/user_events.js" type="BINDATA" />
       <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_TRAFFIC_LOG_JS"  file="resources/traffic_log.js" type="BINDATA" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_INVALIDATIONS_JS"  file="resources/invalidations.js" type="BINDATA" />
     </includes>
   </release>
 </grit>

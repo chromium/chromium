@@ -14,6 +14,7 @@ chrome/test/functional/special_tabs.py. -->
 <link rel="stylesheet" href="sync_search.css">
 <link rel="stylesheet" href="sync_node_browser.css">
 <link rel="stylesheet" href="traffic_log.css">
+<link rel="stylesheet" href="invalidations.css">
 
 <if expr="is_ios">
 <!-- TODO(crbug.com/487000): Remove this once injected by web. -->
@@ -46,6 +47,7 @@ chrome/test/functional/special_tabs.py. -->
 <script src="user_events.js"></script>
 <script src="traffic_log.js"></script>
 <script src="strings.js"></script>
+<script src="invalidations.js"></script>
 </head>
 <body>
 
@@ -70,6 +72,7 @@ chrome/test/functional/special_tabs.py. -->
     <tab id="sync-search-tab">Search</tab>
     <tab id="sync-user-events-tab" hidden>User Events</tab>
     <tab id="sync-traffic-log-tab">Traffic Log</tab>
+    <tab id="sync-invalidations-tab">Invalidations</tab>
   </tabs>
   <tabpanels>
     <tabpanel>
@@ -92,6 +95,9 @@ chrome/test/functional/special_tabs.py. -->
     </tabpanel>
     <tabpanel>
       <include src="traffic_log.html">
+    </tabpanel>
+    <tabpanel>
+      <include src="invalidations.html">
     </tabpanel>
   </tabpanels>
 </tabbox>
