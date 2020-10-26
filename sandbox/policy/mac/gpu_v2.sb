@@ -16,7 +16,7 @@
 
 ; TODO(https://crbug.com/1126350): Remove this after debugging. These blocks
 ; enumerate known denials, while turning unknown denials into fatal crashes.
-(define crash-on-unknown-denials #t) ; Single-line kill switch.
+(define crash-on-unknown-denials #f) ; Single-line kill switch.
 (if crash-on-unknown-denials
   (begin
     (deny mach-lookup (with no-report)
@@ -49,7 +49,6 @@
       (subpath (param bundle-path))
     )
     (deny file-write* (with send-signal SIGSYS))
-    (deny sysctl-read (with send-signal SIGSYS))
   )
 )
 
