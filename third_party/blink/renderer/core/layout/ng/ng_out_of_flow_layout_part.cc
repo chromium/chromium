@@ -1112,10 +1112,20 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
   const NGBlockNode& node = container_builder_->Node();
   const auto& fragment =
       To<NGPhysicalBoxFragment>(*fragmentainer.fragment.get());
+
+  // Grab the previous fragment's break token. We can't just use the current
+  // fragment's break token sequence, since there might not be one if we're
+  // adding a new fragment.
+  const NGBreakToken* previous_break_token =
+      (index == 0)
+          ? nullptr
+          : To<NGPhysicalBoxFragment>(
+                container_builder_->Children()[index - 1].fragment.get())
+                ->BreakToken();
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
   NGLayoutAlgorithmParams params(node, fragment_geometry, space,
-                                 /* break_token */ nullptr,
+                                 To<NGBlockBreakToken>(previous_break_token),
                                  /* early_break */ nullptr);
 
   // |algorithm| corresponds to the "mutable copy" of our original
