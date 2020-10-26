@@ -192,8 +192,14 @@ SafeBrowsingService::GetURLLoaderFactory(Profile* profile) {
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
     return GetURLLoaderFactory();
 
-  return services_delegate_->GetSafeBrowsingNetworkContext(profile)
-      ->GetURLLoaderFactory();
+  safe_browsing::SafeBrowsingNetworkContext* network_context =
+      services_delegate_->GetSafeBrowsingNetworkContext(profile);
+
+  // |network_context| may be null in tests
+  if (!network_context)
+    return nullptr;
+
+  return network_context->GetURLLoaderFactory();
 }
 
 void SafeBrowsingService::FlushNetworkInterfaceForTesting() {

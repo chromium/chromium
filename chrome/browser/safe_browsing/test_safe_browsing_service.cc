@@ -154,6 +154,13 @@ TestSafeBrowsingService::GetURLLoaderFactory() {
   return SafeBrowsingService::GetURLLoaderFactory();
 }
 
+scoped_refptr<network::SharedURLLoaderFactory>
+TestSafeBrowsingService::GetURLLoaderFactory(Profile* profile) {
+  if (use_test_url_loader_factory_)
+    return test_shared_loader_factory_;
+  return SafeBrowsingService::GetURLLoaderFactory(profile);
+}
+
 // TestSafeBrowsingServiceFactory functions:
 TestSafeBrowsingServiceFactory::TestSafeBrowsingServiceFactory()
     : test_safe_browsing_service_(nullptr), use_v4_local_db_manager_(false) {}

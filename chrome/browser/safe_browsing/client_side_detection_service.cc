@@ -72,14 +72,16 @@ ClientSideDetectionService::ClientSideDetectionService(Profile* profile)
     : profile_(profile),
       enabled_(false),
       extended_reporting_(false),
-      url_loader_factory_(
-          g_browser_process->safe_browsing_service()
-              ? g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
-                    profile)
-              : nullptr) {
+      url_loader_factory_(nullptr) {
   // |profile_| can be null in unit tests
   if (!profile_)
     return;
+
+  if (g_browser_process->safe_browsing_service()) {
+    url_loader_factory_ =
+        g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
+            profile);
+  }
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(

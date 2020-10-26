@@ -115,8 +115,10 @@ SafeBrowsingNetworkContext* ServicesDelegate::GetSafeBrowsingNetworkContext(
     Profile* profile) const {
   DCHECK(profile);
   DCHECK(base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts));
+  // In tests, we may not have been notified of Profile creation.
   auto it = network_context_map_.find(profile);
-  DCHECK(it != network_context_map_.end());
+  if (it == network_context_map_.end())
+    return nullptr;
   return it->second.get();
 }
 

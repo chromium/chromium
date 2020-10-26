@@ -6177,6 +6177,24 @@
             ]
         }
     ],
+    "SafeBrowsingNetworkContexts": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingRemoveCookies",
+                        "SafeBrowsingSeparateNetworkContexts"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingPasswordProtectionForSavedPasswords": [
         {
             "platforms": [
