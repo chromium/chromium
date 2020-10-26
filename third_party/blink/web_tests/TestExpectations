@@ -1211,7 +1211,6 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-004.htm
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/relations/css-styling/attribute-mapping-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-1.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/ignored-properties-001.html [ Failure Timeout ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/mathvariant-bold-fraktur.html [ Failure ]
