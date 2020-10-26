@@ -796,7 +796,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.VisitTableCount" units="units"
-    expires_after="2020-11-30">
+    expires_after="2021-05-30">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -828,7 +828,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.WeeklyVisitCount" units="units"
-    expires_after="2020-11-30">
+    expires_after="2021-05-30">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
