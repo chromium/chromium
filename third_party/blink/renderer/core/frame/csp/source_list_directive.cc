@@ -239,10 +239,7 @@ bool SourceListDirective::ParseSource(
     return true;
   }
 
-  if (EqualIgnoringASCIICase("'strict-dynamic'", token) ||
-      (RuntimeEnabledFeatures::
-           ExperimentalContentSecurityPolicyFeaturesEnabled() &&
-       EqualIgnoringASCIICase("'csp3-strict-dynamic'", token))) {
+  if (EqualIgnoringASCIICase("'strict-dynamic'", token)) {
     AddSourceStrictDynamic();
     return true;
   }
@@ -365,14 +362,7 @@ bool SourceListDirective::ParseNonce(const UChar* begin,
   // TODO(esprehn): Should be StringView(begin, nonceLength).startsWith(prefix).
   if (nonce_length <= prefix.length() ||
       !EqualIgnoringASCIICase(prefix, StringView(begin, prefix.length()))) {
-    // Experimentally the prefix could also be "'csp3-nonce-"
-    prefix = "'csp3-nonce-";
-    if (!RuntimeEnabledFeatures::
-            ExperimentalContentSecurityPolicyFeaturesEnabled() ||
-        nonce_length <= prefix.length() ||
-        !EqualIgnoringASCIICase(prefix, StringView(begin, prefix.length()))) {
       return true;
-    }
   }
 
   const UChar* position = begin + prefix.length();
@@ -402,7 +392,7 @@ bool SourceListDirective::ParseHash(
   // respective entries in the kAlgorithmMap array in
   // ContentSecurityPolicy::FillInCSPHashValues().
 
-  static const SupportedPrefixesStruct kSupportedPrefixes[] = {
+  constexpr SupportedPrefixesStruct kSupportedPrefixes[] = {
       {"'sha256-", kContentSecurityPolicyHashAlgorithmSha256},
       {"'sha384-", kContentSecurityPolicyHashAlgorithmSha384},
       {"'sha512-", kContentSecurityPolicyHashAlgorithmSha512},
@@ -411,44 +401,20 @@ bool SourceListDirective::ParseHash(
       {"'sha-512-", kContentSecurityPolicyHashAlgorithmSha512},
       {"'ed25519-", kContentSecurityPolicyHashAlgorithmEd25519}};
 
-  static const SupportedPrefixesStruct kSupportedPrefixesExperimental[] = {
-      {"'sha256-", kContentSecurityPolicyHashAlgorithmSha256},
-      {"'sha384-", kContentSecurityPolicyHashAlgorithmSha384},
-      {"'sha512-", kContentSecurityPolicyHashAlgorithmSha512},
-      {"'sha-256-", kContentSecurityPolicyHashAlgorithmSha256},
-      {"'sha-384-", kContentSecurityPolicyHashAlgorithmSha384},
-      {"'sha-512-", kContentSecurityPolicyHashAlgorithmSha512},
-      {"'ed25519-", kContentSecurityPolicyHashAlgorithmEd25519},
-      {"'csp3-sha256-", kContentSecurityPolicyHashAlgorithmSha256},
-      {"'csp3-sha384-", kContentSecurityPolicyHashAlgorithmSha384},
-      {"'csp3-sha512-", kContentSecurityPolicyHashAlgorithmSha512},
-      {"'csp3-sha-256-", kContentSecurityPolicyHashAlgorithmSha256},
-      {"'csp3-sha-384-", kContentSecurityPolicyHashAlgorithmSha384},
-      {"'csp3-sha-512-", kContentSecurityPolicyHashAlgorithmSha512},
-      {"'csp3-ed25519-", kContentSecurityPolicyHashAlgorithmEd25519}};
-
-  auto* const supportedPrefixes =
-      RuntimeEnabledFeatures::ExperimentalContentSecurityPolicyFeaturesEnabled()
-          ? kSupportedPrefixesExperimental
-          : kSupportedPrefixes;
-
-  const size_t supportedPrefixesLength =
-      RuntimeEnabledFeatures::ExperimentalContentSecurityPolicyFeaturesEnabled()
-          ? sizeof(kSupportedPrefixesExperimental) /
-                sizeof(kSupportedPrefixesExperimental[0])
-          : sizeof(kSupportedPrefixes) / sizeof(kSupportedPrefixes[0]);
+  constexpr size_t kSupportedPrefixesLength =
+      sizeof(kSupportedPrefixes) / sizeof(kSupportedPrefixes[0]);
 
   StringView prefix;
   *hash_algorithm = kContentSecurityPolicyHashAlgorithmNone;
   size_t hash_length = end - begin;
 
-  for (size_t i = 0; i < supportedPrefixesLength; i++) {
-    prefix = supportedPrefixes[i].prefix;
+  for (size_t i = 0; i < kSupportedPrefixesLength; i++) {
+    prefix = kSupportedPrefixes[i].prefix;
     // TODO(esprehn): Should be StringView(begin, end -
     // begin).startsWith(prefix).
     if (hash_length > prefix.length() &&
         EqualIgnoringASCIICase(prefix, StringView(begin, prefix.length()))) {
-      *hash_algorithm = supportedPrefixes[i].type;
+      *hash_algorithm = kSupportedPrefixes[i].type;
       break;
     }
   }
