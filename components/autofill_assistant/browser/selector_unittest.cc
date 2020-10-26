@@ -138,6 +138,16 @@ TEST(SelectorTest, Comparison_Proximity) {
   EXPECT_FALSE(Selector(selector) == Selector(label2));
 }
 
+TEST(SelectorTest, Comparison_MatchCssSelector) {
+  Selector a = Selector({"button"});
+  a.proto.add_filters()->set_match_css_selector(".class1");
+  Selector b = Selector({"button"});
+  b.proto.add_filters()->set_match_css_selector(".class2");
+
+  EXPECT_FALSE(a == b);
+  EXPECT_TRUE(a == a);
+}
+
 TEST(SelectorTest, Comparison_Frames) {
   Selector ab({"a", "b"});
   EXPECT_EQ(ab, ab);

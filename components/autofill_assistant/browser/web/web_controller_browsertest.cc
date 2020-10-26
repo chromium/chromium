@@ -1199,6 +1199,28 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FindFormInputByLabel) {
   EXPECT_EQ(ELEMENT_RESOLUTION_FAILED, status.proto_status());
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, MatchCssSelectorFilter) {
+  Selector selector({"label"});
+  selector.MatchingInnerText("terms and conditions");
+  selector.proto.add_filters()->mutable_labelled();
+
+  RunStrictElementCheck(selector, true);
+
+  auto* last_filter = selector.proto.add_filters();
+
+  last_filter->set_match_css_selector("input[type='checkbox']");
+  RunStrictElementCheck(selector, true);
+
+  last_filter->set_match_css_selector("input[type='text']");
+  RunStrictElementCheck(selector, false);
+
+  last_filter->set_match_css_selector(":checked");
+  RunStrictElementCheck(selector, false);
+
+  last_filter->set_match_css_selector(":not(:checked)");
+  RunStrictElementCheck(selector, true);
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ValueCondition) {
   // One match
   RunLaxElementCheck(Selector({"#input1"}).MatchingValue("helloworld1"), true);

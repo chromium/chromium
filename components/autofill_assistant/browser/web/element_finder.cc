@@ -180,6 +180,11 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
       // https://www.w3.org/TR/2011/WD-html5-author-20110809/forms.html#category-label
       return true;
 
+    case SelectorProto::Filter::kMatchCssSelector:
+      AddLine({"elements = elements.filter((e) => e.webkitMatchesSelector(",
+               AddArgument(filter.match_css_selector()), "));"});
+      return true;
+
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPseudoType:
     case SelectorProto::Filter::kPickOne:
@@ -358,7 +363,8 @@ void ElementFinder::ExecuteNextTask() {
     case SelectorProto::Filter::kValue:
     case SelectorProto::Filter::kBoundingBox:
     case SelectorProto::Filter::kPseudoElementContent:
-    case SelectorProto::Filter::kLabelled: {
+    case SelectorProto::Filter::kLabelled:
+    case SelectorProto::Filter::kMatchCssSelector: {
       std::vector<std::string> matches;
       if (!ConsumeAllMatchesOrFail(matches))
         return;

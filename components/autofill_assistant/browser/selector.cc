@@ -68,6 +68,9 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
                              b.closest().relative_position());
     }
 
+    case SelectorProto::Filter::kMatchCssSelector:
+      return a.match_css_selector() < b.match_css_selector();
+
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
   }
@@ -219,6 +222,7 @@ base::Optional<std::string> Selector::ExtractSingleCssSelectorForAutofill()
       case SelectorProto::Filter::kPseudoElementContent:
       case SelectorProto::Filter::kLabelled:
       case SelectorProto::Filter::kClosest:
+      case SelectorProto::Filter::kMatchCssSelector:
         VLOG(1) << __func__
                 << " Selector feature not supported by autofill: " << *this;
         return base::nullopt;
@@ -352,6 +356,10 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
       if (f.closest().in_alignment()) {
         out << " in alignment";
       }
+      return out;
+
+    case SelectorProto::Filter::kMatchCssSelector:
+      out << "matches: " << f.css_selector();
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

@@ -928,6 +928,9 @@ message SelectorProto {
       // always 0. If there are multiple elements at exactly the same distance,
       // an arbitrary one is returned.
       ProximityFilter closest = 10;
+
+      // Only keep results that match the given CSS selector.
+      string match_css_selector = 11;
     }
   }
 
