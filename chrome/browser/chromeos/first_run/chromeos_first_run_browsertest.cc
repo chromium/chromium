@@ -11,7 +11,6 @@
 #include "chrome/browser/chromeos/first_run/step_names.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/aura/window.h"
@@ -66,16 +65,9 @@ class FirstRunUIBrowserTest
   FirstRunUIBrowserTest()
       : initialized_(false),
         finalized_(false) {
-    if (IsHomeButtonHiddenInTabletMode()) {
-      // kHideShelfControlsInTabletMode is predicated on hotseat being enabled.
-      scoped_feature_list_.InitWithFeatures(
-          {ash::features::kHideShelfControlsInTabletMode,
-           chromeos::features::kShelfHotseat},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {ash::features::kHideShelfControlsInTabletMode});
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kHideShelfControlsInTabletMode,
+        IsHomeButtonHiddenInTabletMode());
   }
 
   void SetUpOnMainThread() override {

@@ -44,7 +44,6 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -86,7 +85,6 @@ class HotseatWidgetTest
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
 
-    enabled_features.push_back(chromeos::features::kShelfHotseat);
     if (navigation_buttons_shown_in_tablet_mode_) {
       disabled_features.push_back(features::kHideShelfControlsInTabletMode);
     } else {

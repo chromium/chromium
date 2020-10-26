@@ -250,8 +250,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kScanningUI;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kSessionManagerLongKillTimeout;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kShelfHotseat;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kShowBluetoothDebugLogToggle;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kShowBluetoothDeviceBattery;

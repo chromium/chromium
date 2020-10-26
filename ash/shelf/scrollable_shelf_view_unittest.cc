@@ -23,7 +23,6 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event_utils.h"
@@ -197,6 +196,28 @@ class ScrollableShelfViewTest : public AshTestBase {
     // Verify that both ends are within bounds of shelf container view.
     EXPECT_GE(ripple_x, shelf_container_bounds_in_screen.x());
     EXPECT_LE(ripple_right, shelf_container_bounds_in_screen.right());
+  }
+
+  bool HasRoundedCornersOnAppButtonAfterMouseRightClick(
+      ShelfAppButton* button) {
+    const gfx::Point location_within_button =
+        button->GetBoundsInScreen().CenterPoint();
+    GetEventGenerator()->MoveMouseTo(location_within_button);
+    GetEventGenerator()->ClickRightButton();
+
+    ui::Layer* layer = scrollable_shelf_view_->shelf_container_view()->layer();
+
+    // The gfx::RoundedCornersF object is considered empty when all of the
+    // corners are squared (no effective radius).
+    const bool has_rounded_corners = !(layer->rounded_corner_radii().IsEmpty());
+
+    // Click outside of |button|. Expects that the rounded corners should always
+    // be empty.
+    GetEventGenerator()->GestureTapAt(
+        button->GetBoundsInScreen().bottom_center());
+    EXPECT_TRUE(layer->rounded_corner_radii().IsEmpty());
+
+    return has_rounded_corners;
   }
 
   ScrollableShelfView* scrollable_shelf_view_ = nullptr;
@@ -516,51 +537,10 @@ TEST_F(ScrollableShelfViewTest, DragIconToNewPage) {
   EXPECT_LE(view_index, scrollable_shelf_view_->last_tappable_app_index());
 }
 
-class HotseatScrollableShelfViewTest : public ScrollableShelfViewTest {
- public:
-  HotseatScrollableShelfViewTest() = default;
-  ~HotseatScrollableShelfViewTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kShelfHotseat},
-                                          {});
-    ScrollableShelfViewTest::SetUp();
-  }
-
-  void TearDown() override {
-    ScrollableShelfViewTest::TearDown();
-    scoped_feature_list_.Reset();
-  }
-
-  bool HasRoundedCornersOnAppButtonAfterMouseRightClick(
-      ShelfAppButton* button) {
-    const gfx::Point location_within_button =
-        button->GetBoundsInScreen().CenterPoint();
-    GetEventGenerator()->MoveMouseTo(location_within_button);
-    GetEventGenerator()->ClickRightButton();
-
-    ui::Layer* layer = scrollable_shelf_view_->shelf_container_view()->layer();
-
-    // The gfx::RoundedCornersF object is considered empty when all of the
-    // corners are squared (no effective radius).
-    const bool has_rounded_corners = !(layer->rounded_corner_radii().IsEmpty());
-
-    // Click outside of |button|. Expects that the rounded corners should always
-    // be empty.
-    GetEventGenerator()->GestureTapAt(
-        button->GetBoundsInScreen().bottom_center());
-    EXPECT_TRUE(layer->rounded_corner_radii().IsEmpty());
-
-    return has_rounded_corners;
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Verifies that after adding the second display, shelf icons showing on
 // the primary display are also visible on the second display
 // (https://crbug.com/1035596).
-TEST_F(HotseatScrollableShelfViewTest, CheckTappableIndicesOnSecondDisplay) {
+TEST_F(ScrollableShelfViewTest, CheckTappableIndicesOnSecondDisplay) {
   constexpr int icon_number = 5;
   for (int i = 0; i < icon_number; i++)
     AddAppShortcut();
@@ -584,7 +564,7 @@ TEST_F(HotseatScrollableShelfViewTest, CheckTappableIndicesOnSecondDisplay) {
 
 // Verifies that the scrollable shelf in oveflow mode has the correct layout
 // after switching to tablet mode (https://crbug.com/1017979).
-TEST_F(HotseatScrollableShelfViewTest, CorrectUIAfterSwitchingToTablet) {
+TEST_F(ScrollableShelfViewTest, CorrectUIAfterSwitchingToTablet) {
   // Add enough app shortcuts to ensure that at least three pages of icons show.
   for (int i = 0; i < 25; i++)
     AddAppShortcut();
@@ -612,7 +592,7 @@ TEST_F(HotseatScrollableShelfViewTest, CorrectUIAfterSwitchingToTablet) {
 
 // Verifies that the scrollable shelf without overflow has the correct layout in
 // tablet mode.
-TEST_F(HotseatScrollableShelfViewTest, CorrectUIInTabletWithoutOverflow) {
+TEST_F(ScrollableShelfViewTest, CorrectUIInTabletWithoutOverflow) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   for (int i = 0; i < 3; i++)
@@ -638,7 +618,7 @@ TEST_F(HotseatScrollableShelfViewTest, CorrectUIInTabletWithoutOverflow) {
 
 // Verifies that the scrollable shelf without overflow has the correct layout in
 // tablet mode.
-TEST_F(HotseatScrollableShelfViewTest, CheckRoundedCornersSetForInkDrop) {
+TEST_F(ScrollableShelfViewTest, CheckRoundedCornersSetForInkDrop) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   AddAppShortcutsUntilOverflow();
   ASSERT_EQ(ScrollableShelfView::kShowRightArrowButton,

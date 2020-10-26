@@ -36,7 +36,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "media/base/media_switches.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -374,7 +373,6 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
     return CollapseState::NOT_COLLAPSIBLE;
 
   bool is_collapsible =
-      chromeos::switches::ShouldShowShelfHotseat() &&
       Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       ShelfConfig::Get()->is_in_app();
 

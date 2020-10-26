@@ -46,7 +46,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -466,13 +465,11 @@ TEST_P(TabletModeWindowManagerTest,
   // is remaining as it is (but not maximized).
   DestroyTabletModeWindowManager();
 
-  if (chromeos::switches::ShouldShowShelfHotseat()) {
-    // Account for work-area updates when leaving tablet mode.
-    const gfx::Insets clamshell_insets =
-        WorkAreaInsets::ForWindow(window.get())->user_work_area_insets();
-    const gfx::Insets offset_difference = clamshell_insets - tablet_insets;
-    maximized_size.Inset(offset_difference);
-  }
+  // Account for work-area updates when leaving tablet mode.
+  const gfx::Insets clamshell_insets =
+      WorkAreaInsets::ForWindow(window.get())->user_work_area_insets();
+  const gfx::Insets offset_difference = clamshell_insets - tablet_insets;
+  maximized_size.Inset(offset_difference);
 
   EXPECT_FALSE(WindowState::Get(window.get())->IsMaximized());
   EXPECT_EQ(maximized_size.ToString(), window->bounds().ToString());

@@ -92,7 +92,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -2521,8 +2520,8 @@ class HotseatShelfAppBrowserTest : public ShelfAppBrowserTest {
   void SetUp() override {
     // Disable contextual nudges to prevent in-app to home nudge from being
     // announced in the ChromeVox test.
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kShelfHotseat},
-                                          {ash::features::kContextualNudges});
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kContextualNudges);
     ShelfAppBrowserTest::SetUp();
   }
 

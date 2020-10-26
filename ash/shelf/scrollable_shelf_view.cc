@@ -18,7 +18,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -555,14 +554,12 @@ void ScrollableShelfView::OnFocusRingActivationChanged(bool activated) {
   if (activated) {
     focus_ring_activated_ = true;
     SetPaneFocusAndFocusDefault();
-    if (Shell::Get()->IsInTabletMode() &&
-        chromeos::switches::ShouldShowShelfHotseat())
+    if (Shell::Get()->IsInTabletMode())
       GetShelf()->shelf_widget()->ForceToShowHotseat();
   } else {
     // Shows the gradient shader when the focus ring is disabled.
     focus_ring_activated_ = false;
-    if (Shell::Get()->IsInTabletMode() &&
-        chromeos::switches::ShouldShowShelfHotseat())
+    if (Shell::Get()->IsInTabletMode())
       GetShelf()->shelf_widget()->ForceToHideHotseat();
   }
 
@@ -1141,7 +1138,6 @@ void ScrollableShelfView::OnShelfButtonAboutToRequestFocusFromTabTraversal(
   // In tablet mode, when the hotseat is not extended but one of the buttons
   // gets focused, it should update the visibility of the hotseat.
   if (Shell::Get()->IsInTabletMode() &&
-      chromeos::switches::ShouldShowShelfHotseat() &&
       !shelf_widget->hotseat_widget()->IsExtended()) {
     shelf_widget->shelf_layout_manager()->UpdateVisibilityState();
   }
@@ -1160,11 +1156,9 @@ void ScrollableShelfView::ButtonPressed(views::Button* sender,
 
 void ScrollableShelfView::HandleAccessibleActionScrollToMakeVisible(
     ShelfButton* button) {
-  if (Shell::Get()->IsInTabletMode() &&
-      chromeos::switches::ShouldShowShelfHotseat()) {
-    // Only in tablet mode with hotseat enabled, may scrollable shelf be hidden.
+  // Scrollable shelf can only be hidden in tablet mode.
+  if (Shell::Get()->IsInTabletMode())
     GetShelf()->shelf_widget()->ForceToShowHotseat();
-  }
 }
 
 std::unique_ptr<ScrollableShelfView::ScopedActiveInkDropCount>
@@ -2109,9 +2103,8 @@ void ScrollableShelfView::UpdateAvailableSpace() {
 
 gfx::Rect ScrollableShelfView::CalculateVisibleSpace(
     LayoutStrategy layout_strategy) const {
-  const bool in_hotseat_tablet = chromeos::switches::ShouldShowShelfHotseat() &&
-                                 Shell::Get()->IsInTabletMode();
-  if (layout_strategy == kNotShowArrowButtons && !in_hotseat_tablet)
+  const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
+  if (layout_strategy == kNotShowArrowButtons && !in_tablet_mode)
     return GetAvailableLocalBounds(/*use_target_bounds=*/false);
 
   const bool should_show_left_arrow =
@@ -2145,15 +2138,14 @@ gfx::Rect ScrollableShelfView::CalculateVisibleSpace(
 
 gfx::Insets ScrollableShelfView::CalculateRipplePaddingInsets() const {
   // Indicates whether it is in tablet mode with hotseat enabled.
-  const bool in_hotseat_tablet = chromeos::switches::ShouldShowShelfHotseat() &&
-                                 Shell::Get()->IsInTabletMode();
+  const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
 
   const int ripple_padding =
       ShelfConfig::Get()->scrollable_shelf_ripple_padding();
   const int before_padding =
-      (in_hotseat_tablet && !ShouldShowLeftArrow()) ? 0 : ripple_padding;
+      (in_tablet_mode && !ShouldShowLeftArrow()) ? 0 : ripple_padding;
   const int after_padding =
-      (in_hotseat_tablet && !ShouldShowRightArrow()) ? 0 : ripple_padding;
+      (in_tablet_mode && !ShouldShowRightArrow()) ? 0 : ripple_padding;
 
   if (ShouldAdaptToRTL())
     return gfx::Insets(0, after_padding, 0, before_padding);
@@ -2173,9 +2165,8 @@ ScrollableShelfView::CalculateShelfContainerRoundedCorners() const {
   const bool is_in_tablet_mode =
       Shell::Get()->tablet_mode_controller() && Shell::Get()->IsInTabletMode();
 
-  if (!chromeos::switches::ShouldShowShelfHotseat() || !is_in_tablet_mode) {
+  if (!is_in_tablet_mode)
     return gfx::RoundedCornersF();
-  }
 
   const bool is_horizontal_alignment = GetShelf()->IsHorizontalAlignment();
   const float radius = (is_horizontal_alignment ? height() : width()) / 2.f;

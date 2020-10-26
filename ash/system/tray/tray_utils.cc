@@ -11,7 +11,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
 
@@ -53,9 +52,6 @@ gfx::Insets GetTrayBubbleInsets() {
       shelf->alignment() == ShelfAlignment::kBottomLocked;
 
   if (!is_bottom_alignment)
-    return insets;
-
-  if (!chromeos::switches::ShouldShowShelfHotseat())
     return insets;
 
   int height_compensation = kTrayBubbleInsetHotseatCompensation;

@@ -30,7 +30,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
@@ -488,10 +487,8 @@ class OverviewButtonTrayWithShelfControlsHiddenTest
       public testing::WithParamInterface<TestAccessibilityFeature> {
  public:
   OverviewButtonTrayWithShelfControlsHiddenTest() {
-    scoped_features_.InitWithFeatures(
-        {chromeos::features::kShelfHotseat,
-         features::kHideShelfControlsInTabletMode},
-        {});
+    scoped_features_.InitAndEnableFeature(
+        features::kHideShelfControlsInTabletMode);
   }
   OverviewButtonTrayWithShelfControlsHiddenTest(
       const OverviewButtonTrayWithShelfControlsHiddenTest& other) = delete;

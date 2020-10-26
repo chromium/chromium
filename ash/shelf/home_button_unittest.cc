@@ -30,9 +30,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -45,29 +43,17 @@ ui::GestureEvent CreateGestureEvent(ui::GestureEventDetails details) {
   return ui::GestureEvent(0, 0, ui::EF_NONE, base::TimeTicks(), details);
 }
 
-class HomeButtonTest
-    : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class HomeButtonTest : public AshTestBase,
+                       public testing::WithParamInterface<bool> {
  public:
   HomeButtonTest() = default;
   ~HomeButtonTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
-
-    if (IsHotseatEnabled())
-      enabled_features.push_back(chromeos::features::kShelfHotseat);
-    else
-      disabled_features.push_back(chromeos::features::kShelfHotseat);
-
-    if (IsHideShelfControlsInTabletModeEnabled())
-      enabled_features.push_back(features::kHideShelfControlsInTabletMode);
-    else
-      disabled_features.push_back(features::kHideShelfControlsInTabletMode);
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHideShelfControlsInTabletMode,
+        IsHideShelfControlsInTabletModeEnabled());
 
     AshTestBase::SetUp();
   }
@@ -94,11 +80,7 @@ class HomeButtonTest
         ->OnGestureEvent(event);
   }
 
-  bool IsHotseatEnabled() const { return std::get<0>(GetParam()); }
-
-  bool IsHideShelfControlsInTabletModeEnabled() const {
-    return std::get<1>(GetParam());
-  }
+  bool IsHideShelfControlsInTabletModeEnabled() const { return GetParam(); }
 
   const HomeButton* home_button() const {
     return GetPrimaryShelf()
@@ -123,10 +105,8 @@ class HomeButtonTest
 class HomeButtonAnimationTest : public AshTestBase {
  public:
   HomeButtonAnimationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kShelfHotseat,
-         features::kHideShelfControlsInTabletMode},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kHideShelfControlsInTabletMode);
   }
   ~HomeButtonAnimationTest() override = default;
 
@@ -163,10 +143,8 @@ class HomeButtonVisibilityWithAccessibilityFeaturesTest
       public ::testing::WithParamInterface<TestAccessibilityFeature> {
  public:
   HomeButtonVisibilityWithAccessibilityFeaturesTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kShelfHotseat,
-         features::kHideShelfControlsInTabletMode},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kHideShelfControlsInTabletMode);
   }
   ~HomeButtonVisibilityWithAccessibilityFeaturesTest() override = default;
 
@@ -198,11 +176,9 @@ class HomeButtonVisibilityWithAccessibilityFeaturesTest
 
 }  // namespace
 
-// The parameters indicate whether the kShelfHotseat and
-// kHideShelfControlsInTabletMode features are enabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         HomeButtonTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+// The parameter indicates whether the kHideShelfControlsInTabletMode feature
+// is enabled.
+INSTANTIATE_TEST_SUITE_P(All, HomeButtonTest, testing::Bool());
 
 TEST_P(HomeButtonTest, SwipeUpToOpenFullscreenAppList) {
   Shelf* shelf = GetPrimaryShelf();
@@ -287,9 +263,9 @@ TEST_P(HomeButtonTest, ClickToOpenAppListInTabletMode) {
   ShelfNavigationWidget::TestApi test_api(shelf->navigation_widget());
 
   // Home button is expected to be hidden in tablet mode if shelf controls
-  // should be hidden - this feature is available only with hotseat enabled.
+  // should be hidden.
   const bool should_show_home_button =
-      !(IsHotseatEnabled() && IsHideShelfControlsInTabletModeEnabled());
+      !IsHideShelfControlsInTabletModeEnabled();
   EXPECT_EQ(should_show_home_button, test_api.IsHomeButtonVisible());
   ASSERT_EQ(should_show_home_button, static_cast<bool>(home_button()));
   if (!should_show_home_button)
@@ -330,31 +306,27 @@ TEST_P(HomeButtonTest, ButtonPositionInTabletMode) {
   ShelfNavigationWidget::TestApi test_api(shelf->navigation_widget());
 
   // Home button is expected to be hidden in tablet mode if shelf controls
-  // should be hidden - this feature is available only with hotseat enabled.
+  // should be hidden.
   const bool should_show_home_button =
-      !(IsHotseatEnabled() && IsHideShelfControlsInTabletModeEnabled());
+      !IsHideShelfControlsInTabletModeEnabled();
   EXPECT_EQ(should_show_home_button, test_api.IsHomeButtonVisible());
   EXPECT_EQ(should_show_home_button, static_cast<bool>(home_button()));
 
-  // When hotseat is enabled, home button position changes between in-app shelf
-  // and home shelf, so test in-app when hotseat is enabled.
-  if (IsHotseatEnabled()) {
-    // Wait for the navigation widget's animation.
-    shelf_test_api.RunMessageLoopUntilAnimationsDone(
-        test_api.GetBoundsAnimator());
+  // Wait for the navigation widget's animation.
+  shelf_test_api.RunMessageLoopUntilAnimationsDone(
+      test_api.GetBoundsAnimator());
 
-    EXPECT_EQ(should_show_home_button, test_api.IsHomeButtonVisible());
-    ASSERT_EQ(should_show_home_button, static_cast<bool>(home_button()));
+  EXPECT_EQ(should_show_home_button, test_api.IsHomeButtonVisible());
+  ASSERT_EQ(should_show_home_button, static_cast<bool>(home_button()));
 
-    if (should_show_home_button) {
-      EXPECT_EQ(home_button()->bounds().x(),
-                ShelfConfig::Get()->control_button_edge_spacing(
-                    true /* is_primary_axis_edge */));
-    }
-
-    // Switch to in-app shelf.
-    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  if (should_show_home_button) {
+    EXPECT_EQ(home_button()->bounds().x(),
+              ShelfConfig::Get()->control_button_edge_spacing(
+                  true /* is_primary_axis_edge */));
   }
+
+  // Switch to in-app shelf.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   // Wait for the navigation widget's animation.
   shelf_test_api.RunMessageLoopUntilAnimationsDone(
@@ -576,7 +548,7 @@ TEST_P(HomeButtonTest, LongPressGestureInTabletMode) {
   ShelfNavigationWidget::TestApi test_api(
       GetPrimaryShelf()->navigation_widget());
   const bool should_show_home_button =
-      !(IsHotseatEnabled() && IsHideShelfControlsInTabletModeEnabled());
+      !IsHideShelfControlsInTabletModeEnabled();
   EXPECT_EQ(should_show_home_button, test_api.IsHomeButtonVisible());
   ASSERT_EQ(should_show_home_button, static_cast<bool>(home_button()));
 

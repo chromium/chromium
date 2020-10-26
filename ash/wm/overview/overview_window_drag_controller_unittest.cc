@@ -24,7 +24,6 @@
 #include "ash/wm/window_util.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -103,17 +102,11 @@ class WindowCloseWaiter : public aura::WindowObserver {
 // SplitView feature is disabled.
 class NoClamshellSplitViewTest : public AshTestBase {
  public:
-  NoClamshellSplitViewTest() = default;
-  ~NoClamshellSplitViewTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kDragToSnapInClamshellMode});
-
-    AshTestBase::SetUp();
+  NoClamshellSplitViewTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDragToSnapInClamshellMode);
   }
+  ~NoClamshellSplitViewTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -281,9 +274,7 @@ TEST_F(OverviewWindowDragControllerTest,
 
 // Tests the behavior of dragging a window in portrait tablet mode with virtual
 // desks enabled.
-class OverviewWindowDragControllerDesksPortraitTabletTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
  public:
   OverviewWindowDragControllerDesksPortraitTabletTest() = default;
   ~OverviewWindowDragControllerDesksPortraitTabletTest() override = default;
@@ -321,16 +312,6 @@ class OverviewWindowDragControllerDesksPortraitTabletTest
 
   // AshTestBase:
   void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /* enabled */ {chromeos::features::kShelfHotseat},
-          /* disabled */ {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /* enabled */ {},
-          /* disabled */ {chromeos::features::kShelfHotseat});
-    }
-
     AshTestBase::SetUp();
 
     // Setup a portrait internal display in tablet mode.
@@ -388,12 +369,10 @@ class OverviewWindowDragControllerDesksPortraitTabletTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(OverviewWindowDragControllerDesksPortraitTabletTest);
 };
 
-TEST_P(OverviewWindowDragControllerDesksPortraitTabletTest,
+TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
        DragAndDropInEmptyArea) {
   auto window = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   StartDraggingAndValidateDesksBarShifted(window.get());
@@ -407,7 +386,7 @@ TEST_P(OverviewWindowDragControllerDesksPortraitTabletTest,
   EXPECT_EQ(0, desks_bar_widget()->GetWindowBoundsInScreen().y());
 }
 
-TEST_P(OverviewWindowDragControllerDesksPortraitTabletTest,
+TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
        DragAndDropInSnapAreas) {
   auto window = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   StartDraggingAndValidateDesksBarShifted(window.get());
@@ -450,7 +429,7 @@ TEST_P(OverviewWindowDragControllerDesksPortraitTabletTest,
             desks_bar_widget()->GetWindowBoundsInScreen().y());
 }
 
-TEST_P(OverviewWindowDragControllerDesksPortraitTabletTest, DragAndDropInDesk) {
+TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest, DragAndDropInDesk) {
   auto window = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   StartDraggingAndValidateDesksBarShifted(window.get());
 
@@ -482,9 +461,5 @@ TEST_P(OverviewWindowDragControllerDesksPortraitTabletTest, DragAndDropInDesk) {
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             drag_indicators()->current_window_dragging_state());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         OverviewWindowDragControllerDesksPortraitTabletTest,
-                         testing::Bool());
 
 }  // namespace ash

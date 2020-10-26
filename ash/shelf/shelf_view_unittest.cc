@@ -62,8 +62,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -584,25 +582,6 @@ class ShelfViewTest : public AshTestBase {
   DISALLOW_COPY_AND_ASSIGN(ShelfViewTest);
 };
 
-// TODO(https://crbug.com/1009638): remove this class and all its descendants
-// when scrollable shelf is launched.
-class ShelfViewNotScrollableTest : public ShelfViewTest {
- public:
-  ShelfViewNotScrollableTest() = default;
-  ~ShelfViewNotScrollableTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({},
-                                          {chromeos::features::kShelfHotseat});
-    ShelfViewTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfViewNotScrollableTest);
-};
-
 const char*
     ShelfViewTest::kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName =
         ShelfButtonPressedMetricTracker::
@@ -1119,31 +1098,6 @@ TEST_F(ShelfViewTest, ShelfTooltipTest) {
   EXPECT_EQ(nullptr, tooltip_manager->GetCurrentAnchorView());
 }
 
-TEST_F(ShelfViewNotScrollableTest, ButtonTitlesTest) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  test_api_->RunMessageLoopUntilAnimationsDone();
-
-  EXPECT_EQ(base::UTF8ToUTF16("Launcher"), shelf_view_->shelf_widget()
-                                               ->navigation_widget()
-                                               ->GetHomeButton()
-                                               ->GetAccessibleName());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE),
-            shelf_view_->shelf_widget()
-                ->navigation_widget()
-                ->GetBackButton()
-                ->GetAccessibleName());
-
-  for (int i = 0; i < test_api_->GetButtonCount(); i++) {
-    ShelfAppButton* button = test_api_->GetButton(i);
-    if (button) {
-      EXPECT_EQ(shelf_view_->GetTitleForView(button),
-                button->GetAccessibleName())
-          << "Each button's tooltip text should read the same as its "
-          << "accessible name";
-    }
-  }
-}
-
 // Verify a fix for crash caused by a tooltip update for a deleted shelf
 // button, see crbug.com/288838.
 TEST_F(ShelfViewTest, RemovingItemClosesTooltip) {
@@ -1230,32 +1184,7 @@ TEST_F(ShelfViewTest, HomeButtonMetricsInTablet) {
   EXPECT_TRUE(home_button->IsShowingAppList());
 }
 
-class HotseatShelfViewTest : public ShelfViewTest,
-                             public testing::WithParamInterface<bool> {
- public:
-  HotseatShelfViewTest() = default;
-  ~HotseatShelfViewTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(chromeos::features::kShelfHotseat);
-    } else {
-      feature_list_.InitAndDisableFeature(chromeos::features::kShelfHotseat);
-    }
-    ShelfViewTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(HotseatShelfViewTest);
-};
-
-// Tests with both hotseat enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(All, HotseatShelfViewTest, testing::Bool());
-
-TEST_P(HotseatShelfViewTest, ShouldHideTooltipTest) {
-
+TEST_F(ShelfViewTest, ShouldHideTooltipTest) {
   ShelfID app_button_id = AddAppShortcut();
   ShelfID platform_button_id = AddApp();
   // TODO(manucornet): It should not be necessary to call this manually. The
@@ -1355,7 +1284,7 @@ TEST_F(ShelfViewTest, ShouldHideTooltipWithAppListWindowTest) {
 
 // Test that by moving the mouse cursor off the button onto the bubble it closes
 // the bubble.
-TEST_P(HotseatShelfViewTest, ShouldHideTooltipWhenHoveringOnTooltip) {
+TEST_F(ShelfViewTest, ShouldHideTooltipWhenHoveringOnTooltip) {
   ShelfTooltipManager* tooltip_manager = test_api_->tooltip_manager();
   tooltip_manager->set_timer_delay_for_test(0);
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -2253,14 +2182,11 @@ TEST_P(ShelfViewMenuTest, ShelfViewMenuAnchorPoint) {
 // Test class that enables notification indicators.
 class NotificationIndicatorTest : public ShelfViewTest {
  public:
-  NotificationIndicatorTest() = default;
-  ~NotificationIndicatorTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({::features::kNotificationIndicator},
-                                          {});
-    ShelfViewTest::SetUp();
+  NotificationIndicatorTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kNotificationIndicator);
   }
+  ~NotificationIndicatorTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -3029,9 +2955,7 @@ class ShelfViewFocusWithNoShelfNavigationTest : public ShelfViewFocusTest {
  public:
   ShelfViewFocusWithNoShelfNavigationTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kShelfHotseat,
-         features::kHideShelfControlsInTabletMode},
-        {});
+        {features::kHideShelfControlsInTabletMode}, {});
   }
   ~ShelfViewFocusWithNoShelfNavigationTest() override = default;
 

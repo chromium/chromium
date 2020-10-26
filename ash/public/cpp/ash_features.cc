@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "chromeos/constants/chromeos_switches.h"
 
 namespace ash {
 namespace features {
@@ -279,8 +278,7 @@ bool IsMovablePartialScreenshotEnabled() {
 }
 
 bool IsAppScalingEnabled() {
-  return base::FeatureList::IsEnabled(kShelfAppScaling) &&
-         chromeos::switches::ShouldShowShelfHotseat();
+  return base::FeatureList::IsEnabled(kShelfAppScaling);
 }
 
 bool IsNotificationsInContextMenuEnabled() {

@@ -8,7 +8,6 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
@@ -66,22 +65,12 @@ TEST_F(WindowUtilTest, CenterWindow) {
   CenterWindow(window.get());
   // Centring window is considered as a user's action.
   EXPECT_TRUE(window_state->bounds_changed_by_user());
-  if (chromeos::switches::ShouldShowShelfHotseat()) {
-    EXPECT_EQ("200,126 100x100", window->bounds().ToString());
-    EXPECT_EQ("200,126 100x100", window->GetBoundsInScreen().ToString());
-  } else {
-    EXPECT_EQ("200,122 100x100", window->bounds().ToString());
-    EXPECT_EQ("200,122 100x100", window->GetBoundsInScreen().ToString());
-  }
+  EXPECT_EQ("200,126 100x100", window->bounds().ToString());
+  EXPECT_EQ("200,126 100x100", window->GetBoundsInScreen().ToString());
   window->SetBoundsInScreen(gfx::Rect(600, 0, 100, 100), GetSecondaryDisplay());
   CenterWindow(window.get());
-  if (chromeos::switches::ShouldShowShelfHotseat()) {
-    EXPECT_EQ("250,126 100x100", window->bounds().ToString());
-    EXPECT_EQ("750,126 100x100", window->GetBoundsInScreen().ToString());
-  } else {
-    EXPECT_EQ("250,122 100x100", window->bounds().ToString());
-    EXPECT_EQ("750,122 100x100", window->GetBoundsInScreen().ToString());
-  }
+  EXPECT_EQ("250,126 100x100", window->bounds().ToString());
+  EXPECT_EQ("750,126 100x100", window->GetBoundsInScreen().ToString());
 }
 
 TEST_F(WindowUtilTest, AdjustBoundsToEnsureMinimumVisibility) {

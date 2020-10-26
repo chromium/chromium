@@ -49,8 +49,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
@@ -725,24 +723,9 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
   EXPECT_FALSE(item_view->IsNotificationIndicatorShownForTest());
 }
 
-class HotseatAppListControllerImplTest : public base::test::WithFeatureOverride,
-                                         public AppListControllerImplTest {
- public:
-  HotseatAppListControllerImplTest()
-      : WithFeatureOverride(chromeos::features::kShelfHotseat) {}
-  ~HotseatAppListControllerImplTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(HotseatAppListControllerImplTest);
-};
-
-// Tests with both hotseat disabled and enabled.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(HotseatAppListControllerImplTest);
-
 // Verifies that the pinned app should still show after canceling the drag from
 // AppsGridView to Shelf (https://crbug.com/1021768).
-TEST_P(HotseatAppListControllerImplTest, DragItemFromAppsGridView) {
+TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
   // Turn on the tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_TRUE(IsTabletMode());
@@ -784,7 +767,7 @@ TEST_P(HotseatAppListControllerImplTest, DragItemFromAppsGridView) {
 
 // Tests for HomeScreenDelegate::GetInitialAppListItemScreenBoundsForWindow
 // implemtenation.
-TEST_P(HotseatAppListControllerImplTest, GetItemBoundsForWindow) {
+TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
   // Populate app list model with 25 items, of which items at indices in
   // |folders| are folders containing a single item.
   const std::set<int> folders = {5, 23};
@@ -885,8 +868,7 @@ TEST_P(HotseatAppListControllerImplTest, GetItemBoundsForWindow) {
 
 // Verifies that apps grid and hotseat bounds do not overlap when switching from
 // side shelf app list to tablet mode.
-TEST_P(HotseatAppListControllerImplTest,
-       NoOverlapWithHotseatOnSwitchFromSideShelf) {
+TEST_F(AppListControllerImplTest, NoOverlapWithHotseatOnSwitchFromSideShelf) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   Shelf* const shelf = GetPrimaryShelf();
   shelf->SetAlignment(ShelfAlignment::kRight);

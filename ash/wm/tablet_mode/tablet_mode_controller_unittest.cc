@@ -1564,48 +1564,21 @@ TEST_P(TabletModeControllerTest, DoNotObserverInputDeviceChangeDuringSuspend) {
   EXPECT_FALSE(IsTabletModeStarted());
 }
 
+// Tests that we get no animation smoothness histograms when entering or
+// exiting tablet mode with no windows.
 TEST_P(TabletModeControllerTest, TabletModeTransitionHistogramsNotLogged) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   base::HistogramTester histogram_tester;
 
-  // Tests that we get no animation smoothness histograms when entering or
-  // exiting tablet mode with no windows.
-  {
-    SCOPED_TRACE("No window");
-    histogram_tester.ExpectTotalCount(kEnterHistogram, 0);
-    histogram_tester.ExpectTotalCount(kExitHistogram, 0);
-    tablet_mode_controller()->SetEnabledForTest(true);
-    tablet_mode_controller()->SetEnabledForTest(false);
-    WaitForSmoothnessMetrics();
-    histogram_tester.ExpectTotalCount(kEnterHistogram, 0);
-    histogram_tester.ExpectTotalCount(kExitHistogram, 0);
-  }
-
-  // The workspace size changes when going between clamshell and tablet mode.
-  // This means there will be an animation during the transition.
-  if (chromeos::switches::ShouldShowShelfHotseat())
-    return;
-
-  // Test that we get no animation smoothness histograms when entering or
-  // exiting tablet mode with a maximized window as no animation will take
-  // place.
-  auto window = CreateTestWindow(gfx::Rect(200, 200));
-  {
-    SCOPED_TRACE("Window is maximized");
-    WindowState::Get(window.get())->Maximize();
-    window->layer()->GetAnimator()->StopAnimating();
-    tablet_mode_controller()->SetEnabledForTest(true);
-    EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
-    WaitForSmoothnessMetrics();
-    histogram_tester.ExpectTotalCount(kEnterHistogram, 0);
-    histogram_tester.ExpectTotalCount(kExitHistogram, 0);
-    tablet_mode_controller()->SetEnabledForTest(false);
-    EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
-    WaitForSmoothnessMetrics();
-    histogram_tester.ExpectTotalCount(kEnterHistogram, 0);
-    histogram_tester.ExpectTotalCount(kExitHistogram, 0);
-  }
+  SCOPED_TRACE("No window");
+  histogram_tester.ExpectTotalCount(kEnterHistogram, 0);
+  histogram_tester.ExpectTotalCount(kExitHistogram, 0);
+  tablet_mode_controller()->SetEnabledForTest(true);
+  tablet_mode_controller()->SetEnabledForTest(false);
+  WaitForSmoothnessMetrics();
+  histogram_tester.ExpectTotalCount(kEnterHistogram, 0);
+  histogram_tester.ExpectTotalCount(kExitHistogram, 0);
 }
 
 TEST_P(TabletModeControllerTest, TabletModeTransitionHistogramsLogged) {
@@ -1763,13 +1736,6 @@ TEST_P(TabletModeControllerScreenshotTest, NoAnimationNoScreenshot) {
 
   waiter.Wait();
   EXPECT_FALSE(IsScreenshotShown());
-  EXPECT_TRUE(IsShelfOpaque());
-
-  // The window will animate if the hotseat is enabled because the workspace
-  // area will change. As long as a screenshot is not shown, this is ok.
-  if (chromeos::switches::ShouldShowShelfHotseat())
-    return;
-  EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(IsShelfOpaque());
 }
 

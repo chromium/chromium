@@ -12,8 +12,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -22,12 +20,6 @@ class ShelfConfigTest : public AshTestBase {
  public:
   ShelfConfigTest() = default;
   ~ShelfConfigTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kShelfHotseat);
-    AshTestBase::SetUp();
-  }
 
  protected:
   bool is_dense() { return ShelfConfig::Get()->is_dense_; }
@@ -39,9 +31,6 @@ class ShelfConfigTest : public AshTestBase {
   void SetTabletMode(bool is_tablet_mode) {
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(is_tablet_mode);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Make sure ShelfConfig is dense when screen becomes small in tablet mode.

@@ -13,7 +13,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
@@ -245,9 +244,10 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
   // is enabled).
   int right_edge = kPaddingBetweenItems;
 
-  if (is_child_on_edge && chromeos::switches::ShouldShowShelfHotseat())
+  if (is_child_on_edge) {
     right_edge = ShelfConfig::Get()->control_button_edge_spacing(
         true /* is_primary_axis_edge */);
+  }
 
   // Swap edges if alignment is not horizontal (bottom-to-top).
   if (!shelf_->IsHorizontalAlignment()) {

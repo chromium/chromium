@@ -249,10 +249,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsCellularFirstDevice();
 // the Chrome OS sign-in screen is enabled.
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsSigninFrameClientCertsEnabled();
 
-// Returns true if we should show the modular shelf with the hotseat UI and
-// a smaller shelf in clamshell mode.
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool ShouldShowShelfHotseat();
-
 // Returns true if we should show window previews when hovering over an app
 // on the shelf.
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool ShouldShowShelfHoverPreviews();

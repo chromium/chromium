@@ -25,9 +25,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
@@ -132,9 +130,6 @@ class KeyboardControllerImplTest : public AshTestBase {
   ~KeyboardControllerImplTest() override = default;
 
   void SetUp() override {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(chromeos::features::kShelfHotseat);
-
     AshTestBase::SetUp();
 
     // Set the initial observer config to the default config.

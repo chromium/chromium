@@ -19,7 +19,6 @@
 #include "ash/style/default_colors.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
@@ -231,8 +230,7 @@ SkColor ShelfBackgroundAnimator::GetBackgroundColor(
       break;
     case ShelfBackgroundType::kOverview:
       shelf_target_color =
-          (chromeos::switches::ShouldShowShelfHotseat() &&
-           Shell::Get()->tablet_mode_controller()->InTabletMode())
+          Shell::Get()->tablet_mode_controller()->InTabletMode()
               ? ShelfConfig::Get()->GetMaximizedShelfColor()
               : ShelfConfig::Get()->GetDefaultShelfColor();
       break;
