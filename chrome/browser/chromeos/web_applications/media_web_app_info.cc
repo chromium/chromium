@@ -64,6 +64,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
           {"app_icon_32.png", 32, IDR_MEDIA_APP_GALLERY_ICON_32_PNG},
           {"app_icon_48.png", 48, IDR_MEDIA_APP_GALLERY_ICON_48_PNG},
           {"app_icon_64.png", 64, IDR_MEDIA_APP_GALLERY_ICON_64_PNG},
+          {"app_icon_96.png", 96, IDR_MEDIA_APP_GALLERY_ICON_96_PNG},
           {"app_icon_128.png", 128, IDR_MEDIA_APP_GALLERY_ICON_128_PNG},
           {"app_icon_192.png", 192, IDR_MEDIA_APP_GALLERY_ICON_192_PNG},
           {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
