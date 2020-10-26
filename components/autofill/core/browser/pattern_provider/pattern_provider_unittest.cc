@@ -110,7 +110,7 @@ TEST(AutofillPatternProviderPipelineTest, DefaultPatternProviderLoads) {
   run_loop.Run();
   PatternProvider& default_pattern_provider = PatternProvider::GetInstance();
 
-  EXPECT_FALSE(default_pattern_provider.patterns_.empty());
+  EXPECT_FALSE(default_pattern_provider.patterns().empty());
 
   // Call the getter to ensure sequence checks work correctly.
   default_pattern_provider.GetMatchPatterns("EMAIL_ADDRESS", "en");
@@ -131,18 +131,17 @@ TEST(AutofillPatternProviderPipelineTest, TestParsingEquivalent) {
 
   TestPatternProvider test_pattern_provider;
 
-  EXPECT_EQ(default_pattern_provider.patterns_,
-            test_pattern_provider.patterns_);
+  EXPECT_EQ(default_pattern_provider.patterns(),
+            test_pattern_provider.patterns());
 }
 
 TEST(AutofillPatternProvider, BasedOnMatchType) {
   UnitTestPatternProvider p;
-  ASSERT_GT(p.GetAllPatternsBaseOnType("COMPANY_NAME").size(), 0u);
-  EXPECT_EQ(p.GetAllPatternsBaseOnType("COMPANY_NAME"),
-            std::vector<MatchingPattern>({GetCompanyPatternDe(),
-                                          GetCompanyPatternEn(),
-                                          GetCompanyPatternEn()}));
-  EXPECT_EQ(p.GetAllPatternsBaseOnType("COMPANY_NAME").size(), 3u);
+  ASSERT_GT(p.GetAllPatternsByType("COMPANY_NAME").size(), 0u);
+  EXPECT_EQ(p.GetAllPatternsByType("COMPANY_NAME"),
+            std::vector<MatchingPattern>(
+                {GetCompanyPatternDe(), GetCompanyPatternEn()}));
+  EXPECT_EQ(p.GetAllPatternsByType("COMPANY_NAME").size(), 2u);
 }
 
 TEST(AutofillPatternProvider, UnknownLanguages) {
@@ -156,9 +155,9 @@ TEST(AutofillPatternProvider, UnknownLanguages) {
              kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics});
     UnitTestPatternProvider p;
     EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", ""),
-              p.GetAllPatternsBaseOnType("COMPANY_NAME"));
+              p.GetAllPatternsByType("COMPANY_NAME"));
     EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "blabla"),
-              p.GetAllPatternsBaseOnType("COMPANY_NAME"));
+              p.GetAllPatternsByType("COMPANY_NAME"));
   }
 
   {
@@ -171,9 +170,9 @@ TEST(AutofillPatternProvider, UnknownLanguages) {
         {features::kAutofillUsePageLanguageToSelectFieldParsingPatterns});
     UnitTestPatternProvider p;
     EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", ""),
-              p.GetAllPatternsBaseOnType("COMPANY_NAME"));
+              p.GetAllPatternsByType("COMPANY_NAME"));
     EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "blabla"),
-              p.GetAllPatternsBaseOnType("COMPANY_NAME"));
+              p.GetAllPatternsByType("COMPANY_NAME"));
   }
 }
 
@@ -205,11 +204,9 @@ TEST(AutofillPatternProvider, EnrichPatternsWithEnVersion) {
     UnitTestPatternProvider p;
     EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "en"),
               std::vector<MatchingPattern>({GetCompanyPatternDe(),
-                                            GetCompanyPatternEn(),
                                             GetCompanyPatternEn()}));
     EXPECT_EQ(p.GetMatchPatterns("COMPANY_NAME", "de"),
               std::vector<MatchingPattern>({GetCompanyPatternDe(),
-                                            GetCompanyPatternEn(),
                                             GetCompanyPatternEn()}));
   }
 }
