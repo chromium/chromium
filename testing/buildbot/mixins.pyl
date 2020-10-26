@@ -588,12 +588,12 @@
     },
   },
   'mac_retina_amd_gpu_experimental': {
-    # Currently same configuration as stable version above.
+    # Currently same configuration as stable version below.
     'swarming': {
       'dimensions': {
         'gpu': '1002:6821',
         'hidpi': '1',
-        'os': 'Mac-10.13.6',
+        'os': 'Mac-10.14.6',
         'pool': 'chromium.tests.gpu',
       },
     },
