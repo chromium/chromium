@@ -994,16 +994,6 @@ void AppListControllerImpl::UpdateScaleAndOpacityForHomeLauncher(
       std::move(callback));
 }
 
-base::Optional<base::TimeDelta>
-AppListControllerImpl::GetOptionalAnimationDuration() {
-  if (model_->state() == AppListState::kStateEmbeddedAssistant) {
-    // If Assistant is shown, we don't want any delay in animation transitions
-    // since the launcher is already shown.
-    return base::TimeDelta::Min();
-  }
-  return base::nullopt;
-}
-
 void AppListControllerImpl::Back() {
   presenter_.GetView()->Back();
 }

@@ -75,10 +75,6 @@ class HomeScreenDelegate {
       base::Optional<AnimationInfo> animation_info,
       UpdateAnimationSettingsCallback callback) = 0;
 
-  // Returns an optional animation duration which is going to be used to set
-  // the transition animation if provided.
-  virtual base::Optional<base::TimeDelta> GetOptionalAnimationDuration() = 0;
-
   // True if home screen is visible.
   virtual bool IsHomeScreenVisible() = 0;
 

@@ -285,7 +285,6 @@ class ASH_EXPORT AppListControllerImpl
       float opacity,
       base::Optional<AnimationInfo> animation_info,
       UpdateAnimationSettingsCallback callback) override;
-  base::Optional<base::TimeDelta> GetOptionalAnimationDuration() override;
   base::ScopedClosureRunner DisableHomeScreenBackgroundBlur() override;
   void OnHomeLauncherAnimationComplete(bool shown, int64_t display_id) override;
   void OnHomeLauncherPositionChanged(int percent_shown,
