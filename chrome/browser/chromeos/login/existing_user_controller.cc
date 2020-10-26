@@ -489,6 +489,10 @@ ExistingUserController::ExistingUserController()
           kAccountsPrefDeviceLocalAccountAutoLoginDelay,
           base::Bind(&ExistingUserController::ConfigureAutoLogin,
                      base::Unretained(this)));
+  family_link_allowed_subscription_ = cros_settings_->AddSettingsObserver(
+      kAccountsPrefFamilyLinkAccountsAllowed,
+      base::Bind(&ExistingUserController::DeviceSettingsChanged,
+                 base::Unretained(this)));
 
   observed_user_manager_.Add(user_manager::UserManager::Get());
 }

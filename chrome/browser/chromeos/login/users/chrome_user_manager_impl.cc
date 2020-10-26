@@ -352,6 +352,10 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
       kAccountsPrefUsers,
       base::Bind(&UserManager::NotifyUsersSignInConstraintsChanged,
                  weak_factory_.GetWeakPtr()));
+  users_subscription_ = cros_settings_->AddSettingsObserver(
+      kAccountsPrefFamilyLinkAccountsAllowed,
+      base::Bind(&UserManager::NotifyUsersSignInConstraintsChanged,
+                 weak_factory_.GetWeakPtr()));
 
   local_accounts_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefDeviceLocalAccounts,

@@ -1294,6 +1294,13 @@ bool SigninScreenHandler::AllAllowlistedUsersPresent() {
   if (!delegate_ || users.size() > kMaxUsers) {
     return false;
   }
+
+  bool allow_family_link = false;
+  cros_settings->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
+                            &allow_family_link);
+  if (allow_family_link)
+    return false;
+
   const base::ListValue* allowlist = nullptr;
   if (!cros_settings->GetList(kAccountsPrefUsers, &allowlist) || !allowlist)
     return false;

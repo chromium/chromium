@@ -416,6 +416,8 @@ class ExistingUserController : public LoginDisplay::Delegate,
       local_account_auto_login_id_subscription_;
   std::unique_ptr<CrosSettings::ObserverSubscription>
       local_account_auto_login_delay_subscription_;
+  std::unique_ptr<CrosSettings::ObserverSubscription>
+      family_link_allowed_subscription_;
 
   std::unique_ptr<OAuth2TokenInitializer> oauth2_token_initializer_;
 

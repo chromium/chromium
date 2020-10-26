@@ -2404,6 +2404,7 @@ if (!is_android) {
         "../browser/chromeos/login/demo_mode/demo_setup_browsertest.cc",
         "../browser/chromeos/login/demo_mode/demo_setup_test_utils.cc",
         "../browser/chromeos/login/demo_mode/demo_setup_test_utils.h",
+        "../browser/chromeos/login/device_family_link_allowed_policy_browsertest.cc",
         "../browser/chromeos/login/enable_debugging_browsertest.cc",
         "../browser/chromeos/login/encryption_migration_browsertest.cc",
         "../browser/chromeos/login/enrollment/enrollment_local_policy_server_browsertest.cc",
