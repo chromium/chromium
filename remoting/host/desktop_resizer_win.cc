@@ -63,11 +63,18 @@ class DesktopResizerWin : public DesktopResizer {
   static ScreenResolution GetModeResolution(const DEVMODE& mode);
 
   std::map<ScreenResolution, DEVMODE> best_mode_for_resolution_;
+  DEVMODE initial_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopResizerWin);
 };
 
 DesktopResizerWin::DesktopResizerWin() {
+  if (!GetPrimaryDisplayMode(ENUM_CURRENT_SETTINGS, 0, &initial_mode_) ||
+      !IsModeValid(initial_mode_)) {
+    LOG(ERROR) << "GetPrimaryDisplayMode failed. Resize will not prefer "
+               << "initial orientation or frequency settings.";
+    initial_mode_.dmFields = 0;
+  }
 }
 
 DesktopResizerWin::~DesktopResizerWin() {
@@ -147,28 +154,66 @@ void DesktopResizerWin::UpdateBestModeForResolution(
   }
 
   // If there are multiple modes with the same dimensions:
-  // - Prefer the modes which match the current rotation.
-  // - Among those, prefer modes which match the current frequency.
+  // - Prefer the modes which match either the initial (preferred) or the
+  //   current rotation.
+  // - Among those, prefer modes which match the initial (preferred) or the
+  //   current frequency.
   // - Otherwise, prefer modes with a higher frequency.
   ScreenResolution candidate_resolution = GetModeResolution(candidate_mode);
   if (best_mode_for_resolution_.count(candidate_resolution) != 0) {
     DEVMODE best_mode = best_mode_for_resolution_[candidate_resolution];
 
-    if ((candidate_mode.dmDisplayOrientation !=
-         current_mode.dmDisplayOrientation) &&
-        (best_mode.dmDisplayOrientation == current_mode.dmDisplayOrientation)) {
+    bool best_mode_matches_initial_orientation =
+        (initial_mode_.dmDisplayOrientation & DM_DISPLAYORIENTATION) &&
+        (best_mode.dmDisplayOrientation == initial_mode_.dmDisplayOrientation);
+    bool candidate_mode_matches_initial_orientation =
+        candidate_mode.dmDisplayOrientation ==
+        initial_mode_.dmDisplayOrientation;
+    if (best_mode_matches_initial_orientation &&
+        !candidate_mode_matches_initial_orientation) {
       LOG(INFO) << "Ignoring mode " << candidate_mode.dmPelsWidth << "x"
                 << candidate_mode.dmPelsHeight
-                << ": mode with matching orientation already found.";
+                << ": mode matching initial orientation already found.";
       return;
     }
 
-    if ((candidate_mode.dmDisplayFrequency !=
-         current_mode.dmDisplayFrequency) &&
-        (best_mode.dmDisplayFrequency >= candidate_mode.dmDisplayFrequency)) {
+    bool best_mode_matches_current_orientation =
+        best_mode.dmDisplayOrientation == current_mode.dmDisplayOrientation;
+    bool candidate_mode_matches_current_orientation =
+        candidate_mode.dmDisplayOrientation ==
+        current_mode.dmDisplayOrientation;
+    if (best_mode_matches_current_orientation &&
+        !candidate_mode_matches_initial_orientation &&
+        !candidate_mode_matches_current_orientation) {
       LOG(INFO) << "Ignoring mode " << candidate_mode.dmPelsWidth << "x"
                 << candidate_mode.dmPelsHeight
-                << ": mode with matching or higher frequency already found.";
+                << ": mode matching current orientation already found.";
+      return;
+    }
+
+    bool best_mode_matches_initial_frequency =
+        (initial_mode_.dmDisplayOrientation & DM_DISPLAYFREQUENCY) &&
+        (best_mode.dmDisplayFrequency == initial_mode_.dmDisplayFrequency);
+    bool candidate_mode_matches_initial_frequency =
+        candidate_mode.dmDisplayFrequency == initial_mode_.dmDisplayFrequency;
+    if (best_mode_matches_initial_frequency &&
+        !candidate_mode_matches_initial_frequency) {
+      LOG(INFO) << "Ignoring mode " << candidate_mode.dmPelsWidth << "x"
+                << candidate_mode.dmPelsHeight
+                << ": mode matching initial frequency already found.";
+      return;
+    }
+
+    bool best_mode_matches_current_frequency =
+        best_mode.dmDisplayFrequency == current_mode.dmDisplayFrequency;
+    bool candidate_mode_matches_current_frequency =
+        candidate_mode.dmDisplayFrequency == current_mode.dmDisplayFrequency;
+    if (best_mode_matches_current_frequency &&
+        !candidate_mode_matches_initial_frequency &&
+        !candidate_mode_matches_current_frequency) {
+      LOG(INFO) << "Ignoring mode " << candidate_mode.dmPelsWidth << "x"
+                << candidate_mode.dmPelsHeight
+                << ": mode matching current frequency already found.";
       return;
     }
   }
