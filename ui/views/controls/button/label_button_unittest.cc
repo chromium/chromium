@@ -72,7 +72,7 @@ class TestLabelButton : public LabelButton {
  public:
   explicit TestLabelButton(const base::string16& text = base::string16(),
                            int button_context = style::CONTEXT_BUTTON)
-      : LabelButton(nullptr, text, button_context) {}
+      : LabelButton(Button::PressedCallback(), text, button_context) {}
 
   using LabelButton::image;
   using LabelButton::label;
@@ -745,8 +745,8 @@ class InkDropLabelButtonTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    button_ = widget_->SetContentsView(
-        std::make_unique<LabelButton>(nullptr, base::string16()));
+    button_ = widget_->SetContentsView(std::make_unique<LabelButton>(
+        Button::PressedCallback(), base::string16()));
 
     test_ink_drop_ = new test::TestInkDrop();
     test::InkDropHostViewTestApi(button_).SetInkDrop(

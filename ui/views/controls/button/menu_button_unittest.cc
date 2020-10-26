@@ -496,8 +496,8 @@ TEST_F(MenuButtonTest, DraggableMenuButtonDoesNotActivateOnDrag) {
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
 #if !defined(OS_APPLE) || defined(USE_AURA)
 
-// Tests if the listener is notified correctly when a gesture tap happens on a
-// MenuButton that has a ButtonListener.
+// Tests if the callback is notified correctly when a gesture tap happens on a
+// MenuButton that has a callback.
 TEST_F(MenuButtonTest, ActivateDropDownOnGestureTap) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
 
@@ -508,7 +508,7 @@ TEST_F(MenuButtonTest, ActivateDropDownOnGestureTap) {
 
   generator()->GestureTapAt(gfx::Point(10, 10));
 
-  // Check that MenuButton has notified the listener, while it was in pressed
+  // Check that MenuButton has notified the callback, while it was in pressed
   // state.
   EXPECT_TRUE(button()->clicked());
   EXPECT_EQ(Button::STATE_HOVERED, button()->last_state());
@@ -529,7 +529,7 @@ TEST_F(MenuButtonTest, TouchFeedbackDuringTap) {
 }
 
 // Tests that a move event that exits the button returns it to the normal state,
-// and that the button did not activate the listener.
+// and that the button did not activate the callback.
 TEST_F(MenuButtonTest, TouchFeedbackDuringTapCancel) {
   ConfigureMenuButton(std::make_unique<TestMenuButton>());
   generator()->PressTouch();

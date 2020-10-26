@@ -58,7 +58,7 @@ class DialogExample::Delegate : public virtual DialogType {
 
     if (parent_->has_extra_button_->GetChecked()) {
       DialogDelegate::SetExtraView(std::make_unique<views::MdTextButton>(
-          nullptr, parent_->extra_button_label_->GetText()));
+          Button::PressedCallback(), parent_->extra_button_label_->GetText()));
     }
   }
 

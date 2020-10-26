@@ -342,7 +342,7 @@ TEST_F(AXSystemCaretWinTest, TestCaretMSAAEvents) {
 
   {
     // Move focus to a button.
-    LabelButton button(nullptr, base::string16());
+    LabelButton button{Button::PressedCallback(), base::string16()};
     button.SetBounds(500, 0, 200, 20);
     widget_->GetRootView()->AddChildView(&button);
     test::WidgetActivationWaiter waiter(widget_, true);

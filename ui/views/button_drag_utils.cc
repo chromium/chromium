@@ -48,7 +48,8 @@ void SetDragImage(const GURL& url,
                   ui::OSExchangeData* data) {
   // Create a button to render the drag image for us.
   views::LabelButton button(
-      nullptr, title.empty() ? base::UTF8ToUTF16(url.spec()) : title);
+      views::Button::PressedCallback(),
+      title.empty() ? base::UTF8ToUTF16(url.spec()) : title);
   button.SetTextSubpixelRenderingEnabled(false);
   const ui::NativeTheme* theme = widget.GetNativeTheme();
   button.SetTextColor(

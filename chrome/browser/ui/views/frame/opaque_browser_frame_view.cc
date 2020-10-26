@@ -548,7 +548,8 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
                                                          int pushed_image_id,
                                                          int mask_image_id,
                                                          ViewID view_id) {
-  views::ImageButton* button = new views::ImageButton(nullptr);
+  views::ImageButton* button =
+      new views::ImageButton(views::Button::PressedCallback());
   const ui::ThemeProvider* tp = frame()->GetThemeProvider();
   button->SetImage(views::Button::STATE_NORMAL,
                    tp->GetImageSkiaNamed(normal_image_id));

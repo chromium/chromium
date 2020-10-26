@@ -21,13 +21,13 @@ namespace views {
 using ImageButtonFactoryTest = ViewsTestBase;
 
 TEST_F(ImageButtonFactoryTest, CreateVectorImageButton) {
-  auto button = CreateVectorImageButton(nullptr);
+  auto button = CreateVectorImageButton(Button::PressedCallback());
   EXPECT_EQ(ImageButton::ALIGN_CENTER, button->h_alignment_);
   EXPECT_EQ(ImageButton::ALIGN_MIDDLE, button->v_alignment_);
 }
 
 TEST_F(ImageButtonFactoryTest, SetImageFromVectorIcon) {
-  auto button = CreateVectorImageButton(nullptr);
+  auto button = CreateVectorImageButton(Button::PressedCallback());
   SetImageFromVectorIcon(button.get(), vector_icons::kCloseRoundedIcon,
                          SK_ColorRED);
   EXPECT_FALSE(button->GetImage(Button::STATE_NORMAL).isNull());
@@ -78,7 +78,7 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
 
 TEST_F(ImageButtonFactoryWidgetTest, CreateVectorImageButtonWithNativeTheme) {
   AddImageButton(CreateVectorImageButtonWithNativeTheme(
-      nullptr, vector_icons::kCloseRoundedIcon));
+      Button::PressedCallback(), vector_icons::kCloseRoundedIcon));
   EXPECT_EQ(button()->GetNativeTheme()->GetSystemColor(
                 ui::NativeTheme::kColorId_DefaultIconColor),
             button()->GetInkDropBaseColor());

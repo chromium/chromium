@@ -48,7 +48,8 @@ class ScrollViewExample::ScrollableView : public View {
       container->AddChildView(std::move(view));
     };
     add_child(std::make_unique<LabelButton>(
-        nullptr, GetStringUTF16(IDS_SCROLL_VIEW_BUTTON_LABEL)));
+        Button::PressedCallback(),
+        GetStringUTF16(IDS_SCROLL_VIEW_BUTTON_LABEL)));
     add_child(std::make_unique<RadioButton>(
         GetStringUTF16(IDS_SCROLL_VIEW_RADIO_BUTTON_LABEL), 0));
     layout_manager->SetDefaultFlex(1);

@@ -532,8 +532,9 @@ TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
 // widget is shown or hidden respectively.
 TEST_F(BubbleDialogDelegateViewTest, AttachedWidgetShowsInkDropWhenVisible) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget();
-  LabelButton* button = anchor_widget->SetContentsView(
-      std::make_unique<LabelButton>(nullptr, base::string16()));
+  LabelButton* button =
+      anchor_widget->SetContentsView(std::make_unique<LabelButton>(
+          Button::PressedCallback(), base::string16()));
   TestInkDrop* ink_drop = new TestInkDrop();
   test::InkDropHostViewTestApi(button).SetInkDrop(base::WrapUnique(ink_drop));
   TestBubbleDialogDelegateView* bubble_delegate =
@@ -560,8 +561,9 @@ TEST_F(BubbleDialogDelegateViewTest, AttachedWidgetShowsInkDropWhenVisible) {
 // widget is shown.
 TEST_F(BubbleDialogDelegateViewTest, VisibleWidgetShowsInkDropOnAttaching) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget();
-  LabelButton* button = anchor_widget->SetContentsView(
-      std::make_unique<LabelButton>(nullptr, base::string16()));
+  LabelButton* button =
+      anchor_widget->SetContentsView(std::make_unique<LabelButton>(
+          Button::PressedCallback(), base::string16()));
   TestInkDrop* ink_drop = new TestInkDrop();
   test::InkDropHostViewTestApi(button).SetInkDrop(base::WrapUnique(ink_drop));
   TestBubbleDialogDelegateView* bubble_delegate =

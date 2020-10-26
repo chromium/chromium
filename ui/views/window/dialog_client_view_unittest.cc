@@ -398,8 +398,8 @@ TEST_F(DialogClientViewTest, LinkedWidthDoesLink) {
   layout_provider()->SetDistanceMetric(DISTANCE_BUTTON_MAX_LINKABLE_WIDTH, 200);
 
   // The extra view should also match, if it's a matching button type.
-  View* extra_button =
-      SetExtraView(std::make_unique<LabelButton>(nullptr, base::string16()));
+  View* extra_button = SetExtraView(std::make_unique<LabelButton>(
+      Button::PressedCallback(), base::string16()));
   CheckContentsIsSetToPreferredSize();
   EXPECT_EQ(cancel_button_width, extra_button->width());
 }
@@ -582,8 +582,8 @@ TEST_F(DialogClientViewTest, ButtonLayoutWithExtra) {
   SetDialogButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   SetDialogButtonLabel(ui::DIALOG_BUTTON_OK, "ok");
   SetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL, "cancel");
-  SetExtraView(
-      std::make_unique<LabelButton>(nullptr, base::UTF8ToUTF16("extra")));
+  SetExtraView(std::make_unique<LabelButton>(Button::PressedCallback(),
+                                             base::UTF8ToUTF16("extra")));
 
   widget()->Show();
 

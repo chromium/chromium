@@ -86,7 +86,8 @@ void TabbedPaneExample::PrintCurrentStatus() {
 }
 
 void TabbedPaneExample::AddButton(const base::string16& label) {
-  tabbed_pane_->AddTab(label, std::make_unique<LabelButton>(nullptr, label));
+  tabbed_pane_->AddTab(
+      label, std::make_unique<LabelButton>(Button::PressedCallback(), label));
   PrintCurrentStatus();
 }
 

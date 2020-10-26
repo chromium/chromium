@@ -145,7 +145,8 @@ class TransparentButton : public views::Button {
  public:
   METADATA_HEADER(TransparentButton);
 
-  explicit TransparentButton(DownloadItemView* parent) : Button(nullptr) {
+  explicit TransparentButton(DownloadItemView* parent)
+      : Button(Button::PressedCallback()) {
     SetFocusForPlatform();
     views::InstallRectHighlightPathGenerator(this);
     SetInkDropMode(InkDropMode::ON);

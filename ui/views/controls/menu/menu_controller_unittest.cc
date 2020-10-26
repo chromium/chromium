@@ -768,8 +768,8 @@ class MenuControllerTest : public ViewsTestBase,
         menu_item()->AppendMenuItem(5, base::ASCIIToUTF16("Five"));
     const size_t children_count = single_child ? 1 : 3;
     for (size_t i = 0; i < children_count; ++i) {
-      LabelButton* button =
-          new LabelButton(nullptr, base::ASCIIToUTF16("Label"));
+      LabelButton* button = new LabelButton(Button::PressedCallback(),
+                                            base::ASCIIToUTF16("Label"));
       // This is an in-menu button. Hence it must be always focusable.
       button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
       item_view->AddChildView(button);

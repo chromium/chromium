@@ -322,7 +322,7 @@ TEST_F(ButtonTest, HoverStatePreservedOnDescendantViewHierarchyChange) {
 TEST_F(ButtonTest, NotifyAction) {
   gfx::Point center(10, 10);
 
-  // By default the button should notify its listener on mouse release.
+  // By default the button should notify the callback on mouse release.
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
@@ -335,7 +335,7 @@ TEST_F(ButtonTest, NotifyAction) {
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
   EXPECT_TRUE(button()->pressed());
 
-  // Set the notify action to its listener on mouse press.
+  // Set the notify action to happen on mouse press.
   button()->Reset();
   button()->button_controller()->set_notify_action(
       ButtonController::NotifyAction::kOnPress);
@@ -359,7 +359,7 @@ TEST_F(ButtonTest, NotifyAction) {
 TEST_F(ButtonTest, NotifyActionNoClick) {
   gfx::Point center(10, 10);
 
-  // By default the button should notify its listener on mouse release.
+  // By default the button should notify the callback on mouse release.
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON));
@@ -370,7 +370,7 @@ TEST_F(ButtonTest, NotifyActionNoClick) {
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON));
   EXPECT_TRUE(button()->canceled());
 
-  // Set the notify action to its listener on mouse press.
+  // Set the notify action to happen on mouse press.
   button()->Reset();
   button()->button_controller()->set_notify_action(
       ButtonController::NotifyAction::kOnPress);
@@ -435,7 +435,7 @@ TEST_F(ButtonTest, GestureEventsRespectDisabledState) {
 TEST_F(ButtonTest, AsButton) {
   base::string16 text;
 
-  LabelButton label_button(nullptr, text);
+  LabelButton label_button(Button::PressedCallback(), text);
   EXPECT_TRUE(Button::AsButton(&label_button));
 
   ImageButton image_button;
@@ -447,7 +447,7 @@ TEST_F(ButtonTest, AsButton) {
   RadioButton radio_button(text, 0);
   EXPECT_TRUE(Button::AsButton(&radio_button));
 
-  MenuButton menu_button(nullptr, text);
+  MenuButton menu_button(Button::PressedCallback(), text);
   EXPECT_TRUE(Button::AsButton(&menu_button));
 
   ToggleButton toggle_button;
@@ -737,7 +737,7 @@ TEST_F(ButtonTest, SetCallback) {
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  // Default button controller notifies listener at mouse release.
+  // Default button controller notifies callback at mouse release.
   button()->OnMouseReleased(ui::MouseEvent(
       ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
@@ -870,7 +870,7 @@ TEST_F(ButtonTest, CustomActionOnKeyPressedEvent) {
 
 // Verifies that button activation highlight state changes trigger property
 // change callbacks.
-TEST_F(ButtonTest, ChangingHighlightStateNotifiesListener) {
+TEST_F(ButtonTest, ChangingHighlightStateNotifiesCallback) {
   CreateButtonWithObserver();
   EXPECT_FALSE(button_observer()->highlighted_changed());
   EXPECT_FALSE(button()->GetHighlighted());

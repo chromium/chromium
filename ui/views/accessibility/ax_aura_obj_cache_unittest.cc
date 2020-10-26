@@ -116,7 +116,8 @@ TEST_F(AXAuraObjCacheTest, ValidTree) {
   child_widget->Show();
 
   // Create a child view.
-  auto* button = new LabelButton(nullptr, base::ASCIIToUTF16("ChildButton"));
+  auto* button = new LabelButton(Button::PressedCallback(),
+                                 base::ASCIIToUTF16("ChildButton"));
   button->SetSize(gfx::Size(20, 20));
   child_widget->GetContentsView()->AddChildView(button);
 

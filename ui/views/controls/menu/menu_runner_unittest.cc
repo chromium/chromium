@@ -641,8 +641,8 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
 
 TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   // Create test button that has focus.
-  LabelButton* button =
-      new LabelButton(nullptr, base::string16(), style::CONTEXT_BUTTON);
+  LabelButton* button = new LabelButton(
+      Button::PressedCallback(), base::string16(), style::CONTEXT_BUTTON);
   button->SetID(1);
   button->SetSize(gfx::Size(20, 20));
   owner()->GetRootView()->AddChildView(button);

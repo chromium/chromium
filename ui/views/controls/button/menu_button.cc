@@ -17,7 +17,7 @@ namespace views {
 MenuButton::MenuButton(PressedCallback callback,
                        const base::string16& text,
                        int button_context)
-    : LabelButton(nullptr, text, button_context) {
+    : LabelButton(PressedCallback(), text, button_context) {
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   std::unique_ptr<MenuButtonController> menu_button_controller =
       std::make_unique<MenuButtonController>(
