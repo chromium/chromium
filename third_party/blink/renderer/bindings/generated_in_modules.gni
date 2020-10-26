@@ -2217,7 +2217,21 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_world_tracking_state.h",
 ]
 
-# Serial and Direct Sockets
+# Direct Sockets
+if (!is_android) {
+  generated_dictionary_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.h",
+  ]
+  generated_interface_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.h",
+  ]
+}
+
+# Serial
 if (!is_android) {
   generated_dictionary_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_connection_event_init.cc",
@@ -2234,8 +2248,6 @@ if (!is_android) {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_request_options.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port_request_options.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.h",
   ]
   generated_enumeration_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_flow_control_type.cc",
@@ -2250,10 +2262,6 @@ if (!is_android) {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_connection_event.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.h",
   ]
 }
 
