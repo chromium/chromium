@@ -1,0 +1,14 @@
+diff --git a/third_party/chaijs/chai.js b/third_party/chaijs/chai.js
+index 39429c51b912..067a18fb688d 100644
+--- a/third_party/chaijs/chai.js
++++ b/third_party/chaijs/chai.js
+@@ -10475,7 +10475,7 @@ module.exports = {
+ var promiseExists = typeof Promise === 'function';
+ 
+ /* eslint-disable no-undef */
+-var globalObject = typeof self === 'object' ? self : global; // eslint-disable-line id-blacklist
++var globalObject = typeof self === 'object' ? self : null; // eslint-disable-line id-blacklist
+ 
+ var symbolExists = typeof Symbol !== 'undefined';
+ var mapExists = typeof Map !== 'undefined';
+

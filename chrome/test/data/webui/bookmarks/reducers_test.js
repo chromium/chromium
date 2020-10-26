@@ -62,7 +62,7 @@ suite('selection state', function() {
 
     action = selectFolder('2');
     selection = updateSelection(selection, action);
-    assertDeepEquals({}, selection.items);
+    assertDeepEquals(new Set(), selection.items);
   });
 
   test('is cleared when search finished', function() {
@@ -71,7 +71,7 @@ suite('selection state', function() {
 
     action = setSearchResults(['2']);
     selection = updateSelection(selection, action);
-    assertDeepEquals({}, selection.items);
+    assertDeepEquals(new Set(), selection.items);
   });
 
   test('is cleared when search cleared', function() {
@@ -80,7 +80,7 @@ suite('selection state', function() {
 
     action = clearSearch();
     selection = updateSelection(selection, action);
-    assertDeepEquals({}, selection.items);
+    assertDeepEquals(new Set(), selection.items);
   });
 
   test('deselect items', function() {
@@ -89,7 +89,7 @@ suite('selection state', function() {
 
     action = deselectItems();
     selection = updateSelection(selection, action);
-    assertDeepEquals({}, selection.items);
+    assertDeepEquals(new Set(), selection.items);
   });
 
   test('toggle an item', function() {

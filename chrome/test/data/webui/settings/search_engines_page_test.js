@@ -340,8 +340,8 @@ suite('SearchEnginePageTests', function() {
 
     // Ensure that the search engines have reverse alphabetical order in the
     // model.
-    assertGT(
-        searchEnginesInfo.others[0].name, searchEnginesInfo.others[1].name);
+    assertTrue(
+        searchEnginesInfo.others[0].name > searchEnginesInfo.others[1].name);
 
     // Ensure that they are displayed in alphabetical order.
     assertEquals(searchEnginesInfo.others[1].name, othersEntries[0].name);
