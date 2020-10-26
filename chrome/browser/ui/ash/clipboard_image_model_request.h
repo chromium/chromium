@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/image_model.h"
 
@@ -25,7 +26,8 @@ class Profile;
 // passes the copy through |deliver_image_model_callback_|. If the request takes
 // takes more than 5s to load, timeout is declared and the callback is not
 // called. If the request is Stop()-ed, the callback is not called.
-class ClipboardImageModelRequest : public content::WebContentsObserver {
+class ClipboardImageModelRequest : public content::WebContentsDelegate,
+                                   public content::WebContentsObserver {
  public:
   using ImageModelCallback = base::OnceCallback<void(ui::ImageModel)>;
 
@@ -68,10 +70,22 @@ class ClipboardImageModelRequest : public content::WebContentsObserver {
   bool IsRunningRequest(
       base::Optional<base::UnguessableToken> request_id = base::nullopt) const;
 
+  // content::WebContentsDelegate:
+  void ResizeDueToAutoResize(content::WebContents* web_contents,
+                             const gfx::Size& new_size) override;
+
   // content::WebContentsObserver:
   void DidStopLoading() override;
+  void RenderViewHostChanged(content::RenderViewHost* old_host,
+                             content::RenderViewHost* new_host) override;
 
  private:
+  // Posts `CopySurface()` to the task sequence.
+  void PostCopySurfaceTask();
+
+  // Copies the rendered HTML.
+  void CopySurface();
+
   // Callback called when the rendered surface is done being copied.
   void OnCopyComplete(const SkBitmap& bitmap);
 
@@ -88,6 +102,9 @@ class ClipboardImageModelRequest : public content::WebContentsObserver {
   // requests.
   base::UnguessableToken request_id_;
 
+  // Whether `AutoResizeDueToAutoResize()` was called.
+  bool did_auto_resize_ = false;
+
   // Callback used to deliver the rendered ImageModel.
   ImageModelCallback deliver_image_model_callback_;
 
@@ -98,6 +115,10 @@ class ClipboardImageModelRequest : public content::WebContentsObserver {
   base::RepeatingTimer timeout_timer_;
 
   base::WeakPtrFactory<ClipboardImageModelRequest> weak_ptr_factory_{this};
+
+  // Used to debounce calls to `CopySurface()`.
+  base::WeakPtrFactory<ClipboardImageModelRequest>
+      copy_surface_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_REQUEST_H_

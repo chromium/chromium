@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
@@ -22,10 +23,9 @@
 
 namespace {
 
-// Size of the bitmap saved.
-constexpr gfx::Size kBitmapFinalSize(224, 64);
-// Size of the WebContents used to render HTML.
-constexpr gfx::Rect kWebContentsBounds(gfx::Point(), kBitmapFinalSize);
+// Size of the ClipboardHistoryBitmapItemView shown in ClipboardHistory.
+constexpr gfx::SizeF kClipboardHistoryBitmapItemViewSize =
+    gfx::SizeF(222.0, 66.0);
 
 }  // namespace
 
@@ -54,11 +54,9 @@ ClipboardImageModelRequest::ClipboardImageModelRequest(
   widget_params.name = "ClipboardImageModelRequest";
   widget_->Init(std::move(widget_params));
   widget_->SetContentsView(web_view_);
-  content::WebContents* web_contents = web_view_->GetWebContents();
-  Observe(web_contents);
-  // TODO(newcomer): Large items show a scrollbar, and small items do not need
-  // this much room. Size the WebContents based on the required bounds.
-  web_contents->GetNativeView()->SetBounds(kWebContentsBounds);
+
+  Observe(web_view_->GetWebContents());
+  web_contents()->SetDelegate(this);
 }
 
 ClipboardImageModelRequest::~ClipboardImageModelRequest() = default;
@@ -71,23 +69,21 @@ void ClipboardImageModelRequest::Start(Params&& params) {
   request_id_ = std::move(params.id);
   deliver_image_model_callback_ = std::move(params.callback);
 
-  timeout_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(5), this,
+  timeout_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(10), this,
                        &ClipboardImageModelRequest::OnTimeout);
 
   // Begin the document with the proper charset, this should prevent strange
   // looking characters from showing up in the render in some cases.
   std::string html_document(
-      "<html><head><meta charset=\"UTF-8\"></meta></head><body>");
-  // Hide overflow to prevent scroll bars from showing up, which occurs when the
-  // rendered HTML takes up more space than 'kWebContentsBounds'.
-  html_document.append("<style>body{overflow:hidden;}</style>");
+      "<!DOCTYPE html><html><head><meta "
+      "charset=\"UTF-8\"></meta></head><body>");
   html_document.append(params.html_markup);
   html_document.append("</body></html>");
 
   std::string encoded_html;
   base::Base64Encode(html_document, &encoded_html);
   constexpr char kDataURIPrefix[] = "data:text/html;base64,";
-  web_view_->GetWebContents()->GetController().LoadURLWithParams(
+  web_contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(
           GURL(kDataURIPrefix + encoded_html)));
   widget_->ShowInactive();
@@ -95,10 +91,12 @@ void ClipboardImageModelRequest::Start(Params&& params) {
 
 void ClipboardImageModelRequest::Stop() {
   weak_ptr_factory_.InvalidateWeakPtrs();
+  copy_surface_weak_ptr_factory_.InvalidateWeakPtrs();
   timeout_timer_.Stop();
   widget_->Hide();
   deliver_image_model_callback_.Reset();
   request_id_ = base::UnguessableToken();
+  did_auto_resize_ = false;
   on_request_finished_callback_.Run();
 }
 
@@ -108,19 +106,75 @@ bool ClipboardImageModelRequest::IsRunningRequest(
                                 : !request_id_.is_empty();
 }
 
+void ClipboardImageModelRequest::ResizeDueToAutoResize(
+    content::WebContents* web_contents,
+    const gfx::Size& new_size) {
+  did_auto_resize_ = true;
+  web_contents->GetNativeView()->SetBounds(gfx::Rect(gfx::Point(), new_size));
+
+  // `ResizeDueToAutoResize()` can be called before and/or after
+  // DidStopLoading(). If `DidStopLoading()` has not been called, wait for the
+  // next resize before copying the surface.
+  if (!web_contents->IsLoading())
+    PostCopySurfaceTask();
+}
+
 void ClipboardImageModelRequest::DidStopLoading() {
+  // Wait for auto resize. In some cases the data url will stop loading before
+  // auto resize has occurred. This will result in a incorrectly sized image.
+  if (!did_auto_resize_)
+    return;
+
+  PostCopySurfaceTask();
+}
+
+void ClipboardImageModelRequest::RenderViewHostChanged(
+    content::RenderViewHost* old_host,
+    content::RenderViewHost* new_host) {
+  if (!web_contents()->GetRenderWidgetHostView())
+    return;
+
+  web_contents()->GetRenderWidgetHostView()->EnableAutoResize(
+      gfx::Size(1, 1), gfx::Size(INT_MAX, INT_MAX));
+}
+
+void ClipboardImageModelRequest::PostCopySurfaceTask() {
+  if (!deliver_image_model_callback_)
+    return;
+
+  // Debounce calls to `CopySurface()`. `DidStopLoading()` and
+  // `ResizeDueToAutoResize()` can be called multiple times in the same task
+  // sequence. Wait for the final update before copying the surface.
+  copy_surface_weak_ptr_factory_.InvalidateWeakPtrs();
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ClipboardImageModelRequest::CopySurface,
+                     copy_surface_weak_ptr_factory_.GetWeakPtr()),
+      base::TimeDelta::FromMilliseconds(100));
+}
+
+void ClipboardImageModelRequest::CopySurface() {
   content::RenderWidgetHostView* source_view =
-      web_view_->GetWebContents()->GetRenderViewHost()->GetWidget()->GetView();
+      web_contents()->GetRenderViewHost()->GetWidget()->GetView();
   gfx::Size source_size = source_view->GetViewBounds().size();
   if (source_size.IsEmpty()) {
     Stop();
     return;
   }
+  // Scale down |source_size| until every edge fits into the 222x66 image that
+  // will be shown in ClipboardHistoryBitmapItemView.
+  const float height_ratio =
+      kClipboardHistoryBitmapItemViewSize.height() / source_size.height();
+  const float width_ratio =
+      kClipboardHistoryBitmapItemViewSize.width() / source_size.width();
+  const float scale = height_ratio < width_ratio ? height_ratio : width_ratio;
 
+  gfx::Size scaled_source_size =
+      gfx::ScaleToRoundedSize(source_size, scale, scale);
   // There is no guarantee CopyFromSurface will call OnCopyComplete. If this
   // takes too long, this will be cleaned up by |timeout_timer_|.
   source_view->CopyFromSurface(
-      gfx::Rect(source_size), kBitmapFinalSize,
+      gfx::Rect(), scaled_source_size,
       base::BindOnce(&ClipboardImageModelRequest::OnCopyComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
