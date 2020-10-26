@@ -42,6 +42,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -172,6 +173,7 @@ public class TabGroupUiTest {
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_BUG_FIX_PARAMS})
+    @DisabledTest(message = "https://crbug.com/1142576")
     public void testVisibilityChangeWithOmnibox() throws Exception {
         // clang-format on
 
