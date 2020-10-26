@@ -174,9 +174,9 @@ TEST_F(CertProvisioningCertIteratorTest, CertificateWithError) {
   run_loop.Run();
 }
 
-//================= CertPrivisioningCertGetter =================================
+//================= CertProvisioningCertGetter =================================
 
-class CertPrivisioningCertGetter : public PlatformKeysHelpersTest {};
+class CertProvisioningCertGetter : public PlatformKeysHelpersTest {};
 
 using CertMap =
     base::flat_map<CertProfileId, scoped_refptr<net::X509Certificate>>;
@@ -205,7 +205,7 @@ class GetterCallbackObserver {
   platform_keys::Status status_ = platform_keys::Status::kSuccess;
 };
 
-TEST_F(CertPrivisioningCertGetter, NoCertificates) {
+TEST_F(CertProvisioningCertGetter, NoCertificates) {
   const CertScope kCertScope = CertScope::kDevice;
 
   GetterCallbackObserver callback_observer;
@@ -217,7 +217,7 @@ TEST_F(CertPrivisioningCertGetter, NoCertificates) {
   EXPECT_EQ(callback_observer.GetStatus(), platform_keys::Status::kSuccess);
 }
 
-TEST_F(CertPrivisioningCertGetter, SingleCertificateWithId) {
+TEST_F(CertProvisioningCertGetter, SingleCertificateWithId) {
   const CertScope kCertScope = CertScope::kDevice;
   const char kCertProfileId[] = "cert_profile_id_1";
   CertMap cert_map;
@@ -234,7 +234,7 @@ TEST_F(CertPrivisioningCertGetter, SingleCertificateWithId) {
   EXPECT_EQ(callback_observer.GetStatus(), platform_keys::Status::kSuccess);
 }
 
-TEST_F(CertPrivisioningCertGetter, ManyCertificatesWithId) {
+TEST_F(CertProvisioningCertGetter, ManyCertificatesWithId) {
   const CertScope kCertScope = CertScope::kDevice;
   std::vector<std::string> ids{"cert_profile_id_0", "cert_profile_id_1",
                                "cert_profile_id_2"};
@@ -253,7 +253,7 @@ TEST_F(CertPrivisioningCertGetter, ManyCertificatesWithId) {
   EXPECT_EQ(callback_observer.GetStatus(), platform_keys::Status::kSuccess);
 }
 
-TEST_F(CertPrivisioningCertGetter, ManyCertificatesWithoutId) {
+TEST_F(CertProvisioningCertGetter, ManyCertificatesWithoutId) {
   const CertScope kCertScope = CertScope::kDevice;
   size_t cert_count = 4;
   for (size_t i = 0; i < cert_count; ++i) {
@@ -269,7 +269,7 @@ TEST_F(CertPrivisioningCertGetter, ManyCertificatesWithoutId) {
   EXPECT_EQ(callback_observer.GetStatus(), platform_keys::Status::kSuccess);
 }
 
-TEST_F(CertPrivisioningCertGetter, CertificatesWithAndWithoutIds) {
+TEST_F(CertProvisioningCertGetter, CertificatesWithAndWithoutIds) {
   const CertScope kCertScope = CertScope::kDevice;
   CertMap cert_map;
 
