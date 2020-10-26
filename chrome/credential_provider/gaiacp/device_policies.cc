@@ -4,6 +4,8 @@
 
 #include "chrome/credential_provider/gaiacp/device_policies.h"
 
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -19,6 +21,18 @@ constexpr bool kDevicePolicyDefaultDeviceEnrollment = true;
 constexpr bool kDevicePolicyDefaultGcpwAutoUpdate = true;
 constexpr bool kDevicePolicyDefaultMultiUserLogin = true;
 
+// Read the list of domains allowed to login from registry.
+std::vector<base::string16> GetRegistryEmailDomains() {
+  base::string16 email_domains_reg =
+      GetGlobalFlagOrDefault(kEmailDomainsKey, L"");
+  base::string16 email_domains_reg_new =
+      GetGlobalFlagOrDefault(kEmailDomainsKeyNew, L"");
+  base::string16 email_domains =
+      email_domains_reg.empty() ? email_domains_reg_new : email_domains_reg;
+  return base::SplitString(email_domains, L",",
+                           base::WhitespaceHandling::TRIM_WHITESPACE,
+                           base::SplitResult::SPLIT_WANT_NONEMPTY);
+}
 }  // namespace
 
 // static
@@ -46,6 +60,7 @@ DevicePolicies::DevicePolicies()
       enable_gcpw_auto_update(kDevicePolicyDefaultGcpwAutoUpdate),
       enable_multi_user_login(kDevicePolicyDefaultMultiUserLogin) {
   // Override with the policies set in the registry.
+  domains_allowed_to_login = GetRegistryEmailDomains();
 
   base::string16 mdm_url = GetGlobalFlagOrDefault(kRegMdmUrl, kDefaultMdmUrl);
   DWORD reg_enable_dm_enrollment;
@@ -82,6 +97,10 @@ bool DevicePolicies::operator==(const DevicePolicies& other) const {
          (gcpw_pinned_version == other.gcpw_pinned_version) &&
          (enable_multi_user_login == other.enable_multi_user_login) &&
          (domains_allowed_to_login == other.domains_allowed_to_login);
+}
+
+base::string16 DevicePolicies::GetAllowedDomainsStr() const {
+  return base::JoinString(domains_allowed_to_login, L",");
 }
 
 }  // namespace credential_provider

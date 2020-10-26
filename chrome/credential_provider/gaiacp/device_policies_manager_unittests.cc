@@ -5,6 +5,8 @@
 #include <windows.h>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/credential_provider/gaiacp/device_policies_manager.h"
@@ -203,6 +205,151 @@ INSTANTIATE_TEST_SUITE_P(All,
                                             ::testing::Values("99.1.2.3",
                                                               "100.1.2.3",
                                                               "100.1.2.4")));
+
+// Base test for testing allowed domains policy scenarios.
+class GcpDevicePoliciesAllowedDomainsBaseTest
+    : public GcpDevicePoliciesBaseTest {
+ public:
+  void SetUp() override;
+};
+
+void GcpDevicePoliciesAllowedDomainsBaseTest::SetUp() {
+  GcpDevicePoliciesBaseTest::SetUp();
+
+  // Delete any existing registry entries. Setting to empty deletes them.
+  SetGlobalFlagForTesting(L"ed", L"");
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"");
+}
+
+// Test that correct allowed domains policy is obtained whether they are set in
+// the registry or through the cloud policy.
+// Parameters are:
+// 1. bool : Whether domains set through Omaha cloud policy.
+// 2. int  : 0 - Domains not set through registry.
+//           1 - Domains set through deprecated "ed" registry entry.
+//           2 - Domains set through "domains_allowed_to_login" registry entry.
+// 3. string : List of domains from which users are allowed to login.
+// 4. bool : Has existing user.
+class GcpDevicePoliciesAllowedDomainsTest
+    : public GcpDevicePoliciesAllowedDomainsBaseTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, int, const wchar_t*, bool>> {};
+
+TEST_P(GcpDevicePoliciesAllowedDomainsTest, OmahaPolicyTest) {
+  bool has_omaha_domains_policy = std::get<0>(GetParam());
+  bool has_registry_domains_policy = std::get<1>(GetParam()) != 0;
+  bool use_old_domains_reg_key = std::get<1>(GetParam()) == 1;
+  base::string16 allowed_domains_str(std::get<2>(GetParam()));
+  bool has_existing_user = std::get<3>(GetParam());
+
+  std::vector<base::string16> allowed_domains = base::SplitString(
+      allowed_domains_str, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+
+  if (has_omaha_domains_policy) {
+    ASSERT_TRUE(
+        DevicePoliciesManager::Get()->SetAllowedDomainsOmahaPolicyForTesting(
+            allowed_domains));
+  }
+
+  if (has_registry_domains_policy) {
+    if (use_old_domains_reg_key) {
+      SetGlobalFlagForTesting(L"ed", allowed_domains_str);
+    } else {
+      SetGlobalFlagForTesting(L"domains_allowed_to_login", allowed_domains_str);
+    }
+  }
+
+  FakeUserPoliciesManager fake_user_policies_manager(true);
+  UserPolicies user_policy;
+
+  if (has_existing_user) {
+    CComBSTR sid;
+    ASSERT_EQ(S_OK,
+              fake_os_user_manager()->CreateTestOSUser(
+                  kDefaultUsername, L"password", L"Full Name", L"comment",
+                  base::UTF8ToUTF16(kDefaultGaiaId), base::string16(), &sid));
+    // Add a random user policy.
+    user_policy.enable_dm_enrollment = false;
+    user_policy.enable_gcpw_auto_update = false;
+    user_policy.enable_multi_user_login = false;
+    user_policy.gcpw_pinned_version = GcpwVersion("100.1.2.3");
+
+    fake_user_policies_manager.SetUserPolicies(OLE2W(sid), user_policy);
+  }
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  if (has_omaha_domains_policy || has_registry_domains_policy)
+    ASSERT_EQ(allowed_domains, device_policies.domains_allowed_to_login);
+
+  if (has_existing_user) {
+    ASSERT_EQ(user_policy.enable_dm_enrollment,
+              device_policies.enable_dm_enrollment);
+    ASSERT_EQ(user_policy.enable_gcpw_auto_update,
+              device_policies.enable_gcpw_auto_update);
+    ASSERT_EQ(user_policy.enable_multi_user_login,
+              device_policies.enable_multi_user_login);
+    ASSERT_EQ(user_policy.gcpw_pinned_version,
+              device_policies.gcpw_pinned_version);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GcpDevicePoliciesAllowedDomainsTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(0, 1, 2),
+        ::testing::Values(L"", L"acme.com", L"acme.com,acme.org"),
+        ::testing::Bool()));
+
+// Test to ensure Omaha policies override the existing registry settings for
+// allowed domains policy.
+// Parameters are:
+// 1. bool : If true, deprecated "ed" registry entry is used. Otherwise
+//           "domains_allowed_to_login" is used.
+// 2. string : List of allowed domains for GCPW specified through registry.
+// 3. string : List of allowed domains for GCPW specified through a Omaha cloud
+//             policy.
+class GcpDevicePoliciesOmahaDomainsWinTest
+    : public GcpDevicePoliciesAllowedDomainsBaseTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, const wchar_t*, const wchar_t*>> {};
+
+TEST_P(GcpDevicePoliciesOmahaDomainsWinTest, TestConflict) {
+  bool use_old_domains_reg_key = std::get<0>(GetParam());
+  base::string16 domains_registry_str(std::get<1>(GetParam()));
+  base::string16 domains_from_omaha_str(std::get<2>(GetParam()));
+
+  std::vector<base::string16> allowed_domains_omaha = base::SplitString(
+      domains_from_omaha_str, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+
+  ASSERT_TRUE(
+      DevicePoliciesManager::Get()->SetAllowedDomainsOmahaPolicyForTesting(
+          allowed_domains_omaha));
+
+  if (use_old_domains_reg_key) {
+    SetGlobalFlagForTesting(L"ed", domains_registry_str);
+  } else {
+    SetGlobalFlagForTesting(L"domains_allowed_to_login", domains_registry_str);
+  }
+
+  DevicePolicies device_policies;
+  DevicePoliciesManager::Get()->GetDevicePolicies(&device_policies);
+
+  ASSERT_EQ(allowed_domains_omaha, device_policies.domains_allowed_to_login);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GcpDevicePoliciesOmahaDomainsWinTest,
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(L"", L"acme.com", L"acme.com,acme.org"),
+        ::testing::Values(L"", L"company.com", L"company.com,company.org")));
 
 }  // namespace testing
 }  // namespace credential_provider
