@@ -224,6 +224,15 @@ diff --git b/third_party/unrar/src/file.cpp a/third_party/unrar/src/file.cpp
 index 52c86c0621af..7dc5b724ca73 100644
 --- b/third_party/unrar/src/file.cpp
 +++ a/third_party/unrar/src/file.cpp
+@@ -17,6 +17,10 @@ File::File()
+ NoSequentialRead=false;
+ CreateMode=FMF_UNDEFINED;
+#endif
++
++#ifdef CHROMIUM_UNRAR
++  hOpenFile=FILE_BAD_HANDLE;
++#endif
+}
 @@ -51,6 +53,11 @@ bool File::Open(const wchar *Name,uint Mode)
    bool UpdateMode=(Mode & FMF_UPDATE)!=0;
    bool WriteMode=(Mode & FMF_WRITE)!=0;

@@ -17,6 +17,10 @@ File::File()
   NoSequentialRead=false;
   CreateMode=FMF_UNDEFINED;
 #endif
+
+#ifdef CHROMIUM_UNRAR
+  hOpenFile=FILE_BAD_HANDLE;
+#endif
 }
 
 
