@@ -316,8 +316,12 @@ class ProfileManager : public content::NotificationObserver,
   // Returns true if the profile was added, false otherwise.
   bool AddProfile(std::unique_ptr<Profile> profile);
 
-  // Removes the Profile at |profile_path| from the manager and destroys it.
-  static void RemoveProfile(const base::FilePath& profile_path);
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+  // Removes the Profile at |profile_dir| from the manager and destroys it. If
+  // it's an ephemeral profile, also nuke the |profile_dir| directory from disk
+  // afterwards.
+  void RemoveProfile(const base::FilePath& profile_dir);
+#endif
 
   // Synchronously creates and returns a profile. This handles both the full
   // creation and adds it to the set managed by this ProfileManager. Returns
@@ -339,6 +343,12 @@ class ProfileManager : public content::NotificationObserver,
                              const base::FilePath& new_active_profile_dir);
   void OnLoadProfileForProfileDeletion(const base::FilePath& profile_dir,
                                        Profile* profile);
+
+  // Searches for the latest active profile that respects |predicate|, already
+  // loaded preferably. Returns nullopt if no existing profile respects all the
+  // conditions.
+  base::Optional<base::FilePath> FindLastActiveProfile(
+      base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate);
 #endif
 
   // Registers profile with given info. Returns pointer to created ProfileInfo

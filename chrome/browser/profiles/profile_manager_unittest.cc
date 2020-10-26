@@ -17,9 +17,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -1287,6 +1289,85 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfilesWithGuestLastUsedProfile) {
 
   ASSERT_EQ(0u, storage.GetNumberOfProfiles());
   EXPECT_EQ("Profile 1", local_state->GetString(prefs::kProfileLastUsed));
+}
+
+TEST_F(ProfileManagerTest, DestroyProfileOnBrowserClose) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+
+  base::FilePath dest_path1 = temp_dir_.GetPath().AppendASCII("New Profile 1");
+  base::FilePath dest_path2 = temp_dir_.GetPath().AppendASCII("New Profile 2");
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  TestingProfile* profile1 =
+      static_cast<TestingProfile*>(profile_manager->GetProfile(dest_path1));
+  ASSERT_TRUE(profile1);
+  TestingProfile* profile2 =
+      static_cast<TestingProfile*>(profile_manager->GetProfile(dest_path2));
+  ASSERT_TRUE(profile2);
+
+  // Create a browser for profile2.
+  Browser::CreateParams profile_params2(profile2, true);
+  std::unique_ptr<Browser> browser2(
+      CreateBrowserWithTestWindowForParams(profile_params2));
+
+  EXPECT_TRUE(profile_manager->IsValidProfile(profile1));
+  EXPECT_TRUE(profile_manager->IsValidProfile(profile2));
+
+  // Close the browser for profile2.
+  browser2.reset();
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_TRUE(profile_manager->IsValidProfile(profile1));
+  EXPECT_FALSE(profile_manager->IsValidProfile(profile2));
+}
+
+TEST_F(ProfileManagerTest, DestroyEphemeralProfileOnBrowserClose) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+
+  base::FilePath dest_path1 = temp_dir_.GetPath().AppendASCII("New Profile 1");
+  base::FilePath dest_path2 = temp_dir_.GetPath().AppendASCII("New Profile 2");
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+
+  // Create 2 ephemeral profiles.
+  TestingProfile* profile1 =
+      static_cast<TestingProfile*>(profile_manager->GetProfile(dest_path1));
+  ASSERT_TRUE(profile1);
+  SetProfileEphemeral(profile1);
+  TestingProfile* profile2 =
+      static_cast<TestingProfile*>(profile_manager->GetProfile(dest_path2));
+  ASSERT_TRUE(profile2);
+  SetProfileEphemeral(profile2);
+
+  content::RunAllTasksUntilIdle();
+  Profile* last_used_profile = profile_manager->GetLastUsedProfile();
+  EXPECT_NE(profile1, last_used_profile);
+  EXPECT_NE(profile2, last_used_profile);
+  EXPECT_EQ(3u, storage.GetNumberOfProfiles());
+  EXPECT_TRUE(base::PathExists(dest_path1));
+  EXPECT_TRUE(base::PathExists(dest_path2));
+
+  // Create a browser for profile2.
+  Browser::CreateParams profile_params2(profile2, true);
+  std::unique_ptr<Browser> browser2(
+      CreateBrowserWithTestWindowForParams(profile_params2));
+
+  // Close the browser for profile2.
+  browser2.reset();
+  content::RunAllTasksUntilIdle();
+
+  last_used_profile = profile_manager->GetLastUsedProfile();
+  EXPECT_NE(profile1, last_used_profile);
+  EXPECT_NE(profile2, last_used_profile);
+  EXPECT_EQ(2u, storage.GetNumberOfProfiles());
+  EXPECT_TRUE(base::PathExists(dest_path1));
+  // |dest_path2| should've been cleaned up from disk.
+  EXPECT_FALSE(base::PathExists(dest_path2));
 }
 
 TEST_F(ProfileManagerTest, ActiveProfileDeleted) {
