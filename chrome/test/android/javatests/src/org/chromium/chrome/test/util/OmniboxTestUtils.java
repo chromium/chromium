@@ -156,6 +156,9 @@ public class OmniboxTestUtils {
         }
 
         @Override
+        public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {}
+
+        @Override
         public void startZeroSuggest(Profile profile, String omniboxText, String url,
                 int pageClassification, String title) {
             mZeroSuggestCalledCount++;
@@ -202,6 +205,9 @@ public class OmniboxTestUtils {
         @Override
         public void startZeroSuggest(Profile profile, String omniboxText, String url,
                 int pageClassification, String title) {}
+
+        @Override
+        public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {}
 
         @Override
         public void stop(boolean clear) {}

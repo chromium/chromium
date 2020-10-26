@@ -3354,7 +3354,7 @@
   {
     "name": "omnibox-adaptive-suggestions-count",
     "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "omnibox-assistant-voice-search",
@@ -3379,7 +3379,7 @@
   {
     "name": "omnibox-compact-suggestions",
     "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "omnibox-deferred-keyboard-popup",

@@ -548,6 +548,19 @@ bool AutocompleteResult::TopMatchIsStandaloneVerbatimMatch() const {
   return true;
 }
 
+void AutocompleteResult::GroupSuggestionsBySearchVsURL(int first_index,
+                                                       int last_index) const {
+  const int num_elements = matches_.size();
+  DCHECK_GE(first_index, 0);
+  DCHECK_LT(first_index, num_elements);
+  DCHECK_GT(last_index, 0);
+  DCHECK_LE(last_index, num_elements);
+  DCHECK_LT(first_index, last_index);
+  auto range_start = const_cast<ACMatches&>(matches_).begin();
+  GroupSuggestionsBySearchVsURL(range_start + first_index,
+                                range_start + last_index);
+}
+
 // static
 ACMatches::const_iterator AutocompleteResult::FindTopMatch(
     const AutocompleteInput& input,

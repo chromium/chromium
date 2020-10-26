@@ -92,6 +92,16 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_gurl);
 
+  // Perform group by search vs url operation on a range of suggestions.
+  // Grouping is performed in place.
+  // The range is half-open [first_index, last_index), meaning the last element
+  // is not included in grouping.
+  // TODO(crbug.com/1138587): delete this once java- and native
+  // AutocompleteResult class are reconciled.
+  void GroupSuggestionsBySearchVsURL(JNIEnv* env,
+                                     int first_index,
+                                     int last_index);
+
   // KeyedService:
   void Shutdown() override;
 

@@ -160,7 +160,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mHandler = handler;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mAutocompleteResult = new AutocompleteResult(null, null);
-        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder();
+        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(mAutocomplete);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
 
         mOverviewModeObserver = new EmptyOverviewModeObserver() {
@@ -1078,6 +1078,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     public void setAutocompleteController(AutocompleteController controller) {
         if (mAutocomplete != null) stopAutocomplete(true);
         mAutocomplete = controller;
+        mDropdownViewInfoListBuilder.setAutocompleteControllerForTest(controller);
     }
 
     private abstract static class DeferredOnSelectionRunnable implements Runnable {
