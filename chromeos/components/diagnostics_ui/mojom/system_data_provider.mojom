@@ -19,6 +19,7 @@ struct VersionInfo {
 // Contains a snapshot of static system information.
 struct SystemInfo {
   string board_name;
+  string marketing_name;
   string cpu_model_name;
   uint32 total_memory_kib;
   uint16 cpu_threads_count;

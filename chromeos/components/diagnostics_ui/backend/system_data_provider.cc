@@ -46,6 +46,11 @@ void PopulateBoardName(const healthd::SystemInfo& system_info,
   out_system_info.board_name = product_name.value();
 }
 
+void PopulateMarketingName(const healthd::SystemInfo& system_info,
+                           mojom::SystemInfo& out_system_info) {
+  out_system_info.marketing_name = system_info.marketing_name;
+}
+
 void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
                      mojom::SystemInfo& out_system_info) {
   const PhysicalCpuInfos& physical_cpus = cpu_info.physical_cpus;
@@ -257,6 +262,7 @@ void SystemDataProvider::OnSystemInfoProbeResponse(
       diagnostics::GetSystemInfo(*info_ptr);
   if (system_info_ptr) {
     PopulateBoardName(*system_info_ptr, *system_info.get());
+    PopulateMarketingName(*system_info_ptr, *system_info.get());
     PopulateVersionInfo(*system_info_ptr, *system_info.get());
   } else {
     LOG(ERROR)

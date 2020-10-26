@@ -56,6 +56,7 @@ void SetProbeTelemetryInfoResponse(
 }
 
 void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
+                                      const std::string& marketing_name,
                                       const std::string& cpu_model,
                                       uint32_t total_memory_kib,
                                       uint16_t cpu_threads_count,
@@ -67,6 +68,7 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
   auto os_version_info = cros_healthd::mojom::OsVersion::New();
   os_version_info->release_milestone = milestone_version;
   system_info->os_version = std::move(os_version_info);
+  system_info->marketing_name = marketing_name;
 
   // Battery info
   auto battery_info =
@@ -403,6 +405,7 @@ class SystemDataProviderTest : public testing::Test {
 
 TEST_F(SystemDataProviderTest, GetSystemInfo) {
   const std::string expected_board_name = "board_name";
+  const std::string expected_marketing_name = "marketing_name";
   const std::string expected_cpu_model = "cpu_model";
   const uint32_t expected_total_memory_kib = 1234;
   const uint16_t expected_cpu_threads_count = 5678;
@@ -410,15 +413,16 @@ TEST_F(SystemDataProviderTest, GetSystemInfo) {
   const std::string expected_milestone_version = "M99";
 
   SetCrosHealthdSystemInfoResponse(
-      expected_board_name, expected_cpu_model, expected_total_memory_kib,
-      expected_cpu_threads_count, expected_has_battery,
-      expected_milestone_version);
+      expected_board_name, expected_marketing_name, expected_cpu_model,
+      expected_total_memory_kib, expected_cpu_threads_count,
+      expected_has_battery, expected_milestone_version);
 
   base::RunLoop run_loop;
   system_data_provider_->GetSystemInfo(
       base::BindLambdaForTesting([&](mojom::SystemInfoPtr ptr) {
         ASSERT_TRUE(ptr);
         EXPECT_EQ(expected_board_name, ptr->board_name);
+        EXPECT_EQ(expected_marketing_name, ptr->marketing_name);
         EXPECT_EQ(expected_cpu_model, ptr->cpu_model_name);
         EXPECT_EQ(expected_total_memory_kib, ptr->total_memory_kib);
         EXPECT_EQ(expected_cpu_threads_count, ptr->cpu_threads_count);
@@ -433,6 +437,7 @@ TEST_F(SystemDataProviderTest, GetSystemInfo) {
 
 TEST_F(SystemDataProviderTest, NoBattery) {
   const std::string expected_board_name = "board_name";
+  const std::string expected_marketing_name = "marketing_name";
   const std::string expected_cpu_model = "cpu_model";
   const uint32_t expected_total_memory_kib = 1234;
   const uint16_t expected_cpu_threads_count = 5678;
@@ -440,15 +445,16 @@ TEST_F(SystemDataProviderTest, NoBattery) {
   const std::string expected_milestone_version = "M99";
 
   SetCrosHealthdSystemInfoResponse(
-      expected_board_name, expected_cpu_model, expected_total_memory_kib,
-      expected_cpu_threads_count, expected_has_battery,
-      expected_milestone_version);
+      expected_board_name, expected_marketing_name, expected_cpu_model,
+      expected_total_memory_kib, expected_cpu_threads_count,
+      expected_has_battery, expected_milestone_version);
 
   base::RunLoop run_loop;
   system_data_provider_->GetSystemInfo(
       base::BindLambdaForTesting([&](mojom::SystemInfoPtr ptr) {
         ASSERT_TRUE(ptr);
         EXPECT_EQ(expected_board_name, ptr->board_name);
+        EXPECT_EQ(expected_marketing_name, ptr->marketing_name);
         EXPECT_EQ(expected_cpu_model, ptr->cpu_model_name);
         EXPECT_EQ(expected_total_memory_kib, ptr->total_memory_kib);
         EXPECT_EQ(expected_cpu_threads_count, ptr->cpu_threads_count);
