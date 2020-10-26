@@ -182,19 +182,10 @@ class ImageTransferCacheEntryTest
     DCHECK_EQ(height, allocated_texture.height());
     DCHECK(!allocated_texture.hasMipMaps());
     DCHECK(allocated_texture_info.fTarget == GL_TEXTURE_2D);
-    if (texture_format == GL_RG8_EXT) {
-      // TODO(crbug.com/985458): using GL_RGBA8_EXT is a workaround so that we
-      // can make a SkImage out of a GL_RG8_EXT texture. Revisit this once Skia
-      // supports a corresponding SkColorType.
-      allocated_texture = GrBackendTexture(
-          width, height, GrMipMapped::kNo,
-          GrGLTextureInfo{GL_TEXTURE_2D, allocated_texture_info.fID,
-                          GL_RGBA8_EXT});
-    }
     *released = false;
     return SkImage::MakeFromTexture(
         gr_context, allocated_texture, kTopLeft_GrSurfaceOrigin,
-        texture_format == GL_RG8_EXT ? kRGBA_8888_SkColorType
+        texture_format == GL_RG8_EXT ? kR8G8_unorm_SkColorType
                                      : kAlpha_8_SkColorType,
         kOpaque_SkAlphaType, nullptr /* colorSpace */, MarkTextureAsReleased,
         released);

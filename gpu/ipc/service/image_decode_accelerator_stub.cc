@@ -358,17 +358,14 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     shared_context_state->PessimisticallyResetGrContext();
 
     // Create a SkImage using the texture.
-    // TODO(crbug.com/985458): ideally, we use GL_RG8_EXT for the NV12 chroma
-    // plane. However, Skia does not have a corresponding SkColorType. Revisit
-    // this when it's supported.
     const GrBackendTexture plane_backend_texture(
         plane_size.width(), plane_size.height(), GrMipMapped::kNo,
         GrGLTextureInfo{GL_TEXTURE_EXTERNAL_OES, resource->texture,
-                        is_nv12_chroma_plane ? GL_RGBA8_EXT : GL_R8_EXT});
+                        is_nv12_chroma_plane ? GL_RG8_EXT : GL_R8_EXT});
     plane_sk_images[plane] = SkImage::MakeFromTexture(
         shared_context_state->gr_context(), plane_backend_texture,
         kTopLeft_GrSurfaceOrigin,
-        is_nv12_chroma_plane ? kRGBA_8888_SkColorType : kAlpha_8_SkColorType,
+        is_nv12_chroma_plane ? kR8G8_unorm_SkColorType : kAlpha_8_SkColorType,
         kOpaque_SkAlphaType, nullptr /* colorSpace */, CleanUpResource,
         resource);
     if (!plane_sk_images[plane]) {
