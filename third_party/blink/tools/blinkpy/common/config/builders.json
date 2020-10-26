@@ -44,6 +44,11 @@
         "port_name": "mac-mac11.0",
         "specifiers": ["Mac11.0", "Release"]
     },
+    "mac-arm64-rel-tests": {
+        "master": "chromium.fyi",
+        "port_name": "mac-mac-arm11.0",
+        "specifiers": ["Mac-arm11.0", "Release"]
+    },
     "Win7 Tests (1)": {
         "master": "chromium.win",
         "port_name": "win-win7",

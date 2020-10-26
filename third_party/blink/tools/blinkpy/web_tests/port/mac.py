@@ -36,12 +36,13 @@ _log = logging.getLogger(__name__)
 
 class MacPort(base.Port):
     SUPPORTED_VERSIONS = ('mac10.12', 'mac10.13', 'mac10.14', 'mac10.15',
-                          'mac11.0')
+                          'mac11.0', 'mac-arm11.0')
     port_name = 'mac'
 
     FALLBACK_PATHS = {}
 
     FALLBACK_PATHS['mac11.0'] = ['mac']
+    FALLBACK_PATHS['mac-arm11.0'] = ['mac-mac-arm11.0'] + FALLBACK_PATHS['mac11.0']
     FALLBACK_PATHS['mac10.15'] = ['mac-mac10.15'] + FALLBACK_PATHS['mac11.0']
     FALLBACK_PATHS['mac10.14'] = ['mac-mac10.14'] + FALLBACK_PATHS['mac10.15']
     FALLBACK_PATHS['mac10.13'] = ['mac-mac10.13'] + FALLBACK_PATHS['mac10.14']
@@ -60,6 +61,7 @@ class MacPort(base.Port):
 
     def __init__(self, host, port_name, **kwargs):
         super(MacPort, self).__init__(host, port_name, **kwargs)
+
         self._version = port_name[port_name.index('mac-') + len('mac-'):]
         # TODO(crbug.com/1114885): This is to workaround the failure of
         # blink_python_tests on mac10.10 and 10.11 waterfall bots. Remove this
@@ -70,6 +72,11 @@ class MacPort(base.Port):
         # use mac11.0 instead.
         if self._version == 'mac10.16':
             self._version = 'mac11.0'
+
+        if self._version == 'mac11.0' and host.platform.is_running_rosetta():
+            self._version = 'mac-arm11.0'
+            self._architecture = 'arm64'
+
         assert self._version in self.SUPPORTED_VERSIONS
 
     def check_build(self, needs_http, printer):

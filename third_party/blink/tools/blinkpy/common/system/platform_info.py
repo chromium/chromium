@@ -83,6 +83,20 @@ class PlatformInfo(object):
                 return True
         return False
 
+    def is_running_rosetta(self):
+        if self.is_mac():
+            # If we are running under Rosetta, platform.machine() is
+            # 'x86_64'; we need to use a sysctl to see if we're being
+            # translated.
+            import ctypes
+            libSystem = ctypes.CDLL("libSystem.dylib")
+            ret = ctypes.c_int(0)
+            size = ctypes.c_size_t(4)
+            e = libSystem.sysctlbyname(ctypes.c_char_p(b'sysctl.proc_translated'),
+                                       ctypes.byref(ret), ctypes.byref(size), None, 0)
+            return e == 0 and ret.value == 1
+        return False
+
     def display_name(self):
         # platform.platform() returns Darwin information for Mac, which is just confusing.
         if self.is_mac():
