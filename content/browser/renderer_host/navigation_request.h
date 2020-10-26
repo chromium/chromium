@@ -356,6 +356,10 @@ class CONTENT_EXPORT NavigationRequest
         did_same_site_proactive_browsing_instance_swap;
   }
 
+  void set_is_cross_browsing_instance(bool is_cross_browsing_instance) {
+    commit_params_->is_cross_browsing_instance = is_cross_browsing_instance;
+  }
+
   NavigationURLLoader* loader_for_testing() const { return loader_.get(); }
 
   NavigationState state() const { return state_; }

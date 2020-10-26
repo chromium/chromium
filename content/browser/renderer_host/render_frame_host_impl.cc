@@ -2213,10 +2213,17 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // clear the frame name. This below informs the renderer at frame creation.
   NavigationRequest* navigation_request =
       frame_tree_node()->navigation_request();
-  if (navigation_request &&
-      navigation_request->coop_status().require_browsing_instance_swap()) {
+
+  bool should_clear_browsing_instance_name =
+      navigation_request &&
+      (navigation_request->coop_status().require_browsing_instance_swap() ||
+       (navigation_request->commit_params().is_cross_browsing_instance &&
+        base::FeatureList::IsEnabled(
+            features::kClearCrossBrowsingContextGroupMainFrameName)));
+
+  if (should_clear_browsing_instance_name) {
     params->replication_state.name = "";
-    // "COOP swaps" only affect main frames, that have an empty unique name.
+    // The "swaps" only affect main frames, that have an empty unique name.
     DCHECK(params->replication_state.unique_name.empty());
   }
 

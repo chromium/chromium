@@ -144,6 +144,12 @@ const base::Feature kCanvas2DImageChromium {
 const base::Feature kCanvasOopRasterization{"CanvasOopRasterization",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Clear the frame name for the top-level cross-browsing-context-group
+// navigation.
+const base::Feature kClearCrossBrowsingContextGroupMainFrameName{
+    "ClearCrossBrowsingContextGroupMainFrameName",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kClickPointerEvent{"ClickPointerEvent",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 

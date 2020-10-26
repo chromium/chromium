@@ -39,6 +39,8 @@ CONTENT_EXPORT extern const base::Feature kCacheInlineScriptCode;
 CONTENT_EXPORT extern const base::Feature kCacheStorageParallelOps;
 CONTENT_EXPORT extern const base::Feature kCanvas2DImageChromium;
 CONTENT_EXPORT extern const base::Feature kCanvasOopRasterization;
+CONTENT_EXPORT extern const base::Feature
+    kClearCrossBrowsingContextGroupMainFrameName;
 CONTENT_EXPORT extern const base::Feature kClickPointerEvent;
 CONTENT_EXPORT extern const base::Feature kCodeCacheDeletionWithoutFilter;
 CONTENT_EXPORT extern const base::Feature kConsolidatedMovementXY;

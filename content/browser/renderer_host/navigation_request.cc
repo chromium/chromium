@@ -4115,13 +4115,20 @@ void NavigationRequest::DidCommitNavigation(
 
   StopCommitTimeout();
 
-  // Switching BrowsingInstance because of COOP resets the name of the frame.
-  // The renderer already knows locally about it because we sent an empty name
-  // at frame creation time. The renderer has now committed the page and we can
-  // safely enforce the empty name on the browser side.
-  if (coop_status().require_browsing_instance_swap()) {
+  // Switching BrowsingInstance because of COOP or top-level cross browsing
+  // instance navigation resets the name of the frame. The renderer already
+  // knows locally about it because we sent an empty name at frame creation
+  // time. The renderer has now committed the page and we can safely enforce the
+  // empty name on the browser side.
+  bool should_clear_browsing_instance_name =
+      coop_status().require_browsing_instance_swap() ||
+      (commit_params().is_cross_browsing_instance &&
+       base::FeatureList::IsEnabled(
+           features::kClearCrossBrowsingContextGroupMainFrameName));
+
+  if (should_clear_browsing_instance_name) {
     std::string name, unique_name;
-    // "COOP swaps" only affect main frames, that have an empty unique name.
+    // The "swap" only affect main frames, that have an empty unique name.
     DCHECK(frame_tree_node_->unique_name().empty());
     frame_tree_node_->SetFrameName(name, unique_name);
   }

@@ -720,6 +720,11 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // The SiteInstance determines whether to switch RenderFrameHost or not.
   bool use_current_rfh = current_site_instance == dest_site_instance;
 
+  if (!request->IsSameDocument() && frame_tree_node_->IsMainFrame()) {
+    request->set_is_cross_browsing_instance(
+        !dest_site_instance->IsRelatedSiteInstance(current_site_instance));
+  }
+
   // If a crashed RenderFrameHost must not be reused, replace it by a
   // new one immediately.
   if (render_frame_host_->must_be_replaced())
