@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Atspausdinta</translation>
 <translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
 <translation id="2049639323467105390">Įrenginys valdomas „<ph name="DOMAIN" />“.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2375079107209812402">Liko bandymų: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> valdo šį naudotoją ir gali nuotoliniu būdu valdyti nustatymus bei stebėti naudotojo veiklą.</translation>
 <translation id="520299634122159966">Nėra pasiekiamų skaitytuvų</translation>
 <translation id="5212543919916444558">Ekrane nieko nerasta, dėl ko galėtume jums padėti.
 Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>

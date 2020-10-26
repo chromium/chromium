@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Stampato</translation>
 <translation id="1979103255016296513">Modifica della password scaduta</translation>
 <translation id="2049639323467105390">Questo dispositivo è gestito da <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentativi rimanenti</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativo rimanente}other{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}}</translation>
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="2872961005593481000">Spegni</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Scegline subito una nuova</translation>
 <translation id="4917889632206600977">Operazione interrotta - Carta esaurita</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestisce questo utente e potrebbe gestire le impostazioni e monitorare l'attività utente da remoto.</translation>
 <translation id="520299634122159966">Nessuno scanner disponibile</translation>
 <translation id="5212543919916444558">Non riesco a trovare nulla sullo schermo per cui poterti essere utile.
 Prova a toccare il microfono per chiedermi qualcosa.</translation>

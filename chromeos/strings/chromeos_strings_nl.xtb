@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
 <translation id="2049639323467105390">Dit apparaat wordt beheerd door <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Schakel Bluetooth in om apparaten in de buurt te vinden</translation>
 <translation id="2375079107209812402">Nog <ph name="ATTEMPTS_LEFT" /> pogingen</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="520299634122159966">Geen beschikbare scanners</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>

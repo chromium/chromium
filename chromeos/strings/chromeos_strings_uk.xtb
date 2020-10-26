@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Надруковано</translation>
 <translation id="1979103255016296513">Час для зміни пароля минув</translation>
 <translation id="2049639323467105390">Цим пристроєм керує домен <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2375079107209812402">Залишилося спроб: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}many{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2805756323405976993">Додатки</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Негайно виберіть новий</translation>
 <translation id="4917889632206600977">Зупинено – закінчився папір</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="5094480857972195099">Адміністратор домену <ph name="ENROLLMENT_DOMAIN" /> керує цим користувачем і може віддалено змінювати налаштування й відстежувати дії користувача.</translation>
 <translation id="520299634122159966">Немає доступних сканерів</translation>
 <translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
 Торкніться значка мікрофона, щоб поставити запитання.</translation>

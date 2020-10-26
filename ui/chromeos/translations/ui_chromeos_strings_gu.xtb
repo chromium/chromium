@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">યુએસ કીબોર્ડ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> આઇટમ કાઢી નાખી</translation>
+<translation id="2541377937973966830">આ ફોલ્ડરનું કન્ટેન્ટ ફક્ત વાંચી શકાય છે. કેટલીક પ્રવૃત્તિઓને સપોર્ટ આપવામાં આવતો નથી.</translation>
 <translation id="2542049655219295786">Google કોષ્ટક</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> માં ઉમેરો</translation>
 <translation id="255937426064304553">યુએસ આંતરરાષ્ટ્રીય</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">વિગતો</translation>
 <translation id="4527800702232535228">Parallels Desktop સાથે આ ફોલ્ડર શેર કરવામાં આવ્યું છે</translation>
 <translation id="4552678318981539154">વધુ સ્ટોરેજ ખરીદો</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> ડિલીટ કરી</translation>
 <translation id="4559767610552730302">બૉકે</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ફાઇલ</translation>
 <translation id="457386861538956877">વધુ...</translation>
@@ -512,6 +514,7 @@
 <translation id="6356685157277930264">ફાઇલોનો પ્રતિસાદ આપતી વિંડો</translation>
 <translation id="6358884629796491903">ડ્રેગન</translation>
 <translation id="637062427944097960">આ ફાઇલને બીજા ડેસ્કટૉપ પર ખોલેલી. તેને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
+<translation id="6394388407447716302">ફક્ત વાંચવા માટે</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> આઇટમ</translation>
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="642282551015776456">આ નામનો ઉપયોગ ફોલ્ડર નામની કોઈ ફાઇલ તરીકે થઈ શકશે નહીં</translation>

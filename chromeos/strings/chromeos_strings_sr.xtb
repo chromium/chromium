@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Одштампано</translation>
 <translation id="1979103255016296513">Рок за промену лозинке је истекао</translation>
 <translation id="2049639323467105390">Овим уређајем управља домен <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Укључите Bluetooth да бисте открили уређаје у близини</translation>
 <translation id="2375079107209812402">Преостали покушаји: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}one{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}few{<ph name="ERROR_MESSAGE" /> Преостају {0} покушаја}other{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушаја}}</translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2872961005593481000">Искључи</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Одмах одаберите нову</translation>
 <translation id="4917889632206600977">Заустављено – нема више папира</translation>
 <translation id="4932733599132424254">Датум</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> управља овим корисником и може даљински да управља подешавањима и надгледа активности корисника.</translation>
 <translation id="520299634122159966">Нема доступних скенера</translation>
 <translation id="5212543919916444558">Не могу да пронађем на екрану ништа око чега могу да помогнем.
 Пробајте да додирнете микрофон да бисте ме питали нешто.</translation>

@@ -2081,6 +2081,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3428419049384081277">Hasi duzu saioa!</translation>
 <translation id="3428747202529429621">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="3428800329481094896">Linux-en edukiontziko SSH gakoak eskuratzen</translation>
+<translation id="3429271624041785769">Web-edukien hizkuntzak</translation>
 <translation id="3429275422858276529">Egin orri honen laster-marka, geroago bizkor aurkitzeko</translation>
 <translation id="3432227430032737297">Kendu erakutsitako guztiak</translation>
 <translation id="3432757130254800023">Bidali audioa eta bideoa sare lokaleko pantailetara</translation>
@@ -2507,6 +2508,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3879748587602334249">Deskargen kudeatzailea</translation>
 <translation id="3881478300875776315">Erakutsi lerro gutxiago</translation>
 <translation id="3882165008614329320">Kamerako bideo bat edo bideo-fitxategi bat (lehendik duzuna)</translation>
+<translation id="3884152383786131369">Hizkuntza onartuen zerrendan agertzen den lehenengo hizkuntza erabiliko dute hizkuntza batean baino gehiagotan dauden web-edukiek. Arakatzaileko ezarpenekin sinkronizatuta daude hobespen horiek. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Bidali zaio webgunean sartzeko eskaera <ph name="NAME" /> erabiltzaileari.</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> aplikazioarekin oharrak idaztea</translation>
 <translation id="3890064827463908288">Aktibatu Chrome-ren Sinkronizazioa Wifi-sinkronizazioa erabiltzeko</translation>
@@ -4365,6 +4367,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6112727384379533756">Gehitu zerbitzu-eskaera bat</translation>
 <translation id="6112931163620622315">Begiratu telefonoan</translation>
 <translation id="6112952769866305444">Editatu pertsona, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Ezarri Chrome arakatzailearen eta <ph name="DEVICE_TYPE" /> gailuaren abiarazlearen bilatzaile lehenetsia</translation>
 <translation id="6113942107547980621">Smart Lock erabiltzeko, aldatu telefonoko erabiltzaile-profil nagusira</translation>
 <translation id="6116921718742659598">Aldatu hizkuntza- eta idazketa-ezarpenak</translation>
 <translation id="6120205520491252677">Ainguratu orria hasierako pantailan…</translation>
@@ -5231,6 +5234,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7140928199327930795">Ez dago erabilgarri dagoen bestelako gailurik.</translation>
 <translation id="7141105143012495934">Ezin izan da hasi saioa, ezin izan direlako eskuratu kontuaren xehetasunak. Jarri administratzailearekin harremanetan edo saiatu berriro.</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
+<translation id="7143358760238281735">Ez dago aplikaziorik erabilgarri</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
 <translation id="714876143603641390">LAN sarearen konexioa</translation>
 <translation id="7149893636342594995">Azken 24 orduetakoak</translation>
@@ -5702,6 +5706,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7707922173985738739">Erabili datu-konexioa</translation>
 <translation id="7709152031285164251">Bertan behera - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Igorri…</translation>
+<translation id="7712739869553853093">Inprimatze-aurrebistaren leihoa</translation>
 <translation id="7712836429117959503"><ph name="EXTENSION_ID" /> IDa duen luzapen ezezaguna</translation>
 <translation id="7714307061282548371">Gaitu dira <ph name="DOMAIN" /> domeinuaren cookieak</translation>
 <translation id="7714464543167945231">Ziurtagiria</translation>

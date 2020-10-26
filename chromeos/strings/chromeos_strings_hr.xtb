@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Ispisano</translation>
 <translation id="1979103255016296513">Zakašnjela promjena zaporke</translation>
 <translation id="2049639323467105390">Ovim uređajem upravlja <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2375079107209812402">Preostalo pokušaja: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostalo pokušaja: {0}}one{<ph name="ERROR_MESSAGE" /> Preostalo pokušaja: {0}}few{<ph name="ERROR_MESSAGE" /> Preostalo pokušaja: {0}}other{<ph name="ERROR_MESSAGE" /> Preostalo pokušaja: {0}}}</translation>
 <translation id="2517472476991765520">Traži</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="4917889632206600977">Zaustavljeno – nema papira</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="5094480857972195099">Domena <ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom i može daljinski upravljati postavkama i nadzirati aktivnost korisnika.</translation>
 <translation id="520299634122159966">Nije dostupan nijedan skener</translation>
 <translation id="5212543919916444558">Na zaslonu ne mogu pronaći ništa u vezi s čime mogu pružiti pomoć.
 Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>

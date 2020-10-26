@@ -2078,6 +2078,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3428419049384081277">Prijavljeni ste!</translation>
 <translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3428800329481094896">Preuzimaju se SSH ključevi za Linux kontejner</translation>
+<translation id="3429271624041785769">Jezici veb-sadržaja</translation>
 <translation id="3429275422858276529">Obeležite ovu stranicu da biste je kasnije lakše pronašli</translation>
 <translation id="3432227430032737297">Ukloni sve prikazano</translation>
 <translation id="3432757130254800023">Šalji audio i video sadržaj ekranima na lokalnoj mreži</translation>
@@ -2504,6 +2505,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3879748587602334249">Menadžer preuzimanja</translation>
 <translation id="3881478300875776315">Prikaži manje redova</translation>
 <translation id="3882165008614329320">Postojeći video iz kamere ili datoteke</translation>
+<translation id="3884152383786131369">Veb-sadržaj koji je dostupan na više jezika koristi prvi podržani jezik sa ove liste. Ova podešavanja se sinhronizuju sa podešavanjima pregledača. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Zahtev za pristup ovom sajtu je poslat korisniku <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Pravljenje beležaka pomoću aplikacije <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Uključite Chrome sinhronizaciju da biste koristili WiFi sinhronizaciju</translation>
@@ -4363,6 +4365,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6112727384379533756">Dodaj tiket</translation>
 <translation id="6112931163620622315">Proverite telefon</translation>
 <translation id="6112952769866305444">Izmeni osobu, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Podesite podrazumevani pretraživač za Chrome pregledač i pokretač za <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Da biste koristili Smart Lock, pređite na primarni korisnički profil na telefonu</translation>
 <translation id="6116921718742659598">Promeni podešavanja jezika i unosa</translation>
 <translation id="6120205520491252677">Zakači ovu stranicu na Početni ekran...</translation>
@@ -5229,6 +5232,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7140928199327930795">Nema drugih dostupnih uređaja.</translation>
 <translation id="7141105143012495934">Prijavljivanje nije uspelo jer nismo uspeli da preuzmemo detalje o nalogu. Kontaktirajte administratora ili pokušajte ponovo.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
+<translation id="7143358760238281735">Nema dostupnih aplikacija</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
 <translation id="714876143603641390">Povezivanje LAN-a</translation>
 <translation id="7149893636342594995">Poslednja 24 sata</translation>
@@ -5700,6 +5704,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7707922173985738739">Koristi mobilne podatke</translation>
 <translation id="7709152031285164251">Nije uspelo – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Prebaci...</translation>
+<translation id="7712739869553853093">Odštampajte dijalog pregleda</translation>
 <translation id="7712836429117959503">Nepoznat dodatak sa ID-om <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Kolačići sa <ph name="DOMAIN" /> su dozvoljeni</translation>
 <translation id="7714464543167945231">Sertifikat</translation>

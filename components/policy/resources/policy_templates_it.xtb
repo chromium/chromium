@@ -188,6 +188,7 @@
       Se attivi questa impostazione, la funzione SafeSearch della Ricerca Google e il livello medio della Modalità con restrizioni su YouTube saranno sempre attivi.
 
       Se disattivi questa impostazione o non imposti un valore, la funzione SafeSearch della Ricerca Google e la Modalità con restrizioni di YouTube non verranno applicate.</translation>
+<translation id="134745581157553029">Se il criterio "DeviceArcDataSnapshotHours" viene configurato, viene attivato il meccanismo di creazione di istantanee dei dati ARC. L'aggiornamento delle istantanee dei dati ARC può essere avviato automaticamente durante gli intervalli di tempo definiti. Quando inizia un intervallo, l'aggiornamento delle istantanee dei dati ARC è necessario e non ci sono utenti che hanno eseguito l'accesso, questa procedura di aggiornamento viene avviata senza informare l'utente. Se è attiva la sessione utente, nell'UI viene mostrata la notifica, che deve essere accettata per poter riavviare il dispositivo e avviare la procedura di aggiornamento delle istantanee dei dati ARC. Nota: durante questa procedura non è possibile usare il dispositivo.</translation>
 <translation id="1353416417709895349">Disattiva controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
 <translation id="1353985065430729216">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono accedere ai sensori, come i sensori di movimento e di luce.
 
@@ -460,6 +461,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       L'impostazione del criterio specifica quali estensioni sono escluse dalla lista delle estensioni non consentite. Utilizza un valore di <ph name="ALL_EXTENSIONS" /> per <ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" /> per non consentire tutte le estensioni. In questo modo gli utenti potranno installare solo estensioni esplicitamente permesse. Per impostazione predefinita, tutte le estensioni sono consentite. Se invece non hai consentito estensioni tramite criterio, utilizza l'elenco delle estensioni consentite per modificare il criterio.</translation>
 <translation id="1781356041596378058">Questa norma controlla anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su true, gli utenti non possono accedere alle Opzioni sviluppatore. Se la norma viene impostata su false o non viene impostata, gli utenti possono accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
+<translation id="1787790976045065845">Questo criterio viene applicato soltanto se il criterio <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> è impostato su <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e un utente che effettua l'autenticazione tramite smart card rimuove quest'ultima. Consente inoltre di specificare per quanti secondi viene visualizzata una notifica che informa l'utente dell'azione imminente. Questa notifica blocca lo schermo. L'azione viene compiuta soltanto allo scadere della notifica. L'utente può impedire l'azione inserendo di nuovo la smart card prima della scadenza della notifica. Se questo criterio viene impostato su 0, non viene visualizzata alcuna notifica e l'azione viene compiuta immediatamente.</translation>
 <translation id="1793346220873697538">Disattiva la stampa PIN per impostazione predefinita</translation>
 <translation id="179694024208061102">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> proverà ad avviare alcuni URL in un browser alternativo, ad esempio <ph name="IE_PRODUCT_NAME" />. Questa funzionalità viene impostata con i criteri del gruppo <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
@@ -992,6 +994,15 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio non viene configurato, i Termini di servizio non vengono visualizzati.
 
       Il criterio deve essere impostato su un URL da cui <ph name="PRODUCT_OS_NAME" /> può scaricare i Termini di servizio. I Termini di servizio devono essere composti da testo normale e pubblicati come testo di tipo MIME/semplice. Non sono consentiti markup.</translation>
+<translation id="2500699707048942472">La funzionalità di invio automatico del PIN modifica il modo in cui i PIN vengono inseriti in Chrome OS.
+          Invece di mostrare lo stesso campo di testo utilizzato per l'inserimento della password, questa
+          funzionalità mostra un'UI speciale che indica chiaramente all'utente da quante
+          cifre è composto il PIN. Di conseguenza, la lunghezza del PIN dell'utente
+          viene memorizzata al di fuori dei dati criptati dell'utente. Sono supportati solo i PIN composti
+          da 6-12 cifre.
+
+          Se il criterio viene impostato su falso, gli utenti non hanno la possibilità di attivare
+          la funzionalità nella pagina Impostazioni.</translation>
 <translation id="2502467045153796624">Comportamento del downgrade del canale</translation>
 <translation id="250670737672448119">Consente di attivare la funzione di accessibilità di evidenziazione del cursore di testo.
 

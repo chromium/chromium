@@ -58,6 +58,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1455242230282523554">Rodyti kalbos nustatymus</translation>
 <translation id="1460620680449458626">Garsumas nutildytas.</translation>
 <translation id="1467432559032391204">Kairė</translation>
+<translation id="1475439723810528286">Palieskite bet kur, kad užfiksuotumėte visą ekraną</translation>
 <translation id="1479909375538722835">Slankusis pritaikomumo meniu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI / DP)</translation>
 <translation id="1503394326855300303">Kelių paskyrų sesijoje pirmiausia turi būti prisijungta naudojant šią savininko paskyrą.</translation>
@@ -121,6 +122,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="209965399369889474">Neprisijungta prie tinklo</translation>
 <translation id="2126242104232412123">Naujas darbalaukis</translation>
 <translation id="2127372758936585790">Mažos galios įkroviklis</translation>
+<translation id="2132302418721800944">Įrašyti viso ekrano režimu</translation>
 <translation id="2135456203358955318">Prie doko prijungtas didintuvas</translation>
 <translation id="2144487987174258011">Paleiskite iš naujo, kad atnaujintumėte „Adobe Flash Player“</translation>
 <translation id="2180011262286780504">Administratorius išjungė galimybę fiksuoti ekraną.</translation>
@@ -192,6 +194,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
 <translation id="2878884018241093801">Nėra jokių naujausių elementų</translation>
 <translation id="2903844815300039659">Prisijungėte prie „<ph name="NAME" />“, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">Užfiksuoti ekrano vaizdai</translation>
 <translation id="2942350706960889382">Prie doko prijungtas didintuvas</translation>
 <translation id="2942516765047364088">Lentynos pozicija</translation>
 <translation id="2946119680249604491">Pridėti ryšį</translation>
@@ -367,6 +370,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4513946894732546136">Atsiliepimai</translation>
 <translation id="4527045527269911712">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti.</translation>
 <translation id="453661520163887813">Liko <ph name="TIME" />, kol bus visiškai įkrautas</translation>
+<translation id="4538824937723742295">Kurti ekrano kopiją viso ekrano režimu</translation>
 <translation id="4544483149666270818">Pasirinkite norimą įrašyti langą</translation>
 <translation id="4560576029703263363">Įjungta</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> val. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Programos ženkleliai</translation>
 <translation id="5030687792513154421">Laikas baigėsi</translation>
+<translation id="5033299697334913360">Spustelėkite bet kur, kad užfiksuotumėte visą ekraną</translation>
 <translation id="5035236842988137213">„<ph name="DEVICE_NAME" />“ įrenginys buvo susietas su telefonu</translation>
 <translation id="5035389544768382859">Ekrano konfigūracijos patvirtinimas</translation>
 <translation id="5083553833479578423">Atrakinkite daugiau Padėjėjo funkcijų.</translation>
 <translation id="5136175204352732067">Prijungta kita klaviatūra</translation>
 <translation id="5168181903108465623">Pasiekiami perdavimo įrenginiai</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
+<translation id="5176318573511391780">Įrašyti dalinį ekrano vaizdą</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="5208059991603368177">Įjungti</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
@@ -488,6 +494,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5837036133683224804">Sustabdyti „<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="5876666360658629066">Įveskite tėvų kodą</translation>
+<translation id="5881540930187678962">„Phone Hub“ nustatymas vėliau</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="589817443623831496">Taškų nuskaitymas</translation>
 <translation id="5901316534475909376">„Shift“ + „Esc“</translation>
@@ -542,6 +549,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6424520630891723617">„<ph name="SECURITY_STATUS" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Visų pranešimų išvalymas</translation>
 <translation id="643147933154517414">Viskas atlikta</translation>
+<translation id="6431865393913628856">Ekrano įrašas</translation>
 <translation id="6445835306623867477">„<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
 <translation id="6452181791372256707">Atmesti</translation>
 <translation id="6453179446719226835">Kalba pakeista</translation>
@@ -627,6 +635,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7346909386216857016">Gerai, supratau</translation>
 <translation id="7348093485538360975">Ekraninė klaviatūra</translation>
 <translation id="735745346212279324">VPN atjungtas</translation>
+<translation id="7371404428569700291">Įrašymo langas</translation>
 <translation id="7377169924702866686">Įjungtas didžiųjų raidžių klavišas.</translation>
 <translation id="7378203170292176219">Vilkdami pasirinkite norimą įrašyti vietą</translation>
 <translation id="7378594059915113390">Medijos valdikliai</translation>
@@ -815,6 +824,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="9084606467167974638">Perjunkite meniu padėtį</translation>
 <translation id="9089416786594320554">Įvesties metodai</translation>
 <translation id="9091626656156419976">Pašalintas vaizdas „<ph name="DISPLAY_NAME" />“</translation>
+<translation id="9092749890156285613">Naujausi užfiksuoti ekrano vaizdai ir atsisiuntimai</translation>
 <translation id="9151726767154816831">Kad atnaujintumėte, paleiskite iš naujo ir naudokite „Powerwash“</translation>
 <translation id="9166331175924255663">Perjungti bendrinimo netoliese didelį matomumą.</translation>
 <translation id="9168436347345867845">Atlikti vėliau</translation>

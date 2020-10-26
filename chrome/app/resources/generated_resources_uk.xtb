@@ -2081,6 +2081,7 @@
 <translation id="3428419049384081277">Ви ввійшли.</translation>
 <translation id="3428747202529429621">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис</translation>
 <translation id="3428800329481094896">Отримання ключів SSH контейнера Linux</translation>
+<translation id="3429271624041785769">Мови веб-контенту</translation>
 <translation id="3429275422858276529">Створіть закладку цієї сторінки, щоб легко знайти її пізніше</translation>
 <translation id="3432227430032737297">Вилучити всі показані</translation>
 <translation id="3432757130254800023">Надсилати аудіо та відео на дисплеї в локальній мережі</translation>
@@ -2507,6 +2508,7 @@
 <translation id="3879748587602334249">Диспетчер завантажень</translation>
 <translation id="3881478300875776315">Показати менше рядків</translation>
 <translation id="3882165008614329320">Наявні відео з камери або файлу</translation>
+<translation id="3884152383786131369">Для веб-контенту, доступного багатьма мовами, використовуватиметься перший доступний варіант зі списку нижче. Ці параметри синхронізуються з налаштуваннями веб-переглядача. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Запит на доступ до цього сайту надіслано користувачу <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Створення нотаток за допомогою додатка <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Щоб користуватися синхронізацією Wi-Fi, потрібно ввімкнути Синхронізацію Chrome</translation>
@@ -4365,6 +4367,7 @@
 <translation id="6112727384379533756">Додати квиток</translation>
 <translation id="6112931163620622315">Перевірте телефон</translation>
 <translation id="6112952769866305444">Редагувати користувача <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Налаштуйте пошукову систему за умовчанням для веб-переглядача Chrome і Панелі запуску <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Щоб користуватися Smart Lock, перейдіть у профіль основного користувача на телефоні</translation>
 <translation id="6116921718742659598">Змінити налаштування мови та введення</translation>
 <translation id="6120205520491252677">Закріпити цю сторінку на екрані запуску...</translation>
@@ -5231,6 +5234,7 @@
 <translation id="7140928199327930795">Немає інших доступних пристроїв.</translation>
 <translation id="7141105143012495934">Помилка входу. Не вдалось отримати дані вашого облікового запису. Зв’яжіться з адміністратором або повторіть спробу.</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
+<translation id="7143358760238281735">Доступних додатків немає</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
 <translation id="7149893636342594995">Останні 24 години</translation>
@@ -5702,6 +5706,7 @@
 <translation id="7707922173985738739">Використовувати мобільне передавання даних</translation>
 <translation id="7709152031285164251">Помилка – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Транслювати…</translation>
+<translation id="7712739869553853093">Вікно попереднього перегляду версії для друку</translation>
 <translation id="7712836429117959503">Невідоме розширення з ідентифікатором <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Файли cookie із сайту <ph name="DOMAIN" /> дозволено</translation>
 <translation id="7714464543167945231">Сертифікат</translation>

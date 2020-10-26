@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
 <translation id="1979103255016296513">ກາຍກຳນົດປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="2049639323467105390">ອຸປະກອນນີ້ຖືກຈັດການໂດຍ <ph name="DOMAIN" /></translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2375079107209812402">ຍັງລອງໄດ້ອີກ <ph name="ATTEMPTS_LEFT" /> ຄັ້ງ</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}other{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}}</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
 <translation id="2872961005593481000">ມອດ</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">ເລືອກລະຫັດຜ່ານໃໝ່ໃນທັນທີ</translation>
 <translation id="4917889632206600977">ຢຸດພິມ, ເຈ້ຍໝົດ</translation>
 <translation id="4932733599132424254">ວັນ​ທີ</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
 <translation id="520299634122159966">ບໍ່ມີເຄື່ອງສະແກນພ້ອມນຳໃຊ້</translation>
 <translation id="5212543919916444558">ຂ້ອຍບໍ່ສາມາດຊອກເຫັນອັນໃດຢູ່ໃນໜ້າຈໍຂອງທ່ານທີ່ຂ້ອຍສາມາດຊ່ວຍໄດ້.
 ລອງແຕະໄມເພື່ອຖາມຂ້ອຍອັນໃດກໍໄດ້.</translation>

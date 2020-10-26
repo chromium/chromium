@@ -58,6 +58,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1455242230282523554">Kuva keeleseaded</translation>
 <translation id="1460620680449458626">Helitugevus on vaigistatud.</translation>
 <translation id="1467432559032391204">Vasakule</translation>
+<translation id="1475439723810528286">Täisekraani jäädvustamiseks puudutage ekraanikuval kus tahes</translation>
 <translation id="1479909375538722835">Hõljuv juurdepääsetavuse menüü</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">See omaniku konto peab olema esimene sisselogitud konto mitmele kontole sisselogimise seansil.</translation>
@@ -121,6 +122,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="209965399369889474">Pole võrguga ühendatud</translation>
 <translation id="2126242104232412123">Uus töölaud</translation>
 <translation id="2127372758936585790">Väikese energiakuluga laadija</translation>
+<translation id="2132302418721800944">Täisekraani salvestamine</translation>
 <translation id="2135456203358955318">Dokitud luup</translation>
 <translation id="2144487987174258011">Taaskäivitage Adobe Flash Playeri värskendamiseks</translation>
 <translation id="2180011262286780504">Administraator on ekraanikuva jäädvustamise võimaluse keelanud.</translation>
@@ -192,6 +194,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2878884018241093801">Hiljutisi üksusi pole</translation>
 <translation id="2903844815300039659">Ühendatud võrguga <ph name="NAME" />, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">Ekraanipildid</translation>
 <translation id="2942350706960889382">Dokitud luup</translation>
 <translation id="2942516765047364088">Riiuli positsioon</translation>
 <translation id="2946119680249604491">Lisa ühendus</translation>
@@ -368,6 +371,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="4527045527269911712">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> täislaadimiseni</translation>
+<translation id="4538824937723742295">Täisekraani ekraanipildi jäädvustamine</translation>
 <translation id="4544483149666270818">Valige salvestatav aken</translation>
 <translation id="4560576029703263363">Sees</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -423,12 +427,14 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Rakenduse ikooni märguandetäpp</translation>
 <translation id="5030687792513154421">Aeg on läbi</translation>
+<translation id="5033299697334913360">Täisekraani jäädvustamiseks klõpsake ekraanikuval kus tahes</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ühendati uue telefoniga</translation>
 <translation id="5035389544768382859">Kuva seadistuse kinnitamine</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
 <translation id="5168181903108465623">Ülekandeseadmed on saadaval</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
+<translation id="5176318573511391780">Ekraani osa salvestamine</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
 <translation id="5208059991603368177">Sees</translation>
 <translation id="5222676887888702881">Logi välja</translation>
@@ -489,6 +495,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="5876666360658629066">Sisestage vanema kood</translation>
+<translation id="5881540930187678962">Seadistage Phone Hub hiljem</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="589817443623831496">Punkti skannimine</translation>
 <translation id="5901316534475909376">Tõstuklahv + ESC</translation>
@@ -543,6 +550,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Kõikide märguannete kustutamine</translation>
 <translation id="643147933154517414">Kõik on valmis</translation>
+<translation id="6431865393913628856">Ekraani salvestamine</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="6452181791372256707">Lükka tagasi</translation>
 <translation id="6453179446719226835">Keelt muudeti</translation>
@@ -628,6 +636,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7346909386216857016">Selge, sain aru</translation>
 <translation id="7348093485538360975">Ekraanil kuvatav klaviatuur</translation>
 <translation id="735745346212279324">VPN-i ühendus on katkestatud</translation>
+<translation id="7371404428569700291">Akna salvestamine</translation>
 <translation id="7377169924702866686">Suurtähelukk on sisse lülitatud.</translation>
 <translation id="7378203170292176219">Lohistage salvestatava piirkonna valimiseks</translation>
 <translation id="7378594059915113390">Meedia juhtnupud</translation>
@@ -816,6 +825,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="9084606467167974638">Menüü asendi vahetamine</translation>
 <translation id="9089416786594320554">Sisestusviisid</translation>
 <translation id="9091626656156419976">Ekraan <ph name="DISPLAY_NAME" /> eemaldati</translation>
+<translation id="9092749890156285613">Hiljutised ekraanipildid ja allalaadimised</translation>
 <translation id="9151726767154816831">Värskendamiseks tuleb arvuti taaskäivitada ja teha Powerwash</translation>
 <translation id="9166331175924255663">Läheduses jagamise hea nähtavuse muutmine.</translation>
 <translation id="9168436347345867845">Teen seda hiljem</translation>

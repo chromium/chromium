@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">ইউএস কীবোর্ড</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />টি আইটেম মোছা হয়েছে</translation>
+<translation id="2541377937973966830">এই ফোল্ডারের কন্টেন্ট 'রিড-ওনলি' মোডে রয়েছে। কিছু অ্যাক্টিভিটি এখানে কাজ করবে না।</translation>
 <translation id="2542049655219295786">Google টেবিল</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> এ যোগ করুন</translation>
 <translation id="255937426064304553">মার্কিন আন্তর্জাতিক</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">বিশদ বিবরণ</translation>
 <translation id="4527800702232535228">এই ফোল্ডার Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="4552678318981539154">আরও সঞ্চয়স্থান কিনুন</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> মুছে ফেলা হয়েছে</translation>
 <translation id="4559767610552730302">বোকে</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ফাইল</translation>
 <translation id="457386861538956877">আরও...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">ফাইল সম্পর্কে মতামত জানানোর উইন্ডো</translation>
 <translation id="6358884629796491903">ড্রাগন</translation>
 <translation id="637062427944097960">এই ফাইলটি একটি আলাদা ডেস্কটপে খোলা রয়েছে৷ এটিকে দেখতে <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) এ সরান৷</translation>
+<translation id="6394388407447716302">রিড-ওনলি</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টি আইটেম</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="642282551015776456">ফাইল বা ফোল্ডারের নাম হিসাবে নামটি ব্যবহৃত নাও হতে পারে</translation>

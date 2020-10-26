@@ -2081,6 +2081,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3428419049384081277">Je bent ingelogd.</translation>
 <translation id="3428747202529429621">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd</translation>
 <translation id="3428800329481094896">De SSH-codes van de Linux-container worden opgehaald</translation>
+<translation id="3429271624041785769">Talen voor webcontent</translation>
 <translation id="3429275422858276529">Stel een bookmark in voor deze pagina zodat je de pagina later makkelijk kunt terugvinden</translation>
 <translation id="3432227430032737297">Alle weergegeven verwijderen</translation>
 <translation id="3432757130254800023">Audio en video verzenden naar displays in het lokale netwerk</translation>
@@ -2507,6 +2508,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3881478300875776315">Minder regels weergeven</translation>
 <translation id="3882165008614329320">Bestaande video van camera of uit bestand</translation>
+<translation id="3884152383786131369">Voor webcontent die in meerdere talen beschikbaar is, wordt de eerste ondersteunde taal in deze lijst gebruikt. Deze voorkeuren worden gesynchroniseerd met je browserinstellingen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Je verzoek voor toegang tot deze website is verzonden naar <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Notities maken met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Chrome-synchronisatie inschakelen om wifi-synchronisatie te gebruiken</translation>
@@ -4365,6 +4367,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6112727384379533756">Een ticket toevoegen</translation>
 <translation id="6112931163620622315">Controleer je telefoon</translation>
 <translation id="6112952769866305444">Persoon bewerken: <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Stel de standaard zoekmachine in voor de Chrome-browser en <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">Als je Smart Lock wilt gebruiken, schakel je over naar het primaire gebruikersprofiel op je telefoon</translation>
 <translation id="6116921718742659598">Taal- en invoerinstellingen wijzigen</translation>
 <translation id="6120205520491252677">Deze pagina vastzetten op het startscherm...</translation>
@@ -5231,6 +5234,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7140928199327930795">Geen andere beschikbare apparaten.</translation>
 <translation id="7141105143012495934">Inloggen is mislukt omdat je accountgegevens niet kunnen worden opgevraagd. Neem contact op met je beheerder of probeer het opnieuw.</translation>
 <translation id="7143207342074048698">Verbinden</translation>
+<translation id="7143358760238281735">Geen apps</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
 <translation id="7149893636342594995">Afgelopen 24 uur</translation>
@@ -5702,6 +5706,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7707922173985738739">Mobiele data gebruiken</translation>
 <translation id="7709152031285164251">Mislukt - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Casten...</translation>
+<translation id="7712739869553853093">Dialoogvenster met afdrukvoorbeeld</translation>
 <translation id="7712836429117959503">Onbekende extensie met ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Cookies van <ph name="DOMAIN" /> toegestaan</translation>
 <translation id="7714464543167945231">Certificaat</translation>

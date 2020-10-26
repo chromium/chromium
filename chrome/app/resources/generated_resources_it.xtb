@@ -2080,6 +2080,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3428419049384081277">Hai eseguito l'accesso.</translation>
 <translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3428800329481094896">Recupero delle chiavi SSH del container Linux</translation>
+<translation id="3429271624041785769">Lingue contenuti web</translation>
 <translation id="3429275422858276529">Aggiungi questa pagina ai preferiti per trovarla facilmente in seguito</translation>
 <translation id="3432227430032737297">Rimuovi tutti i cookie visualizzati</translation>
 <translation id="3432757130254800023">Invio di audio e video agli schermi sulla rete locale</translation>
@@ -2506,6 +2507,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3879748587602334249">Gestione dei download</translation>
 <translation id="3881478300875776315">Mostra meno righe</translation>
 <translation id="3882165008614329320">Video esistente da fotocamera o file</translation>
+<translation id="3884152383786131369">I contenuti web che sono disponibili in più lingue utilizzeranno la prima lingua supportata nell'elenco. Queste preferenze sono sincronizzate con le impostazioni del browser. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">La tua richiesta di accesso al sito è stata inviata a <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Creazione di appunti con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Per utilizzare Sync Wi-Fi, attiva Sincronizzazione Chrome</translation>
@@ -4364,6 +4366,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6112727384379533756">Aggiungi una richiesta</translation>
 <translation id="6112931163620622315">Controlla il tuo telefono</translation>
 <translation id="6112952769866305444">Modifica persona, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Imposta il tuo motore di ricerca predefinito per il browser Chrome e Avvio app di <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Per usare Smart Lock, passa al profilo utente principale del telefono</translation>
 <translation id="6116921718742659598">Modifica impostazioni della lingua e di immissione</translation>
 <translation id="6120205520491252677">Blocca questa pagina in schermata iniziale...</translation>
@@ -5230,6 +5233,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7140928199327930795">Non ci sono altri dispositivi disponibili.</translation>
 <translation id="7141105143012495934">Accesso non riuscito perché non è stato possibile recuperare i dati dell'account. Contatta l'amministratore o riprova.</translation>
 <translation id="7143207342074048698">Connessione</translation>
+<translation id="7143358760238281735">Nessuna app disponibile</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
 <translation id="7149893636342594995">Ultimo giorno</translation>
@@ -5701,6 +5705,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7709152031285164251">Operazione non riuscita. <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Trasmetti...</translation>
+<translation id="7712739869553853093">Finestra di dialogo di anteprima di stampa</translation>
 <translation id="7712836429117959503">Estensione sconosciuta con ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">I cookie provenienti da <ph name="DOMAIN" /> sono consentiti</translation>
 <translation id="7714464543167945231">Certificato</translation>

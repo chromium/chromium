@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Udskrevet</translation>
 <translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="2049639323467105390">Denne enhed administreres af <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøg tilbage</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}one{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}other{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}}</translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Sluk</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
 <translation id="4932733599132424254">Dato</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og holde øje med brugeraktivitet via fjernadgang.</translation>
 <translation id="520299634122159966">Der er ingen tilgængelige scannere</translation>
 <translation id="5212543919916444558">Jeg kan ikke finde noget på skærmen, jeg kan hjælpe med. Prøv at trykke på mikrofonen for at spørge mig om noget.</translation>
 <translation id="5222676887888702881">Log ud</translation>

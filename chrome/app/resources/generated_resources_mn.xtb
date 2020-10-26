@@ -2076,6 +2076,7 @@
 <translation id="3428419049384081277">Та нэвтэрсэн байна!</translation>
 <translation id="3428747202529429621">Таныг нэвтэрсэн үед Chrome дээр таны аюулгүй байдлыг хангадаг бөгөөд Google-н бусад апп дахь таны аюулгүй байдлыг сайжруулахын тулд ашиглагдах боломжтой</translation>
 <translation id="3428800329481094896">Linux контейнерын ssh түлхүүрүүдийг дуудаж байна</translation>
+<translation id="3429271624041785769">Веб контентын хэлнүүд</translation>
 <translation id="3429275422858276529">Энэ хуудсыг дараа хялбар олохын тулд тэмдэглэнэ үү</translation>
 <translation id="3432227430032737297">Харуулсан бүх зүйлийг устгах</translation>
 <translation id="3432757130254800023">Дотоод сүлжээнд харуулах аудио болон видеог илгээх</translation>
@@ -2502,6 +2503,7 @@
 <translation id="3879748587602334249">Таталтын менежер</translation>
 <translation id="3881478300875776315">Арай цөөн мөр харуулах</translation>
 <translation id="3882165008614329320">Камер эсвэл файлд байгаа видео</translation>
+<translation id="3884152383786131369">Олон хэл дээр ашиглах боломжтой веб контент энэ жагсаалтын эхний дэмжигдсэн хэлийг ашиглана. Эдгээр сонголтыг таны хөтчийн тохиргоотой синк хийдэг. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Таны энэ сайтад нэвтрэх хүсэлтийг <ph name="NAME" />-д илгээсэн</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />-р тэмдэглэл бичиж байна</translation>
 <translation id="3890064827463908288">Wi-Fi синкийг ашиглахын тулд Chrome Синкийг асаана уу</translation>
@@ -4359,6 +4361,7 @@
 <translation id="6112727384379533756">Тасалбар нэмэх</translation>
 <translation id="6112931163620622315">Утсаа шалгана уу</translation>
 <translation id="6112952769866305444">Хүн засах, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Chrome хөтөч болон <ph name="DEVICE_TYPE" />-н эхлүүлэгчид өгөгдмөл хайлтын системээ тохируулна уу</translation>
 <translation id="6113942107547980621">Smart Lock-г ашиглахын тулд утсан дээрээ үндсэн хэрэглэгчийн профайл руу сэлгэнэ үү</translation>
 <translation id="6116921718742659598">Хэл болон оролтын тохиргоог өөрчлөх</translation>
 <translation id="6120205520491252677">Эхлүүлэх дэлгэц дээр энэ хуудсыг тусгайлан сонгож оруул...</translation>
@@ -5225,6 +5228,7 @@
 <translation id="7140928199327930795">Өөр ямар ч боломжит төхөөрөмжүүд байхгүй байна.</translation>
 <translation id="7141105143012495934">Таны бүртгэлийн мэдээллийг татаж чадсангүй тул нэвтрэх үйлдэл амжилтгүй боллоо. Та админтайгаа холбогдох, эсвэл дахин оролдох хэрэгтэй.</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
+<translation id="7143358760238281735">Боломжтой апп алга</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
@@ -5696,6 +5700,7 @@
 <translation id="7707922173985738739">Мобайл дата ашиглах</translation>
 <translation id="7709152031285164251">Амжилтгүй боллоо - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Дамжуулах...</translation>
+<translation id="7712739869553853093">Урьдчилан үзэх харилцах цонхыг хэвлэх</translation>
 <translation id="7712836429117959503"><ph name="EXTENSION_ID" /> ID-тай үл мэдэгдэх өргөтгөл</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" />-н күүкиг зөвшөөрсөн</translation>
 <translation id="7714464543167945231">Сертификат</translation>

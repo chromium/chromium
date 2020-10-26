@@ -448,7 +448,7 @@
 <translation id="1509281256533087115">通过 USB 访问任何<ph name="DEVICE_NAME_AND_VENDOR" /></translation>
 <translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
 <translation id="1510238584712386396">启动器</translation>
-<translation id="151070646350206700">网站无法询问能否向您发送通知，因此您不会受到干扰</translation>
+<translation id="151070646350206700">网站无法请求向您发送通知，因此您不会受到干扰</translation>
 <translation id="1510785804673676069">如果您使用的是代理服务器，请检查您的代理设置，或与网络管理员核实代理服务器是否运转正常。如果您认为自己使用的不是代理服务器，请调整您的<ph name="LINK_START" />代理设置<ph name="LINK_END" />。</translation>
 <translation id="1511997356770098059">此安全密钥无法存储任何登录数据</translation>
 <translation id="1512210426710821809">要想撤消此操作，唯一的方法是重新安装 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
@@ -4038,7 +4038,7 @@
 <translation id="5739235828260127894">正在等待验证。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">特大</translation>
 <translation id="5740328398383587084">附近分享</translation>
-<translation id="5740820643029013514">使用静态指示方式（推荐）</translation>
+<translation id="5740820643029013514">使用静态消息通知（推荐）</translation>
 <translation id="574104302965107104">显示屏镜像</translation>
 <translation id="574209121243317957">音高</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
