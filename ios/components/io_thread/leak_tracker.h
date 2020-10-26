@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_DEBUG_LEAK_TRACKER_H_
-#define BASE_DEBUG_LEAK_TRACKER_H_
+#ifndef IOS_COMPONENTS_IO_THREAD_LEAK_TRACKER_H_
+#define IOS_COMPONENTS_IO_THREAD_LEAK_TRACKER_H_
 
 #include <stddef.h>
 
@@ -34,7 +34,7 @@
 //   class URLRequest {
 //     ...
 //    private:
-//     base::LeakTracker<URLRequest> leak_tracker_;
+//     LeakTracker<URLRequest> leak_tracker_;
 //   };
 //
 //
@@ -48,13 +48,10 @@
 //
 // If ENABLE_LEAK_TRACKER is not defined, then the check has no effect.
 
-namespace base {
-namespace debug {
-
 #ifndef ENABLE_LEAK_TRACKER
 
 // If leak tracking is disabled, do nothing.
-template<typename T>
+template <typename T>
 class LeakTracker {
  public:
   // This destructor suppresses warnings about instances of this class not being
@@ -68,16 +65,12 @@ class LeakTracker {
 
 // If leak tracking is enabled we track where the object was allocated from.
 
-template<typename T>
-class LeakTracker : public LinkNode<LeakTracker<T> > {
+template <typename T>
+class LeakTracker : public base::LinkNode<LeakTracker<T>> {
  public:
-  LeakTracker() {
-    instances()->Append(this);
-  }
+  LeakTracker() { instances()->Append(this); }
 
-  ~LeakTracker() {
-    this->RemoveFromList();
-  }
+  ~LeakTracker() { this->RemoveFromList(); }
 
   static void CheckForLeaks() {
     // Walk the allocation list and print each entry it contains.
@@ -87,12 +80,12 @@ class LeakTracker : public LinkNode<LeakTracker<T> > {
     // This way if we hit the CHECK() in a release build, the leak
     // information will be available in mini-dump.
     const size_t kMaxStackTracesToCopyOntoStack = 3;
-    StackTrace stacktraces[kMaxStackTracesToCopyOntoStack];
+    base::debug::StackTrace stacktraces[kMaxStackTracesToCopyOntoStack];
 
-    for (LinkNode<LeakTracker<T> >* node = instances()->head();
-         node != instances()->end();
-         node = node->next()) {
-      StackTrace& allocation_stack = node->value()->allocation_stack_;
+    for (base::LinkNode<LeakTracker<T>>* node = instances()->head();
+         node != instances()->end(); node = node->next()) {
+      base::debug::StackTrace& allocation_stack =
+          node->value()->allocation_stack_;
 
       if (count < kMaxStackTracesToCopyOntoStack)
         stacktraces[count] = allocation_stack;
@@ -117,9 +110,8 @@ class LeakTracker : public LinkNode<LeakTracker<T> > {
   static int NumLiveInstances() {
     // Walk the allocation list and count how many entries it has.
     int count = 0;
-    for (LinkNode<LeakTracker<T> >* node = instances()->head();
-         node != instances()->end();
-         node = node->next()) {
+    for (base::LinkNode<LeakTracker<T>>* node = instances()->head();
+         node != instances()->end(); node = node->next()) {
       ++count;
     }
     return count;
@@ -127,17 +119,14 @@ class LeakTracker : public LinkNode<LeakTracker<T> > {
 
  private:
   // Each specialization of LeakTracker gets its own static storage.
-  static LinkedList<LeakTracker<T> >* instances() {
-    static LinkedList<LeakTracker<T> > list;
+  static base::LinkedList<LeakTracker<T>>* instances() {
+    static base::LinkedList<LeakTracker<T>> list;
     return &list;
   }
 
-  StackTrace allocation_stack_;
+  base::debug::StackTrace allocation_stack_;
 };
 
 #endif  // ENABLE_LEAK_TRACKER
 
-}  // namespace debug
-}  // namespace base
-
-#endif  // BASE_DEBUG_LEAK_TRACKER_H_
+#endif  // IOS_COMPONENTS_IO_THREAD_LEAK_TRACKER_H_

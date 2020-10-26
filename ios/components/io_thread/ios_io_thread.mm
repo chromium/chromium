@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/debug/leak_tracker.h"
 #include "base/environment.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
@@ -33,6 +32,7 @@
 #include "components/proxy_config/pref_proxy_config_tracker.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
+#include "ios/components/io_thread/leak_tracker.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -123,7 +123,7 @@ class SystemURLRequestContextGetter : public net::URLRequestContextGetter {
   IOSIOThread* io_thread_;  // Weak pointer, owned by ApplicationContext.
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
 
-  base::debug::LeakTracker<SystemURLRequestContextGetter> leak_tracker_;
+  LeakTracker<SystemURLRequestContextGetter> leak_tracker_;
 };
 
 SystemURLRequestContextGetter::SystemURLRequestContextGetter(
@@ -307,7 +307,7 @@ void IOSIOThread::CleanUp() {
   delete globals_;
   globals_ = nullptr;
 
-  base::debug::LeakTracker<SystemURLRequestContextGetter>::CheckForLeaks();
+  LeakTracker<SystemURLRequestContextGetter>::CheckForLeaks();
 }
 
 void IOSIOThread::CreateDefaultAuthHandlerFactory() {

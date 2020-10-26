@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/debug/leak_tracker.h"
+#include "ios/components/io_thread/leak_tracker.h"
 
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace base {
-namespace debug {
 
 namespace {
 
@@ -110,6 +107,3 @@ TEST(LeakTrackerTest, NoOpCheckForLeaks) {
 #endif  // ENABLE_LEAK_TRACKER
 
 }  // namespace
-
-}  // namespace debug
-}  // namespace base
