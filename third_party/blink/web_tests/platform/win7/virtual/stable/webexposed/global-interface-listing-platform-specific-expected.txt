@@ -6,6 +6,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 interface Navigator
 interface Notification : EventTarget
     getter image
+[NAMESPACES]
 [GLOBAL OBJECT]
 PASS successfullyParsed is true
 

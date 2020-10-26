@@ -80,6 +80,7 @@ interface BluetoothUUID
 interface Navigator
     getter bluetooth
 interface Notification : EventTarget
+[NAMESPACES]
 [GLOBAL OBJECT]
 PASS successfullyParsed is true
 

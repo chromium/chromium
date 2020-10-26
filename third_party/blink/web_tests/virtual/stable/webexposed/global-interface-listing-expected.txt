@@ -9558,6 +9558,7 @@ interface webkitURL
     setter protocol
     setter search
     setter username
+[NAMESPACES]
 [GLOBAL OBJECT]
     attribute GCController
     attribute accessibilityController

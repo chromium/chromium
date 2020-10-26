@@ -89,6 +89,7 @@ interface Navigator
     getter bluetooth
 interface Notification : EventTarget
     getter image
+[NAMESPACES]
 [GLOBAL OBJECT]
 PASS successfullyParsed is true
 

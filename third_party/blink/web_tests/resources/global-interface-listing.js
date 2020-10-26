@@ -77,13 +77,25 @@ var jsBuiltins = new Set([
     'unescape',
 ]);
 
-function isWebIDLConstructor(propertyKey) {
+function isWebIDLInterface(propertyKey) {
     if (jsBuiltins.has(propertyKey))
         return false;
     var descriptor = Object.getOwnPropertyDescriptor(this, propertyKey);
     if (descriptor.value == undefined || descriptor.value.prototype == undefined)
         return false;
     return descriptor.writable && !descriptor.enumerable && descriptor.configurable;
+}
+
+function isWebIDLNamespace(propertyKey) {
+    if (jsBuiltins.has(propertyKey))
+        return false;
+    let object = Object.getOwnPropertyDescriptor(this, propertyKey).value;
+    if (object == undefined || typeof(object) != 'object' ||
+        object.prototype != undefined) {
+        return false;
+    }
+    let classString = Object.getOwnPropertyDescriptor(object, Symbol.toStringTag);
+    return classString && classString.value == propertyKey;
 }
 
 var wellKnownSymbols = new Map([
@@ -192,13 +204,7 @@ function outputProperty(property) {
     outputFunc('    ' + property);
 }
 
-// FIXME: List interfaces with LegacyNoInterfaceObject specified in their IDL file.
-outputFunc('[INTERFACES]');
-var interfaceNames = Object.getOwnPropertyNames(this)
-                           .filter(isWebIDLConstructor)
-                           .filter(filterPlatformSpecificInterface);
-interfaceNames.sort();
-interfaceNames.forEach(function(interfaceName) {
+function outputWebIDLInterface(interfaceName) {
     var inheritsFrom = this[interfaceName].__proto__.name;
     if (inheritsFrom)
         outputFunc('interface ' + interfaceName + ' : ' + inheritsFrom);
@@ -215,12 +221,40 @@ interfaceNames.forEach(function(interfaceName) {
         propertyStrings.filter((property) => filterPlatformSpecificProperty(interfaceName, property))
             .sort().forEach(outputProperty);
     });
-});
+}
+
+function outputWebIDLNamespace(namespaceName) {
+    outputFunc('namespace ' + namespaceName);
+    let object = this[namespaceName];
+    let propertyKeys = collectPropertyKeys(object);
+    let propertyStrings = [];
+    propertyKeys.forEach((propertyKey) => {
+        collectPropertyInfo(object, propertyKey, propertyStrings);
+    });
+
+    propertyStrings.sort().forEach(outputProperty);
+}
+
+outputFunc('[INTERFACES]');
+var interfaceNames = Object.getOwnPropertyNames(this)
+                           .filter(isWebIDLInterface)
+                           .filter(filterPlatformSpecificInterface);
+interfaceNames.sort();
+interfaceNames.forEach(outputWebIDLInterface);
+
+outputFunc('[NAMESPACES]');
+let namespaceNames = Object.getOwnPropertyNames(this)
+                           .filter(isWebIDLNamespace)
+                           .filter(filterPlatformSpecificInterface);
+namespaceNames.sort();
+namespaceNames.forEach(outputWebIDLNamespace);
 
 outputFunc('[GLOBAL OBJECT]');
 var propertyStrings = [];
 var memberNames = propertyNamesInGlobal.filter(function(propertyKey) {
-    return !jsBuiltins.has(propertyKey) && !isWebIDLConstructor(propertyKey);
+    return !jsBuiltins.has(propertyKey)
+        && !isWebIDLInterface(propertyKey)
+        && !isWebIDLNamespace(propertyKey);
 });
 memberNames.forEach(function(propertyKey) {
     collectPropertyInfo(globalObject, propertyKey, propertyStrings);

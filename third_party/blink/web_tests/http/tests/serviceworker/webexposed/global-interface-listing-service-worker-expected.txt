@@ -3921,6 +3921,7 @@ interface WritableStreamDefaultWriter
     method constructor
     method releaseLock
     method write
+[NAMESPACES]
 [GLOBAL OBJECT]
     attribute console
     attribute globalThis

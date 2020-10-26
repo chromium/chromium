@@ -2794,6 +2794,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface XMLHttpRequestUpload : XMLHttpRequestEventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] [NAMESPACES]
 [Worker] [GLOBAL OBJECT]
 [Worker]     attribute console
 [Worker]     attribute globalThis
