@@ -16,6 +16,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -26,6 +27,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for the PermissionInfoTest. */
@@ -43,120 +45,173 @@ public class PermissionInfoTest {
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
-    private Profile getProfile(boolean incognito) {
-        return incognito ? Profile.getLastUsedRegularProfile().getOffTheRecordProfile()
-                         : Profile.getLastUsedRegularProfile();
+    private static Profile getRegularProfile() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                (Callable<Profile>) () -> Profile.getLastUsedRegularProfile());
+    }
+
+    private static Profile getNonPrimaryOTRProfile() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException((Callable<Profile>) () -> {
+            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+            return Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
+        });
+    }
+
+    private static Profile getPrimaryOTRProfile() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                (Callable<Profile>) ()
+                        -> Profile.getLastUsedRegularProfile().getPrimaryOTRProfile());
     }
 
     private void setGeolocation(
-            String origin, String embedder, @ContentSettingValues int setting, boolean incognito) {
+            String origin, String embedder, @ContentSettingValues int setting, Profile profile) {
         PermissionInfo info = new PermissionInfo(ContentSettingsType.GEOLOCATION, origin, embedder);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> info.setContentSetting(getProfile(incognito), setting));
+        TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
     }
 
     private @ContentSettingValues int getGeolocation(
-            String origin, String embedder, boolean incognito) throws ExecutionException {
+            String origin, String embedder, Profile profile) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             PermissionInfo info =
                     new PermissionInfo(ContentSettingsType.GEOLOCATION, origin, embedder);
-            return info.getContentSetting(getProfile(incognito));
+            return info.getContentSetting(profile);
         });
     }
 
     private void setNotifications(
-            String origin, String embedder, @ContentSettingValues int setting, boolean incognito) {
+            String origin, String embedder, @ContentSettingValues int setting, Profile profile) {
         PermissionInfo info =
                 new PermissionInfo(ContentSettingsType.NOTIFICATIONS, origin, embedder);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> info.setContentSetting(getProfile(incognito), setting));
+        TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
     }
 
     private @ContentSettingValues int getNotifications(
-            String origin, String embedder, boolean incognito) throws ExecutionException {
+            String origin, String embedder, Profile profile) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             PermissionInfo info =
                     new PermissionInfo(ContentSettingsType.NOTIFICATIONS, origin, embedder);
-            return info.getContentSetting(getProfile(incognito));
+            return info.getContentSetting(profile);
+        });
+    }
+
+    private void resetNotificationsSettingsForTest() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest(
+                    Profile.getLastUsedRegularProfile());
         });
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSEGeolocation() throws Throwable {
+    public void testResetDSEGeolocation_RegularProfile_DefaultsToAllowFromBlock() throws Throwable {
         // Resetting the DSE geolocation permission should change it to ALLOW.
-        boolean incognito = false;
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.BLOCK, incognito);
+        Profile regularProfile = getRegularProfile();
+        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.BLOCK, regularProfile);
         Assert.assertEquals(
-                ContentSettingValues.BLOCK, getGeolocation(DSE_ORIGIN, null, incognito));
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, incognito);
+                ContentSettingValues.BLOCK, getGeolocation(DSE_ORIGIN, null, regularProfile));
+        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, regularProfile);
         Assert.assertEquals(
-                ContentSettingValues.ALLOW, getGeolocation(DSE_ORIGIN, null, incognito));
-
-        // Resetting in incognito should not have the same behavior.
-        incognito = true;
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.BLOCK, incognito);
-        Assert.assertEquals(
-                ContentSettingValues.BLOCK, getGeolocation(DSE_ORIGIN, null, incognito));
-        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, incognito);
-        Assert.assertEquals(ContentSettingValues.ASK, getGeolocation(DSE_ORIGIN, null, incognito));
+                ContentSettingValues.ALLOW, getGeolocation(DSE_ORIGIN, null, regularProfile));
 
         // Resetting a different top level origin should not have the same behavior
-        incognito = false;
-        setGeolocation(OTHER_ORIGIN, null, ContentSettingValues.BLOCK, incognito);
+        setGeolocation(OTHER_ORIGIN, null, ContentSettingValues.BLOCK, regularProfile);
         Assert.assertEquals(
-                ContentSettingValues.BLOCK, getGeolocation(OTHER_ORIGIN, null, incognito));
-        setGeolocation(OTHER_ORIGIN, null, ContentSettingValues.DEFAULT, incognito);
+                ContentSettingValues.BLOCK, getGeolocation(OTHER_ORIGIN, null, regularProfile));
+        setGeolocation(OTHER_ORIGIN, null, ContentSettingValues.DEFAULT, regularProfile);
         Assert.assertEquals(
-                ContentSettingValues.ASK, getGeolocation(OTHER_ORIGIN, null, incognito));
+                ContentSettingValues.ASK, getGeolocation(OTHER_ORIGIN, null, regularProfile));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testResetDSEGeolocation_InPrimaryOTRProfile_DefaultsToAskFromBlock()
+            throws Throwable {
+        Profile primaryOTRProfile = getPrimaryOTRProfile();
+        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.BLOCK, primaryOTRProfile);
+        Assert.assertEquals(
+                ContentSettingValues.BLOCK, getGeolocation(DSE_ORIGIN, null, primaryOTRProfile));
+        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, primaryOTRProfile);
+        Assert.assertEquals(
+                ContentSettingValues.ASK, getGeolocation(DSE_ORIGIN, null, primaryOTRProfile));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testResetDSEGeolocation_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
+            throws Throwable {
+        Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
+        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.BLOCK, nonPrimaryOTRProfile);
+        Assert.assertEquals(
+                ContentSettingValues.BLOCK, getGeolocation(DSE_ORIGIN, null, nonPrimaryOTRProfile));
+        setGeolocation(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, nonPrimaryOTRProfile);
+        Assert.assertEquals(
+                ContentSettingValues.ASK, getGeolocation(DSE_ORIGIN, null, nonPrimaryOTRProfile));
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.GRANT_NOTIFICATIONS_TO_DSE)
-    public void testResetDSENotifications() throws Throwable {
+    public void testResetDSENotifications_InRegularProfile_DefaultsToAllowFromBlock()
+            throws Throwable {
+        Profile regularProfile = getRegularProfile();
+
         // On Android O+ we need to clear notification channels so they don't interfere with the
         // test.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest(
-                    Profile.getLastUsedRegularProfile());
-        });
+        resetNotificationsSettingsForTest();
+        setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, regularProfile);
+        Assert.assertEquals(
+                ContentSettingValues.BLOCK, getNotifications(DSE_ORIGIN, null, regularProfile));
+        setNotifications(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, regularProfile);
+        Assert.assertEquals(
+                ContentSettingValues.ALLOW, getNotifications(DSE_ORIGIN, null, regularProfile));
 
-        // Resetting the DSE notifications permission should change it to ALLOW.
-        boolean incognito = false;
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, incognito);
+        // For other origins it defaults to ASK
+        resetNotificationsSettingsForTest();
+        setNotifications(OTHER_ORIGIN, null, ContentSettingValues.BLOCK, regularProfile);
         Assert.assertEquals(
-                ContentSettingValues.BLOCK, getNotifications(DSE_ORIGIN, null, incognito));
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, incognito);
+                ContentSettingValues.BLOCK, getNotifications(OTHER_ORIGIN, null, regularProfile));
+        setNotifications(OTHER_ORIGIN, null, ContentSettingValues.DEFAULT, regularProfile);
         Assert.assertEquals(
-                ContentSettingValues.ALLOW, getNotifications(DSE_ORIGIN, null, incognito));
+                ContentSettingValues.ASK, getNotifications(OTHER_ORIGIN, null, regularProfile));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.GRANT_NOTIFICATIONS_TO_DSE)
+    public void testResetDSENotification_InPrimaryOTRProfile_DefaultsToAskFromBlock()
+            throws Throwable {
+        Profile primaryOTRProfile = getPrimaryOTRProfile();
 
         // Resetting in incognito should not have the same behavior.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest(
-                    Profile.getLastUsedRegularProfile());
-        });
-        incognito = true;
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, incognito);
+        resetNotificationsSettingsForTest();
+        setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, primaryOTRProfile);
         Assert.assertEquals(
-                ContentSettingValues.BLOCK, getNotifications(DSE_ORIGIN, null, incognito));
-        setNotifications(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, incognito);
+                ContentSettingValues.BLOCK, getNotifications(DSE_ORIGIN, null, primaryOTRProfile));
+        setNotifications(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, primaryOTRProfile);
         Assert.assertEquals(
-                ContentSettingValues.ASK, getNotifications(DSE_ORIGIN, null, incognito));
+                ContentSettingValues.ASK, getNotifications(DSE_ORIGIN, null, primaryOTRProfile));
+    }
 
-        // // Resetting a different top level origin should not have the same behavior
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest(
-                    Profile.getLastUsedRegularProfile());
-        });
-        incognito = false;
-        setNotifications(OTHER_ORIGIN, null, ContentSettingValues.BLOCK, incognito);
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.GRANT_NOTIFICATIONS_TO_DSE)
+    public void testResetDSENotification_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
+            throws Throwable {
+        Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
+
+        // Resetting in incognito should not have the same behavior.
+        resetNotificationsSettingsForTest();
+        setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, nonPrimaryOTRProfile);
+        Assert.assertEquals(ContentSettingValues.BLOCK,
+                getNotifications(DSE_ORIGIN, null, nonPrimaryOTRProfile));
+        setNotifications(DSE_ORIGIN, null, ContentSettingValues.DEFAULT, nonPrimaryOTRProfile);
         Assert.assertEquals(
-                ContentSettingValues.BLOCK, getNotifications(OTHER_ORIGIN, null, incognito));
-        setNotifications(OTHER_ORIGIN, null, ContentSettingValues.DEFAULT, incognito);
-        Assert.assertEquals(
-                ContentSettingValues.ASK, getNotifications(OTHER_ORIGIN, null, incognito));
+                ContentSettingValues.ASK, getNotifications(DSE_ORIGIN, null, nonPrimaryOTRProfile));
     }
 }
