@@ -24,7 +24,7 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
 
     @Override
     public PaymentRequest createImpl() {
-        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_LAYER_PAYMENTS)) {
+        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS)) {
             return new InvalidPaymentRequest();
         }
 

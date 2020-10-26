@@ -830,7 +830,6 @@ const base::Feature kWebOtpBackend{"kWebOtpBackend",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // The JavaScript API for payments on the web.
-// TODO(rouslan): Remove this.
 const base::Feature kWebPayments{"WebPayments",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 

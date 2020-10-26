@@ -38,7 +38,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kWebPaymentsSingleAppUiSkip,
     &kAndroidAppPaymentUpdateEvents,
     &kScrollToExpandPaymentHandler,
-    &kWebLayerPayments,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
@@ -59,8 +58,6 @@ const base::Feature kAndroidAppPaymentUpdateEvents{
 // TODO(crbug.com/1094549): clean up after being stable.
 const base::Feature kScrollToExpandPaymentHandler{
     "ScrollToExpandPaymentHandler", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kWebLayerPayments{"WebLayerPayments",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 static jboolean JNI_PaymentFeatureList_IsEnabled(
     JNIEnv* env,

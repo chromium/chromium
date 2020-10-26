@@ -14,7 +14,6 @@ namespace android {
 // Android only payment features in alphabetical order:
 extern const base::Feature kAndroidAppPaymentUpdateEvents;
 extern const base::Feature kScrollToExpandPaymentHandler;
-extern const base::Feature kWebLayerPayments;
 
 }  // namespace android
 }  // namespace payments
