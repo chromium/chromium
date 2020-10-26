@@ -90,7 +90,8 @@ void DiagnosticsSendPacketFunction::OnTestICMPCompleted(
   api::diagnostics::SendPacketResult result;
   result.ip = ip;
   result.latency = latency;
-  Respond(OneArgument(SendPacket::Results::Create(result)));
+  Respond(OneArgument(
+      base::Value::FromUniquePtrValue(SendPacket::Results::Create(result))));
 }
 
 }  // namespace extensions

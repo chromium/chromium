@@ -234,7 +234,7 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
 
 void EnterpriseReportingPrivateGetDeviceInfoFunction::OnDeviceInfoRetrieved(
     const api::enterprise_reporting_private::DeviceInfo& device_info) {
-  Respond(OneArgument(device_info.ToValue()));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(device_info.ToValue())));
 }
 
 }  // namespace extensions

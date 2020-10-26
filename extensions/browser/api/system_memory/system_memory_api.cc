@@ -25,10 +25,12 @@ ExtensionFunction::ResponseAction SystemMemoryGetInfoFunction::Run() {
 }
 
 void SystemMemoryGetInfoFunction::OnGetMemoryInfoCompleted(bool success) {
-  if (success)
-    Respond(OneArgument(MemoryInfoProvider::Get()->memory_info().ToValue()));
-  else
+  if (success) {
+    Respond(OneArgument(base::Value::FromUniquePtrValue(
+        MemoryInfoProvider::Get()->memory_info().ToValue())));
+  } else {
     Respond(Error("Error occurred when querying memory information."));
+  }
 }
 
 }  // namespace extensions

@@ -504,7 +504,8 @@ LanguageSettingsPrivateGetSpellcheckWordsFunction::Run() {
   SpellcheckCustomDictionary* dictionary = service->GetCustomDictionary();
 
   if (dictionary->IsLoaded())
-    return RespondNow(OneArgument(GetSpellcheckWords()));
+    return RespondNow(
+        OneArgument(base::Value::FromUniquePtrValue(GetSpellcheckWords())));
 
   dictionary->AddObserver(this);
   AddRef();  // Balanced in OnCustomDictionaryLoaded().
@@ -516,7 +517,7 @@ void LanguageSettingsPrivateGetSpellcheckWordsFunction::
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
   service->GetCustomDictionary()->RemoveObserver(this);
-  Respond(OneArgument(GetSpellcheckWords()));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(GetSpellcheckWords())));
   Release();
 }
 
@@ -698,7 +699,8 @@ LanguageSettingsPrivateGetInputMethodListsFunction::Run() {
         ext_ime_descriptors, &input_method_lists.third_party_extension_imes);
   }
 
-  return RespondNow(OneArgument(input_method_lists.ToValue()));
+  return RespondNow(OneArgument(
+      base::Value::FromUniquePtrValue(input_method_lists.ToValue())));
 #endif
 }
 

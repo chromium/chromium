@@ -1537,7 +1537,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcStateFunction::Run() {
 
   arc_state.provisioned = arc::IsArcProvisioned(profile);
   arc_state.tos_needed = arc::IsArcTermsOfServiceNegotiationNeeded(profile);
-  return RespondNow(OneArgument(arc_state.ToValue()));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(arc_state.ToValue())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1561,7 +1562,8 @@ AutotestPrivateGetPlayStoreStateFunction::Run() {
     play_store_state.managed = std::make_unique<bool>(
         arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile));
   }
-  return RespondNow(OneArgument(play_store_state.ToValue()));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(play_store_state.ToValue())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2791,10 +2793,12 @@ AutotestPrivateSendAssistantTextQueryFunction::Run() {
 
 void AutotestPrivateSendAssistantTextQueryFunction::
     OnInteractionFinishedCallback(const base::Optional<std::string>& error) {
-  if (error)
+  if (error) {
     Respond(Error(error.value()));
-  else
-    Respond(OneArgument(interaction_helper_->GetQueryStatus()));
+  } else {
+    Respond(OneArgument(base::Value::FromUniquePtrValue(
+        interaction_helper_->GetQueryStatus())));
+  }
 
   // |timeout_timer_| need to be hold until |Respond(.)| is called to avoid
   // |this| being destructed.
@@ -2847,10 +2851,12 @@ AutotestPrivateWaitForAssistantQueryStatusFunction::Run() {
 
 void AutotestPrivateWaitForAssistantQueryStatusFunction::
     OnInteractionFinishedCallback(const base::Optional<std::string>& error) {
-  if (error)
+  if (error) {
     Respond(Error(error.value()));
-  else
-    Respond(OneArgument(interaction_helper_->GetQueryStatus()));
+  } else {
+    Respond(OneArgument(base::Value::FromUniquePtrValue(
+        interaction_helper_->GetQueryStatus())));
+  }
 
   // |timeout_timer_| need to be hold until |Respond(.)| is called to avoid
   // |this| being destructed.
@@ -4484,7 +4490,8 @@ AutotestPrivateGetScrollableShelfInfoForStateFunction::Run() {
         std::make_unique<double>(fetched_info.target_main_axis_offset);
   }
 
-  return RespondNow(OneArgument(info.ToValue()));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(info.ToValue())));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -4552,7 +4559,8 @@ AutotestPrivateGetShelfUIInfoForStateFunction::Run() {
     shelf_ui_info.hotseat_info = std::move(hotseat_ui_info);
   }
 
-  return RespondNow(OneArgument(shelf_ui_info.ToValue()));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(shelf_ui_info.ToValue())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4619,8 +4627,8 @@ AutotestPrivateSetWindowBoundsFunction::Run() {
 
   if (window->GetBoundsInRootWindow() == to_bounds &&
       state->GetDisplay().id() == display_id) {
-    return RespondNow(
-        OneArgument(BuildSetWindowBoundsResult(to_bounds, display_id)));
+    return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
+        BuildSetWindowBoundsResult(to_bounds, display_id))));
   }
 
   window_bounds_observer_ = std::make_unique<WindowBoundsChangeObserver>(
@@ -4642,8 +4650,8 @@ void AutotestPrivateSetWindowBoundsFunction::WindowBoundsChanged(
     Respond(Error(
         "The app window was destroyed while waiting for bounds to change!"));
   } else {
-    Respond(
-        OneArgument(BuildSetWindowBoundsResult(bounds_in_display, display_id)));
+    Respond(OneArgument(base::Value::FromUniquePtrValue(
+        BuildSetWindowBoundsResult(bounds_in_display, display_id))));
   }
 }
 

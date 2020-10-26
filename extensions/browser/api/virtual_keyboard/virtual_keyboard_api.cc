@@ -47,7 +47,8 @@ VirtualKeyboardRestrictFeaturesFunction::Run() {
   api::virtual_keyboard::FeatureRestrictions update =
       api->delegate()->RestrictFeatures(*params);
 
-  return RespondNow(OneArgument(update.ToValue()));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(update.ToValue())));
 }
 
 }  // namespace extensions

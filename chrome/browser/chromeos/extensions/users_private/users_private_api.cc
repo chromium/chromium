@@ -171,7 +171,8 @@ UsersPrivateGetUsersFunction::~UsersPrivateGetUsersFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateGetUsersFunction::Run() {
   Profile* profile = chrome_details_.GetProfile();
-  return RespondNow(OneArgument(GetUsersList(profile, browser_context())));
+  return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
+      GetUsersList(profile, browser_context()))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -280,9 +281,9 @@ ExtensionFunction::ResponseAction UsersPrivateGetCurrentUserFunction::Run() {
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
           chrome_details_.GetProfile());
-  return user ? RespondNow(OneArgument(
+  return user ? RespondNow(OneArgument(base::Value::FromUniquePtrValue(
                     CreateApiUser(user->GetAccountId().GetUserEmail(), *user)
-                        .ToValue()))
+                        .ToValue())))
               : RespondNow(Error("No Current User"));
 }
 

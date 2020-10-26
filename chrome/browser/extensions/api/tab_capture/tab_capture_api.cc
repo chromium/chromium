@@ -355,7 +355,8 @@ ExtensionFunction::ResponseAction TabCaptureCaptureOffscreenTabFunction::Run() {
   // the custom JS bindings in the extension's render process to complete the
   // request.  See the comment at end of TabCaptureCaptureFunction::RunSync()
   // for more details.
-  return RespondNow(OneArgument(params->options.ToValue()));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(params->options.ToValue())));
 }
 
 // static

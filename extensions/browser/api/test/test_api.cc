@@ -143,8 +143,8 @@ ExtensionFunction::ResponseAction TestGetConfigFunction::Run() {
   TestConfigState* test_config_state = TestConfigState::GetInstance();
   if (!test_config_state->config_state())
     return RespondNow(Error(kNoTestConfigDataError));
-  return RespondNow(
-      OneArgument(test_config_state->config_state()->CreateDeepCopy()));
+  return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
+      test_config_state->config_state()->CreateDeepCopy())));
 }
 
 TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() {}

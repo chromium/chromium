@@ -250,8 +250,7 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
   address_components.SetKey("components", std::move(rows));
   address_components.SetKey("languageCode", base::Value(language_code_));
 
-  return RespondNow(OneArgument(
-      base::Value::ToUniquePtrValue(std::move(address_components))));
+  return RespondNow(OneArgument(std::move(address_components)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

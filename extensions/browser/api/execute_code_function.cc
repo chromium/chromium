@@ -293,7 +293,8 @@ void ExecuteCodeFunction::OnExecuteCodeFinished(const std::string& error,
   // insertCSS and removeCSS don't have a result argument.
   Respond(ShouldInsertCSS() || ShouldRemoveCSS()
               ? NoArguments()
-              : OneArgument(result.CreateDeepCopy()));
+              : OneArgument(
+                    base::Value::FromUniquePtrValue(result.CreateDeepCopy())));
 }
 
 }  // namespace extensions

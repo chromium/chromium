@@ -189,7 +189,8 @@ void BluetoothGetDeviceFunction::DoWork(
   if (device) {
     bluetooth_api::Device extension_device;
     bluetooth_api::BluetoothDeviceToApiDevice(*device, &extension_device);
-    Respond(OneArgument(extension_device.ToValue()));
+    Respond(OneArgument(
+        base::Value::FromUniquePtrValue(extension_device.ToValue())));
   } else {
     Respond(Error(kInvalidDevice));
   }

@@ -325,7 +325,7 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
   }
 
   if (!metadata.supports_thumbnail) {
-    Respond(OneArgument(std::make_unique<base::Value>("")));
+    Respond(OneArgument(base::Value("")));
     return;
   }
 

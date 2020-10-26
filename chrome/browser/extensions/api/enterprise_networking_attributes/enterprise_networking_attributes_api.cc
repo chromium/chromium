@@ -84,7 +84,8 @@ EnterpriseNetworkingAttributesGetNetworkDetailsFunction::Run() {
     details.ipv6 = std::make_unique<std::string>(ipv6_address);
   }
 
-  return RespondNow(OneArgument(details.ToValue()));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(details.ToValue())));
 }
 
 }  // namespace extensions

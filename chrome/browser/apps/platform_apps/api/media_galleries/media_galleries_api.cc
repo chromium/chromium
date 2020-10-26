@@ -870,9 +870,10 @@ void MediaGalleriesAddGalleryWatchFunction::HandleResponse(
   }
 
   result.success = error.empty();
-  Respond(error.empty() ? OneArgument(result.ToValue())
-                        : ErrorWithArguments(
-                              AddGalleryWatch::Results::Create(result), error));
+  Respond(error.empty()
+              ? OneArgument(base::Value::FromUniquePtrValue(result.ToValue()))
+              : ErrorWithArguments(AddGalleryWatch::Results::Create(result),
+                                   error));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

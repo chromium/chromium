@@ -376,14 +376,15 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
   const auto params = GetSettings::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  const base::DictionaryValue* inputMethods =
+  const base::DictionaryValue* input_methods =
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->GetDictionary(prefs::kLanguageInputMethodSpecificSettings);
-  const base::Value* result = inputMethods->FindPath(params->engine_id);
-  return RespondNow(
-      OneArgument(result ? std::make_unique<base::Value>(result->Clone())
-                         : std::make_unique<base::Value>()));
+  const base::Value* engine_result = input_methods->FindPath(params->engine_id);
+  base::Value result;
+  if (engine_result)
+    result = engine_result->Clone();
+  return RespondNow(OneArgument(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {

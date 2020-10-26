@@ -51,7 +51,7 @@ void PrintingSubmitJobFunction::OnPrintJobSubmitted(
   DCHECK(status.has_value());
   response.status = status.value();
   response.job_id = std::move(job_id);
-  Respond(OneArgument(response.ToValue()));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
 }
 
 PrintingCancelJobFunction::~PrintingCancelJobFunction() = default;
@@ -122,7 +122,7 @@ void PrintingGetPrinterInfoFunction::OnPrinterInfoRetrieved(
   }
   DCHECK(status.has_value());
   response.status = status.value();
-  Respond(OneArgument(response.ToValue()));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
 }
 
 }  // namespace extensions

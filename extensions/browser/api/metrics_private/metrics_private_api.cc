@@ -307,7 +307,7 @@ MetricsPrivateGetHistogramFunction::GetHistogram(const std::string& name) {
     result.buckets.push_back(std::move(bucket));
   }
 
-  return OneArgument(result.ToValue());
+  return OneArgument(base::Value::FromUniquePtrValue(result.ToValue()));
 }
 
 }  // namespace extensions

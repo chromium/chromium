@@ -718,7 +718,7 @@ WebViewInternalFindFunction::~WebViewInternalFindFunction() {
 
 void WebViewInternalFindFunction::ForwardResponse(
     const base::DictionaryValue& results) {
-  Respond(OneArgument(results.CreateDeepCopy()));
+  Respond(OneArgument(results.Clone()));
 }
 
 ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {

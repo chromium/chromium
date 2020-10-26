@@ -872,9 +872,10 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   if (params->update_info.draw_attention)
     browser->window()->FlashFrame(*params->update_info.draw_attention);
 
-  return RespondNow(OneArgument(ExtensionTabUtil::CreateWindowValueForExtension(
-      *browser, extension(), ExtensionTabUtil::kDontPopulateTabs,
-      source_context_type())));
+  return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
+      ExtensionTabUtil::CreateWindowValueForExtension(
+          *browser, extension(), ExtensionTabUtil::kDontPopulateTabs,
+          source_context_type()))));
 }
 
 ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
@@ -947,8 +948,9 @@ ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {
   if (!GetBrowserFromWindowID(this, window_id, &browser, &error))
     return RespondNow(Error(std::move(error)));
 
-  return RespondNow(OneArgument(ExtensionTabUtil::CreateTabList(
-      browser, extension(), source_context_type())));
+  return RespondNow(OneArgument(
+      base::Value::FromUniquePtrValue(ExtensionTabUtil::CreateTabList(
+          browser, extension(), source_context_type()))));
 }
 
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
@@ -1285,9 +1287,10 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
 
   selection.set_active(active_index);
   browser->tab_strip_model()->SetSelectionFromModel(std::move(selection));
-  return RespondNow(OneArgument(ExtensionTabUtil::CreateWindowValueForExtension(
-      *browser, extension(), ExtensionTabUtil::kPopulateTabs,
-      source_context_type())));
+  return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
+      ExtensionTabUtil::CreateWindowValueForExtension(
+          *browser, extension(), ExtensionTabUtil::kPopulateTabs,
+          source_context_type()))));
 }
 
 bool TabsHighlightFunction::HighlightTab(TabStripModel* tabstrip,

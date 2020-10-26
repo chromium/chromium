@@ -24,10 +24,12 @@ ExtensionFunction::ResponseAction SystemCpuGetInfoFunction::Run() {
 }
 
 void SystemCpuGetInfoFunction::OnGetCpuInfoCompleted(bool success) {
-  if (success)
-    Respond(OneArgument(CpuInfoProvider::Get()->cpu_info().ToValue()));
-  else
+  if (success) {
+    Respond(OneArgument(base::Value::FromUniquePtrValue(
+        CpuInfoProvider::Get()->cpu_info().ToValue())));
+  } else {
     Respond(Error("Error occurred when querying cpu information."));
+  }
 }
 
 }  // namespace extensions

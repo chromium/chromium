@@ -24,7 +24,7 @@ MediaPerceptionPrivateGetStateFunction::Run() {
 
 void MediaPerceptionPrivateGetStateFunction::GetStateCallback(
     extensions::api::media_perception_private::State state) {
-  Respond(OneArgument(state.ToValue()));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(state.ToValue())));
 }
 
 MediaPerceptionPrivateSetStateFunction ::
@@ -95,7 +95,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
 
 void MediaPerceptionPrivateSetStateFunction::SetStateCallback(
     extensions::api::media_perception_private::State state) {
-  Respond(OneArgument(state.ToValue()));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(state.ToValue())));
 }
 
 MediaPerceptionPrivateGetDiagnosticsFunction ::
@@ -116,7 +116,7 @@ MediaPerceptionPrivateGetDiagnosticsFunction::Run() {
 
 void MediaPerceptionPrivateGetDiagnosticsFunction::GetDiagnosticsCallback(
     extensions::api::media_perception_private::Diagnostics diagnostics) {
-  Respond(OneArgument(diagnostics.ToValue()));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(diagnostics.ToValue())));
 }
 
 MediaPerceptionPrivateSetAnalyticsComponentFunction::
@@ -147,7 +147,8 @@ void MediaPerceptionPrivateSetAnalyticsComponentFunction::
     OnAnalyticsComponentSet(
         extensions::api::media_perception_private::ComponentState
             component_state) {
-  Respond(OneArgument(component_state.ToValue()));
+  Respond(
+      OneArgument(base::Value::FromUniquePtrValue(component_state.ToValue())));
 }
 
 MediaPerceptionPrivateSetComponentProcessStateFunction::
@@ -185,7 +186,8 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
 void MediaPerceptionPrivateSetComponentProcessStateFunction::
     OnComponentProcessStateSet(
         extensions::api::media_perception_private::ProcessState process_state) {
-  Respond(OneArgument(process_state.ToValue()));
+  Respond(
+      OneArgument(base::Value::FromUniquePtrValue(process_state.ToValue())));
 }
 
 }  // namespace extensions

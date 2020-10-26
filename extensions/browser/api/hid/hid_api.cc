@@ -138,8 +138,8 @@ void HidGetUserSelectedDevicesFunction::OnDevicesChosen(
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
   CHECK(device_manager);
-  Respond(
-      OneArgument(device_manager->GetApiDevicesFromList(std::move(devices))));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      device_manager->GetApiDevicesFromList(std::move(devices)))));
 }
 
 HidConnectFunction::HidConnectFunction() : connection_manager_(nullptr) {
@@ -185,7 +185,8 @@ void HidConnectFunction::OnConnectComplete(
   DCHECK(connection_manager_);
   int connection_id = connection_manager_->Add(
       new HidConnectionResource(extension_id(), std::move(connection)));
-  Respond(OneArgument(PopulateHidConnection(connection_id)));
+  Respond(OneArgument(
+      base::Value::FromUniquePtrValue(PopulateHidConnection(connection_id))));
 }
 
 HidDisconnectFunction::HidDisconnectFunction() {}

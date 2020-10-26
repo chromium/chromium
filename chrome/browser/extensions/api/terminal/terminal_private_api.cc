@@ -573,7 +573,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetSettingsFunction::Run() {
       Profile::FromBrowserContext(browser_context())->GetPrefs();
   const base::DictionaryValue* value =
       service->GetDictionary(crostini::prefs::kCrostiniTerminalSettings);
-  return RespondNow(OneArgument(value->CreateDeepCopy()));
+  return RespondNow(OneArgument(value->Clone()));
 }
 
 TerminalPrivateSetSettingsFunction::~TerminalPrivateSetSettingsFunction() =
@@ -599,7 +599,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetA11yStatusFunction::Run() {
       OneArgument(Profile::FromBrowserContext(browser_context())
                       ->GetPrefs()
                       ->Get(ash::prefs::kAccessibilitySpokenFeedbackEnabled)
-                      ->CreateDeepCopy()));
+                      ->Clone()));
 }
 
 }  // namespace extensions

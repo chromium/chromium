@@ -24,8 +24,7 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
 SettingsPrivateGetAllPrefsFunction::~SettingsPrivateGetAllPrefsFunction() {}
 
 ExtensionFunction::ResponseAction SettingsPrivateGetAllPrefsFunction::Run() {
-  std::unique_ptr<base::ListValue> prefs(new base::ListValue());
-  return RespondNow(OneArgument(std::move(prefs)));
+  return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
 }
 
 SettingsPrivateGetPrefFunction::~SettingsPrivateGetPrefFunction() {}

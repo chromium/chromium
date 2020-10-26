@@ -589,7 +589,8 @@ void BluetoothLowEnergyGetCharacteristicFunction::DoWork() {
   // Manually construct the result instead of using
   // apibtle::GetCharacteristic::Result::Create as it doesn't convert lists of
   // enums correctly.
-  Respond(OneArgument(apibtle::CharacteristicToValue(&characteristic)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      apibtle::CharacteristicToValue(&characteristic))));
 }
 
 BluetoothLowEnergyGetCharacteristicsFunction::
@@ -700,7 +701,8 @@ void BluetoothLowEnergyGetDescriptorFunction::DoWork() {
   // Manually construct the result instead of using
   // apibtle::GetDescriptor::Result::Create as it doesn't convert lists of enums
   // correctly.
-  Respond(OneArgument(apibtle::DescriptorToValue(&descriptor)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      apibtle::DescriptorToValue(&descriptor))));
 }
 
 BluetoothLowEnergyGetDescriptorsFunction::
@@ -791,7 +793,8 @@ void BluetoothLowEnergyReadCharacteristicValueFunction::SuccessCallback() {
   // Manually construct the result instead of using
   // apibtle::GetCharacteristic::Result::Create as it doesn't convert lists of
   // enums correctly.
-  Respond(OneArgument(apibtle::CharacteristicToValue(&characteristic)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      apibtle::CharacteristicToValue(&characteristic))));
 }
 
 void BluetoothLowEnergyReadCharacteristicValueFunction::ErrorCallback(
@@ -981,7 +984,8 @@ void BluetoothLowEnergyReadDescriptorValueFunction::SuccessCallback() {
   // Manually construct the result instead of using
   // apibtle::GetDescriptor::Results::Create as it doesn't convert lists of
   // enums correctly.
-  Respond(OneArgument(apibtle::DescriptorToValue(&descriptor)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      apibtle::DescriptorToValue(&descriptor))));
 }
 
 void BluetoothLowEnergyReadDescriptorValueFunction::ErrorCallback(

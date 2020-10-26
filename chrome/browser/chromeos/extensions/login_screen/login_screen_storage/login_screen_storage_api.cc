@@ -38,7 +38,7 @@ void LoginScreenStorageExtensionFunction::OnDataRetrieved(
     Respond(Error(*error));
     return;
   }
-  Respond(OneArgument(data ? std::make_unique<base::Value>(*data) : nullptr));
+  Respond(OneArgument(data ? base::Value(*data) : base::Value()));
 }
 
 LoginScreenStorageStorePersistentDataFunction::

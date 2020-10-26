@@ -889,9 +889,9 @@ void UsbOpenDeviceFunction::OnDeviceOpened(
   DCHECK(device_info);
   UsbDeviceResource* resource = new UsbDeviceResource(
       extension_id(), device_info->guid, std::move(device));
-  Respond(OneArgument(PopulateConnectionHandle(manager->Add(resource),
-                                               device_info->vendor_id,
-                                               device_info->product_id)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      PopulateConnectionHandle(manager->Add(resource), device_info->vendor_id,
+                               device_info->product_id))));
 }
 
 void UsbOpenDeviceFunction::OnDisconnect() {
@@ -957,7 +957,8 @@ ExtensionFunction::ResponseAction UsbGetConfigurationFunction::Run() {
       DCHECK(config);
       if (config->configuration_value == active_config_value) {
         ConfigDescriptor api_config = ConvertConfigDescriptor(*config);
-        return RespondNow(OneArgument(api_config.ToValue()));
+        return RespondNow(
+            OneArgument(base::Value::FromUniquePtrValue(api_config.ToValue())));
       }
     }
   }
