@@ -407,4 +407,17 @@ Polymer({
         this.networkState.typeState.cellular.activationState !==
         mojom.ActivationStateType.kActivated;
   },
+
+  /**
+   * When the row is focused, this enables aria-live in "polite" mode to notify
+   * a11y users when details about the network change or when the list gets
+   * re-ordered because of changing signal strengths.
+   * @param {boolean} isFocused
+   * @return {string}
+   * @private
+   */
+  getLiveStatus_(isFocused) {
+    // isFocused is supplied by FocusRowBehavior.
+    return this.isFocused ? 'polite' : 'off';
+  },
 });

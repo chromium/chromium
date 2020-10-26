@@ -107,6 +107,12 @@ cr.define('cr.ui', function() {
         reflectToAttribute: true,
       },
 
+      /** For notifying when the row is in focus. */
+      isFocused: {
+        type: Boolean,
+        notify: true,
+      },
+
       /** Should be bound to the index of the item from the iron-list */
       focusRowIndex: {
         type: Number,
@@ -331,6 +337,7 @@ cr.define('cr.ui', function() {
         cr.ui.focusWithoutInk(firstFocusable);
       }
       this.listBlurred = false;
+      this.isFocused = true;
     },
 
     /** @param {!KeyboardEvent} e */
@@ -363,7 +370,9 @@ cr.define('cr.ui', function() {
      * @private
      */
     onBlur_(e) {
-      this.mouseFocused_ = false;  // Reset flag since it's not active anymore.
+      // Reset focused flags since it's not active anymore.
+      this.mouseFocused_ = false;
+      this.isFocused = false;
 
       const node =
           e.relatedTarget ? /** @type {!Node} */ (e.relatedTarget) : null;
