@@ -23,27 +23,41 @@ BEGIN_METADATA(CpuGraphPageView, GraphPageViewBase)
 END_METADATA
 
 CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
-    : cpu_other_(Graph::Baseline::BASELINE_BOTTOM,
+    : cpu_other_(kDefaultGraphWidth,
+                 Graph::Baseline::BASELINE_BOTTOM,
                  Graph::Fill::SOLID,
+                 Graph::Style::LINES,
                  SkColorSetA(SK_ColorMAGENTA, kHUDAlpha)),
-      cpu_system_(Graph::Baseline::BASELINE_BOTTOM,
+      cpu_system_(kDefaultGraphWidth,
+                  Graph::Baseline::BASELINE_BOTTOM,
                   Graph::Fill::SOLID,
+                  Graph::Style::LINES,
                   SkColorSetA(SK_ColorRED, kHUDAlpha)),
-      cpu_user_(Graph::Baseline::BASELINE_BOTTOM,
+      cpu_user_(kDefaultGraphWidth,
+                Graph::Baseline::BASELINE_BOTTOM,
                 Graph::Fill::SOLID,
+                Graph::Style::LINES,
                 SkColorSetA(SK_ColorBLUE, kHUDAlpha)),
-      cpu_idle_(Graph::Baseline::BASELINE_BOTTOM,
+      cpu_idle_(kDefaultGraphWidth,
+                Graph::Baseline::BASELINE_BOTTOM,
                 Graph::Fill::SOLID,
+                Graph::Style::LINES,
                 SkColorSetA(SK_ColorDKGRAY, kHUDAlpha)) {
-  const int data_width = cpu_other_.GetDataBufferSize();
+  const int data_width = cpu_other_.max_data_points();
+  // Verical ticks are drawn every 10% (10/100 interval).
+  constexpr float vertical_ticks_interval = (10 / 100.0);
   // -XX seconds on the left, 100% top, 0 seconds on the right, 0% on the
-  // bottom. Seconds and Gigabytes are dimentions. Number of data points is
+  // bottom. Seconds and Gigabytes are dimensions. Number of data points is
   // cpu_other_.GetDataBufferSize(), horizontal grid ticks are drawn every 10
   // seconds.
   CreateGrid(
       /*left=*/static_cast<int>(-data_width * refresh_interval.InSecondsF()),
-      /*top=*/100, /*right=*/0, /*bottom=*/0, base::ASCIIToUTF16("s"),
-      base::ASCIIToUTF16("%"), data_width, 10 / refresh_interval.InSecondsF());
+      /*top=*/100, /*right=*/0, /*bottom=*/0,
+      /*x_unit=*/base::ASCIIToUTF16("s"),
+      /*y_unit=*/base::ASCIIToUTF16("%"),
+      /*horizontal_points_number=*/data_width,
+      /*horizontal_ticks_interval=*/10 / refresh_interval.InSecondsF(),
+      vertical_ticks_interval);
 
   Legend::Formatter formatter = base::BindRepeating([](float value) {
     return base::ASCIIToUTF16(base::StringPrintf(

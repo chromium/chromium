@@ -689,6 +689,8 @@ void Compositor::DidPresentCompositorFrame(
   TRACE_EVENT_MARK_WITH_TIMESTAMP1("cc,benchmark", "FramePresented",
                                    feedback.timestamp, "environment",
                                    "browser");
+  for (auto& observer : observer_list_)
+    observer.OnDidPresentCompositorFrame(frame_token, feedback);
 }
 
 void Compositor::DidSubmitCompositorFrame() {

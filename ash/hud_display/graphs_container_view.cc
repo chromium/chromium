@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "ash/hud_display/cpu_graph_page_view.h"
+#include "ash/hud_display/fps_graph_page_view.h"
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/memory_graph_page_view.h"
 #include "base/bind.h"
@@ -20,7 +21,7 @@ namespace {
 
 // UI refresh interval.
 constexpr base::TimeDelta kGraphsDataRefreshInterval =
-    base::TimeDelta::FromMilliseconds(500);
+    base::TimeDelta::FromMilliseconds(1000);
 
 }  // namespace
 
@@ -47,6 +48,9 @@ GraphsContainerView::GraphsContainerView() {
   AddChildView(
       std::make_unique<CpuGraphPageView>(refresh_timer_.GetCurrentDelay()))
       ->SetID(static_cast<int>(DisplayMode::CPU_DISPLAY));
+  AddChildView(
+      std::make_unique<FPSGraphPageView>(refresh_timer_.GetCurrentDelay()))
+      ->SetID(static_cast<int>(DisplayMode::FPS_DISPLAY));
 }
 
 GraphsContainerView::~GraphsContainerView() {

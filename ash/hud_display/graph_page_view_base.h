@@ -36,7 +36,7 @@ class GraphPageViewBase : public views::View {
   // Adds default legend.
   void CreateLegend(const std::vector<Legend::Entry>& entries);
 
-  // Put grid in its dedicated container.
+  // Put grid in its dedicated container. See Grid class for details.
   Grid* CreateGrid(float left,
                    float top,
                    float right,
@@ -44,7 +44,8 @@ class GraphPageViewBase : public views::View {
                    const base::string16& x_unit,
                    const base::string16& y_unit,
                    int horizontal_points_number,
-                   int horizontal_ticks_interval);
+                   int horizontal_ticks_interval,
+                   float vertical_ticks_interval);
 
  protected:
   void RefreshLegendValues();

@@ -149,11 +149,12 @@ Grid* GraphPageViewBase::CreateGrid(float left,
                                     const base::string16& x_unit,
                                     const base::string16& y_unit,
                                     int horizontal_points_number,
-                                    int horizontal_ticks_interval) {
+                                    int horizontal_ticks_interval,
+                                    float vertical_ticks_interval) {
   DCHECK(grid_container_->children().empty());
   return grid_container_->AddChildView(std::make_unique<Grid>(
       left, top, right, bottom, x_unit, y_unit, horizontal_points_number,
-      horizontal_ticks_interval));
+      horizontal_ticks_interval, vertical_ticks_interval));
 }
 
 void GraphPageViewBase::RefreshLegendValues() {

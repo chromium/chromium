@@ -17,8 +17,15 @@
 namespace ash {
 namespace hud_display {
 
-Graph::Graph(Baseline baseline, Fill fill, SkColor color)
-    : baseline_(baseline), fill_(fill), color_(color) {}
+Graph::Graph(size_t max_data_points,
+             Baseline baseline,
+             Fill fill,
+             Style style,
+             SkColor color)
+    : baseline_(baseline), fill_(fill), style_(style), color_(color) {
+  DCHECK_LT(max_data_points, data_.BufferSize());
+  max_data_points_ = std::min(max_data_points, data_.BufferSize() - 1);
+}
 
 Graph::~Graph() {}
 
@@ -30,8 +37,7 @@ void Graph::AddValue(float value, float unscaled_value) {
 void Graph::Layout(const gfx::Rect& graph_bounds, const Graph* base) {
   graph_bounds_ = graph_bounds;
 
-  // base::RingBuffer::Iterator::index never reaches 0. Thus "-1";
-  const float scale_x = graph_bounds.width() / (data_.BufferSize() - 1.f);
+  const float scale_x = graph_bounds.width() / (float)max_data_points_;
 
   // Assume data is already scaled to [0-1], which will map to full
   // |graph_bounds| height.
@@ -46,18 +52,19 @@ void Graph::Layout(const gfx::Rect& graph_bounds, const Graph* base) {
   bottom_path_.resize(0);
   if (base) {
     bottom_path_.reserve(base->top_path().size());
+    bottom_path_style_ = base->style_;
     for (const SkPoint& point : base->top_path())
       bottom_path_.push_back({point.x(), point.y() + pixel_adjust});
   }
   top_path_.resize(0);
-  top_path_.reserve(data_.BufferSize());
+  top_path_.reserve(max_data_points_);
   size_t i = 0;
   // base::RingBuffer<> does not conform to C++ containers specification, so
   // it's End() is actually Back().
   for (Graph::Data::Iterator it = data_.End(); it; --it) {
     const float value = **it;
 
-    float x = graph_bounds.x() + it.index() * scale_x;
+    float x = graph_bounds.x() + (max_data_points_ - i) * scale_x;
     float y =
         (baseline_ == Baseline::BASELINE_BOTTOM ? -1 : 1) * value * scale_y;
     if (bottom_path_.size()) {
@@ -71,6 +78,8 @@ void Graph::Layout(const gfx::Rect& graph_bounds, const Graph* base) {
     }
     top_path_.push_back({x, y});
     ++i;
+    if (i >= max_data_points_)
+      break;
   }
 
   // This is the first layer from the start and it is filled and is non-empty.
@@ -91,19 +100,64 @@ void Graph::Draw(gfx::Canvas* canvas) const {
 
   SkPath path;
   path.moveTo(top_path_.front());
-  CHECK(top_path_.size());
-  for (std::vector<SkPoint>::const_iterator it = top_path_.begin();
-       it != top_path_.end(); ++it) {
-    if (it == top_path_.begin())
-      continue;
 
-    path.lineTo(*it);
+  const auto draw_top_line = [](const std::vector<SkPoint>& top_path,
+                                const auto& draw_point, SkPath& out_path) {
+    SkPoint previous_point = top_path.front();
+    for (std::vector<SkPoint>::const_iterator it = top_path.begin();
+         it != top_path.end(); ++it) {
+      // For the top line we are already here.
+      if (it == top_path.begin())
+        continue;
+      // Depending on the line type, |draw_point| may use the previous point.
+      draw_point(*it, previous_point, out_path);
+    }
+  };
+  const auto draw_bottom_line = [](const std::vector<SkPoint>& bottom_path,
+                                   const auto& draw_point, SkPath& result) {
+    SkPoint previous_point = bottom_path.back();
+    for (std::vector<SkPoint>::const_reverse_iterator it =
+             bottom_path.crbegin();
+         it != bottom_path.crend(); ++it) {
+      // Bottom line needs line to the first point too.
+      // Depending on the line type, |draw_point| may use the previous point.
+      draw_point(*it, previous_point, result);
+    }
+  };
+
+  // This is used to draw both top and bottom Style::LINES paths.
+  const auto draw_lines_point =
+      [](const SkPoint& point, const SkPoint& /*previous_point*/,
+         SkPath& out_path) { out_path.lineTo(point); };
+  // Top and bottom Style::SKYLINE drawing functions are symmetric.
+  const auto draw_skyline_point =
+      [](const SkPoint& point, SkPoint& previous_point, SkPath& out_path) {
+        out_path.lineTo(SkPoint::Make(point.x(), previous_point.y()));
+        out_path.lineTo(point);
+        previous_point = point;
+      };
+  const auto draw_bottom_skyline_point =
+      [](const SkPoint& point, SkPoint& previous_point, SkPath& out_path) {
+        out_path.lineTo(SkPoint::Make(previous_point.x(), point.y()));
+        out_path.lineTo(point);
+        previous_point = point;
+      };
+  switch (style_) {
+    case Style::LINES:
+      draw_top_line(top_path_, draw_lines_point, path);
+      break;
+    case Style::SKYLINE:
+      draw_top_line(top_path_, draw_skyline_point, path);
+      break;
   }
   if (fill_ == Graph::Fill::SOLID) {
-    for (std::vector<SkPoint>::const_reverse_iterator it =
-             bottom_path_.crbegin();
-         it != bottom_path_.crend(); ++it) {
-      path.lineTo(*it);
+    switch (bottom_path_style_) {
+      case Style::LINES:
+        draw_bottom_line(bottom_path_, draw_lines_point, path);
+        break;
+      case Style::SKYLINE:
+        draw_bottom_line(bottom_path_, draw_bottom_skyline_point, path);
+        break;
     }
   }
   cc::PaintFlags flags;
@@ -118,7 +172,19 @@ void Graph::Draw(gfx::Canvas* canvas) const {
   canvas->DrawPath(path, flags);
 }
 
+void Graph::UpdateLastValue(float value, float unscaled_value) {
+  const size_t last_index = data_.BufferSize() - 1;
+  if (!data_.IsFilledIndex(last_index))
+    return;
+
+  *data_.MutableReadBuffer(last_index) = value;
+  *unscaled_data_.MutableReadBuffer(last_index) = unscaled_value;
+}
+
 float Graph::GetUnscaledValueAt(size_t index) const {
+  if (index >= max_data_points_)
+    return 0;
+
   // 0 - the oldest value
   // BufferSize() - 1  - the newest value.
   const size_t raw_index = index < unscaled_data_.BufferSize()
@@ -133,6 +199,9 @@ float Graph::GetUnscaledValueAt(size_t index) const {
 }
 
 bool Graph::IsFilledIndex(size_t index) const {
+  if (index >= max_data_points_)
+    return false;
+
   // 0 - the oldest value
   // BufferSize() - 1  - the newest value.
   const size_t raw_index =
@@ -156,7 +225,7 @@ std::string Graph::DebugDump(const std::string& name) const {
     if (fill_ == Graph::Fill::SOLID) {
       // Print filled graph as a set of vertical lines.
       if (top_path_.size() == bottom_path_.size()) {
-        // Each point op the top has matching point on the bottom.
+        // Each point on the top has matching point on the bottom.
         os << "\t" << name << ": " << i << ": [" << bottom_path_[i].x() << ", "
            << bottom_path_[i].y() << "] -> [" << top_path_[i].x() << ", "
            << top_path_[i].y() << "]";
@@ -173,6 +242,7 @@ std::string Graph::DebugDump(const std::string& name) const {
       os << "\t" << name << ": " << i << ": -> [" << top_path_[i].x() << ", "
          << top_path_[i].y() << "]";
     }
+    os << "\n";
   }
   return os.str();
 }

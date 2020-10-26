@@ -45,6 +45,9 @@ class Legend : public views::View {
 
   ~Legend() override;
 
+  // views::View:
+  void Layout() override;
+
   // Display values for the given index. |index| is always interpreted as
   // "negative", i.e. "0" - current data, "1" - previous graph data, 2 - two
   // steps ago. I.e. it's number of graph points from the right graph edge.

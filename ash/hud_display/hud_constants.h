@@ -46,6 +46,7 @@ enum class DisplayMode {
   CPU_DISPLAY =
       1,  // First value should be different from default Views::ID = 0.
   MEMORY_DISPLAY,
+  FPS_DISPLAY,
 };
 
 }  // namespace hud_display

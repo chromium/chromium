@@ -24,39 +24,60 @@ BEGIN_METADATA(MemoryGraphPageView, GraphPageViewBase)
 END_METADATA
 
 MemoryGraphPageView::MemoryGraphPageView(const base::TimeDelta refresh_interval)
-    : graph_chrome_rss_private_(Graph::Baseline::BASELINE_BOTTOM,
+    : graph_chrome_rss_private_(kDefaultGraphWidth,
+                                Graph::Baseline::BASELINE_BOTTOM,
                                 Graph::Fill::SOLID,
+                                Graph::Style::LINES,
                                 SkColorSetA(SK_ColorRED, kHUDAlpha)),
-      graph_mem_free_(Graph::Baseline::BASELINE_BOTTOM,
+      graph_mem_free_(kDefaultGraphWidth,
+                      Graph::Baseline::BASELINE_BOTTOM,
                       Graph::Fill::NONE,
+                      Graph::Style::LINES,
                       SkColorSetA(SK_ColorDKGRAY, kHUDAlpha)),
-      graph_mem_used_unknown_(Graph::Baseline::BASELINE_BOTTOM,
+      graph_mem_used_unknown_(kDefaultGraphWidth,
+                              Graph::Baseline::BASELINE_BOTTOM,
                               Graph::Fill::SOLID,
+                              Graph::Style::LINES,
                               SkColorSetA(SK_ColorLTGRAY, kHUDAlpha)),
-      graph_renderers_rss_private_(Graph::Baseline::BASELINE_BOTTOM,
+      graph_renderers_rss_private_(kDefaultGraphWidth,
+                                   Graph::Baseline::BASELINE_BOTTOM,
                                    Graph::Fill::SOLID,
+                                   Graph::Style::LINES,
                                    SkColorSetA(SK_ColorCYAN, kHUDAlpha)),
-      graph_arc_rss_private_(Graph::Baseline::BASELINE_BOTTOM,
+      graph_arc_rss_private_(kDefaultGraphWidth,
+                             Graph::Baseline::BASELINE_BOTTOM,
                              Graph::Fill::SOLID,
+                             Graph::Style::LINES,
                              SkColorSetA(SK_ColorMAGENTA, kHUDAlpha)),
-      graph_gpu_rss_private_(Graph::Baseline::BASELINE_BOTTOM,
+      graph_gpu_rss_private_(kDefaultGraphWidth,
+                             Graph::Baseline::BASELINE_BOTTOM,
                              Graph::Fill::SOLID,
+                             Graph::Style::LINES,
                              SkColorSetA(SK_ColorRED, kHUDAlpha)),
-      graph_gpu_kernel_(Graph::Baseline::BASELINE_BOTTOM,
+      graph_gpu_kernel_(kDefaultGraphWidth,
+                        Graph::Baseline::BASELINE_BOTTOM,
                         Graph::Fill::SOLID,
+                        Graph::Style::LINES,
                         SkColorSetA(SK_ColorYELLOW, kHUDAlpha)),
-      graph_chrome_rss_shared_(Graph::Baseline::BASELINE_BOTTOM,
+      graph_chrome_rss_shared_(kDefaultGraphWidth,
+                               Graph::Baseline::BASELINE_BOTTOM,
                                Graph::Fill::NONE,
+                               Graph::Style::LINES,
                                SkColorSetA(SK_ColorBLUE, kHUDAlpha)) {
-  const int data_width = graph_arc_rss_private_.GetDataBufferSize();
+  const int data_width = graph_arc_rss_private_.max_data_points();
+  // Verical ticks are drawn every 10% (10/100 interval).
+  constexpr float vertical_ticks_interval = 10 / 100.0;
   // -XX seconds on the left, 0Gb top (will be updated later), 0 seconds on the
-  // right, 0 Gb on the bottom. Seconds and Gigabytes are dimentions. Number of
+  // right, 0 Gb on the bottom. Seconds and Gigabytes are dimensions. Number of
   // data points is data_width. horizontal grid ticks are drawn every 10
   // seconds.
   grid_ = CreateGrid(
       static_cast<int>(/*left=*/-data_width * refresh_interval.InSecondsF()),
-      /*top=*/0, /*right=*/0, /*bottom=*/0, base::ASCIIToUTF16("s"),
-      base::ASCIIToUTF16("Gb"), data_width, 10 / refresh_interval.InSecondsF());
+      /*top=*/0, /*right=*/0, /*bottom=*/0, /*x_unit=*/base::ASCIIToUTF16("s"),
+      /*y_unit=*/base::ASCIIToUTF16("Gb"),
+      /*horizontal_points_number=*/data_width,
+      /*horizontal_ticks_interval=*/10 / refresh_interval.InSecondsF(),
+      vertical_ticks_interval);
   // Hide grid until we know total memory size.
   grid_->SetVisible(false);
 

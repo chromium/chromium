@@ -11,7 +11,8 @@
 
 namespace gfx {
 class Size;
-}
+struct PresentationFeedback;
+}  // namespace gfx
 
 namespace ui {
 
@@ -51,6 +52,11 @@ class COMPOSITOR_EXPORT CompositorObserver {
   // Called at the top of the compositor's destructor, to give observers a
   // chance to remove themselves.
   virtual void OnCompositingShuttingDown(Compositor* compositor) {}
+
+  // Called when the presentation feedback was received from the viz.
+  virtual void OnDidPresentCompositorFrame(
+      uint32_t frame_token,
+      const gfx::PresentationFeedback& feedback) {}
 };
 
 }  // namespace ui

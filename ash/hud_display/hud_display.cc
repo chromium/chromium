@@ -134,11 +134,12 @@ HUDDisplayView::HUDDisplayView() {
 
   // Setup header.
 
-  // TODO: Add tab buttons via:
   header_view_->tab_strip()->AddTabButton(DisplayMode::CPU_DISPLAY,
                                           base::ASCIIToUTF16("CPU"));
   header_view_->tab_strip()->AddTabButton(DisplayMode::MEMORY_DISPLAY,
                                           base::ASCIIToUTF16("RAM"));
+  header_view_->tab_strip()->AddTabButton(DisplayMode::FPS_DISPLAY,
+                                          base::ASCIIToUTF16("FPS"));
 
   // Setup data.
   data->SetBackground(views::CreateSolidBackground(kHUDBackground));
@@ -162,19 +163,6 @@ HUDDisplayView::~HUDDisplayView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 }
 
-int HUDDisplayView::NonClientHitTest(const gfx::Point& point) {
-  const View* view = GetEventHandlerForPoint(point);
-  if (!view)
-    return HTNOWHERE;
-
-  return view->GetProperty(kHUDClickHandler);
-}
-
-void HUDDisplayView::SetDisplayMode(DisplayMode display_mode) {
-  graphs_container_->SetMode(display_mode);
-  header_view_->tab_strip()->ActivateTab(display_mode);
-}
-
 views::ClientView* HUDDisplayView::CreateClientView(views::Widget* widget) {
   return new HTClientView(this, widget, TransferOwnershipOfContentsView());
 }
@@ -192,6 +180,19 @@ void HUDDisplayView::OnWidgetInitialized() {
 void HUDDisplayView::OnSettingsToggle() {
   settings_view_->ToggleVisibility();
   graphs_container_->SetVisible(!settings_view_->GetVisible());
+}
+
+int HUDDisplayView::NonClientHitTest(const gfx::Point& point) {
+  const View* view = GetEventHandlerForPoint(point);
+  if (!view)
+    return HTNOWHERE;
+
+  return view->GetProperty(kHUDClickHandler);
+}
+
+void HUDDisplayView::SetDisplayMode(DisplayMode display_mode) {
+  graphs_container_->SetMode(display_mode);
+  header_view_->tab_strip()->ActivateTab(display_mode);
 }
 
 }  // namespace hud_display

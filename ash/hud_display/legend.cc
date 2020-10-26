@@ -40,6 +40,9 @@ class LegendEntry : public views::View {
   void SetValueIndex(size_t index);
   void RefreshValue();
 
+  // This is used by parent to match sizes.
+  views::View* value() { return value_; }
+
  private:
   const SkColor color_;
   const Graph& graph_;
@@ -169,6 +172,30 @@ Legend::Legend(const std::vector<Legend::Entry>& contents) {
 }
 
 Legend::~Legend() = default;
+
+void Legend::Layout() {
+  views::View::Layout();
+
+  gfx::Size max_size;
+  bool updated = false;
+  for (auto* view : children()) {
+    if (view->GetClassName() != LegendEntry::kViewClassName)
+      continue;
+
+    views::View* value = static_cast<LegendEntry*>(view)->value();
+    max_size.SetToMax(value->GetPreferredSize());
+    updated |= max_size != value->GetPreferredSize();
+  }
+  if (updated) {
+    for (auto* view : children()) {
+      if (view->GetClassName() != LegendEntry::kViewClassName)
+        continue;
+
+      static_cast<LegendEntry*>(view)->value()->SetPreferredSize(max_size);
+    }
+    views::View::Layout();
+  }
+}
 
 void Legend::SetValuesIndex(size_t index) {
   for (auto* view : children()) {

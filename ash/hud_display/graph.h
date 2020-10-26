@@ -39,7 +39,17 @@ class Graph {
     SOLID,
   };
 
-  Graph(Baseline baseline, Fill fill, SkColor color);
+  enum class Style {
+    LINES,
+    SKYLINE,
+  };
+
+  // |max_data_points| must be less than the ring buffer size.
+  Graph(size_t max_data_points,
+        Baseline baseline,
+        Fill fill,
+        Style style,
+        SkColor color);
   ~Graph();
 
   Graph(const Graph&) = delete;
@@ -51,10 +61,12 @@ class Graph {
   void AddValue(float value, float unscaled_value);
   void Layout(const gfx::Rect& graph_bounds, const Graph* base);
   void Draw(gfx::Canvas* canvas) const;
+  void UpdateLastValue(float value, float unscaled_value);
 
   const std::vector<SkPoint>& top_path() const { return top_path_; }
 
-  size_t GetDataBufferSize() const { return data_.BufferSize(); }
+  // Returns number of data points displayed on the graph.
+  size_t max_data_points() const { return max_data_points_; }
 
   SkColor color() const { return color_; }
 
@@ -78,6 +90,7 @@ class Graph {
  private:
   const Baseline baseline_;
   const Fill fill_;
+  const Style style_;
   const SkColor color_;
 
   // Result of last Layout() call.
@@ -90,9 +103,12 @@ class Graph {
   // Paths are calculated by Layout() from the |data_|.
   std::vector<SkPoint> top_path_;
   std::vector<SkPoint> bottom_path_;
+  // Bottom path style should follow base graph style.
+  Style bottom_path_style_ = Style::LINES;
 
   Data data_;
   Data unscaled_data_;
+  size_t max_data_points_ = 0;
 };
 
 }  // namespace hud_display
