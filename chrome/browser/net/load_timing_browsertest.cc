@@ -28,6 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -151,19 +152,13 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, DISABLED_HTTPS) {
             navigation_deltas.receive_headers_end);
 }
 
-// Flaky on Win10: crbug.com/997823
-#if defined(OS_WIN)
-#define MAYBE_Proxy DISABLED_Proxy
-#else
-#define MAYBE_Proxy Proxy
-#endif
-IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, MAYBE_Proxy) {
-  ASSERT_TRUE(spawned_test_server()->Start());
+IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, Proxy) {
+  ASSERT_TRUE(embedded_test_server()->Start());
 
   browser()->profile()->GetPrefs()->Set(
       proxy_config::prefs::kProxy,
       ProxyConfigDictionary::CreateFixedServers(
-          spawned_test_server()->host_port_pair().ToString(), std::string()));
+          embedded_test_server()->host_port_pair().ToString(), std::string()));
   ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
       ->FlushProxyConfigMonitorForTesting();
 
