@@ -958,12 +958,25 @@ PositionWithAffinity NGInlineCursor::PositionForPointInText(
 
 PositionWithAffinity NGInlineCursor::PositionForStartOfLine() const {
   DCHECK(Current().IsLineBox());
-  const PhysicalOffset point_in_line = Current().LineStartPoint();
-  if (IsItemCursor()) {
-    return PositionForPointInInlineBox(point_in_line +
-                                       Current().OffsetInContainerBlock());
+  NGInlineCursor first_leaf = CursorForDescendants();
+  if (IsLtr(Current().BaseDirection()))
+    first_leaf.MoveToFirstNonPseudoLeaf();
+  else
+    first_leaf.MoveToLastNonPseudoLeaf();
+  if (!first_leaf)
+    return PositionWithAffinity();
+  Node* const node = first_leaf.Current().GetLayoutObject()->NonPseudoNode();
+  if (!node) {
+    NOTREACHED() << "MoveToFirstLeaf returns invalid node: " << first_leaf;
+    return PositionWithAffinity();
   }
-  return CurrentPaintFragment()->PositionForPoint(point_in_line);
+  if (!IsA<Text>(node))
+    return PositionWithAffinity(Position::BeforeNode(*node));
+  const unsigned text_offset =
+      Current().BaseDirection() == first_leaf.Current().ResolvedDirection()
+          ? first_leaf.Current().TextOffset().start
+          : first_leaf.Current().TextOffset().end;
+  return first_leaf.PositionForPointInText(text_offset);
 }
 
 PositionWithAffinity NGInlineCursor::PositionForEndOfLine() const {

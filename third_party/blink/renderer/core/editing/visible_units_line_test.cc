@@ -65,6 +65,13 @@ class VisibleUnitsLineTest : public EditingTestBase {
         LogicalEndOfLine(CreateVisiblePosition(caret)).DeepEquivalent();
     return GetCaretTextFromBody(result);
   }
+
+  std::string TestStartOfLine(const std::string& input) {
+    const Position& caret = SetCaretTextToBody(input);
+    const Position& result =
+        StartOfLine(CreateVisiblePosition(caret)).DeepEquivalent();
+    return GetCaretTextFromBody(result);
+  }
 };
 
 class ParameterizedVisibleUnitsLineTest
@@ -959,6 +966,52 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithMixedEditability) {
   PositionWithAffinity position2(selection.Extent());
   // "Same line" is restricted by editability boundaries.
   EXPECT_FALSE(InSameLine(position1, position2));
+}
+
+TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithBidi) {
+  LoadAhem();
+  InsertStyleElement("p { font: 30px/3 Ahem; }");
+
+  EXPECT_EQ(
+      "<p dir=\"ltr\"><bdo dir=\"ltr\">|abc xyz</bdo></p>",
+      TestStartOfLine("<p dir=\"ltr\"><bdo dir=\"ltr\">abc |xyz</bdo></p>"))
+      << "LTR LTR";
+  EXPECT_EQ(
+      "<p dir=\"ltr\"><bdo dir=\"rtl\">|abc xyz</bdo></p>",
+      TestStartOfLine("<p dir=\"ltr\"><bdo dir=\"rtl\">abc |xyz</bdo></p>"))
+      << "LTR RTL";
+  EXPECT_EQ(
+      "<p dir=\"rtl\"><bdo dir=\"ltr\">|abc xyz</bdo></p>",
+      TestStartOfLine("<p dir=\"rtl\"><bdo dir=\"ltr\">abc |xyz</bdo></p>"))
+      << "RTL LTR";
+  EXPECT_EQ(
+      "<p dir=\"rtl\"><bdo dir=\"rtl\">|abc xyz</bdo></p>",
+      TestStartOfLine("<p dir=\"rtl\"><bdo dir=\"rtl\">abc |xyz</bdo></p>"))
+      << "RTL RTL";
+}
+
+TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithPositionRelative) {
+  LoadAhem();
+  InsertStyleElement(
+      "b { position:relative; left: -100px; }"
+      "p { font: 30px/3 Ahem; }");
+
+  EXPECT_EQ("<p><b>|abc</b> xyz</p>", TestStartOfLine("<p><b>abc</b> |xyz</p>"))
+      << "LTR-LTR";
+  EXPECT_EQ("<p dir=\"rtl\"><b>|abc</b> xyz</p>",
+            TestStartOfLine("<p dir=\"rtl\"><b>abc</b> |xyz</p>"))
+      << "RTL-LTR";
+  // Legacy results are wrong. See StartOfLineWithBidi
+  EXPECT_EQ(LayoutNGEnabled() ? "<p><bdo dir=\"rtl\"><b>|abc</b> xyz</bdo></p>"
+                              : "<p><bdo dir=\"rtl\"><b>abc|</b> xyz</bdo></p>",
+            TestStartOfLine("<p><bdo dir=\"rtl\"><b>abc</b> |xyz</bdo></p>"))
+      << "LTR-RTL";
+  EXPECT_EQ(LayoutNGEnabled()
+                ? "<p dir=\"rtl\"><bdo dir=\"rtl\"><b>|abc</b> xyz</bdo></p>"
+                : "<p dir=\"rtl\"><bdo dir=\"rtl\"><b>abc|</b> xyz</bdo></p>",
+            TestStartOfLine(
+                "<p dir=\"rtl\"><bdo  dir=\"rtl\"><b>abc</b> |xyz</bdo></p>"))
+      << "RTL-RTL";
 }
 
 // https://crbug.com/947462
