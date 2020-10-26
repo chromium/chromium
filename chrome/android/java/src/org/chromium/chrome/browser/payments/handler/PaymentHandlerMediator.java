@@ -285,6 +285,6 @@ import java.lang.annotation.RetentionPolicy;
 
     private void onSystemBackButtonClicked() {
         NavigationController navigation = mPaymentHandlerWebContents.getNavigationController();
-        if (navigation.canGoBack()) navigation.goBack();
+        if (navigation != null && navigation.canGoBack()) navigation.goBack();
     }
 }
