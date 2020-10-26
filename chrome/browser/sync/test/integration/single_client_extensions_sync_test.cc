@@ -36,9 +36,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, StartWithNoExtensions) {
   ASSERT_TRUE(AllProfilesHaveSameExtensionsAsVerifier());
 }
 
-// Flaky: https://crbug.com/1030556
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest,
-                       DISABLED_StartWithSomeExtensions) {
+                       StartWithSomeExtensions) {
   ASSERT_TRUE(SetupClients());
 
   const int kNumExtensions = 5;
