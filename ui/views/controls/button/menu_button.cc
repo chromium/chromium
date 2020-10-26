@@ -25,6 +25,9 @@ MenuButton::MenuButton(PressedCallback callback,
           std::make_unique<Button::DefaultButtonControllerDelegate>(this));
   menu_button_controller_ = menu_button_controller.get();
   SetButtonController(std::move(menu_button_controller));
+
+  DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 MenuButton::MenuButton(ButtonListener* listener,

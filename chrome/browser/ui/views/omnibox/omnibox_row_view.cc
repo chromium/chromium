@@ -60,6 +60,9 @@ class OmniboxRowView::HeaderView : public views::View {
             &HeaderView::HeaderToggleButtonPressed, base::Unretained(this))));
     mouse_enter_exit_handler_.ObserveMouseEnterExitOn(header_toggle_button_);
     views::InstallCircleHighlightPathGenerator(header_toggle_button_);
+    DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY,
+              header_toggle_button_->GetFocusBehavior());
+    header_toggle_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     header_toggle_button_focus_ring_ =
         views::FocusRing::Install(header_toggle_button_);

@@ -143,6 +143,8 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>());
+  DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   UpdateBorder();
 

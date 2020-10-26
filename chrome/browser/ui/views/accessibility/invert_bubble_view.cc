@@ -70,11 +70,16 @@ InvertBubbleView::InvertBubbleView(Browser* browser, views::View* anchor_view)
       browser_(browser) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_DONE));
-  SetExtraView(views::CreateVectorImageButtonWithNativeTheme(
-                   base::BindRepeating(&InvertBubbleView::OpenLink,
-                                       base::Unretained(this), kLearnMoreUrl),
-                   vector_icons::kHelpOutlineIcon))
-      ->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+
+  auto button = views::CreateVectorImageButtonWithNativeTheme(
+      base::BindRepeating(&InvertBubbleView::OpenLink, base::Unretained(this),
+                          kLearnMoreUrl),
+      vector_icons::kHelpOutlineIcon);
+  button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+  DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, button->GetFocusBehavior());
+  button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetExtraView(std::move(button));
+
   set_margins(gfx::Insets());
   chrome::RecordDialogCreation(chrome::DialogIdentifier::INVERT);
 }

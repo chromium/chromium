@@ -72,6 +72,9 @@ NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
   SetInstallFocusRingOnFocus(true);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<NewTabButton::HighlightPathGenerator>());
+
+  DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 NewTabButton::~NewTabButton() {

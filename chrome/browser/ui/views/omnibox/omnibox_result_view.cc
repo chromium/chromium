@@ -54,6 +54,9 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
   explicit OmniboxRemoveSuggestionButton(PressedCallback callback)
       : ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
+
+    DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+    SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
