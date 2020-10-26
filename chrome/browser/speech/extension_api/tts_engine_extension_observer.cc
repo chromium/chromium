@@ -63,6 +63,19 @@ void UpdateGoogleSpeechSynthesisKeepAliveCount(content::BrowserContext* context,
       increment);
 }
 
+void UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(
+    content::BrowserContext* browser_context) {
+  if (chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+    UpdateGoogleSpeechSynthesisKeepAliveCount(browser_context,
+                                              true /* increment */);
+  }
+
+  if (chromeos::AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
+    UpdateGoogleSpeechSynthesisKeepAliveCount(browser_context,
+                                              true /* increment */);
+  }
+}
+
 }  // namespace
 #endif  // defined(OS_CHROMEOS)
 
@@ -139,6 +152,12 @@ const std::set<std::string> TtsEngineExtensionObserver::GetTtsExtensions() {
 #if defined(OS_CHROMEOS)
 void TtsEngineExtensionObserver::BindTtsStream(
     mojo::PendingReceiver<chromeos::tts::mojom::TtsStream> receiver) {
+  // At this point, the component extension has loaded, and the js has requested
+  // a TtsStream be bound. It's safe now to update the keep alive count for
+  // important accessibility features. This path is also encountered if the
+  // component extension background page forceably window.close(s) on error.
+  UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(profile_);
+
   // Always launch a new TtsService. By assigning below, if |tts_service_| held
   // a remote, it will be killed and a new one created, ensuring we only ever
   // have one TtsService running.
@@ -185,26 +204,10 @@ void TtsEngineExtensionObserver::OnListenerAdded(
 void TtsEngineExtensionObserver::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
-  if (!extension->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kTtsEngine))
-    return;
-
-  engine_extension_ids_.insert(extension->id());
-
-#if defined(OS_CHROMEOS)
-  if (extension->id() != extension_misc::kGoogleSpeechSynthesisExtensionId)
-    return;
-
-  if (chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
-    UpdateGoogleSpeechSynthesisKeepAliveCount(browser_context,
-                                              true /* increment */);
+  if (extension->permissions_data()->HasAPIPermission(
+          extensions::APIPermission::kTtsEngine)) {
+    engine_extension_ids_.insert(extension->id());
   }
-
-  if (chromeos::AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
-    UpdateGoogleSpeechSynthesisKeepAliveCount(browser_context,
-                                              true /* increment */);
-  }
-#endif  // defined(OS_CHROMEOS)
 }
 
 void TtsEngineExtensionObserver::OnExtensionUnloaded(
