@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_modal_overlay_request_callback_installer.h"
 
 #include "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 
 class PasswordInfobarModalInteractionHandler;
 
@@ -17,9 +18,11 @@ class PasswordInfobarModalOverlayRequestCallbackInstaller
     : public InfobarModalOverlayRequestCallbackInstaller {
  public:
   // Constructor for an instance that installs callbacks that forward
-  // interaction events to |interaction_handler|.
+  // interaction events to |interaction_handler| for an Password Infobar Overlay
+  // of type |action_type|.
   explicit PasswordInfobarModalOverlayRequestCallbackInstaller(
-      PasswordInfobarModalInteractionHandler* interaction_handler);
+      PasswordInfobarModalInteractionHandler* interaction_handler,
+      password_modal::PasswordAction action_type);
   ~PasswordInfobarModalOverlayRequestCallbackInstaller() override;
 
  private:
@@ -56,6 +59,9 @@ class PasswordInfobarModalOverlayRequestCallbackInstaller
 
   // The handler for received responses.
   PasswordInfobarModalInteractionHandler* interaction_handler_ = nullptr;
+
+  // The type of Password Infobar Overlay this installer handles.
+  password_modal::PasswordAction password_action_;
 
   base::WeakPtrFactory<PasswordInfobarModalOverlayRequestCallbackInstaller>
       weak_factory_{this};

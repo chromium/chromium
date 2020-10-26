@@ -19,8 +19,9 @@ PasswordInfobarModalInteractionHandler::
     PasswordInfobarModalInteractionHandler() = default;
 
 PasswordInfobarModalInteractionHandler::PasswordInfobarModalInteractionHandler(
-    Browser* browser)
-    : browser_(browser) {
+    Browser* browser,
+    password_modal::PasswordAction action_type)
+    : browser_(browser), action_type_(action_type) {
   DCHECK(browser_);
 }
 
@@ -68,7 +69,7 @@ void PasswordInfobarModalInteractionHandler::InfobarVisibilityChanged(
 std::unique_ptr<InfobarModalOverlayRequestCallbackInstaller>
 PasswordInfobarModalInteractionHandler::CreateModalInstaller() {
   return std::make_unique<PasswordInfobarModalOverlayRequestCallbackInstaller>(
-      this);
+      this, action_type_);
 }
 
 IOSChromeSavePasswordInfoBarDelegate*

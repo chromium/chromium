@@ -39,7 +39,9 @@ class PasswordInfobarModalOverlayRequestCallbackInstallerTest
     : public PlatformTest {
  public:
   PasswordInfobarModalOverlayRequestCallbackInstallerTest()
-      : installer_(&mock_handler_) {
+      : installer_(&mock_handler_, password_modal::PasswordAction::kSave),
+        update_installer_(&mock_handler_,
+                          password_modal::PasswordAction::kUpdate) {
     scoped_feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
                                           {kInfobarUIRebootOnlyiOS13});
     // Create the infobar and add it to the WebState's manager.
@@ -77,6 +79,7 @@ class PasswordInfobarModalOverlayRequestCallbackInstallerTest
   OverlayRequest* request_ = nullptr;
   MockPasswordInfobarModalInteractionHandler mock_handler_;
   PasswordInfobarModalOverlayRequestCallbackInstaller installer_;
+  PasswordInfobarModalOverlayRequestCallbackInstaller update_installer_;
 };
 
 // Tests that a dispatched InfobarBannerMainActionResponse calls
@@ -130,5 +133,22 @@ TEST_F(PasswordInfobarModalOverlayRequestCallbackInstallerTest,
   // trigger this completion callback and verify that the interaction handler's
   // PresentPasswordSettings() was called.
   EXPECT_CALL(mock_handler_, PresentPasswordsSettings(infobar_));
+  queue()->CancelAllRequests();
+}
+
+// Tests that dispatch responses for a save password RequestConfig do not cause
+// the update callback installer to call it's interaction handler.
+TEST_F(PasswordInfobarModalOverlayRequestCallbackInstallerTest, SaveNotUpdate) {
+  update_installer_.InstallCallbacks(request_);
+  // Dispatch a PresentPasswordSettings response.
+  request_->GetCallbackManager()->DispatchResponse(
+      OverlayResponse::CreateWithInfo<PresentPasswordSettings>());
+
+  // When the installer handles the PresentPasswordSettings response, it adds a
+  // completion callback to the request that instructs the interaction handler
+  // to present settings when the dismissal finishes.  Cancel the request to
+  // trigger this completion callback and verify that the interaction handler's
+  // PresentPasswordSettings() was called.
+  EXPECT_CALL(mock_handler_, PresentPasswordsSettings(infobar_)).Times(1);
   queue()->CancelAllRequests();
 }

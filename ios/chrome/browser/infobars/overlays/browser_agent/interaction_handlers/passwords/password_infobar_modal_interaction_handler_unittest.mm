@@ -41,8 +41,8 @@ class PasswordInfobarModalInteractionHandlerTest : public PlatformTest {
     [browser_.GetCommandDispatcher()
         startDispatchingToTarget:mock_command_receiver_
                      forProtocol:@protocol(ApplicationSettingsCommands)];
-    handler_ =
-        std::make_unique<PasswordInfobarModalInteractionHandler>(&browser_);
+    handler_ = std::make_unique<PasswordInfobarModalInteractionHandler>(
+        &browser_, password_modal::PasswordAction::kSave);
   }
   ~PasswordInfobarModalInteractionHandlerTest() override {
     [browser_.GetCommandDispatcher()
