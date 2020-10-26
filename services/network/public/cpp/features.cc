@@ -152,14 +152,6 @@ const base::Feature
         "DeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess",
         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Emergency switch for legacy cookie access semantics on given patterns, as
-// specified by the param, comma separated.
-const base::Feature kEmergencyLegacyCookieAccess{
-    "EmergencyLegacyCookieAccess", base::FEATURE_DISABLED_BY_DEFAULT};
-const char kEmergencyLegacyCookieAccessParamName[] = "Patterns";
-const base::FeatureParam<std::string> kEmergencyLegacyCookieAccessParam{
-    &kEmergencyLegacyCookieAccess, kEmergencyLegacyCookieAccessParamName, ""};
-
 // Controls whether a |request_initiator| that mismatches
 // |request_initiator_origin_lock| leads to 1) failing the HTTP request and 2)
 // calling mojo::ReportBadMessage (on desktop platforms, where NetworkService

@@ -59,13 +59,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature
     kDeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess;
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kEmergencyLegacyCookieAccess;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const char kEmergencyLegacyCookieAccessParamName[];
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<std::string> kEmergencyLegacyCookieAccessParam;
-
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kRequestInitiatorSiteLockEnfocement;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCertVerifierService;

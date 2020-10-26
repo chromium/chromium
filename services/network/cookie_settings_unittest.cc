@@ -502,45 +502,5 @@ TEST_F(CookieSettingsTest,
   }
 }
 
-TEST_F(CookieSettingsTest, CookieAccessSemanticsEmergencyOverride) {
-  base::test::ScopedFeatureList feature_list;
-
-  feature_list.InitWithFeaturesAndParameters(
-      {{net::features::kSameSiteByDefaultCookies, {}},
-       {features::kEmergencyLegacyCookieAccess,
-        {{features::kEmergencyLegacyCookieAccessParamName,
-          "example.org, [*.]example.gov"}}}},
-      {} /* disabled_features*/);
-  CookieSettings settings;
-  settings.set_content_settings_for_legacy_cookie_access(
-      {CreateSetting(kDomainWildcardPattern, "*", CONTENT_SETTING_ALLOW)});
-
-  const struct {
-    net::CookieAccessSemantics status;
-    std::string cookie_domain;
-  } kTestCases[] = {
-      // These three test cases are LEGACY because they match the setting.
-      {net::CookieAccessSemantics::LEGACY, kDomain},
-      {net::CookieAccessSemantics::LEGACY, kDotDomain},
-      // Subdomain also matches pattern.
-      {net::CookieAccessSemantics::LEGACY, kSubDomain},
-      // This test case defaults into NONLEGACY.
-      {net::CookieAccessSemantics::NONLEGACY, kOtherDomain},
-
-      // things that got pushed via experiment config.
-      {net::CookieAccessSemantics::LEGACY, "example.org"},
-      {net::CookieAccessSemantics::NONLEGACY, "sub.example.org"},
-      {net::CookieAccessSemantics::LEGACY, "example.gov"},
-      {net::CookieAccessSemantics::LEGACY, "sub.example.gov"},
-      {net::CookieAccessSemantics::NONLEGACY, "example.gov.uk"},
-  };
-
-  for (const auto& test : kTestCases) {
-    EXPECT_EQ(test.status,
-              settings.GetCookieAccessSemanticsForDomain(test.cookie_domain))
-        << test.cookie_domain;
-  }
-}
-
 }  // namespace
 }  // namespace network

@@ -58,7 +58,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   }
 
   void set_content_settings_for_legacy_cookie_access(
-      const ContentSettingsForOneType& settings);
+      const ContentSettingsForOneType& settings) {
+    settings_for_legacy_cookie_access_ = settings;
+  }
 
   void set_storage_access_grants(const ContentSettingsForOneType& settings) {
     storage_access_grants_ = settings;

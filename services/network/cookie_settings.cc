@@ -8,54 +8,23 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/string_split.h"
-#include "components/content_settings/core/common/content_settings_utils.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/static_cookie_policy.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network {
 namespace {
+
 bool IsDefaultSetting(const ContentSettingPatternSource& setting) {
   return setting.primary_pattern.MatchesAllHosts() &&
          setting.secondary_pattern.MatchesAllHosts();
 }
 
-void AppendEmergencyLegacyCookieAccess(
-    ContentSettingsForOneType* settings_for_legacy_cookie_access) {
-  if (!base::FeatureList::IsEnabled(features::kEmergencyLegacyCookieAccess))
-    return;
-
-  std::vector<std::string> patterns =
-      SplitString(features::kEmergencyLegacyCookieAccessParam.Get(), ",",
-                  base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (const auto& pattern_str : patterns) {
-    // Only primary pattern and the setting actually looked at here.
-    settings_for_legacy_cookie_access->push_back(ContentSettingPatternSource(
-        ContentSettingsPattern::FromString(pattern_str),
-        ContentSettingsPattern::Wildcard(),
-        /* legacy, see CookieSettingsBase::GetCookieAccessSemanticsForDomain */
-        base::Value::FromUniquePtrValue(
-            content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
-        std::string(), false));
-  }
-}
-
 }  // namespace
 
-CookieSettings::CookieSettings() {
-  AppendEmergencyLegacyCookieAccess(&settings_for_legacy_cookie_access_);
-}
+CookieSettings::CookieSettings() = default;
 
 CookieSettings::~CookieSettings() = default;
-
-void CookieSettings::set_content_settings_for_legacy_cookie_access(
-    const ContentSettingsForOneType& settings) {
-  settings_for_legacy_cookie_access_ = settings;
-  AppendEmergencyLegacyCookieAccess(&settings_for_legacy_cookie_access_);
-}
 
 DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
     const {
