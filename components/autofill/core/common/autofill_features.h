@@ -39,6 +39,7 @@ extern const base::Feature kAutofillEnableSupportForMoreStructureInNames;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInAddresses;
 extern const base::Feature kAutofillEnableSupportForMergingSubsetNames;
 extern const base::Feature kAutofillEnableSupportForHouseNumbers;
+extern const base::Feature kAutofillEnableUIForHonorificPrefixesInSettings;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForHeuristics;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForQuery;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForUpload;
