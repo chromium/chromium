@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.incognito.IncognitoTabSnapshotController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.infobar.DataReductionPromoInfoBar;
 import org.chromium.chrome.browser.infobar.SyncErrorInfoBar;
+import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -272,10 +273,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     private ChromeInactivityTracker mInactivityTracker;
 
-    // Whether or not chrome was launched with an intent to open a tab.
-    private boolean mIntentWithEffect;
-    private ObservableSupplierImpl<Boolean> mIntentWithEffectSupplier =
-            new ObservableSupplierImpl<>();
+    // Supplier for a dependency to inform about the type of intent used to launch Chrome.
+    private OneshotSupplierImpl<IntentMetadata> mIntentMetadataOneshotSupplier =
+            new OneshotSupplierImpl<>();
 
     // Time at which an intent was received and handled.
     private long mIntentHandlingTimeMs;
@@ -1075,18 +1075,21 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
 
             mInactivityTracker.register(this.getLifecycleDispatcher());
-            mIntentWithEffect = false;
+            boolean isIntentWithEffect = false;
+            boolean isMainIntentFromLauncher = false;
             if (getSavedInstanceState() == null && intent != null) {
                 if (!mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true)) {
-                    mIntentWithEffect = mIntentHandler.onNewIntent(intent);
+                    isIntentWithEffect = mIntentHandler.onNewIntent(intent);
                 }
 
                 if (isMainIntentFromLauncher(intent)) {
+                    isMainIntentFromLauncher = true;
                     logMainIntentBehavior(intent);
                 }
             }
 
-            mIntentWithEffectSupplier.set(mIntentWithEffect);
+            mIntentMetadataOneshotSupplier.set(
+                    new IntentMetadata(isMainIntentFromLauncher, isIntentWithEffect));
 
             // If we have tabs to reparent and getSavedInstanceState() is non-null, then the tabs
             // are coming from night mode tab reparenting. In this case, reparenting happens
@@ -1096,13 +1099,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
                     && getSavedInstanceState() == null;
             mCreatedTabOnStartup = getCurrentTabModel().getCount() > 0
-                    || mTabModelSelectorImpl.getRestoredTabCount() > 0 || mIntentWithEffect
+                    || mTabModelSelectorImpl.getRestoredTabCount() > 0 || isIntentWithEffect
                     || hasTabWaitingForReparenting;
 
             // We always need to try to restore tabs. The set of tabs might be empty, but at least
             // it will trigger the notification that tab restore is complete which is needed by
             // other parts of Chrome such as sync.
-            boolean activeTabBeingRestored = !mIntentWithEffect
+            boolean activeTabBeingRestored = !isIntentWithEffect
                     || (shouldShowTabSwitcherOnStart()
                             && !mTabModelSelectorImpl.isIncognitoSelected());
 
@@ -1460,8 +1463,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected RootUiCoordinator createRootUiCoordinator() {
         return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
-                mIntentWithEffectSupplier, getShareDelegateSupplier(), getActivityTabProvider(),
-                mEphemeralTabCoordinatorSupplier, mTabModelProfileSupplier, mBookmarkBridgeSupplier,
+                mIntentMetadataOneshotSupplier, getShareDelegateSupplier(),
+                getActivityTabProvider(), mEphemeralTabCoordinatorSupplier,
+                mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
                 mTabModelSelectorSupplier, mStartSurfaceSupplier);
     }

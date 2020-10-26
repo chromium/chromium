@@ -157,7 +157,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         -> mNavigationController,
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 mOverviewModeBehaviorSupplier, this::getContextualSearchManager,
-                mTabModelSelectorSupplier, new OneshotSupplierImpl<>());
+                mTabModelSelectorSupplier, new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>());
     }
 
     @Override

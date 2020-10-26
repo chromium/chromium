@@ -1,6 +1,7 @@
 include_rules = [
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/browser_ui/android/bottomsheet",
+  "+components/browser_ui/widget/android",
   "+components/embedder_support/android/java",
   "+components/infobars/android/java",
   "+components/payments/content/android",

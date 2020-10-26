@@ -33,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.DOWNLOAD_SETTINGS_FEATURE,
         FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_FEATURE,
         FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOADS_ARE_FASTER_FEATURE,
+        FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE,
         FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
         FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
         FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
@@ -114,6 +115,9 @@ public @interface FeatureConstants {
      * are now faster than before.
      */
     String DOWNLOAD_INFOBAR_DOWNLOADS_ARE_FASTER_FEATURE = "IPH_DownloadInfoBarDownloadsAreFaster";
+
+    /** An IPH feature to prompt users to open the new tab page after a navigation. */
+    String NEW_TAB_PAGE_HOME_BUTTON_FEATURE = "IPH_NewTabPageHomeButton";
 
     /**
      * An IPH feature to prompt the user to long press on pages with links to open them in a group.

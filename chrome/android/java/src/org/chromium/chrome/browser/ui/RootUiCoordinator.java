@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
+import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -170,6 +171,9 @@ public class RootUiCoordinator
     @Nullable
     private MessageContainerCoordinator mMessageContainerCoordinator;
     private LayoutManager mLayoutManager;
+    protected OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
+    // This supplier only ever updated when feature TOOLBAR_IPH_ANDROID is enabled.
+    protected OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier = new OneshotSupplierImpl<>();
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -186,6 +190,7 @@ public class RootUiCoordinator
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
+     * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      */
     public RootUiCoordinator(ChromeActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -195,7 +200,8 @@ public class RootUiCoordinator
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            OneshotSupplier<StartSurface> startSurfaceSupplier,
+            OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mOnOmniboxFocusChangedListener = onOmniboxFocusChangedListener;
@@ -226,6 +232,7 @@ public class RootUiCoordinator
         mOverviewModeBehaviorSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setOverviewModeBehavior));
         mStartSurfaceSupplier = startSurfaceSupplier;
+        mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
 
         mContextualSearchSceneChangeObserver = new SceneChangeObserver() {
             @Override
@@ -584,7 +591,8 @@ public class RootUiCoordinator
                     mScrimCoordinator, mActionModeControllerCallback, mFindToolbarManager,
                     mProfileSupplier, mBookmarkBridgeSupplier, mCanAnimateBrowserControls,
                     mOverviewModeBehaviorSupplier, mAppMenuSupplier, shouldShowMenuUpdateBadge(),
-                    mTabModelSelectorSupplier, mStartSurfaceSupplier, mOmniboxFocusStateSupplier);
+                    mTabModelSelectorSupplier, mStartSurfaceSupplier, mOmniboxFocusStateSupplier,
+                    mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier);
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

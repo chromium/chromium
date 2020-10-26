@@ -390,7 +390,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return new RootUiCoordinator(this, null, getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
-                mTabModelSelectorSupplier, new OneshotSupplierImpl<>());
+                mTabModelSelectorSupplier, new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>());
     }
 
     private NotificationManagerProxy getNotificationManagerProxy() {

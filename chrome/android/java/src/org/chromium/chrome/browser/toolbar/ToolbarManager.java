@@ -47,11 +47,13 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
+import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -82,6 +84,7 @@ import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
+import org.chromium.chrome.browser.toolbar.top.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
@@ -179,6 +182,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private HomepageManager.HomepageStateListener mHomepageStateListener;
 
+    private HomeButtonCoordinator mHomeButtonCoordinator;
+
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenFindInPageToken = TokenHolder.INVALID_TOKEN;
@@ -207,6 +212,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private StartSurface mStartSurface;
     private StartSurface.StateObserver mStartSurfaceStateObserver;
 
+    private OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
+    private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
+
     /**
      * Creates a ToolbarManager object.
      * @param controlsSizer The {@link BrowserControlsSizer} for the activity.
@@ -233,6 +241,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
+     * @param intentMetadataOneshotSupplier Supplier with info about the launching intent.
+     * @param promoShownOneshotSupplier Supplier for whether a promo was shown on startup. Will only
+     *                                  be fulfilled when feature TOOLBAR_IPH_ANDROID is enabled.
      */
     public ToolbarManager(ChromeActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -250,7 +261,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             boolean shouldShowUpdateBadge,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
-            ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
+            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
+            OneshotSupplier<Boolean> promoShownOneshotSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mBrowserControlsSizer = controlsSizer;
@@ -262,6 +275,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mScrimCoordinator = scrimCoordinator;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
+        mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
+        mPromoShownOneshotSupplier = promoShownOneshotSupplier;
 
         mLocationBarModel = new LocationBarModel(activity);
         mControlContainer = controlContainer;
@@ -835,6 +850,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mControlContainer.setReadyForBitmapCapture(true);
         }
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
+            UserEducationHelper userEducationHelper = new UserEducationHelper(
+                    mActivity, mHandler, TrackerFactory::getTrackerForProfile);
+            View homeButton = mControlContainer.findViewById(R.id.home_button);
+            mHomeButtonCoordinator =
+                    new HomeButtonCoordinator(mActivity, homeButton, mActivityTabProvider,
+                            userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
+                            mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier);
+        }
+
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 
@@ -966,6 +991,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (mMenuButtonCoordinator != null) {
             mMenuButtonCoordinator.destroy();
             mMenuButtonCoordinator = null;
+        }
+
+        if (mHomeButtonCoordinator != null) {
+            mHomeButtonCoordinator.destroy();
+            mHomeButtonCoordinator = null;
         }
 
         if (mCallbackController != null) {

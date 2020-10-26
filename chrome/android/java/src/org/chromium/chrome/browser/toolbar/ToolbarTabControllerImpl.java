@@ -10,6 +10,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -98,7 +99,19 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     @Override
     public void openHomepage() {
         RecordUserAction.record("Home");
-        if (mOverrideHomePageSupplier.get()) return;
+        if (mOverrideHomePageSupplier.get()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
+                // While some other element is handling the routing of this click event, something
+                // still needs to notify the event. This approach allows consolidation of events for
+                // the home button.
+                Profile profile = mProfileSupplier.get();
+                if (profile != null) {
+                    TrackerFactory.getTrackerForProfile(profile).notifyEvent(
+                            EventConstants.HOMEPAGE_BUTTON_CLICKED);
+                }
+            }
+            return;
+        }
         Tab currentTab = mTabSupplier.get();
         if (currentTab == null) return;
         String homePageUrl = HomepageManager.getHomepageUri();

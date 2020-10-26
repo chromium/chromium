@@ -1,5 +1,5 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
+# Copyright 2019 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
 chrome_java_sources = [
@@ -873,6 +873,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsBannerData.java",
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsHandler.java",
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsSettings.java",
+  "java/src/org/chromium/chrome/browser/intent/IntentMetadata.java",
   "java/src/org/chromium/chrome/browser/invalidation/ChromeBrowserSyncAdapter.java",
   "java/src/org/chromium/chrome/browser/invalidation/ChromeBrowserSyncAdapterServiceImpl.java",
   "java/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunner.java",
@@ -1591,6 +1592,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonViewBinder.java",
   "java/src/org/chromium/chrome/browser/toolbar/menu_button/PropertyModelAnimatorFactory.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/ActionModeController.java",
+  "java/src/org/chromium/chrome/browser/toolbar/top/HomeButtonCoordinator.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/IncognitoSwitchCoordinator.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/IncognitoSwitchProperties.java",
   "java/src/org/chromium/chrome/browser/toolbar/top/IncognitoSwitchViewBinder.java",

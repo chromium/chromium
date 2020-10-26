@@ -159,6 +159,18 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     }
 
     /**
+     * Determines whether the homepage is set to something other than the NTP or empty/null.
+     * Normally, when loading the homepage the NTP is loaded as a fallback if the homepage is null
+     * or empty. So while other helper methods that check if a given string is the NTP
+     * will reject null and empty, this method does the opposite.
+     * @return Whether the current homepage is something other than the NTP.
+     */
+    public static boolean isHomepageNonNtp() {
+        String currentHomepage = getHomepageUri();
+        return !TextUtils.isEmpty(currentHomepage) && !UrlUtilities.isNTPUrl(currentHomepage);
+    }
+
+    /**
      * Get homepage URI without checking if the homepage is enabled.
      * @return Homepage URI based on policy and shared preference settings.
      */

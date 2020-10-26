@@ -16,7 +16,9 @@ import static org.mockito.Mockito.verify;
 import android.text.TextUtils;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
@@ -26,11 +28,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -61,13 +66,18 @@ public class ToolbarTabControllerImplTest {
     @Mock
     private Supplier<Profile> mProfileSupplier;
     @Mock
+    private Profile mProfile;
+    @Mock
     private Supplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
     @Mock
     private BottomControlsCoordinator mBottomControlsCoordinator;
     @Mock
-    Tracker mTracker;
+    private Tracker mTracker;
     @Mock
     private Runnable mRunnable;
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     private ToolbarTabControllerImpl mToolbarTabController;
 
@@ -130,11 +140,38 @@ public class ToolbarTabControllerImplTest {
     }
 
     @Test
-    public void openHomepage_handledByStartSurface() {
+    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
+    public void openHomepage_handledByStartSurfaceNoProfile() {
         doReturn(true).when(mOverrideHomePageSupplier).get();
 
         mToolbarTabController.openHomepage();
+
         verify(mTab, never()).loadUrl(any());
+        verify(mTracker, never()).notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
+    public void openHomepage_handledByStartSurfaceWithProfile() {
+        doReturn(true).when(mOverrideHomePageSupplier).get();
+        doReturn(mProfile).when(mProfileSupplier).get();
+
+        mToolbarTabController.openHomepage();
+
+        verify(mTab, never()).loadUrl(any());
+        verify(mTracker, times(1)).notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
+    public void openHomepage_handledByStartSurface_disabledNtpButtonFeature() {
+        doReturn(true).when(mOverrideHomePageSupplier).get();
+        doReturn(mProfile).when(mProfileSupplier).get();
+
+        mToolbarTabController.openHomepage();
+
+        verify(mTab, never()).loadUrl(any());
+        verify(mTracker, never()).notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
     }
 
     @Test

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
+import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -79,8 +80,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private AppBannerInProductHelpController mAppBannerInProductHelpController;
-    private ObservableSupplier<Boolean> mIntentWithEffect;
-    private Callback<Boolean> mIntentWithEffectObserver;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
     private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
@@ -91,8 +90,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param activity The activity whose UI the coordinator is responsible for.
      * @param onOmniboxFocusChangedListener callback to invoke when Omnibox focus
      *         changes.
-     * @param intentWithEffect Supplier of boolean saying whether or not {@code activity} was
-     *         launched with an intent to open a single tab.
+     * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param shareDelegateSupplier
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
@@ -103,7 +101,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      */
     public TabbedRootUiCoordinator(ChromeActivity activity,
             Callback<Boolean> onOmniboxFocusChangedListener,
-            ObservableSupplier<Boolean> intentWithEffect,
+            OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             ActivityTabProvider tabProvider,
             ObservableSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
@@ -115,8 +113,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplier<StartSurface> startSurfaceSupplier) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, overviewModeBehaviorSupplier,
-                contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier);
-        mIntentWithEffect = intentWithEffect;
+                contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
+                intentMetadataOneshotSupplier);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mCanAnimateBrowserControls = () -> {
             // These null checks prevent any exceptions that may be caused by callbacks after
@@ -247,8 +245,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     getBottomSheetController(), true));
         }
 
-        mIntentWithEffectObserver = this::initializeIPH;
-        mIntentWithEffect.addObserver(mIntentWithEffectObserver);
+        mIntentMetadataOneshotSupplier.onAvailable(mCallbackController.makeCancelable(
+                (metadata) -> initializeIPH(metadata.getIsIntentWithEffect())));
     }
 
     // Protected class methods
@@ -305,16 +303,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     // Private class methods
 
     private void initializeIPH(boolean intentWithEffect) {
-        assert mIntentWithEffectObserver != null;
-        mIntentWithEffect.removeObserver(mIntentWithEffectObserver);
-        mIntentWithEffectObserver = null;
-
         if (mActivity == null) return;
         mToolbarButtonInProductHelpController =
                 new ToolbarButtonInProductHelpController(mActivity, mAppMenuCoordinator,
                         mActivity.getLifecycleDispatcher(), mActivity.getActivityTabProvider());
-        if (!triggerPromo(intentWithEffect)) {
+        boolean didTriggerPromo = triggerPromo(intentWithEffect);
+        if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIPH();
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
+            mPromoShownOneshotSupplier.set(didTriggerPromo);
         }
 
         if (mOfflineIndicatorController != null) {
