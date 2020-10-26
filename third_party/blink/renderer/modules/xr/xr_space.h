@@ -90,6 +90,9 @@ class XRSpace : public EventTargetWithInlineData {
 
   XRSession* session() const { return session_; }
 
+  // ToString() helper, used for debugging.
+  virtual std::string ToString() const = 0;
+
   // EventTarget overrides.
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;

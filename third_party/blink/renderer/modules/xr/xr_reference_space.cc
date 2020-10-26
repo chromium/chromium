@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 
+#include <sstream>
+
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space_event.h"
@@ -195,6 +197,14 @@ XRReferenceSpace* XRReferenceSpace::cloneWithOriginOffset(
 base::Optional<device::mojom::blink::XRNativeOriginInformation>
 XRReferenceSpace::NativeOrigin() const {
   return XRNativeOriginInformation::Create(this);
+}
+
+std::string XRReferenceSpace::ToString() const {
+  std::stringstream ss;
+
+  ss << "XRReferenceSpace(type=" << type_ << ")";
+
+  return ss.str();
 }
 
 void XRReferenceSpace::Trace(Visitor* visitor) const {

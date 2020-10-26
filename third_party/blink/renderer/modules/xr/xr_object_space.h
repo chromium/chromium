@@ -44,6 +44,8 @@ class XRObjectSpace : public XRSpace {
     return true;
   }
 
+  std::string ToString() const override { return "XRObjectSpace"; }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(object_);
     XRSpace::Trace(visitor);

@@ -52,6 +52,8 @@ class XRReferenceSpace : public XRSpace {
   base::Optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
       const final;
 
+  std::string ToString() const override;
+
   void Trace(Visitor*) const override;
 
   virtual void OnReset();

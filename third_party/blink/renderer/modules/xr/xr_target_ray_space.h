@@ -22,6 +22,8 @@ class XRTargetRaySpace : public XRSpace {
 
   bool IsStationary() const override;
 
+  std::string ToString() const override;
+
   void Trace(Visitor*) const override;
 
  private:

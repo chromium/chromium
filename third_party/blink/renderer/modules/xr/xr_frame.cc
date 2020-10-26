@@ -274,6 +274,8 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
     return {};
   }
 
+  DVLOG(3) << __func__ << ": space->ToString()=" << space->ToString();
+
   // The passed in space may be an offset space, we need to transform the pose
   // to account for origin-offset:
   auto native_origin_from_offset_space = space->NativeFromOffsetMatrix();

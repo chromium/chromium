@@ -1056,6 +1056,8 @@ ArCoreImpl::GetMojoFromInputSources(
 base::Optional<gfx::Transform> ArCoreImpl::GetMojoFromReferenceSpace(
     device::mojom::XRReferenceSpaceType type,
     const gfx::Transform& mojo_from_viewer) {
+  DVLOG(3) << __func__ << ": type=" << type;
+
   switch (type) {
     case device::mojom::XRReferenceSpaceType::kLocal:
       return gfx::Transform{};

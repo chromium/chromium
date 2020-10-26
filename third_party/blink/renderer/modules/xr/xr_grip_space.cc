@@ -46,6 +46,10 @@ bool XRGripSpace::IsStationary() const {
   return false;
 }
 
+std::string XRGripSpace::ToString() const {
+  return "XRGripSpace";
+}
+
 void XRGripSpace::Trace(Visitor* visitor) const {
   visitor->Trace(input_source_);
   XRSpace::Trace(visitor);

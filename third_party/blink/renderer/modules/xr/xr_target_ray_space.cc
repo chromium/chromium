@@ -55,6 +55,10 @@ XRTargetRaySpace::NativeOrigin() const {
   return input_source_->nativeOrigin();
 }
 
+std::string XRTargetRaySpace::ToString() const {
+  return "XRTargetRaySpace";
+}
+
 bool XRTargetRaySpace::IsStationary() const {
   // Target ray space is a space derived off of input source, so it is not
   // considered stationary.
