@@ -17,8 +17,6 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
-import org.chromium.components.version_info.Channel;
-import org.chromium.components.version_info.VersionConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,40 +44,38 @@ abstract class AwDataDirLock {
                 StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             if (sExclusiveFileLock != null) {
                 // We have already called lock() and successfully acquired the lock in this process.
-                // This shouldn't happen, but may be the result of an app catching an exception
-                // thrown during initialization and discarding it, causing us to later attempt to
-                // initialize WebView again. By continuing, we are racing with the file being closed
-                // by the finalizer (releasing the lock), and so we may or may not crash with
-                // OverlappingFileLockException. Ideally we'd explicitly crash here but we don't
-                // want to make this problem worse until we fully understand it, so on stable we
-                // just log and then let execution continue; the app will either be lucky or not
-                // with roughly the same chance/conditions as before these checks were implemented.
-                throwIfNotStableChannel("Data directory already locked by current process - "
-                        + "https://crbug.com/1054774");
-            } else if (sLockFile != null) {
-                // We have already called lock() but didn't succeed in getting the lock. As above
-                // this shouldn't happen, but this won't lead to OverlappingFileLockException.
-                // Again, we just log and then let execution continue on stable; if the app fails to
-                // acquire the lock again we'll crash from that anyway.
-                throwIfNotStableChannel("Previous data directory lock attempt in current process - "
-                        + "https://crbug.com/1054744");
+                // This shouldn't happen, but is likely to be the result of an app catching an
+                // exception thrown during initialization and discarding it, causing us to later
+                // attempt to initialize WebView again. There's no real advantage to failing the
+                // locking code when this happens; we may as well count this as the lock being
+                // acquired and let init continue (though the app may experience other problems
+                // later).
+                return;
             }
 
-            String dataPath = PathUtils.getDataDirectory();
-            File lockFile = new File(dataPath, EXCLUSIVE_LOCK_FILE);
+            // If we already called lock() but didn't succeed in getting the lock, it's possible the
+            // app caught the exception and tried again later. As above, there's no real advantage
+            // to failing here, so only open the lock file if we didn't already open it before.
+            if (sLockFile == null) {
+                String dataPath = PathUtils.getDataDirectory();
+                File lockFile = new File(dataPath, EXCLUSIVE_LOCK_FILE);
 
-            try {
-                // Note that the file is kept open intentionally.
-                sLockFile = new RandomAccessFile(lockFile, "rw");
-            } catch (IOException e) {
-                // Failing to create the lock file is always fatal; even if multiple processes are
-                // using the same data directory we should always be able to access the file itself.
-                throw new RuntimeException("Failed to create lock file " + lockFile, e);
+                try {
+                    // Note that the file is kept open intentionally.
+                    sLockFile = new RandomAccessFile(lockFile, "rw");
+                } catch (IOException e) {
+                    // Failing to create the lock file is always fatal; even if multiple processes
+                    // are using the same data directory we should always be able to access the file
+                    // itself.
+                    throw new RuntimeException("Failed to create lock file " + lockFile, e);
+                }
             }
 
             // Android versions before 11 have edge cases where a new instance of an app process can
-            // be started while an existing one is still in the process of being killed. Retry
-            // the lock a few times to give the old process time to fully go away.
+            // be started while an existing one is still in the process of being killed. This can
+            // still happen on Android 11+ because the platform has a timeout for waiting, but it's
+            // much less likely. Retry the lock a few times to give the old process time to fully go
+            // away.
             for (int attempts = 1; attempts <= LOCK_RETRIES; ++attempts) {
                 try {
                     sExclusiveFileLock = sLockFile.getChannel().tryLock();
@@ -177,13 +173,5 @@ abstract class AwDataDirLock {
             error.append(" unknown");
         }
         return error.toString();
-    }
-
-    private static void throwIfNotStableChannel(String error) {
-        if (VersionConstants.CHANNEL == Channel.STABLE) {
-            Log.e(TAG, error);
-        } else {
-            throw new RuntimeException(error);
-        }
     }
 }
