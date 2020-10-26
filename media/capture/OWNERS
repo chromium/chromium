@@ -4,3 +4,5 @@
 file://media/capture/content/OWNERS
 # For video/
 file://media/capture/video/OWNERS
+# For video/mac/
+file://media/capture/video/mac/OWNERS
