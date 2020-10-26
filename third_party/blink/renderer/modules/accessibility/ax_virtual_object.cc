@@ -29,8 +29,14 @@ void AXVirtualObject::AddChildren() {
   if (!accessible_node_)
     return;
 
-  for (const auto& child : accessible_node_->GetChildren())
-    children_.push_back(AXObjectCache().GetOrCreate(child));
+  for (const auto& child : accessible_node_->GetChildren()) {
+    AXObject* ax_child = AXObjectCache().GetOrCreate(child);
+    if (!ax_child)
+      continue;
+
+    children_.push_back(ax_child);
+    ax_child->SetParent(this);
+  }
 }
 
 void AXVirtualObject::ChildrenChanged() {

@@ -109,8 +109,8 @@ void AXMenuListPopup::AddChildren() {
   for (auto* const option_element : html_select_element->GetOptionList()) {
     AXMenuListOption* option = MenuListOptionAXObject(option_element);
     if (option) {
-      option->SetParent(this);
       children_.push_back(option);
+      option->SetParent(this);
     }
   }
 }
