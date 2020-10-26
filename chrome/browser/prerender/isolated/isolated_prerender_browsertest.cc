@@ -83,6 +83,7 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -683,11 +684,10 @@ class IsolatedPrerenderBrowserTest
 
     bool found_chrome_tunnel_header = false;
     for (const std::string& header : request_lines) {
-      if (header.find("chrome-tunnel") != std::string::npos &&
-          header.find("key=" +
-                      IsolatedPrerenderProxyConfigurator::GetGoogleAPIKey()) !=
-              std::string::npos) {
+      if (base::Contains(header, "chrome-tunnel") &&
+          base::Contains(header, "key=" + google_apis::GetAPIKey())) {
         found_chrome_tunnel_header = true;
+        break;
       }
     }
     EXPECT_TRUE(found_chrome_tunnel_header);

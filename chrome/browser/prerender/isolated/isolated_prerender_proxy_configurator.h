@@ -22,9 +22,6 @@ class IsolatedPrerenderProxyConfigurator {
   IsolatedPrerenderProxyConfigurator();
   ~IsolatedPrerenderProxyConfigurator();
 
-  // Gets the Google API ket, if configured. If not, returns an empty string.
-  static std::string GetGoogleAPIKey();
-
   // Adds a config client that can be used to update Data Reduction Proxy
   // settings.
   void AddCustomProxyConfigClient(
