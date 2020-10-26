@@ -1345,9 +1345,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
 
 #if defined(OS_ANDROID)
-  { key::kCCTToSDialogEnabled,
-    first_run::kCCTToSDialogEnabled,
-    base::Value::Type::BOOLEAN },
+  { key::kTosDialogBehavior,
+    first_run::kTosDialogBehavior,
+    base::Value::Type::INTEGER },
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_ASH)

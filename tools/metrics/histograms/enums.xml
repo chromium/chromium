@@ -22327,6 +22327,7 @@ Called by update_document_policy_enum.py.-->
   <int value="798" label="WifiSyncAndroidAllowed"/>
   <int value="799" label="SecurityTokenSessionBehavior"/>
   <int value="800" label="SecurityTokenSessionNotificationSeconds"/>
+  <int value="801" label="TosDialogBehavior"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

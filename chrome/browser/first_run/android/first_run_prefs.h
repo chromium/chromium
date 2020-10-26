@@ -7,7 +7,11 @@
 
 namespace first_run {
 
-extern const char kCCTToSDialogEnabled[];
+// Must also match definition in policy_templates.json.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.firstrun
+enum class TosDialogBehavior { UNSET = 0, STANDARD = 1, SKIP = 2 };
+
+extern const char kTosDialogBehavior[];
 
 }  // namespace first_run
 

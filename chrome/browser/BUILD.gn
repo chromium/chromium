@@ -6811,6 +6811,9 @@ if (is_android) {
   java_cpp_enum("sharing_dialog_type_generated_enum") {
     sources = [ "sharing/sharing_metrics.h" ]
   }
+  java_cpp_enum("tos_dialog_behavior_generated_enum") {
+    sources = [ "first_run/android/first_run_prefs.h" ]
+  }
 }
 
 proto_library("status_proto") {
