@@ -193,7 +193,6 @@ no_check_targets = [
   "//sandbox/win:*",  # 7 errors
 
   # //third_party/blink/*, https://crbug.com/800764
-  "//third_party/blink/renderer/core/animation:*",  # 506 errors
   "//third_party/blink/renderer/core/exported:*",  # 470 errors
 
   "//third_party/breakpad:*",  # 34 errors
