@@ -60,7 +60,7 @@ ImageDecoderImpl::ImageDecoderImpl() = default;
 
 ImageDecoderImpl::~ImageDecoderImpl() = default;
 
-void ImageDecoderImpl::DecodeImage(const std::vector<uint8_t>& encoded_data,
+void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
                                    mojom::ImageCodec codec,
                                    bool shrink_to_fit,
                                    int64_t max_size_in_bytes,
@@ -97,7 +97,7 @@ void ImageDecoderImpl::DecodeImage(const std::vector<uint8_t>& encoded_data,
   std::move(callback).Run(decoded_image);
 }
 
-void ImageDecoderImpl::DecodeAnimation(const std::vector<uint8_t>& encoded_data,
+void ImageDecoderImpl::DecodeAnimation(mojo_base::BigBuffer encoded_data,
                                        bool shrink_to_fit,
                                        int64_t max_size_in_bytes,
                                        DecodeAnimationCallback callback) {
