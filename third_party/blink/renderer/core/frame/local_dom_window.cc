@@ -1665,9 +1665,7 @@ void LocalDOMWindow::resizeTo(int width, int height) const {
 
 int LocalDOMWindow::requestAnimationFrame(V8FrameRequestCallback* callback) {
   if (Document* doc = document()) {
-    auto* frame_callback =
-        MakeGarbageCollected<FrameRequestCallbackCollection::V8FrameCallback>(
-            callback);
+    auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
     frame_callback->SetUseLegacyTimeBase(false);
     return doc->RequestAnimationFrame(frame_callback);
   }
@@ -1677,9 +1675,7 @@ int LocalDOMWindow::requestAnimationFrame(V8FrameRequestCallback* callback) {
 int LocalDOMWindow::webkitRequestAnimationFrame(
     V8FrameRequestCallback* callback) {
   if (Document* doc = document()) {
-    auto* frame_callback =
-        MakeGarbageCollected<FrameRequestCallbackCollection::V8FrameCallback>(
-            callback);
+    auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
     frame_callback->SetUseLegacyTimeBase(true);
     return doc->RequestAnimationFrame(frame_callback);
   }
@@ -1713,8 +1709,7 @@ int LocalDOMWindow::requestIdleCallback(V8IdleRequestCallback* callback,
                                         const IdleRequestOptions* options) {
   if (!GetFrame())
     return 0;
-  return document_->RequestIdleCallback(
-      ScriptedIdleTaskController::V8IdleTask::Create(callback), options);
+  return document_->RequestIdleCallback(V8IdleTask::Create(callback), options);
 }
 
 void LocalDOMWindow::cancelIdleCallback(int id) {

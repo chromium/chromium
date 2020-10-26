@@ -22,7 +22,7 @@
 namespace blink {
 
 class ComputedAccessibleNodePromiseResolver::RequestAnimationFrameCallback final
-    : public FrameRequestCallbackCollection::FrameCallback {
+    : public FrameCallback {
  public:
   explicit RequestAnimationFrameCallback(
       ComputedAccessibleNodePromiseResolver* resolver)
@@ -35,7 +35,7 @@ class ComputedAccessibleNodePromiseResolver::RequestAnimationFrameCallback final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(resolver_);
-    FrameRequestCallbackCollection::FrameCallback::Trace(visitor);
+    FrameCallback::Trace(visitor);
   }
 
  private:

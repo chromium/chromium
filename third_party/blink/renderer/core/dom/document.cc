@@ -144,6 +144,7 @@
 #include "third_party/blink/renderer/core/dom/node_with_index.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
+#include "third_party/blink/renderer/core/dom/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -7497,8 +7498,7 @@ ScriptedAnimationController& Document::GetScriptedAnimationController() {
   return *scripted_animation_controller_;
 }
 
-int Document::RequestAnimationFrame(
-    FrameRequestCallbackCollection::FrameCallback* callback) {
+int Document::RequestAnimationFrame(FrameCallback* callback) {
   return scripted_animation_controller_->RegisterFrameCallback(callback);
 }
 
@@ -7530,9 +7530,8 @@ ScriptedIdleTaskController& Document::EnsureScriptedIdleTaskController() {
   return *scripted_idle_task_controller_;
 }
 
-int Document::RequestIdleCallback(
-    ScriptedIdleTaskController::IdleTask* idle_task,
-    const IdleRequestOptions* options) {
+int Document::RequestIdleCallback(IdleTask* idle_task,
+                                  const IdleRequestOptions* options) {
   return EnsureScriptedIdleTaskController().RegisterCallback(idle_task,
                                                              options);
 }

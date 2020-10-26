@@ -29,8 +29,7 @@ namespace blink {
 
 namespace {
 
-class XRFrameProviderRequestCallback
-    : public FrameRequestCallbackCollection::FrameCallback {
+class XRFrameProviderRequestCallback : public FrameCallback {
  public:
   explicit XRFrameProviderRequestCallback(XRFrameProvider* frame_provider)
       : frame_provider_(frame_provider) {}
@@ -41,8 +40,7 @@ class XRFrameProviderRequestCallback
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(frame_provider_);
-
-    FrameRequestCallbackCollection::FrameCallback::Trace(visitor);
+    FrameCallback::Trace(visitor);
   }
 
   Member<XRFrameProvider> frame_provider_;

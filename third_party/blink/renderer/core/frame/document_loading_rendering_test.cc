@@ -296,8 +296,7 @@ TEST_F(DocumentLoadingRenderingTest,
 
 namespace {
 
-class CheckRafCallback final
-    : public FrameRequestCallbackCollection::FrameCallback {
+class CheckRafCallback final : public FrameCallback {
  public:
   void Invoke(double high_res_time_ms) override { was_called_ = true; }
   bool WasCalled() const { return was_called_; }

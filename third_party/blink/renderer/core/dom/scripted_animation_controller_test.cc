@@ -155,8 +155,7 @@ TEST_F(ScriptedAnimationControllerTest, EnqueueTaskAndEvent) {
 
 namespace {
 
-class RunTaskCallback final
-    : public FrameRequestCallbackCollection::FrameCallback {
+class RunTaskCallback final : public FrameCallback {
  public:
   RunTaskCallback(base::RepeatingClosure task) : task_(std::move(task)) {}
   void Invoke(double) override { task_.Run(); }

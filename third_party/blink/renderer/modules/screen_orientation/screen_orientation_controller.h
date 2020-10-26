@@ -12,6 +12,7 @@
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"

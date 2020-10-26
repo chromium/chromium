@@ -102,18 +102,15 @@ void FrameRequestCallbackCollection::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
 }
 
-FrameRequestCallbackCollection::V8FrameCallback::V8FrameCallback(
-    V8FrameRequestCallback* callback)
+V8FrameCallback::V8FrameCallback(V8FrameRequestCallback* callback)
     : callback_(callback) {}
 
-void FrameRequestCallbackCollection::V8FrameCallback::Trace(
-    blink::Visitor* visitor) const {
+void V8FrameCallback::Trace(blink::Visitor* visitor) const {
   visitor->Trace(callback_);
-  FrameRequestCallbackCollection::FrameCallback::Trace(visitor);
+  FrameCallback::Trace(visitor);
 }
 
-void FrameRequestCallbackCollection::V8FrameCallback::Invoke(
-    double highResTime) {
+void V8FrameCallback::Invoke(double highResTime) {
   callback_->InvokeAndReportException(nullptr, highResTime);
 }
 

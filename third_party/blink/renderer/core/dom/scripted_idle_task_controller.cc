@@ -74,16 +74,14 @@ class IdleRequestCallbackWrapper
 
 }  // namespace internal
 
-ScriptedIdleTaskController::V8IdleTask::V8IdleTask(
-    V8IdleRequestCallback* callback)
-    : callback_(callback) {}
+V8IdleTask::V8IdleTask(V8IdleRequestCallback* callback) : callback_(callback) {}
 
-void ScriptedIdleTaskController::V8IdleTask::Trace(Visitor* visitor) const {
+void V8IdleTask::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
-  ScriptedIdleTaskController::IdleTask::Trace(visitor);
+  IdleTask::Trace(visitor);
 }
 
-void ScriptedIdleTaskController::V8IdleTask::invoke(IdleDeadline* deadline) {
+void V8IdleTask::invoke(IdleDeadline* deadline) {
   callback_->InvokeAndReportException(nullptr, deadline);
 }
 

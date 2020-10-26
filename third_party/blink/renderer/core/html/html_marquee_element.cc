@@ -78,7 +78,7 @@ void HTMLMarqueeElement::DidAddUserAgentShadowRoot(ShadowRoot& shadow_root) {
 }
 
 class HTMLMarqueeElement::RequestAnimationFrameCallback final
-    : public FrameRequestCallbackCollection::FrameCallback {
+    : public FrameCallback {
  public:
   explicit RequestAnimationFrameCallback(HTMLMarqueeElement* marquee)
       : marquee_(marquee) {}
@@ -90,7 +90,7 @@ class HTMLMarqueeElement::RequestAnimationFrameCallback final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(marquee_);
-    FrameRequestCallbackCollection::FrameCallback::Trace(visitor);
+    FrameCallback::Trace(visitor);
   }
 
  private:

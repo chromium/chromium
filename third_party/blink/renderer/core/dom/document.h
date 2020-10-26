@@ -53,10 +53,8 @@
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
-#include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
-#include "third_party/blink/renderer/core/dom/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
@@ -145,6 +143,7 @@ class FloatQuad;
 class FloatRect;
 class FontMatchingMetrics;
 class FormController;
+class FrameCallback;
 class HTMLAllCollection;
 class HTMLBodyElement;
 class FrameScheduler;
@@ -160,6 +159,7 @@ class HTMLScriptElementOrSVGScriptElement;
 class HitTestRequest;
 class HttpRefreshScheduler;
 class IdleRequestOptions;
+class IdleTask;
 class IntersectionObserverController;
 class LayoutView;
 class LazyLoadImageObserver;
@@ -183,6 +183,7 @@ class Range;
 class ResourceFetcher;
 class RootScrollerController;
 class ScriptValue;
+class ScriptedIdleTaskController;
 class SVGDocumentExtensions;
 class SVGUseElement;
 class Text;
@@ -1295,13 +1296,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   const DocumentTiming& GetTiming() const { return document_timing_; }
 
-  int RequestAnimationFrame(FrameRequestCallbackCollection::FrameCallback*);
+  int RequestAnimationFrame(FrameCallback*);
   void CancelAnimationFrame(int id);
   void ServiceScriptedAnimations(
       base::TimeTicks monotonic_animation_start_time);
 
-  int RequestIdleCallback(ScriptedIdleTaskController::IdleTask*,
-                          const IdleRequestOptions*);
+  int RequestIdleCallback(IdleTask*, const IdleRequestOptions*);
   void CancelIdleCallback(int id);
 
   ScriptedAnimationController& GetScriptedAnimationController();

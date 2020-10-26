@@ -91,8 +91,7 @@ void ScriptedAnimationController::ScheduleVideoFrameCallbacksExecution(
 }
 
 ScriptedAnimationController::CallbackId
-ScriptedAnimationController::RegisterFrameCallback(
-    FrameRequestCallbackCollection::FrameCallback* callback) {
+ScriptedAnimationController::RegisterFrameCallback(FrameCallback* callback) {
   CallbackId id = callback_collection_.RegisterFrameCallback(callback);
   ScheduleAnimationIfNeeded();
   return id;

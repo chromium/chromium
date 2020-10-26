@@ -41,15 +41,14 @@ constexpr base::TimeDelta kIdleSpellcheckTestTimeout =
 
 }  // namespace
 
-class IdleSpellCheckController::IdleCallback final
-    : public ScriptedIdleTaskController::IdleTask {
+class IdleSpellCheckController::IdleCallback final : public IdleTask {
  public:
   explicit IdleCallback(IdleSpellCheckController* controller)
       : controller_(controller) {}
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(controller_);
-    ScriptedIdleTaskController::IdleTask::Trace(visitor);
+    IdleTask::Trace(visitor);
   }
 
  private:

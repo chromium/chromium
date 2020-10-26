@@ -102,7 +102,7 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
       base::MakeRefCounted<scheduler::FakeTaskRunner>();
 };
 
-class MockIdleTask : public ScriptedIdleTaskController::IdleTask {
+class MockIdleTask : public IdleTask {
  public:
   MOCK_METHOD1(invoke, void(IdleDeadline*));
 };
