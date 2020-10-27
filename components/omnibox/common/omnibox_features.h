@@ -72,8 +72,9 @@ extern const base::Feature kReactiveZeroSuggestionsOnNTPRealbox;
 extern const base::Feature kOnDeviceHeadProviderIncognito;
 extern const base::Feature kOnDeviceHeadProviderNonIncognito;
 
-// Scoring - these affect how relevance scores are calculated for suggestions.
+// Provider-specific - These features change the behavior of specific providers.
 extern const base::Feature kOmniboxExperimentalSuggestScoring;
+extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kHistoryQuickProviderAllowButDoNotScoreMidwordTerms;
 extern const base::Feature kHistoryQuickProviderAllowMidwordContinuations;
 

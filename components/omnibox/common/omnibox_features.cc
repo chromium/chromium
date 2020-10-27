@@ -262,6 +262,14 @@ const base::Feature kOnDeviceHeadProviderNonIncognito{
 const base::Feature kOmniboxExperimentalSuggestScoring{
     "OmniboxExperimentalSuggestScoring", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the HistoryQuickProvider's InMemoryURLIndex service never
+// persists its index to a cache file on shutdown, and instead always rebuilds
+// it from the HistoryService on startup. Persisting the index to disk causes
+// over 10% of all shutdown hangs.
+const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile{
+    "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If disabled, terms with no wordstart matches disqualify the suggestion unless
 // they occur in the URL host. If enabled, terms with no wordstart matches are
 // allowed but not scored. E.g., both inputs 'java script' and 'java cript' will

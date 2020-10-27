@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -22,6 +23,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/omnibox_features.h"
 
 using in_memory_url_index::InMemoryURLIndexCacheItem;
 
@@ -240,6 +242,13 @@ void InMemoryURLIndex::PostRestoreFromCacheFileTask() {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0("browser", "InMemoryURLIndex::PostRestoreFromCacheFileTask");
 
+  if (base::FeatureList::IsEnabled(
+          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
+    // To short circuit the cache, pretend we've failed to load it.
+    OnCacheLoadDone(nullptr);
+    return;
+  }
+
   base::FilePath path;
   if (!GetCacheFilePath(&path) || shutdown_) {
     restored_ = true;
@@ -292,11 +301,16 @@ void InMemoryURLIndex::Shutdown() {
   if (!GetCacheFilePath(&path))
     return;
   private_data_tracker_.TryCancelAll();
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(
-                         &URLIndexPrivateData::WritePrivateDataToCacheFileTask),
-                     private_data_, path));
+
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(
+                &URLIndexPrivateData::WritePrivateDataToCacheFileTask),
+            private_data_, path));
+  }
 #ifndef LEAK_SANITIZER
   // Intentionally create and then leak a scoped_refptr to private_data_. This
   // permanently raises the reference count so that the URLIndexPrivateData
@@ -349,6 +363,11 @@ void InMemoryURLIndex::RebuildFromHistory(
 // Saving to Cache -------------------------------------------------------------
 
 void InMemoryURLIndex::PostSaveToCacheFileTask() {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
+    return;
+  }
+
   base::FilePath path;
   if (!GetCacheFilePath(&path))
     return;
