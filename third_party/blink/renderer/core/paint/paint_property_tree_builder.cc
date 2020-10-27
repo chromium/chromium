@@ -1664,21 +1664,21 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
 
   if (NeedsOverflowControlsClip()) {
     // Clip overflow controls to the border box rect. Not wrapped with
-    // OnUpdateClip() because this clip doesn't affect descendants.
+    // OnUpdateClip() because this clip doesn't affect descendants. Wrap with
+    // OnUpdate() to let PrePaintTreeWalk see the change. This may cause
+    // unnecessary subtree update, but is not a big deal because it is rare.
     const auto& clip_rect = PhysicalRect(context_.current.paint_offset,
                                          ToLayoutBox(object_).Size());
-    properties_->UpdateOverflowControlsClip(
+    OnUpdate(properties_->UpdateOverflowControlsClip(
         *context_.current.clip,
         ClipPaintPropertyNode::State(context_.current.transform,
                                      FloatRoundedRect(FloatRect(clip_rect)),
-                                     ToSnappedClipRect(clip_rect)));
+                                     ToSnappedClipRect(clip_rect))));
   } else {
-    properties_->ClearOverflowControlsClip();
+    OnClear(properties_->ClearOverflowControlsClip());
   }
 
-  // No need to set force_subtree_update_reasons and clip_changed because
-  // OverflowControlsClip applies to overflow controls only, not descendants.
-  // We also don't walk into custom scrollbars in PrePaintTreeWalk and
+  // We don't walk into custom scrollbars in PrePaintTreeWalk because
   // LayoutObjects under custom scrollbars don't support paint properties.
 }
 
