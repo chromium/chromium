@@ -8744,6 +8744,7 @@ class RenderFrameHostManagerDefaultProcessTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     RenderFrameHostManagerTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    command_line->RemoveSwitch(switches::kSitePerProcess);
 
     if (AreAllSitesIsolatedForTesting()) {
       LOG(WARNING) << "This test should be run without strict site isolation. "
@@ -8757,14 +8758,6 @@ class RenderFrameHostManagerDefaultProcessTest
   DISALLOW_COPY_AND_ASSIGN(RenderFrameHostManagerDefaultProcessTest);
 };
 
-// TODO(crbug.com/1110497): flaky on Android builders since 2020-07-28.
-#if defined(OS_ANDROID)
-#define MAYBE_NavigationRacesWithSitelessCommitInDefaultProcess \
-  DISABLED_NavigationRacesWithSitelessCommitInDefaultProcess
-#else
-#define MAYBE_NavigationRacesWithSitelessCommitInDefaultProcess \
-  NavigationRacesWithSitelessCommitInDefaultProcess
-#endif
 // Ensure that the default process can be used for URLs that don't assign a site
 // to the SiteInstance, when Site Isolation is not enabled.
 // 1. Visit foo.com.
@@ -8774,13 +8767,8 @@ class RenderFrameHostManagerDefaultProcessTest
 // https://crbug.com/838348.)
 // All navigations should use the default process, and we should not crash.
 // See https://crbug.com/977956.
-IN_PROC_BROWSER_TEST_P(
-    RenderFrameHostManagerDefaultProcessTest,
-    MAYBE_NavigationRacesWithSitelessCommitInDefaultProcess) {
-  // This test is designed to run without strict site isolation.
-  if (AreAllSitesIsolatedForTesting())
-    return;
-
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerDefaultProcessTest,
+                       NavigationRacesWithSitelessCommitInDefaultProcess) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
