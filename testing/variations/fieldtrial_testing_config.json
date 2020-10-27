@@ -1615,8 +1615,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ChromeShareHighlightsAndroid",
                         "ChromeShareQRCode",
-                        "ChromeSharingHub"
+                        "ChromeShareScreenshot",
+                        "ChromeSharingHub",
+                        "ChromeSharingHubV15"
                     ]
                 }
             ]
