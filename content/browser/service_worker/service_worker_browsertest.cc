@@ -360,6 +360,7 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
     RunOnCoreThread(base::BindOnce(&self::TearDownOnCoreThread,
                                    base::Unretained(this), loop.QuitClosure()));
     loop.Run();
+    content::RunAllTasksUntilIdle();
     wrapper_ = nullptr;
   }
 
@@ -599,14 +600,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, FetchPageWithSaveData) {
 // Tests that when data saver is enabled and a cross-origin fetch by a webpage
 // is intercepted by a serviceworker, and the serviceworker does a fetch, the
 // preflight request does not have save-data in Access-Control-Request-Headers.
-#if defined(OS_ANDROID)
-// Flaky on Android, http://crbug.com/1142544.
-#define MAYBE_CrossOriginFetchWithSaveData DISABLED_CrossOriginFetchWithSaveData
-#else
-#define MAYBE_CrossOriginFetchWithSaveData CrossOriginFetchWithSaveData
-#endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
-                       MAYBE_CrossOriginFetchWithSaveData) {
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, CrossOriginFetchWithSaveData) {
   StartServerAndNavigateToSetup();
   const char kPageUrl[] = "/service_worker/fetch_cross_origin.html";
   const char kWorkerUrl[] = "/service_worker/fetch_event_pass_through.js";
