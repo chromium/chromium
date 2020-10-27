@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"

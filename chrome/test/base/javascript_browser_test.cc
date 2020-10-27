@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/javascript_browser_test.h"
 
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"

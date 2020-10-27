@@ -580,7 +580,6 @@ void BrowserTestBase::SetUp() {
     ShutDownNetworkService();
     service_manager_env.reset();
     discardable_shared_memory_manager.reset();
-    spawned_test_server_.reset();
   }
 
   base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
@@ -799,9 +798,6 @@ void BrowserTestBase::SetAllowNetworkAccessToHostResolutions() {
 }
 
 void BrowserTestBase::CreateTestServer(const base::FilePath& test_server_base) {
-  CHECK(!spawned_test_server_.get());
-  spawned_test_server_ = std::make_unique<net::SpawnedTestServer>(
-      net::SpawnedTestServer::TYPE_HTTP, test_server_base);
   embedded_test_server()->AddDefaultHandlers(test_server_base);
 }
 
