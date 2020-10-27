@@ -9,7 +9,7 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
-preprocess_folder = "$target_gen_dir/../preprocessed/cr_elements"
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_elements"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
 preprocess_src_manifest = "preprocessed_src_manifest.json"
