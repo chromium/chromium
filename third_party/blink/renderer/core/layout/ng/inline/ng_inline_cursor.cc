@@ -655,25 +655,6 @@ LayoutUnit NGInlineCursor::InlinePositionForOffset(unsigned offset) const {
   return LayoutUnit();
 }
 
-PhysicalOffset NGInlineCursorPosition::LineStartPoint() const {
-  DCHECK(IsLineBox()) << this;
-  const LogicalOffset logical_start;  // (0, 0)
-  const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
-  return logical_start.ConvertToPhysical(
-      {Style().GetWritingMode(), BaseDirection()}, Size(), pixel_size);
-}
-
-PhysicalOffset NGInlineCursorPosition::LineEndPoint() const {
-  DCHECK(IsLineBox()) << this;
-  const WritingMode writing_mode = Style().GetWritingMode();
-  const LayoutUnit inline_size =
-      IsHorizontalWritingMode(writing_mode) ? Size().width : Size().height;
-  const LogicalOffset logical_end(inline_size, LayoutUnit());
-  const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
-  return logical_end.ConvertToPhysical({writing_mode, BaseDirection()}, Size(),
-                                       pixel_size);
-}
-
 LogicalRect NGInlineCursorPosition::ConvertChildToLogical(
     const PhysicalRect& physical_rect) const {
   return WritingModeConverter(
