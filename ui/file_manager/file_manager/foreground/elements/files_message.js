@@ -74,22 +74,16 @@ const filesMessageTemplate = `
  */
 class FilesMessage extends HTMLElement {
   constructor() {
-    super();
-    this.createElement_();
+    /**
+     * Create element content.
+     */
+    super().attachShadow({mode: 'open'}).innerHTML = filesMessageTemplate;
 
     /**
      * FilesMessage visual signals user callback.
      * @private @type {!function(*)}
      */
     this.signal_ = console.log;
-  }
-
-  /**
-   * Creates FilesMessage element.
-   * @private
-   */
-  createElement_() {
-    this.attachShadow({mode: 'open'}).innerHTML = filesMessageTemplate;
   }
 
   /**
