@@ -212,11 +212,10 @@ void AgentSchedulingGroup::CreateFrameProxy(
 void AgentSchedulingGroup::BindAssociatedRouteProvider(
     mojo::PendingAssociatedRemote<mojom::RouteProvider> remote,
     mojo::PendingAssociatedReceiver<mojom::RouteProvider> receiver) {
-  remote_route_provider_.Bind(std::move(remote));
+  remote_route_provider_.Bind(std::move(remote),
+                              agent_group_scheduler_->DefaultTaskRunner());
   route_provider_receiver_.Bind(std::move(receiver),
-                                ToImpl(render_thread_)
-                                    .GetWebMainThreadScheduler()
-                                    ->DeprecatedDefaultTaskRunner());
+                                agent_group_scheduler_->DefaultTaskRunner());
 }
 
 void AgentSchedulingGroup::GetRoute(
@@ -224,8 +223,9 @@ void AgentSchedulingGroup::GetRoute(
     mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
         receiver) {
   DCHECK(receiver.is_valid());
-  associated_interface_provider_receivers_.Add(this, std::move(receiver),
-                                               routing_id);
+  associated_interface_provider_receivers_.Add(
+      this, std::move(receiver), routing_id,
+      agent_group_scheduler_->DefaultTaskRunner());
 }
 
 void AgentSchedulingGroup::GetAssociatedInterface(
