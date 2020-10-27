@@ -27,6 +27,9 @@ class CAPTURE_EXPORT VideoCaptureDXGIDeviceManager
   // Registers this manager in capture engine attributes.
   void RegisterInCaptureEngineAttributes(IMFAttributes* attributes);
 
+  // Registers this manager in source reader attributes.
+  void RegisterInSourceReaderAttributes(IMFAttributes* attributes);
+
   // Registers this manager with a media source
   void RegisterWithMediaSource(
       Microsoft::WRL::ComPtr<IMFMediaSource> media_source);

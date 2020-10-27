@@ -6,6 +6,7 @@
 
 #include <d3d11.h>
 #include <mfcaptureengine.h>
+#include <mfreadwrite.h>
 #include "base/logging.h"
 
 using Microsoft::WRL::ComPtr;
@@ -67,6 +68,13 @@ bool VideoCaptureDXGIDeviceManager::ResetDevice() {
 void VideoCaptureDXGIDeviceManager::RegisterInCaptureEngineAttributes(
     IMFAttributes* attributes) {
   HRESULT result = attributes->SetUnknown(MF_CAPTURE_ENGINE_D3D_MANAGER,
+                                          mf_dxgi_device_manager_.Get());
+  DCHECK(SUCCEEDED(result));
+}
+
+void VideoCaptureDXGIDeviceManager::RegisterInSourceReaderAttributes(
+    IMFAttributes* attributes) {
+  HRESULT result = attributes->SetUnknown(MF_SOURCE_READER_D3D_MANAGER,
                                           mf_dxgi_device_manager_.Get());
   DCHECK(SUCCEEDED(result));
 }

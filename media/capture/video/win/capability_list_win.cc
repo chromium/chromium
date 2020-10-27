@@ -19,11 +19,12 @@ namespace {
 bool CompareCapability(const VideoCaptureFormat& requested,
                        const VideoCaptureFormat& lhs,
                        const VideoCaptureFormat& rhs) {
-  // When 16-bit format is requested and available, avoid other formats.
+  // When 16-bit format or NV12 is requested and available, avoid other formats.
   // If both lhs and rhs are 16-bit, we still need to compare them based on
   // height, width and frame rate.
   const bool use_requested =
-      (requested.pixel_format == media::PIXEL_FORMAT_Y16);
+      (requested.pixel_format == media::PIXEL_FORMAT_Y16) ||
+      (requested.pixel_format == media::PIXEL_FORMAT_NV12);
   if (use_requested && lhs.pixel_format != rhs.pixel_format) {
     if (lhs.pixel_format == requested.pixel_format)
       return true;

@@ -46,9 +46,10 @@ void ConsolidateCaptureFormats(media::VideoCaptureFormats* formats) {
     return;
   // Mark all formats as I420, since this is what the renderer side will get
   // anyhow: the actual pixel format is decided at the device level.
-  // Don't do this for Y16 format as it is handled separatelly.
+  // Don't do this for the Y16 or NV12 formats as they are handled separately.
   for (auto& format : *formats) {
-    if (format.pixel_format != media::PIXEL_FORMAT_Y16)
+    if (format.pixel_format != media::PIXEL_FORMAT_Y16 &&
+        format.pixel_format != media::PIXEL_FORMAT_NV12)
       format.pixel_format = media::PIXEL_FORMAT_I420;
   }
   std::sort(formats->begin(), formats->end(), IsCaptureFormatSmaller);

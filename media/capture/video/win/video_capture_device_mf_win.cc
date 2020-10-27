@@ -227,6 +227,7 @@ bool GetFrameRateFromMediaType(IMFMediaType* type, float* frame_rate) {
 
 bool GetFormatFromSourceMediaType(IMFMediaType* source_media_type,
                                   bool photo,
+                                  bool use_hardware_format,
                                   VideoCaptureFormat* format) {
   GUID major_type_guid;
   if (FAILED(source_media_type->GetGUID(MF_MT_MAJOR_TYPE, &major_type_guid)) ||
@@ -240,7 +241,7 @@ bool GetFormatFromSourceMediaType(IMFMediaType* source_media_type,
   if (FAILED(source_media_type->GetGUID(MF_MT_SUBTYPE, &sub_type_guid)) ||
       !GetFrameSizeFromMediaType(source_media_type, &format->frame_size) ||
       !VideoCaptureDeviceMFWin::GetPixelFormatFromMFSourceMediaSubtype(
-          sub_type_guid, &format->pixel_format)) {
+          sub_type_guid, use_hardware_format, &format->pixel_format)) {
     return false;
   }
 
@@ -269,7 +270,15 @@ struct MediaFormatConfiguration {
 
 bool GetMediaFormatConfigurationFromMFSourceMediaSubtype(
     const GUID& mf_source_media_subtype,
+    bool use_hardware_format,
     MediaFormatConfiguration* media_format_configuration) {
+  // Special case handling of the NV12 format when using hardware capture
+  // to ensure that captured buffers are passed through without copies
+  if (use_hardware_format && mf_source_media_subtype == MFVideoFormat_NV12) {
+    *media_format_configuration = {MFVideoFormat_NV12, MFVideoFormat_NV12,
+                                   PIXEL_FORMAT_NV12};
+    return true;
+  }
   static const MediaFormatConfiguration kMediaFormatConfigurationMap[] = {
       // IMFCaptureEngine inevitably performs the video frame decoding itself.
       // This means that the sink must always be set to an uncompressed video
@@ -313,6 +322,7 @@ bool GetMediaFormatConfigurationFromMFSourceMediaSubtype(
 // sink and source are the same and means that there should be no transcoding
 // done by IMFCaptureEngine.
 HRESULT GetMFSinkMediaSubtype(IMFMediaType* source_media_type,
+                              bool use_hardware_format,
                               GUID* mf_sink_media_subtype,
                               bool* passthrough) {
   GUID source_subtype;
@@ -321,7 +331,7 @@ HRESULT GetMFSinkMediaSubtype(IMFMediaType* source_media_type,
     return hr;
   MediaFormatConfiguration media_format_configuration;
   if (!GetMediaFormatConfigurationFromMFSourceMediaSubtype(
-          source_subtype, &media_format_configuration))
+          source_subtype, use_hardware_format, &media_format_configuration))
     return E_FAIL;
   *mf_sink_media_subtype = media_format_configuration.mf_sink_media_subtype;
   *passthrough =
@@ -338,8 +348,8 @@ HRESULT ConvertToPhotoSinkMediaType(IMFMediaType* source_media_type,
 
   bool passthrough = false;
   GUID mf_sink_media_subtype;
-  hr = GetMFSinkMediaSubtype(source_media_type, &mf_sink_media_subtype,
-                             &passthrough);
+  hr = GetMFSinkMediaSubtype(source_media_type, /*use_hardware_format=*/false,
+                             &mf_sink_media_subtype, &passthrough);
   if (FAILED(hr))
     return hr;
 
@@ -352,6 +362,7 @@ HRESULT ConvertToPhotoSinkMediaType(IMFMediaType* source_media_type,
 }
 
 HRESULT ConvertToVideoSinkMediaType(IMFMediaType* source_media_type,
+                                    bool use_hardware_format,
                                     IMFMediaType* sink_media_type) {
   HRESULT hr = sink_media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
   if (FAILED(hr))
@@ -359,8 +370,8 @@ HRESULT ConvertToVideoSinkMediaType(IMFMediaType* source_media_type,
 
   bool passthrough = false;
   GUID mf_sink_media_subtype;
-  hr = GetMFSinkMediaSubtype(source_media_type, &mf_sink_media_subtype,
-                             &passthrough);
+  hr = GetMFSinkMediaSubtype(source_media_type, use_hardware_format,
+                             &mf_sink_media_subtype, &passthrough);
   if (FAILED(hr))
     return hr;
 
@@ -559,10 +570,12 @@ class MFVideoCallback final
 // static
 bool VideoCaptureDeviceMFWin::GetPixelFormatFromMFSourceMediaSubtype(
     const GUID& mf_source_media_subtype,
+    bool use_hardware_format,
     VideoPixelFormat* pixel_format) {
   MediaFormatConfiguration media_format_configuration;
   if (!GetMediaFormatConfigurationFromMFSourceMediaSubtype(
-          mf_source_media_subtype, &media_format_configuration))
+          mf_source_media_subtype, use_hardware_format,
+          &media_format_configuration))
     return false;
 
   *pixel_format = media_format_configuration.pixel_format;
@@ -702,7 +715,11 @@ HRESULT VideoCaptureDeviceMFWin::FillCapabilities(
     while (SUCCEEDED(hr = GetAvailableDeviceMediaType(
                          source, stream_index, media_type_index, &type))) {
       VideoCaptureFormat format;
-      if (GetFormatFromSourceMediaType(type.Get(), photo, &format))
+      if (GetFormatFromSourceMediaType(
+              type.Get(), photo,
+              /*use_hardware_format=*/!photo &&
+                  static_cast<bool>(dxgi_device_manager_),
+              &format))
         capabilities->emplace_back(media_type_index, format, stream_index);
       type.Reset();
       ++media_type_index;
@@ -929,8 +946,10 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
     return;
   }
 
-  hr = ConvertToVideoSinkMediaType(source_video_media_type.Get(),
-                                   sink_video_media_type.Get());
+  hr = ConvertToVideoSinkMediaType(
+      source_video_media_type.Get(),
+      /*use_hardware_format=*/static_cast<bool>(dxgi_device_manager_),
+      sink_video_media_type.Get());
   if (FAILED(hr)) {
     OnError(
         VideoCaptureError::kWinMediaFoundationConvertToVideoSinkMediaTypeFailed,
@@ -1039,7 +1058,8 @@ void VideoCaptureDeviceMFWin::TakePhoto(TakePhotoCallback callback) {
   }
 
   VideoCaptureFormat format;
-  hr = GetFormatFromSourceMediaType(sink_media_type.Get(), true, &format)
+  hr = GetFormatFromSourceMediaType(sink_media_type.Get(), true,
+                                    /*use_hardware_format=*/false, &format)
            ? S_OK
            : E_FAIL;
   if (FAILED(hr)) {

@@ -896,9 +896,23 @@ VideoCaptureFormats
 VideoCaptureDeviceFactoryWin::GetSupportedFormatsMediaFoundation(
     ComPtr<IMFMediaSource> source,
     const std::string& display_name) {
+  ComPtr<IMFAttributes> source_reader_attributes;
+  if (dxgi_device_manager_) {
+    dxgi_device_manager_->RegisterWithMediaSource(source);
+
+    HRESULT hr = MFCreateAttributes(&source_reader_attributes, 1);
+    if (SUCCEEDED(hr)) {
+      dxgi_device_manager_->RegisterInSourceReaderAttributes(
+          source_reader_attributes.Get());
+    } else {
+      DLOG(ERROR) << "MFCreateAttributes failed: "
+                  << logging::SystemErrorCodeToString(hr);
+    }
+  }
+
   ComPtr<IMFSourceReader> reader;
-  HRESULT hr =
-      MFCreateSourceReaderFromMediaSource(source.Get(), nullptr, &reader);
+  HRESULT hr = MFCreateSourceReaderFromMediaSource(
+      source.Get(), source_reader_attributes.Get(), &reader);
   if (FAILED(hr)) {
     DLOG(ERROR) << "MFCreateSourceReaderFromMediaSource failed: "
                 << logging::SystemErrorCodeToString(hr);
@@ -909,6 +923,7 @@ VideoCaptureDeviceFactoryWin::GetSupportedFormatsMediaFoundation(
 
   DWORD stream_index = 0;
   ComPtr<IMFMediaType> type;
+  const bool dxgi_device_manager_available = dxgi_device_manager_ != nullptr;
   while (SUCCEEDED(hr = reader->GetNativeMediaType(
                        static_cast<DWORD>(MF_SOURCE_READER_FIRST_VIDEO_STREAM),
                        stream_index, &type))) {
@@ -940,10 +955,16 @@ VideoCaptureDeviceFactoryWin::GetSupportedFormatsMediaFoundation(
       return {};
     }
     VideoCaptureDeviceMFWin::GetPixelFormatFromMFSourceMediaSubtype(
-        type_guid, &capture_format.pixel_format);
+        type_guid, /*use_hardware_format=*/dxgi_device_manager_available,
+        &capture_format.pixel_format);
     type.Reset();
     ++stream_index;
     if (capture_format.pixel_format == PIXEL_FORMAT_UNKNOWN)
+      continue;
+    // If we're using the hardware capture path, ignore non-NV12 pixel formats
+    // to prevent copies
+    if (dxgi_device_manager_available &&
+        capture_format.pixel_format != PIXEL_FORMAT_NV12)
       continue;
     formats.push_back(capture_format);
 

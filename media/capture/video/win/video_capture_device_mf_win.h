@@ -41,6 +41,7 @@ class MFVideoCallback;
 class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
  public:
   static bool GetPixelFormatFromMFSourceMediaSubtype(const GUID& guid,
+                                                     bool use_hardware_format,
                                                      VideoPixelFormat* format);
   static VideoCaptureControlSupport GetControlSupport(
       Microsoft::WRL::ComPtr<IMFMediaSource> source);
