@@ -7,6 +7,7 @@
 
 #include "base/scoped_observer.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "ui/views/controls/webview/web_bubble_dialog_view.h"
 
 namespace views {
@@ -56,6 +57,8 @@ class TabSearchBubbleView : public views::WebBubbleDialogView,
 
   ScopedObserver<views::Widget, views::WidgetObserver> observed_bubble_widget_{
       this};
+
+  CloseBubbleOnTabActivationHelper close_bubble_helper_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_TAB_SEARCH_BUBBLE_VIEW_H_

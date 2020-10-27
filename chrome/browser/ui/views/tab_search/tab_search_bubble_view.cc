@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/views/controls/webview/webview.h"
@@ -23,7 +24,8 @@ views::Widget* TabSearchBubbleView::CreateTabSearchBubble(
 TabSearchBubbleView::TabSearchBubbleView(
     content::BrowserContext* browser_context,
     views::View* anchor_view)
-    : WebBubbleDialogView(browser_context, anchor_view) {
+    : WebBubbleDialogView(browser_context, anchor_view),
+      close_bubble_helper_(this, BrowserList::GetInstance()->GetLastActive()) {
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_view()->GetWebContents());
 }
