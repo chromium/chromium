@@ -84,6 +84,7 @@ constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
 constexpr SkColor kCaptureRegionColor = SkColorSetA(gfx::kGoogleBlue300, 77);
 
 // Values for the shadows of the capture region components.
+constexpr int kRegionAffordanceCircleShadow2Blur = 6;
 constexpr gfx::ShadowValue kRegionOutlineShadow(gfx::Vector2d(0, 0),
                                                 2,
                                                 SkColorSetARGB(41, 0, 0, 0));
@@ -93,8 +94,15 @@ constexpr gfx::ShadowValue kRegionAffordanceCircleShadow1(
     SkColorSetARGB(76, 0, 0, 0));
 constexpr gfx::ShadowValue kRegionAffordanceCircleShadow2(
     gfx::Vector2d(0, 2),
-    6,
+    kRegionAffordanceCircleShadow2Blur,
     SkColorSetARGB(38, 0, 0, 0));
+
+// When updating the capture region, request a repaint on the region and inset
+// such that the border, affordance circles and affordance circle shadows are
+// all repainted as well.
+constexpr int kDamageInsetDp = kCaptureRegionBorderStrokePx +
+                               kAffordanceCircleRadiusDp +
+                               kRegionAffordanceCircleShadow2Blur;
 
 // The minimum padding on each side of the capture region. If the capture button
 // cannot be placed in the center of the capture region and maintain this
@@ -507,6 +515,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   cc::PaintFlags circle_flags;
   circle_flags.setColor(kRegionBorderColor);
   circle_flags.setStyle(cc::PaintFlags::kFill_Style);
+  circle_flags.setAntiAlias(true);
   circle_flags.setLooper(gfx::CreateShadowDrawLooper(
       {kRegionAffordanceCircleShadow1, kRegionAffordanceCircleShadow2}));
 
@@ -776,11 +785,9 @@ void CaptureModeSession::OnLocatedEventReleased(
       GetCursorType(GetFineTunePosition(location_in_root, /*is_touch=*/false),
                     is_event_on_capture_bar));
 
-  // Do a repaint to show the affordance circles. See UpdateCaptureRegion to see
-  // how damage is calculated.
+  // Do a repaint to show the affordance circles.
   gfx::Rect damage_region = controller_->user_capture_region();
-  damage_region.Inset(
-      gfx::Insets(-kAffordanceCircleRadiusDp - kCaptureRegionBorderStrokePx));
+  damage_region.Inset(gfx::Insets(-kDamageInsetDp));
   layer()->SchedulePaint(damage_region);
 
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
@@ -806,8 +813,7 @@ void CaptureModeSession::UpdateCaptureRegion(
   // repainted.
   gfx::Rect damage_region = old_capture_region;
   damage_region.Union(new_capture_region);
-  damage_region.Inset(
-      gfx::Insets(-kAffordanceCircleRadiusDp - kCaptureRegionBorderStrokePx));
+  damage_region.Inset(gfx::Insets(-kDamageInsetDp));
   layer()->SchedulePaint(damage_region);
 
   controller_->set_user_capture_region(new_capture_region);
