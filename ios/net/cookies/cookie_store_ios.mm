@@ -518,8 +518,9 @@ void CookieStoreIOS::OnSystemCookiesChanged() {
   if (!flush_closure_.IsCancelled())
     return;
 
-  flush_closure_.Reset(base::Bind(&CookieStoreIOS::FlushStore,
-                                  weak_factory_.GetWeakPtr(), base::Closure()));
+  flush_closure_.Reset(base::BindOnce(&CookieStoreIOS::FlushStore,
+                                      weak_factory_.GetWeakPtr(),
+                                      base::OnceClosure()));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, flush_closure_.callback(), base::TimeDelta::FromSeconds(10));
 }

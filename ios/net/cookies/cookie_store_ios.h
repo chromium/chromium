@@ -198,7 +198,7 @@ class CookieStoreIOS : public net::CookieStore,
   std::unique_ptr<net::CookieMonster> cookie_monster_;
   std::unique_ptr<SystemCookieStore> system_store_;
   bool metrics_enabled_;
-  base::CancelableClosure flush_closure_;
+  base::CancelableOnceClosure flush_closure_;
 
   // Cookie notification methods.
   // The cookie cache is updated from both the system store and the
