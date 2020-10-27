@@ -1533,7 +1533,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorBase.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorProfileSupplier.java",
-  "java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorUma.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabPersistencePolicy.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabPersistentStore.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabPersister.java",

@@ -120,20 +120,19 @@ public class TabPersistentStoreTest {
                 public TabModelImpl call() {
                     return new TabModelImpl(Profile.getLastUsedRegularProfile(), false,
                             getTabCreatorManager().getTabCreator(false),
-                            getTabCreatorManager().getTabCreator(true), null,
-                            mTabModelOrderController, null, mTabPersistentStore,
-                            nextTabPolicySupplier, AsyncTabParamsManagerSingleton.getInstance(),
-                            TestTabModelSelector.this, true);
+                            getTabCreatorManager().getTabCreator(true), mTabModelOrderController,
+                            null, mTabPersistentStore, nextTabPolicySupplier,
+                            AsyncTabParamsManagerSingleton.getInstance(), TestTabModelSelector.this,
+                            true);
                 }
             };
             TabModelImpl regularTabModel = TestThreadUtils.runOnUiThreadBlocking(callable);
             IncognitoTabModel incognitoTabModel =
                     new IncognitoTabModelImpl(new IncognitoTabModelImplCreator(null,
                             getTabCreatorManager().getTabCreator(false),
-                            getTabCreatorManager().getTabCreator(true), null,
-                            mTabModelOrderController, null, mTabPersistentStore,
-                            nextTabPolicySupplier, AsyncTabParamsManagerSingleton.getInstance(),
-                            this));
+                            getTabCreatorManager().getTabCreator(true), mTabModelOrderController,
+                            null, mTabPersistentStore, nextTabPolicySupplier,
+                            AsyncTabParamsManagerSingleton.getInstance(), this));
             initialize(regularTabModel, incognitoTabModel);
         }
 

@@ -22,7 +22,6 @@ import org.chromium.ui.base.WindowAndroid;
 class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     private final TabCreator mRegularTabCreator;
     private final TabCreator mIncognitoTabCreator;
-    private final TabModelSelectorUma mUma;
     private final TabModelOrderController mOrderController;
     private final TabContentManager mTabContentManager;
     private final TabPersistentStore mTabSaver;
@@ -45,7 +44,6 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
      * @param windowAndroidSupplier The supplier to the {@link WindowAndroid} instance.
      * @param regularTabCreator   Creates regular tabs.
      * @param incognitoTabCreator Creates incognito tabs.
-     * @param uma                 Handles UMA tracking for the model.
      * @param orderController     Determines the order for inserting new Tabs.
      * @param tabContentManager   Manages the display content of the tab.
      * @param tabSaver            Handler for saving tabs.
@@ -54,14 +52,13 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
      * @param modelDelegate       Delegate to handle external dependencies and interactions.
      */
     public IncognitoTabModelImplCreator(@Nullable Supplier<WindowAndroid> windowAndroidSupplier,
-            TabCreator regularTabCreator, TabCreator incognitoTabCreator, TabModelSelectorUma uma,
+            TabCreator regularTabCreator, TabCreator incognitoTabCreator,
             TabModelOrderController orderController, TabContentManager tabContentManager,
             TabPersistentStore tabSaver, NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
         mWindowAndroidSupplier = windowAndroidSupplier;
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
-        mUma = uma;
         mOrderController = orderController;
         mTabContentManager = tabContentManager;
         mTabSaver = tabSaver;
@@ -91,7 +88,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     @Override
     public TabModel createTabModel() {
         Profile otrProfile = getOTRProfile();
-        return new TabModelImpl(otrProfile, false, mRegularTabCreator, mIncognitoTabCreator, mUma,
+        return new TabModelImpl(otrProfile, false, mRegularTabCreator, mIncognitoTabCreator,
                 mOrderController, mTabContentManager, mTabSaver, mNextTabPolicySupplier,
                 mAsyncTabParamsManager, mModelDelegate, false);
     }

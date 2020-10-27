@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -55,7 +56,6 @@ public class TabModelImpl extends TabModelJniBridge {
 
     private final TabCreator mRegularTabCreator;
     private final TabCreator mIncognitoTabCreator;
-    private final TabModelSelectorUma mUma;
     private final TabModelOrderController mOrderController;
     private final TabContentManager mTabContentManager;
     private final TabPersistentStore mTabSaver;
@@ -86,7 +86,7 @@ public class TabModelImpl extends TabModelJniBridge {
     private boolean mIsUndoSupported = true;
 
     public TabModelImpl(@NonNull Profile profile, boolean isTabbedActivity,
-            TabCreator regularTabCreator, TabCreator incognitoTabCreator, TabModelSelectorUma uma,
+            TabCreator regularTabCreator, TabCreator incognitoTabCreator,
             TabModelOrderController orderController, TabContentManager tabContentManager,
             TabPersistentStore tabSaver, NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate,
@@ -94,7 +94,6 @@ public class TabModelImpl extends TabModelJniBridge {
         super(profile, isTabbedActivity);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
-        mUma = uma;
         mOrderController = orderController;
         mTabContentManager = tabContentManager;
         mTabSaver = tabSaver;
@@ -564,9 +563,9 @@ public class TabModelImpl extends TabModelJniBridge {
                 for (TabModelObserver obs : mObservers) obs.didSelectTab(tab, type, lastId);
 
                 boolean wasAlreadySelected = tab.getId() == lastId;
-                if (!wasAlreadySelected && type == TabSelectionType.FROM_USER && mUma != null) {
+                if (!wasAlreadySelected && type == TabSelectionType.FROM_USER) {
                     // We only want to record when the user actively switches to a different tab.
-                    mUma.userSwitchedToTab();
+                    RecordUserAction.record("MobileTabSwitched");
                 }
             }
         } finally {
