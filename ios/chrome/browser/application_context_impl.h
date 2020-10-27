@@ -100,7 +100,10 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<BreadcrumbPersistentStorageManager>
       breadcrumb_persistent_storage_manager_;
 
-  // Must be destroyed after |local_state_|.
+  // Must be destroyed after |local_state_|. BrowserStatePolicyConnector isn't a
+  // keyed service because the pref service, which isn't a keyed service, has a
+  // hard dependency on the policy infrastructure. In order to outlive the pref
+  // service, the policy connector must live outside the keyed services.
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
 
   std::unique_ptr<PrefService> local_state_;
