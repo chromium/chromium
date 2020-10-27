@@ -3625,6 +3625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
+  <owner>handellm@chromium.org</owner>
   <summary>
     Video Capture Device frame rate requested by VideoCaptureManager on
     AllocateAndStart(). The collection is made in the VideoCaptureController
@@ -3632,8 +3633,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Height" units="pixels" expires_after="M85">
+<histogram name="Media.VideoCapture.Height" units="pixels" expires_after="M99">
   <owner>mcasas@chromium.org</owner>
+  <owner>handellm@chromium.org</owner>
   <summary>
     Video Capture Device captured frame height in pixels. The collection is made
     in the VideoCaptureController upon reception of the first frame.
@@ -3705,8 +3707,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Width" units="pixels" expires_after="M82">
+<histogram name="Media.VideoCapture.Width" units="pixels" expires_after="M99">
   <owner>mcasas@chromium.org</owner>
+  <owner>handellm@chromium.org</owner>
   <summary>
     Video Capture Device captured frame width in pixels. The collection is made
     in the VideoCaptureController upon reception of the first frame.
