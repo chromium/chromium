@@ -33,7 +33,7 @@ struct TextInputState {
   uint32 flags;
 
   // The value of input field.
-  mojo_base.mojom.String16? value;
+  mojo_base.mojom.BigString16? value;
 
   // The current selection range, or the caret position if nothing is selected.
   gfx.mojom.Range selection;

@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_web_vector.h"
 #include "mojo/public/cpp/bindings/string_traits_wtf.h"
@@ -61,7 +62,7 @@ struct StructTraits<blink::mojom::DragItemFileDataView,
 template <>
 struct StructTraits<blink::mojom::DragItemBinaryDataView,
                     blink::WebDragData::Item> {
-  static blink::WebVector<uint8_t> data(const blink::WebDragData::Item& item);
+  static mojo_base::BigBuffer data(const blink::WebDragData::Item& item);
   static blink::KURL source_url(const blink::WebDragData::Item& item);
   static base::FilePath filename_extension(
       const blink::WebDragData::Item& item);

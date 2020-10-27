@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/file_system_access/native_file_system_manager_impl.h"
@@ -147,7 +148,7 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         DCHECK(result.file_contents.empty());
 
         const blink::mojom::DragItemBinaryPtr& binary_item = item->get_binary();
-        std::vector<uint8_t> contents = binary_item->data;
+        base::span<const uint8_t> contents = base::make_span(binary_item->data);
         result.file_contents.assign(contents.begin(), contents.end());
         result.file_contents_source_url = binary_item->source_url;
         result.file_contents_filename_extension =

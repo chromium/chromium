@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
@@ -44,7 +45,7 @@ struct DragItemString {
   string string_type;
   // Depending of the value of `string_type`, it contains the dragged link,
   // text, HTML markup or any other data.
-  mojo_base.mojom.String16 string_data;
+  mojo_base.mojom.BigString16 string_data;
 
   // Title associated with a link. Only valid when string_type == "text/uri-list".
   mojo_base.mojom.String16? title;
@@ -64,7 +65,7 @@ struct DragItemFile {
 // Only used when dragging images out of Blink.
 struct DragItemBinary {
   // Image data.
-  array<uint8> data;
+  mojo_base.mojom.BigBuffer data;
   url.mojom.Url source_url;
   mojo_base.mojom.FilePath filename_extension;
   // Content-Disposition response header.

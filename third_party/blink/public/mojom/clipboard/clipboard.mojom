@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/big_string.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "url/mojom/url.mojom";
 
@@ -55,7 +56,7 @@ interface ClipboardHost {
   ReadSvg(ClipboardBuffer buffer) => (mojo_base.mojom.BigString16 result);
 
   [Sync]
-  ReadRtf(ClipboardBuffer buffer) => (string result);
+  ReadRtf(ClipboardBuffer buffer) => (mojo_base.mojom.BigString result);
 
   [Sync]
   ReadImage(ClipboardBuffer buffer) => (skia.mojom.Bitmap? image);

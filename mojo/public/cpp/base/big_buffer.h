@@ -176,7 +176,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
   static BigBufferView CreateInvalidForTest();
 
  private:
-  BigBuffer::StorageType storage_type_;
+  BigBuffer::StorageType storage_type_ = BigBuffer::StorageType::kBytes;
   base::span<const uint8_t> bytes_;
   base::Optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 

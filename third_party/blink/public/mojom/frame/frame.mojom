@@ -376,7 +376,7 @@ interface LocalFrameHost {
   // Notification that the text selection has changed.
   // Note: The second parameter is the character based offset of the
   // base::string16 text in the document.
-  TextSelectionChanged(mojo_base.mojom.String16 text,
+  TextSelectionChanged(mojo_base.mojom.BigString16 text,
                        uint32 offset,
                        gfx.mojom.Range range);
 
