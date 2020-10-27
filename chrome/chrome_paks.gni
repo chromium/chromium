@@ -143,6 +143,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/settings_resources.pak",
         "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
         "$root_gen_dir/headless/headless_lib_resources.pak",
+        "$root_gen_dir/ui/resources/webui_generated_resources.pak",
       ]
       deps += [
         "//chrome/browser/media/kaleidoscope:kaleidoscope_resources",

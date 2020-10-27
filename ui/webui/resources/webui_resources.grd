@@ -470,8 +470,6 @@ without changes to the corresponding grd file. -->
         <part file="cr_components/cr_components_resources.grdp" />
         <part file="cr_elements_resources.grdp" />
         <part file="cr_polymer_resources.grdp" />
-        <part file="polymer_resources.grdp" />
-        <part file="polymer_resources_v3.grdp" />
       </if>
     </structures>
   </release>

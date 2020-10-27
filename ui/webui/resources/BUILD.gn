@@ -4,8 +4,34 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_grit.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 preprocess_folder = "preprocessed"
+
+include_polymer = !is_android && !is_ios
+
+if (include_polymer) {
+  # Note: Currently webui_generated_resources.grd contains only Polymer-related
+  # files so no need to exist where Polymer is not available. This might
+  # change as more files are moved to webui_generated_resources.grd.
+  generate_grd("build_grd") {
+    grd_prefix = "webui_generated"
+    out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+    deps = [
+      "//third_party/polymer/v1_0:build_grdp",
+      "//third_party/polymer/v3_0:build_grdp",
+    ]
+    grdp_files = [
+      "$root_gen_dir/third_party/polymer/v1_0/polymer_1_0_resources.grdp",
+      "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//third_party/web-animations-js:build_grdp" ]
+      grdp_files += [ "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp" ]
+    }
+  }
+}
 
 group("preprocess") {
   deps = [
@@ -24,7 +50,7 @@ preprocess_grit("preprocess_src") {
     "js/plural_string_proxy.js",
   ]
 
-  if (!is_android) {
+  if (include_polymer) {
     in_files += [
       "cr_elements/cr_splitter/cr_splitter.js",
       "cr_components/certificate_manager/certificates_browser_proxy.js",
@@ -57,7 +83,7 @@ preprocess_grit("preprocess_generated") {
     "js/cr/ui/store.m.js",
   ]
 
-  if (!is_android) {
+  if (include_polymer) {
     in_files += [
       "cr_components/certificate_manager/ca_trust_edit_dialog.js",
       "cr_components/certificate_manager/certificate_delete_confirmation_dialog.js",

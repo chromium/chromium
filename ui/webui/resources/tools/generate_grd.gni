@@ -36,10 +36,10 @@ template("generate_grd") {
 
     if (defined(invoker.input_files)) {
       args += [
-        "--input-files-base-dir",
-        invoker.input_files_base_dir,
-      ]
-      args += [ "--input-files" ] + invoker.input_files
+                "--input-files-base-dir",
+                invoker.input_files_base_dir,
+                "--input-files",
+              ] + invoker.input_files
     }
 
     if (defined(invoker.resource_path_rewrites)) {

@@ -46,6 +46,10 @@
 #include "base/strings/utf_string_conversions.h"
 #endif
 
+#if !defined(OS_ANDROID)
+#include "ui/resources/grit/webui_generated_resources_map.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -56,10 +60,6 @@ const std::map<std::string, std::string> CreatePathPrefixAliasesMap() {
   // TODO(rkc): Once we have a separate source for apps, remove '*/apps/'
   // aliases.
   std::map<std::string, std::string> aliases = {
-    {"../../../third_party/polymer/v1_0/components-chromium/", "polymer/v1_0/"},
-    {"../../../third_party/polymer/v3_0/components-chromium/", "polymer/v3_0/"},
-    {"../../../third_party/web-animations-js/sources/",
-     "polymer/v1_0/web-animations-js/"},
     {"../../views/resources/default_100_percent/common/", "images/apps/"},
     {"../../views/resources/default_200_percent/common/", "images/2x/apps/"},
     {"../../webui/resources/cr_components/", "cr_components/"},
@@ -77,8 +77,6 @@ const std::map<std::string, std::string> CreatePathPrefixAliasesMap() {
 
 #if !defined(OS_ANDROID)
   aliases["../../../third_party/lottie/"] = "lottie/";
-  aliases["../../../third_party/polymer/v1_0/components-chromium/polymer2/"] =
-      "polymer/v1_0/polymer/";
 #endif  // !defined(OS_ANDROID)
   return aliases;
 }
@@ -232,6 +230,11 @@ const ResourcesMap* CreateResourcesMap() {
   AddAliasedResourcesToMap(CreateContentResourceIdToAliasMap(),
                            kMediaInternalsResources,
                            kMediaInternalsResourcesSize, result);
+#if !defined(OS_ANDROID)
+  AddGritResourcesToMap(
+      base::make_span(kWebuiGeneratedResources, kWebuiGeneratedResourcesSize),
+      result);
+#endif
   AddGritResourcesToMap(
       base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize),
       result);

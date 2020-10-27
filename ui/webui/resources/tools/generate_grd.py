@@ -84,8 +84,16 @@ def _generate_include_row(grd_prefix, filename, pathname, \
   extension = os.path.splitext(filename)[1]
   type = 'chrome_html' if extension == '.html' or extension == '.js' \
           else 'BINDATA'
+
   resource_path = resource_path_rewrites[filename] \
       if filename in resource_path_rewrites else filename
+
+   # Rewrite resource_path for third_party/polymer/.
+  if 'third_party/polymer/v1_0/components-chromium/' in pathname:
+    resource_path = 'polymer/v1_0/' + resource_path
+  if 'third_party/polymer/v3_0/components-chromium/' in pathname:
+    resource_path = 'polymer/v3_0/' + resource_path
+
   return GRD_INCLUDE_TEMPLATE.format(
       file=pathname,
       path=resource_path,
