@@ -1288,10 +1288,10 @@
     Share folder with Linux
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with the crostini container.">
-    Give Linux apps permission to modify files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
+    Give Linux apps permission to access files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with the crostini container.">
-    Give Linux apps permission to modify files in your Google Drive. Changes will sync to your other devices.
+    Give Linux apps permission to access files in your Google Drive. Changes will sync to your other devices.
   </message>
   <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_CROSTINI" desc="Confirmation message shown when a user shares a folder with the crostini container.">
     1 folder shared with Linux
@@ -1303,10 +1303,10 @@
     Share folder with Parallels Desktop
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with Parallels." >
-    Give Parallels Desktop permission to modify files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
+    Give Parallels Desktop permission to access files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with Parallels.">
-    Give Parallels Desktop permission to modify files in your Google Drive. Changes will sync to your other devices.
+    Give Parallels Desktop permission to access files in your Google Drive. Changes will sync to your other devices.
   </message>
   <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares a folder with Parallels.">
     1 folder shared with Parallels Desktop

@@ -67,7 +67,7 @@ shareBase.testSharePaths = async (
     'termina': 'Linux apps',
     'PvmDefault': 'Parallels Desktop'
   };
-  const givePermission = `Give ${shareLabel[vmName]} permission to modify `;
+  const givePermission = `Give ${shareLabel[vmName]} permission to access `;
   const shareMessageShown = '#files-message:not([hidden])';
   const shareMessageHidden = '#files-message[hidden]';
 
@@ -270,7 +270,7 @@ shareBase.testShareVolumes = async (vmName, vmNameSelector, done) => {
     'termina': 'Linux apps',
     'PvmDefault': 'Parallels Desktop'
   };
-  const givePermission = `Give ${shareLabel[vmName]} permission to modify `;
+  const givePermission = `Give ${shareLabel[vmName]} permission to access `;
 
   chrome.fileManagerPrivate.mountCrostiniDelay_ = 0;
 
