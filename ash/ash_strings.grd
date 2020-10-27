@@ -1112,9 +1112,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON" desc="Label for the inline reply button inside a PhoneHub notification.">
         Reply
       </message>
-      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_CANCEL_BUTTON" desc="Label for the cancel button inside a PhoneHub notification.">
-        Cancel
-      </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION" desc="Description for the notification opt in view.">
         Turn on Notifications from your Android phone
       </message>

@@ -192,26 +192,6 @@ TEST_F(PhoneHubNotificationControllerTest, ClickSettings) {
   EXPECT_EQ(1, GetSystemTrayClient()->show_connected_devices_settings_count());
 }
 
-TEST_F(PhoneHubNotificationControllerTest, CancelReply) {
-  chromeos::phonehub::Notification fake_notification(
-      kPhoneHubNotificationId0,
-      chromeos::phonehub::Notification::AppMetadata(base::UTF8ToUTF16(kAppName),
-                                                    kPackageName,
-                                                    /*icon=*/gfx::Image()),
-      base::Time::Now(), chromeos::phonehub::Notification::Importance::kDefault,
-      /*inline_reply_id=*/1, base::UTF8ToUTF16(kTitle),
-      base::UTF8ToUTF16(kTextContent));
-
-  notification_manager_.SetNotification(fake_notification);
-
-  auto* cros_notification =
-      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
-  ASSERT_TRUE(cros_notification);
-  EXPECT_EQ(2u, cros_notification->buttons().size());
-  message_center_->ClickOnNotificationButton(kCrOSNotificationId0, 1);
-  EXPECT_EQ(0u, message_center_->NotificationCount());
-}
-
 TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
   base::Time timestamp = base::Time::FromJsTime(12345);
 

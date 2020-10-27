@@ -33,7 +33,6 @@ const char kNotifierId[] = "chrome://phonehub";
 const char kNotifierIdSeparator[] = "-";
 const char kNotificationCustomViewType[] = "phonehub";
 const int kReplyButtonIndex = 0;
-const int kCancelButtonIndex = 1;
 
 // The amount of time the reply button is disabled after sending an inline
 // reply. This is used to make sure that all the replies are received by the
@@ -153,9 +152,6 @@ class PhoneHubNotificationController::NotificationDelegate
       controller_->SendInlineReply(phone_hub_id_, reply.value());
       return;
     }
-
-    if (button_index.value() == kCancelButtonIndex)
-      Remove();
   }
 
   void SettingsClick() override {
@@ -325,11 +321,6 @@ PhoneHubNotificationController::CreateNotification(
       IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON);
   reply_button.placeholder = base::string16();
   optional_fields.buttons.push_back(reply_button);
-
-  message_center::ButtonInfo cancel_button;
-  cancel_button.title = l10n_util::GetStringUTF16(
-      IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_CANCEL_BUTTON);
-  optional_fields.buttons.push_back(cancel_button);
 
   if (TrayPopupUtils::CanOpenWebUISettings()) {
     optional_fields.settings_button_handler =
