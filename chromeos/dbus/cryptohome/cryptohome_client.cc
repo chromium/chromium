@@ -482,21 +482,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
   }
 
   // CryptohomeClient override.
-  void TpmAttestationGetEnrollmentId(
-      bool ignore_cache,
-      DBusMethodCallback<TpmAttestationDataResult> callback) override {
-    dbus::MethodCall method_call(
-        cryptohome::kCryptohomeInterface,
-        cryptohome::kCryptohomeTpmAttestationGetEnrollmentId);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(ignore_cache);
-    proxy_->CallMethod(
-        &method_call, kTpmDBusTimeoutMs,
-        base::BindOnce(&CryptohomeClientImpl::OnTpmAttestationDataMethod,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  // CryptohomeClient override.
   void TpmAttestationIsEnrolled(DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(
         cryptohome::kCryptohomeInterface,

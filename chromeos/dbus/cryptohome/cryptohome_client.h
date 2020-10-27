@@ -316,13 +316,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // succeeds. This method blocks until the call returns.
   virtual bool InstallAttributesIsFirstInstall(bool* is_first_install) = 0;
 
-  // Requests the device's enrollment identifier (EID). The |callback| will be
-  // called with the EID. If |ignore_cache| is true, the EID is calculated
-  // even if the attestation database already contains a cached version.
-  virtual void TpmAttestationGetEnrollmentId(
-      bool ignore_cache,
-      DBusMethodCallback<TpmAttestationDataResult> callback) = 0;
-
   // Calls the TpmAttestationIsEnrolled dbus method.  The callback is called
   // when the operation completes.
   virtual void TpmAttestationIsEnrolled(DBusMethodCallback<bool> callback) = 0;
