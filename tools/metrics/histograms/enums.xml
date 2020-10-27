@@ -26002,6 +26002,15 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Service error"/>
 </enum>
 
+<enum name="FamilyLinkUserLogSegment">
+  <summary>
+    Filters family link user metrics into categories of interest.
+  </summary>
+  <int value="0" label="Other Not Family Link"/>
+  <int value="1" label="Under Age of Consent"/>
+  <int value="2" label="Over Age of Consent"/>
+</enum>
+
 <enum name="FamilyUserLogSegment">
   <summary>Filters family user metrics into categories of interest.</summary>
   <int value="0" label="Other"/>

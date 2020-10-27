@@ -88,6 +88,12 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
     initialize_fake_merge_session_ = value;
   }
 
+  bool initialize_child_id_token() { return initialize_child_id_token_; }
+
+  void set_initialize_child_id_token(bool value) {
+    initialize_child_id_token_ = value;
+  }
+
   FakeGaia* fake_gaia() { return fake_gaia_.get(); }
   HTTPSForwarder* gaia_https_forwarder() { return &gaia_https_forwarder_; }
 
@@ -103,6 +109,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
 
   std::unique_ptr<FakeGaia> fake_gaia_;
   bool initialize_fake_merge_session_ = true;
+  bool initialize_child_id_token_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeGaiaMixin);
 };

@@ -152,6 +152,7 @@
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
+#include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/signin/signin_status_metrics_provider_chromeos.h"
 #include "components/metrics/structured/structured_metrics_provider.h"
@@ -748,6 +749,11 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   if (base::FeatureList::IsEnabled(chromeos::kFamilyUserMetricsProvider)) {
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<FamilyUserMetricsProvider>());
+  }
+
+  if (base::FeatureList::IsEnabled(chromeos::kFamilyLinkUserMetricsProvider)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<FamilyLinkUserMetricsProvider>());
   }
 #endif  // defined(OS_CHROMEOS)
 

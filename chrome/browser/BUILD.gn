@@ -4164,6 +4164,8 @@ static_library("browser") {
       "metrics/cros_healthd_metrics_provider.cc",
       "metrics/cros_healthd_metrics_provider.h",
       "metrics/enrollment_status.h",
+      "metrics/family_link_user_metrics_provider.cc",
+      "metrics/family_link_user_metrics_provider.h",
       "metrics/family_user_metrics_provider.cc",
       "metrics/family_user_metrics_provider.h",
       "metrics/perf/collection_params.cc",

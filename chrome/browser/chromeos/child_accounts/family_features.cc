@@ -9,4 +9,7 @@ namespace chromeos {
 const base::Feature kFamilyUserMetricsProvider{
     "FamilyUserMetricsProvider", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kFamilyLinkUserMetricsProvider{
+    "FamilyLinkUserMetricsProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace chromeos

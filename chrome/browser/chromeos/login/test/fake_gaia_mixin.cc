@@ -79,6 +79,8 @@ void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
   user_info_token.token = "fake-userinfo-token";
   user_info_token.expires_in = kFakeAccessTokenExpiration;
   user_info_token.email = user_email;
+  if (initialize_child_id_token())
+    user_info_token.id_token = test::GetChildAccountOAuthIdToken();
   fake_gaia_->IssueOAuthToken(refresh_token, user_info_token);
 
   if (issue_any_scope_token) {

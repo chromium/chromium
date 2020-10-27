@@ -14,6 +14,9 @@ namespace chromeos {
 // this feature for privacy reasons.
 extern const base::Feature kFamilyUserMetricsProvider;
 
+// Filters family link user metrics into one of three types.
+extern const base::Feature kFamilyLinkUserMetricsProvider;
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_FAMILY_FEATURES_H_
