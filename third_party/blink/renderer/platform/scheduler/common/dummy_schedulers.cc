@@ -92,10 +92,28 @@ class DummyFrameScheduler : public FrameScheduler {
   DISALLOW_COPY_AND_ASSIGN(DummyFrameScheduler);
 };
 
+class DummyAgentGroupScheduler : public AgentGroupScheduler {
+ public:
+  DummyAgentGroupScheduler() = default;
+  ~DummyAgentGroupScheduler() override = default;
+  AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
+  std::unique_ptr<PageScheduler> CreatePageScheduler(
+      PageScheduler::Delegate*) override {
+    return CreateDummyPageScheduler();
+  }
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(DummyAgentGroupScheduler);
+};
+
 class DummyPageScheduler : public PageScheduler {
  public:
-  DummyPageScheduler() {}
-  ~DummyPageScheduler() override {}
+  DummyPageScheduler()
+      : agent_group_scheduler_(std::make_unique<DummyAgentGroupScheduler>()) {}
+  ~DummyPageScheduler() override = default;
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
@@ -132,26 +150,13 @@ class DummyPageScheduler : public PageScheduler {
       WebScopedVirtualTimePauser::VirtualTaskDuration) override {
     return WebScopedVirtualTimePauser();
   }
+  scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override {
+    return *agent_group_scheduler_;
+  }
 
  private:
+  std::unique_ptr<DummyAgentGroupScheduler> agent_group_scheduler_;
   DISALLOW_COPY_AND_ASSIGN(DummyPageScheduler);
-};
-
-class DummyAgentGroupScheduler : public AgentGroupScheduler {
- public:
-  DummyAgentGroupScheduler() = default;
-  ~DummyAgentGroupScheduler() override = default;
-  AgentGroupScheduler& AsAgentGroupScheduler() override { return *this; }
-  std::unique_ptr<PageScheduler> CreatePageScheduler(
-      PageScheduler::Delegate*) override {
-    return CreateDummyPageScheduler();
-  }
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyAgentGroupScheduler);
 };
 
 // TODO(altimin,yutak): Merge with SimpleThread in platform.cc.

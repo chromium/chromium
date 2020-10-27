@@ -228,6 +228,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   mojo::AssociatedReceiver<mojom::blink::RemoteFrame> receiver_{this};
   mojo::AssociatedReceiver<mojom::blink::RemoteMainFrame> main_frame_receiver_{
       this};
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 inline RemoteFrameView* RemoteFrame::View() const {

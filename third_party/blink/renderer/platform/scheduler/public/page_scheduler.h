@@ -18,6 +18,10 @@
 
 namespace blink {
 
+namespace scheduler {
+class WebAgentGroupScheduler;
+}  // namespace scheduler
+
 class PLATFORM_EXPORT PageScheduler {
  public:
   class PLATFORM_EXPORT Delegate {
@@ -156,6 +160,9 @@ class PLATFORM_EXPORT PageScheduler {
   virtual WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
       const String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration) = 0;
+
+  // Returns WebAgentGroupScheduler
+  virtual scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() = 0;
 };
 
 }  // namespace blink

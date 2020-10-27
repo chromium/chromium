@@ -115,7 +115,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool IsOrdinary() const;
 
   MainThreadSchedulerImpl* GetMainThreadScheduler() const;
-  AgentGroupSchedulerImpl& GetAgentGroupScheduler();
+  AgentGroupSchedulerImpl& GetAgentGroupScheduler() override;
 
   void Unregister(FrameSchedulerImpl*);
   void OnNavigation();

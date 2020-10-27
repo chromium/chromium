@@ -109,9 +109,12 @@ RemoteFrame::RemoteFrame(
             frame_token,
             MakeGarbageCollected<RemoteWindowProxyManager>(*this),
             inheriting_agent_factory),
-      interface_registry_(
-          interface_registry ? interface_registry
-                             : InterfaceRegistry::GetEmptyInterfaceRegistry()) {
+      interface_registry_(interface_registry
+                              ? interface_registry
+                              : InterfaceRegistry::GetEmptyInterfaceRegistry()),
+      task_runner_(page.GetPageScheduler()
+                       ->GetAgentGroupScheduler()
+                       .DefaultTaskRunner()) {
   // TODO(crbug.com/1094850): Remove this check once the renderer is correctly
   // handling errors during the creation of HTML portal elements, which would
   // otherwise cause RemoteFrame() being created with empty frame tokens.
@@ -126,8 +129,9 @@ RemoteFrame::RemoteFrame(
   interface_registry->AddAssociatedInterface(WTF::BindRepeating(
       &RemoteFrame::BindToReceiver, WrapWeakPersistent(this)));
 
+  DCHECK(task_runner_);
   associated_interface_provider->GetInterface(
-      remote_frame_host_remote_.BindNewEndpointAndPassReceiver());
+      remote_frame_host_remote_.BindNewEndpointAndPassReceiver(task_runner_));
 
   UpdateInertIfPossible();
   UpdateInheritedEffectiveTouchActionIfPossible();
@@ -832,14 +836,14 @@ void RemoteFrame::BindToReceiver(
     RemoteFrame* frame,
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver) {
   DCHECK(frame);
-  frame->receiver_.Bind(std::move(receiver));
+  frame->receiver_.Bind(std::move(receiver), frame->task_runner_);
 }
 
 void RemoteFrame::BindToMainFrameReceiver(
     RemoteFrame* frame,
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteMainFrame> receiver) {
   DCHECK(frame);
-  frame->main_frame_receiver_.Bind(std::move(receiver));
+  frame->main_frame_receiver_.Bind(std::move(receiver), frame->task_runner_);
 }
 
 }  // namespace blink
