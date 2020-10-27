@@ -192,7 +192,7 @@ test("media_unittests") {
       "//media/fuchsia/audio:unittests",
       "//media/fuchsia/cdm/service:unittests",
     ]
-    manifest = "//media/fuchsia/media_unittests.cmx"
+    manifest = "//media/fuchsia/media_unittests.test-cmx"
   }
 
   if (enable_media_remoting) {

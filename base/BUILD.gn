@@ -3348,7 +3348,7 @@ test("base_unittests") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
 
-    manifest = "fuchsia/base_unittests.cmx"
+    manifest = "fuchsia/base_unittests.test-cmx"
   }
 
   if (!is_fuchsia && !is_ios) {
