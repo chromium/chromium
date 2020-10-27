@@ -233,6 +233,33 @@ private_api::Certificate GetCertDictionary(
   return api_cert;
 }
 
+// This returns the strings provided by NetworkPortalDetector for backwards
+// compatibility, even though the implementation no longer queries
+// NetworkPortalDetector directly.
+// static
+std::string PortalStatusString(
+    chromeos::NetworkState::PortalState portal_state) {
+  using PortalState = chromeos::NetworkState::PortalState;
+  switch (portal_state) {
+    case PortalState::kUnknown:
+      return chromeos::NetworkPortalDetector::CaptivePortalStatusString(
+          chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
+    case PortalState::kOnline:
+      return chromeos::NetworkPortalDetector::CaptivePortalStatusString(
+          chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+    case PortalState::kPortalSuspected:
+    case PortalState::kPortal:
+    case PortalState::kNoInternet:
+      return chromeos::NetworkPortalDetector::CaptivePortalStatusString(
+          chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+    case PortalState::kProxyAuthRequired:
+      return chromeos::NetworkPortalDetector::CaptivePortalStatusString(
+          chromeos::NetworkPortalDetector::
+              CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
+  }
+  return "Unrecognized";
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -533,16 +560,21 @@ void NetworkingPrivateChromeOS::GetCaptivePortalStatus(
     const std::string& guid,
     StringCallback success_callback,
     FailureCallback failure_callback) {
-  if (!chromeos::network_portal_detector::IsInitialized()) {
-    std::move(failure_callback).Run(networking_private::kErrorNotReady);
+  const chromeos::NetworkState* network =
+      GetStateHandler()->GetNetworkStateFromGuid(guid);
+  if (!network) {
+    std::move(failure_callback)
+        .Run(extensions::networking_private::kErrorInvalidNetworkGuid);
     return;
   }
-
-  std::move(success_callback)
-      .Run(chromeos::NetworkPortalDetector::CaptivePortalStatusString(
-          chromeos::network_portal_detector::GetInstance()
-              ->GetCaptivePortalState(guid)
-              .status));
+  if (!network->IsConnectedState()) {
+    std::move(success_callback)
+        .Run(chromeos::NetworkPortalDetector::CaptivePortalStatusString(
+            chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE));
+    return;
+  }
+  chromeos::NetworkState::PortalState portal_state = network->portal_state();
+  std::move(success_callback).Run(PortalStatusString(portal_state));
 }
 
 void NetworkingPrivateChromeOS::UnlockCellularSim(

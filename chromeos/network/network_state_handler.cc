@@ -1898,8 +1898,10 @@ void NetworkStateHandler::OnNetworkConnectionStateChanged(
 bool NetworkStateHandler::VerifyDefaultNetworkConnectionStateChange(
     NetworkState* network) {
   DCHECK(network->path() == default_network_path_);
-  if (network->IsConnectedState())
+  if (network->IsConnectedState() ||
+      NetworkState::StateIsPortalled(network->connection_state())) {
     return true;
+  }
   if (network->IsConnectingState()) {
     // Wait until the network is actually connected to notify that the default
     // network changed.
@@ -1944,6 +1946,24 @@ void NetworkStateHandler::NotifyDefaultNetworkChanged(
   notifying_network_observers_ = true;
   for (auto& observer : observers_)
     observer.DefaultNetworkChanged(default_network);
+
+  if (default_network &&
+      (default_network->portal_state() != default_network_portal_state_ ||
+       default_network->proxy_config() != default_network_proxy_config_)) {
+    default_network_portal_state_ = default_network->portal_state();
+    default_network_proxy_config_ = default_network->proxy_config().Clone();
+    for (auto& observer : observers_) {
+      observer.PortalStateChanged(default_network,
+                                  default_network_portal_state_);
+    }
+  } else if (!default_network && (default_network_portal_state_ !=
+                                      NetworkState::PortalState::kUnknown ||
+                                  !default_network_proxy_config_.is_none())) {
+    default_network_portal_state_ = NetworkState::PortalState::kUnknown;
+    default_network_proxy_config_ = base::Value();
+    for (auto& observer : observers_)
+      observer.PortalStateChanged(nullptr, NetworkState::PortalState::kUnknown);
+  }
   notifying_network_observers_ = false;
 }
 

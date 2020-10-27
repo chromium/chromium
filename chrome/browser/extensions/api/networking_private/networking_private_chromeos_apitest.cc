@@ -14,10 +14,10 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/helper.h"
-#include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/extensions/api/networking_cast_private/chrome_networking_cast_private_delegate.h"
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -38,7 +38,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/onc/onc_utils.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -80,8 +79,6 @@ using testing::_;
 
 using chromeos::CryptohomeClient;
 using chromeos::DBusThreadManager;
-using chromeos::NetworkPortalDetector;
-using chromeos::NetworkPortalDetectorTestImpl;
 using chromeos::ShillDeviceClient;
 using chromeos::ShillIPConfigClient;
 using chromeos::ShillManagerClient;
@@ -189,8 +186,7 @@ class TestListener : public content::NotificationObserver {
 class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
  public:
   NetworkingPrivateChromeOSApiTest()
-      : detector_(nullptr),
-        manager_test_(nullptr),
+      : manager_test_(nullptr),
         profile_test_(nullptr),
         service_test_(nullptr),
         device_test_(nullptr) {}
@@ -345,9 +341,6 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
   }
 
   void SetUpOnMainThread() override {
-    detector_ = new NetworkPortalDetectorTestImpl();
-    chromeos::network_portal_detector::InitializeForTesting(detector_);
-
     extensions::ExtensionApiTest::SetUpOnMainThread();
     content::RunAllPendingInMessageLoop();
 
@@ -496,9 +489,6 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  NetworkPortalDetectorTestImpl* detector() { return detector_; }
-
-  NetworkPortalDetectorTestImpl* detector_;
   ShillManagerClient::TestInterface* manager_test_;
   ShillProfileClient::TestInterface* profile_test_;
   ShillServiceClient::TestInterface* service_test_;
@@ -820,37 +810,29 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, VerifyAndEncryptData) {
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
                        GetCaptivePortalStatus) {
-  SetupCellular();
-
-  NetworkPortalDetector::CaptivePortalState state;
-  state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-  detector()->SetDetectionResultsForTesting("stub_ethernet_guid", state);
-
-  state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE;
-  detector()->SetDetectionResultsForTesting("stub_wifi1_guid", state);
-
-  state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL;
-  detector()->SetDetectionResultsForTesting("stub_wifi2_guid", state);
-
-  state.status =
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED;
-  detector()->SetDetectionResultsForTesting("stub_cellular1_guid", state);
+  // Ethernet defaults to online. Set wifi1 to idle -> 'Offline', and wifi2 to
+  // redirect-found -> 'Portal'.
+  service_test_->SetServiceProperty(kWifi1ServicePath, shill::kStateProperty,
+                                    base::Value(shill::kStateIdle));
+  service_test_->SetServiceProperty(kWifi2ServicePath, shill::kStateProperty,
+                                    base::Value(shill::kStateRedirectFound));
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(RunNetworkingSubtest("getCaptivePortalStatus")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
                        CaptivePortalNotification) {
-  detector()->SetDefaultNetworkForTesting("wifi_guid");
-  NetworkPortalDetector::CaptivePortalState state;
-  state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-  detector()->SetDetectionResultsForTesting("wifi_guid", state);
-
-  TestListener listener(
-      "notifyPortalDetectorObservers",
-      base::BindRepeating(
-          &NetworkPortalDetectorTestImpl::NotifyObserversForTesting,
-          base::Unretained(detector())));
+  // Make wifi1 the default service since captive portal notifications only
+  // occur for the default service.
+  service_test_->RemoveService("stub_ethernet");
+  service_test_->RemoveService("stub_vpn1");
+  TestListener listener("notifyPortalDetectorObservers",
+                        base::BindLambdaForTesting([&]() {
+                          service_test_->SetServiceProperty(
+                              kWifi1ServicePath, shill::kStateProperty,
+                              base::Value(shill::kStateRedirectFound));
+                        }));
   EXPECT_TRUE(RunNetworkingSubtest("captivePortalNotification")) << message_;
 }
 

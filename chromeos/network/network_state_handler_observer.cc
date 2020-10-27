@@ -17,6 +17,10 @@ void NetworkStateHandlerObserver::DeviceListChanged() {}
 void NetworkStateHandlerObserver::DefaultNetworkChanged(
     const NetworkState* network) {}
 
+void NetworkStateHandlerObserver::PortalStateChanged(
+    const NetworkState* default_network,
+    NetworkState::PortalState portal_state) {}
+
 void NetworkStateHandlerObserver::NetworkConnectionStateChanged(
     const NetworkState* network) {}
 

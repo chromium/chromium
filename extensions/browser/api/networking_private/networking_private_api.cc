@@ -133,7 +133,6 @@ const char kErrorInvalidArguments[] = "Error.InvalidArguments";
 const char kErrorInvalidNetworkGuid[] = "Error.InvalidNetworkGuid";
 const char kErrorInvalidNetworkOperation[] = "Error.InvalidNetworkOperation";
 const char kErrorNetworkUnavailable[] = "Error.NetworkUnavailable";
-const char kErrorNotReady[] = "Error.NotReady";
 const char kErrorNotSupported[] = "Error.NotSupported";
 const char kErrorPolicyControlled[] = "Error.PolicyControlled";
 const char kErrorSimLocked[] = "Error.SimLocked";

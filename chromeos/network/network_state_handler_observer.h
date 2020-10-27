@@ -10,12 +10,12 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "chromeos/network/network_state.h"
 #include "chromeos/network/network_type_pattern.h"
 
 namespace chromeos {
 
 class DeviceState;
-class NetworkState;
 
 // Observer class for all network state changes, including changes to
 // active (connecting or connected) services.
@@ -35,8 +35,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
   // changed. This won't be called if the WiFi signal strength property
   // changes. If interested in those events, use NetworkPropertiesUpdated()
   // below.
-  // |network| will be NULL if there is no longer a default network.
+  // |network| will be null if there is no longer a default network.
   virtual void DefaultNetworkChanged(const NetworkState* network);
+
+  // The portal state or the proxy configuration of the default network changed.
+  // Note: |default_network| may be null if there is no default network, in
+  // which case |portal_state| will always be kUnknown.
+  virtual void PortalStateChanged(const NetworkState* default_network,
+                                  NetworkState::PortalState portal_state);
 
   // The connection state of |network| changed.
   virtual void NetworkConnectionStateChanged(const NetworkState* network);

@@ -661,6 +661,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // List of interfaces on which portal check is enabled.
   std::string check_portal_list_;
 
+  // Tracks the default network portal state for triggering PortalStateChanged.
+  NetworkState::PortalState default_network_portal_state_ =
+      NetworkState::PortalState::kUnknown;
+
+  // Tracks the default network proxy config for triggering PortalStateChanged.
+  base::Value default_network_proxy_config_;
+
   // DHCP Hostname.
   std::string hostname_;
 

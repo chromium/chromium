@@ -22,7 +22,6 @@ extern const char kErrorInvalidArguments[];
 extern const char kErrorInvalidNetworkGuid[];
 extern const char kErrorInvalidNetworkOperation[];
 extern const char kErrorNetworkUnavailable[];
-extern const char kErrorNotReady[];
 extern const char kErrorNotSupported[];
 extern const char kErrorPolicyControlled[];
 extern const char kErrorSimLocked[];

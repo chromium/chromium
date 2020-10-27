@@ -119,6 +119,12 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
             << " State: " << default_network_connection_state_;
   }
 
+  void PortalStateChanged(const NetworkState* default_network,
+                          NetworkState::PortalState portal_state) override {
+    default_network_portal_state_ = portal_state;
+    VLOG(1) << "PortalStateChanged: " << static_cast<int>(portal_state);
+  }
+
   void NetworkConnectionStateChanged(const NetworkState* network) override {
     network_connection_state_[network->path()] = network->connection_state();
     connection_state_changes_[network->path()]++;
@@ -188,6 +194,9 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   std::string default_network_connection_state() {
     return default_network_connection_state_;
   }
+  NetworkState::PortalState default_network_portal_state() {
+    return default_network_portal_state_;
+  }
 
   int PropertyUpdatesForService(const std::string& service_path) {
     return property_updates_[service_path];
@@ -220,6 +229,7 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   std::vector<std::string> active_network_paths_;
   std::string default_network_;
   std::string default_network_connection_state_;
+  NetworkState::PortalState default_network_portal_state_;
   std::map<std::string, int> property_updates_;
   std::map<std::string, int> device_property_updates_;
   std::map<std::string, int> connection_state_changes_;
@@ -1817,6 +1827,28 @@ TEST_F(NetworkStateHandlerTest, DefaultServiceChanged) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(wifi2, test_observer_->default_network());
   EXPECT_EQ(2u, test_observer_->default_network_change_count());
+}
+
+TEST_F(NetworkStateHandlerTest, PortalStateChanged) {
+  // Remove Ethernet.
+  manager_test_->RemoveTechnology(shill::kTypeEthernet);
+  service_test_->RemoveService(kShillManagerClientStubDefaultService);
+  manager_test_->SetManagerProperty(
+      shill::kDefaultServiceProperty,
+      base::Value(kShillManagerClientStubDefaultWifi));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(test_observer_->default_network(),
+            kShillManagerClientStubDefaultWifi);
+
+  // Set WiFi to portal-suspected and ensure observer is triggered.
+  ASSERT_EQ(NetworkState::PortalState::kOnline,
+            test_observer_->default_network_portal_state());
+  service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
+                                    shill::kStateProperty,
+                                    base::Value(shill::kStatePortalSuspected));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(NetworkState::PortalState::kPortalSuspected,
+            test_observer_->default_network_portal_state());
 }
 
 TEST_F(NetworkStateHandlerTest, RequestUpdate) {
