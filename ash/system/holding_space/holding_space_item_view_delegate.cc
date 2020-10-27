@@ -76,14 +76,23 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewCreated(
 bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
     HoldingSpaceItemView* view,
     const ui::AXActionData& action_data) {
-  // When performing the default accessible action (e.g. Search + Space), we
-  // open the selected holding space items. If `view` is not part of the current
+  // When performing the default accessible action (e.g. Search + Space), open
+  // the selected holding space items. If `view` is not part of the current
   // selection it will become the entire selection.
   if (action_data.action == ax::mojom::Action::kDoDefault) {
     if (!view->selected())
       SetSelection(view);
     OpenItems(GetSelection());
     return true;
+  }
+  // When showing the context menu via accessible action (e.g. Search + M),
+  // ensure that `view` is part of the current selection. If it is not part of
+  // the current selection it will become the entire selection.
+  if (action_data.action == ax::mojom::Action::kShowContextMenu) {
+    if (!view->selected())
+      SetSelection(view);
+    // Return false so that the views framework will show the context menu.
+    return false;
   }
   return false;
 }
