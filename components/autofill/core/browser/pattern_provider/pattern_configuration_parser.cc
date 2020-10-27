@@ -47,15 +47,19 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
   base::Optional<int> match_field_input_types =
       value.FindIntKey(kMatchFieldInputTypesKey);
 
-  if (!pattern_identifier || !positive_pattern || !negative_pattern ||
-      !positive_score || !match_field_attributes || !match_field_input_types)
+  if (!pattern_identifier || !positive_pattern || !positive_score ||
+      !match_field_attributes || !match_field_input_types)
     return false;
 
   autofill::MatchingPattern new_pattern;
   new_pattern.pattern_identifier = *pattern_identifier;
   new_pattern.positive_pattern = *positive_pattern;
   new_pattern.positive_score = *positive_score;
-  new_pattern.negative_pattern = *negative_pattern;
+  if (negative_pattern != nullptr) {
+    new_pattern.negative_pattern = *negative_pattern;
+  } else {
+    new_pattern.negative_pattern = base::nullopt;
+  }
   new_pattern.match_field_attributes = match_field_attributes.value();
   new_pattern.match_field_input_types = match_field_input_types.value();
   new_pattern.language = language;

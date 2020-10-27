@@ -207,7 +207,9 @@ bool FormField::ParseFieldSpecifics(
     if (base::FeatureList::IsEnabled(
             features::
                 kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
-      if (FormField::Match(field, base::UTF8ToUTF16(pattern.negative_pattern),
+      if (pattern.negative_pattern.has_value() &&
+          FormField::Match(field,
+                           base::UTF8ToUTF16(pattern.negative_pattern.value()),
                            pattern.match_field_attributes,
                            pattern.match_field_input_types, logging)) {
         continue;
