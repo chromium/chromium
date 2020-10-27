@@ -421,7 +421,7 @@ void GuestViewBase::DidAttach(int guest_proxy_routing_id) {
 void GuestViewBase::DidDetach() {
   GuestViewManager::FromBrowserContext(browser_context_)->DetachGuest(this);
   StopTrackingEmbedderZoomLevel();
-  owner_web_contents()->GetRenderViewHost()->Send(
+  owner_web_contents()->GetMainFrame()->GetRenderViewHost()->Send(
       new GuestViewMsg_GuestDetached(element_instance_id_));
   element_instance_id_ = kInstanceIDNone;
   if (ShouldDestroyOnDetach())
@@ -567,7 +567,8 @@ double GuestViewBase::PhysicalPixelsToLogicalPixels(int physical_pixels) const {
 }
 
 void GuestViewBase::DidStopLoading() {
-  content::RenderViewHost* rvh = web_contents()->GetRenderViewHost();
+  content::RenderViewHost* rvh =
+      web_contents()->GetMainFrame()->GetRenderViewHost();
 
   if (IsPreferredSizeModeEnabled())
     rvh->EnablePreferredSizeMode();
