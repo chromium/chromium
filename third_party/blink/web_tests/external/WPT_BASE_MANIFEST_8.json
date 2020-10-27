@@ -162557,7 +162557,7 @@
      ],
      "reftests": {
       "display-none-mask.html": [
-       "5a746c9fdaec71c5c530e393aaa1f641f55c89b8",
+       "a6aa6007574ff6c3b2930fd15b6e51d65a633c7e",
        [
         null,
         [
@@ -227104,6 +227104,10 @@
         "62c141d960d27dc59666538b2ec0f185f59c9468",
         []
        ],
+       "input-types.js": [
+        "44567510523622ff06f3ffccdd26cd44f864f372",
+        []
+       ],
        "multiline-placeholder-ref.html": [
         "2812f86e1e6c8e240f60ff313e856b6733e54b5e",
         []
@@ -242718,7 +242722,7 @@
      },
      "reftests": {
       "display-none-mask-ref.html": [
-       "7835597d961a9c9feb0fff92b0f651e164456c12",
+       "3739265b23d22e39f2e2acdc90d94c583b36f4f9",
        []
       ],
       "marker-path-001-ref.svg": [
@@ -361065,6 +361069,15 @@
          {}
         ]
        ],
+       "selection-pointer.html": [
+        "8ad1f578215773a072304108e528c96afafd2797",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "selection.html": [
         "42c40108d92716ca263323389d05c5480703b393",
         [
@@ -421726,7 +421739,7 @@
      ]
     ],
     "RTCPeerConnection-insertable-streams-audio.https.html": [
-     "3d419b2b9a792fe7e732309f81e64716146cd683",
+     "04282d0942cc1f8b733d9a48cab3a77a264b7f34",
      [
       null,
       {}
@@ -421768,7 +421781,7 @@
      ]
     ],
     "RTCPeerConnection-insertable-streams-worker.https.html": [
-     "a21a0d90e55cbcc1ca912b88cfa61d038688e1fc",
+     "04c9c106b873058176298d8deca1cad06ffc8049",
      [
       null,
       {}
