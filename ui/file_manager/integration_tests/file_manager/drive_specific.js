@@ -748,3 +748,11 @@ testcase.driveWelcomeBanner = async () => {
     }
   });
 };
+
+testcase.driveOfflineInfoBanner = async () => {
+  // Open Files app on Drive.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+
+  // Check: the Drive Offline info banner should appear.
+  await remoteCall.waitForElement(appId, '#offline-info-banner:not([hidden])');
+};

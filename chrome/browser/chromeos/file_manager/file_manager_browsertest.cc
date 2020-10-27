@@ -652,7 +652,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkToDirectory"),
         TestCase("driveLinkOpenFileThroughLinkedDirectory"),
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
-        TestCase("driveWelcomeBanner")));
+        TestCase("driveWelcomeBanner"),
+        TestCase("driveOfflineInfoBanner")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Transfer, /* transfer.js */

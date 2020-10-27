@@ -1988,6 +1988,17 @@ body.files-ng .volume-warning .banner-button {
   padding-inline-start: 16px;
 }
 
+body.files-ng .volume-warning .info-icon {
+  -webkit-mask-image: url(../images/files/ui/info.svg);
+  background-color: var(--cros-text-color-secondary);
+  background-size: 20px 20px;
+  flex: none;
+  height: 20px;
+  margin-inline-end: 16px;
+  margin-inline-start: 8px;
+  width: 20px;
+}
+
 body:not(.files-ng) .banner-close {
   background: -webkit-image-set(
       url(../images/files/ui/close_button_white.png) 1x,

@@ -21,6 +21,12 @@ const DRIVE_WARNING_DISMISSED_KEY = 'driveSpaceWarningDismissed';
 const DOWNLOADS_WARNING_DISMISSED_KEY = 'downloadsSpaceWarningDismissed';
 
 /**
+ * Key in localStorage to store the number of sessions the Offline Info banner
+ * message has shown in.
+ */
+const OFFLINE_INFO_BANNER_COUNTER_KEY = 'driveOfflineInfoBannerCounter';
+
+/**
  * Maximum times Drive Welcome banner could have shown.
  */
 const WELCOME_HEADER_COUNTER_LIMIT = 25;
@@ -44,6 +50,11 @@ const DOWNLOADS_SPACE_WARNING_THRESHOLD_SIZE = 1 * 1024 * 1024 * 1024;
  * @const {number}
  */
 const DOWNLOADS_SPACE_WARNING_DISMISS_DURATION = 36 * 60 * 60 * 1000;
+
+/**
+ * Maximum sessions the Offline Info banner should be shown.
+ */
+const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
 
 /**
  * Responsible for showing following banners in the file list.
@@ -71,7 +82,7 @@ class Banners extends cr.EventTarget {
     this.privateOnDirectoryChangedBound_ =
         this.privateOnDirectoryChanged_.bind(this);
 
-    const handler = this.checkSpaceAndMaybeShowWelcomeBanner_.bind(this);
+    const handler = this.maybeShowDriveBanners_.bind(this);
     this.directoryModel_.addEventListener('scan-completed', handler);
     this.directoryModel_.addEventListener('rescan-completed', handler);
     this.directoryModel_.addEventListener(
@@ -88,11 +99,25 @@ class Banners extends cr.EventTarget {
     this.warningDismissedCounter_ = 0;
     this.downloadsWarningDismissedTime_ = 0;
 
+    /**
+     * Number of sessions the offline info banner has been shown in already.
+     * @private {!number}
+     */
+    this.offlineInfoBannerCounter_ = 0;
+
+    /**
+     * Whether or not the offline info banner has been shown this session.
+     * @private {!boolean}
+     */
+    this.hasShownOfflineInfoBanner_ = false;
+
     this.ready_ = new Promise((resolve, reject) => {
       chrome.storage.local.get(
           [
-            WELCOME_HEADER_COUNTER_KEY, DRIVE_WARNING_DISMISSED_KEY,
-            DOWNLOADS_WARNING_DISMISSED_KEY
+            WELCOME_HEADER_COUNTER_KEY,
+            DRIVE_WARNING_DISMISSED_KEY,
+            DOWNLOADS_WARNING_DISMISSED_KEY,
+            OFFLINE_INFO_BANNER_COUNTER_KEY,
           ],
           values => {
             if (chrome.runtime.lastError) {
@@ -107,12 +132,15 @@ class Banners extends cr.EventTarget {
                 parseInt(values[DRIVE_WARNING_DISMISSED_KEY], 10) || 0;
             this.downloadsWarningDismissedTime_ =
                 parseInt(values[DOWNLOADS_WARNING_DISMISSED_KEY], 10) || 0;
+            this.offlineInfoBannerCounter_ =
+                parseInt(values[OFFLINE_INFO_BANNER_COUNTER_KEY], 10) || 0;
 
             // If it's in test, override the counter to show the header by
             // force.
             if (chrome.test) {
               this.welcomeHeaderCounter_ = 0;
               this.warningDismissedCounter_ = 0;
+              this.offlineInfoBannerCounter_ = 0;
             }
             resolve();
           });
@@ -128,6 +156,15 @@ class Banners extends cr.EventTarget {
       e.preventDefault();
     });
     this.maybeShowAuthFailBanner_();
+
+    /**
+     * Banner informing user they can make elements available offline.
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.offlineInfoBanner_ = queryRequiredElement('#offline-info-banner');
+    util.setClampLine(
+        queryRequiredElement('.body2-primary', this.offlineInfoBanner_), '2');
   }
 
   /**
@@ -152,6 +189,17 @@ class Banners extends cr.EventTarget {
   }
 
   /**
+   * @param {number} value How many sessions the Offline Info banner has shown
+   * in.
+   * @private
+   */
+  setOfflineInfoBannerCounter_(value) {
+    const values = {};
+    values[OFFLINE_INFO_BANNER_COUNTER_KEY] = value;
+    chrome.storage.local.set(values);
+  }
+
+  /**
    * chrome.storage.onChanged event handler.
    * @param {Object<Object>} changes Changes values.
    * @param {string} areaName "local" or "sync".
@@ -168,6 +216,10 @@ class Banners extends cr.EventTarget {
     if (areaName == 'local' && DOWNLOADS_WARNING_DISMISSED_KEY in changes) {
       this.downloadsWarningDismissedTime_ =
           changes[DOWNLOADS_WARNING_DISMISSED_KEY].newValue;
+    }
+    if (areaName == 'local' && OFFLINE_INFO_BANNER_COUNTER_KEY in changes) {
+      this.offlineInfoBannerCounter_ =
+          changes[OFFLINE_INFO_BANNER_COUNTER_KEY].newValue;
     }
   }
 
@@ -400,32 +452,43 @@ class Banners extends cr.EventTarget {
    * Shows or hides the welcome banner for drive.
    * @private
    */
-  checkSpaceAndMaybeShowWelcomeBanner_() {
+  maybeShowDriveBanners_() {
     this.ready_.then(() => {
       if (!this.isOnCurrentProfileDrive()) {
-        // We are not on the drive file system. Do not show (close) the welcome
-        // banner.
+        // We are not on the drive file system. Do not show (close) the drive
+        // banners.
         this.cleanupWelcomeBanner_();
         this.previousDirWasOnDrive_ = false;
+        this.offlineInfoBanner_.hidden = true;
         return;
       }
 
       const driveVolume = this.volumeManager_.getCurrentProfileVolumeInfo(
           VolumeManagerCommon.VolumeType.DRIVE);
-      if (this.welcomeHeaderCounter_ >= WELCOME_HEADER_COUNTER_LIMIT ||
-          !driveVolume || driveVolume.error) {
-        // The banner is already shown enough times or the drive FS is not
-        // mounted. So, do nothing here.
+      if (!driveVolume || driveVolume.error) {
+        // Drive is not mounted, so do nothing.
         return;
       }
 
-      this.maybeShowWelcomeBanner_();
+      if (this.welcomeHeaderCounter_ < WELCOME_HEADER_COUNTER_LIMIT) {
+        this.maybeShowWelcomeBanner_();
+      }
+
+      if (util.isFilesNg() &&
+          (this.offlineInfoBannerCounter_ < OFFLINE_INFO_BANNER_COUNTER_LIMIT ||
+           this.hasShownOfflineInfoBanner_)) {
+        this.offlineInfoBanner_.hidden = false;
+        if (!this.hasShownOfflineInfoBanner_) {
+          this.hasShownOfflineInfoBanner_ = true;
+          this.setOfflineInfoBannerCounter_(this.offlineInfoBannerCounter_ + 1);
+        }
+      }
     });
   }
 
   /**
    * Decides which banner should be shown, and show it. This method is designed
-   * to be called only from checkSpaceAndMaybeShowWelcomeBanner_.
+   * to be called only from maybeShowDriveBanners_.
    * @private
    */
   maybeShowWelcomeBanner_() {
