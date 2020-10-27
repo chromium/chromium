@@ -134,7 +134,7 @@ CacheWithUUID.prototype = {
     */
   isNodeReachable_: function(node) {
     var nodeRoot = getNodeRootThroughAnyShadows(node);
-    return (nodeRoot == document);
+    return (nodeRoot == document.documentElement.parentNode);
   }
 
 
@@ -202,7 +202,7 @@ Cache.prototype = {
     */
   isNodeReachable_: function(node) {
     var nodeRoot = getNodeRootThroughAnyShadows(node);
-    return (nodeRoot == document);
+    return (nodeRoot == document.documentElement.parentNode);
   }
 };
 
