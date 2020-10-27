@@ -57,7 +57,7 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   if (!browser) {
     // It's possible that the WebContents is no longer in the tab strip. If so,
-    // just give up. https://crbug.com/786178#c7.
+    // just give up. https://crbug.com/786178
     return;
   }
 
@@ -69,7 +69,13 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  DCHECK(browser);
+  if (!browser) {
+    // It's rare, but there are crashes from where sites are trying to show
+    // dialogs in the split second of time between when their Browser is gone
+    // and they're gone. In that case, bail. https://crbug.com/1142806
+    return false;
+  }
+
   return browser->tab_strip_model()->GetActiveWebContents() == web_contents_;
 }
 
