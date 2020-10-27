@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.media.remote;
+package org.chromium.components.media_router.cast_emulator.remote;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -20,8 +20,8 @@ import java.io.IOException;
  * Handles playback of a single media item using MediaPlayer.
  */
 public class DummyPlayer implements MediaPlayer.OnPreparedListener,
-        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnSeekCompleteListener {
+                                    MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener,
+                                    MediaPlayer.OnSeekCompleteListener {
     private static final String TAG = "CastEmulator";
 
     private static final int STATE_IDLE = 0;

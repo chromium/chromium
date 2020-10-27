@@ -29,6 +29,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.MockMediaRouteProvider;
+import org.chromium.components.media_router.RouterTestUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.Criteria;
@@ -44,8 +45,6 @@ import java.io.StringWriter;
 
 /**
  * Integration tests for MediaRouter.
- *
- * TODO(jbudorick): Remove this when media_router_integration_browsertest runs on Android.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ContentSwitches.DISABLE_GESTURE_REQUIREMENT_FOR_PRESENTATION,
@@ -74,8 +73,6 @@ public class MediaRouterIntegrationTest {
     private static final String SEND_MESSAGE_AND_EXPECT_CONNECTION_CLOSE_ON_ERROR_SCRIPT =
             "sendMessageAndExpectConnectionCloseOnError()";
 
-    private static final int VIEW_TIMEOUT_MS = 2000;
-    private static final int VIEW_RETRY_MS = 100;
     private static final int SCRIPT_TIMEOUT_MS = 10000;
     private static final int SCRIPT_RETRY_MS = 50;
 
@@ -196,8 +193,7 @@ public class MediaRouterIntegrationTest {
         WebContents webContents = mActivityTestRule.getWebContents();
         executeJavaScriptApi(webContents, WAIT_DEVICE_SCRIPT);
         executeJavaScriptApi(webContents, START_SESSION_SCRIPT);
-        View testRouteButton = RouterTestUtils.waitForRouteButton(
-                mActivityTestRule.getActivity(), TEST_SINK_NAME, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+        View testRouteButton = waitForRouteButton();
         ClickUtils.mouseSingleClickView(
                 InstrumentationRegistry.getInstrumentation(), testRouteButton);
         executeJavaScriptApi(webContents, CHECK_SESSION_SCRIPT);
@@ -218,8 +214,7 @@ public class MediaRouterIntegrationTest {
         WebContents webContents = mActivityTestRule.getWebContents();
         executeJavaScriptApi(webContents, WAIT_DEVICE_SCRIPT);
         executeJavaScriptApi(webContents, START_SESSION_SCRIPT);
-        View testRouteButton = RouterTestUtils.waitForRouteButton(
-                mActivityTestRule.getActivity(), TEST_SINK_NAME, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+        View testRouteButton = waitForRouteButton();
         ClickUtils.mouseSingleClickView(
                 InstrumentationRegistry.getInstrumentation(), testRouteButton);
         executeJavaScriptApi(webContents, CHECK_SESSION_SCRIPT);
@@ -239,8 +234,7 @@ public class MediaRouterIntegrationTest {
         WebContents webContents = mActivityTestRule.getWebContents();
         executeJavaScriptApi(webContents, WAIT_DEVICE_SCRIPT);
         executeJavaScriptApi(webContents, START_SESSION_SCRIPT);
-        View testRouteButton = RouterTestUtils.waitForRouteButton(
-                mActivityTestRule.getActivity(), TEST_SINK_NAME, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+        View testRouteButton = waitForRouteButton();
         ClickUtils.mouseSingleClickView(
                 InstrumentationRegistry.getInstrumentation(), testRouteButton);
         executeJavaScriptApi(webContents, CHECK_SESSION_SCRIPT);
@@ -259,8 +253,7 @@ public class MediaRouterIntegrationTest {
         WebContents webContents = mActivityTestRule.getWebContents();
         executeJavaScriptApi(webContents, WAIT_DEVICE_SCRIPT);
         executeJavaScriptApi(webContents, START_SESSION_SCRIPT);
-        View testRouteButton = RouterTestUtils.waitForRouteButton(
-                mActivityTestRule.getActivity(), TEST_SINK_NAME, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+        View testRouteButton = waitForRouteButton();
         ClickUtils.mouseSingleClickView(
                 InstrumentationRegistry.getInstrumentation(), testRouteButton);
         checkStartFailed(
@@ -277,8 +270,7 @@ public class MediaRouterIntegrationTest {
         WebContents webContents = mActivityTestRule.getWebContents();
         executeJavaScriptApi(webContents, WAIT_DEVICE_SCRIPT);
         executeJavaScriptApi(webContents, START_SESSION_SCRIPT);
-        View testRouteButton = RouterTestUtils.waitForRouteButton(
-                mActivityTestRule.getActivity(), TEST_SINK_NAME, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+        View testRouteButton = waitForRouteButton();
         ClickUtils.mouseSingleClickView(
                 InstrumentationRegistry.getInstrumentation(), testRouteButton);
         checkStartFailed(webContents, "UnknownError", "Unknown sink");
@@ -293,8 +285,7 @@ public class MediaRouterIntegrationTest {
         WebContents webContents = mActivityTestRule.getWebContents();
         executeJavaScriptApi(webContents, WAIT_DEVICE_SCRIPT);
         executeJavaScriptApi(webContents, START_SESSION_SCRIPT);
-        View testRouteButton = RouterTestUtils.waitForRouteButton(
-                mActivityTestRule.getActivity(), TEST_SINK_NAME, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+        View testRouteButton = waitForRouteButton();
         ClickUtils.mouseSingleClickView(
                 InstrumentationRegistry.getInstrumentation(), testRouteButton);
         executeJavaScriptApi(webContents, CHECK_SESSION_SCRIPT);
@@ -319,8 +310,7 @@ public class MediaRouterIntegrationTest {
         WebContents webContents = mActivityTestRule.getWebContents();
         executeJavaScriptApi(webContents, WAIT_DEVICE_SCRIPT);
         executeJavaScriptApi(webContents, START_SESSION_SCRIPT);
-        View testRouteButton = RouterTestUtils.waitForRouteButton(
-                mActivityTestRule.getActivity(), TEST_SINK_NAME, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+        View testRouteButton = waitForRouteButton();
         ClickUtils.mouseSingleClickView(
                 InstrumentationRegistry.getInstrumentation(), testRouteButton);
         executeJavaScriptApi(webContents, CHECK_SESSION_SCRIPT);
@@ -344,9 +334,14 @@ public class MediaRouterIntegrationTest {
         executeJavaScriptApi(webContents, WAIT_DEVICE_SCRIPT);
         executeJavaScriptApi(webContents, START_SESSION_SCRIPT);
         final Dialog routeSelectionDialog = RouterTestUtils.waitForDialog(
-                mActivityTestRule.getActivity(), VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+                mActivityTestRule.getActivity().getSupportFragmentManager());
         Assert.assertNotNull(routeSelectionDialog);
         TestThreadUtils.runOnUiThreadBlocking(() -> { routeSelectionDialog.cancel(); });
         checkStartFailed(webContents, "NotAllowedError", "Dialog closed.");
+    }
+
+    private View waitForRouteButton() {
+        return RouterTestUtils.waitForRouteButton(
+                mActivityTestRule.getActivity().getSupportFragmentManager(), TEST_SINK_NAME);
     }
 }

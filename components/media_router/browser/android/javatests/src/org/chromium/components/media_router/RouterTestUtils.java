@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.media.router;
+package org.chromium.components.media_router;
 
 import android.app.Dialog;
 import android.view.View;
@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentManager;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.CriteriaNotSatisfiedException;
@@ -28,12 +27,15 @@ import java.util.concurrent.Callable;
 public class RouterTestUtils {
     private static final String TAG = "RouterTestUtils";
 
-    public static View waitForRouteButton(final ChromeActivity activity,
-            final String chromecastName, int maxTimeoutMs, int intervalMs) {
+    private static final int VIEW_TIMEOUT_MS = 2000;
+    private static final int VIEW_RETRY_MS = 100;
+
+    public static View waitForRouteButton(
+            final FragmentManager fragmentManager, final String chromecastName) {
         return waitForView(new Callable<View>() {
             @Override
             public View call() {
-                Dialog mediaRouteListDialog = getDialog(activity);
+                Dialog mediaRouteListDialog = getDialog(fragmentManager);
                 if (mediaRouteListDialog == null) {
                     Log.w(TAG, "Cannot find device selection dialog");
                     return null;
@@ -53,35 +55,32 @@ public class RouterTestUtils {
                 Log.i(TAG, "Found wanted device");
                 return routesWanted.get(0);
             }
-        }, maxTimeoutMs, intervalMs);
+        });
     }
 
-    public static Dialog waitForDialog(
-            final ChromeActivity activity, int maxTimeoutMs, int intervalMs) {
+    public static Dialog waitForDialog(final FragmentManager fragmentManager) {
         try {
             CriteriaHelper.pollUiThread(() -> {
                 try {
-                    Criteria.checkThat(getDialog(activity), Matchers.notNullValue());
+                    Criteria.checkThat(getDialog(fragmentManager), Matchers.notNullValue());
                 } catch (Exception e) {
                     throw new CriteriaNotSatisfiedException(e);
                 }
-            }, maxTimeoutMs, intervalMs);
-            return getDialog(activity);
+            }, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
+            return getDialog(fragmentManager);
         } catch (Exception e) {
             return null;
         }
     }
 
-    public static Dialog getDialog(ChromeActivity activity) {
-        FragmentManager fm = activity.getSupportFragmentManager();
-        if (fm == null) return null;
-        return ((DialogFragment) fm.findFragmentByTag(
-                        "android.support.v7.mediarouter:MediaRouteChooserDialogFragment"))
-                .getDialog();
+    private static Dialog getDialog(FragmentManager fragmentManager) {
+        DialogFragment fragment = (DialogFragment) fragmentManager.findFragmentByTag(
+                "android.support.v7.mediarouter:MediaRouteChooserDialogFragment");
+        if (fragment == null) return null;
+        return fragment.getDialog();
     }
 
-    public static View waitForView(
-            final Callable<View> getViewCallable, int maxTimeoutMs, int intervalMs) {
+    private static View waitForView(final Callable<View> getViewCallable) {
         try {
             CriteriaHelper.pollUiThread(() -> {
                 try {
@@ -89,7 +88,7 @@ public class RouterTestUtils {
                 } catch (Exception e) {
                     throw new CriteriaNotSatisfiedException(e);
                 }
-            }, maxTimeoutMs, intervalMs);
+            }, VIEW_TIMEOUT_MS, VIEW_RETRY_MS);
             return getViewCallable.call();
         } catch (Exception e) {
             return null;

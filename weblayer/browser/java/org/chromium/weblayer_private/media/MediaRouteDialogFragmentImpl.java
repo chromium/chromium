@@ -33,6 +33,7 @@ import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 
 /**
@@ -52,6 +53,10 @@ public class MediaRouteDialogFragmentImpl extends RemoteFragmentImpl {
 
     private boolean mStarted;
     private FragmentController mFragmentController;
+
+    // The instance for the currently active dialog, if any. This is a WeakReference to get around
+    // StaticFieldLeak warnings.
+    private static WeakReference<MediaRouteDialogFragmentImpl> sInstanceForTest;
 
     /**
      * A fake FragmentActivity needed to make the Fragment system happy.
@@ -195,6 +200,7 @@ public class MediaRouteDialogFragmentImpl extends RemoteFragmentImpl {
 
     public MediaRouteDialogFragmentImpl(IRemoteFragmentClient remoteFragmentClient) {
         super(remoteFragmentClient);
+        sInstanceForTest = new WeakReference<MediaRouteDialogFragmentImpl>(this);
     }
 
     @Override
@@ -239,6 +245,7 @@ public class MediaRouteDialogFragmentImpl extends RemoteFragmentImpl {
         StrictModeWorkaround.apply();
         super.onDestroy();
         mFragmentController.dispatchDestroy();
+        sInstanceForTest = null;
     }
 
     @Override
@@ -299,5 +306,9 @@ public class MediaRouteDialogFragmentImpl extends RemoteFragmentImpl {
 
     private Context getWebLayerContext() {
         return mContext;
+    }
+
+    public static MediaRouteDialogFragmentImpl getInstanceForTest() {
+        return sInstanceForTest.get();
     }
 }

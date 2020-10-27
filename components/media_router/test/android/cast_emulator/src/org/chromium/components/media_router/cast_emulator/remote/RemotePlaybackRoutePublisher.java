@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.media.remote;
+package org.chromium.components.media_router.cast_emulator.remote;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -28,7 +28,7 @@ import com.google.android.gms.cast.CastMediaControlIntent;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.RemovableInRelease;
-import org.chromium.chrome.browser.media.RoutePublisher;
+import org.chromium.components.media_router.cast_emulator.RoutePublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,16 +105,20 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
         controlFilters.add(f1);
         controlFilters.add(f2);
 
-        MediaRouteDescriptor testRouteDescriptor = new MediaRouteDescriptor.Builder(
-                VARIABLE_VOLUME_SESSION_ROUTE_ID, "Cast Test Route")
-                        .setDescription("Cast Test Route").addControlFilters(controlFilters)
+        MediaRouteDescriptor testRouteDescriptor =
+                new MediaRouteDescriptor
+                        .Builder(VARIABLE_VOLUME_SESSION_ROUTE_ID, "Cast Test Route")
+                        .setDescription("Cast Test Route")
+                        .addControlFilters(controlFilters)
                         .setPlaybackStream(AudioManager.STREAM_MUSIC)
                         .setPlaybackType(MediaRouter.RouteInfo.PLAYBACK_TYPE_REMOTE)
                         .setVolumeHandling(MediaRouter.RouteInfo.PLAYBACK_VOLUME_VARIABLE)
-                        .setVolumeMax(VOLUME_MAX).setVolume(mVolume).build();
+                        .setVolumeMax(VOLUME_MAX)
+                        .setVolume(mVolume)
+                        .build();
 
-        MediaRouteProviderDescriptor providerDescriptor = new MediaRouteProviderDescriptor.Builder()
-                .addRoute(testRouteDescriptor).build();
+        MediaRouteProviderDescriptor providerDescriptor =
+                new MediaRouteProviderDescriptor.Builder().addRoute(testRouteDescriptor).build();
         mProvider.setDescriptor(providerDescriptor);
     }
 
@@ -232,8 +236,8 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
                 if (item != null) {
                     String iid = item.getItemId();
                     result.putString(MediaControlIntent.EXTRA_ITEM_ID, iid);
-                    result.putBundle(MediaControlIntent.EXTRA_ITEM_STATUS,
-                            item.getStatus().asBundle());
+                    result.putBundle(
+                            MediaControlIntent.EXTRA_ITEM_STATUS, item.getStatus().asBundle());
                     if (mMetadata != null) {
                         result.putBundle(MediaControlIntent.EXTRA_ITEM_METADATA, mMetadata);
                     }
@@ -247,8 +251,8 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             if (volume >= 0 && volume <= VOLUME_MAX) {
                 mVolume = volume;
                 Log.v(TAG, "%s: New volume is %d", mRouteId, mVolume);
-                AudioManager audioManager = (AudioManager) mProvider.getContext()
-                        .getSystemService(Context.AUDIO_SERVICE);
+                AudioManager audioManager = (AudioManager) mProvider.getContext().getSystemService(
+                        Context.AUDIO_SERVICE);
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
                 publishRoutes();
             }
@@ -285,8 +289,7 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
                 Bundle result = new Bundle();
                 result.putString(MediaControlIntent.EXTRA_SESSION_ID, item.getSessionId());
                 result.putString(MediaControlIntent.EXTRA_ITEM_ID, item.getItemId());
-                result.putBundle(MediaControlIntent.EXTRA_ITEM_STATUS,
-                        item.getStatus().asBundle());
+                result.putBundle(MediaControlIntent.EXTRA_ITEM_STATUS, item.getStatus().asBundle());
                 callback.onResult(result);
             }
             return true;
@@ -318,8 +321,8 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             if (callback != null) {
                 if (item != null) {
                     Bundle result = new Bundle();
-                    result.putBundle(MediaControlIntent.EXTRA_ITEM_STATUS,
-                            item.getStatus().asBundle());
+                    result.putBundle(
+                            MediaControlIntent.EXTRA_ITEM_STATUS, item.getStatus().asBundle());
                     callback.onResult(result);
                 } else {
                     callback.onError("Failed to get status, sid=" + sid + ", iid=" + iid, null);
@@ -420,10 +423,11 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             if (callback != null) {
                 if (success) {
                     Bundle result = new Bundle();
-                    MediaSessionStatus sessionStatus = new MediaSessionStatus.Builder(
-                            MediaSessionStatus.SESSION_STATE_ENDED).build();
-                    result.putBundle(MediaControlIntent.EXTRA_SESSION_STATUS,
-                            sessionStatus.asBundle());
+                    MediaSessionStatus sessionStatus =
+                            new MediaSessionStatus.Builder(MediaSessionStatus.SESSION_STATE_ENDED)
+                                    .build();
+                    result.putBundle(
+                            MediaControlIntent.EXTRA_SESSION_STATUS, sessionStatus.asBundle());
                     callback.onResult(result);
                     handleSessionStatusChange(sid);
                     mSessionReceiver = null;
@@ -444,8 +448,8 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
                     Intent intent = new Intent();
                     intent.putExtra(MediaControlIntent.EXTRA_SESSION_ID, item.getSessionId());
                     intent.putExtra(MediaControlIntent.EXTRA_ITEM_ID, item.getItemId());
-                    intent.putExtra(MediaControlIntent.EXTRA_ITEM_STATUS,
-                            item.getStatus().asBundle());
+                    intent.putExtra(
+                            MediaControlIntent.EXTRA_ITEM_STATUS, item.getStatus().asBundle());
                     try {
                         receiver.send(mProvider.getContext(), 0, intent);
                         Log.v(TAG, "%s: Sending status update from provider", mRouteId);
@@ -474,14 +478,11 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
 
     @RemovableInRelease
     private String getMediaControlIntentDebugString(Intent intent) {
-        return "uri=" + intent.getData()
-                + ", mime=" + intent.getType()
-                + ", sid=" +  intent.getStringExtra(MediaControlIntent.EXTRA_SESSION_ID)
-                + ", pos=" + intent.getLongExtra(
-                        MediaControlIntent.EXTRA_ITEM_CONTENT_POSITION, 0)
+        return "uri=" + intent.getData() + ", mime=" + intent.getType()
+                + ", sid=" + intent.getStringExtra(MediaControlIntent.EXTRA_SESSION_ID)
+                + ", pos=" + intent.getLongExtra(MediaControlIntent.EXTRA_ITEM_CONTENT_POSITION, 0)
                 + ", metadata=" + intent.getBundleExtra(MediaControlIntent.EXTRA_ITEM_METADATA)
-                + ", headers=" + intent.getBundleExtra(
-                        MediaControlIntent.EXTRA_ITEM_HTTP_HEADERS);
+                + ", headers=" + intent.getBundleExtra(MediaControlIntent.EXTRA_ITEM_HTTP_HEADERS);
     }
 
     private static void addDataTypeUnchecked(IntentFilter filter, String type) {
@@ -491,5 +492,4 @@ public final class RemotePlaybackRoutePublisher implements RoutePublisher {
             throw new RuntimeException(ex);
         }
     }
-
 }

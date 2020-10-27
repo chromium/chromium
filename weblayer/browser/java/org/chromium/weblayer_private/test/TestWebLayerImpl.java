@@ -9,12 +9,17 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.media_router.BrowserMediaRouter;
+import org.chromium.components.media_router.MockMediaRouteProvider;
+import org.chromium.components.media_router.RouterTestUtils;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -27,6 +32,7 @@ import org.chromium.weblayer_private.WebLayerAccessibilityUtil;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
+import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
 import org.chromium.weblayer_private.test_interfaces.ITestWebLayer;
 
 import java.util.concurrent.ExecutionException;
@@ -190,5 +196,17 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
     public boolean didShowFullscreenToast(ITab tab) {
         TabImpl tabImpl = (TabImpl) tab;
         return tabImpl.didShowFullscreenToast();
+    }
+
+    @Override
+    public void initializeMockMediaRouteProvider() {
+        BrowserMediaRouter.setRouteProviderFactoryForTest(new MockMediaRouteProvider.Factory());
+    }
+
+    @Override
+    public IObjectWrapper getMediaRouteButton(String name) {
+        FragmentManager fm =
+                MediaRouteDialogFragmentImpl.getInstanceForTest().getSupportFragmentManager();
+        return ObjectWrapper.wrap(RouterTestUtils.waitForRouteButton(fm, name));
     }
 }

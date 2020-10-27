@@ -75,6 +75,7 @@ android_library("weblayer_private_java_tests") {
     "src/org/chromium/weblayer/test/GeolocationTest.java",
     "src/org/chromium/weblayer/test/InfoBarTest.java",
     "src/org/chromium/weblayer/test/MediaCaptureTest.java",
+    "src/org/chromium/weblayer/test/MediaRouterTest.java",
     "src/org/chromium/weblayer/test/NetworkChangeNotifierTest.java",
     "src/org/chromium/weblayer/test/PageInfoTest.java",
     "src/org/chromium/weblayer/test/PopupTest.java",
@@ -89,6 +90,7 @@ android_library("weblayer_private_java_tests") {
     ":weblayer_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
     "//third_party/android_deps:android_support_v4_java",
@@ -100,6 +102,7 @@ android_library("weblayer_private_java_tests") {
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
+    "//ui/android:ui_java_test_support",
     "//weblayer/public/java",
     "//weblayer/public/javatestutil:test_java",
     "//weblayer/shell/android:weblayer_shell_java",
@@ -197,7 +200,10 @@ weblayer_instrumentation("weblayer_support_instrumentation_test_apk") {
 weblayer_instrumentation("weblayer_private_instrumentation_test_apk") {
   apk_name = "WebLayerPrivateInstrumentationTest"
   apk_under_test = "//weblayer/shell/android:weblayer_shell_apk"
-  additional_apks = [ "//weblayer/shell/android:weblayer_support_apk" ]
+  additional_apks = [
+    "//weblayer/shell/android:weblayer_support_apk",
+    "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
+  ]
 
   deps = [ ":weblayer_private_java_tests" ]
 }

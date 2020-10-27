@@ -38,7 +38,7 @@ interface ITestWebLayer {
   void addInfoBar(in ITab tab, in IObjectWrapper runnable) = 10;
 
   // Gets the infobar container view associated with |tab|.
-  IObjectWrapper getInfoBarContainerView(in ITab tab) = 11;
+  IObjectWrapper /* View */ getInfoBarContainerView(in ITab tab) = 11;
 
   void setIgnoreMissingKeyForTranslateManager(in boolean ignore) = 12;
   void forceNetworkConnectivityState(in boolean networkAvailable) = 13;
@@ -53,4 +53,11 @@ interface ITestWebLayer {
 
   // Returns true if a fullscreen toast was shown for |tab|.
   boolean didShowFullscreenToast(in ITab tab) = 17;
+
+  // Does setup for MediaRouter tests, mocking out Chromecast devices.
+  void initializeMockMediaRouteProvider() = 18;
+
+  // Gets a button from the currently visible media route selection dialog. The button represents a
+  // route and contains the text |name|. Returns null if no such dialog or button exists.
+  IObjectWrapper /* View */ getMediaRouteButton(String name) = 19;
 }

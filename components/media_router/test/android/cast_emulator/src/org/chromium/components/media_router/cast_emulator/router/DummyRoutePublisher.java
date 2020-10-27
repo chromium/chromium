@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.media.router;
+package org.chromium.components.media_router.cast_emulator.router;
 
 import android.content.IntentFilter;
 
@@ -13,7 +13,7 @@ import androidx.mediarouter.media.MediaRouteProviderDescriptor;
 import com.google.android.gms.cast.CastMediaControlIntent;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.media.RoutePublisher;
+import org.chromium.components.media_router.cast_emulator.RoutePublisher;
 
 import java.util.ArrayList;
 
@@ -55,19 +55,21 @@ public final class DummyRoutePublisher implements RoutePublisher {
         ArrayList<IntentFilter> controlFilters = new ArrayList<IntentFilter>();
         controlFilters.add(filter);
 
-        MediaRouteDescriptor testRouteDescriptor1 = new MediaRouteDescriptor.Builder(
-                DUMMY_ROUTE_ID1, DUMMY_ROUTE_NAME1)
-                        .setDescription(DUMMY_ROUTE_NAME1).addControlFilters(controlFilters)
+        MediaRouteDescriptor testRouteDescriptor1 =
+                new MediaRouteDescriptor.Builder(DUMMY_ROUTE_ID1, DUMMY_ROUTE_NAME1)
+                        .setDescription(DUMMY_ROUTE_NAME1)
+                        .addControlFilters(controlFilters)
                         .build();
-        MediaRouteDescriptor testRouteDescriptor2 = new MediaRouteDescriptor.Builder(
-                DUMMY_ROUTE_ID2, DUMMY_ROUTE_NAME2)
-                        .setDescription(DUMMY_ROUTE_NAME2).addControlFilters(controlFilters)
+        MediaRouteDescriptor testRouteDescriptor2 =
+                new MediaRouteDescriptor.Builder(DUMMY_ROUTE_ID2, DUMMY_ROUTE_NAME2)
+                        .setDescription(DUMMY_ROUTE_NAME2)
+                        .addControlFilters(controlFilters)
                         .build();
 
         MediaRouteProviderDescriptor providerDescriptor = new MediaRouteProviderDescriptor.Builder()
-                .addRoute(testRouteDescriptor1)
-                .addRoute(testRouteDescriptor2)
-                .build();
+                                                                  .addRoute(testRouteDescriptor1)
+                                                                  .addRoute(testRouteDescriptor2)
+                                                                  .build();
         mProvider.setDescriptor(providerDescriptor);
     }
 

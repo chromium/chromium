@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.media.remote;
+package org.chromium.components.media_router.cast_emulator.remote;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -87,7 +87,8 @@ public class LocalSessionManager {
     public MediaSessionStatus getSessionStatus(String sid) {
         if (!hasSession()) {
             return new MediaSessionStatus.Builder(MediaSessionStatus.SESSION_STATE_INVALIDATED)
-                    .setQueuePaused(false).build();
+                    .setQueuePaused(false)
+                    .build();
         }
         return mRemoteManager.getSessionStatus(sid);
     }
@@ -196,5 +197,4 @@ public class LocalSessionManager {
     public void updateStatus() {
         if (hasSession()) mRemoteManager.updateStatus();
     }
-
 }

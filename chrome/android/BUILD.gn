@@ -2545,6 +2545,7 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     "//chrome/android/webapk/shell_apk:javatests_webapk",
     "//chrome/android/webapk/shell_apk/javatests/dex_optimizer:dex_optimizer_apk",
     "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
+    "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
   ]
 }
 

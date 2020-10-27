@@ -290,6 +290,8 @@ android_library("test_java") {
     "//base:jni_java",
     "//components/infobars/android:java",
     "//components/location/android:location_java",
+    "//components/media_router/browser/android:java",
+    "//components/media_router/browser/android:test_support_java",
     "//components/permissions/android:java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java",

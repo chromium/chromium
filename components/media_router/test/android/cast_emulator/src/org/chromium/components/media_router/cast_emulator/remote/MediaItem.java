@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.media.remote;
+package org.chromium.components.media_router.cast_emulator.remote;
 
 import android.app.PendingIntent;
 import android.net.Uri;
@@ -95,14 +95,17 @@ final class MediaItem {
     }
 
     public MediaItemStatus getStatus() {
-        return new MediaItemStatus.Builder(mPlaybackState).setContentPosition(mContentPosition)
-                .setContentDuration(mContentDuration).setTimestamp(mTimestamp).build();
+        return new MediaItemStatus.Builder(mPlaybackState)
+                .setContentPosition(mContentPosition)
+                .setContentDuration(mContentDuration)
+                .setTimestamp(mTimestamp)
+                .build();
     }
 
     @Override
     public String toString() {
         String state[] = {"PENDING", "PLAYING", "PAUSED", "BUFFERING", "FINISHED", "CANCELED",
-            "INVALIDATED", "ERROR"};
+                "INVALIDATED", "ERROR"};
         return "[" + mSessionId + "|" + mItemId + "|"
                 + (mRemoteItemId != null ? mRemoteItemId : "-") + "|" + state[mPlaybackState] + "] "
                 + mUri.toString();

@@ -87,6 +87,7 @@ android_library("test_support_java") {
   sources = [
     "java/src/org/chromium/components/media_router/TestMediaRouterClient.java",
     "javatests/src/org/chromium/components/media_router/MockMediaRouteProvider.java",
+    "javatests/src/org/chromium/components/media_router/RouterTestUtils.java",
   ]
 
   deps = [
@@ -95,8 +96,10 @@ android_library("test_support_java") {
     "//base:base_java",
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
+    "//third_party/hamcrest:hamcrest_java",
   ]
 }
 

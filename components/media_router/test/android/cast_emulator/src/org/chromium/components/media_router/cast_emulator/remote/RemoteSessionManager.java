@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.media.remote;
+package org.chromium.components.media_router.cast_emulator.remote;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
@@ -31,8 +31,8 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
      * @param player the player to use
      * @return the remote session manager
      */
-    public static RemoteSessionManager connect(LocalSessionManager localSessionManager,
-            Context context) {
+    public static RemoteSessionManager connect(
+            LocalSessionManager localSessionManager, Context context) {
         if (sInstance == null) {
             sInstance = new RemoteSessionManager("remote", context);
         }
@@ -75,8 +75,8 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
 
         // create new item with initial status PLAYBACK_STATE_PENDING
         mItemId++;
-        mCurrentItem = new MediaItem(Integer.toString(mSessionId), Integer.toString(mItemId), uri,
-                mime, receiver);
+        mCurrentItem = new MediaItem(
+                Integer.toString(mSessionId), Integer.toString(mItemId), uri, mime, receiver);
         mCurrentItem.setPosition(contentPosition);
 
         Log.v(TAG, "%s: add: new item id = %s", mName, mCurrentItem);
@@ -116,8 +116,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
      */
     public MediaSessionStatus getSessionStatus(String sid) {
         Log.v(TAG, "Getting session status for session %s", sid);
-        int sessionState =
-                (sid != null && sid.equals(Integer.toString(mSessionId)))
+        int sessionState = (sid != null && sid.equals(Integer.toString(mSessionId)))
                 ? MediaSessionStatus.SESSION_STATE_ACTIVE
                 : MediaSessionStatus.SESSION_STATE_INVALIDATED;
 
@@ -233,12 +232,12 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
     }
 
     /**
-      * Start a new emulated Chromecast session if needed.
-      *
-      * @param relaunch relaunch the remote session (the emulation of the Chromecast app) even if it
-      *        is already running.
-      * @return The new session id
-      */
+     * Start a new emulated Chromecast session if needed.
+     *
+     * @param relaunch relaunch the remote session (the emulation of the Chromecast app) even if it
+     *        is already running.
+     * @return The new session id
+     */
     public String startSession(boolean relaunch) {
         if (!mSessionValid || relaunch) {
             if (mPlayer != null) mPlayer.setCallback(null);
@@ -306,8 +305,9 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
 
     private void finishItem(boolean error) {
         if (mCurrentItem != null) {
-            removeItem(mCurrentItem.getItemId(), error ? MediaItemStatus.PLAYBACK_STATE_ERROR
-                    : MediaItemStatus.PLAYBACK_STATE_FINISHED);
+            removeItem(mCurrentItem.getItemId(),
+                    error ? MediaItemStatus.PLAYBACK_STATE_ERROR
+                          : MediaItemStatus.PLAYBACK_STATE_FINISHED);
             updateStatus();
         }
     }
@@ -336,7 +336,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
         if (mCurrentItem != null) {
             if (mCurrentItem.getState() == MediaItemStatus.PLAYBACK_STATE_PENDING) {
                 mCurrentItem.setState(mPaused ? MediaItemStatus.PLAYBACK_STATE_PAUSED
-                        : MediaItemStatus.PLAYBACK_STATE_PLAYING);
+                                              : MediaItemStatus.PLAYBACK_STATE_PLAYING);
                 mPlayer.play(mCurrentItem);
             } else if (mPaused
                     && mCurrentItem.getState() == MediaItemStatus.PLAYBACK_STATE_PLAYING) {
@@ -358,5 +358,4 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
             mLocalSessionManager.onItemChanged(mCurrentItem);
         }
     }
-
 }
