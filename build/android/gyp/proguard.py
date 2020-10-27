@@ -31,7 +31,9 @@ _API_LEVEL_VERSION_CODE = [
 ]
 _CHECKDISCARD_RE = re.compile(r'^[ \t\r\f\v]*-checkdiscard[^\n{]*({[\s\S]*?})?',
                               re.MULTILINE)
-_DIRECTIVE_RE = re.compile(r'^\s*-', re.MULTILINE)
+# Ignore remaining directives that start with -check, as they're not supported
+# by R8 anyway.
+_DIRECTIVE_RE = re.compile(r'^\s*-(?<!check)[a-zA-Z].*')
 
 
 def _ValidateAndFilterCheckDiscards(configs):
@@ -55,10 +57,13 @@ def _ValidateAndFilterCheckDiscards(configs):
       contents = f.read()
       if _CHECKDISCARD_RE.search(contents):
         contents = _CHECKDISCARD_RE.sub('', contents)
-        if _DIRECTIVE_RE.search(contents):
-          raise Exception('Proguard configs containing -checkdiscards cannot '
-                          'contain other directives so that they can be '
-                          'disabled in test APKs ({}).'.format(config_path))
+        directive_match = _DIRECTIVE_RE.search(contents)
+        if directive_match:
+          raise Exception(
+              'Proguard configs containing -checkdiscards cannot '
+              'contain other directives so that they can be '
+              'disabled in test APKs ({}). Directive "{}" found.'.format(
+                  config_path, directive_match.group()))
       else:
         valid_configs.append(config_path)
 
