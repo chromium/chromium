@@ -278,6 +278,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<MainThreadTaskQueue> NewThrottleableTaskQueueForTest(
       FrameSchedulerImpl* frame_scheduler);
 
+  scoped_refptr<base::sequence_manager::TaskQueue> NewTaskQueueForTest();
+
   using VirtualTimePolicy = PageScheduler::VirtualTimePolicy;
 
   using BaseTimeOverridePolicy =
@@ -783,6 +785,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
   MainThreadSchedulerHelper helper_;
+  scoped_refptr<MainThreadTaskQueue> idle_helper_queue_;
   IdleHelper idle_helper_;
   std::unique_ptr<TaskQueueThrottler> task_queue_throttler_;
   RenderWidgetSignals render_widget_scheduler_signals_;

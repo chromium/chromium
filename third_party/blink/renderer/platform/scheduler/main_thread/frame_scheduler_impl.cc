@@ -81,7 +81,8 @@ void UpdatePriority(MainThreadTaskQueue* task_queue) {
 
   FrameSchedulerImpl* frame_scheduler = task_queue->GetFrameScheduler();
   DCHECK(frame_scheduler);
-  task_queue->SetQueuePriority(frame_scheduler->ComputePriority(task_queue));
+  task_queue->GetTaskQueue()->SetQueuePriority(
+      frame_scheduler->ComputePriority(task_queue));
 }
 
 }  // namespace
@@ -212,7 +213,7 @@ void CleanUpQueue(MainThreadTaskQueue* queue) {
 
   queue->DetachFromMainThreadScheduler();
   DCHECK(!queue->GetFrameScheduler());
-  queue->SetBlameContext(nullptr);
+  queue->GetTaskQueue()->SetBlameContext(nullptr);
 }
 
 }  // namespace
@@ -268,8 +269,10 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
                 main_thread_scheduler_->tick_clock())
           : base::sequence_manager::LazyNow(base::TimeTicks::Now());
 
-  if (cpu_time_budget_pool)
-    cpu_time_budget_pool->RemoveQueue(lazy_now.Now(), task_queue);
+  if (cpu_time_budget_pool) {
+    cpu_time_budget_pool->RemoveQueue(lazy_now.Now(),
+                                      task_queue->GetTaskQueue());
+  }
 
   parent_page_scheduler_->RemoveQueueFromWakeUpBudgetPool(
       task_queue, frame_origin_type_, &lazy_now);
@@ -536,7 +539,7 @@ FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandleImpl() {
     scoped_refptr<MainThreadTaskQueue> task_queue =
         frame_task_queue_controller_->NewResourceLoadingTaskQueue();
     resource_loading_task_queue_priorities_.insert(
-        task_queue, task_queue->GetQueuePriority());
+        task_queue, task_queue->GetTaskQueue()->GetQueuePriority());
     return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(task_queue);
   }
 
@@ -840,8 +843,10 @@ void FrameSchedulerImpl::SetShouldReportPostedTasksWhenDisabled(
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
     auto* task_queue = task_queue_and_voter.first;
-    if (task_queue->CanBeFrozen())
-      task_queue->SetShouldReportPostedTasksWhenDisabled(should_report);
+    if (task_queue->CanBeFrozen()) {
+      task_queue->GetTaskQueue()->SetShouldReportPostedTasksWhenDisabled(
+          should_report);
+    }
   }
 }
 
@@ -989,10 +994,10 @@ void FrameSchedulerImpl::UpdateTaskQueueThrottling(
     return;
   if (should_throttle) {
     main_thread_scheduler_->task_queue_throttler()->IncreaseThrottleRefCount(
-        task_queue);
+        task_queue->GetTaskQueue());
   } else {
     main_thread_scheduler_->task_queue_throttler()->DecreaseThrottleRefCount(
-        task_queue);
+        task_queue->GetTaskQueue());
   }
 }
 
@@ -1212,7 +1217,7 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
     base::sequence_manager::TaskQueue::QueueEnabledVoter* voter) {
   DCHECK(parent_page_scheduler_);
 
-  task_queue->SetBlameContext(blame_context_);
+  task_queue->GetTaskQueue()->SetBlameContext(blame_context_);
   UpdateQueuePolicy(task_queue, voter);
 
   if (task_queue->CanBeThrottled()) {
@@ -1222,7 +1227,8 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
     CPUTimeBudgetPool* cpu_time_budget_pool =
         parent_page_scheduler_->background_cpu_time_budget_pool();
     if (cpu_time_budget_pool) {
-      cpu_time_budget_pool->AddQueue(lazy_now.Now(), task_queue);
+      cpu_time_budget_pool->AddQueue(lazy_now.Now(),
+                                     task_queue->GetTaskQueue());
     }
 
     parent_page_scheduler_->AddQueueToWakeUpBudgetPool(

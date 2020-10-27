@@ -46,7 +46,7 @@ class PLATFORM_EXPORT CompositorPriorityExperiments {
 
   void OnTaskCompleted(MainThreadTaskQueue* queue,
                        QueuePriority current_priority,
-                       MainThreadTaskQueue::TaskTiming* task_timing);
+                       TaskQueue::TaskTiming* task_timing);
 
   QueuePriority GetAlternatingPriority() const {
     return alternating_compositor_priority_;
@@ -78,7 +78,7 @@ class PLATFORM_EXPORT CompositorPriorityExperiments {
     void UpdateCompositorBudgetState(base::TimeTicks now);
 
     void OnTaskCompleted(MainThreadTaskQueue* queue,
-                         MainThreadTaskQueue::TaskTiming* task_timing,
+                         TaskQueue::TaskTiming* task_timing,
                          bool have_seen_stop_signal);
 
     // Unimplemented methods.

@@ -210,16 +210,16 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     base::Optional<base::Time> initial_virtual_time)
     : sequence_manager_(std::move(sequence_manager)),
       helper_(sequence_manager_.get(), this),
-      idle_helper_(
-          &helper_,
-          this,
-          "MainThreadSchedulerIdlePeriod",
-          base::TimeDelta(),
-          helper_.NewTaskQueue(
-              MainThreadTaskQueue::QueueCreationParams(
-                  MainThreadTaskQueue::QueueType::kIdle)
-                  .SetPrioritisationType(MainThreadTaskQueue::QueueTraits::
-                                             PrioritisationType::kBestEffort))),
+      idle_helper_queue_(helper_.NewTaskQueue(
+          MainThreadTaskQueue::QueueCreationParams(
+              MainThreadTaskQueue::QueueType::kIdle)
+              .SetPrioritisationType(MainThreadTaskQueue::QueueTraits::
+                                         PrioritisationType::kBestEffort))),
+      idle_helper_(&helper_,
+                   this,
+                   "MainThreadSchedulerIdlePeriod",
+                   base::TimeDelta(),
+                   idle_helper_queue_->GetTaskQueue()),
       render_widget_scheduler_signals_(this),
       find_in_page_budget_pool_controller_(
           new FindInPageBudgetPoolController(this)),
@@ -231,7 +231,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
               .SetPrioritisationType(MainThreadTaskQueue::QueueTraits::
                                          PrioritisationType::kCompositor))),
       compositor_task_queue_enabled_voter_(
-          compositor_task_queue_->CreateQueueEnabledVoter()),
+          compositor_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter()),
       memory_purge_task_queue_(helper_.NewTaskQueue(
           MainThreadTaskQueue::QueueCreationParams(
               MainThreadTaskQueue::QueueType::kIdle)
@@ -255,8 +255,9 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   // Compositor task queue and default task queue should be managed by
   // WebThreadScheduler. Control task queue should not.
   task_runners_.emplace(helper_.DefaultMainThreadTaskQueue(), nullptr);
-  task_runners_.emplace(compositor_task_queue_,
-                        compositor_task_queue_->CreateQueueEnabledVoter());
+  task_runners_.emplace(
+      compositor_task_queue_,
+      compositor_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter());
 
   RegisterTimeDomain(&non_waking_time_domain_);
 
@@ -327,7 +328,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   // Explicitly set the priority of this queue since it is not managed by
   // the main thread scheduler.
-  memory_purge_task_queue_->SetQueuePriority(
+  memory_purge_task_queue_->GetTaskQueue()->SetQueuePriority(
       ComputePriority(memory_purge_task_queue_.get()));
 }
 
@@ -692,7 +693,7 @@ MainThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::VirtualTimeControlTaskRunner() {
-  return virtual_time_control_task_queue_->task_runner();
+  return virtual_time_control_task_queue_->GetTaskQueue()->task_runner();
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -728,7 +729,7 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter;
   if (params.queue_traits.can_be_deferred ||
       params.queue_traits.can_be_paused || params.queue_traits.can_be_frozen) {
-    voter = task_queue->CreateQueueEnabledVoter();
+    voter = task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
   }
 
   auto insert_result = task_runners_.emplace(task_queue, std::move(voter));
@@ -743,7 +744,8 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
   if (main_thread_only().virtual_time_stopped &&
       main_thread_only().use_virtual_time &&
       !task_queue->CanRunWhenVirtualTimePaused()) {
-    task_queue->InsertFence(TaskQueue::InsertFencePosition::kNow);
+    task_queue->GetTaskQueue()->InsertFence(
+        TaskQueue::InsertFencePosition::kNow);
   }
 
   return task_queue;
@@ -775,6 +777,12 @@ MainThreadSchedulerImpl::NewThrottleableTaskQueueForTest(
                           .SetCanRunWhenVirtualTimePaused(false));
 }
 
+scoped_refptr<base::sequence_manager::TaskQueue>
+MainThreadSchedulerImpl::NewTaskQueueForTest() {
+  return sequence_manager_->CreateTaskQueue(
+      base::sequence_manager::TaskQueue::Spec("test"));
+}
+
 std::unique_ptr<WebRenderWidgetSchedulingState>
 MainThreadSchedulerImpl::NewRenderWidgetSchedulingState() {
   return render_widget_scheduler_signals_.NewRenderWidgetSchedulingState();
@@ -786,7 +794,7 @@ void MainThreadSchedulerImpl::OnShutdownTaskQueue(
     return;
 
   if (task_queue_throttler_)
-    task_queue_throttler_->ShutdownTaskQueue(task_queue.get());
+    task_queue_throttler_->ShutdownTaskQueue(task_queue->GetTaskQueue());
 
   task_runners_.erase(task_queue.get());
 }
@@ -903,7 +911,7 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
     // hidden.
     base::TimeDelta end_idle_when_hidden_delay =
         base::TimeDelta::FromMilliseconds(kEndIdleWhenHiddenDelayMillis);
-    control_task_queue_->task_runner()->PostDelayedTask(
+    control_task_queue_->GetTaskQueue()->task_runner()->PostDelayedTask(
         FROM_HERE, end_renderer_hidden_idle_period_closure_.GetCallback(),
         end_idle_when_hidden_delay);
     main_thread_only().renderer_hidden = true;
@@ -1246,7 +1254,7 @@ void MainThreadSchedulerImpl::UpdateForInputEventOnCompositorThread(
       !notify_agent_strategy_task_posted_.IsSet() &&
       agent_scheduling_strategy_->ShouldNotifyOnInputEvent()) {
     notify_agent_strategy_task_posted_.SetWhileLocked(true);
-    control_task_queue_->task_runner()->PostTask(
+    control_task_queue_->GetTaskQueue()->task_runner()->PostTask(
         FROM_HERE, notify_agent_strategy_on_input_event_closure_);
   }
 
@@ -1350,7 +1358,8 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
     case UseCase::kMainThreadGesture:
     case UseCase::kMainThreadCustomInputHandling:
     case UseCase::kSynchronizedGesture:
-      return compositor_task_queue_->HasTaskToRunImmediately() ||
+      return compositor_task_queue_->GetTaskQueue()
+                 ->HasTaskToRunImmediately() ||
              main_thread_only().blocking_input_expected_soon;
 
     case UseCase::kTouchstart:
@@ -1395,8 +1404,8 @@ void MainThreadSchedulerImpl::EnsureUrgentPolicyUpdatePostedOnMainThread(
   any_thread_lock_.AssertAcquired();
   if (!policy_may_need_update_.IsSet()) {
     policy_may_need_update_.SetWhileLocked(true);
-    control_task_queue_->task_runner()->PostTask(from_here,
-                                                 update_policy_closure_);
+    control_task_queue_->GetTaskQueue()->task_runner()->PostTask(
+        from_here, update_policy_closure_);
   }
 }
 
@@ -1612,7 +1621,7 @@ void MainThreadSchedulerImpl::UpdateTaskQueueState(
     const Policy& new_policy,
     bool should_update_priority) const {
   if (should_update_priority)
-    task_queue->SetQueuePriority(ComputePriority(task_queue));
+    task_queue->GetTaskQueue()->SetQueuePriority(ComputePriority(task_queue));
 
   if (task_queue_enabled_voter) {
     bool is_enabled_for_agent =
@@ -1631,9 +1640,9 @@ void MainThreadSchedulerImpl::UpdateTaskQueueState(
   if (old_time_domain_type != new_time_domain_type) {
     if (new_time_domain_type == TimeDomainType::kVirtual) {
       DCHECK(virtual_time_domain_);
-      task_queue->SetTimeDomain(virtual_time_domain_.get());
+      task_queue->GetTaskQueue()->SetTimeDomain(virtual_time_domain_.get());
     } else {
-      task_queue->SetTimeDomain(real_time_domain());
+      task_queue->GetTaskQueue()->SetTimeDomain(real_time_domain());
     }
   }
 }
@@ -1773,9 +1782,10 @@ base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime(
   virtual_time_control_task_queue_ =
       helper_.NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
           MainThreadTaskQueue::QueueType::kControl));
-  virtual_time_control_task_queue_->SetQueuePriority(
+  virtual_time_control_task_queue_->GetTaskQueue()->SetQueuePriority(
       TaskQueue::kControlPriority);
-  virtual_time_control_task_queue_->SetTimeDomain(virtual_time_domain_.get());
+  virtual_time_control_task_queue_->GetTaskQueue()->SetTimeDomain(
+      virtual_time_domain_.get());
 
   main_thread_only().use_virtual_time = true;
   ForceUpdatePolicy();
@@ -1841,8 +1851,9 @@ void MainThreadSchedulerImpl::VirtualTimePaused() {
   for (const auto& pair : task_runners_) {
     if (pair.first->CanRunWhenVirtualTimePaused())
       continue;
-    DCHECK(!task_queue_throttler_->IsThrottled(pair.first.get()));
-    pair.first->InsertFence(TaskQueue::InsertFencePosition::kNow);
+    DCHECK(!task_queue_throttler_->IsThrottled(pair.first->GetTaskQueue()));
+    pair.first->GetTaskQueue()->InsertFence(
+        TaskQueue::InsertFencePosition::kNow);
   }
 }
 
@@ -1850,9 +1861,9 @@ void MainThreadSchedulerImpl::VirtualTimeResumed() {
   for (const auto& pair : task_runners_) {
     if (pair.first->CanRunWhenVirtualTimePaused())
       continue;
-    DCHECK(!task_queue_throttler_->IsThrottled(pair.first.get()));
-    DCHECK(pair.first->HasActiveFence());
-    pair.first->RemoveFence();
+    DCHECK(!task_queue_throttler_->IsThrottled(pair.first->GetTaskQueue()));
+    DCHECK(pair.first->GetTaskQueue()->HasActiveFence());
+    pair.first->GetTaskQueue()->RemoveFence();
   }
 }
 
@@ -2128,7 +2139,7 @@ void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
   // called) at any moment, including in the middle of allocating an object,
   // when state is not consistent. Posting a task to dispatch notifications
   // minimizes the amount of code that runs and sees an inconsistent state .
-  control_task_queue_->task_runner()->PostTask(
+  control_task_queue_->GetTaskQueue()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected,
@@ -2263,11 +2274,11 @@ void MainThreadSchedulerImpl::SetTopLevelBlameContext(
   //
   // TODO(altimin): automatically enter top-level for all task queues associated
   // with renderer scheduler which do not have a corresponding frame.
-  control_task_queue_->SetBlameContext(blame_context);
-  DefaultTaskQueue()->SetBlameContext(blame_context);
-  compositor_task_queue_->SetBlameContext(blame_context);
+  control_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
+  DefaultTaskQueue()->GetTaskQueue()->SetBlameContext(blame_context);
+  compositor_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
   idle_helper_.IdleTaskRunner()->SetBlameContext(blame_context);
-  v8_task_queue_->SetBlameContext(blame_context);
+  v8_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
 }
 
 void MainThreadSchedulerImpl::AddRAILModeObserver(RAILModeObserver* observer) {
@@ -2508,9 +2519,9 @@ void MainThreadSchedulerImpl::OnTaskStarted(
           : base::nullopt};
 
   main_thread_only().task_priority_for_tracing =
-      queue
-          ? base::Optional<TaskQueue::QueuePriority>(queue->GetQueuePriority())
-          : base::nullopt;
+      queue ? base::Optional<TaskQueue::QueuePriority>(
+                  queue->GetTaskQueue()->GetQueuePriority())
+            : base::nullopt;
 }
 
 void MainThreadSchedulerImpl::OnTaskCompleted(
@@ -2536,8 +2547,9 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   DispatchOnTaskCompletionCallbacks();
 
   if (queue) {
-    task_queue_throttler()->OnTaskRunTimeReported(
-        queue.get(), task_timing->start_time(), task_timing->end_time());
+    task_queue_throttler()->OnTaskRunTimeReported(queue->GetTaskQueue(),
+                                                  task_timing->start_time(),
+                                                  task_timing->end_time());
   }
 
   // TODO(altimin): Per-page metrics should also be considered.
@@ -2787,7 +2799,7 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
 
 void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
   main_thread_only().compositor_priority = ComputeCompositorPriority();
-  CompositorTaskQueue()->SetQueuePriority(
+  CompositorTaskQueue()->GetTaskQueue()->SetQueuePriority(
       ComputePriority(CompositorTaskQueue().get()));
 }
 

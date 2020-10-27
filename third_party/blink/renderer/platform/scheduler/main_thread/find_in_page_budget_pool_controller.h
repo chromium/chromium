@@ -32,7 +32,7 @@ class PLATFORM_EXPORT FindInPageBudgetPoolController
   ~FindInPageBudgetPoolController() override;
 
   void OnTaskCompleted(MainThreadTaskQueue* queue,
-                       MainThreadTaskQueue::TaskTiming* task_timing);
+                       TaskQueue::TaskTiming* task_timing);
 
   QueuePriority CurrentTaskPriority() { return task_priority_; }
 

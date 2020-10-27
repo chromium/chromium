@@ -8,13 +8,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
-#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/sequence_manager/test/test_task_time_observer.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 
 namespace blink {
 namespace scheduler {
@@ -22,8 +22,7 @@ namespace scheduler {
 class IdleTimeEstimatorForTest : public IdleTimeEstimator {
  public:
   IdleTimeEstimatorForTest(
-      const scoped_refptr<base::sequence_manager::TaskQueue>&
-          compositor_task_runner,
+      const scoped_refptr<MainThreadTaskQueue>& compositor_task_runner,
       const base::TickClock* clock,
       int sample_count,
       double estimation_percentile)
@@ -48,9 +47,11 @@ class IdleTimeEstimatorTest : public testing::Test {
         nullptr, task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMockTickClock());
     compositor_task_queue_ =
-        manager_
-            ->CreateTaskQueueWithType<base::sequence_manager::TestTaskQueue>(
-                base::sequence_manager::TaskQueue::Spec("test_tq"));
+        manager_->CreateTaskQueueWithType<MainThreadTaskQueue>(
+            base::sequence_manager::TaskQueue::Spec("test_tq"),
+            MainThreadTaskQueue::QueueCreationParams(
+                MainThreadTaskQueue::QueueType::kCompositor),
+            nullptr);
     estimator_.reset(new IdleTimeEstimatorForTest(
         compositor_task_queue_, task_environment_.GetMockTickClock(), 10, 50));
   }
@@ -89,7 +90,7 @@ class IdleTimeEstimatorTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::sequence_manager::SequenceManager> manager_;
-  scoped_refptr<base::sequence_manager::TaskQueue> compositor_task_queue_;
+  scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
   std::unique_ptr<IdleTimeEstimatorForTest> estimator_;
   const base::TimeDelta frame_length_;
   base::sequence_manager::TestTaskTimeObserver test_task_time_observer_;

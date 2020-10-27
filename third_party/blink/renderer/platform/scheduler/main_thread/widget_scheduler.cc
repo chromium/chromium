@@ -20,7 +20,7 @@ WidgetScheduler::WidgetScheduler(
   input_task_runner_ =
       input_task_queue_->CreateTaskRunner(TaskType::kMainThreadTaskQueueInput);
   input_task_queue_enabled_voter_ =
-      input_task_queue_->CreateQueueEnabledVoter();
+      input_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter();
 }
 
 WidgetScheduler::~WidgetScheduler() {

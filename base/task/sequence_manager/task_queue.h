@@ -342,6 +342,35 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     return default_task_runner_;
   }
 
+  // Checks whether or not this TaskQueue has a TaskQueueImpl.
+  // TODO(kdillon): Remove this method when TaskQueueImpl inherits from
+  // TaskQueue and TaskQueue no longer owns an Impl.
+  bool HasImpl() { return !!impl_; }
+
+  using OnTaskStartedHandler =
+      RepeatingCallback<void(const Task&, const TaskQueue::TaskTiming&)>;
+  using OnTaskCompletedHandler =
+      RepeatingCallback<void(const Task&, TaskQueue::TaskTiming*, LazyNow*)>;
+  using OnTaskPostedHandler = RepeatingCallback<void(const Task&)>;
+
+  // Sets a handler to subscribe for notifications about started and completed
+  // tasks.
+  void SetOnTaskStartedHandler(OnTaskStartedHandler handler);
+
+  // |task_timing| may be passed in Running state and may not have the end time,
+  // so that the handler can run an additional task that is counted as a part of
+  // the main task.
+  // The handler can call TaskTiming::RecordTaskEnd, which is optional, to
+  // finalize the task, and use the resulting timing.
+  void SetOnTaskCompletedHandler(OnTaskCompletedHandler handler);
+
+  // Set a callback for adding custom functionality for processing posted task.
+  // Callback will be dispatched while holding a scheduler lock. As a result,
+  // callback should not call scheduler APIs directly, as this can lead to
+  // deadlocks. For example, PostTask should not be called directly and
+  // ScopedDeferTaskPosting::PostOrDefer should be used instead.
+  void SetOnTaskPostedHandler(OnTaskPostedHandler handler);
+
  protected:
   virtual ~TaskQueue();
 

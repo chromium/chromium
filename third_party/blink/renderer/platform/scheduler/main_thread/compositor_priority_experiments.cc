@@ -94,7 +94,7 @@ void CompositorPriorityExperiments::OnWillBeginMainFrame() {
 void CompositorPriorityExperiments::OnTaskCompleted(
     MainThreadTaskQueue* queue,
     QueuePriority current_compositor_priority,
-    MainThreadTaskQueue::TaskTiming* task_timing) {
+    TaskQueue::TaskTiming* task_timing) {
   if (!queue)
     return;
 
@@ -182,7 +182,7 @@ CompositorPriorityExperiments::CompositorBudgetPoolController::
       "CompositorBudgetPool", this, tracing_controller, now));
   compositor_budget_pool_->SetMinBudgetLevelToRun(now, min_budget);
   compositor_budget_pool_->SetTimeBudgetRecoveryRate(now, budget_recovery_rate);
-  compositor_budget_pool_->AddQueue(now, compositor_queue);
+  compositor_budget_pool_->AddQueue(now, compositor_queue->GetTaskQueue());
 }
 
 CompositorPriorityExperiments::CompositorBudgetPoolController::
@@ -210,7 +210,7 @@ void CompositorPriorityExperiments::CompositorBudgetPoolController::
 
 void CompositorPriorityExperiments::CompositorBudgetPoolController::
     OnTaskCompleted(MainThreadTaskQueue* queue,
-                    MainThreadTaskQueue::TaskTiming* task_timing,
+                    TaskQueue::TaskTiming* task_timing,
                     bool have_seen_stop_signal) {
   if (have_seen_stop_signal) {
     compositor_budget_pool_->RecordTaskRunTime(

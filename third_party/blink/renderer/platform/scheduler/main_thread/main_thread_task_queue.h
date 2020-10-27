@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
+#include "base/task/sequence_manager/time_domain.h"
 #include "net/base/request_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -24,6 +26,8 @@ class SequenceManager;
 namespace blink {
 namespace scheduler {
 
+using TaskQueue = base::sequence_manager::TaskQueue;
+
 namespace main_thread_scheduler_impl_unittest {
 class MainThreadSchedulerImplTest;
 }
@@ -35,8 +39,10 @@ class AgentInterferenceRecorderTest;
 class FrameSchedulerImpl;
 class MainThreadSchedulerImpl;
 
+// TODO(kdillon): Remove ref-counting of MainThreadTaskQueues as it's no longer
+// needed.
 class PLATFORM_EXPORT MainThreadTaskQueue
-    : public base::sequence_manager::TaskQueue {
+    : public base::RefCountedThreadSafe<MainThreadTaskQueue> {
  public:
   enum class QueueType {
     // Keep MainThreadTaskQueue::NameForQueueType in sync.
@@ -331,7 +337,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     }
 
     QueueType queue_type;
-    base::sequence_manager::TaskQueue::Spec spec;
+    TaskQueue::Spec spec;
     AgentGroupSchedulerImpl* agent_group_scheduler;
     FrameSchedulerImpl* frame_scheduler;
     QueueTraits queue_traits;
@@ -343,8 +349,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       spec = spec.SetDelayedFencesAllowed(queue_traits.can_be_throttled);
     }
   };
-
-  ~MainThreadTaskQueue() override;
 
   QueueType queue_type() const { return queue_type_; }
 
@@ -390,14 +394,12 @@ class PLATFORM_EXPORT MainThreadTaskQueue
                    const base::sequence_manager::Task& task,
                    base::sequence_manager::LazyNow* lazy_now);
 
-  void OnTaskStarted(
-      const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
+  void OnTaskStarted(const base::sequence_manager::Task& task,
+                     const TaskQueue::TaskTiming& task_timing);
 
-  void OnTaskCompleted(
-      const base::sequence_manager::Task& task,
-      base::sequence_manager::TaskQueue::TaskTiming* task_timing,
-      base::sequence_manager::LazyNow* lazy_now);
+  void OnTaskCompleted(const base::sequence_manager::Task& task,
+                       TaskQueue::TaskTiming* task_timing,
+                       base::sequence_manager::LazyNow* lazy_now);
 
   void SetOnIPCTaskPosted(
       base::RepeatingCallback<void(const base::sequence_manager::Task&)>
@@ -406,8 +408,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   void DetachFromMainThreadScheduler();
 
-  // Override base method to notify MainThreadScheduler about shutdown queue.
-  void ShutdownTaskQueue() override;
+  void ShutdownTaskQueue();
 
   WebAgentGroupScheduler* GetAgentGroupScheduler();
 
@@ -415,7 +416,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner(
       TaskType task_type) {
-    return TaskQueue::CreateTaskRunner(static_cast<int>(task_type));
+    return task_queue_->CreateTaskRunner(static_cast<int>(task_type));
   }
 
   void SetNetRequestPriority(net::RequestPriority net_request_priority);
@@ -424,6 +425,10 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
   base::Optional<WebSchedulingPriority> web_scheduling_priority() const;
 
+  // TODO(kdillon): Improve MTTQ API surface so that we no longer
+  // need to expose the raw pointer to the queue.
+  TaskQueue* GetTaskQueue() { return task_queue_.get(); }
+
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -431,14 +436,18 @@ class PLATFORM_EXPORT MainThreadTaskQueue
  protected:
   void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);
 
-  // TODO(kraynov): Consider options to remove TaskQueueImpl reference here.
+  // TODO(kdillon): Remove references to TaskQueueImpl once TaskQueueImpl
+  // inherits from TaskQueue.
   MainThreadTaskQueue(
       std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
-      const Spec& spec,
+      const TaskQueue::Spec& spec,
       const QueueCreationParams& params,
       MainThreadSchedulerImpl* main_thread_scheduler);
 
+  ~MainThreadTaskQueue();
+
  private:
+  friend class base::RefCountedThreadSafe<MainThreadTaskQueue>;
   friend class base::sequence_manager::SequenceManager;
   friend class blink::scheduler::main_thread_scheduler_impl_unittest::
       MainThreadSchedulerImplTest;
@@ -448,6 +457,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // appropriate notifications. This is the common part of ShutdownTaskQueue and
   // DetachFromMainThreadScheduler.
   void ClearReferencesToSchedulers();
+
+  scoped_refptr<TaskQueue> task_queue_;
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;

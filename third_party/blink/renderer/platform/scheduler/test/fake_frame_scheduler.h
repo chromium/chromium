@@ -22,19 +22,20 @@ class MainThreadTaskQueueForTest : public MainThreadTaskQueue {
       QueueTraits::PrioritisationType prioritisation_type)
       : MainThreadTaskQueue(
             nullptr,
-            Spec(MainThreadTaskQueue::NameForQueueType(
-                MainThreadTaskQueue::QueueType::kTest)),
+            base::sequence_manager::TaskQueue::Spec(
+                MainThreadTaskQueue::NameForQueueType(
+                    MainThreadTaskQueue::QueueType::kTest)),
             QueueCreationParams(MainThreadTaskQueue::QueueType::kTest)
                 .SetQueueTraits(
                     QueueTraits().SetPrioritisationType(prioritisation_type)),
             nullptr) {}
   explicit MainThreadTaskQueueForTest(QueueType queue_type)
       : MainThreadTaskQueue(nullptr,
-                            Spec(MainThreadTaskQueue::NameForQueueType(
-                                MainThreadTaskQueue::QueueType::kTest)),
+                            base::sequence_manager::TaskQueue::Spec(
+                                MainThreadTaskQueue::NameForQueueType(
+                                    MainThreadTaskQueue::QueueType::kTest)),
                             QueueCreationParams(queue_type),
                             nullptr) {}
-  ~MainThreadTaskQueueForTest() override = default;
 };
 
 // A dummy FrameScheduler for tests.

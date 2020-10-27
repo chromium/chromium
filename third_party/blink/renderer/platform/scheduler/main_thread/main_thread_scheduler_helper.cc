@@ -24,7 +24,8 @@ MainThreadSchedulerHelper::MainThreadSchedulerHelper(
           NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
                            MainThreadTaskQueue::QueueType::kControl)
                            .SetShouldNotifyObservers(false))) {
-  InitDefaultQueues(default_task_queue_, control_task_queue_,
+  InitDefaultQueues(default_task_queue_->GetTaskQueue(),
+                    control_task_queue_->GetTaskQueue(),
                     TaskType::kMainThreadTaskQueueDefault);
   sequence_manager_->EnableCrashKeys("blink_scheduler_async_stack");
 }
@@ -40,7 +41,7 @@ MainThreadSchedulerHelper::DefaultMainThreadTaskQueue() {
 }
 
 scoped_refptr<TaskQueue> MainThreadSchedulerHelper::DefaultTaskQueue() {
-  return default_task_queue_;
+  return default_task_queue_->GetTaskQueue();
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -49,7 +50,7 @@ MainThreadSchedulerHelper::ControlMainThreadTaskQueue() {
 }
 
 scoped_refptr<TaskQueue> MainThreadSchedulerHelper::ControlTaskQueue() {
-  return control_task_queue_;
+  return control_task_queue_->GetTaskQueue();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

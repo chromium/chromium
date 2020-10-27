@@ -349,5 +349,29 @@ std::unique_ptr<internal::TaskQueueImpl> TaskQueue::TakeTaskQueueImpl() {
   return std::move(impl_);
 }
 
+void TaskQueue::SetOnTaskStartedHandler(OnTaskStartedHandler handler) {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  if (!impl_)
+    return;
+
+  impl_->SetOnTaskStartedHandler(std::move(handler));
+}
+
+void TaskQueue::SetOnTaskCompletedHandler(OnTaskCompletedHandler handler) {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  if (!impl_)
+    return;
+
+  impl_->SetOnTaskCompletedHandler(std::move(handler));
+}
+
+void TaskQueue::SetOnTaskPostedHandler(OnTaskPostedHandler handler) {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  if (!impl_)
+    return;
+
+  impl_->SetOnTaskPostedHandler(std::move(handler));
+}
+
 }  // namespace sequence_manager
 }  // namespace base
