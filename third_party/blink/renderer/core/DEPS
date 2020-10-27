@@ -162,9 +162,6 @@ specific_include_rules = {
     "element_test.cc": [
         "+third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
     ],
-    "frame.cc": [
-        "+third_party/blink/renderer/core/exported/web_remote_frame_impl.h"
-    ],
     "html_canvas_painter_test.cc": [
         "+components/viz/test/test_context_provider.h",
     ],

@@ -8,8 +8,6 @@ blink_core_sources("exported") {
   configs += [ "//build/config/compiler:noshadowing" ]
 
   sources = [
-    "local_frame_client_impl.cc",
-    "local_frame_client_impl.h",
     "web_array_buffer.cc",
     "web_array_buffer_converter.cc",
     "web_blob.cc",
@@ -31,7 +29,6 @@ blink_core_sources("exported") {
     "web_form_element.cc",
     "web_form_element_observer_impl.cc",
     "web_form_element_observer_impl.h",
-    "web_frame.cc",
     "web_frame_content_dumper.cc",
     "web_frame_serializer.cc",
     "web_heap.cc",
@@ -46,7 +43,6 @@ blink_core_sources("exported") {
     "web_isolated_world_info.cc",
     "web_label_element.cc",
     "web_language_detection_details.cc",
-    "web_local_frame_client.cc",
     "web_memory_statistics.cc",
     "web_message_port_converter.cc",
     "web_meta_element.cc",
@@ -61,8 +57,6 @@ blink_core_sources("exported") {
     "web_plugin_document.cc",
     "web_plugin_script_forbidden_scope.cc",
     "web_range.cc",
-    "web_remote_frame_impl.cc",
-    "web_remote_frame_impl.h",
     "web_render_theme.cc",
     "web_savable_resources_test_support.cc",
     "web_scoped_page_pauser.cc",

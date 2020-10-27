@@ -1,50 +1,54 @@
 specific_include_rules = {
-  "ad_tracker_test.cc": [
+  "ad_tracker_test\.cc": [
     "+base/run_loop.h",
   ],
-  "coop_access_violation_report_body.cc": [
+  "coop_access_violation_report_body\.cc": [
     "+services/network/public/cpp/cross_origin_opener_policy.h"
   ],
-  "frame_view.cc": [
+  "frame_view\.cc": [
     "+ui/gfx/transform.h"
   ],
-  "frame_test_helpers.h": [
+  "frame_test_helpers\.h": [
     "+components/viz/common/surfaces/frame_sink_id.h"
   ],
-  "local_frame_back_forward_cache_test.cc": [
+  "local_frame_back_forward_cache_test\.cc": [
     "+base/run_loop.h",
   ],
-  "local_frame.h": [
+  "local_frame\.h": [
     "+ui/gfx/transform.h"
   ],
-  "local_frame.cc": [
+  "local_frame\.cc": [
     "+ui/gfx/transform.h"
   ],
-  "local_frame_view.cc": [
+  "local_frame_view\.cc": [
     "+base/timer/lap_timer.h",
     "+cc/tiles/frame_viewer_instrumentation.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
   ],
-  "remote_frame_view.cc": [
+  "remote_frame_view\.cc": [
     "+components/paint_preview/common/paint_preview_tracker.h",
     "+printing/buildflags/buildflags.h",
     "+printing/metafile_skia.h",
   ],
-  "visual_viewport.cc": [
+  "visual_viewport\.cc": [
     "+cc/layers/solid_color_scrollbar_layer.h",
   ],
-  "web_frame_widget_base.cc": [
+  "web_frame_widget_base\.cc": [
     "+cc/trees/swap_promise.h",
   ],
-  "web_frame_widget_base.h": [
+  "web_frame_widget_base\.h": [
     "+services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h",
     "+ui/base/mojom/ui_base_types.mojom-shared.h",
   ],
-  "web_frame_widget_test.cc": [
+  "web_frame_test\.cc": [
+    "+ui/base/mojom/ui_base_types.mojom-shared.h",
+    "+ui/gfx/transform.h",
+  ],
+  "web_frame_widget_test\.cc": [
     "+base/run_loop.h",
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
   ],
-  "settings.h": [
+  "settings\.h": [
     "+ui/base/pointer/pointer_device.h",
   ],
 }

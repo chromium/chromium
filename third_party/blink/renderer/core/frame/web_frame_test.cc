@@ -126,7 +126,6 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/exported/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -140,6 +139,7 @@
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -203,12 +203,12 @@
 #include "ui/gfx/transform.h"
 #include "v8/include/v8.h"
 
-using blink::url_test_helpers::ToKURL;
 using blink::mojom::SelectionMenuBehavior;
 using blink::test::RunPendingTasks;
+using blink::url_test_helpers::ToKURL;
+using testing::_;
 using testing::ElementsAre;
 using testing::Mock;
-using testing::_;
 
 namespace blink {
 
@@ -7478,7 +7478,7 @@ TEST_F(WebFrameTest, WebNodeImageContentsWithOrientation) {
       "1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpz"
       "dHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytL"
       "T1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A7j/iMz/6tv8A/Mgf/e"
-    "2iiiv9ff8AiVzwx/6Fn/lbEf8Ay0+A/tvG/wA/4L/I/9k=\">";
+      "2iiiv9ff8AiVzwx/6Fn/lbEf8Ay0+A/tvG/wA/4L/I/9k=\">";
 
   // Load up the image and test that we can extract the contents.
   KURL test_url = ToKURL("about:blank");
@@ -13235,7 +13235,8 @@ TEST_F(WebFrameTest, RightClickActivatesForExecuteCommand) {
       frame->GetFrame()->GetBrowserInterfaceBroker());
 
   EXPECT_FALSE(frame->GetFrame()->HasStickyUserActivation());
-  frame->ExecuteScript(WebScriptSource(WebString("document.execCommand('copy');")));
+  frame->ExecuteScript(
+      WebScriptSource(WebString("document.execCommand('copy');")));
   EXPECT_FALSE(frame->GetFrame()->HasStickyUserActivation());
 
   // Right-click to activate the page.
@@ -13267,7 +13268,8 @@ TEST_F(WebFrameTest, GetCanonicalUrlForSharingNotInHead) {
       frame, R"(
     <body>
       <link rel="canonical" href="https://example.com/canonical.html">
-    </body>)", ToKURL("https://example.com/test_page.html"));
+    </body>)",
+      ToKURL("https://example.com/test_page.html"));
   EXPECT_TRUE(frame->GetDocument().CanonicalUrlForSharing().IsNull());
 }
 
@@ -13279,7 +13281,8 @@ TEST_F(WebFrameTest, GetCanonicalUrlForSharing) {
       frame, R"(
     <head>
       <link rel="canonical" href="https://example.com/canonical.html">
-    </head>)", ToKURL("https://example.com/test_page.html"));
+    </head>)",
+      ToKURL("https://example.com/test_page.html"));
   EXPECT_EQ(WebURL(ToKURL("https://example.com/canonical.html")),
             frame->GetDocument().CanonicalUrlForSharing());
 }
@@ -13293,7 +13296,8 @@ TEST_F(WebFrameTest, GetCanonicalUrlForSharingMultiple) {
     <head>
       <link rel="canonical" href="https://example.com/canonical1.html">
       <link rel="canonical" href="https://example.com/canonical2.html">
-    </head>)", ToKURL("https://example.com/test_page.html"));
+    </head>)",
+      ToKURL("https://example.com/test_page.html"));
   EXPECT_EQ(WebURL(ToKURL("https://example.com/canonical1.html")),
             frame->GetDocument().CanonicalUrlForSharing());
 }

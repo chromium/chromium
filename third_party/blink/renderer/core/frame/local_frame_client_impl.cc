@@ -29,7 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/exported/local_frame_client_impl.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client_impl.h"
 
 #include <utility>
 
