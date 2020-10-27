@@ -44,8 +44,8 @@ class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
       network_config::mojom::ManagedPropertiesPtr managed_properties);
 
   bool no_active_networks_ = false;
-  bool restricted_connectivity_ = false;
-  bool state_is_captive_portal_ = false;
+  chromeos::network_config::mojom::PortalState portal_state_ =
+      chromeos::network_config::mojom::PortalState::kUnknown;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::vector<mojom::CaptivePortalProblem> problems_;

@@ -13,6 +13,31 @@
 namespace chromeos {
 namespace network_diagnostics {
 
+namespace {
+
+mojom::CaptivePortalProblem GetProblemFromPortalState(
+    network_config::mojom::PortalState portal_state) {
+  switch (portal_state) {
+    case network_config::mojom::PortalState::kOnline:
+      // Already handled, not expected, fall through.
+      break;
+    case network_config::mojom::PortalState::kUnknown:
+      return mojom::CaptivePortalProblem::kUnknownPortalState;
+    case network_config::mojom::PortalState::kPortalSuspected:
+      return mojom::CaptivePortalProblem::kPortalSuspected;
+    case network_config::mojom::PortalState::kPortal:
+      return mojom::CaptivePortalProblem::kPortal;
+    case network_config::mojom::PortalState::kProxyAuthRequired:
+      return mojom::CaptivePortalProblem::kProxyAuthRequired;
+    case network_config::mojom::PortalState::kNoInternet:
+      return mojom::CaptivePortalProblem::kNoInternet;
+  }
+  NOTREACHED();
+  return mojom::CaptivePortalProblem::kUnknownPortalState;
+}
+
+}  // namespace
+
 CaptivePortalRoutine::CaptivePortalRoutine() {
   network_config::BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
@@ -33,15 +58,11 @@ void CaptivePortalRoutine::AnalyzeResultsAndExecuteCallback() {
   if (no_active_networks_) {
     set_verdict(mojom::RoutineVerdict::kProblem);
     problems_.emplace_back(mojom::CaptivePortalProblem::kNoActiveNetworks);
-  } else if (restricted_connectivity_) {
-    set_verdict(mojom::RoutineVerdict::kProblem);
-    problems_.emplace_back(
-        mojom::CaptivePortalProblem::kRestrictedConnectivity);
-  } else if (state_is_captive_portal_) {
-    set_verdict(mojom::RoutineVerdict::kProblem);
-    problems_.emplace_back(mojom::CaptivePortalProblem::kCaptivePortalState);
-  } else {
+  } else if (portal_state_ == network_config::mojom::PortalState::kOnline) {
     set_verdict(mojom::RoutineVerdict::kNoProblem);
+  } else {
+    set_verdict(mojom::RoutineVerdict::kProblem);
+    problems_.emplace_back(GetProblemFromPortalState(portal_state_));
   }
   std::move(routine_completed_callback_).Run(verdict(), problems_);
 }
@@ -62,36 +83,27 @@ void CaptivePortalRoutine::FetchManagedProperties(const std::string& guid) {
                            base::Unretained(this)));
 }
 
-// Process the network interface information.
 void CaptivePortalRoutine::OnNetworkStateListReceived(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
   if (networks.size() == 0) {
     no_active_networks_ = true;
     AnalyzeResultsAndExecuteCallback();
-  } else {
-    state_is_captive_portal_ =
-        networks[0]->connection_state ==
-        network_config::mojom::ConnectionStateType::kPortal;
-    FetchManagedProperties(networks[0]->guid);
+    return;
   }
+  if (networks[0]->connection_state !=
+      network_config::mojom::ConnectionStateType::kPortal) {
+    // Not in a captive portal state.
+    portal_state_ = network_config::mojom::PortalState::kOnline;
+    AnalyzeResultsAndExecuteCallback();
+    return;
+  }
+  FetchManagedProperties(networks[0]->guid);
 }
 
 void CaptivePortalRoutine::OnManagedPropertiesReceived(
     network_config::mojom::ManagedPropertiesPtr managed_properties) {
-  if (!managed_properties) {
-    AnalyzeResultsAndExecuteCallback();
-    return;
-  }
-  switch (managed_properties->portal_state) {
-    case network_config::mojom::PortalState::kUnknown:
-    case network_config::mojom::PortalState::kOnline:
-      break;
-    case network_config::mojom::PortalState::kPortalSuspected:
-    case network_config::mojom::PortalState::kPortal:
-    case network_config::mojom::PortalState::kProxyAuthRequired:
-    case network_config::mojom::PortalState::kNoInternet:
-      restricted_connectivity_ = true;
-      break;
+  if (managed_properties) {
+    portal_state_ = managed_properties->portal_state;
   }
   AnalyzeResultsAndExecuteCallback();
 }

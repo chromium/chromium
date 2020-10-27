@@ -80,11 +80,17 @@ enum DnsResolutionProblem {
 enum CaptivePortalProblem {
   // No active networks found.
   kNoActiveNetworks,
-  // The active network is detected to be behind a captive portal and have
-  // restricted connectivity.
-  kRestrictedConnectivity,
-  // The active network is detected to be behind a captive portal.
-  kCaptivePortalState,
+  // The active network is not connected or the portal state is not available.
+  kUnknownPortalState,
+  // A portal is suspected but no redirect was provided.
+  kPortalSuspected,
+  // The network is in a portal state with a redirect URL.
+  kPortal,
+  // A proxy requiring authentication is detected.
+  kProxyAuthRequired,
+  // The active network is connected but no internet is available and no proxy
+  // was detected.
+  kNoInternet,
 };
 
 // Problems related to the HttpFirewall routine.
