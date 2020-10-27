@@ -483,11 +483,13 @@ quic::ParsedQuicVersionVector GetQuicVersions(
     if (found_obsolete_version) {
       UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.FinchObsoleteVersion", true);
       // OQV prefix stands for Obsolete QUIC Version.
+      // OQV_quic_versions.
       static base::debug::CrashKeyString* quic_versions_key =
           base::debug::AllocateCrashKeyString(
               "OQV_quic_versions", base::debug::CrashKeySize::Size32);
       base::debug::ScopedCrashKeyString quic_versions_scoped_key(
           quic_versions_key, trial_versions_str);
+      // OQV_time.
       static base::debug::CrashKeyString* time_key =
           base::debug::AllocateCrashKeyString(
               "OQV_time", base::debug::CrashKeySize::Size32);
@@ -497,6 +499,7 @@ quic::ParsedQuicVersionVector GetQuicVersions(
                             3600;  // Only provide granularity of 1h.
       std::string time_string = base::NumberToString(seconds_since_epoch);
       base::debug::ScopedCrashKeyString time_scoped_key(time_key, time_string);
+      // OQV_finch_seed.
       static base::debug::CrashKeyString* finch_seed_key =
           base::debug::AllocateCrashKeyString(
               "OQV_finch_seed", base::debug::CrashKeySize::Size32);
@@ -506,6 +509,54 @@ quic::ParsedQuicVersionVector GetQuicVersions(
       }
       base::debug::ScopedCrashKeyString finch_scoped_key(finch_seed_key,
                                                          finch_seed);
+      // OQV_seed_expiry.
+      static base::debug::CrashKeyString* seed_expiry_key =
+          base::debug::AllocateCrashKeyString(
+              "OQV_seed_expiry", base::debug::CrashKeySize::Size32);
+      base::HistogramBase* histogram_seed_expiry =
+          base::LinearHistogram::FactoryGet(
+              "Variations.CreateTrials.SeedExpiry", 1, 3, 4,
+              base::HistogramBase::kUmaTargetedHistogramFlag);
+      std::unique_ptr<base::HistogramSamples> samples_seed_expiry =
+          histogram_seed_expiry->SnapshotSamples();
+      std::string seed_expiry_string =
+          "c" + base::NumberToString(samples_seed_expiry->TotalCount()) + "s" +
+          base::NumberToString(samples_seed_expiry->sum());
+      base::debug::ScopedCrashKeyString seed_expiry_scoped_key(
+          seed_expiry_key, seed_expiry_string);
+      // OQV_seed_freshness.
+      static base::debug::CrashKeyString* seed_freshness_key =
+          base::debug::AllocateCrashKeyString(
+              "OQV_seed_freshness", base::debug::CrashKeySize::Size32);
+      base::HistogramBase* histogram_seed_freshness =
+          base::Histogram::FactoryGet(
+              "Variations.SeedFreshness", 1,
+              base::TimeDelta::FromDays(30).InMinutes(), 50,
+              base::HistogramBase::kUmaTargetedHistogramFlag);
+      std::unique_ptr<base::HistogramSamples> samples_seed_freshness =
+          histogram_seed_freshness->SnapshotSamples();
+      std::string seed_freshness_string =
+          "c" + base::NumberToString(samples_seed_freshness->TotalCount()) +
+          "s" + base::NumberToString(samples_seed_freshness->sum());
+      base::debug::ScopedCrashKeyString seed_freshness_scoped_key(
+          seed_freshness_key, seed_freshness_string);
+      // OQV_finch_safe.
+      static base::debug::CrashKeyString* finch_safe_key =
+          base::debug::AllocateCrashKeyString(
+              "OQV_finch_safe", base::debug::CrashKeySize::Size32);
+      base::HistogramBase* histogram_finch_safe =
+          base::BooleanHistogram::FactoryGet(
+              "Variations.SafeMode.FellBackToSafeMode2",
+              base::HistogramBase::kUmaTargetedHistogramFlag);
+      std::unique_ptr<base::HistogramSamples> samples_finch_safe =
+          histogram_finch_safe->SnapshotSamples();
+      std::string finch_safe_string =
+          "c" + base::NumberToString(samples_finch_safe->TotalCount()) + "s" +
+          base::NumberToString(samples_finch_safe->sum());
+      base::debug::ScopedCrashKeyString finch_safe_scoped_key(
+          finch_safe_key, finch_safe_string);
+      // Now save all this state into a fake crash. See b/167728915 and
+      // crbug.com/1139877 for analysis details.
       base::debug::DumpWithoutCrashing();
     }
     trial_versions = filtered_versions;
