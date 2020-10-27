@@ -1139,6 +1139,41 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, PseudoTypeContent) {
   RunLaxElementCheck(selector, false);
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       PseudoElementContentWithCssStyle) {
+  Selector selector({"#with_inner_text span"});
+  auto* style = selector.proto.add_filters()->mutable_css_style();
+  style->set_property("content");
+  style->set_pseudo_element("before");
+  style->mutable_value()->set_re2("\"before\"");
+  RunLaxElementCheck(selector, true);
+
+  style->mutable_value()->set_re2("\"nomatch\"");
+  RunLaxElementCheck(selector, false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, CssVisibility) {
+  Selector selector({"#button"});
+  auto* style = selector.proto.add_filters()->mutable_css_style();
+  style->set_property("visibility");
+  style->mutable_value()->set_re2("visible");
+
+  EXPECT_TRUE(content::ExecJs(shell(), R"(
+  document.getElementById("button").style.visibility = 'hidden';
+)"));
+  RunLaxElementCheck(selector, false);
+  style->set_should_match(false);
+  RunLaxElementCheck(selector, true);
+
+  EXPECT_TRUE(content::ExecJs(shell(), R"(
+  document.getElementById("button").style.visibility = 'visible';
+)"));
+  style->set_should_match(true);
+  RunLaxElementCheck(selector, true);
+  style->set_should_match(false);
+  RunLaxElementCheck(selector, false);
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, InnerTextThenCss) {
   // There are two divs containing "Section with text", but only one has a
   // button, which removes #button.

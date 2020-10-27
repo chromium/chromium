@@ -902,6 +902,8 @@ message SelectorProto {
       //
       // Note that this just filters out elements. It doesn't select the
       // pseudo-element; use pseudo_type for that.
+      //
+      // Deprecated: prefer css_style. This should be removed in Chrome M89.
       PseudoElementContent pseudo_element_content = 8;
 
       // Go from label to the labelled control. Only works starting with current
@@ -931,6 +933,10 @@ message SelectorProto {
 
       // Only keep results that match the given CSS selector.
       string match_css_selector = 11;
+
+      // Only keep elements whose computed style match the given filter. This is
+      // based on Window.computedStyle()
+      CssStyleFilter css_style = 12;
     }
   }
 
@@ -950,6 +956,35 @@ message SelectorProto {
   message PseudoElementContent {
     optional PseudoType pseudo_type = 1;
     optional TextFilter content = 2;
+  }
+
+  // Only keep elements whose computed style match the given filter. This is
+  // based on Window.computedStyle()
+  //
+  // See
+  // https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle
+  message CssStyleFilter {
+    // CSS property name.
+    optional string property = 3;
+
+    // Name of the pseudo-element whose style should be checked. Leave it unset
+    // or set to the empty string to check the style of the real element.
+    //
+    // This is the pseudoElt argument of JavaScript's
+    // window.getComputedStyle(element, [, pseudoElt]).
+    optional string pseudo_element = 4;
+
+    // By default the text filter in |value| must match. Set this to false to
+    // require the text condition not to match.
+    optional bool should_match = 5 [default = true];
+
+    // CSS property value match.
+    //
+    // Valid computed CSS properties always have a value, even if it's a default
+    // value. The default value depends on the property.
+    optional TextFilter value = 6;
+
+    reserved 1, 2;
   }
 
   // Filter elements by their position on the page, relative to a given target

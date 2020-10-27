@@ -55,6 +55,14 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
              std::make_tuple(b.pseudo_element_content().pseudo_type(),
                              b.pseudo_element_content().content());
 
+    case SelectorProto::Filter::kCssStyle:
+      return std::make_tuple(a.css_style().property(),
+                             a.css_style().pseudo_element(),
+                             a.css_style().value()) <
+             std::make_tuple(b.css_style().property(),
+                             b.css_style().pseudo_element(),
+                             b.css_style().value());
+
     case SelectorProto::Filter::kBoundingBox:
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPickOne:
@@ -220,6 +228,7 @@ base::Optional<std::string> Selector::ExtractSingleCssSelectorForAutofill()
       case SelectorProto::Filter::kValue:
       case SelectorProto::Filter::kPseudoType:
       case SelectorProto::Filter::kPseudoElementContent:
+      case SelectorProto::Filter::kCssStyle:
       case SelectorProto::Filter::kLabelled:
       case SelectorProto::Filter::kClosest:
       case SelectorProto::Filter::kMatchCssSelector:
@@ -321,6 +330,14 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
     case SelectorProto::Filter::kPseudoElementContent:
       out << "::" << f.pseudo_element_content().pseudo_type()
           << "~=" << f.pseudo_element_content().content();
+      return out;
+
+    case SelectorProto::Filter::kCssStyle:
+      if (!f.css_style().pseudo_element().empty()) {
+        out << f.css_style().pseudo_element() << " ";
+      }
+      out << "style." << f.css_style().property()
+          << "~=" << f.css_style().value();
       return out;
 
     case SelectorProto::Filter::kBoundingBox:

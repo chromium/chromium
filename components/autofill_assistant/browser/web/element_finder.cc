@@ -158,6 +158,23 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
       return true;
     }
 
+    case SelectorProto::Filter::kCssStyle: {
+      std::string re_var = AddRegexpInstance(filter.css_style().value());
+      std::string property = AddArgument(filter.css_style().property());
+      std::string element = AddArgument(filter.css_style().pseudo_element());
+      AddLine("elements = elements.filter((e) => {");
+      AddLine("  const s = window.getComputedStyle(e, ");
+      AddLine({"      ", element, " === '' ? null : ", element, ");"});
+      AddLine({"  const match = ", re_var, ".test(s[", property, "]);"});
+      if (filter.css_style().should_match()) {
+        AddLine("  return match;");
+      } else {
+        AddLine("  return !match;");
+      }
+      AddLine("});");
+      return true;
+    }
+
     case SelectorProto::Filter::kLabelled:
       AddLine(R"(elements = elements.flatMap((e) => {
   if (e.tagName != 'LABEL') return [];
@@ -363,8 +380,9 @@ void ElementFinder::ExecuteNextTask() {
     case SelectorProto::Filter::kValue:
     case SelectorProto::Filter::kBoundingBox:
     case SelectorProto::Filter::kPseudoElementContent:
-    case SelectorProto::Filter::kLabelled:
-    case SelectorProto::Filter::kMatchCssSelector: {
+    case SelectorProto::Filter::kMatchCssSelector:
+    case SelectorProto::Filter::kCssStyle:
+    case SelectorProto::Filter::kLabelled: {
       std::vector<std::string> matches;
       if (!ConsumeAllMatchesOrFail(matches))
         return;
