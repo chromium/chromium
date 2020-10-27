@@ -136,6 +136,7 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
         IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
     settings_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
+    settings_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     AddChildView(settings_button_);
     Layout();
@@ -168,6 +169,7 @@ void NotificationSwipeControlView::ShowSnoozeButton(bool show) {
         IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
     snooze_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
+    snooze_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     AddChildViewAt(snooze_button_, 0);
     Layout();

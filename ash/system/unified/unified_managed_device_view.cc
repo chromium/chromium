@@ -32,7 +32,6 @@ UnifiedManagedDeviceView::UnifiedManagedDeviceView(
       icon_(new views::ImageView),
       label_(new views::Label),
       controller_(controller) {
-  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(

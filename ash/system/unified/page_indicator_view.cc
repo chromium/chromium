@@ -48,7 +48,6 @@ class PageIndicatorView::PageIndicatorButton : public views::Button,
  public:
   PageIndicatorButton(UnifiedSystemTrayController* controller, int page)
       : views::Button(this), controller_(controller), page_number_(page) {
-    DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetInkDropMode(InkDropMode::ON);
     views::InstallFixedSizeCircleHighlightPathGenerator(this, kInkDropRadius);

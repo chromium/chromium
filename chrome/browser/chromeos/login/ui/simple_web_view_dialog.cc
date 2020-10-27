@@ -174,6 +174,7 @@ void SimpleWebViewDialog::Init() {
                                  ui::EF_MIDDLE_MOUSE_BUTTON);
   back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
   back->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
+  back->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   back->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back->SetID(VIEW_ID_BACK_BUTTON);
   back_ = back.get();
@@ -184,6 +185,7 @@ void SimpleWebViewDialog::Init() {
   forward->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                                     ui::EF_MIDDLE_MOUSE_BUTTON);
   forward->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
+  forward->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   forward->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
   forward->SetID(VIEW_ID_FORWARD_BUTTON);
   forward_ = forward.get();

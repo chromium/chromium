@@ -110,7 +110,6 @@ class OverviewCloseButton : public views::ImageButton {
     SetMinimumImageSize(gfx::Size(kHeaderHeightDp, kHeaderHeightDp));
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
     SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-    DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
     views::InstallFixedSizeCircleHighlightPathGenerator(

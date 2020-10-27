@@ -16,10 +16,6 @@
 
 namespace views {
 
-// An image button.
-// Note that this type of button is not focusable by default and will not be
-// part of the focus chain, unless in accessibility mode. Call
-// SetFocusForPlatform() to make it part of the focus chain.
 class VIEWS_EXPORT ImageButton : public Button {
  public:
   METADATA_HEADER(ImageButton);

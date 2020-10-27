@@ -30,7 +30,7 @@ namespace views {
 class InkDropContainerView;
 class LabelButtonBorder;
 
-// LabelButton is a button with text and an icon, it's not focusable by default.
+// LabelButton is a button with text and an icon.
 class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
  public:
   METADATA_HEADER(LabelButton);

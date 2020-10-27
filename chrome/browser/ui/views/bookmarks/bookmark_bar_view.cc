@@ -160,7 +160,6 @@ class BookmarkButtonBase : public views::LabelButton {
     SetHasInkDropActionOnClick(true);
     SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 
-    DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     show_animation_ = std::make_unique<gfx::SlideAnimation>(this);

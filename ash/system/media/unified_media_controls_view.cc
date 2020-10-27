@@ -147,7 +147,6 @@ UnifiedMediaControlsView::MediaActionButton::CreateInkDropRipple() const {
 UnifiedMediaControlsView::UnifiedMediaControlsView(
     UnifiedMediaControlsController* controller)
     : views::Button(this), controller_(controller) {
-  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   SetBackground(views::CreateRoundedRectBackground(

@@ -207,6 +207,7 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
   close_button_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING))));
   close_button_->SizeToPreferredSize();
+  close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   views::InstallCircleHighlightPathGenerator(close_button_);
 
   location_icon_view_ =

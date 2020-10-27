@@ -87,6 +87,7 @@ CustomFrameView::CustomFrameView(Widget* frame)
   if (frame_->widget_delegate()->ShouldShowWindowIcon()) {
     window_icon_ =
         AddChildView(std::make_unique<ImageButton>(Button::PressedCallback()));
+    window_icon_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   }
 }
 
@@ -541,6 +542,7 @@ ImageButton* CustomFrameView::InitWindowCaptionButton(
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   ImageButton* button =
       AddChildView(std::make_unique<ImageButton>(std::move(callback)));
+  button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   button->SetAccessibleName(l10n_util::GetStringUTF16(accessibility_string_id));
   button->SetImage(Button::STATE_NORMAL,
                    rb.GetImageNamed(normal_image_id).ToImageSkia());

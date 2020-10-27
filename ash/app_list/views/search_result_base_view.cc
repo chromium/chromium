@@ -13,7 +13,6 @@
 namespace ash {
 
 SearchResultBaseView::SearchResultBaseView() {
-  DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetInstallFocusRingOnFocus(false);
 }

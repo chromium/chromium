@@ -40,8 +40,6 @@ LabelButton::LabelButton(PressedCallback callback,
           style::GetFont(button_context, style::STYLE_PRIMARY)),
       cached_default_button_font_list_(
           style::GetFont(button_context, style::STYLE_DIALOG_BUTTON_DEFAULT)) {
-  // Not focusable by default, only for accessibility.
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   ink_drop_container_ = AddChildView(std::make_unique<InkDropContainerView>());
   ink_drop_container_->SetVisible(false);
 

@@ -73,6 +73,11 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const base::string16& text,
   return gfx::Range(cursor_position, previous_grapheme_index);
 }
 
+// static
+View::FocusBehavior PlatformStyle::DefaultFocusBehavior() {
+  return View::FocusBehavior::ALWAYS;
+}
+
 #endif  // OS_APPLE
 
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || \

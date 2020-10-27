@@ -199,8 +199,6 @@ MigratableCardView::GetMigratableCardDescriptionView(
             kTrashCanIcon);
     delete_card_from_local_button->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_TRASH_CAN_BUTTON_TOOLTIP));
-    DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY,
-              delete_card_from_local_button->GetFocusBehavior());
     delete_card_from_local_button->SetFocusBehavior(
         FocusBehavior::ACCESSIBLE_ONLY);
     delete_card_from_local_button_ =

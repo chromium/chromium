@@ -145,7 +145,6 @@ CandidateView::CandidateView(PressedCallback callback,
     infolist_icon_ = AddChildView(std::move(infolist_icon));
   }
 
-  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 

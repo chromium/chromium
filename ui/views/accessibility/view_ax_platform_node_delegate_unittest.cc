@@ -200,7 +200,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
   button_->SetInstallFocusRingOnFocus(false);
 
   // |button_| is focusable, so |label_| (as its child) should be ignored.
-  EXPECT_EQ(View::FocusBehavior::ACCESSIBLE_ONLY, button_->GetFocusBehavior());
+  EXPECT_NE(View::FocusBehavior::NEVER, button_->GetFocusBehavior());
   EXPECT_EQ(1, button_accessibility()->GetChildCount());
   EXPECT_EQ(button_->GetNativeViewAccessible(),
             label_accessibility()->GetParent());

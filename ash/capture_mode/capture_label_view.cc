@@ -161,6 +161,7 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
       color_provider->GetRippleAttributes(background_color);
   label_button_->SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
   label_button_->SetInkDropBaseColor(ripple_attributes.base_color);
+  label_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   label_ = AddChildView(std::make_unique<views::Label>(base::string16()));
   label_->SetPaintToLayer();

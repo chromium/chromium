@@ -44,6 +44,7 @@ WindowPreview::WindowPreview(aura::Window* window,
       kPreviewContainerBgColor, kPreviewBorderRadius));
   title_ = new views::Label(window->GetTitle());
   close_button_ = new views::ImageButton(this);
+  close_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   AddChildView(preview_container_view_);
   AddChildView(preview_view_);

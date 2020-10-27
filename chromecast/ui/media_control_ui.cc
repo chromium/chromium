@@ -239,6 +239,7 @@ std::unique_ptr<views::ImageButton> MediaControlUi::CreateImageButton(
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   button->SetSize(gfx::Size(height, height));
+  button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetButtonImage(button.get(), icon);
 
   return button;

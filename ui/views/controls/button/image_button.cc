@@ -34,8 +34,6 @@ ImageButton::ImageButton(PressedCallback callback)
   // implementation is flipped horizontally so that the button's images are
   // mirrored when the UI directionality is right-to-left.
   SetFlipCanvasOnPaintForRTLUI(true);
-  // Not focusable by default, only for accessibility.
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 ImageButton::ImageButton(ButtonListener* listener)
@@ -220,7 +218,6 @@ const gfx::Point ImageButton::ComputeImagePaintPosition(
 
 ToggleImageButton::ToggleImageButton(PressedCallback callback)
     : ImageButton(std::move(callback)) {
-  DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 

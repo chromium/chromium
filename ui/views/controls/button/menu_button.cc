@@ -26,7 +26,6 @@ MenuButton::MenuButton(PressedCallback callback,
   menu_button_controller_ = menu_button_controller.get();
   SetButtonController(std::move(menu_button_controller));
 
-  DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 

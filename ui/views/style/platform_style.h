@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -98,6 +99,9 @@ class VIEWS_EXPORT PlatformStyle {
   // pairs on other platforms.
   static gfx::Range RangeToDeleteBackwards(const base::string16& text,
                                            size_t cursor_position);
+
+  // Returns the default focus behavior based on the platform.
+  static View::FocusBehavior DefaultFocusBehavior();
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(PlatformStyle);

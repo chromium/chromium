@@ -76,7 +76,6 @@ InvertBubbleView::InvertBubbleView(Browser* browser, views::View* anchor_view)
                           kLearnMoreUrl),
       vector_icons::kHelpOutlineIcon);
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  DCHECK_EQ(FocusBehavior::ACCESSIBLE_ONLY, button->GetFocusBehavior());
   button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetExtraView(std::move(button));
 

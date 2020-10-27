@@ -557,6 +557,7 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
                    tp->GetImageSkiaNamed(hot_image_id));
   button->SetImage(views::Button::STATE_PRESSED,
                    tp->GetImageSkiaNamed(pushed_image_id));
+  button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   if (browser_view()->IsBrowserTypeNormal()) {
     // Get a custom processed version of the theme's background image so
     // that it appears to draw contiguously across all of the caption

@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/layout.h"
 #include "ui/views/border.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace {
@@ -42,7 +43,7 @@ using ImageButtonTest = ViewsTestBase;
 TEST_F(ImageButtonTest, FocusBehavior) {
   ImageButton button;
 
-  EXPECT_EQ(View::FocusBehavior::ACCESSIBLE_ONLY, button.GetFocusBehavior());
+  EXPECT_EQ(PlatformStyle::DefaultFocusBehavior(), button.GetFocusBehavior());
 }
 
 TEST_F(ImageButtonTest, Basics) {

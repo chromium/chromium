@@ -44,6 +44,7 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL));
   undo_button_->SetBackground(nullptr);
+  undo_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 void UndoWindow::OnThemeChanged() {

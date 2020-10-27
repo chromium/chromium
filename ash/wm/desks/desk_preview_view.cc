@@ -218,7 +218,6 @@ DeskPreviewView::DeskPreviewView(DeskMiniView* mini_view)
 
   SetFocusPainter(nullptr);
   SetInkDropMode(InkDropMode::OFF);
-  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   SetPaintToLayer(ui::LAYER_TEXTURED);

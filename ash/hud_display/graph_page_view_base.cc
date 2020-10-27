@@ -40,7 +40,6 @@ class MinMaxButton : public views::ImageButton {
                                                           /*radius=*/0));
     SetProperty(kHUDClickHandler, HTCLIENT);
 
-    DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 

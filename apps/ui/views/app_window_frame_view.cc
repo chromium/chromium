@@ -64,6 +64,7 @@ void AppWindowFrameView::Init() {
     close_button->SetImage(
         views::Button::STATE_PRESSED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_CLOSE_P).ToImageSkia());
+    close_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     close_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
     close_button_ = AddChildView(std::move(close_button));
@@ -80,6 +81,7 @@ void AppWindowFrameView::Init() {
     maximize_button->SetImage(
         views::Button::STATE_DISABLED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_MAXIMIZE_D).ToImageSkia());
+    maximize_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     maximize_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
     maximize_button_ = AddChildView(std::move(maximize_button));
@@ -92,6 +94,7 @@ void AppWindowFrameView::Init() {
     restore_button->SetImage(
         views::Button::STATE_PRESSED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_RESTORE_P).ToImageSkia());
+    restore_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     restore_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
     restore_button_ = AddChildView(std::move(restore_button));
@@ -104,6 +107,7 @@ void AppWindowFrameView::Init() {
     minimize_button->SetImage(
         views::Button::STATE_PRESSED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_MINIMIZE_P).ToImageSkia());
+    minimize_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     minimize_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
     minimize_button_ = AddChildView(std::move(minimize_button));

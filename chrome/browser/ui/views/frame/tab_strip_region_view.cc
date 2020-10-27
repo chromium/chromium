@@ -42,6 +42,7 @@ std::unique_ptr<views::ImageButton> CreateScrollButton(
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
   scroll_button->SetHasInkDropActionOnClick(true);
   scroll_button->SetInkDropMode(views::Button::InkDropMode::ON);
+  scroll_button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   return scroll_button;
 }
 

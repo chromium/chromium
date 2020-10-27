@@ -31,7 +31,6 @@ CloseDeskButton::CloseDeskButton(views::ButtonListener* listener)
   SetInkDropMode(InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusPainter(nullptr);
-  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));

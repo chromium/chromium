@@ -103,7 +103,6 @@ SuggestionView::SuggestionView(PressedCallback callback)
   annotation_label_ = AddChildView(CreateAnnotationLabel());
   annotation_label_->SetVisible(false);
 
-  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 

@@ -42,9 +42,8 @@ class VIEWS_EXPORT ButtonListener {
   virtual ~ButtonListener() = default;
 };
 
-// A View representing a button. A Button is not focusable by default and will
-// not be part of the focus chain, unless in accessibility mode (see
-// SetFocusForPlatform()).
+// A View representing a button. A Button is focusable by default and will
+// be part of the focus chain.
 class VIEWS_EXPORT Button : public InkDropHostView,
                             public AnimationDelegateViews {
  public:
@@ -132,6 +131,8 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
   // Make the button focusable as per the platform.
+  // TODO(weili): remove this as it is no longer needed since the platform
+  // focus behavior is the default.
   void SetFocusForPlatform();
 
   void SetTooltipText(const base::string16& tooltip_text);

@@ -132,7 +132,6 @@ class ToastOverlayButton : public views::LabelButton {
 
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kToastCornerRounding);
-    DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 
