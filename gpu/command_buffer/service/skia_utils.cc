@@ -4,11 +4,13 @@
 
 #include "gpu/command_buffer/service/skia_utils.h"
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/config/gpu_switches.h"
 #include "gpu/config/skia_limits.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -86,6 +88,11 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
   options.fInternalMultisampleCount = 0;
   if (type == GrContextType::kMetal)
     options.fRuntimeProgramCacheSize = 1024;
+
+  options.fSuppressMipmapSupport =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableMipmapGeneration);
+
   return options;
 }
 

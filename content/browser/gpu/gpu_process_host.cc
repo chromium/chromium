@@ -241,6 +241,7 @@ static const char* const kSwitchNames[] = {
     switches::kDisableGpuRasterization,
     switches::kDisableGLExtensions,
     switches::kDisableLogging,
+    switches::kDisableMipmapGeneration,
     switches::kDisableShaderNameHashing,
     switches::kDisableSkiaRuntimeOpts,
     switches::kDisableWebRtcHWEncoding,

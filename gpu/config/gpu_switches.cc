@@ -10,6 +10,10 @@ namespace switches {
 // Overrides the kEnableGpuRasterization flag.
 const char kDisableGpuRasterization[] = "disable-gpu-rasterization";
 
+// Disables mipmap generation in Skia. Used a workaround for select low memory
+// devices, see https://crbug.com/1138979 for details.
+const char kDisableMipmapGeneration[] = "disable-mipmap-generation";
+
 // Allow heuristics to determine when a layer tile should be drawn with the
 // Skia GPU backend. Only valid with GPU accelerated compositing.
 const char kEnableGpuRasterization[] = "enable-gpu-rasterization";

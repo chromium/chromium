@@ -301,7 +301,6 @@ bool SharedContextState::InitializeGrContext(
     // in GetCapabilities and ensuring these are also used by the
     // PaintOpBufferSerializer.
     GrContextOptions options = GetDefaultGrContextOptions(GrContextType::kGL);
-    options.fSuppressMipmapSupport = workarounds.disable_mipmap_generation;
     options.fDriverBugWorkarounds =
         GrDriverBugWorkarounds(workarounds.ToIntSet());
     options.fPersistentCache = cache;

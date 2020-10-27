@@ -50,6 +50,7 @@
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_switches.h"
 #include "media/base/key_system_names.h"
 #include "media/base/media_switches.h"
 #include "net/http/http_util.h"
@@ -69,11 +70,6 @@ constexpr char kMixedContentAutoupgradeFeatureName[] =
     "AutoupgradeMixedContent";
 constexpr char kDisableMixedContentAutoupgradeOrigin[] =
     "disable-mixed-content-autoupgrade";
-
-// This flag is auto generated for a GPU workaround with the same name in
-// gpu/config/gpu_workaround_list.txt. There is no string to reference so it's
-// defined here.
-constexpr char kDisableMipmapGeneration[] = "disable_mipmap_generation";
 
 // Returns the underlying channel if |directory| is a client endpoint for a
 // |fuchsia::io::Directory| protocol. Otherwise, returns an empty channel.
@@ -160,9 +156,9 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,
       cc::switches::kEnableGpuBenchmarking,
-      kDisableMipmapGeneration,
       switches::kDisableFeatures,
       switches::kDisableGpuWatchdog,
+      switches::kDisableMipmapGeneration,
       // TODO(crbug.com/1082821): Remove this switch from the allow-list.
       switches::kEnableCastStreamingReceiver,
       switches::kEnableFeatures,
