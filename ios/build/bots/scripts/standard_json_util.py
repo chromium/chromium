@@ -4,6 +4,7 @@
 
 import logging
 from collections import OrderedDict
+import os
 
 import result_sink_util
 
@@ -20,6 +21,7 @@ class StdJson():
 
     self.tests = OrderedDict()
     self.result_sink = result_sink_util.ResultSinkClient()
+    self._shard_index = os.getenv('GTEST_SHARD_INDEX', 0)
 
     if 'passed' in kwargs:
       self.mark_all_passed(kwargs['passed'])
@@ -27,6 +29,18 @@ class StdJson():
       self.mark_all_failed(kwargs['failed'])
     if 'flaked' in kwargs:
       self.mark_all_passed(kwargs['flaked'], flaky=True)
+
+  def _init_test(self, expected, actual, is_unexpected=False):
+    """Returns a dict of test result info used as values in self.tests dict."""
+    test = {
+        'expected': expected,
+        'actual': actual,
+        'shard': self._shard_index,
+    }
+    if is_unexpected:
+      test['is_unexpected'] = True
+
+    return test
 
   def mark_passed(self, test, flaky=False):
     """Sets test as passed
@@ -48,7 +62,7 @@ class StdJson():
     if test in self.tests:
       self.tests[test]['actual'] = self.tests[test]['actual'] + " PASS"
     else:
-      self.tests[test] = {'expected': 'PASS', 'actual': 'PASS'}
+      self.tests[test] = self._init_test('PASS', 'PASS')
 
     if flaky or 'FAIL' in self.tests[test]['actual']:
       self.tests[test]['is_flaky'] = True
@@ -79,11 +93,7 @@ class StdJson():
       self.tests[test]['actual'] = self.tests[test]['actual'] + " FAIL"
       self.tests[test]['is_unexpected'] = True
     else:
-      self.tests[test] = {
-          'expected': 'PASS',
-          'actual': 'FAIL',
-          'is_unexpected': True
-      }
+      self.tests[test] = self._init_test('PASS', 'FAIL', True)
 
   def mark_all_failed(self, tests):
     """Marks all tests as FAIL"""
@@ -104,7 +114,7 @@ class StdJson():
         test, 'SKIP', True, tags=[('disabled_test', 'true')])
     self.result_sink.post(result_sink_test_result)
 
-    self.tests[test] = {'expected': 'SKIP', 'actual': 'SKIP'}
+    self.tests[test] = self._init_test('SKIP', 'SKIP')
 
   def mark_all_skipped(self, tests):
     for test in tests:
@@ -135,8 +145,4 @@ class StdJson():
       self.tests[test]['actual'] = self.tests[test]['actual'] + " TIMEOUT"
       self.tests[test]['is_unexpected'] = True
     else:
-      self.tests[test] = {
-          'expected': 'PASS',
-          'actual': 'TIMEOUT',
-          'is_unexpected': True
-      }
+      self.tests[test] = self._init_test('PASS', 'TIMEOUT', True)
