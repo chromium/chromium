@@ -987,6 +987,22 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MultipleUrls) {
   run_loop.Run();
 }
 
+TEST_F(FileManagerPathUtilTest, ReplacePathPrefixDoesMatch) {
+  base::FilePath path =
+      ReplacePathPrefix(base::FilePath("/home/chronos/user/foo.txt"),
+                        base::FilePath("/home/chronos/user"),
+                        base::FilePath("/home/chronos/u-0123456789abcdef"));
+  EXPECT_EQ(base::FilePath("/home/chronos/u-0123456789abcdef/foo.txt"), path);
+}
+
+TEST_F(FileManagerPathUtilTest, ReplacePathPrefixDoesNotMatch) {
+  base::FilePath path =
+      ReplacePathPrefix(base::FilePath("/media/removable/a/b/c/foo.txt"),
+                        base::FilePath("/home/chronos/user"),
+                        base::FilePath("/home/chronos/u-0123456789abcdef"));
+  EXPECT_EQ(base::FilePath("/media/removable/a/b/c/foo.txt"), path);
+}
+
 }  // namespace
 }  // namespace util
 }  // namespace file_manager

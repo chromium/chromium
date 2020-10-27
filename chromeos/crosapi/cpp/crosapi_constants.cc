@@ -11,4 +11,20 @@ namespace crosapi {
 // trailing "." is intentional.
 const char kLacrosAppIdPrefix[] = "org.chromium.lacros.";
 
+// Path to the ash-side primary user profile directory, which is a hard link to
+// a directory in the encrypted user data partition.
+const char kHomeChronosUserPath[] = "/home/chronos/user";
+
+// The "MyFiles" directory for the ash-side primary user.
+const char kMyFilesPath[] = "/home/chronos/user/MyFiles";
+
+// The "Downloads" directory for the ash-side primary user. Note that the user
+// can choose to download files to a different directory, see DownloadPrefs.
+const char kDefaultDownloadsPath[] = "/home/chronos/user/MyFiles/Downloads";
+
+// The default user-data-directory for Lacros.
+// NOTE: This is security sensitive. The directory must be inside the encrypted
+// user data partition.
+const char kLacrosUserDataPath[] = "/home/chronos/user/lacros";
+
 }  // namespace crosapi

@@ -154,6 +154,15 @@ bool ExtractMountNameFileSystemNameFullPath(const base::FilePath& absolute_path,
                                             std::string* mount_name,
                                             std::string* file_system_name,
                                             std::string* full_path);
+
+// Convenience wrapper around the FilePath::AppendRelativePath() function.
+// For |input| "/foo/bar" and |old_prefix| "/foo" and |new_prefix| "/baz",
+// returns "/baz/bar". If |input| does not start with |old_prefix|,
+// returns |input|.
+base::FilePath ReplacePathPrefix(const base::FilePath& input,
+                                 const base::FilePath& old_prefix,
+                                 const base::FilePath& new_prefix);
+
 }  // namespace util
 }  // namespace file_manager
 

@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,8 +45,9 @@ TEST(ChromePaths, UserCacheDir) {
 #endif
 
   // Verify that a profile in the special platform-specific source
-  // location ends up in the special target location.
-#if !defined(OS_WIN)  // No special behavior on Windows.
+  // location ends up in the special target location. Ignore this assertion on
+  // platforms that don't use a special cache directory.
+#if !defined(OS_WIN) && !BUILDFLAG(IS_LACROS)
   GetUserCacheDirectory(test_profile_dir, &cache_dir);
   EXPECT_EQ(expected_cache_dir.value(), cache_dir.value());
 #endif
@@ -61,7 +63,8 @@ TEST(ChromePaths, UserCacheDir) {
 #endif
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Chrome OS doesn't use any of the desktop linux configuration.
+#if defined(OS_LINUX) && !BUILDFLAG(IS_LACROS) && !BUILDFLAG(IS_ASH)
 TEST(ChromePaths, DefaultUserDataDir) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   std::string orig_chrome_config_home;
@@ -97,6 +100,16 @@ TEST(ChromePaths, DefaultUserDataDir) {
     env->SetVar("CHROME_CONFIG_HOME", orig_chrome_config_home);
   else
     env->UnSetVar("CHROME_CONFIG_HOME");
+}
+#endif
+
+#if BUILDFLAG(IS_LACROS) || BUILDFLAG(IS_ASH)
+TEST(ChromePaths, UserMediaDirectories) {
+  base::FilePath path;
+  // Chrome OS does not support custom media directories.
+  EXPECT_FALSE(GetUserMusicDirectory(&path));
+  EXPECT_FALSE(GetUserPicturesDirectory(&path));
+  EXPECT_FALSE(GetUserVideosDirectory(&path));
 }
 #endif
 

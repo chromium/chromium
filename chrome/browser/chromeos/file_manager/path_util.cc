@@ -762,5 +762,16 @@ bool ExtractMountNameFileSystemNameFullPath(const base::FilePath& absolute_path,
   return true;
 }
 
+base::FilePath ReplacePathPrefix(const base::FilePath& input,
+                                 const base::FilePath& old_prefix,
+                                 const base::FilePath& new_prefix) {
+  if (old_prefix.IsParent(input)) {
+    base::FilePath output = new_prefix;
+    old_prefix.AppendRelativePath(input, &output);
+    return output;
+  }
+  return input;
+}
+
 }  // namespace util
 }  // namespace file_manager

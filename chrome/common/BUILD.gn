@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")  # For branding_file_path.
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
@@ -630,7 +631,10 @@ static_library("constants") {
     # implemented in //ui/base, so we need that dependency.
     deps += [ "//ui/base" ]
   }
-  if (is_linux || is_chromeos) {
+  if (is_lacros) {
+    sources += [ "chrome_paths_lacros.cc" ]
+    deps += [ "//chromeos/crosapi/cpp" ]
+  } else if (is_linux || is_chromeos) {
     sources += [ "chrome_paths_linux.cc" ]
   }
   if (is_mac) {

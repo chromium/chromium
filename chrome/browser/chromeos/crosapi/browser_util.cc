@@ -90,16 +90,15 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 base::FilePath GetUserDataDir() {
-  base::FilePath base_path;
   if (base::SysInfo::IsRunningOnChromeOS()) {
     // NOTE: On device this function is privacy/security sensitive. The
     // directory must be inside the encrypted user partition.
-    base_path = base::FilePath("/home/chronos/user");
-  } else {
-    // For developers on Linux desktop, put the directory under the developer's
-    // specified --user-data-dir.
-    base::PathService::Get(chrome::DIR_USER_DATA, &base_path);
+    return base::FilePath(crosapi::kLacrosUserDataPath);
   }
+  // For developers on Linux desktop, put the directory under the developer's
+  // specified --user-data-dir.
+  base::FilePath base_path;
+  base::PathService::Get(chrome::DIR_USER_DATA, &base_path);
   return base_path.Append("lacros");
 }
 

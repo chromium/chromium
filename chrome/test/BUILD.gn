@@ -4830,7 +4830,10 @@ test("unit_tests") {
   # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
   if (chromeos_is_browser_only) {
     assert(enable_native_notifications)
-    sources += [ "../browser/notifications/notification_platform_bridge_lacros_unittest.cc" ]
+    sources += [
+      "../browser/notifications/notification_platform_bridge_lacros_unittest.cc",
+      "../common/chrome_paths_lacros_unittest.cc",
+    ]
   }
 
   if (is_chromeos) {

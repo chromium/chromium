@@ -11,6 +11,14 @@ namespace crosapi {
 
 COMPONENT_EXPORT(CROSAPI) extern const char kLacrosAppIdPrefix[];
 
+COMPONENT_EXPORT(CROSAPI) extern const char kHomeChronosUserPath[];
+
+COMPONENT_EXPORT(CROSAPI) extern const char kMyFilesPath[];
+
+COMPONENT_EXPORT(CROSAPI) extern const char kDefaultDownloadsPath[];
+
+COMPONENT_EXPORT(CROSAPI) extern const char kLacrosUserDataPath[];
+
 }  // namespace crosapi
 
 #endif  // CHROMEOS_CROSAPI_CPP_CROSAPI_CONSTANTS_H_
