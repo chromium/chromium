@@ -22,7 +22,7 @@ static float32x4_t WrapVirtualIndexVector(float32x4_t x,
 
   // vcltq_f32 returns returns all 0xfffffff (-1) if a < b and if if not.
   const uint32x4_t cmp = vcltq_f32(r, vcvtq_f32_s32(f));
-  f = vaddq_s32(f, static_cast<int32x4_t>(cmp));
+  f = vaddq_s32(f, vreinterpretq_s32_u32(cmp));
 
   return vsubq_f32(x, vmulq_f32(vcvtq_f32_s32(f), wave_size));
 }
@@ -49,8 +49,8 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
   const float32x4_t v_wave_size = vdupq_n_f32(periodic_wave_size);
   const float32x4_t v_inv_wave_size = vdupq_n_f32(1.0f / periodic_wave_size);
 
-  const uint32x4_t v_read_mask = vdupq_n_s32(periodic_wave_size - 1);
-  const uint32x4_t v_one = vdupq_n_s32(1);
+  const uint32x4_t v_read_mask = vdupq_n_u32(periodic_wave_size - 1);
+  const uint32x4_t v_one = vdupq_n_u32(1);
 
   const float32x4_t v_table_factor = vdupq_n_f32(table_interpolation_factor);
 
@@ -187,7 +187,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
   const uint32x4_t v_read0 = vcvtq_u32_f32(v_virt_index);
 
   // v_read1 = v_read0 + 1, but wrap the index around, if needed.
-  const uint32x4_t v_read1 = vandq_s32(vaddq_s32(v_read0, vdupq_n_u32(1)),
+  const uint32x4_t v_read1 = vandq_u32(vaddq_u32(v_read0, vdupq_n_u32(1)),
                                        vdupq_n_u32(read_index_mask));
 
   float sample1_lower[4] __attribute__((aligned(16)));

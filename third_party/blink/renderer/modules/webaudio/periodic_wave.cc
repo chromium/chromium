@@ -332,7 +332,7 @@ void PeriodicWave::WaveDataForFundamentalFrequency(
 
   const uint32x4_t v_index1 = vcvtq_u32_f32(v_pitch_range);
   uint32x4_t v_index2 = vaddq_u32(v_index1, vdupq_n_u32(1));
-  v_index2 = vminq_u32(v_index2, vdupq_n_f32(NumberOfRanges() - 1));
+  v_index2 = vminq_u32(v_index2, vdupq_n_u32(NumberOfRanges() - 1));
 
   uint32_t range_index1[4] __attribute__((aligned(16)));
   uint32_t range_index2[4] __attribute__((aligned(16)));
