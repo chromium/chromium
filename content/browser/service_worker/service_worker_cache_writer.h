@@ -34,12 +34,6 @@ namespace content {
 //
 // This class's behavior is modelled as a state machine; see the DoLoop function
 // for comments about this.
-//
-// Note that currently we have two types of interfaces to create an instance of
-// ServiceWorkerCacheWriter: storage service and non storage service.
-// After storage service is shipped, we use Mojo connection to read and write
-// the resource.
-// See https://crbug.com/1055677 for more info.
 class CONTENT_EXPORT ServiceWorkerCacheWriter {
  public:
   using OnWriteCompleteCallback = base::OnceCallback<void(net::Error)>;

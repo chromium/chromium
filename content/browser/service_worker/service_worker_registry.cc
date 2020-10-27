@@ -947,7 +947,6 @@ void ServiceWorkerRegistry::DidGetRegistrationsForOrigin(
     DCHECK(entry->registration);
     DCHECK(entry->version_reference);
     registration_ids.insert(entry->registration->registration_id);
-    // TODO(crbug.com/1055677): Pass ServiceWorkerLiveVersionRef.
     registrations.push_back(
         GetOrCreateRegistration(*entry->registration, entry->resources,
                                 std::move(entry->version_reference)));
