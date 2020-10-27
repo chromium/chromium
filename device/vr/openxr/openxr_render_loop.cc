@@ -137,6 +137,10 @@ device::mojom::XRInteractionMode OpenXrRenderLoop::GetInteractionMode(
   return device::mojom::XRInteractionMode::kWorldSpace;
 }
 
+bool OpenXrRenderLoop::CanEnableAntiAliasing() const {
+  return openxr_->CanEnableAntiAliasing();
+}
+
 void OpenXrRenderLoop::OnSessionStart() {
   LogViewerType(VrViewerType::OPENXR_UNKNOWN);
 }

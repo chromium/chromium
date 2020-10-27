@@ -95,10 +95,11 @@ XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
                                               ignore_depth_values);
   }
 
-  bool want_antialiasing = initializer->antialias();
-  bool want_depth_buffer = initializer->depth();
-  bool want_stencil_buffer = initializer->stencil();
-  bool want_alpha_channel = initializer->alpha();
+  const bool want_antialiasing =
+      initializer->antialias() && session->CanEnableAntiAliasing();
+  const bool want_depth_buffer = initializer->depth();
+  const bool want_stencil_buffer = initializer->stencil();
+  const bool want_alpha_channel = initializer->alpha();
 
   // Allocate a drawing buffer to back the framebuffer if needed.
   if (initializer->hasFramebufferScaleFactor()) {

@@ -140,12 +140,16 @@ struct XRSessionDeviceConfig {
   // this would result in broken rendering due to inconsistency between the
   // drawn and displayed viewports.
   bool supports_viewport_scaling;
+
+  // Indicates whether we should enable anti-aliasing for WebGL layers. Value
+  // comes from the underlying XR runtime.
+  bool enable_anti_aliasing = true;
 };
 
 // This structure contains all the mojo interfaces for different kinds of
 // XRSession. The only interface required by all sessions is the
 // XRFrameDataProvider. It must always be present. Other interfaces are set as
-// apropriate based on the session creation options. (for example, an immersive
+// appropriate based on the session creation options. (for example, an immersive
 // session ought to have a XRPresentationConnection to submit the frames to the
 // immersive environment).
 // The XRSessionClient receiver must be fulfilled for the session to get

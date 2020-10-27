@@ -310,6 +310,10 @@ class XRSession final
 
   bool CanReportPoses() const;
 
+  // Return whether we should enable anti-aliasing for WebGL layers. Value
+  // comes from the underlying XR runtime.
+  bool CanEnableAntiAliasing() const;
+
   // Returns current transform from mojo space to the space of the passed in
   // type. May return nullopt if poses cannot be reported or if the transform is
   // unknown.
@@ -566,6 +570,9 @@ class XRSession final
 
   // Corresponds to mojo XRSession.supportsViewportScaling
   bool supports_viewport_scaling_ = false;
+
+  // Corresponds to mojo XRSessionOptions.enable_anti_aliasing
+  bool enable_anti_aliasing_ = true;
 
   std::unique_ptr<XRSessionViewportScaler> viewport_scaler_;
 

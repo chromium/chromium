@@ -53,6 +53,9 @@ device::mojom::XRInteractionMode XRDeviceAbstraction::GetInteractionMode(
     device::mojom::XRSessionMode session_mode) {
   return device::mojom::XRInteractionMode::kWorldSpace;
 }
+bool XRDeviceAbstraction::CanEnableAntiAliasing() const {
+  return true;
+}
 
 XRCompositorCommon::OutstandingFrame::OutstandingFrame() = default;
 XRCompositorCommon::OutstandingFrame::~OutstandingFrame() = default;
@@ -250,6 +253,7 @@ void XRCompositorCommon::RequestSession(
 
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   session->device_config->uses_input_eventing = UsesInputEventing();
+  session->device_config->enable_anti_aliasing = CanEnableAntiAliasing();
   session->enviroment_blend_mode = GetEnvironmentBlendMode(options->mode);
   session->interaction_mode = GetInteractionMode(options->mode);
 

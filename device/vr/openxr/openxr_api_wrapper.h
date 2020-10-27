@@ -75,6 +75,8 @@ class OpenXrApiWrapper {
   device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
       device::mojom::XRSessionMode session_mode);
 
+  bool CanEnableAntiAliasing() const;
+
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
 
  private:

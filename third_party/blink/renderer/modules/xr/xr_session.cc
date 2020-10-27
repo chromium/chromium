@@ -328,6 +328,7 @@ XRSession::XRSession(
       uses_input_eventing_(device_config->uses_input_eventing),
       supports_viewport_scaling_(immersive() &&
                                  device_config->supports_viewport_scaling),
+      enable_anti_aliasing_(device_config->enable_anti_aliasing),
       sensorless_session_(sensorless_session) {
   client_receiver_.Bind(
       std::move(client_receiver),
@@ -1788,6 +1789,10 @@ bool XRSession::CanReportPoses() const {
   // the way visibility state is updatd), the rest of the steps really just
   // boil down to whether or not the XRVisibilityState is Visible.
   return visibility_state_ == XRVisibilityState::VISIBLE;
+}
+
+bool XRSession::CanEnableAntiAliasing() const {
+  return enable_anti_aliasing_;
 }
 
 base::Optional<TransformationMatrix> XRSession::GetMojoFrom(

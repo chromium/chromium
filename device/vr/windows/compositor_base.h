@@ -43,6 +43,7 @@ class XRDeviceAbstraction {
       device::mojom::XRSessionMode session_mode);
   virtual device::mojom::XRInteractionMode GetInteractionMode(
       device::mojom::XRSessionMode session_mode);
+  virtual bool CanEnableAntiAliasing() const;
 };
 
 class XRCompositorCommon : public base::Thread,

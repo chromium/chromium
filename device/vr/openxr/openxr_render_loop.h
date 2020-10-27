@@ -45,6 +45,7 @@ class OpenXrRenderLoop : public XRCompositorCommon {
       device::mojom::XRSessionMode session_mode) override;
   device::mojom::XRInteractionMode GetInteractionMode(
       device::mojom::XRSessionMode session_mode) override;
+  bool CanEnableAntiAliasing() const override;
 
   void InitializeDisplayInfo();
   bool UpdateEyeParameters();

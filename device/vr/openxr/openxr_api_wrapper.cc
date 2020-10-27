@@ -767,6 +767,26 @@ uint32_t OpenXrApiWrapper::GetRecommendedSwapchainSampleCount() const {
       ->recommendedSwapchainSampleCount;
 }
 
+// From the OpenXR Spec:
+// maxSwapchainSampleCount is the maximum number of sub-data element samples
+// supported for swapchain images that will be rendered into for this view.
+//
+// To ease the workload on low end devices, we disable anti-aliasing when the
+// max sample count is 1.
+bool OpenXrApiWrapper::CanEnableAntiAliasing() const {
+  DCHECK(IsInitialized());
+
+  const auto compareMaxSwapchainSampleCounts =
+      [](const XrViewConfigurationView& i, const XrViewConfigurationView& j) {
+        return (i.maxSwapchainSampleCount < j.maxSwapchainSampleCount);
+      };
+
+  const auto it_min_element =
+      std::min_element(view_configs_.begin(), view_configs_.end(),
+                       compareMaxSwapchainSampleCounts);
+  return (it_min_element->maxSwapchainSampleCount > 1);
+}
+
 // stage bounds is fixed unless we received event
 // XrEventDataReferenceSpaceChangePending
 XrResult OpenXrApiWrapper::UpdateStageBounds() {
