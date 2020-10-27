@@ -159,10 +159,11 @@ void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
 }
 
 void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
-                                        const gfx::Point& location) {
+                                        const gfx::Point& hotspot_in_dips,
+                                        int buffer_scale) {
   if (!cursor_)
     return;
-  cursor_->UpdateBitmap(bitmaps, location, serial());
+  cursor_->UpdateBitmap(bitmaps, hotspot_in_dips, serial(), buffer_scale);
 }
 
 bool WaylandConnection::IsDragInProgress() const {

@@ -39,9 +39,14 @@ class WaylandCursor {
 
   // Updates wl_pointer's visual representation with the given bitmap
   // image set and hotspot.
+  // The cursor bitmap should already match the device scale factor.
+  // `buffer_scale` should match the scale of the window surface, so that we
+  // can pass this information to the compositor which will avoid scaling it
+  // again.
   void UpdateBitmap(const std::vector<SkBitmap>& bitmaps,
-                    const gfx::Point& hotspot,
-                    uint32_t serial);
+                    const gfx::Point& hotspot_in_dips,
+                    uint32_t serial,
+                    int buffer_scale);
 
  private:
   // wl_buffer_listener:

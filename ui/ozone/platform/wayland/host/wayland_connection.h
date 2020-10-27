@@ -94,7 +94,8 @@ class WaylandConnection {
   EventSerial event_serial() const { return serial_; }
 
   void SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
-                       const gfx::Point& location);
+                       const gfx::Point& hotspot_in_dips,
+                       int buffer_scale);
 
   WaylandEventSource* event_source() const { return event_source_.get(); }
 

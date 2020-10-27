@@ -112,8 +112,13 @@ void WaylandWindow::SetPointerFocus(bool focus) {
   // Whenever the window gets the pointer focus back, we must reinitialize the
   // cursor. Otherwise, it is invalidated whenever the pointer leaves the
   // surface and is not restored by the Wayland compositor.
-  if (has_pointer_focus_ && bitmap_)
-    connection_->SetCursorBitmap(bitmap_->bitmaps(), bitmap_->hotspot());
+  if (has_pointer_focus_ && bitmap_) {
+    // Translate physical pixels to DIPs.
+    gfx::Point hotspot_in_dips =
+        gfx::ScaleToRoundedPoint(bitmap_->hotspot(), 1.0f / ui_scale_);
+    connection_->SetCursorBitmap(bitmap_->bitmaps(), hotspot_in_dips,
+                                 buffer_scale());
+  }
 }
 
 void WaylandWindow::Show(bool inactive) {
@@ -214,9 +219,14 @@ void WaylandWindow::SetCursor(PlatformCursor cursor) {
   bitmap_ = bitmap;
 
   if (bitmap_) {
-    connection_->SetCursorBitmap(bitmap_->bitmaps(), bitmap_->hotspot());
+    // Translate physical pixels to DIPs.
+    gfx::Point hotspot_in_dips =
+        gfx::ScaleToRoundedPoint(bitmap_->hotspot(), 1.0f / ui_scale_);
+    connection_->SetCursorBitmap(bitmap_->bitmaps(), hotspot_in_dips,
+                                 buffer_scale());
   } else {
-    connection_->SetCursorBitmap(std::vector<SkBitmap>(), gfx::Point());
+    connection_->SetCursorBitmap(std::vector<SkBitmap>(), gfx::Point(),
+                                 buffer_scale());
   }
 }
 

@@ -247,13 +247,13 @@ TEST_P(WaylandPointerTest, SetBitmap) {
       SkImageInfo::Make(16, 16, kUnknown_SkColorType, kUnknown_SkAlphaType));
 
   EXPECT_CALL(*pointer_, SetCursor(nullptr, 0, 0));
-  connection_->SetCursorBitmap({}, {});
+  connection_->SetCursorBitmap({}, {}, 1.0);
   connection_->ScheduleFlush();
   Sync();
   Mock::VerifyAndClearExpectations(pointer_);
 
   EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8));
-  connection_->SetCursorBitmap({dummy_cursor}, gfx::Point(5, 8));
+  connection_->SetCursorBitmap({dummy_cursor}, gfx::Point(5, 8), 1.0);
   connection_->ScheduleFlush();
   Sync();
   Mock::VerifyAndClearExpectations(pointer_);
