@@ -546,6 +546,9 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
       // once they're near the viewport or visible.
       should_lazy_load_children_ = false;
 
+      if (lazy_load_frame_observer_)
+        lazy_load_frame_observer_->CancelPendingLazyLoad();
+
       lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
           *this, LazyLoadFrameObserver::LoadType::kSubsequent);
 
