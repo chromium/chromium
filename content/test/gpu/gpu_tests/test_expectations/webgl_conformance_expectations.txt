@@ -444,6 +444,7 @@ crbug.com/989194 [ mac passthrough angle-opengl ] conformance/extensions/oes-tex
 # Mac / Passthrough command decoder / OpenGL / NVIDIA
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/tex-input-validation.html [ Failure ]
+crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 
 # Mac ASAN flakes
 crbug.com/1059760 [ mac asan ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
