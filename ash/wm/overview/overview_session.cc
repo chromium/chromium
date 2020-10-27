@@ -126,7 +126,7 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
 // role button as the overview focus widget's contents.
 class OverviewFocusButton : public views::Button {
  public:
-  OverviewFocusButton() : views::Button(/*listener=*/nullptr) {
+  OverviewFocusButton() : views::Button(views::Button::PressedCallback()) {
     // Make this not focusable to avoid accessibility error since this view has
     // no accessible name.
     SetFocusBehavior(FocusBehavior::NEVER);

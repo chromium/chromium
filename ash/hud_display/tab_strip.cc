@@ -79,7 +79,7 @@ END_METADATA
 HUDTabButton::HUDTabButton(Style style,
                            const DisplayMode display_mode,
                            const base::string16& text)
-    : views::LabelButton(nullptr, text),
+    : views::LabelButton(views::Button::PressedCallback(), text),
       style_(style),
       display_mode_(display_mode) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);

@@ -30,7 +30,7 @@ class DummyButton : public views::Button {
   DISALLOW_COPY_AND_ASSIGN(DummyButton);
 };
 
-DummyButton::DummyButton() : views::Button(nullptr) {}
+DummyButton::DummyButton() : views::Button(views::Button::PressedCallback()) {}
 
 // A simple light weight test double dummy for a ui::Event.
 class DummyEvent : public ui::Event {

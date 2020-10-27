@@ -18,7 +18,7 @@ namespace ash {
 
 ShelfButton::ShelfButton(Shelf* shelf,
                          ShelfButtonDelegate* shelf_button_delegate)
-    : Button(nullptr),
+    : Button(Button::PressedCallback()),
       shelf_(shelf),
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(shelf_button_delegate_);
