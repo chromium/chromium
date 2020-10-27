@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace blink {
 
@@ -46,10 +45,6 @@ static bool DigestsEqual(const DigestValue& digest1,
   }
 
   return true;
-}
-
-inline bool IsSpaceOrComma(UChar c) {
-  return IsASCIISpace(c) || c == ',';
 }
 
 void SubresourceIntegrity::ReportInfo::AddUseCount(UseCounterFeature feature) {
@@ -88,9 +83,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     return false;
   }
 
-  return CheckSubresourceIntegrityImpl(
-      metadata_set, content, size, resource_url,
-      resource.GetResponse().HttpHeaderField("Integrity"), report_info);
+  return CheckSubresourceIntegrityImpl(metadata_set, content, size,
+                                       resource_url, report_info);
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
@@ -108,11 +102,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
       integrity_metadata, features, metadata_set, &report_info);
   if (integrity_parse_result != kIntegrityParseValidResult)
     return true;
-  // TODO(vogelheim): crbug.com/753349, figure out how deal with Ed25519
-  //                  checking here.
-  String integrity_header;
-  return CheckSubresourceIntegrityImpl(
-      metadata_set, content, size, resource_url, integrity_header, report_info);
+  return CheckSubresourceIntegrityImpl(metadata_set, content, size,
+                                       resource_url, report_info);
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
@@ -120,27 +111,17 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const char* content,
     size_t size,
     const KURL& resource_url,
-    const String integrity_header,
     ReportInfo& report_info) {
   if (!metadata_set.size())
     return true;
 
   // Check any of the "strongest" integrity constraints.
   IntegrityAlgorithm max_algorithm = FindBestAlgorithm(metadata_set);
-  CheckFunction checker = GetCheckFunctionForAlgorithm(max_algorithm);
-  bool report_ed25519 = max_algorithm == IntegrityAlgorithm::kEd25519;
-  if (report_ed25519) {
-    report_info.AddUseCount(ReportInfo::UseCounterFeature::kSRISignatureCheck);
-  }
   for (const IntegrityMetadata& metadata : metadata_set) {
     if (metadata.Algorithm() == max_algorithm &&
-        (*checker)(metadata, content, size, integrity_header)) {
+        CheckSubresourceIntegrityDigest(metadata, content, size)) {
       report_info.AddUseCount(ReportInfo::UseCounterFeature::
                                   kSRIElementWithMatchingIntegrityAttribute);
-      if (report_ed25519) {
-        report_info.AddUseCount(
-            ReportInfo::UseCounterFeature::kSRISignatureSuccess);
-      }
       return true;
     }
   }
@@ -175,8 +156,7 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
   // IntegrityAlgorithm declaration order matching the "strongest" order, so
   // make the compiler check this assumption first.)
   static_assert(IntegrityAlgorithm::kSha256 < IntegrityAlgorithm::kSha384 &&
-                    IntegrityAlgorithm::kSha384 < IntegrityAlgorithm::kSha512 &&
-                    IntegrityAlgorithm::kSha512 < IntegrityAlgorithm::kEd25519,
+                    IntegrityAlgorithm::kSha384 < IntegrityAlgorithm::kSha512,
                 "IntegrityAlgorithm enum order should match the priority "
                 "of the integrity algorithms.");
 
@@ -192,26 +172,10 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
   return max_algorithm;
 }
 
-SubresourceIntegrity::CheckFunction
-SubresourceIntegrity::GetCheckFunctionForAlgorithm(
-    IntegrityAlgorithm algorithm) {
-  switch (algorithm) {
-    case IntegrityAlgorithm::kSha256:
-    case IntegrityAlgorithm::kSha384:
-    case IntegrityAlgorithm::kSha512:
-      return SubresourceIntegrity::CheckSubresourceIntegrityDigest;
-    case IntegrityAlgorithm::kEd25519:
-      return SubresourceIntegrity::CheckSubresourceIntegritySignature;
-  }
-  NOTREACHED();
-  return nullptr;
-}
-
 bool SubresourceIntegrity::CheckSubresourceIntegrityDigest(
     const IntegrityMetadata& metadata,
     const char* content,
-    size_t size,
-    const String& integrity_header) {
+    size_t size) {
   blink::HashAlgorithm hash_algo = kHashAlgorithmSha256;
   switch (metadata.Algorithm()) {
     case IntegrityAlgorithm::kSha256:
@@ -222,9 +186,6 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityDigest(
       break;
     case IntegrityAlgorithm::kSha512:
       hash_algo = kHashAlgorithmSha512;
-      break;
-    case IntegrityAlgorithm::kEd25519:
-      NOTREACHED();
       break;
   }
 
@@ -240,66 +201,6 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityDigest(
   return DigestsEqual(digest, converted_hash_vector);
 }
 
-bool SubresourceIntegrity::CheckSubresourceIntegritySignature(
-    const IntegrityMetadata& metadata,
-    const char* content,
-    size_t size,
-    const String& integrity_header) {
-  DCHECK_EQ(IntegrityAlgorithm::kEd25519, metadata.Algorithm());
-
-  Vector<char> pubkey;
-  if (!Base64Decode(metadata.Digest(), pubkey) ||
-      pubkey.size() != ED25519_PUBLIC_KEY_LEN)
-    return false;
-
-  // Parse the Integrity:-header containing the signature(s).
-  Vector<UChar> integrity_header_chars;
-  integrity_header.AppendTo(integrity_header_chars);
-  const UChar* position = integrity_header_chars.begin();
-
-  const UChar* const end_position = integrity_header_chars.end();
-  while (position < end_position) {
-    // We expect substrings of the form "ed25519-<BASE64>* ,".
-    // We'll move all of our UChar* pointers up front (before any early exits
-    // from the loop), since we should cleanly skip the next token in the
-    // header in all cases, even if the current token doesn't validate.
-    SkipWhile<UChar, IsSpaceOrComma>(position, end_position);
-    IntegrityAlgorithm algorithm;
-    bool found_ed25519 =
-        kAlgorithmValid ==
-            ParseIntegrityHeaderAlgorithm(position, end_position, algorithm) &&
-        IntegrityAlgorithm::kEd25519 == algorithm;
-    const UChar* digest_begin = position;
-    SkipUntil<UChar, IsSpaceOrComma>(position, end_position);
-    const UChar* const digest_end = position;
-
-    // Now, algorithm contains the parsed algorithm specifier, the digest is
-    // found at digest_begin..digest_end, and position sits before the next
-    // token.
-
-    if (!found_ed25519)
-      continue;
-
-    String signature_raw;
-    if (!ParseDigest(digest_begin, digest_end, signature_raw))
-      continue;
-
-    Vector<char> signature;
-    Base64Decode(signature_raw, signature);
-    if (signature.size() != ED25519_SIGNATURE_LEN)
-      continue;
-
-    // BoringSSL/OpenSSL functions return 1 for success.
-    if (1 ==
-        ED25519_verify(reinterpret_cast<const uint8_t*>(content), size,
-                       reinterpret_cast<const uint8_t*>(&*signature.begin()),
-                       reinterpret_cast<const uint8_t*>(&*pubkey.begin()))) {
-      return true;
-    }
-  }
-  return false;
-}
-
 SubresourceIntegrity::AlgorithmParseResult
 SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
                                               const UChar* end,
@@ -311,8 +212,7 @@ SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
       {"sha384", IntegrityAlgorithm::kSha384},
       {"sha-384", IntegrityAlgorithm::kSha384},
       {"sha512", IntegrityAlgorithm::kSha512},
-      {"sha-512", IntegrityAlgorithm::kSha512},
-      {"ed25519", IntegrityAlgorithm::kEd25519}};
+      {"sha-512", IntegrityAlgorithm::kSha512}};
 
   // The last algorithm prefix is the ed25519 signature algorithm, which should
   // only be enabled if kSignatures is requested. We'll implement this by
@@ -322,17 +222,6 @@ SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
     last_prefix--;
 
   return ParseAlgorithmPrefix(begin, end, kPrefixes, last_prefix, algorithm);
-}
-
-SubresourceIntegrity::AlgorithmParseResult
-SubresourceIntegrity::ParseIntegrityHeaderAlgorithm(
-    const UChar*& begin,
-    const UChar* end,
-    IntegrityAlgorithm& algorithm) {
-  static const AlgorithmPrefixPair kPrefixes[] = {
-      {"ed25519", IntegrityAlgorithm::kEd25519}};
-  return ParseAlgorithmPrefix(begin, end, kPrefixes, base::size(kPrefixes),
-                              algorithm);
 }
 
 SubresourceIntegrity::AlgorithmParseResult

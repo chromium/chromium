@@ -91,18 +91,14 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   friend class SubresourceIntegrityTest;
   FRIEND_TEST_ALL_PREFIXES(SubresourceIntegrityTest, Parsing);
   FRIEND_TEST_ALL_PREFIXES(SubresourceIntegrityTest, ParseAlgorithm);
-  FRIEND_TEST_ALL_PREFIXES(SubresourceIntegrityTest, ParseHeader);
   FRIEND_TEST_ALL_PREFIXES(SubresourceIntegrityTest, Prioritization);
   FRIEND_TEST_ALL_PREFIXES(SubresourceIntegrityTest, FindBestAlgorithm);
-  FRIEND_TEST_ALL_PREFIXES(SubresourceIntegrityTest,
-                           GetCheckFunctionForAlgorithm);
 
   // The core implementation for all CheckSubresoureIntegrity functions.
   static bool CheckSubresourceIntegrityImpl(const IntegrityMetadataSet&,
                                             const char*,
                                             size_t,
                                             const KURL& resource_url,
-                                            const String integrity_header,
                                             ReportInfo&);
 
   enum AlgorithmParseResult {
@@ -117,26 +113,18 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                 const char*,
                                 size_t,
                                 const String&);
-  static CheckFunction GetCheckFunctionForAlgorithm(IntegrityAlgorithm);
 
   static bool CheckSubresourceIntegrityDigest(const IntegrityMetadata&,
                                               const char*,
-                                              size_t,
-                                              const String& integrity_header);
-  static bool CheckSubresourceIntegritySignature(
-      const IntegrityMetadata&,
-      const char*,
-      size_t,
-      const String& integrity_header);
+                                              size_t);
+  static bool CheckSubresourceIntegritySignature(const IntegrityMetadata&,
+                                                 const char*,
+                                                 size_t);
 
   static AlgorithmParseResult ParseAttributeAlgorithm(const UChar*& begin,
                                                       const UChar* end,
                                                       IntegrityFeatures,
                                                       IntegrityAlgorithm&);
-  static AlgorithmParseResult ParseIntegrityHeaderAlgorithm(
-      const UChar*& begin,
-      const UChar* end,
-      IntegrityAlgorithm&);
   typedef std::pair<const char*, IntegrityAlgorithm> AlgorithmPrefixPair;
   static AlgorithmParseResult ParseAlgorithmPrefix(
       const UChar*& string_position,

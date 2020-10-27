@@ -39,7 +39,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/web_task_runner.h",
     "+third_party/blink/renderer/platform/wtf",
-    "+third_party/boringssl/src/include/openssl/curve25519.h",  # for SubresourceIntegrity.cpp
 ]
 
 specific_include_rules = {

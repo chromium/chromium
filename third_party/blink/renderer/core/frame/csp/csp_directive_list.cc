@@ -57,8 +57,6 @@ ContentSecurityPolicyHashAlgorithm ConvertHashAlgorithmToCSPHashAlgorithm(
       return kContentSecurityPolicyHashAlgorithmSha384;
     case IntegrityAlgorithm::kSha512:
       return kContentSecurityPolicyHashAlgorithmSha512;
-    case IntegrityAlgorithm::kEd25519:
-      return kContentSecurityPolicyHashAlgorithmEd25519;
   }
   NOTREACHED();
   return kContentSecurityPolicyHashAlgorithmNone;

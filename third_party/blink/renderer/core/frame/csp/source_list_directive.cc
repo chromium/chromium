@@ -398,8 +398,7 @@ bool SourceListDirective::ParseHash(
       {"'sha512-", kContentSecurityPolicyHashAlgorithmSha512},
       {"'sha-256-", kContentSecurityPolicyHashAlgorithmSha256},
       {"'sha-384-", kContentSecurityPolicyHashAlgorithmSha384},
-      {"'sha-512-", kContentSecurityPolicyHashAlgorithmSha512},
-      {"'ed25519-", kContentSecurityPolicyHashAlgorithmEd25519}};
+      {"'sha-512-", kContentSecurityPolicyHashAlgorithmSha512}};
 
   constexpr size_t kSupportedPrefixesLength =
       sizeof(kSupportedPrefixes) / sizeof(kSupportedPrefixes[0]);
