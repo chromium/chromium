@@ -23,7 +23,10 @@ class ProfilePicker {
     kProfileMenuManageProfiles = 1,
     kProfileMenuAddNewProfile = 2,
     kOpenNewWindowAfterProfileDeletion = 3,
-    kMaxValue = kOpenNewWindowAfterProfileDeletion,
+    // A new session was sarted while Chrome was already running (e.g. by
+    // clicking on the tray icon on Windows).
+    kNewSessionOnExistingProcess = 4,
+    kMaxValue = kNewSessionOnExistingProcess,
   };
 
   // Shows the Profile picker for the given `entry_point` or re-activates an

@@ -898,7 +898,10 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
       StartupBrowserCreator::GetURLsFromCommandLine(command_line, cur_dir,
                                                     last_used_profile);
   if (ShouldShowProfilePicker(command_line, urls_to_launch)) {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kOnStartup);
+    ProfilePicker::Show(
+        process_startup
+            ? ProfilePicker::EntryPoint::kOnStartup
+            : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
     return true;
   }
 #endif  // !defined(OS_CHROMEOS)
