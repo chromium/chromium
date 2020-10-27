@@ -3016,7 +3016,8 @@ void RenderFrameImpl::Clone(
     mojo::PendingReceiver<blink::mojom::ResourceLoadInfoNotifier>
         pending_resource_load_info_notifier) {
   resource_load_info_notifier_receivers_.Add(
-      this, std::move(pending_resource_load_info_notifier));
+      this, std::move(pending_resource_load_info_notifier),
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 }
 
 // mojom::Frame implementation -------------------------------------------------
@@ -3823,7 +3824,8 @@ RenderFrameImpl::CreateWorkerFetchContext() {
       pending_resource_load_info_notifier;
   resource_load_info_notifier_receivers_.Add(
       this,
-      pending_resource_load_info_notifier.InitWithNewPipeAndPassReceiver());
+      pending_resource_load_info_notifier.InitWithNewPipeAndPassReceiver(),
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
   // |pending_subresource_loader_updater| and
   // |pending_resource_load_info_notifier| are not used for
@@ -3866,7 +3868,8 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
       pending_resource_load_info_notifier;
   resource_load_info_notifier_receivers_.Add(
       this,
-      pending_resource_load_info_notifier.InitWithNewPipeAndPassReceiver());
+      pending_resource_load_info_notifier.InitWithNewPipeAndPassReceiver(),
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
   scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
       static_cast<DedicatedWorkerHostFactoryClient*>(factory_client)
@@ -4985,7 +4988,9 @@ blink::mojom::RendererAudioInputStreamFactory*
 RenderFrameImpl::GetAudioInputStreamFactory() {
   if (!audio_input_stream_factory_)
     GetBrowserInterfaceBroker()->GetInterface(
-        audio_input_stream_factory_.BindNewPipeAndPassReceiver());
+        audio_input_stream_factory_.BindNewPipeAndPassReceiver(
+            agent_scheduling_group_.agent_group_scheduler()
+                .DefaultTaskRunner()));
   return audio_input_stream_factory_.get();
 }
 
