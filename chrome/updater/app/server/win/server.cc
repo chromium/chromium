@@ -24,6 +24,7 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/win/constants.h"
+#include "chrome/updater/win/setup/uninstall.h"
 #include "chrome/updater/win/wrl_module.h"
 #include "components/prefs/pref_service.h"
 
@@ -170,7 +171,8 @@ void ComServerApp::ActiveDuty(scoped_refptr<UpdateService> update_service,
 }
 
 void ComServerApp::UninstallSelf() {
-  // TODO(crbug.com/1098934): Uninstall this candidate version of the updater.
+  // TODO(crbug.com/1096654): Add support for is_machine.
+  UninstallCandidate(false);
 }
 
 bool ComServerApp::SwapRPCInterfaces() {
