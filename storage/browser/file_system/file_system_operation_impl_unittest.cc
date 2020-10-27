@@ -979,11 +979,12 @@ TEST_F(FileSystemOperationImplTest, TestReadDirSuccess) {
   EXPECT_EQ(base::File::FILE_OK, ReadDirectory(parent_dir));
   EXPECT_EQ(2u, entries().size());
 
-  for (size_t i = 0; i < entries().size(); ++i) {
-    if (entries()[i].type == filesystem::mojom::FsFileType::DIRECTORY)
-      EXPECT_EQ(FILE_PATH_LITERAL("child_dir"), entries()[i].name.value());
-    else
-      EXPECT_EQ(FILE_PATH_LITERAL("child_file"), entries()[i].name.value());
+  for (const filesystem::mojom::DirectoryEntry& entry : entries()) {
+    if (entry.type == filesystem::mojom::FsFileType::DIRECTORY) {
+      EXPECT_EQ(FILE_PATH_LITERAL("child_dir"), entry.name.value());
+    } else {
+      EXPECT_EQ(FILE_PATH_LITERAL("child_file"), entry.name.value());
+    }
   }
   EXPECT_EQ(1, quota_manager_proxy()->notify_storage_accessed_count());
   EXPECT_TRUE(change_observer()->HasNoChange());
