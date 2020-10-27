@@ -17,21 +17,40 @@ enum class InterstitialScreenEvent {
   kMaxValue = kConfirm
 };
 
-// Keep in sync with corresponding suffix in
-// tools/metrics/histograms_xml/histogram_suffixes_list.xml.
+// Keep in sync with corresponding template variants in the
+// Ash.PhoneHub.InterstitialEvent.* histogram.
 enum class InterstitialScreen {
   kConnectionError = 0,
   kBluetoothOrWifiDisabled,
-  kNotificationOptIn,
   kReconnecting,
   kInitialConnecting,
   kOnboardingExistingMultideviceUser,
   kOnboardingNewMultideviceUser
 };
 
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class QuickAction {
+  kToggleHotspotOn = 0,
+  kToggleHotspotOff,
+  kToggleQuietModeOn,
+  kToggleQuietModeOff,
+  kToggleLocatePhoneOn,
+  kToggleLocatePhoneOff,
+  kMaxValue = kToggleLocatePhoneOff
+};
+
 // Logs an |event| occurring for the given |interstitial_screen|.
 void LogInterstitialScreenEvent(InterstitialScreen screen,
                                 InterstitialScreenEvent event);
+
+// Logs an |event| for the notification opt-in prompt.
+void LogNotificationOptInEvent(InterstitialScreenEvent event);
+
+// Logs the |tab_index| of the tab continuation chip that was clicked.
+void LogTabContinuationChipClicked(int tab_index);
+
+// Logs a given |quick_action| click.
+void LogQuickActionClick(QuickAction quick_action);
 
 }  // namespace phone_hub_metrics
 }  // namespace ash

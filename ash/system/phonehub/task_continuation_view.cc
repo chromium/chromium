@@ -170,9 +170,11 @@ void TaskContinuationView::Update() {
     return;
   }
 
+  int index = 0;
   for (const BrowserTabsModel::BrowserTabMetadata& metadata :
        browser_tabs.most_recent_tabs()) {
-    chips_view_->AddTaskChip(new ContinueBrowsingChip(metadata));
+    chips_view_->AddTaskChip(new ContinueBrowsingChip(metadata, index));
+    index++;
   }
 
   PreferredSizeChanged();

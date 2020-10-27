@@ -6,6 +6,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/quick_action_item.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -13,6 +14,9 @@
 namespace ash {
 
 namespace {
+
+using phone_hub_metrics::LogQuickActionClick;
+using phone_hub_metrics::QuickAction;
 
 // Time to wait until we check the state of the phone to prevent showing wrong
 // state
@@ -54,6 +58,9 @@ QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
 }
 
 void SilencePhoneQuickActionController::OnButtonPressed(bool is_now_enabled) {
+  LogQuickActionClick(is_now_enabled ? QuickAction::kToggleQuietModeOff
+                                     : QuickAction::kToggleQuietModeOn);
+
   requested_state_ = is_now_enabled ? ActionState::kOff : ActionState::kOn;
   SetItemState(requested_state_.value());
 

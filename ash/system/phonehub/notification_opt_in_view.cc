@@ -30,7 +30,7 @@ namespace ash {
 
 using phone_hub_metrics::InterstitialScreen;
 using phone_hub_metrics::InterstitialScreenEvent;
-using phone_hub_metrics::LogInterstitialScreenEvent;
+using phone_hub_metrics::LogNotificationOptInEvent;
 
 namespace {
 
@@ -64,8 +64,7 @@ NotificationOptInView::NotificationOptInView(
       notification_access_manager_(notification_access_manager) {
   SetID(PhoneHubViewID::kNotificationOptInView);
   InitLayout();
-  LogInterstitialScreenEvent(InterstitialScreen::kNotificationOptIn,
-                             InterstitialScreenEvent::kShown);
+  LogNotificationOptInEvent(InterstitialScreenEvent::kShown);
 }
 
 NotificationOptInView::~NotificationOptInView() = default;
@@ -75,8 +74,7 @@ void NotificationOptInView::ButtonPressed(views::Button* sender,
   switch (sender->tag()) {
     case kDismissButtonTag:
       // Dismiss this view if user chose to opt out and update the bubble size.
-      LogInterstitialScreenEvent(InterstitialScreen::kNotificationOptIn,
-                                 InterstitialScreenEvent::kDismiss);
+      LogNotificationOptInEvent(InterstitialScreenEvent::kDismiss);
       SetVisible(false);
       bubble_view_->UpdateBubble();
       notification_access_manager_->DismissSetupRequiredUi();
@@ -84,8 +82,7 @@ void NotificationOptInView::ButtonPressed(views::Button* sender,
     case kSetUpButtonTag:
       // Opens the notification set up dialog in settings to start the opt in
       // flow.
-      LogInterstitialScreenEvent(InterstitialScreen::kNotificationOptIn,
-                                 InterstitialScreenEvent::kConfirm);
+      LogNotificationOptInEvent(InterstitialScreenEvent::kConfirm);
       NewWindowDelegate::GetInstance()->NewTabWithUrl(
           GURL(kMultideviceSettingsUrl), /*from_user_interaction=*/true);
       break;

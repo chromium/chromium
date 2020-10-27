@@ -1032,8 +1032,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PhoneHub.InterstitialScreenEvent.{ScreenName}"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
-<!-- Name completed by histogram_suffixes name="PhoneHubInterstitialScreen" -->
-
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Events for the given PhoneHub interstitial screen.</summary>
@@ -1041,11 +1039,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="BluetoothOrWifiDisabled"/>
     <variant name="ConnectionError"/>
     <variant name="InitialConnecting"/>
-    <variant name="NotificationOptIn"/>
     <variant name="Onboarding.ExistingMultideviceUser"/>
     <variant name="Onboarding.NewMultideviceUser"/>
     <variant name="Reconnecting"/>
   </token>
+</histogram>
+
+<histogram name="Ash.PhoneHub.NotificationOptInEvents"
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>Events for the given notification opt-in prompt.</summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.QuickActionClicked" enum="PhoneHubQuickAction"
+    expires_after="2021-10-31">
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>Event logged after the user clicks on a quick action.</summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.TabContinuationChipClicked" units="tab index"
+    expires_after="2021-10-31">
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    After a tab continuation chip is clicked, the index of the tab is logged.
+    Tab indices are ordered left-to-right, top-to-bottom in a standard LTR
+    locale.
+  </summary>
 </histogram>
 
 <histogram name="Ash.Pip.AndroidPipUseTime" units="ms"

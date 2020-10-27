@@ -17,8 +17,9 @@ namespace ash {
 class ASH_EXPORT ContinueBrowsingChip : public views::Button,
                                         public views::ButtonListener {
  public:
-  explicit ContinueBrowsingChip(
-      const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata);
+  ContinueBrowsingChip(
+      const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
+      int index);
 
   ~ContinueBrowsingChip() override;
   ContinueBrowsingChip(ContinueBrowsingChip&) = delete;
@@ -30,7 +31,11 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button,
   const char* GetClassName() const override;
 
  private:
+  // The URL of the tab to open.
   GURL url_;
+
+  // The index of the chip as it is ordered in the parent view.
+  int index_;
 };
 
 }  // namespace ash

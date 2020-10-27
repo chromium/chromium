@@ -6,12 +6,16 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/quick_action_item.h"
 #include "ash/system/phonehub/silence_phone_quick_action_controller.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
+using phone_hub_metrics::LogQuickActionClick;
+using phone_hub_metrics::QuickAction;
 
 namespace {
 
@@ -50,6 +54,9 @@ QuickActionItem* LocatePhoneQuickActionController::CreateItem() {
 }
 
 void LocatePhoneQuickActionController::OnButtonPressed(bool is_now_enabled) {
+  LogQuickActionClick(is_now_enabled ? QuickAction::kToggleLocatePhoneOff
+                                     : QuickAction::kToggleLocatePhoneOn);
+
   requested_state_ = is_now_enabled ? ActionState::kOff : ActionState::kOn;
   SetItemState(requested_state_.value());
 

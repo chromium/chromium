@@ -6,12 +6,15 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/quick_action_item.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 using Status = chromeos::phonehub::TetherController::Status;
+using phone_hub_metrics::LogQuickActionClick;
+using phone_hub_metrics::QuickAction;
 
 EnableHotspotQuickActionController::EnableHotspotQuickActionController(
     chromeos::phonehub::TetherController* tether_controller)
@@ -38,6 +41,9 @@ QuickActionItem* EnableHotspotQuickActionController::CreateItem() {
 }
 
 void EnableHotspotQuickActionController::OnButtonPressed(bool is_now_enabled) {
+  LogQuickActionClick(is_now_enabled ? QuickAction::kToggleHotspotOff
+                                     : QuickAction::kToggleHotspotOn);
+
   is_now_enabled ? tether_controller_->Disconnect()
                  : tether_controller_->AttemptConnection();
 }

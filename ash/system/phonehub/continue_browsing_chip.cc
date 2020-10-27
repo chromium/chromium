@@ -8,6 +8,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,8 +33,9 @@ constexpr int kTitleMaxLines = 2;
 }  // namespace
 
 ContinueBrowsingChip::ContinueBrowsingChip(
-    const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata)
-    : views::Button(this), url_(metadata.url) {
+    const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
+    int index)
+    : views::Button(this), url_(metadata.url), index_(index) {
   auto* color_provider = AshColorProvider::Get();
   SetFocusBehavior(FocusBehavior::ALWAYS);
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
@@ -101,8 +103,11 @@ void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {
 void ContinueBrowsingChip::ButtonPressed(views::Button* sender,
                                          const ui::Event& event) {
   PA_LOG(INFO) << "Opening browser tab: " << url_;
+  phone_hub_metrics::LogTabContinuationChipClicked(index_);
+
   NewWindowDelegate::GetInstance()->NewTabWithUrl(
       url_, /*from_user_interaction=*/true);
+
   Shell::GetPrimaryRootWindowController()
       ->GetStatusAreaWidget()
       ->phone_hub_tray()
