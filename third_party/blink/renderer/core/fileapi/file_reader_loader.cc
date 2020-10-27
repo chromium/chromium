@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -328,10 +329,8 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
 }
 
 void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(SparseHistogram,
-                                  file_reader_loader_read_errors_histogram,
-                                  ("Storage.Blob.FileReaderLoader.ReadError"));
-  file_reader_loader_read_errors_histogram.Sample(std::max(0, -net_error_));
+  base::UmaHistogramSparse("Storage.Blob.FileReaderLoader.ReadError",
+                           std::max(0, -net_error_));
 
   if (status != net::OK) {
     net_error_ = status;
