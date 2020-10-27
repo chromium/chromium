@@ -2303,24 +2303,6 @@
             ]
         }
     ],
-    "DialMediaRouteProvider": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DialMediaRouteProvider"
-                    ]
-                }
-            ]
-        }
-    ],
     "DirectActions": [
         {
             "platforms": [
