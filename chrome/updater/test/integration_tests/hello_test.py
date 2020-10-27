@@ -4,19 +4,12 @@
 
 """Sample test case to run on chromium infra."""
 
-import logging
-import typ
+import unittest
 
-class HelloTest(typ.TestCase):
+class HelloTest(unittest.TestCase):
 
   def test_hello(self):
-    logging.info('Hello World!')
     pass
-
-  def test_build_dir(self):
-    logging.debug('Build dir = %s', self.context.build_dir)
-    self.assertTrue(self.context.build_dir is not None)
-
 
 if __name__ == '__main__':
   unittest.main()
