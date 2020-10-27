@@ -99,7 +99,7 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     bool observe_file_tasks = true;
 
     // Whether test should enable sharesheet.
-    bool enable_sharesheet = true;
+    bool enable_sharesheet = false;
 
     // Whether test needs the single partition format feature.
     bool single_partition_format = false;
