@@ -2976,6 +2976,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Net.QuicSession.KeyUpdate.Supported"
+    enum="QuicKeyUpdateSupported" expires_after="2021-05-11">
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Whether key update was supported by either or both sides of the connection,
+    recorded on connection close. Only logged for connections which reached the
+    1-RTT level.
+  </summary>
+</histogram>
+
 <histogram
     name="Net.QuicSession.LastInFlightPacketSentTimeFromHandshakeCompletionWithPublicReset"
     units="ms" expires_after="2021-05-11">

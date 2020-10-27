@@ -1870,6 +1870,28 @@ void QuicChromiumClientSession::OnConnectionClosed(
         "Net.QuicSession.ConnectionDuration",
         tick_clock_->NowTicks() - connect_timing_.connect_end);
     UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumMigrations", num_migrations_);
+    // These values are persisted to logs. Entries should not be renumbered
+    // and numeric values should never be reused.
+    enum class KeyUpdateSupported {
+      kInvalid = 0,
+      kUnsupported = 1,
+      kSupported = 2,
+      kSupportedLocallyOnly = 3,
+      kSupportedRemotelyOnly = 4,
+      kMaxValue = kSupportedRemotelyOnly,
+    };
+    KeyUpdateSupported key_update_supported = KeyUpdateSupported::kInvalid;
+    if (config()->KeyUpdateSupportedForConnection()) {
+      key_update_supported = KeyUpdateSupported::kSupported;
+    } else if (config()->KeyUpdateSupportedLocally()) {
+      key_update_supported = KeyUpdateSupported::kSupportedLocallyOnly;
+    } else if (config()->KeyUpdateSupportedRemotely()) {
+      key_update_supported = KeyUpdateSupported::kSupportedRemotelyOnly;
+    } else {
+      key_update_supported = KeyUpdateSupported::kUnsupported;
+    }
+    base::UmaHistogramEnumeration("Net.QuicSession.KeyUpdate.Supported",
+                                  key_update_supported);
     if (config()->KeyUpdateSupportedForConnection()) {
       base::UmaHistogramCounts100("Net.QuicSession.KeyUpdate.PerConnection2",
                                   connection()->GetStats().key_update_count);
