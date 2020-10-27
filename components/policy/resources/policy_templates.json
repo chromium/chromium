@@ -1444,13 +1444,9 @@
       'id': 273,
       'caption': '''Enable network prediction''',
       'tags': [],
-      'desc': '''Enables network prediction in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and prevents users from changing this setting.
+      'desc': '''This policy controls network prediction in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. It controls DNS prefetching, TCP, and SSL preconnection and prerendering of webpages.
 
-      This controls DNS prefetching, TCP and SSL preconnection and prerendering of web pages.
-
-      If you set this policy, users cannot change or override this setting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
-
-      If this policy is left not set, network prediction will be enabled but the user will be able to change it.''',
+      If you set the policy, users can't change it. Leaving it unset turns on network prediction, but the user can change it.''',
     },
     {
       'name': 'WPADQuickCheckEnabled',
@@ -1466,11 +1462,11 @@
       'id': 261,
       'caption': '''Enable WPAD optimization''',
       'tags': ['system-security'],
-      'desc': '''Allows to turn off WPAD (Web Proxy Auto-Discovery) optimization in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      'desc': '''Setting the policy to Enabled or leaving it unset turns on WPAD (Web Proxy Auto-Discovery) optimization in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-      If this policy is set to false, WPAD optimization is disabled causing <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to wait longer for DNS-based WPAD servers.  If the policy is not set or is enabled, WPAD optimization is enabled.
+      Setting the policy to Disabled turns off WPAD optimization, causing <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to wait longer for DNS-based WPAD servers.
 
-      Independent of whether or how this policy is set, the WPAD optimization setting cannot be changed by users.''',
+      Whether or not this policy is set, users can't change the WPAD optimization setting.''',
     },
     {
       'name': 'DisableSpdy',
@@ -3880,13 +3876,9 @@
       'id': 295,
       'caption': '''Captive portal authentication ignores proxy''',
       'tags': [],
-      'desc': '''This policy allows <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> to bypass any proxy for captive portal authentication.
+      'desc': '''Setting the policy to Enabled lets <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> bypass any proxy for captive portal authentication. These authentication webpages, starting from the captive portal sign-in page until Chrome detects a successful internet connection, open in a separate window, ignoring all policy settings and restrictions for the current user. This policy only takes effect if a proxy is set up (by policy, extension, or the user in chrome://settings).
 
-      This policy only takes effect if a proxy is configured (for example through policy, by the user in chrome://settings, or by extensions).
-
-      If you enable this setting, any captive portal authentication pages (i.e. all web pages starting from captive portal signin page until <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> detects successful internet connection) will be displayed in a separate window ignoring all policy settings and restrictions for the current user.
-
-      If you disable this setting or leave it unset, any captive portal authentication pages will be shown in a (regular) new browser tab, using the current user's proxy settings.''',
+      Setting the policy to Disabled or leaving it unset means any captive portal authentication pages are shown in a (regular) new browser tab, using the current user's proxy settings.''',
     },
     {
       'name': 'ProxyMode',
@@ -7834,15 +7826,9 @@
       'id': 92,
       'caption': '''Maximal number of concurrent connections to the proxy server''',
       'tags': [],
-      'desc': '''Specifies the maximal number of simultaneous connections to the proxy server.
+      'desc': '''Setting the policy specifies the maximal number of simultaneous connections to the proxy server. Some proxy servers can't handle a high number of concurrent connections per client, which is solved by setting this policy to a lower value. The value should be lower than 100 and higher than 6. Some web apps are known to consume many connections with hanging GETs, so setting a value below 32 may lead to browser networking hangs if there are too many web apps with hanging connections open. Lower below the default at your own risk.
 
-      Some proxy servers can not handle high number of concurrent connections per client and this can be solved by setting this policy to a lower value.
-
-      The value of this policy should be lower than 100 and higher than 6 and the default value is 32.
-
-      Some web apps are known to consume many connections with hanging GETs, so lowering below 32 may lead to browser networking hangs if too many such web apps are open. Lower below the default at your own risk.
-
-      If this policy is left not set the default value will be used which is 32.''',
+      Leaving the policy unset means a default of 32 is used.''',
     },
     {
       'name': 'HideWebStorePromo',
@@ -8148,7 +8134,7 @@
       'id': 107,
       'caption': '''User-level network configuration''',
       'tags': ['full-admin-access'],
-      'desc': '''Allows pushing network configuration to be applied per-user to a <ph name="PRODUCT_OS_NAME">$2<ex>Chromium OS</ex></ph> device. The network configuration is a JSON-formatted string as defined by the Open Network Configuration format.''',
+      'desc': '''Setting the policy allows pushing network configuration per-user for each <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> device. The network configuration is a JSON-formatted string, as defined by the Open Network Configuration format.''',
       'arc_support': 'Android apps can use the network configurations and CA certificates set via this policy, but do not have access to some configuration options.',
     },
     {
@@ -8166,7 +8152,7 @@
       'id': 108,
       'caption': '''Device-level network configuration''',
       'tags': ['full-admin-access'],
-      'desc': '''Allows pushing network configuration to be applied for all users of a <ph name="PRODUCT_OS_NAME">$2<ex>Chromium OS</ex></ph> device. The network configuration is a JSON-formatted string as defined by the Open Network Configuration format.''',
+      'desc': '''Setting the policy allows pushing network configuration for all users of a <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device. The network configuration is a JSON-formatted string, as defined by the Open Network Configuration format.''',
       'arc_support': 'Android apps can use the network configurations and CA certificates set via this policy, but do not have access to some configuration options.',
     },
     {
@@ -9429,7 +9415,9 @@
       'id': 126,
       'caption': '''Enable data roaming''',
       'tags': [],
-      'desc': '''Determines whether data roaming should be enabled for the device. If set to true, data roaming is allowed. If left unconfigured or set to false, data roaming will be not available.''',
+      'desc': '''Setting the policy to Enabled allows data roaming for the device.
+
+      Setting the policy to Disabled or leaving it unset renders data roaming unavailable.''',
     },
     {
       'name': 'DeviceMetricsReportingEnabled',
@@ -14003,8 +13991,9 @@
       'id': 301,
       'caption': '''Allow QUIC protocol''',
       'tags': [],
-      'desc': '''If this policy is set to true or not set usage of QUIC protocol in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is allowed.
-      If this policy is set to false usage of QUIC protocol is disallowed.''',
+      'desc': '''Setting the policy to Enabled or leaving it unset allows the use of QUIC protocol in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+      Setting the policy to Disabled disallows the use of QUIC protocol.''',
     },
     {
       'name': 'KeyPermissions',
@@ -14518,12 +14507,7 @@
       'owners': ['kirtika@chromium.org', 'pmarko@chromium.org'],
       'device_only': True,
       'caption': '''Enable throttling network bandwidth''',
-      'desc': '''Allows enabling or disabling network throttling.
-      This applies to all users, and to all interfaces on the device. Once set,
-      the throttling persists until the policy is changed to disable it.
-
-      If set to false, there is no throttling.
-      If set to true, the system is throttled to achieve the provided upload and download rates (in kbits/s).''',
+      'desc': '''Setting the policy turns network throttling on or off. This means that the system is throttled to achieve the provided upload and download rates (in kbits/s). It applies to all users and interfaces on the device.''',
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -14558,13 +14542,11 @@
       'owners': ['matthewmwang@chromium.org'],
       'device_only': True,
       'caption': '''Enable 802.11r Fast Transition''',
-      'desc': '''Allows enabling or disabling Fast Transition.
-      This applies to all users, and to all interfaces on the device.
-      In order for Fast Transition to be used, both this setting and the per-network ONC property need to be enabled.
-      Once set, Fast Transition persists until the policy is changed to disable it.
+      'desc': '''Setting the policy to Enabled means that Fast Transition is used when the wireless access point supports it. It applies to all users and interfaces on the device.
 
-      If this policy is not set or set to false, Fast Transition is not used.
-      If set to true, Fast Transition is used when the wireless access point supports it.''',
+      Setting the policy to Disabled or leaving it unset means that Fast Transition isn't used.
+
+      Note: To use Fast Transition, also turn on the per-network ONC property.''',
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:72-'],
@@ -14581,9 +14563,9 @@
       'owners': ['apotapchuk@chromium.org'],
       'device_only': True,
       'caption': '''Enable WiFi''',
-      'desc': '''
-          If the policy is set to false, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will disable WiFi and users cannot enable it back.
-          If the policy is set to true or left unset, users will be able to enable or disable WiFi as they wish.''',
+      'desc': '''Setting the policy to Disabled means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> turns off Wi-Fi, and users can't change it.
+
+      Setting the policy to Enabled or leaving it unset lets users turn Wi-Fi on or off.''',
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:75-'],
@@ -14599,18 +14581,15 @@
       'name': 'DeviceDockMacAddressSource',
       'owners': ['lamzin@google.com'],
       'caption': '''Device MAC address source when docked''',
-      'desc': '''
-          Configures which MAC (media access control) address will be used when a dock is connected to the device.
+      'desc': '''Setting the policy lets the administrator change the MAC (media access control) address when connecting a device to the dock. When a dock is connected to some device models, by default, the device's MAC address helps identify the device on Ethernet.
 
-          When a dock is connected to some device models, the device's designated dock MAC address is used to identify the device on Ethernet by default. This policy allows the administrator to change the source of the MAC address while docked.
+      If 'DeviceDockMacAddress' is selected or the policy is left unset, the device's designated dock MAC address will be used.
 
-          If  'DeviceDockMacAddress' is selected or the policy is left unset, the device's designated dock MAC address will be used.
+      If 'DeviceNicMacAddress' is selected, the device's NIC (network interface controller) MAC address will be used.
 
-          If  'DeviceNicMacAddress' is selected, the device's NIC (network interface controller) MAC address will be used.
+      If 'DockNicMacAddress' is selected, the dock's NIC MAC address will be used.
 
-          If  'DockNicMacAddress' is selected, the dock's NIC MAC address will be used.
-
-          This setting can not be changed by the user.''',
+      Users can't change this setting.''',
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -17101,13 +17080,9 @@
       'id': 403,
       'caption': '''Device network hostname template''',
       'tags': [],
-      'desc': '''Determine the hostname of the device used in DHCP requests.
+      'desc': '''Setting the policy to a string applies the string as the device hostname during DHCP request. The string can have variables <ph name="ASSET_ID_PLACEHOLDER">${ASSET_ID}</ph>, <ph name="SERIAL_NUM_PLACEHOLDER">${SERIAL_NUM}</ph>, <ph name="MAC_ADDR_PLACEHOLDER">${MAC_ADDR}</ph>, <ph name="MACHINE_NAME_PLACEHOLDER">${MACHINE_NAME}</ph>, <ph name="LOCATION_PLACEHOLDER">${LOCATION}</ph> to be replaced with values on the device before using it as a hostname. The resulting substitution should be a valid hostname (per RFC 1035, section 3.1).
 
-      If this policy is set to a non empty string, that string will be used as the device hostname during DHCP request.
-
-      The string can contain variables <ph name="ASSET_ID_PLACEHOLDER">${ASSET_ID}</ph>, <ph name="SERIAL_NUM_PLACEHOLDER">${SERIAL_NUM}</ph>, <ph name="MAC_ADDR_PLACEHOLDER">${MAC_ADDR}</ph>, <ph name="MACHINE_NAME_PLACEHOLDER">${MACHINE_NAME}</ph>, <ph name="LOCATION_PLACEHOLDER">${LOCATION}</ph> that would be replaced with values on the device before using as a hostname. Resulting substitution should be a valid hostname (per RFC 1035, section 3.1).
-
-      If this policy is not set, or the value after substitution is not a valid hostname, no hostname will be set in DHCP request. '''
+      Leaving the policy unset or if the value after substitution isn't a valid hostname, no hostname is set in DHCP request.'''
     },
     {
       'name': 'AbusiveExperienceInterventionEnforce',
@@ -19065,15 +19040,9 @@
       'id': 485,
       'caption': '''Allow the user to manage VPN connections''',
       'tags': [],
-      'desc': '''Allow the user to manage VPN connections.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets users manage (disconnect or modify) VPN connections. If the VPN connection is created using a VPN app, the UI inside the app isn't affected. So, users might still be able to use the app to modify the VPN connection. Use this policy with the Always on VPN feature, which lets the admin decide to establish a VPN connection when starting a device.
 
-      If this policy is set to false, all <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph> user interfaces that would allow the user to disconnect or modify VPN connections are disabled.
-
-      If this policy is unset or set to true, users can disconnect or modify VPN connections as usual.
-
-      If the VPN connection is created via a VPN app, the UI inside the app remains unaffected by this policy. Therefore, the user might still be able to use the app to modify the VPN connection.
-
-      This policy is meant to be used together with the "Always on VPN" feature, that lets the admin decide to establish a VPN connection on boot.''',
+      Setting the policy to Disabled turns off the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> user interfaces that would let the user disconnect or modify VPN connections.''',
     },
     {
       'id': 489,
