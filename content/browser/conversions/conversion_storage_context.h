@@ -37,7 +37,6 @@ class CONTENT_EXPORT ConversionStorageContext
     : public base::RefCountedThreadSafe<ConversionStorageContext> {
  public:
   ConversionStorageContext(
-      scoped_refptr<base::SequencedTaskRunner> storage_task_runner,
       const base::FilePath& user_data_directory,
       std::unique_ptr<ConversionStorageDelegateImpl> delegate,
       const base::Clock* clock);

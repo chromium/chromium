@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/task_runner_util.h"
 #include "base/time/default_clock.h"
 #include "content/browser/conversions/conversion_reporter_impl.h"
 #include "content/browser/conversions/conversion_storage_delegate_impl.h"
@@ -44,17 +43,14 @@ std::unique_ptr<ConversionManagerImpl> ConversionManagerImpl::CreateForTesting(
     std::unique_ptr<ConversionReporter> reporter,
     std::unique_ptr<ConversionPolicy> policy,
     const base::Clock* clock,
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> storage_task_runner) {
+    const base::FilePath& user_data_directory) {
   return base::WrapUnique<ConversionManagerImpl>(new ConversionManagerImpl(
-      std::move(reporter), std::move(policy), clock, user_data_directory,
-      std::move(storage_task_runner)));
+      std::move(reporter), std::move(policy), clock, user_data_directory));
 }
 
 ConversionManagerImpl::ConversionManagerImpl(
     StoragePartition* storage_partition,
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    const base::FilePath& user_data_directory)
     : ConversionManagerImpl(
           std::make_unique<ConversionReporterImpl>(
               storage_partition,
@@ -63,22 +59,19 @@ ConversionManagerImpl::ConversionManagerImpl(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
                   switches::kConversionsDebugMode)),
           base::DefaultClock::GetInstance(),
-          user_data_directory,
-          std::move(task_runner)) {}
+          user_data_directory) {}
 
 ConversionManagerImpl::ConversionManagerImpl(
     std::unique_ptr<ConversionReporter> reporter,
     std::unique_ptr<ConversionPolicy> policy,
     const base::Clock* clock,
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> storage_task_runner)
+    const base::FilePath& user_data_directory)
     : debug_mode_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kConversionsDebugMode)),
       clock_(clock),
       reporter_(std::move(reporter)),
       conversion_storage_context_(
           base::MakeRefCounted<ConversionStorageContext>(
-              std::move(storage_task_runner),
               user_data_directory,
               std::make_unique<ConversionStorageDelegateImpl>(debug_mode_),
               clock_)),
@@ -122,8 +115,6 @@ void ConversionManagerImpl::HandleConversion(
 
 void ConversionManagerImpl::GetActiveImpressionsForWebUI(
     base::OnceCallback<void(std::vector<StorableImpression>)> callback) {
-  // Unretained is safe because any task to delete |storage_| will be posted
-  // after this one because |storage_| uses base::OnTaskRunnerDeleter.
   conversion_storage_context_->GetActiveImpressions(std::move(callback));
 }
 

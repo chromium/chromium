@@ -120,8 +120,7 @@ class ConversionManagerImplTest : public testing::Test {
     test_reporter_ = reporter.get();
     conversion_manager_ = ConversionManagerImpl::CreateForTesting(
         std::move(reporter), std::make_unique<ConstantStartupDelayPolicy>(),
-        task_environment_.GetMockClock(), dir_.GetPath(),
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+        task_environment_.GetMockClock(), dir_.GetPath());
   }
 
   const base::Clock& clock() { return *task_environment_.GetMockClock(); }

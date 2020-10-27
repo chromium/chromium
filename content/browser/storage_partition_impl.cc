@@ -1354,10 +1354,7 @@ void StoragePartitionImpl::Initialize(
   // The Conversion Measurement API is not available in Incognito mode.
   if (!is_in_memory_ &&
       base::FeatureList::IsEnabled(features::kConversionMeasurement)) {
-    conversion_manager_ = std::make_unique<ConversionManagerImpl>(
-        this, path,
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+    conversion_manager_ = std::make_unique<ConversionManagerImpl>(this, path);
   }
 
   GeneratedCodeCacheSettings settings =
