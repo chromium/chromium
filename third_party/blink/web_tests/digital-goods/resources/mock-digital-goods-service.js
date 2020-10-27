@@ -30,10 +30,16 @@ class MockDigitalGoods {
     itemDetails.price.currency = 'AUD';
     // Set price.value as on number in |id| dollars.
     const matchNum = id.match(/\d+/);
-    if (matchNum) {
-      itemDetails.price.value = matchNum[0] + '.00';
-    } else {
-      itemDetails.price.value = '1.23';
+    const num = matchNum ? matchNum[0] : 0;
+    itemDetails.price.value = num + '.00';
+    if (num % 2) {
+      // Add optional fields.
+      itemDetails.subscriptionPeriod = 'P' + num + 'Y';
+      itemDetails.freeTrialPeriod = 'P' + num + 'M';
+      itemDetails.introductoryPrice = {};
+      itemDetails.introductoryPrice.currency = 'JPY';
+      itemDetails.introductoryPrice.value = 2*num + '';
+      itemDetails.introductoryPricePeriod = 'P' + num + 'D';
     }
     return itemDetails;
   }

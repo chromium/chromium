@@ -19,9 +19,23 @@ blink::ItemDetails* TypeConverter<blink::ItemDetails*, ItemDetailsPtr>::Convert(
   blink::ItemDetails* output = blink::ItemDetails::Create();
   output->setItemId(input->item_id);
   output->setTitle(input->title);
-  output->setDescription(input->description);
+  if (!input->description.IsEmpty())
+    output->setDescription(input->description);
   output->setPrice(
       blink::PaymentEventDataConversion::ToPaymentCurrencyAmount(input->price));
+  if (input->subscription_period && !input->subscription_period.IsEmpty())
+    output->setSubscriptionPeriod(input->subscription_period);
+  if (input->free_trial_period && !input->free_trial_period.IsEmpty())
+    output->setFreeTrialPeriod(input->free_trial_period);
+  if (input->introductory_price) {
+    output->setIntroductoryPrice(
+        blink::PaymentEventDataConversion::ToPaymentCurrencyAmount(
+            input->introductory_price));
+  }
+  if (input->introductory_price_period &&
+      !input->introductory_price_period.IsEmpty()) {
+    output->setIntroductoryPricePeriod(input->introductory_price_period);
+  }
   return output;
 }
 
