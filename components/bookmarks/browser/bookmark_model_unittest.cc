@@ -1234,6 +1234,94 @@ TEST_F(BookmarkModelTest, RenamedFolderNodeExcludedFromIndex) {
   EXPECT_TRUE(matches.empty());
 }
 
+// Verifies that TitledUrlIndex is updated when a bookmark is removed.
+TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnRemove) {
+  const base::string16 title = base::ASCIIToUTF16("Title");
+  const GURL url("http://google.com");
+  const BookmarkNode* root = model_->bookmark_bar_node();
+
+  model_->AddURL(root, 0, title, url);
+  ASSERT_EQ(1U, model_
+                    ->GetBookmarksMatching(
+                        title, 1, query_parser::MatchingAlgorithm::DEFAULT)
+                    .size());
+
+  // Remove the node and make sure we don't get back any results.
+  model_->Remove(root->children().front().get());
+  EXPECT_EQ(0U, model_
+                    ->GetBookmarksMatching(
+                        title, 1, query_parser::MatchingAlgorithm::DEFAULT)
+                    .size());
+}
+
+// Verifies that TitledUrlIndex is updated when a bookmark's title changes.
+TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnChangeTitle) {
+  const base::string16 initial_title = base::ASCIIToUTF16("Initial");
+  const base::string16 new_title = base::ASCIIToUTF16("New");
+  const GURL url("http://google.com");
+  const BookmarkNode* root = model_->bookmark_bar_node();
+
+  model_->AddURL(root, 0, initial_title, url);
+  ASSERT_EQ(1U,
+            model_
+                ->GetBookmarksMatching(initial_title, 1,
+                                       query_parser::MatchingAlgorithm::DEFAULT)
+                .size());
+  ASSERT_EQ(0U, model_
+                    ->GetBookmarksMatching(
+                        new_title, 1, query_parser::MatchingAlgorithm::DEFAULT)
+                    .size());
+
+  // Change the title.
+  model_->SetTitle(root->children().front().get(), new_title);
+
+  // Verify that we only get results for the new title.
+  EXPECT_EQ(0U,
+            model_
+                ->GetBookmarksMatching(initial_title, 1,
+                                       query_parser::MatchingAlgorithm::DEFAULT)
+                .size());
+  EXPECT_EQ(1U, model_
+                    ->GetBookmarksMatching(
+                        new_title, 1, query_parser::MatchingAlgorithm::DEFAULT)
+                    .size());
+}
+
+// Verifies that TitledUrlIndex is updated when a bookmark's URL changes.
+TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnChangeURL) {
+  const base::string16 title = base::ASCIIToUTF16("Title");
+  const GURL initial_url("http://initial");
+  const GURL new_url("http://new");
+  const BookmarkNode* root = model_->bookmark_bar_node();
+
+  model_->AddURL(root, 0, title, initial_url);
+  ASSERT_EQ(1U,
+            model_
+                ->GetBookmarksMatching(base::ASCIIToUTF16("initial"), 1,
+                                       query_parser::MatchingAlgorithm::DEFAULT)
+                .size());
+  ASSERT_EQ(0U,
+            model_
+                ->GetBookmarksMatching(base::ASCIIToUTF16("new"), 1,
+                                       query_parser::MatchingAlgorithm::DEFAULT)
+                .size());
+
+  // Change the URL.
+  model_->SetURL(root->children().front().get(), new_url);
+
+  // Verify that we only get results for the new URL.
+  EXPECT_EQ(0U,
+            model_
+                ->GetBookmarksMatching(base::ASCIIToUTF16("initial"), 1,
+                                       query_parser::MatchingAlgorithm::DEFAULT)
+                .size());
+  EXPECT_EQ(1U,
+            model_
+                ->GetBookmarksMatching(base::ASCIIToUTF16("new"), 1,
+                                       query_parser::MatchingAlgorithm::DEFAULT)
+                .size());
+}
+
 // Verifies the TitledUrlIndex is probably loaded.
 TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   // Create a model with a single url.

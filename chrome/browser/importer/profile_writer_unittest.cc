@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/query_parser/query_parser.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -136,7 +137,8 @@ class ProfileWriterTest : public testing::Test {
                             size_t expected) {
     for (auto bookmark : bookmarks_record) {
       std::vector<TitledUrlMatch> matches =
-          bookmark_model->GetBookmarksMatching(bookmark.title, 10);
+          bookmark_model->GetBookmarksMatching(
+              bookmark.title, 10, query_parser::MatchingAlgorithm::DEFAULT);
       EXPECT_EQ(expected, matches.size());
     }
   }

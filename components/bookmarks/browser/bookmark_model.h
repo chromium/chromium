@@ -244,15 +244,11 @@ class BookmarkModel : public BookmarkUndoProvider,
   // combobox of most recently modified folders.
   void ResetDateFolderModified(const BookmarkNode* node);
 
-  // Returns up to |max_count| of bookmarks containing each term from |text|
-  // in either the title or the URL. It uses default matching algorithm.
-  std::vector<TitledUrlMatch> GetBookmarksMatching(const base::string16& text,
-                                                   size_t max_count);
-
-  // Returns up to |max_count| of bookmarks containing each term from |text|
-  // in either the title or the URL.
+  // Returns up to |max_count| of bookmarks containing each term from |query|
+  // in either the title or the URL. |matching_algorithm| determines
+  // the algorithm used by QueryParser internally to parse |query|.
   std::vector<TitledUrlMatch> GetBookmarksMatching(
-      const base::string16& text,
+      const base::string16& query,
       size_t max_count,
       query_parser::MatchingAlgorithm matching_algorithm);
 

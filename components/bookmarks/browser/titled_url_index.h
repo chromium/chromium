@@ -47,7 +47,8 @@ class TitledUrlIndex {
   void Remove(const TitledUrlNode* node);
 
   // Returns up to |max_count| of matches containing each term from the text
-  // |query| in either the title or the URL.
+  // |query| in either the title or the URL. |matching_algorithm| determines
+  // the algorithm used by QueryParser internally to parse |query|.
   std::vector<TitledUrlMatch> GetResultsMatching(
       const base::string16& query,
       size_t max_count,

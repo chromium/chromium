@@ -129,10 +129,10 @@ source_set("unit_tests") {
   sources = [
     "bookmark_codec_unittest.cc",
     "bookmark_expanded_state_tracker_unittest.cc",
-    "bookmark_index_unittest.cc",
     "bookmark_model_unittest.cc",
     "bookmark_storage_unittest.cc",
     "bookmark_utils_unittest.cc",
+    "titled_url_index_unittest.cc",
     "titled_url_match_unittest.cc",
   ]
 

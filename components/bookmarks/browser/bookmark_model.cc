@@ -731,15 +731,7 @@ void BookmarkModel::ResetDateFolderModified(const BookmarkNode* node) {
 }
 
 std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
-    const base::string16& text,
-    size_t max_count) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetBookmarksMatching(text, max_count,
-                              query_parser::MatchingAlgorithm::DEFAULT);
-}
-
-std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
-    const base::string16& text,
+    const base::string16& query,
     size_t max_count,
     query_parser::MatchingAlgorithm matching_algorithm) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -747,7 +739,7 @@ std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
   if (!loaded_)
     return {};
 
-  return titled_url_index_->GetResultsMatching(text, max_count,
+  return titled_url_index_->GetResultsMatching(query, max_count,
                                                matching_algorithm);
 }
 

@@ -9,6 +9,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/prefs/pref_service.h"
+#include "components/query_parser/query_parser.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -139,7 +140,9 @@
   base::string16 matchString = base::SysNSStringToUTF16(title);
   int const kMaxCountOfBookmarks = 50;
   std::vector<bookmarks::TitledUrlMatch> matches =
-      bookmarkModel->GetBookmarksMatching(matchString, kMaxCountOfBookmarks);
+      bookmarkModel->GetBookmarksMatching(
+          matchString, kMaxCountOfBookmarks,
+          query_parser::MatchingAlgorithm::DEFAULT);
   if (matches.size() != expectedCount)
     return testing::NSErrorWithLocalizedDescription(
         @"Unexpected number of bookmarks");
