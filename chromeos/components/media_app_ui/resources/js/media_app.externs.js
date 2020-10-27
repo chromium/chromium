@@ -100,6 +100,12 @@ mediaApp.AbstractFileList = function() {};
 /** @type {number} */
 mediaApp.AbstractFileList.prototype.length;
 /**
+ * The index of the currently active file which navigation and other file
+ * operations are performed relative to. Defaults to -1 if file list is empty.
+ * @type {number}
+ */
+mediaApp.AbstractFileList.prototype.currentFileIndex;
+/**
  * @param {number} index
  * @return {(null|!mediaApp.AbstractFile)}
  */
@@ -128,7 +134,13 @@ mediaApp.AbstractFileList.prototype.loadPrev = function(currentFileToken) {};
  *     size or contents of the file list changes.
  */
 mediaApp.AbstractFileList.prototype.addObserver = function(observer) {};
-
+/**
+ * Request for the user to be prompted with a open file picker. Once the user
+ * selects a file, the file is inserted into the navigation order after the
+ * current file and navigated to.
+ * @return {!Promise<undefined>}
+ */
+mediaApp.AbstractFileList.prototype.openFile = function() {};
 /**
  * The delegate which exposes open source privileged WebUi functions to
  * MediaApp.

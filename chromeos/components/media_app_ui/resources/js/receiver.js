@@ -134,6 +134,7 @@ class ReceivedFileList {
     }
 
     this.length = files.length;
+    this.currentFileIndex = files.length ? 0 : -1;
     /** @type {!Array<!ReceivedFile>} */
     this.files = files.map(f => new ReceivedFile(f));
     /** @type {number} */
@@ -175,6 +176,10 @@ class ReceivedFileList {
   /** @override */
   addObserver(observer) {
     this.observers.push(observer);
+  }
+
+  async openFile() {
+    await parentMessagePipe.sendMessage(Message.OPEN_FILE);
   }
 
   /** @param {!Array<!ReceivedFile>} files */
@@ -318,6 +323,12 @@ window.addEventListener('DOMContentLoaded', () => {
   const observer = new MutationObserver(mutationCallback);
   observer.observe(document.body, {childList: true});
 });
+
+// Ensure that if no files are loaded into the media app there is a default
+// empty file list available.
+window.customLaunchData = {
+  files: new ReceivedFileList({files: [], writableFileIndex: 0})
+};
 
 // Attempting to show file pickers in the sandboxed <iframe> is guaranteed to
 // result in a SecurityError: hide them.

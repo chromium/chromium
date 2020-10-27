@@ -13,6 +13,7 @@ let TestMessageResponseData;
 
 /**
  * Object sent over postMessage to run a command or extract data.
+ * TODO(b/165720635): Remove legacyOpenFile when google3 updates.
  * @typedef {{
  *     deleteLastFile: (boolean|undefined),
  *     getFileErrors: (boolean|undefined),
@@ -25,6 +26,7 @@ let TestMessageResponseData;
  *     requestFullscreen: (boolean|undefined),
  *     requestSaveFile: (boolean|undefined),
  *     saveAs: (string|undefined),
+ *     legacyOpenFile: (boolean|undefined),
  *     openFile: (boolean|undefined),
  *     testQuery: string,
  * }}

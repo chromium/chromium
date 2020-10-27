@@ -74,10 +74,8 @@ var MediaAppUIBrowserTest = class extends testing.Test {
     // flags to prevent tests crashing on Media App load due to
     // window.launchQueue being undefined. See http://crbug.com/1071320.
     return {
-      enabled: [
-        'chromeos::features::kMediaApp',
-        'blink::features::kFileHandlingAPI'
-      ]
+      enabled:
+          ['chromeos::features::kMediaApp', 'blink::features::kFileHandlingAPI']
     };
   }
 
@@ -1008,11 +1006,13 @@ TEST_F('MediaAppUIBrowserTest', 'SaveAsErrorHandling', async () => {
 });
 
 // Tests the IPC behind the openFile delegate function.
-TEST_F('MediaAppUIBrowserTest', 'OpenFileIPC', async () => {
+// TODO(b/165720635): Remove this once google3 shifts over to using openFile on
+// the fileList.
+TEST_F('MediaAppUIBrowserTest', 'LegacyOpenFileIPC', async () => {
   const pickedFileHandle = new FakeFileSystemFileHandle('picked_file.jpg');
   window.showOpenFilePicker = () => Promise.resolve([pickedFileHandle]);
 
-  await sendTestMessage({openFile: true});
+  await sendTestMessage({legacyOpenFile: true});
 
   const lastToken = [...tokenMap.keys()].slice(-1)[0];
   assertEquals(entryIndex, 0);
@@ -1021,6 +1021,25 @@ TEST_F('MediaAppUIBrowserTest', 'OpenFileIPC', async () => {
   assertEquals(currentFiles[0].handle.name, 'picked_file.jpg');
   assertEquals(currentFiles[0].token, lastToken);
   assertEquals(tokenMap.get(currentFiles[0].token), currentFiles[0].handle);
+  testDone();
+});
+
+// Tests the IPC behind the openFile function on receivedFileList.
+TEST_F('MediaAppUIBrowserTest', 'OpenFileIPC', async () => {
+  const pickedFileHandle = new FakeFileSystemFileHandle('picked_file.jpg');
+  window.showOpenFilePicker = () => Promise.resolve([pickedFileHandle]);
+  await launchWithFiles(
+      [await createTestImageFile(10, 10, 'original_file.jpg')]);
+
+  await sendTestMessage({openFile: true});
+
+  const lastToken = [...tokenMap.keys()].slice(-1)[0];
+  assertEquals(entryIndex, 1);
+  assertEquals(currentFiles.length, 2);
+  assertEquals(currentFiles[1].handle, pickedFileHandle);
+  assertEquals(currentFiles[1].handle.name, 'picked_file.jpg');
+  assertEquals(currentFiles[1].token, lastToken);
+  assertEquals(tokenMap.get(currentFiles[1].token), currentFiles[1].handle);
   testDone();
 });
 
@@ -1151,5 +1170,10 @@ TEST_F('MediaAppUIBrowserTest', 'GuestLoadsLoadTimeData', async () => {
 
 TEST_F('MediaAppUIBrowserTest', 'GuestCanLoadWithCspRestrictions', async () => {
   await runTestInGuest('GuestCanLoadWithCspRestrictions');
+  testDone();
+});
+
+TEST_F('MediaAppUIBrowserTest', 'GuestStartsWithDefaultFileList', async () => {
+  await runTestInGuest('GuestStartsWithDefaultFileList');
   testDone();
 });

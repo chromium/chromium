@@ -124,8 +124,12 @@ async function runTestQuery(data) {
   } else if (data.getFileErrors) {
     result =
         assertCast(lastReceivedFileList).files.map(file => file.error).join();
-  } else if (data.openFile) {
+  } else if (data.legacyOpenFile) {
+    // TODO(b/165720635): Remove this once google3 shifts over to using openFile
+    // on the fileList.
     await DELEGATE.openFile();
+  } else if (data.openFile) {
+    await assertCast(lastReceivedFileList).openFile();
   } else if (data.getLastFileName) {
     result = firstReceivedItem().name;
   }

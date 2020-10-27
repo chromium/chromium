@@ -74,3 +74,9 @@ GUEST_TEST('GuestCanLoadWithCspRestrictions', async () => {
   videoBlob.src = 'blob:chrome-untrusted://media-app/my-fake-blob-hash';
   await test_util.eventToPromise('error', videoBlob);
 });
+
+GUEST_TEST('GuestStartsWithDefaultFileList', async () => {
+  chai.assert.isDefined(window.customLaunchData);
+  chai.assert.isDefined(window.customLaunchData.files);
+  chai.assert.isTrue(window.customLaunchData.files.length === 0);
+});
