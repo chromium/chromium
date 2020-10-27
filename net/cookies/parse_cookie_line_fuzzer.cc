@@ -25,7 +25,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Call zero or one of ParsedCookie's mutator methods.  Should not call
   // anything other than SetName/SetValue when !IsValid().
-  const uint8_t action = data_provider.ConsumeIntegralInRange(0, 10);
+  const uint8_t action = data_provider.ConsumeIntegralInRange(0, 11);
   switch (action) {
     case 1:
       parsed_cookie.SetName(GetArbitraryString(&data_provider));
@@ -61,6 +61,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
       case 10:
         parsed_cookie.SetPriority(GetArbitraryString(&data_provider));
+        break;
+      case 11:
+        parsed_cookie.SetIsSameParty(data_provider.ConsumeBool());
         break;
     }
   }

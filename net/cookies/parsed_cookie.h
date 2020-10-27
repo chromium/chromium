@@ -53,6 +53,7 @@ class NET_EXPORT ParsedCookie {
   CookieSameSite SameSite(
       CookieSameSiteString* samesite_string = nullptr) const;
   CookiePriority Priority() const;
+  bool IsSameParty() const { return same_party_index_ != 0; }
 
   // Returns the number of attributes, for example, returning 2 for:
   //   "BLAH=hah; path=/; domain=.google.com"
@@ -76,6 +77,7 @@ class NET_EXPORT ParsedCookie {
   bool SetIsHttpOnly(bool is_http_only);
   bool SetSameSite(const std::string& same_site);
   bool SetPriority(const std::string& priority);
+  bool SetIsSameParty(bool is_same_party);
 
   // Returns the cookie description as it appears in a HTML response header.
   std::string ToCookieLine() const;
@@ -139,17 +141,16 @@ class NET_EXPORT ParsedCookie {
 
   PairList pairs_;
   // These will default to 0, but that should never be valid since the
-  // 0th index is the user supplied token/value, not an attribute.
-  // We're really never going to have more than like 8 attributes, so we
-  // could fit these into 3 bits each if we're worried about size...
-  size_t path_index_;
-  size_t domain_index_;
-  size_t expires_index_;
-  size_t maxage_index_;
-  size_t secure_index_;
-  size_t httponly_index_;
-  size_t same_site_index_;
-  size_t priority_index_;
+  // 0th index is the user supplied cookie name/value, not an attribute.
+  size_t path_index_ = 0;
+  size_t domain_index_ = 0;
+  size_t expires_index_ = 0;
+  size_t maxage_index_ = 0;
+  size_t secure_index_ = 0;
+  size_t httponly_index_ = 0;
+  size_t same_site_index_ = 0;
+  size_t priority_index_ = 0;
+  size_t same_party_index_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(ParsedCookie);
 };
