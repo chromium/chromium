@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import android.os.SystemClock;
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -21,6 +25,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@link PersistedTabData} for Shopping related websites
@@ -43,7 +48,18 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final String TYPE_KEY = "type";
     private static final String SHOPPING_ID = "SHOPPING";
 
-    private String mPriceString;
+    private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
+            ShoppingPersistedTabData.class;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final long NO_TRANSITIONS_OCCURRED = -1;
+
+    private long mTimeToLiveMs = ONE_HOUR_MS;
+    private String mPriceString = "";
+    private String mPreviousPriceString = "";
+    public long mLastPriceChangeTimeMs = NO_TRANSITIONS_OCCURRED;
 
     protected ShoppingPersistedTabData(Tab tab) {
         super(tab,
@@ -70,11 +86,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 new OneshotSupplierImpl<ShoppingPersistedTabData>() {
                     @Override
                     public void onAvailable(Callback<ShoppingPersistedTabData> supplierCallback) {
+                        ShoppingPersistedTabData previousShoppingPersistedTabData =
+                                PersistedTabData.from(tab, USER_DATA_KEY);
                         EndpointFetcher.fetchUsingOAuth(
                                 (endpointResponse)
                                         -> {
                                     supplierCallback.onResult(
-                                            build(tab, endpointResponse.getResponseString()));
+                                            build(tab, endpointResponse.getResponseString(),
+                                                    previousShoppingPersistedTabData));
                                 },
                                 Profile.getLastUsedRegularProfile(), OAUTH_NAME,
                                 String.format(Locale.US, ENDPOINT, tab.getUrlString()),
@@ -84,7 +103,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 ShoppingPersistedTabData.class, callback);
     }
 
-    private static ShoppingPersistedTabData build(Tab tab, String responseString) {
+    private static ShoppingPersistedTabData build(Tab tab, String responseString,
+            ShoppingPersistedTabData previousShoppingPersistedTabData) {
         ShoppingPersistedTabData res = new ShoppingPersistedTabData(tab);
         try {
             JSONObject jsonObject = new JSONObject(responseString);
@@ -94,7 +114,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                 // TODO(crbug.com/1130068) support all currencies
                 if (SHOPPING_ID.equals(representation.getString(TYPE_KEY))) {
                     res.setPriceString(
-                            String.format(Locale.US, "$%.2f", representation.getDouble(PRICE_KEY)));
+                            String.format(Locale.US, "$%.2f", representation.getDouble(PRICE_KEY)),
+                            previousShoppingPersistedTabData);
                     break;
                 }
             }
@@ -112,9 +133,21 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     /**
      * Set the price string
      * @param priceString a string representing the price of the shopping offer
+     * @param previousShoppingPersistedTabData {@link ShoppingPersistedTabData} from previous fetch
      */
-    protected void setPriceString(String priceString) {
+    protected void setPriceString(
+            String priceString, ShoppingPersistedTabData previousShoppingPersistedTabData) {
         mPriceString = priceString;
+        // Detect price transition
+        if (previousShoppingPersistedTabData != null && !TextUtils.isEmpty(priceString)
+                && !TextUtils.isEmpty(previousShoppingPersistedTabData.getPriceString())
+                && !priceString.equals(previousShoppingPersistedTabData.getPriceString())) {
+            mPreviousPriceString = previousShoppingPersistedTabData.getPriceString();
+            mLastPriceChangeTimeMs = SystemClock.uptimeMillis();
+        } else if (previousShoppingPersistedTabData != null) {
+            mPreviousPriceString = previousShoppingPersistedTabData.getPreviousPriceString();
+            mLastPriceChangeTimeMs = previousShoppingPersistedTabData.getLastPriceChangeTimeMs();
+        }
         save();
     }
 
@@ -128,10 +161,22 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return mPriceString;
     }
 
+    /**
+     * @return the price string of the {@link ShoppingPersistedTabDta}
+     * before the refetch occurred because of a timeout. This enables
+     * the consumer to determine if the price changed during the fetch.
+     */
+    public String getPreviousPriceString() {
+        return mPreviousPriceString;
+    }
+
     @Override
     public byte[] serialize() {
         return ShoppingPersistedTabDataProto.newBuilder()
                 .setPriceString(mPriceString)
+                .setPreviousPriceString(mPreviousPriceString)
+                .setLastUpdatedMs(getLastUpdatedMs())
+                .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs)
                 .build()
                 .toByteArray();
     }
@@ -143,6 +188,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             ShoppingPersistedTabDataProto shoppingPersistedTabDataProto =
                     ShoppingPersistedTabDataProto.parseFrom(bytes);
             mPriceString = shoppingPersistedTabDataProto.getPriceString();
+            mPreviousPriceString = shoppingPersistedTabDataProto.getPreviousPriceString();
+            setLastUpdatedMs(shoppingPersistedTabDataProto.getLastUpdatedMs());
+            mLastPriceChangeTimeMs = shoppingPersistedTabDataProto.getLastPriceChangeTimeMs();
             return true;
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG,
@@ -160,5 +208,20 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @Override
     public String getUmaTag() {
         return "SPTD";
+    }
+
+    @Override
+    public long getTimeToLiveMs() {
+        return mTimeToLiveMs;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void setTimeToLiveMs(long timeToLiveMs) {
+        mTimeToLiveMs = timeToLiveMs;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public long getLastPriceChangeTimeMs() {
+        return mLastPriceChangeTimeMs;
     }
 }

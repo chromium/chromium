@@ -9,6 +9,17 @@ package org.chromium.chrome.browser.tab.proto;
 option java_package = "org.chromium.chrome.browser.tab.proto";
 
 message ShoppingPersistedTabDataProto {
-  // String representing the price of the offer
+  // String representing the price of the offer.
   optional string price_string = 1;
+
+  // String representing previous price of the offer.
+  optional string previous_price_string = 2;
+
+  // Time the ShoppingPersistedTabData was fetched
+  // measured in the number of seconds since the epoch.
+  optional int64 last_updated_ms = 3;
+
+  // Time the price changed measured in the number of
+  // seconds since the epoch.
+  optional int64 last_price_change_time_ms = 4;
 }

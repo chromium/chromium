@@ -11,6 +11,7 @@ include_rules = [
   "+chrome/browser/tabmodel/android/java",
   "+chrome/browser/tabpersistence/android/java",
   "+chrome/browser/thumbnail/generator/android/java",
+  "+chrome/browser/endpoint_fetcher",
   "+chrome/browser/ui/android/appmenu",
   "-chrome/browser/ui/android/appmenu/internal",
   "+chrome/browser/ui/messages/android/java",
