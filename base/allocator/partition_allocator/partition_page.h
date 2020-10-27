@@ -365,9 +365,9 @@ ALWAYS_INLINE size_t SlotSpanMetadata<thread_safe>::GetRawSize() const {
 template <bool thread_safe>
 ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetFreelistHead(
     PartitionFreelistEntry* new_head) {
-  PA_CHECK(!new_head ||
-           (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
-               (reinterpret_cast<uintptr_t>(new_head) & kSuperPageBaseMask));
+  PA_DCHECK(!new_head ||
+            (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
+                (reinterpret_cast<uintptr_t>(new_head) & kSuperPageBaseMask));
   freelist_head = new_head;
 }
 
