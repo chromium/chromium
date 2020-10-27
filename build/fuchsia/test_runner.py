@@ -20,9 +20,10 @@ from symbolizer import BuildIdsPaths
 
 DEFAULT_TEST_SERVER_CONCURRENCY = 4
 
-TEST_RESULT_PATH = '/data/test_summary.json'
-TEST_PERF_RESULT_PATH = '/data/test_perf_summary.json'
-TEST_FILTER_PATH = '/data/test_filter.txt'
+TEST_DATA_DIR = '/tmp'
+TEST_RESULT_PATH = TEST_DATA_DIR + '/test_summary.json'
+TEST_PERF_RESULT_PATH = TEST_DATA_DIR + '/test_perf_summary.json'
+TEST_FILTER_PATH = TEST_DATA_DIR + '/test_filter.txt'
 
 TEST_REALM_NAME = 'chromium_tests'
 

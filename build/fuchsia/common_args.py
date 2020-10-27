@@ -100,9 +100,6 @@ def AddCommonArgs(arg_parser):
       help='Name of the package to execute, defined in ' + 'package metadata.')
 
   common_args = arg_parser.add_argument_group('common', 'Common arguments')
-  common_args.add_argument('--target-staging-path',
-                           help='target path under which to stage packages '
-                           'during deployment.', default='/data')
   common_args.add_argument('--runner-logs-dir',
                            help='Directory to write test runner logs to.')
   common_args.add_argument('--exclude-system-logs',
