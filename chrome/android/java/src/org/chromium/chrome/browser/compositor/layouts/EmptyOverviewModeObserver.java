@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.compositor.layouts;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 
 /**
-* An empty implementation of {@link OverviewModeObserver}.
-*/
+ * An empty implementation of {@link OverviewModeObserver}.
+ * DEPRECATED, please use {@link
+ * org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver} instead.
+ */
+@Deprecated
 public class EmptyOverviewModeObserver implements OverviewModeObserver {
     @Override
     public void onOverviewModeStartedShowing(boolean showToolbar) {}

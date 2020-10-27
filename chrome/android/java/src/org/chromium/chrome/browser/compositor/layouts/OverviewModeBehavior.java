@@ -7,11 +7,18 @@ package org.chromium.chrome.browser.compositor.layouts;
 /**
  * Exposes the current overview mode state as well as a way to listen to overview mode state
  * changes.
+ *
+ * DEPRECATED, please use {@link org.chromium.chrome.browser.layouts.LayoutStateProvider} instead.
  */
+@Deprecated
 public interface OverviewModeBehavior {
     /**
      * An observer that is notified when the overview mode state changes.
+     *
+     * DEPRECATED, please use {@link
+     * org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver} instead.
      */
+    @Deprecated
     interface OverviewModeObserver {
         /**
          * Called when overview mode starts showing.
