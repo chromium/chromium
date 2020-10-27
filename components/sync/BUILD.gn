@@ -320,8 +320,6 @@ static_library("test_support_engine") {
     "engine/test_engine_components_factory.h",
     "engine_impl/cycle/mock_debug_info_getter.cc",
     "engine_impl/cycle/mock_debug_info_getter.h",
-    "engine_impl/cycle/test_util.cc",
-    "engine_impl/cycle/test_util.h",
     "test/engine/fake_sync_scheduler.cc",
     "test/engine/fake_sync_scheduler.h",
     "test/engine/mock_connection_manager.cc",
