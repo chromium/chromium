@@ -29,6 +29,8 @@ source_set("browsing_data") {
     "browsing_data_remover_observer.h",
     "browsing_data_remover_observer_bridge.h",
     "browsing_data_remover_observer_bridge.mm",
+    "sessions_storage_util.h",
+    "sessions_storage_util.mm",
   ]
   deps = [
     ":counters",
@@ -138,11 +140,13 @@ source_set("test_support") {
     "fake_browsing_data_remover.mm",
     "fake_browsing_data_remover_observer.h",
     "fake_browsing_data_remover_observer.mm",
+    "session_storage_util_unittest.mm",
   ]
 
   deps = [
     ":browsing_data",
     "//base",
+    "//testing/gtest",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
