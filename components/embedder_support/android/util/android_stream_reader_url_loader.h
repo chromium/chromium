@@ -67,6 +67,15 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
     // Allows the delegate to add extra response headers.
     virtual void AppendResponseHeaders(JNIEnv* env,
                                        net::HttpResponseHeaders* headers) = 0;
+
+    // Called right before URLLoaderClient::OnReceiveResponse is called. If this
+    // method returns true then a copy of the response is made and returned in
+    // OnResponseCache.
+    virtual bool ShouldCacheResponse(network::mojom::URLResponseHead* response);
+
+    // Called if ShouldCacheResponse returned true and the response was
+    // successful.
+    virtual void OnResponseCache(const std::string& data) {}
   };
 
   struct SecurityOptions {
@@ -135,6 +144,10 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   const net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   std::unique_ptr<ResponseDelegate> response_delegate_;
   scoped_refptr<InputStreamReaderWrapper> input_stream_reader_wrapper_;
+
+  // If true, a copy of the response is made.
+  bool cache_response_ = false;
+  std::string cached_response_;
 
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;

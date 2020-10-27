@@ -50,6 +50,8 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
 
     private BrowserImpl mBrowserImpl;
     private long mNativeUrlBarController;
+    // A count of how many Views created by this controller are attached to a Window.
+    private int mActiveViewCount;
     private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     private String getUrlForDisplay() {
@@ -72,6 +74,18 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
                 UrlBarControllerImplJni.get().createUrlBarController(nativeBrowser);
     }
 
+    void addActiveView() {
+        mActiveViewCount++;
+    }
+
+    void removeActiveView() {
+        mActiveViewCount--;
+    }
+
+    boolean hasActiveView() {
+        return mActiveViewCount != 0;
+    }
+
     @Override
     @Deprecated
     public IObjectWrapper /* View */ deprecatedCreateUrlBarView(Bundle options) {
@@ -90,12 +104,14 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
         Context context = mBrowserImpl.getContext();
         if (context == null) throw new IllegalStateException("BrowserFragment not attached yet.");
 
-        UrlBarView urlBarView = new UrlBarView(context, options, clickListener, longClickListener);
+        UrlBarView urlBarView =
+                new UrlBarView(this, context, options, clickListener, longClickListener);
         return ObjectWrapper.wrap(urlBarView);
     }
 
     protected class UrlBarView
             extends LinearLayout implements BrowserImpl.VisibleSecurityStateObserver {
+        private final UrlBarControllerImpl mController;
         private float mTextSize;
         private boolean mShowPageInfoWhenUrlTextClicked;
 
@@ -109,10 +125,12 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
         OnClickListener mUrlBarClickListener;
         OnLongClickListener mUrlBarLongClickListener;
 
-        public UrlBarView(@NonNull Context context, @NonNull Bundle options,
+        public UrlBarView(@NonNull UrlBarControllerImpl controller, @NonNull Context context,
+                @NonNull Bundle options,
                 @Nullable IObjectWrapper /* OnClickListener */ clickListener,
                 @Nullable IObjectWrapper /* OnLongClickListener */ longClickListener) {
             super(context);
+            mController = controller;
             setGravity(Gravity.CENTER_HORIZONTAL);
 
             mTextSize = options.getFloat(UrlBarOptionsKeys.URL_TEXT_SIZE, DEFAULT_TEXT_SIZE);
@@ -149,12 +167,14 @@ public class UrlBarControllerImpl extends IUrlBarController.Stub {
             }
 
             super.onAttachedToWindow();
+            mController.addActiveView();
         }
 
         @Override
         protected void onDetachedFromWindow() {
             if (mBrowserImpl != null) mBrowserImpl.removeVisibleSecurityStateObserver(this);
             super.onDetachedFromWindow();
+            mController.removeActiveView();
         }
 
         private void updateView() {

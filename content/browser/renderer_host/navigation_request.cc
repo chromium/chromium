@@ -1664,20 +1664,6 @@ ukm::SourceId NavigationRequest::GetPreviousPageUkmSourceId() {
   return previous_page_ukm_source_id_;
 }
 
-NavigationEntry* NavigationRequest::GetNavigationEntry() {
-  if (nav_entry_id_ == 0)
-    return nullptr;
-
-  NavigationControllerImpl* controller = GetNavigationController();
-  NavigationEntry* entry = controller->GetEntryWithUniqueID(nav_entry_id_);
-  if (entry)
-    return entry;
-  return (controller->GetPendingEntry() &&
-          controller->GetPendingEntry()->GetUniqueID() == nav_entry_id_)
-             ? controller->GetPendingEntry()
-             : nullptr;
-}
-
 void NavigationRequest::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
@@ -4789,6 +4775,20 @@ const base::Optional<url::Origin>& NavigationRequest::GetInitiatorOrigin() {
 
 bool NavigationRequest::IsSameProcess() {
   return is_same_process_;
+}
+
+NavigationEntry* NavigationRequest::GetNavigationEntry() {
+  if (nav_entry_id_ == 0)
+    return nullptr;
+
+  NavigationControllerImpl* controller = GetNavigationController();
+  NavigationEntry* entry = controller->GetEntryWithUniqueID(nav_entry_id_);
+  if (entry)
+    return entry;
+  return (controller->GetPendingEntry() &&
+          controller->GetPendingEntry()->GetUniqueID() == nav_entry_id_)
+             ? controller->GetPendingEntry()
+             : nullptr;
 }
 
 int NavigationRequest::GetNavigationEntryOffset() {

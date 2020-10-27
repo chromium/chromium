@@ -465,7 +465,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
                         || mBrowser.isInConfigurationChangeAndWasAttached());
     }
 
-    private boolean isActiveTab() {
+    public boolean isActiveTab() {
         return mBrowser.getActiveTab() == this;
     }
 

@@ -314,6 +314,7 @@ class CONTENT_EXPORT NavigationRequest
   const GlobalFrameRoutingId& GetInitiatorRoutingId() override;
   const base::Optional<url::Origin>& GetInitiatorOrigin() override;
   bool IsSameProcess() override;
+  NavigationEntry* GetNavigationEntry() override;
   int GetNavigationEntryOffset() override;
   void RegisterSubresourceOverride(
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) override;
@@ -657,9 +658,6 @@ class CONTENT_EXPORT NavigationRequest
   // RenderFrameHost::FromID(GetPreviousRenderFrameHostId())
   //     ->GetPageUkmSourceId() for main-frame cross-document navigations.
   ukm::SourceId GetPreviousPageUkmSourceId();
-
-  // Returns the NavigationEntry associated with this, which may be null.
-  NavigationEntry* GetNavigationEntry();
 
   void OnServiceWorkerAccessed(const GURL& scope,
                                AllowServiceWorkerResult allowed);
