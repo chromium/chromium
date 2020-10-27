@@ -15,5 +15,6 @@ js_library("main_js") {
 }
 
 js_type_check("closure_compile") {
+  uses_js_modules = true
   deps = [ ":main_js" ]
 }

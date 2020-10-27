@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class BrowserProxy {
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import './file_manager.mojom-lite.js';
+
+export class BrowserProxy {
   constructor() {
     /** @type {chromeos.fileManager.mojom.PageCallbackRouter} */
     this.callbackRouter = new chromeos.fileManager.mojom.PageCallbackRouter();
@@ -15,7 +18,3 @@ class BrowserProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 }
-
-// For demo purpose a global variable is fine I guess.
-// I'll defer to people who know how to JS to do it in a proper way.
-const theBrowserProxy = new BrowserProxy();
