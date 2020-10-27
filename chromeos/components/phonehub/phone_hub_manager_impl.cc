@@ -82,7 +82,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           multidevice_setup_client,
           phone_model_.get())),
       tether_controller_(
-          std::make_unique<TetherControllerImpl>(multidevice_setup_client)),
+          std::make_unique<TetherControllerImpl>(phone_model_.get(),
+                                                 multidevice_setup_client)),
       browser_tabs_model_provider_(std::move(browser_tabs_model_provider)),
       browser_tabs_model_controller_(
           std::make_unique<BrowserTabsModelController>(

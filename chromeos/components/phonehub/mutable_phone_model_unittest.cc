@@ -82,13 +82,14 @@ TEST_F(MutablePhoneModelTest, PhoneStatusModel) {
   EXPECT_EQ(0u, GetNumObserverCalls());
 
   // Set the PhoneStatusModel; observers should be notified.
-  model_.SetPhoneStatusModel(CreateFakePhoneStatusModel());
-  EXPECT_EQ(CreateFakePhoneStatusModel(), model_.phone_status_model());
+  auto fake_phone_status_model = CreateFakePhoneStatusModel();
+  model_.SetPhoneStatusModel(fake_phone_status_model);
+  EXPECT_EQ(fake_phone_status_model, model_.phone_status_model());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
   // Set the same PhoneStatusModel; observers should not be notified.
-  model_.SetPhoneStatusModel(CreateFakePhoneStatusModel());
-  EXPECT_EQ(CreateFakePhoneStatusModel(), model_.phone_status_model());
+  model_.SetPhoneStatusModel(fake_phone_status_model);
+  EXPECT_EQ(fake_phone_status_model, model_.phone_status_model());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
   // Set the PhoneStatusModel back to null; observers should be notified.

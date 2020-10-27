@@ -20,7 +20,9 @@ extern const char kFakeMobileProviderName[];
 // Creates fake phone status data for use in tests.
 const PhoneStatusModel::MobileConnectionMetadata&
 CreateFakeMobileConnectionMetadata();
-const PhoneStatusModel& CreateFakePhoneStatusModel();
+const PhoneStatusModel& CreateFakePhoneStatusModel(
+    PhoneStatusModel::MobileStatus mobile_status =
+        PhoneStatusModel::MobileStatus::kSimWithReception);
 
 // Fake data for browser tabs.
 extern const char kFakeBrowserTabUrl1[];

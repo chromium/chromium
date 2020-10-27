@@ -5,6 +5,7 @@
 #include "chromeos/components/phonehub/tether_controller_impl.h"
 
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/phone_status_model.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 
 namespace chromeos {
@@ -44,15 +45,19 @@ void TetherControllerImpl::TetherNetworkConnector::StartDisconnect(
 }
 
 TetherControllerImpl::TetherControllerImpl(
+    PhoneModel* phone_model,
     MultiDeviceSetupClient* multidevice_setup_client)
     : TetherControllerImpl(
+          phone_model,
           multidevice_setup_client,
           std::make_unique<TetherControllerImpl::TetherNetworkConnector>()) {}
 
 TetherControllerImpl::TetherControllerImpl(
+    PhoneModel* phone_model,
     MultiDeviceSetupClient* multidevice_setup_client,
     std::unique_ptr<TetherControllerImpl::TetherNetworkConnector> connector)
-    : multidevice_setup_client_(multidevice_setup_client),
+    : phone_model_(phone_model),
+      multidevice_setup_client_(multidevice_setup_client),
       connector_(std::move(connector)) {
   // Receive updates when devices (e.g., Tether, Ethernet, Wi-Fi) go on/offline
   // This class only cares about Tether devices.
@@ -60,6 +65,7 @@ TetherControllerImpl::TetherControllerImpl(
       cros_network_config_.BindNewPipeAndPassReceiver());
   cros_network_config_->AddObserver(receiver_.BindNewPipeAndPassRemote());
 
+  phone_model_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
 
   // Compute current status.
@@ -70,6 +76,7 @@ TetherControllerImpl::TetherControllerImpl(
 }
 
 TetherControllerImpl::~TetherControllerImpl() {
+  phone_model_->RemoveObserver(this);
   multidevice_setup_client_->RemoveObserver(this);
 }
 
@@ -219,6 +226,10 @@ void TetherControllerImpl::Disconnect() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void TetherControllerImpl::OnModelChanged() {
+  UpdateStatus();
+}
+
 void TetherControllerImpl::OnDisconnectCompleted(bool success) {
   if (connect_disconnect_status_ != ConnectDisconnectStatus::kDisconnecting)
     return;
@@ -353,6 +364,14 @@ void TetherControllerImpl::UpdateStatus() {
 }
 
 TetherController::Status TetherControllerImpl::ComputeStatus() const {
+  bool does_sim_exist_with_reception =
+      phone_model_->phone_status_model().has_value() &&
+      phone_model_->phone_status_model()->mobile_status() ==
+          PhoneStatusModel::MobileStatus::kSimWithReception;
+
+  if (!does_sim_exist_with_reception)
+    return Status::kIneligibleForFeature;
+
   FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kInstantTethering);
 
