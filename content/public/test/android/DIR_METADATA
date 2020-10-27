@@ -1,0 +1,5 @@
+monorail {
+  component: "Test>Android"
+}
+
+os: ANDROID
