@@ -14,6 +14,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 // an arbitrarily large amount of data (available memory permitting) without
 // negatively impacting IPC performance or hitting hard message size
 // boundaries.
+[Stable]
 struct BigString {
   mojo_base.mojom.BigBuffer data;
 };

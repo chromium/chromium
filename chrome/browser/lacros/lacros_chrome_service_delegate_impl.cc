@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/lacros_chrome_service_delegate_impl.h"
 
 #include "base/logging.h"
+#include "base/metrics/statistics_recorder.h"
 #include "chrome/browser/lacros/feedback_util.h"
 #include "chrome/browser/lacros/system_logs/lacros_system_log_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,8 +13,15 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/channel_info.h"
 #include "components/feedback/feedback_report.h"
+#include "components/feedback/feedback_util.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+
+namespace {
+
+constexpr char kHistogramsFilename[] = "lacros_histograms.txt";
+
+}  // namespace
 
 LacrosChromeServiceDelegateImpl::LacrosChromeServiceDelegateImpl() = default;
 
@@ -42,6 +50,20 @@ void LacrosChromeServiceDelegateImpl::GetFeedbackData(
   fetcher->Fetch(
       base::BindOnce(&LacrosChromeServiceDelegateImpl::OnSystemInformationReady,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void LacrosChromeServiceDelegateImpl::GetHistograms(
+    GetHistogramsCallback callback) {
+  std::string histograms =
+      base::StatisticsRecorder::ToJSON(base::JSON_VERBOSITY_LEVEL_FULL);
+  std::string compressed_histograms;
+  if (feedback_util::ZipString(base::FilePath(kHistogramsFilename),
+                               std::move(histograms), &compressed_histograms)) {
+    std::move(callback).Run(std::move(compressed_histograms));
+  } else {
+    LOG(ERROR) << "Failed to compress lacros histograms.";
+    std::move(callback).Run(std::string());
+  }
 }
 
 void LacrosChromeServiceDelegateImpl::OnSystemInformationReady(

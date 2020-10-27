@@ -67,6 +67,10 @@ constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
 
 constexpr int kKaleidoscopeProductId = 5192933;
 
+#if defined(OS_CHROMEOS)
+constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
+#endif
+
 // Getting the filename of a blob prepends a "C:\fakepath" to the filename.
 // This is undesirable, strip it if it exists.
 std::string StripFakepath(const std::string& path) {
@@ -356,7 +360,7 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
 #if defined(OS_CHROMEOS)
     delegate->FetchExtraLogs(
         feedback_data,
-        base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnAllLogsFetched,
+        base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnAshLogsFetched,
                        this, send_histograms, send_bluetooth_logs,
                        send_tab_titles));
     return RespondLater();
@@ -410,6 +414,36 @@ void FeedbackPrivateSendFeedbackFunction::OnAllLogsFetched(
       base::Bind(&FeedbackPrivateSendFeedbackFunction::OnCompleted, this,
                  GetLandingPageType(*feedback_data)));
 }
+
+#if defined(OS_CHROMEOS)
+void FeedbackPrivateSendFeedbackFunction::OnAshLogsFetched(
+    bool send_histograms,
+    bool send_bluetooth_logs,
+    bool send_tab_titles,
+    scoped_refptr<feedback::FeedbackData> feedback_data) {
+  FeedbackPrivateDelegate* feedback_private_delegate =
+      ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
+  feedback_private_delegate->GetLacrosHistograms(base::BindOnce(
+      &FeedbackPrivateSendFeedbackFunction::OnLacrosHistogramsFetched, this,
+      send_histograms, send_bluetooth_logs, send_tab_titles, feedback_data));
+}
+
+void FeedbackPrivateSendFeedbackFunction::OnLacrosHistogramsFetched(
+    bool send_histograms,
+    bool send_bluetooth_logs,
+    bool send_tab_titles,
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    const std::string& compressed_histograms) {
+  // Attach lacros histogram to feedback data.
+  if (!compressed_histograms.empty()) {
+    feedback_data->AddFile(kLacrosHistogramsFilename,
+                           std::move(compressed_histograms));
+  }
+
+  OnAllLogsFetched(send_histograms, send_bluetooth_logs, send_tab_titles,
+                   feedback_data);
+}
+#endif  // defined(OS_CHROMEOS)
 
 void FeedbackPrivateSendFeedbackFunction::OnCompleted(
     api::feedback_private::LandingPageType type,

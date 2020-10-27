@@ -18,7 +18,6 @@ component("lacros") {
     "//mojo/public/cpp/bindings",
   ]
   sources = [
-    "get_feedback_data_callback.h",
     "lacros_chrome_service_delegate.h",
     "lacros_chrome_service_impl.cc",
     "lacros_chrome_service_impl.h",

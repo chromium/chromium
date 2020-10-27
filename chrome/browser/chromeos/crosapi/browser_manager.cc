@@ -58,7 +58,10 @@ BrowserManager* g_instance = nullptr;
 
 // The min version of LacrosChromeService mojo interface that supports
 // GetFeedbackData API.
-uint32_t kGetFeedbackDataMinVersion = 6;
+constexpr uint32_t kGetFeedbackDataMinVersion = 6;
+// The min version of LacrosChromeService mojo interface that supports
+// GetHistograms API.
+constexpr uint32_t kGetHistogramsMinVersion = 7;
 
 base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
@@ -231,6 +234,16 @@ void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
   DCHECK(lacros_chrome_service_.is_connected());
   DCHECK(GetFeedbackDataSupported());
   lacros_chrome_service_->GetFeedbackData(std::move(callback));
+}
+
+bool BrowserManager::GetHistogramsSupported() const {
+  return lacros_chrome_service_version_ >= kGetHistogramsMinVersion;
+}
+
+void BrowserManager::GetHistograms(GetHistogramsCallback callback) {
+  DCHECK(lacros_chrome_service_.is_connected());
+  DCHECK(GetHistogramsSupported());
+  lacros_chrome_service_->GetHistograms(std::move(callback));
 }
 
 void BrowserManager::AddObserver(BrowserManagerObserver* observer) {

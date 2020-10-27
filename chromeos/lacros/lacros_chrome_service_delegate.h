@@ -7,7 +7,8 @@
 
 #include <string>
 
-#include "chromeos/lacros/get_feedback_data_callback.h"
+#include "base/callback.h"
+#include "base/values.h"
 
 namespace chromeos {
 
@@ -26,8 +27,13 @@ class LacrosChromeServiceDelegate {
   // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
   virtual std::string GetChromeVersion() = 0;
 
+  using GetFeedbackDataCallback = base::OnceCallback<void(base::Value)>;
   // Gets lacros feedback data.
   virtual void GetFeedbackData(GetFeedbackDataCallback callback) = 0;
+
+  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
+  // Gets lacros histograms.
+  virtual void GetHistograms(GetHistogramsCallback callback) = 0;
 };
 
 }  // namespace chromeos

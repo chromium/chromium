@@ -931,15 +931,13 @@ static_library("extensions") {
 
   if (chromeos_is_browser_only || is_chromeos) {
     sources += [ "api/enterprise_platform_keys/enterprise_platform_keys_api.h" ]
+    deps += [ "//chromeos/crosapi/mojom" ]
     if (chromeos_is_browser_only) {
       sources += [
         "api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.cc",
         "api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.h",
       ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
+      deps += [ "//chromeos/lacros" ]
     }
   }
 

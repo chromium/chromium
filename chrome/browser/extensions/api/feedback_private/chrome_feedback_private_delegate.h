@@ -31,6 +31,7 @@ class ChromeFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
   void UnloadFeedbackExtension(content::BrowserContext* context) const override;
   api::feedback_private::LandingPageType GetLandingPageType(
       const feedback::FeedbackData& feedback_data) const override;
+  void GetLacrosHistograms(GetHistogramsCallback callback) override;
 #endif  // defined(OS_CHROMEOS)
   std::string GetSignedInUserEmail(
       content::BrowserContext* context) const override;

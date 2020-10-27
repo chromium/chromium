@@ -29,6 +29,7 @@
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/system_logs/iwlwifi_dump_log_source.h"
 #include "chrome/browser/chromeos/system_logs/single_debug_daemon_log_source.h"
 #include "chrome/browser/chromeos/system_logs/single_log_file_log_source.h"
@@ -235,6 +236,17 @@ ChromeFeedbackPrivateDelegate::GetLandingPageType(
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   return board[0] == "eve" ? api::feedback_private::LANDING_PAGE_TYPE_TECHSTOP
                            : api::feedback_private::LANDING_PAGE_TYPE_NORMAL;
+}
+
+void ChromeFeedbackPrivateDelegate::GetLacrosHistograms(
+    GetHistogramsCallback callback) {
+  crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
+  if (browser_manager->GetHistogramsSupported() &&
+      browser_manager->IsRunning()) {
+    browser_manager->GetHistograms(std::move(callback));
+  } else {
+    std::move(callback).Run(std::string());
+  }
 }
 #endif  // defined(OS_CHROMEOS)
 

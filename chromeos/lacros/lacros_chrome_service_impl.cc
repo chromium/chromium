@@ -82,6 +82,13 @@ class LacrosChromeServiceNeverBlockingState
                        owner_, std::move(callback)));
   }
 
+  void GetHistograms(GetHistogramsCallback callback) override {
+    owner_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LacrosChromeServiceImpl::GetHistogramsAffineSequence,
+                       owner_, std::move(callback)));
+  }
+
   // Unlike most of other methods of this class, this is called on the
   // affined thread. Specifically, it is intended to be called before starting
   // the message pumping of the affined thread to pass the initialization
@@ -419,6 +426,12 @@ void LacrosChromeServiceImpl::GetFeedbackDataAffineSequence(
     GetFeedbackDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
   delegate_->GetFeedbackData(std::move(callback));
+}
+
+void LacrosChromeServiceImpl::GetHistogramsAffineSequence(
+    GetHistogramsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+  delegate_->GetHistograms(std::move(callback));
 }
 
 int LacrosChromeServiceImpl::AshChromeServiceVersion() {

@@ -82,6 +82,13 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Virtual for testing.
   virtual void GetFeedbackData(GetFeedbackDataCallback callback);
 
+  // Returns true if crosapi interface supports GetHistograms API.
+  bool GetHistogramsSupported() const;
+
+  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
+  // Gets Lacros histograms.
+  void GetHistograms(GetHistogramsCallback callback);
+
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);
 
