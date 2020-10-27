@@ -122,6 +122,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   size_t hover_cards_seen_count_ = 0;
   bool waiting_for_decompress_ = false;
 
+  const bool using_rounded_corners_;
+
   base::OneShotTimer delayed_show_timer_;
 };
 

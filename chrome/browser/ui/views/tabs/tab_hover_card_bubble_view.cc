@@ -412,7 +412,8 @@ class TabHoverCardBubbleView::ThumbnailObserver
 };
 
 TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
-    : BubbleDialogDelegateView(tab, views::BubbleBorder::TOP_LEFT) {
+    : BubbleDialogDelegateView(tab, views::BubbleBorder::TOP_LEFT),
+      using_rounded_corners_(CustomShadowsSupported()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   // We'll do all of our own layout inside the bubble, so no need to inset this
@@ -529,7 +530,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);
 
-  if (CustomShadowsSupported()) {
+  if (using_rounded_corners_) {
     GetBubbleFrameView()->SetCornerRadius(
         ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
             views::EMPHASIS_HIGH));
@@ -863,6 +864,13 @@ gfx::Size TabHoverCardBubbleView::CalculatePreferredSize() const {
 
 void TabHoverCardBubbleView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
+
+  // Bubble closes if the theme changes to the point where the border has to be
+  // regenerated. See crbug.com/1140256
+  if (using_rounded_corners_ != CustomShadowsSupported()) {
+    GetWidget()->Close();
+    return;
+  }
 
   // Update fade labels' background color to match that of the the original
   // label since these child views are ignored by layout.
