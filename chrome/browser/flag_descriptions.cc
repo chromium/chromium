@@ -553,11 +553,11 @@ const char kEnableAutofillCreditCardAuthenticationDescription[] =
     "authenticator (if available) to verify card ownership when retrieving "
     "credit cards from Google Payments.";
 
-const char kEnableAutofillInfoBarAccountIndicationFooterName[] =
-    "Display InfoBar footer with account indication information";
-const char kEnableAutofillInfoBarAccountIndicationFooterDescription[] =
+const char kEnableAutofillPasswordInfoBarAccountIndicationFooterName[] =
+    "Display password InfoBar footers with account indication information";
+const char kEnableAutofillPasswordInfoBarAccountIndicationFooterDescription[] =
     "When enabled, a footer indicating user's e-mail address will appear at "
-    "the bottom of corresponding InfoBar.";
+    "the bottom of corresponding password InfoBars.";
 
 const char kEnableAutofillCreditCardCvcPromptGoogleLogoName[] =
     "Enable Google Pay branding on CVC prompt on Android";

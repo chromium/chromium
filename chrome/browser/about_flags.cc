@@ -6692,13 +6692,15 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_ANDROID)
-    {"enable-autofill-account-indicator-footer",
-     flag_descriptions::kEnableAutofillInfoBarAccountIndicationFooterName,
+    {"enable-autofill-password-account-indicator-footer",
      flag_descriptions::
-         kEnableAutofillInfoBarAccountIndicationFooterDescription,
+         kEnableAutofillPasswordInfoBarAccountIndicationFooterName,
+     flag_descriptions::
+         kEnableAutofillPasswordInfoBarAccountIndicationFooterDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableInfoBarAccountIndicationFooter)},
+         autofill::features::
+             kAutofillEnablePasswordInfoBarAccountIndicationFooter)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

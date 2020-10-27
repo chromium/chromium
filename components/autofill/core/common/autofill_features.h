@@ -34,7 +34,8 @@ extern const base::Feature kAutofillCreateDataForTest;
 extern const base::Feature kAutofillEnableAccountWalletStorage;
 extern const base::Feature kAutofillEnableAugmentedPhoneCountryCode;
 extern const base::Feature kAutofillEnableHideSuggestionsUI;
-extern const base::Feature kAutofillEnableInfoBarAccountIndicationFooter;
+extern const base::Feature
+    kAutofillEnablePasswordInfoBarAccountIndicationFooter;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInNames;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInAddresses;
 extern const base::Feature kAutofillEnableSupportForMergingSubsetNames;

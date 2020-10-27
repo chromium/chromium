@@ -94,9 +94,10 @@ const base::Feature kAutofillEnableHideSuggestionsUI{
     "AutofillEnableHideSuggestionsUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled and user is signed in, a footer indicating user's e-mail address
-// and profile picture will appear at the bottom of corresponding InfoBar.
-const base::Feature kAutofillEnableInfoBarAccountIndicationFooter{
-    "AutofillEnableInfoBarAccountIndicationFooter",
+// and profile picture will appear at the bottom of corresponding password
+// InfoBars.
+const base::Feature kAutofillEnablePasswordInfoBarAccountIndicationFooter{
+    "AutofillEnablePasswordInfoBarAccountIndicationFooter",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls if Autofill supports new structure in names.
