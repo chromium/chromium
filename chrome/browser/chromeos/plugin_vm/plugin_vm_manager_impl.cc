@@ -119,6 +119,11 @@ void PluginVmManagerImpl::OnPrimaryUserProfilePrepared() {
   request.set_owner_id(owner_id_);
   request.set_vm_name_uuid(kPluginVmName);
 
+  // TODO(b/167491603): We need to reset these permissions until we have
+  // permission indicators/notifications working.
+  profile_->GetPrefs()->SetBoolean(prefs::kPluginVmCameraAllowed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kPluginVmMicAllowed, false);
+
   // Probe the dispatcher.
   chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient()->ListVms(
       std::move(request),

@@ -8,7 +8,6 @@
 <link rel="import" href="../store_client.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="plugin_vm_permission_dialog.html">
 
 <dom-module id="app-management-plugin-vm-detail-view">
   <template>
@@ -78,12 +77,18 @@
       </div>
     </div>
 
-    <template is="dom-if" if="[[showPluginVmPermissionDialog_]]" restamp>
-      <app-management-plugin-vm-permission-dialog
-          on-close="onPluginVmPermissionDialogClose_"
-          pending-permission-change="[[pendingPermissionChange_]]"
-          reset-permission-change="{{resetPermissionChange}}">
-      </app-management-plugin-vm-permission-dialog>
+    <template is="dom-if" if="[[showDialog_]]" restamp>
+      <cr-dialog close-text="$i18n{close}" show-on-attach on-cancel="onCancel_">
+        <div slot="body">[[dialogText_]]</div>
+        <div slot="button-container">
+          <cr-button class="cancel-button" on-click="onCancel_">
+            $i18n{cancel}
+          </cr-button>
+          <cr-button class="action-button" on-click="onRelaunchTap_">
+            $i18n{pluginVmPermissionDialogRelaunchButton}
+          </cr-button>
+        </div>
+      </cr-dialog>
     </template>
   </template>
   <script src="plugin_vm_detail_view.js"></script>

@@ -20,7 +20,6 @@ js_library("plugin_vm_browser_proxy") {
 js_library("plugin_vm_detail_view") {
   deps = [
     ":plugin_vm_browser_proxy",
-    ":plugin_vm_permission_dialog",
     "../:constants",
     "../:permission_item",
     "../:store_client",
@@ -43,10 +42,6 @@ js_library("plugin_vm_shared_usb_devices") {
     ":plugin_vm_browser_proxy",
     "../../..:metrics_recorder",
   ]
-}
-
-js_library("plugin_vm_permission_dialog") {
-  deps = [ ":plugin_vm_browser_proxy" ]
 }
 
 # TODO: Uncomment as the Polymer3 migration makes progress.
@@ -98,7 +93,6 @@ group("polymer3_elements") {
   public_deps = [
     ":modulize",
     ":plugin_vm_detail_view_module",
-    ":plugin_vm_permission_dialog_module",
     ":plugin_vm_shared_paths_module",
     ":plugin_vm_shared_usb_devices_module",
   ]
@@ -107,12 +101,6 @@ group("polymer3_elements") {
 polymer_modulizer("plugin_vm_detail_view") {
   js_file = "plugin_vm_detail_view.js"
   html_file = "plugin_vm_detail_view.html"
-  html_type = "dom-module"
-}
-
-polymer_modulizer("plugin_vm_permission_dialog") {
-  js_file = "plugin_vm_permission_dialog.js"
-  html_file = "plugin_vm_permission_dialog.html"
   html_type = "dom-module"
 }
 

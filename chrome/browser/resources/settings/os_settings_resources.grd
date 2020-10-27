@@ -288,12 +288,6 @@
       <structure name="IDR_OS_SETTINGS_APP_MANAGEMENT_PLUGIN_VM_BROWSER_PROXY_HTML"
                 file="chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.html"
                  compress="false" type="chrome_html" />
-      <structure name="IDR_OS_SETTINGS_APP_MANAGEMENT_PLUGIN_VM_PERMISSION_DIALOG_JS"
-                file="chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_permission_dialog.js"
-                 compress="false" type="chrome_html" />
-      <structure name="IDR_OS_SETTINGS_APP_MANAGEMENT_PLUGIN_VM_PERMISSION_DIALOG_HTML"
-                file="chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_permission_dialog.html"
-                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_CAPTIONS_SUBPAGE_JS"
                  file="a11y_page/captions_subpage.js"
                  compress="false" type="chrome_html" />

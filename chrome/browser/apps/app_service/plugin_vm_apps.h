@@ -29,7 +29,6 @@ namespace apps {
 //
 // See components/services/app_service/README.md.
 class PluginVmApps : public apps::PublisherBase,
-                     public plugin_vm::PluginVmPermissionsObserver,
                      public guest_os::GuestOsRegistryService::Observer {
  public:
   PluginVmApps(const mojo::Remote<apps::mojom::AppService>& app_service,
@@ -77,9 +76,6 @@ class PluginVmApps : public apps::PublisherBase,
       bool new_icon_key);
   void OnPluginVmAllowedChanged(bool is_allowed);
   void OnPluginVmConfiguredChanged();
-  // plugin_vm::PluginVmPermissionsObserver
-  void OnPluginVmPermissionsChanged(plugin_vm::PermissionType permission_type,
-                                    bool allowed) override;
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
@@ -90,12 +86,6 @@ class PluginVmApps : public apps::PublisherBase,
 
   // Whether the Plugin VM app is allowed by policy.
   bool is_allowed_;
-
-  ScopedObserver<plugin_vm::PluginVmManager,
-                 plugin_vm::PluginVmPermissionsObserver,
-                 &plugin_vm::PluginVmManager::AddPluginVmPermissionsObserver,
-                 &plugin_vm::PluginVmManager::RemovePluginVmPermissionsObserver>
-      permissions_observer_;
 
   std::unique_ptr<plugin_vm::PluginVmPolicySubscription> policy_subscription_;
   PrefChangeRegistrar pref_registrar_;

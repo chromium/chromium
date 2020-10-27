@@ -19,20 +19,9 @@ class VmStartingObserver;
 
 namespace plugin_vm {
 
-enum class PermissionType { kCamera = 0, kMicrophone = 1 };
-
-class PluginVmPermissionsObserver : public base::CheckedObserver {
- public:
-  virtual void OnPluginVmPermissionsChanged(
-      plugin_vm::PermissionType permission_type,
-      bool allowed) = 0;
-};
-
 class PluginVmManager : public KeyedService {
  public:
   using LaunchPluginVmCallback = base::OnceCallback<void(bool success)>;
-
-  ~PluginVmManager() override;
 
   virtual void OnPrimaryUserProfilePrepared() = 0;
 
@@ -63,28 +52,11 @@ class PluginVmManager : public KeyedService {
   virtual void RemoveVmStartingObserver(
       chromeos::VmStartingObserver* observer) = 0;
 
-  // Add/remove permissions observers
-  void AddPluginVmPermissionsObserver(PluginVmPermissionsObserver* observer);
-  void RemovePluginVmPermissionsObserver(PluginVmPermissionsObserver* observer);
-
   virtual vm_tools::plugin_dispatcher::VmState vm_state() const = 0;
-  bool GetPermission(PermissionType permission_type);
-  void SetPermission(PermissionType permission_type, bool value);
 
   // Indicates whether relaunch (suspend + start) is needed for the new
-  // permissions to go into effect.
+  // camera/mic permissions to go into effect.
   virtual bool IsRelaunchNeededForNewPermissions() const = 0;
-
- protected:
-  PluginVmManager();
-
- private:
-  base::flat_map<PermissionType, bool> permissions_ = {
-      {PermissionType::kCamera, false},
-      {PermissionType::kMicrophone, false}};
-
-  base::ObserverList<PluginVmPermissionsObserver>
-      plugin_vm_permissions_observers_;
 };
 
 }  // namespace plugin_vm

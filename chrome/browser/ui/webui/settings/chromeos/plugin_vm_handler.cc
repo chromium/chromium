@@ -64,14 +64,10 @@ void PluginVmHandler::RegisterMessages() {
       base::BindRepeating(&PluginVmHandler::HandleSetPluginVmUsbDeviceShared,
                           weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
-      "wouldPermissionChangeRequireRelaunch",
+      "isRelaunchNeededForNewPermissions",
       base::BindRepeating(
-          &PluginVmHandler::HandleWouldPermissionChangeRequireRelaunch,
+          &PluginVmHandler::HandleIsRelaunchNeededForNewPermissions,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "setPluginVmPermission",
-      base::BindRepeating(&PluginVmHandler::HandleSetPluginVmPermission,
-                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "relaunchPluginVm",
       base::BindRepeating(&PluginVmHandler::HandleRelaunchPluginVm,
@@ -163,35 +159,17 @@ void PluginVmHandler::OnUsbDevicesChanged() {
       UsbDevicesToListValue(detector->GetDevicesSharableWithCrostini()));
 }
 
-void PluginVmHandler::HandleWouldPermissionChangeRequireRelaunch(
+void PluginVmHandler::HandleIsRelaunchNeededForNewPermissions(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(3U, args->GetSize());
-  std::string callback_id = args->GetList()[0].GetString();
-  plugin_vm::PermissionType permission_type =
-      static_cast<plugin_vm::PermissionType>(args->GetList()[1].GetInt());
-  DCHECK(permission_type == plugin_vm::PermissionType::kCamera ||
-         permission_type == plugin_vm::PermissionType::kMicrophone);
-  plugin_vm::PluginVmManager* manager =
-      plugin_vm::PluginVmManagerFactory::GetForProfile(profile_);
-  bool current_value = manager->GetPermission(permission_type);
-  bool proposed_value = args->GetList()[2].GetBool();
-  bool requires_relaunch = proposed_value != current_value &&
-                           manager->IsRelaunchNeededForNewPermissions();
 
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(requires_relaunch));
-}
-
-void PluginVmHandler::HandleSetPluginVmPermission(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
-  plugin_vm::PermissionType permission_type =
-      static_cast<plugin_vm::PermissionType>(args->GetList()[0].GetInt());
-  bool proposed_value = args->GetList()[1].GetBool();
-  DCHECK(permission_type == plugin_vm::PermissionType::kCamera ||
-         permission_type == plugin_vm::PermissionType::kMicrophone);
-  plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)->SetPermission(
-      permission_type, proposed_value);
+  CHECK_EQ(1U, args->GetList().size());
+  bool requires_relaunch =
+      plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
+          ->IsRelaunchNeededForNewPermissions();
+  ResolveJavascriptCallback(
+      /*callback_id=*/base::Value(args->GetList()[0].GetString()),
+      base::Value(requires_relaunch));
 }
 
 void PluginVmHandler::HandleRelaunchPluginVm(const base::ListValue* args) {

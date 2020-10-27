@@ -56,18 +56,10 @@ cr.define('settings', function() {
     setPluginVmUsbDeviceShared(guid, shared) {}
 
     /**
-     * @param {!PermissionSetting} permissionSetting The proposed change to
-     *     permissions
      * @return {!Promise<boolean>} Whether Plugin VM needs to be relaunched for
      *     permissions to take effect.
      */
-    wouldPermissionChangeRequireRelaunch(permissionSetting) {}
-
-    /**
-     * @param {!PermissionSetting} permissionSetting The change to make to the
-     *     permissions
-     */
-    setPluginVmPermission(permissionSetting) {}
+    isRelaunchNeededForNewPermissions() {}
 
     /**
      * Relaunches Plugin VM.
@@ -98,17 +90,8 @@ cr.define('settings', function() {
     }
 
     /** @override */
-    wouldPermissionChangeRequireRelaunch(permissionSetting) {
-      return cr.sendWithPromise(
-          'wouldPermissionChangeRequireRelaunch',
-          permissionSetting.permissionType, permissionSetting.proposedValue);
-    }
-
-    /** @override */
-    setPluginVmPermission(permissionSetting) {
-      chrome.send(
-          'setPluginVmPermission',
-          [permissionSetting.permissionType, permissionSetting.proposedValue]);
+    isRelaunchNeededForNewPermissions() {
+      return cr.sendWithPromise('isRelaunchNeededForNewPermissions');
     }
 
     /** @override */

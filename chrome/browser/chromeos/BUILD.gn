@@ -2064,7 +2064,6 @@ source_set("chromeos") {
     "plugin_vm/plugin_vm_installer_factory.h",
     "plugin_vm/plugin_vm_license_checker.cc",
     "plugin_vm/plugin_vm_license_checker.h",
-    "plugin_vm/plugin_vm_manager.cc",
     "plugin_vm/plugin_vm_manager.h",
     "plugin_vm/plugin_vm_manager_factory.cc",
     "plugin_vm/plugin_vm_manager_factory.h",

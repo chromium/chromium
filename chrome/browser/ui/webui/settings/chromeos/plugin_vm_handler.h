@@ -47,9 +47,7 @@ class PluginVmHandler : public ::settings::SettingsPageUIHandler,
   void HandleSetPluginVmUsbDeviceShared(const base::ListValue* args);
   // Checks if Plugin VM would need to be relaunched if the proposed changes are
   // made.
-  void HandleWouldPermissionChangeRequireRelaunch(const base::ListValue* args);
-  // Sets the specified permission to the value proposed.
-  void HandleSetPluginVmPermission(const base::ListValue* args);
+  void HandleIsRelaunchNeededForNewPermissions(const base::ListValue* args);
   // Relaunches Plugin VM.
   void HandleRelaunchPluginVm(const base::ListValue* args);
 
