@@ -295,7 +295,7 @@ void RenderViewContextMenuBase::RemoveAdjacentSeparators() {
 }
 
 RenderViewHost* RenderViewContextMenuBase::GetRenderViewHost() const {
-  return source_web_contents_->GetRenderViewHost();
+  return source_web_contents_->GetMainFrame()->GetRenderViewHost();
 }
 
 WebContents* RenderViewContextMenuBase::GetWebContents() const {
