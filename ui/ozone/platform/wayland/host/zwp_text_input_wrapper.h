@@ -27,6 +27,7 @@ class ZWPTextInputWrapperClient {
   // Called when a new composing text (pre-edit) should be set around the
   // current cursor position. Any previously set composing text should
   // be removed.
+  // Note that the preedit_cursor is byte-offset.
   virtual void OnPreeditString(const std::string& text,
                                int32_t preedit_cursor) = 0;
 

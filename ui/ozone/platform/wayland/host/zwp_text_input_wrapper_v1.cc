@@ -121,8 +121,9 @@ void ZWPTextInputWrapperV1::OnPreeditString(
     const char* text,
     const char* commit) {
   ZWPTextInputWrapperV1* wti = static_cast<ZWPTextInputWrapperV1*>(data);
+  int32_t preedit_cursor = wti->preedit_cursor_;
   wti->ResetInputEventState();
-  wti->client_->OnPreeditString(std::string(text), wti->preedit_cursor_);
+  wti->client_->OnPreeditString(std::string(text), preedit_cursor);
 }
 
 void ZWPTextInputWrapperV1::OnPreeditStyling(

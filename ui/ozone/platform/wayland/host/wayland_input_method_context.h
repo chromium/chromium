@@ -42,7 +42,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void Blur() override;
 
   // ui::ZWPTextInputWrapperClient
-  void OnPreeditString(const std::string& text, int preedit_cursor) override;
+  void OnPreeditString(const std::string& text,
+                       int32_t preedit_cursor) override;
   void OnCommitString(const std::string& text) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
   void OnKeysym(uint32_t keysym, uint32_t state, uint32_t modifiers) override;

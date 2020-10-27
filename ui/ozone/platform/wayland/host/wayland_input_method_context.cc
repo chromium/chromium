@@ -26,6 +26,13 @@
 #endif
 
 namespace ui {
+namespace {
+
+size_t OffsetFromUTF8Offset(const base::StringPiece& text, uint32_t offset) {
+  return base::UTF8ToUTF16(text.substr(0, offset)).size();
+}
+
+}  // namespace
 
 WaylandInputMethodContext::WaylandInputMethodContext(
     WaylandConnection* connection,
@@ -126,18 +133,13 @@ void WaylandInputMethodContext::SetSurroundingText(
 }
 
 void WaylandInputMethodContext::OnPreeditString(const std::string& text,
-                                                int preedit_cursor) {
-  gfx::Range selection_range = gfx::Range::InvalidRange();
-
-  if (!selection_range.IsValid()) {
-    int cursor_pos = (preedit_cursor) ? text.length() : preedit_cursor;
-    selection_range.set_start(cursor_pos);
-    selection_range.set_end(cursor_pos);
-  }
-
+                                                int32_t preedit_cursor) {
   ui::CompositionText composition_text;
   composition_text.text = base::UTF8ToUTF16(text);
-  composition_text.selection = selection_range;
+  composition_text.selection =
+      (preedit_cursor >= 0) ? gfx::Range(OffsetFromUTF8Offset(
+                                  text, static_cast<uint32_t>(preedit_cursor)))
+                            : gfx::Range::InvalidRange();
   ime_delegate_->OnPreeditChanged(composition_text);
 }
 
