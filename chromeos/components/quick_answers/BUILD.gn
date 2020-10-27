@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "search_result_parsers/unit_conversion_result_parser_unittest.cc",
     "test/test_helpers.cc",
     "test/test_helpers.h",
+    "translation_response_parser_unittest.cc",
     "translation_result_loader_unittest.cc",
     "understanding/intent_generator_unittest.cc",
   ]
