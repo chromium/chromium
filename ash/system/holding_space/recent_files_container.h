@@ -34,10 +34,9 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
 
  private:
-  void AddHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item,
-                                        size_t index);
+  void AddHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item);
   void RemoveHoldingSpaceScreenCaptureView(const HoldingSpaceItem* item);
-  void AddHoldingSpaceDownloadView(const HoldingSpaceItem* item, size_t index);
+  void AddHoldingSpaceDownloadView(const HoldingSpaceItem* item);
   void RemoveHoldingSpaceDownloadView(const HoldingSpaceItem* item);
   void OnScreenCapturesContainerViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details);

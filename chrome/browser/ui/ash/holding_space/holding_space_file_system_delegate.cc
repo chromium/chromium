@@ -95,9 +95,6 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!item->IsFinalized())
-    return;
-
   // Watch the directory containing `items`'s backing file. If the directory is
   // already being watched, this will no-op.
   AddWatch(item->file_path().DirName());
@@ -110,20 +107,15 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemRemoved(
   // Since we were watching the directory containing `item`'s backing file and
   // not the backing file itself, we only need to remove the associated watch if
   // there are no other holding space items backed by the same directory.
-  const bool remove_watch = std::none_of(
-      model()->items().begin(), model()->items().end(),
-      [removed_item = item](const auto& item) {
-        return item->IsFinalized() && item->file_path().DirName() ==
-                                          removed_item->file_path().DirName();
-      });
+  const bool remove_watch =
+      std::none_of(model()->items().begin(), model()->items().end(),
+                   [removed_item = item](const auto& item) {
+                     return item->file_path().DirName() ==
+                            removed_item->file_path().DirName();
+                   });
 
   if (remove_watch)
     RemoveWatch(item->file_path().DirName());
-}
-
-void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemFinalized(
-    const HoldingSpaceItem* item) {
-  AddWatch(item->file_path().DirName());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(

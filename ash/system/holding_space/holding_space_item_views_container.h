@@ -43,7 +43,6 @@ class HoldingSpaceItemViewsContainer : public views::View,
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
  private:
   ScopedObserver<HoldingSpaceController, HoldingSpaceControllerObserver>

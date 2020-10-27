@@ -126,22 +126,4 @@ std::vector<views::View*> HoldingSpaceTestApi::GetScreenCaptureViews() {
   return screen_capture_views;
 }
 
-bool HoldingSpaceTestApi::PinnedFilesContainerShown() const {
-  if (!holding_space_tray_->GetBubbleView())
-    return false;
-
-  views::View* container = holding_space_tray_->GetBubbleView()->GetViewByID(
-      kHoldingSpacePinnedFilesContainerId);
-  return container && container->GetVisible();
-}
-
-bool HoldingSpaceTestApi::RecentFilesContainerShown() const {
-  if (!holding_space_tray_->GetBubbleView())
-    return false;
-
-  views::View* container = holding_space_tray_->GetBubbleView()->GetViewByID(
-      kHoldingSpaceRecentFilesContainerId);
-  return container && container->GetVisible();
-}
-
 }  // namespace ash

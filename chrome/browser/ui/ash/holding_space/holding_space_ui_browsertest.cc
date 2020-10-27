@@ -84,10 +84,6 @@ class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
               OnHoldingSpaceItemRemoved,
               (const HoldingSpaceItem* item),
               (override));
-  MOCK_METHOD(void,
-              OnHoldingSpaceItemFinalized,
-              (const HoldingSpaceItem* item),
-              (override));
 };
 
 // DropTargetView --------------------------------------------------------------

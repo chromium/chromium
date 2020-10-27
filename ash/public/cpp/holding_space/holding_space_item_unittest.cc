@@ -32,7 +32,7 @@ using HoldingSpaceItemTest = testing::TestWithParam<HoldingSpaceItem::Type>;
 // Tests round-trip serialization for each holding space item type.
 TEST_P(HoldingSpaceItemTest, Serialization) {
   const base::FilePath file_path("file_path");
-  const GURL file_system_url("filesystem:file_system_url");
+  const GURL file_system_url("file_system_url");
   const gfx::ImageSkia placeholder(gfx::test::CreateImageSkia(10, 10));
 
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
@@ -45,6 +45,9 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
 
   const auto deserialized_holding_space_item = HoldingSpaceItem::Deserialize(
       serialized_holding_space_item,
+      /*file_system_url_resolver=*/
+      base::BindLambdaForTesting(
+          [&](const base::FilePath& file_path) { return file_system_url; }),
       /*image_resolver=*/
       base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
                                      const base::FilePath& file_path) {
@@ -52,19 +55,13 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
             placeholder, /*async_bitmap_resolver=*/base::DoNothing());
       }));
 
-  EXPECT_FALSE(deserialized_holding_space_item->IsFinalized());
-  EXPECT_TRUE(deserialized_holding_space_item->file_system_url().is_empty());
-
-  deserialized_holding_space_item->Finalize(file_system_url);
-  EXPECT_TRUE(deserialized_holding_space_item->IsFinalized());
   EXPECT_EQ(*deserialized_holding_space_item, *holding_space_item);
 }
 
 // Tests deserialization of id for each holding space item type.
 TEST_P(HoldingSpaceItemTest, DeserializeId) {
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetParam(), base::FilePath("file_path"),
-      GURL("filesystem:file_system_url"),
+      /*type=*/GetParam(), base::FilePath("file_path"), GURL("file_system_url"),
       std::make_unique<HoldingSpaceImage>(
           /*placeholder=*/gfx::test::CreateImageSkia(10, 10),
           /*async_bitmap_resolver=*/base::DoNothing()));
