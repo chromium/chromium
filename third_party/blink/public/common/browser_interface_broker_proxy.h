@@ -18,8 +18,10 @@ namespace blink {
 class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
  public:
   BrowserInterfaceBrokerProxy() = default;
-  void Bind(mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>);
-  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> Reset();
+  void Bind(mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker,
+            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> Reset(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Asks the browser to bind the given receiver. If a non-null testing override
   // was set by |SetBinderForTesting()|, the request will be intercepted by that

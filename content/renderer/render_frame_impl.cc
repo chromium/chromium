@@ -2020,7 +2020,8 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
 
   CHECK(params.browser_interface_broker.is_valid());
   browser_interface_broker_proxy_.Bind(
-      std::move(params.browser_interface_broker));
+      std::move(params.browser_interface_broker),
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
   // Must call after binding our own remote interfaces.
   media_factory_.SetupMojo();
@@ -4334,7 +4335,8 @@ void RenderFrameImpl::DidCommitNavigation(
     // remote interfaces. The interface requests will be serviced once the
     // BrowserInterfaceBroker interface request is bound by the
     // RenderFrameHostImpl.
-    browser_interface_broker_receiver = browser_interface_broker_proxy_.Reset();
+    browser_interface_broker_receiver = browser_interface_broker_proxy_.Reset(
+        agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
     // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
     auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();

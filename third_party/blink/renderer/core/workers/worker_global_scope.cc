@@ -568,7 +568,8 @@ WorkerGlobalScope::WorkerGlobalScope(
     auto pipe = creation_params->browser_interface_broker.PassPipe();
     browser_interface_broker_proxy_.Bind(
         mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>(
-            std::move(pipe), blink::mojom::BrowserInterfaceBroker::Version_));
+            std::move(pipe), blink::mojom::BrowserInterfaceBroker::Version_),
+        GetTaskRunner(TaskType::kInternalDefault));
   }
 
   // A FeaturePolicy is created by FeaturePolicy::CreateFromParentPolicy, even
