@@ -385,8 +385,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ContentVerification.FetchFailureError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-03-30">
-  <owner>lazyboy@chromium.org</owner>
   <owner>burunduk@chromium.org</owner>
+  <owner>lazyboy@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
