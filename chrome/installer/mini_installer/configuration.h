@@ -13,19 +13,11 @@ namespace mini_installer {
 // command line used to invoke it.
 class Configuration {
  public:
-  enum Operation {
-    INSTALL_PRODUCT,
-    CLEANUP,
-  };
-
   Configuration();
   ~Configuration();
 
   // Initializes this instance on the basis of the process's command line.
   bool Initialize(HMODULE module);
-
-  // Returns the desired operation dictated by the command line options.
-  Operation operation() const { return operation_; }
 
   // Returns the program portion of the command line, or nullptr if it cannot be
   // determined (e.g., by misuse).
@@ -67,7 +59,6 @@ class Configuration {
   const wchar_t* chrome_app_guid_;
   const wchar_t* command_line_;
   int argument_count_;
-  Operation operation_;
   bool is_system_level_;
   bool has_invalid_switch_;
   bool should_delete_extracted_files_;

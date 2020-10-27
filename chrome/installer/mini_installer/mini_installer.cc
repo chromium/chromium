@@ -736,24 +736,6 @@ bool GetWorkDir(HMODULE module,
          CreateWorkDir(base_path.get(), work_dir, exit_code);
 }
 
-// Checks the command line for specific mini installer flags.
-// If the function returns true, the command line has been processed and all
-// required actions taken.  The installer must exit and return the returned
-// |exit_code|.
-bool ProcessNonInstallOperations(const Configuration& configuration,
-                                 ProcessExitResult* exit_code) {
-  switch (configuration.operation()) {
-    case Configuration::CLEANUP:
-      // Cleanup has already taken place in DeleteOldChromeTempDirectories at
-      // this point, so just tell our caller to exit early.
-      *exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
-      return true;
-
-    default:
-      return false;
-  }
-}
-
 ProcessExitResult WMain(HMODULE module) {
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
@@ -766,11 +748,6 @@ ProcessExitResult WMain(HMODULE module) {
   // command line.
   if (configuration.has_invalid_switch())
     return ProcessExitResult(INVALID_OPTION);
-
-  // If the --cleanup switch was specified on the command line, then that means
-  // we should only do the cleanup and then exit.
-  if (ProcessNonInstallOperations(configuration, &exit_code))
-    return exit_code;
 
   // First get a path where we can extract payload
   bool work_dir_in_fallback = false;

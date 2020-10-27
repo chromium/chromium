@@ -57,7 +57,6 @@ void Configuration::Clear() {
   }
   chrome_app_guid_ = google_update::kAppGuid;
   command_line_ = nullptr;
-  operation_ = INSTALL_PRODUCT;
   argument_count_ = 0;
   is_system_level_ = false;
   has_invalid_switch_ = false;
@@ -86,7 +85,7 @@ bool Configuration::ParseCommandLine(const wchar_t* command_line) {
       chrome_app_guid_ = google_update::kSxSAppGuid;
 #endif
     else if (0 == ::lstrcmpi(args_[i], L"--cleanup"))
-      operation_ = CLEANUP;
+      has_invalid_switch_ = true;
     else if (0 == ::lstrcmpi(args_[i], L"--chrome-frame"))
       has_invalid_switch_ = true;
   }

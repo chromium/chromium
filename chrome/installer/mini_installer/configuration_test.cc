@@ -67,21 +67,6 @@ class MiniInstallerConfigurationTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(MiniInstallerConfigurationTest);
 };
 
-// Test that the operation type is CLEANUP iff --cleanup is on the cmdline.
-TEST_F(MiniInstallerConfigurationTest, Operation) {
-  EXPECT_EQ(Configuration::INSTALL_PRODUCT,
-            TestConfiguration(L"spam.exe").operation());
-  EXPECT_EQ(Configuration::INSTALL_PRODUCT,
-            TestConfiguration(L"spam.exe --clean").operation());
-  EXPECT_EQ(Configuration::INSTALL_PRODUCT,
-            TestConfiguration(L"spam.exe --cleanupthis").operation());
-
-  EXPECT_EQ(Configuration::CLEANUP,
-            TestConfiguration(L"spam.exe --cleanup").operation());
-  EXPECT_EQ(Configuration::CLEANUP,
-            TestConfiguration(L"spam.exe --cleanup now").operation());
-}
-
 TEST_F(MiniInstallerConfigurationTest, Program) {
   EXPECT_EQ(nullptr, mini_installer::Configuration().program());
   EXPECT_TRUE(std::wstring(L"spam.exe") ==
@@ -143,6 +128,7 @@ TEST_F(MiniInstallerConfigurationTest, HasInvalidSwitch) {
   EXPECT_FALSE(TestConfiguration(L"spam.exe").has_invalid_switch());
   EXPECT_TRUE(
       TestConfiguration(L"spam.exe --chrome-frame").has_invalid_switch());
+  EXPECT_TRUE(TestConfiguration(L"spam.exe --cleanup").has_invalid_switch());
 }
 
 TEST_F(MiniInstallerConfigurationTest, DeleteExtractedFilesDefaultTrue) {
