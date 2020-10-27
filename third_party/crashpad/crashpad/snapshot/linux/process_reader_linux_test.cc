@@ -643,16 +643,16 @@ bool WriteTestModule(const base::FilePath& module_path,
   module.phdr_table.load1.p_type = PT_LOAD;
   module.phdr_table.load1.p_offset = 0;
   module.phdr_table.load1.p_vaddr = 0;
-  module.phdr_table.load1.p_filesz = sizeof(module);
-  module.phdr_table.load1.p_memsz = sizeof(module);
+  module.phdr_table.load1.p_filesz = offsetof(decltype(module), shdr_table);
+  module.phdr_table.load1.p_memsz = offsetof(decltype(module), shdr_table);
   module.phdr_table.load1.p_flags = PF_R;
   module.phdr_table.load1.p_align = load2_vaddr;
 
   module.phdr_table.load2.p_type = PT_LOAD;
   module.phdr_table.load2.p_offset = 0;
   module.phdr_table.load2.p_vaddr = load2_vaddr;
-  module.phdr_table.load2.p_filesz = sizeof(module);
-  module.phdr_table.load2.p_memsz = sizeof(module);
+  module.phdr_table.load2.p_filesz = offsetof(decltype(module), shdr_table);
+  module.phdr_table.load2.p_memsz = offsetof(decltype(module), shdr_table);
   module.phdr_table.load2.p_flags = PF_R | PF_W;
   module.phdr_table.load2.p_align = load2_vaddr;
 

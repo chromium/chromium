@@ -20,7 +20,6 @@
 
 #include "base/macros.h"
 #include "gtest/gtest.h"
-#include "util/stream/test_output_stream.h"
 
 namespace crashpad {
 namespace test {
@@ -32,21 +31,34 @@ const char* kBeginGuard = "-----BEGIN CRASHPAD MINIDUMP-----";
 const char* kEndGuard = "-----END CRASHPAD MINIDUMP-----";
 const char* kAbortGuard = "-----ABORT CRASHPAD MINIDUMP-----";
 
-std::string ConvertToString(const std::vector<uint8_t>& src) {
-  return std::string(reinterpret_cast<const char*>(src.data()), src.size());
-}
+class LogOutputStreamTestDelegate : public LogOutputStream::Delegate {
+ public:
+  LogOutputStreamTestDelegate(std::string* logging_destination)
+      : logging_destination_(logging_destination) {}
+  ~LogOutputStreamTestDelegate() = default;
+
+  int Log(const char* buf) override {
+    size_t len = strnlen(buf, kLineBufferSize + 1);
+    EXPECT_LE(len, kLineBufferSize);
+    logging_destination_->append(buf, len);
+    return static_cast<int>(len);
+  }
+
+  size_t OutputCap() override { return kOutputCap; }
+  size_t LineWidth() override { return kLineBufferSize; }
+
+ private:
+  std::string* logging_destination_;
+};
 
 class LogOutputStreamTest : public testing::Test {
  public:
-  LogOutputStreamTest() : test_output_stream_(nullptr) {}
+  LogOutputStreamTest() : test_log_output_() {}
 
  protected:
   void SetUp() override {
-    std::unique_ptr<TestOutputStream> output_stream =
-        std::make_unique<TestOutputStream>();
-    test_output_stream_ = output_stream.get();
-    log_stream_ = std::make_unique<LogOutputStream>();
-    log_stream_->SetOutputStreamForTesting(std::move(output_stream));
+    log_stream_ = std::make_unique<LogOutputStream>(
+        std::make_unique<LogOutputStreamTestDelegate>(&test_log_output_));
   }
 
   const uint8_t* BuildDeterministicInput(size_t size) {
@@ -57,37 +69,25 @@ class LogOutputStreamTest : public testing::Test {
     return deterministic_input_base;
   }
 
-  TestOutputStream* test_output_stream() const { return test_output_stream_; }
+  const std::string& test_log_output() const { return test_log_output_; }
 
   LogOutputStream* log_stream() const { return log_stream_.get(); }
 
  private:
   std::unique_ptr<LogOutputStream> log_stream_;
-  TestOutputStream* test_output_stream_;
+  std::string test_log_output_;
   std::unique_ptr<uint8_t[]> deterministic_input_;
 
   DISALLOW_COPY_AND_ASSIGN(LogOutputStreamTest);
 };
-
-TEST_F(LogOutputStreamTest, VerifyGuards) {
-  log_stream()->Flush();
-  // Verify OutputStream wrote 2 guards.
-  EXPECT_EQ(test_output_stream()->write_count(), 2u);
-  EXPECT_EQ(test_output_stream()->flush_count(), 1u);
-  EXPECT_FALSE(test_output_stream()->all_data().empty());
-  EXPECT_EQ(ConvertToString(test_output_stream()->all_data()),
-            std::string(kBeginGuard).append(kEndGuard));
-}
 
 TEST_F(LogOutputStreamTest, WriteShortLog) {
   const uint8_t* input = BuildDeterministicInput(2);
   EXPECT_TRUE(log_stream()->Write(input, 2));
   EXPECT_TRUE(log_stream()->Flush());
   // Verify OutputStream wrote 2 guards and data.
-  EXPECT_EQ(test_output_stream()->write_count(), 3u);
-  EXPECT_EQ(test_output_stream()->flush_count(), 1u);
-  EXPECT_FALSE(test_output_stream()->all_data().empty());
-  EXPECT_EQ(ConvertToString(test_output_stream()->all_data()),
+  EXPECT_FALSE(test_log_output().empty());
+  EXPECT_EQ(test_log_output(),
             std::string(kBeginGuard).append("aa").append(kEndGuard));
 }
 
@@ -97,10 +97,7 @@ TEST_F(LogOutputStreamTest, WriteLongLog) {
   // Verify OutputStream wrote 2 guards and data.
   EXPECT_TRUE(log_stream()->Write(input, input_length));
   EXPECT_TRUE(log_stream()->Flush());
-  EXPECT_EQ(test_output_stream()->write_count(),
-            2 + input_length / kLineBufferSize + 1);
-  EXPECT_EQ(test_output_stream()->flush_count(), 1u);
-  EXPECT_EQ(test_output_stream()->all_data().size(),
+  EXPECT_EQ(test_log_output().size(),
             strlen(kBeginGuard) + strlen(kEndGuard) + input_length);
 }
 
@@ -108,17 +105,19 @@ TEST_F(LogOutputStreamTest, WriteAbort) {
   size_t input_length = kOutputCap + kLineBufferSize;
   const uint8_t* input = BuildDeterministicInput(input_length);
   EXPECT_FALSE(log_stream()->Write(input, input_length));
-  std::string data(ConvertToString(test_output_stream()->all_data()));
-  EXPECT_EQ(data.substr(data.size() - strlen(kAbortGuard)), kAbortGuard);
+  EXPECT_EQ(
+      test_log_output().substr(test_log_output().size() - strlen(kAbortGuard)),
+      kAbortGuard);
 }
 
 TEST_F(LogOutputStreamTest, FlushAbort) {
-  size_t input_length = kOutputCap + kLineBufferSize / 2;
+  size_t input_length = kOutputCap - strlen(kBeginGuard) + kLineBufferSize / 2;
   const uint8_t* input = BuildDeterministicInput(input_length);
   EXPECT_TRUE(log_stream()->Write(input, input_length));
   EXPECT_FALSE(log_stream()->Flush());
-  std::string data(ConvertToString(test_output_stream()->all_data()));
-  EXPECT_EQ(data.substr(data.size() - strlen(kAbortGuard)), kAbortGuard);
+  EXPECT_EQ(
+      test_log_output().substr(test_log_output().size() - strlen(kAbortGuard)),
+      kAbortGuard);
 }
 
 }  // namespace

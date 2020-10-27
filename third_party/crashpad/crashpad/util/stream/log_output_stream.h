@@ -26,32 +26,48 @@
 
 namespace crashpad {
 
-//! \brief This class output the received data to Android log, NOP in other
-//! platform.
-//!
-//! To avoid overflowing Android log, total 128k log data is allowed, after
-//! that cap, the output is aborted.
+//! \brief This class outputs a stream of data as a series of log messages.
 class LogOutputStream : public OutputStreamInterface {
  public:
-  LogOutputStream();
+  //! \brief An interface to a log output sink.
+  class Delegate {
+   public:
+    Delegate() = default;
+    virtual ~Delegate() = default;
+
+    //! \brief Logs |buf| to the output sink.
+    //!
+    //! \param buf the buffer to write to the log. More bytes than are in |buf|
+    //!     may be written, e.g. to convey metadata.
+    //! \return the number of bytes written, or a negative error code.
+    virtual int Log(const char* buf) = 0;
+
+    //! \brief Returns the maximum number of bytes to allow writing to this log.
+    virtual size_t OutputCap() = 0;
+
+    //! \brief Returns the maximum length of buffers allowed to be passed to
+    //!     Log().
+    virtual size_t LineWidth() = 0;
+  };
+
+  LogOutputStream(std::unique_ptr<Delegate> delegate);
   ~LogOutputStream() override;
 
   // OutputStreamInterface:
   bool Write(const uint8_t* data, size_t size) override;
   bool Flush() override;
 
-  void SetOutputStreamForTesting(std::unique_ptr<OutputStreamInterface> stream);
-
  private:
-  // Flush the |buffer_|, return false if kOutputCap meet.
+  // Flushes buffer_, returning false on failure.
   bool WriteBuffer();
-  bool WriteToLog(const char* buf);
+
+  int WriteToLog(const char* buf);
 
   std::string buffer_;
+  std::unique_ptr<Delegate> delegate_;
   size_t output_count_;
   bool flush_needed_;
   bool flushed_;
-  std::unique_ptr<OutputStreamInterface> output_stream_for_testing_;
 
   DISALLOW_COPY_AND_ASSIGN(LogOutputStream);
 };
