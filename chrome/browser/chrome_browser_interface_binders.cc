@@ -52,6 +52,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prerender/browser/prerender_contents.h"
 #include "components/prerender/browser/prerender_processor_impl.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
@@ -657,7 +658,7 @@ void PopulateChromeWebUIFrameBinders(
         shopping_tasks::mojom::ShoppingTasksHandler, NewTabPageUI>(map);
   }
 
-  if (base::FeatureList::IsEnabled(features::kReadLater)) {
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
     RegisterWebUIControllerInterfaceBinder<
         read_later::mojom::PageHandlerFactory, ReadLaterUI>(map);
   }

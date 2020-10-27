@@ -29,11 +29,11 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -4125,7 +4125,7 @@ TEST_F(TabStripModelTest, MoveTabsToNewWindow) {
 class TabStripModelTestWithReadLaterEnabled : public BrowserWithTestWindowTest {
  public:
   TabStripModelTestWithReadLaterEnabled() {
-    feature_list_.InitAndEnableFeature(features::kReadLater);
+    feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
   }
   TabStripModelTestWithReadLaterEnabled(
       const TabStripModelTestWithReadLaterEnabled&) = delete;

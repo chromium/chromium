@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_READING_LIST_FEATURES_READING_LIST_SWITCHES_H_
 #define COMPONENTS_READING_LIST_FEATURES_READING_LIST_SWITCHES_H_
 
+#include "base/feature_list.h"
+
 namespace reading_list {
 namespace switches {
+// Feature flag used for enabling Read later on desktop and Android.
+extern const base::Feature kReadLater;
 // Whether Reading List is enabled on this device.
 bool IsReadingListEnabled();
 }  // namespace switches

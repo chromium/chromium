@@ -47,10 +47,6 @@ const base::Feature kPermissionChip{"PermissionChip",
 const base::Feature kProminentDarkModeActiveTabTitle{
     "ProminentDarkModeActiveTabTitle", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allow users to save tabs for later. Enables a new button and menu for
-// accessing tabs saved for later. https://crbug.com/1109316
-const base::Feature kReadLater{"ReadLater", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

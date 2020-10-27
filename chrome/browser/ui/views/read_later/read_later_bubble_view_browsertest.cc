@@ -12,17 +12,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/read_later/read_later_button.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "content/public/test/browser_test.h"
 
 class ReadLaterBubbleViewBrowserTest : public DialogBrowserTest {
  public:
   ReadLaterBubbleViewBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kReadLater);
+    feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
   }
 
   void SetUpOnMainThread() override {

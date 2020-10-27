@@ -111,6 +111,7 @@
 #include "components/previews/core/previews_features.h"
 #include "components/previews/core/previews_switches.h"
 #include "components/query_tiles/switches.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/features.h"
@@ -4277,7 +4278,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"read-later", flag_descriptions::kReadLaterName,
      flag_descriptions::kReadLaterDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kReadLater)},
+     FEATURE_VALUE_TYPE(reading_list::switches::kReadLater)},
 
     {"tab-groups", flag_descriptions::kTabGroupsName,
      flag_descriptions::kTabGroupsDescription, kOsDesktop,

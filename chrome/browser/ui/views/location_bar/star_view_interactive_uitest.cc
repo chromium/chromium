@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/read_later/read_later_test_utils.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/star_menu_model.h"
@@ -29,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, InkDropHighlighted) {
 class StarViewTestWithReadLaterEnabled : public InProcessBrowserTest {
  public:
   StarViewTestWithReadLaterEnabled() {
-    feature_list_.InitAndEnableFeature(features::kReadLater);
+    feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
   }
   StarViewTestWithReadLaterEnabled(const StarViewTestWithReadLaterEnabled&) =
       delete;

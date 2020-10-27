@@ -37,8 +37,6 @@ extern const base::Feature kPermissionChip;
 
 extern const base::Feature kProminentDarkModeActiveTabTitle;
 
-extern const base::Feature kReadLater;
-
 extern const base::Feature kScrollableTabStrip;
 
 extern const base::Feature kSidePanel;

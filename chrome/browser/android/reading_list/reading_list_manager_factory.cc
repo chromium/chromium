@@ -10,8 +10,8 @@
 #include "chrome/browser/reading_list/android/empty_reading_list_manager.h"
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/reading_list/features/reading_list_switches.h"
 
 // static
 ReadingListManagerFactory* ReadingListManagerFactory::GetInstance() {
@@ -36,7 +36,7 @@ ReadingListManagerFactory::~ReadingListManagerFactory() = default;
 
 KeyedService* ReadingListManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kReadLater))
+  if (!base::FeatureList::IsEnabled(reading_list::switches::kReadLater))
     return new EmptyReadingListManager();
 
   auto* reading_list_model =

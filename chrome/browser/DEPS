@@ -231,6 +231,7 @@ include_rules = [
   "+components/quirks",
   "+components/rappor",
   "+components/reading_list/core",
+  "+components/reading_list/features",
   "+components/remote_cocoa/app_shim",
   "+components/remote_cocoa/browser",
   "+components/remote_cocoa/common",
