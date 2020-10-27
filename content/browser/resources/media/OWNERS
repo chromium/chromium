@@ -2,5 +2,3 @@ file://media/OWNERS
 tommi@chromium.org
 # For chrome://webrtc-internals related.
 hbos@chromium.org
-
-# COMPONENT: Internals>Media
