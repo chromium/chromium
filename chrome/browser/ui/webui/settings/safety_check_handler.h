@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/help/version_updater.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/safety_check/safety_check.h"
 #include "components/safety_check/update_check_helper.h"
 #include "extensions/browser/extension_prefs.h"
@@ -38,6 +39,7 @@
 class SafetyCheckHandler
     : public settings::SettingsPageUIHandler,
       public password_manager::BulkLeakCheckServiceInterface::Observer,
+      public password_manager::InsecureCredentialsManager::Observer,
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
       public safe_browsing::ChromeCleanerController::Observer,
 #endif
@@ -210,6 +212,10 @@ class SafetyCheckHandler
       const std::vector<extensions::api::passwords_private::PasswordUiEntry>&
           passwords);
 
+  // Gets the compromised passwords count and invokes an appropriate result
+  // method depending on the state.
+  void UpdatePasswordsResultOnCheckIdle();
+
   // A callback passed to |VersionUpdater::CheckForUpdate| to receive the update
   // state.
   void OnVersionUpdaterResult(VersionUpdater::Status status,
@@ -228,6 +234,11 @@ class SafetyCheckHandler
       password_manager::BulkLeakCheckService::State state) override;
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
+
+  // InsecureCredentialsManager::Observer implementation.
+  void OnCompromisedCredentialsChanged(
+      password_manager::InsecureCredentialsManager::CredentialsView credentials)
+      override;
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // safe_browsing::ChromeCleanerController::Observer overrides.
@@ -270,18 +281,26 @@ class SafetyCheckHandler
   ChromeCleanerStatus chrome_cleaner_status_ = ChromeCleanerStatus::kHidden;
   // System time when safety check completed.
   base::Time safety_check_completion_time_;
+  // Tracks whether there is at least one |OnCredentialDone| callback with
+  // is_leaked = true.
+  bool compromised_passwords_exist_ = false;
 
   std::unique_ptr<safety_check::SafetyCheck> safety_check_;
   std::unique_ptr<safety_check::UpdateCheckHelper> update_helper_;
 
   std::unique_ptr<VersionUpdater> version_updater_;
   password_manager::BulkLeakCheckServiceInterface* leak_service_ = nullptr;
+  password_manager::InsecureCredentialsManager* insecure_credentials_manager_ =
+      nullptr;
   extensions::PasswordsPrivateDelegate* passwords_delegate_ = nullptr;
   extensions::ExtensionPrefs* extension_prefs_ = nullptr;
   extensions::ExtensionServiceInterface* extension_service_ = nullptr;
   ScopedObserver<password_manager::BulkLeakCheckServiceInterface,
                  password_manager::BulkLeakCheckServiceInterface::Observer>
       observed_leak_check_{this};
+  ScopedObserver<password_manager::InsecureCredentialsManager,
+                 password_manager::InsecureCredentialsManager::Observer>
+      observed_insecure_credentials_manager_{this};
   base::WeakPtrFactory<SafetyCheckHandler> weak_ptr_factory_{this};
 };
 

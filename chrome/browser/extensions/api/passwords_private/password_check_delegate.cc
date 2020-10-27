@@ -419,6 +419,11 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
   return result;
 }
 
+password_manager::InsecureCredentialsManager*
+PasswordCheckDelegate::GetInsecureCredentialsManager() {
+  return &insecure_credentials_manager_;
+}
+
 void PasswordCheckDelegate::OnSavedPasswordsChanged(SavedPasswordsView) {
   // Getting the first notification about a change in saved passwords implies
   // that the delegate is initialized, and start check callbacks can be invoked,

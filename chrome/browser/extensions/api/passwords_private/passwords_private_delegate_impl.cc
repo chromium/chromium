@@ -528,6 +528,11 @@ PasswordsPrivateDelegateImpl::GetPasswordCheckStatus() {
   return password_check_delegate_.GetPasswordCheckStatus();
 }
 
+password_manager::InsecureCredentialsManager*
+PasswordsPrivateDelegateImpl::GetInsecureCredentialsManager() {
+  return password_check_delegate_.GetInsecureCredentialsManager();
+}
+
 void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
     password_manager::ExportProgressStatus status,
     const std::string& folder_name) {

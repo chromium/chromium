@@ -69,6 +69,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
+  password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
+      override;
 
   void SetProfile(Profile* profile);
   void SetOptedInForAccountStorage(bool opted_in);

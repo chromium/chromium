@@ -86,6 +86,11 @@ class PasswordCheckDelegate
   // Returns the current status of the password check.
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() const;
 
+  // Returns a pointer to the current instance of InsecureCredentialsManager.
+  // Needed to get notified when compromised credentials are written out to
+  // disk, since BulkLeakCheckService does not know about that step.
+  password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager();
+
  private:
   // password_manager::SavedPasswordsPresenter::Observer:
   void OnSavedPasswordsChanged(

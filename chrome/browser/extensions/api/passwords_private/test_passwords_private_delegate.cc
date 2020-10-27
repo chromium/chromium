@@ -277,6 +277,11 @@ TestPasswordsPrivateDelegate::GetPasswordCheckStatus() {
   return status;
 }
 
+password_manager::InsecureCredentialsManager*
+TestPasswordsPrivateDelegate::GetInsecureCredentialsManager() {
+  return nullptr;
+}
+
 void TestPasswordsPrivateDelegate::SetProfile(Profile* profile) {
   profile_ = profile;
 }

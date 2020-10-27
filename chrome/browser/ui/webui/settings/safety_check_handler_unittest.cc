@@ -27,6 +27,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safety_check/test_update_check_helper.h"
@@ -104,6 +105,14 @@ bool TestDestructionVersionUpdater::destructor_invoked_ = false;
 
 class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
  public:
+  TestPasswordsDelegate() { store_->Init(/*prefs=*/nullptr); }
+
+  void TearDown() {
+    store_->ShutdownOnUIThread();
+    // Needs to be invoked in the test's TearDown() - before the destructor.
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetBulkLeakCheckService(
       password_manager::BulkLeakCheckService* leak_service) {
     leak_service_ = leak_service;
@@ -121,6 +130,15 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   void SetProgress(int done, int total) {
     done_ = done;
     total_ = total;
+  }
+
+  void InvokeOnCompromisedCredentialsChanged() {
+    // Credentials have to be unique, so the callback is always invoked.
+    store_->AddCompromisedCredentials(
+        {"test.com",
+         base::ASCIIToUTF16("test" +
+                            base::NumberToString(test_credential_counter_++))});
+    base::RunLoop().RunUntilIdle();
   }
 
   std::vector<extensions::api::passwords_private::InsecureCredential>
@@ -144,13 +162,24 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     return status;
   }
 
+  password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
+      override {
+    return &credentials_manager_;
+  }
+
  private:
   password_manager::BulkLeakCheckService* leak_service_ = nullptr;
   int compromised_password_count_ = 0;
   int done_ = 0;
   int total_ = 0;
+  int test_credential_counter_ = 0;
   extensions::api::passwords_private::PasswordCheckState state_ =
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE;
+  scoped_refptr<password_manager::TestPasswordStore> store_ =
+      base::MakeRefCounted<password_manager::TestPasswordStore>();
+  password_manager::SavedPasswordsPresenter presenter_{store_};
+  password_manager::InsecureCredentialsManager credentials_manager_{&presenter_,
+                                                                    store_};
 };
 
 class TestSafetyCheckExtensionService : public TestExtensionService {
@@ -201,6 +230,7 @@ class TestChromeCleanerControllerDelegate
 class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override;
+  void TearDown() override;
 
   // Returns a |base::DictionaryValue| for safety check status update that
   // has the specified |component| and |new_state| if it exists; nullptr
@@ -258,6 +288,11 @@ void SafetyCheckHandlerTest::SetUp() {
   test_web_ui_.ClearTrackedCalls();
   safety_check_->set_web_ui(&test_web_ui_);
   safety_check_->AllowJavascript();
+}
+
+void SafetyCheckHandlerTest::TearDown() {
+  test_passwords_delegate_.TearDown();
+  ChromeRenderViewHostTestHarness::TearDown();
 }
 
 const base::DictionaryValue*
@@ -811,6 +846,91 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Safe) {
       SafetyCheckHandler::PasswordsStatus::kSafe, 1);
 }
 
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
+  constexpr int kCompromised = 7;
+  safety_check_->PerformSafetyCheck();
+  // First, a "running" change of state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kRunning);
+  test_passwords_delegate_.SetPasswordCheckState(
+      extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING);
+  EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
+  // Not a "safe" state, so send an |OnCredentialDone| with is_leaked=true.
+  static_cast<password_manager::BulkLeakCheckService::Observer*>(
+      safety_check_.get())
+      ->OnCredentialDone(
+          {base::ASCIIToUTF16("login"), base::ASCIIToUTF16("password")},
+          password_manager::IsLeaked(true));
+  // The service goes idle, but the disk still has a stale "safe" state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kIdle);
+  test_passwords_delegate_.SetPasswordCheckState(
+      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
+  const base::DictionaryValue* event =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kPasswords,
+          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
+  EXPECT_TRUE(event);
+  // An InsecureCredentialsManager callback fires once the compromised passwords
+  // get written to disk.
+  test_passwords_delegate_.SetNumCompromisedCredentials(kCompromised);
+  test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
+  const base::DictionaryValue* event2 =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kPasswords,
+          static_cast<int>(
+              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  EXPECT_TRUE(event2);
+  VerifyDisplayString(
+      event2, base::NumberToString(kCompromised) + " compromised passwords");
+}
+
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
+  safety_check_->PerformSafetyCheck();
+  // Running state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kRunning);
+  test_passwords_delegate_.SetPasswordCheckState(
+      extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING);
+  EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
+
+  // Previous safe state got loaded.
+  test_passwords_delegate_.SetNumCompromisedCredentials(0);
+  test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
+  // The event should get ignored, since the state is still running.
+  const base::DictionaryValue* event =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kPasswords,
+          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
+  EXPECT_FALSE(event);
+
+  // The check is completed with another safe state.
+  test_passwords_delegate_.SetPasswordCheckState(
+      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kIdle);
+  // This time the safe state should be reflected.
+  event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
+  EXPECT_TRUE(event);
+
+  // After some time, some compromises were discovered (unrelated to SC).
+  constexpr int kCompromised = 7;
+  test_passwords_delegate_.SetNumCompromisedCredentials(kCompromised);
+  test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
+  // The new event should get ignored, since the safe state was final.
+  const base::DictionaryValue* event2 =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kPasswords,
+          static_cast<int>(
+              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  EXPECT_FALSE(event2);
+}
+
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedExist) {
   constexpr int kCompromised = 7;
   test_passwords_delegate_.SetNumCompromisedCredentials(kCompromised);
@@ -855,6 +975,47 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error) {
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.PasswordsResult",
       SafetyCheckHandler::PasswordsStatus::kError, 1);
+}
+
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error_FutureEventsIgnored) {
+  safety_check_->PerformSafetyCheck();
+  EXPECT_TRUE(test_passwords_delegate_.StartPasswordCheckTriggered());
+  static_cast<password_manager::BulkLeakCheckService::Observer*>(
+      safety_check_.get())
+      ->OnStateChanged(
+          password_manager::BulkLeakCheckService::State::kServiceError);
+  const base::DictionaryValue* event =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kPasswords,
+          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kError));
+  ASSERT_TRUE(event);
+  VerifyDisplayString(event,
+                      "Browser can't check your passwords. Try again "
+                      "later.");
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.PasswordsResult",
+      SafetyCheckHandler::PasswordsStatus::kError, 1);
+  // At some point later, the service discovers compromised passwords and goes
+  // idle.
+  constexpr int kCompromised = 7;
+  static_cast<password_manager::BulkLeakCheckService::Observer*>(
+      safety_check_.get())
+      ->OnStateChanged(password_manager::BulkLeakCheckService::State::kRunning);
+  static_cast<password_manager::BulkLeakCheckService::Observer*>(
+      safety_check_.get())
+      ->OnStateChanged(password_manager::BulkLeakCheckService::State::kIdle);
+  // An InsecureCredentialsManager callback fires once the compromised passwords
+  // get written to disk.
+  test_passwords_delegate_.SetNumCompromisedCredentials(kCompromised);
+  test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
+  const base::DictionaryValue* event2 =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kPasswords,
+          static_cast<int>(
+              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  // The event for compromised passwords should not exist, since the changes
+  // should no longer be observed.
+  EXPECT_FALSE(event2);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_FeatureUnavailable) {

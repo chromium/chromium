@@ -230,6 +230,11 @@ void SafetyCheckHandler::PerformSafetyCheck() {
             Profile::FromWebUI(web_ui()), true);
   }
   DCHECK(passwords_delegate_);
+  if (!insecure_credentials_manager_) {
+    insecure_credentials_manager_ =
+        passwords_delegate_->GetInsecureCredentialsManager();
+  }
+  DCHECK(insecure_credentials_manager_);
   CheckPasswords();
 
   if (!extension_prefs_) {
@@ -296,12 +301,17 @@ void SafetyCheckHandler::CheckUpdates() {
 }
 
 void SafetyCheckHandler::CheckPasswords() {
+  // Reset the tracking for callbacks with compromised passwords.
+  compromised_passwords_exist_ = false;
   // Remove |this| as an existing observer for BulkLeakCheck if it is
   // registered. This takes care of an edge case when safety check starts twice
   // on the same page. Normally this should not happen, but if it does, the
   // browser should not crash.
   observed_leak_check_.RemoveAll();
   observed_leak_check_.Add(leak_service_);
+  // Start observing the InsecureCredentialsManager.
+  observed_insecure_credentials_manager_.RemoveAll();
+  observed_insecure_credentials_manager_.Add(insecure_credentials_manager_);
   passwords_delegate_->StartPasswordCheck(base::BindOnce(
       &SafetyCheckHandler::OnStateChanged, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -739,6 +749,25 @@ void SafetyCheckHandler::DetermineIfNoPasswordsOrSafe(
                          Compromised(0), Done(0), Total(0));
 }
 
+void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
+  size_t num_compromised =
+      passwords_delegate_->GetCompromisedCredentials().size();
+  if (num_compromised == 0) {
+    // If there are no |OnCredentialDone| callbacks with is_leaked = true, no
+    // need to wait for InsecureCredentialsManager callbacks any longer, since
+    // there should be none for the current password check.
+    if (!compromised_passwords_exist_) {
+      observed_insecure_credentials_manager_.RemoveAll();
+    }
+    passwords_delegate_->GetSavedPasswordsList(
+        base::BindOnce(&SafetyCheckHandler::DetermineIfNoPasswordsOrSafe,
+                       base::Unretained(this)));
+  } else {
+    OnPasswordsCheckResult(PasswordsStatus::kCompromisedExist,
+                           Compromised(num_compromised), Done(0), Total(0));
+  }
+}
+
 void SafetyCheckHandler::OnVersionUpdaterResult(VersionUpdater::Status status,
                                                 int progress,
                                                 bool rollback,
@@ -774,17 +803,9 @@ void SafetyCheckHandler::OnStateChanged(
   switch (state) {
     case BulkLeakCheckService::State::kIdle:
     case BulkLeakCheckService::State::kCanceled: {
-      size_t num_compromised =
-          passwords_delegate_->GetCompromisedCredentials().size();
-      if (num_compromised == 0) {
-        passwords_delegate_->GetSavedPasswordsList(
-            base::BindOnce(&SafetyCheckHandler::DetermineIfNoPasswordsOrSafe,
-                           base::Unretained(this)));
-      } else {
-        OnPasswordsCheckResult(PasswordsStatus::kCompromisedExist,
-                               Compromised(num_compromised), Done(0), Total(0));
-      }
-      break;
+      UpdatePasswordsResultOnCheckIdle();
+      observed_leak_check_.RemoveAll();
+      return;
     }
     case BulkLeakCheckService::State::kRunning:
       OnPasswordsCheckResult(PasswordsStatus::kChecking, Compromised(0),
@@ -814,14 +835,20 @@ void SafetyCheckHandler::OnStateChanged(
       break;
   }
 
-  // Stop observing the leak service in all terminal states, if it's still being
-  // observed.
+  // Stop observing the leak service and credentials manager in all non-idle
+  // states.
   observed_leak_check_.RemoveAll();
+  observed_insecure_credentials_manager_.RemoveAll();
 }
 
 void SafetyCheckHandler::OnCredentialDone(
     const password_manager::LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {
+  // If a leaked credential is discovered, this is guaranteed to not be a safe
+  // state.
+  if (is_leaked) {
+    compromised_passwords_exist_ = true;
+  }
   extensions::api::passwords_private::PasswordCheckStatus status =
       passwords_delegate_->GetPasswordCheckStatus();
   // Send progress updates only if the check is still running.
@@ -834,6 +861,21 @@ void SafetyCheckHandler::OnCredentialDone(
                            total);
   }
 }
+
+void SafetyCheckHandler::OnCompromisedCredentialsChanged(
+    password_manager::InsecureCredentialsManager::CredentialsView credentials) {
+  extensions::api::passwords_private::PasswordCheckStatus status =
+      passwords_delegate_->GetPasswordCheckStatus();
+  // Ignore the event, unless the password check is idle with no errors.
+  if (status.state !=
+      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE) {
+    return;
+  }
+  UpdatePasswordsResultOnCheckIdle();
+  // Stop observing the manager to avoid dynamically updating the result.
+  observed_insecure_credentials_manager_.RemoveAll();
+}
+
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void SafetyCheckHandler::OnIdle(
     safe_browsing::ChromeCleanerController::IdleReason idle_reason) {

@@ -88,6 +88,8 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
+  password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
+      override;
 
   // PasswordUIView implementation.
   Profile* GetProfile() override;
