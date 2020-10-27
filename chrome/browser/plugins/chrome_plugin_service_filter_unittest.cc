@@ -157,26 +157,3 @@ TEST_F(ChromePluginServiceFilterTest,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   EXPECT_FALSE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
 }
-
-TEST_F(ChromePluginServiceFilterTest, ManagedSetting) {
-  content::WebPluginInfo flash_plugin(
-      base::ASCIIToUTF16(content::kFlashPluginName), flash_plugin_path_,
-      base::ASCIIToUTF16("1"), base::ASCIIToUTF16("The Flash plugin."));
-
-  sync_preferences::TestingPrefServiceSyncable* prefs =
-      profile()->GetTestingPrefService();
-  prefs->SetManagedPref(prefs::kManagedDefaultPluginsSetting,
-                        std::make_unique<base::Value>(CONTENT_SETTING_ASK));
-
-  GURL url("http://www.google.com");
-  url::Origin main_frame_origin = url::Origin::Create(url);
-  NavigateAndCommit(url);
-
-  // Flash is normally blocked on the ASK managed policy.
-  EXPECT_FALSE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
-
-  // Allow flash temporarily.
-  FlashTemporaryPermissionTracker::Get(profile())->FlashEnabledForWebContents(
-      web_contents());
-  EXPECT_TRUE(IsPluginAvailable(url, main_frame_origin, flash_plugin));
-}

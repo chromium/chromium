@@ -161,10 +161,6 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool incognito)
                             IntToContentSetting(prefs_->GetInteger(
                                 GetPrefName(ContentSettingsType::IMAGES))),
                             CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultPluginsSetting",
-                            IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(ContentSettingsType::PLUGINS))),
-                            CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
 #if !defined(OS_IOS)

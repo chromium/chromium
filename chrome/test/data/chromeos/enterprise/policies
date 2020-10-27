@@ -23,7 +23,6 @@
       u'DefaultImagesSetting': 2,
       u'DefaultJavaScriptSetting': 2,
       u'DefaultNotificationsSetting': 2,
-      u'DefaultPluginsSetting': 2,
       u'DefaultPopupsSetting': 2,
       u'DefaultSearchProviderEnabled': True,
       u'DefaultSearchProviderEncodings': [u'UTF-8'],
@@ -84,7 +83,6 @@
       u'DefaultImagesSetting': 1,
       u'DefaultJavaScriptSetting': 1,
       u'DefaultNotificationsSetting': 1,
-      u'DefaultPluginsSetting': 1,
       u'DefaultPopupsSetting': 1,
       u'DefaultSearchProviderEnabled': True,
       u'DefaultSearchProviderEncodings': [
@@ -155,7 +153,6 @@
       u'DefaultSearchProviderSearchURL':
         u'http://search.my.company/search?q={searchTerms}',
       u'DefaultNotificationsSetting': 3,
-      u'DefaultPluginsSetting': 1,
       u'DefaultSearchProviderEncodings': [
         u'["UTF-8"',
         u'"UTF-16"',
@@ -274,7 +271,6 @@
       u'DefaultImagesSetting': 2,
       u'DefaultJavaScriptSetting': 2,
       u'DefaultNotificationsSetting': 2,
-      u'DefaultPluginsSetting': 2,
       u'DefaultPopupsSetting': 2,
       u'DefaultSearchProviderEnabled': True,
       u'DefaultSearchProviderEncodings': [u'UTF-8'],
@@ -335,7 +331,6 @@
       u'DefaultImagesSetting': 1,
       u'DefaultJavaScriptSetting': 1,
       u'DefaultNotificationsSetting': 1,
-      u'DefaultPluginsSetting': 1,
       u'DefaultPopupsSetting': 1,
       u'DefaultSearchProviderEnabled': True,
       u'DefaultSearchProviderEncodings': [
@@ -406,7 +401,6 @@
       u'DefaultSearchProviderSearchURL':
         u'http://search.my.company/search?q={searchTerms}',
       u'DefaultNotificationsSetting': 3,
-      u'DefaultPluginsSetting': 1,
       u'DefaultSearchProviderEncodings': [
         u'["UTF-8"',
         u'"UTF-16"',

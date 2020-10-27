@@ -37,8 +37,6 @@ const char kManagedDefaultNotificationsSetting[] =
     "profile.managed_default_content_settings.notifications";
 const char kManagedDefaultMediaStreamSetting[] =
     "profile.managed_default_content_settings.media_stream";
-const char kManagedDefaultPluginsSetting[] =
-    "profile.managed_default_content_settings.plugins";
 const char kManagedDefaultPopupsSetting[] =
     "profile.managed_default_content_settings.popups";
 const char kManagedDefaultSensorsSetting[] =

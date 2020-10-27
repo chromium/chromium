@@ -914,15 +914,7 @@
   },
 
   "DisabledPlugins.0": {
-    "note": "This policy is deprecated. This test tests its migration path.",
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "DisabledPlugins": [ "*Flash*" ] },
-        "prefs": { "profile.managed_default_content_settings.plugins": { "value": 2 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.plugins", "selector": "[content-setting=plugins]", "value": "block" }]
-      }
-    ]
+    "note": "This policy is deprecated. This test tests its migration path."
   },
 
   "DisabledPlugins.1": {
@@ -937,15 +929,7 @@
   },
 
   "EnabledPlugins.0": {
-    "note": "This policy is deprecated. This test tests its migration path.",
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "EnabledPlugins": [ "*Flash*" ] },
-        "prefs": { "profile.managed_default_content_settings.plugins": {"value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.plugins", "selector": "[content-setting=plugins]", "value": "allow" }]
-      }
-    ]
+    "note": "This policy is deprecated. This test tests its migration path."
   },
 
   "EnabledPlugins.1": {
@@ -2108,21 +2092,7 @@
   },
 
   "DefaultPluginsSetting": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "DefaultPluginsSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.plugins": { "value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.plugins", "selector": "[content-setting=plugins]", "value": "allow" }],
-        "note": "TODO(bartfab): Flag this with can_be_recommended when http://crbug.com/106682 is fixed."
-      },
-      {
-        "policies": { "DefaultPluginsSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.plugins": { } },
-        "indicator_tests" :[{ "pref": "profile.managed_default_content_settings.plugins", "selector": "[content-setting=plugins]", "value": "block" }],
-        "note": "TODO(bartfab): Flag this with can_be_recommended when http://crbug.com/106682 is fixed."
-      }
-    ]
+    "note": "Deprecated since Chrome 88. See https://crbug.com/1083496"
   },
 
   "DefaultPopupsSetting": {

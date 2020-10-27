@@ -5508,7 +5508,7 @@
           'caption': '''Click to play''',
         },
       ],
-      'supported_on': ['chrome.*:10-', 'chrome_os:11-'],
+      'supported_on': ['chrome.*:10-87', 'chrome_os:11-87'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5517,7 +5517,8 @@
       'id': 51,
       'caption': '''Default <ph name="FLASH_PLUGIN_NAME">Flash</ph> setting''',
       'tags': [],
-      'desc': '''Setting the policy to 1 lets you set whether all websites can automatically run the <ph name="FLASH_PLUGIN_NAME">Flash</ph> plugin. Setting the policy to 2 denies this plugin for all websites. Click to play lets the <ph name="FLASH_PLUGIN_NAME">Flash</ph> plugin run, but users click on the placeholder to start it.
+      'deprecated': True,
+      'desc': '''This policy is deprecated in M88, Flash is no longer supported by Chrome. Setting the policy to 1 lets you set whether all websites can automatically run the <ph name="FLASH_PLUGIN_NAME">Flash</ph> plugin. Setting the policy to 2 denies this plugin for all websites. Click to play lets the <ph name="FLASH_PLUGIN_NAME">Flash</ph> plugin run, but users click on the placeholder to start it.
 
       Leaving the policy unset uses <ph name="BLOCK_PLUGINS_POLICY_NAME">BlockPlugins</ph> and lets users change this setting.
 

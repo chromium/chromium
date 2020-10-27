@@ -147,7 +147,6 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultInsecureContentSetting},
         {ContentSettingsType::NOTIFICATIONS,
          prefs::kManagedDefaultNotificationsSetting},
-        {ContentSettingsType::PLUGINS, prefs::kManagedDefaultPluginsSetting},
         {ContentSettingsType::POPUPS, prefs::kManagedDefaultPopupsSetting},
         {ContentSettingsType::BLUETOOTH_GUARD,
          prefs::kManagedDefaultWebBluetoothGuardSetting},
@@ -218,8 +217,6 @@ void PolicyProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kManagedDefaultNotificationsSetting,
                                 CONTENT_SETTING_DEFAULT);
   registry->RegisterIntegerPref(prefs::kManagedDefaultMediaStreamSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultPluginsSetting,
                                 CONTENT_SETTING_DEFAULT);
   registry->RegisterIntegerPref(prefs::kManagedDefaultPopupsSetting,
                                 CONTENT_SETTING_DEFAULT);
@@ -310,7 +307,6 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
       prefs::kManagedDefaultNotificationsSetting, callback);
   pref_change_registrar_.Add(
       prefs::kManagedDefaultMediaStreamSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultPluginsSetting, callback);
   pref_change_registrar_.Add(prefs::kManagedDefaultPopupsSetting, callback);
   pref_change_registrar_.Add(prefs::kManagedDefaultWebBluetoothGuardSetting,
                              callback);
@@ -547,13 +543,6 @@ void PolicyProvider::UpdateManagedDefaultSetting(
          prefs_->IsManagedPreference(entry.pref_name));
   base::AutoLock auto_lock(lock_);
   int setting = prefs_->GetInteger(entry.pref_name);
-  // TODO(wfh): Remove once HDB is enabled by default.
-  if (entry.pref_name == prefs::kManagedDefaultPluginsSetting) {
-    static constexpr base::Feature kIgnoreDefaultPluginsSetting = {
-        "IgnoreDefaultPluginsSetting", base::FEATURE_DISABLED_BY_DEFAULT};
-    if (base::FeatureList::IsEnabled(kIgnoreDefaultPluginsSetting))
-      setting = CONTENT_SETTING_DEFAULT;
-  }
   if (setting == CONTENT_SETTING_DEFAULT) {
     value_map_.DeleteValue(ContentSettingsPattern::Wildcard(),
                            ContentSettingsPattern::Wildcard(),

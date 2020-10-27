@@ -61,13 +61,6 @@ void PluginPolicyHandler::ProcessPolicy(const policy::PolicyMap& policies,
       prefs->SetValue(prefs::kPluginsAlwaysOpenPdfExternally,
                       base::Value(disable_pdf_plugin));
     }
-    if ((base::MatchPattern(
-             PluginMetadata::kAdobeFlashPlayerGroupName, plugin) ||
-         base::MatchPattern(content::kFlashPluginName, plugin)) &&
-        !policies.GetValue(policy::key::kDefaultPluginsSetting)) {
-      prefs->SetValue(prefs::kManagedDefaultPluginsSetting,
-                      base::Value(flash_content_setting));
-    }
   }
 }
 
@@ -113,12 +106,6 @@ void PluginPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
                             plugin)) &&
         !policies.GetValue(policy::key::kAlwaysOpenPdfExternally)) {
       prefs->RemoveValue(prefs::kPluginsAlwaysOpenPdfExternally);
-    }
-    if ((base::MatchPattern(
-            PluginMetadata::kAdobeFlashPlayerGroupName, plugin) ||
-         base::MatchPattern(content::kFlashPluginName, plugin)) &&
-        !policies.GetValue(policy::key::kDefaultPluginsSetting)) {
-      prefs->RemoveValue(prefs::kManagedDefaultPluginsSetting);
     }
   }
 }

@@ -86,41 +86,6 @@ TEST_F(PolicyProviderTest, ManagedDefaultContentSettings) {
   provider.ShutdownOnUIThread();
 }
 
-TEST_F(PolicyProviderTest, ManagedDefaultPluginSettingsExperiment) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine("IgnoreDefaultPluginsSetting",
-                                          std::string());
-
-  TestingProfile profile;
-  sync_preferences::TestingPrefServiceSyncable* prefs =
-      profile.GetTestingPrefService();
-  PolicyProvider provider(prefs);
-
-  // ForceDefaultPluginsSettingAsk overrides this to ASK.
-  prefs->SetManagedPref(prefs::kManagedDefaultPluginsSetting,
-                        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
-  prefs->SetManagedPref(prefs::kManagedDefaultJavaScriptSetting,
-                        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
-
-  std::unique_ptr<RuleIterator> plugin_rule_iterator(provider.GetRuleIterator(
-      ContentSettingsType::PLUGINS, std::string(), false));
-  // Policy should be removed when running under experiment.
-  EXPECT_FALSE(plugin_rule_iterator);
-
-  std::unique_ptr<RuleIterator> js_rule_iterator(provider.GetRuleIterator(
-      ContentSettingsType::JAVASCRIPT, std::string(), false));
-  // Other policies should be left alone.
-  EXPECT_TRUE(js_rule_iterator->HasNext());
-  Rule rule = js_rule_iterator->Next();
-  EXPECT_FALSE(js_rule_iterator->HasNext());
-
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(&rule.value));
-
-  provider.ShutdownOnUIThread();
-}
-
 // When a default-content-setting is set to a managed setting a
 // CONTENT_SETTINGS_CHANGED notification should be fired. The same should happen
 // if the managed setting is removed.

@@ -221,6 +221,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContentSettings.DefaultPluginsSetting" enum="ContentSetting"
     expires_after="2021-06-19">
+  <obsolete>
+    Removed as of 09/2020. Flash / Plugins is deprecated.
+  </obsolete>
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default plugins setting at profile open.</summary>
