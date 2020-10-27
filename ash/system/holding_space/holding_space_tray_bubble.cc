@@ -169,6 +169,11 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
   bubble_wrapper_->bubble_view()->ResetDelegate();
+
+  // Clear container state before `delegate_` is deleted, as container views
+  // depend on it.
+  pinned_files_container_->Reset();
+  recent_files_container_->Reset();
 }
 
 void HoldingSpaceTrayBubble::AnchorUpdated() {
