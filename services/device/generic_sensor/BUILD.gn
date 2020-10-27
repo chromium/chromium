@@ -105,6 +105,8 @@ source_set("generic_sensor") {
         "linux/sensor_device_manager.h",
         "platform_sensor_provider_linux.cc",
         "platform_sensor_provider_linux.h",
+        "platform_sensor_provider_linux_base.cc",
+        "platform_sensor_provider_linux_base.h",
       ]
     }
   }
