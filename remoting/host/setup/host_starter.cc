@@ -56,7 +56,7 @@ void HostStarter::StartHost(const std::string& host_id,
                             const std::string& redirect_url,
                             CompletionCallback on_done) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK(on_done_.is_null());
+  DCHECK(!on_done_);
 
   host_id_ = host_id;
   host_name_ = host_name;
@@ -168,9 +168,8 @@ void HostStarter::OnHostRegistered(const std::string& authorization_code) {
   }
 
   if (authorization_code.empty()) {
-    // No service account code, start the host with the owner's credentials.
-    xmpp_login_ = host_owner_;
-    StartHostProcess();
+    NOTREACHED() << "No authorization code returned by the Directory.";
+    std::move(on_done_).Run(START_ERROR);
     return;
   }
 
@@ -194,9 +193,7 @@ void HostStarter::StartHostProcess() {
   // Start the host.
   std::string host_secret_hash = remoting::MakeHostPinHash(host_id_, host_pin_);
   std::unique_ptr<base::DictionaryValue> config(new base::DictionaryValue());
-  if (host_owner_ != xmpp_login_) {
-    config->SetString("host_owner", host_owner_);
-  }
+  config->SetString("host_owner", host_owner_);
   config->SetString("xmpp_login", xmpp_login_);
   config->SetString("oauth_refresh_token", host_refresh_token_);
   config->SetString("host_id", host_id_);
