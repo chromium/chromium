@@ -12,8 +12,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/metrics/unsent_log_store.h"
 #include "components/metrics/reporting_service.h"
+#include "components/metrics/unsent_log_store.h"
+#include "third_party/metrics_proto/ukm/report.pb.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -56,7 +57,8 @@ class UkmReportingService : public metrics::ReportingService {
   void LogResponseOrErrorCode(int response_code,
                               int error_code,
                               bool was_https) override;
-  void LogSuccess(size_t log_size) override;
+  void LogSuccessLogSize(size_t log_size) override;
+  void LogSuccessMetadata(const std::string& staged_log) override;
   void LogLargeRejection(size_t log_size) override;
 
   metrics::UnsentLogStore unsent_log_store_;

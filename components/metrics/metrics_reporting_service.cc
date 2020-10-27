@@ -87,9 +87,12 @@ void MetricsReportingService::LogResponseOrErrorCode(int response_code,
   }
 }
 
-void MetricsReportingService::LogSuccess(size_t log_size) {
+void MetricsReportingService::LogSuccessLogSize(size_t log_size) {
   UMA_HISTOGRAM_COUNTS_10000("UMA.LogSize.OnSuccess", log_size / 1024);
 }
+
+void MetricsReportingService::LogSuccessMetadata(
+    const std::string& staged_log) {}
 
 void MetricsReportingService::LogLargeRejection(size_t log_size) {
 }

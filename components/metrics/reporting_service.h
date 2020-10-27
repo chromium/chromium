@@ -90,7 +90,8 @@ class ReportingService {
   virtual void LogResponseOrErrorCode(int response_code,
                                       int error_code,
                                       bool was_https) {}
-  virtual void LogSuccess(size_t log_size) {}
+  virtual void LogSuccessLogSize(size_t log_size) {}
+  virtual void LogSuccessMetadata(const std::string& staged_log) {}
   virtual void LogLargeRejection(size_t log_size) {}
 
   // If recording is enabled, begins uploading the next completed log from

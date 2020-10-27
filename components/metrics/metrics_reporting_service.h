@@ -55,7 +55,8 @@ class MetricsReportingService : public ReportingService {
   void LogResponseOrErrorCode(int response_code,
                               int error_code,
                               bool was_https) override;
-  void LogSuccess(size_t log_size) override;
+  void LogSuccessLogSize(size_t log_size) override;
+  void LogSuccessMetadata(const std::string& staged_log) override;
   void LogLargeRejection(size_t log_size) override;
 
   MetricsLogStore metrics_log_store_;

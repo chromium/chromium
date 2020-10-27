@@ -181,9 +181,11 @@ void ReportingService::OnLogUploadComplete(int response_code,
   if (log_store()->has_staged_log()) {
     // Provide boolean for error recovery (allow us to ignore response_code).
     bool discard_log = false;
-    const size_t log_size = log_store()->staged_log().length();
+    const std::string& staged_log = log_store()->staged_log();
+    const size_t log_size = staged_log.length();
     if (upload_succeeded) {
-      LogSuccess(log_size);
+      LogSuccessLogSize(log_size);
+      LogSuccessMetadata(staged_log);
     } else if (log_size > max_retransmit_size_) {
       LogLargeRejection(log_size);
       discard_log = true;
