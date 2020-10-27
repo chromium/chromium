@@ -32,7 +32,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  enum class AxisEdge { kStart, kCenter, kEnd, kBaseline };
 
   struct GridItemData {
     explicit GridItemData(const NGBlockNode node);
@@ -60,12 +59,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     wtf_size_t columns_end_set_index;
     wtf_size_t rows_begin_set_index;
     wtf_size_t rows_end_set_index;
-
-    AxisEdge inline_axis_alignment;
-    AxisEdge block_axis_alignment;
-
-    bool is_inline_axis_stretched;
-    bool is_block_axis_stretched;
 
     bool is_spanning_flex_track : 1;
     bool is_spanning_intrinsic_track : 1;
