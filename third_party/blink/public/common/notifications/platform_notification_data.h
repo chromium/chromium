@@ -17,11 +17,6 @@
 
 namespace blink {
 
-enum PlatformNotificationActionType {
-  PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON = 0,
-  PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT,
-};
-
 // A notification action (button or text input); corresponds to Blink
 // WebNotificationAction.
 struct BLINK_COMMON_EXPORT PlatformNotificationAction {
@@ -30,8 +25,7 @@ struct BLINK_COMMON_EXPORT PlatformNotificationAction {
   ~PlatformNotificationAction();
 
   // Type of the action (button or text input).
-  PlatformNotificationActionType type =
-      PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON;
+  mojom::NotificationActionType type = mojom::NotificationActionType::BUTTON;
 
   // Action name that the author can use to distinguish them.
   std::string action;

@@ -42,39 +42,6 @@ bool ValidateData(const std::vector<char>& data) {
 
 namespace mojo {
 
-using blink::mojom::NotificationActionType;
-
-// static
-NotificationActionType
-EnumTraits<NotificationActionType, blink::PlatformNotificationActionType>::
-    ToMojom(blink::PlatformNotificationActionType input) {
-  switch (input) {
-    case blink::PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON:
-      return NotificationActionType::BUTTON;
-    case blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT:
-      return NotificationActionType::TEXT;
-  }
-
-  NOTREACHED();
-  return NotificationActionType::BUTTON;
-}
-
-// static
-bool EnumTraits<NotificationActionType, blink::PlatformNotificationActionType>::
-    FromMojom(NotificationActionType input,
-              blink::PlatformNotificationActionType* out) {
-  switch (input) {
-    case NotificationActionType::BUTTON:
-      *out = blink::PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON;
-      return true;
-    case NotificationActionType::TEXT:
-      *out = blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT;
-      return true;
-  }
-
-  return false;
-}
-
 // static
 bool StructTraits<blink::mojom::NotificationActionDataView,
                   blink::PlatformNotificationAction>::

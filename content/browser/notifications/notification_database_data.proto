@@ -39,7 +39,7 @@ message NotificationDatabaseDataProto {
   //
   // Next tag: 6
   message NotificationAction {
-    // Corresponds to blink::PlatformNotificationActionType.
+    // Corresponds to blink::mojom::NotificationActionType.
     enum Type {
       BUTTON = 0;
       TEXT = 1;

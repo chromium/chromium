@@ -152,10 +152,10 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
 
     switch (payload_action.type()) {
       case NotificationDatabaseDataProto::NotificationAction::BUTTON:
-        action.type = blink::PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON;
+        action.type = blink::mojom::NotificationActionType::BUTTON;
         break;
       case NotificationDatabaseDataProto::NotificationAction::TEXT:
-        action.type = blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT;
+        action.type = blink::mojom::NotificationActionType::TEXT;
         break;
       default:
         NOTREACHED();
@@ -240,11 +240,11 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
         payload->add_actions();
 
     switch (action.type) {
-      case blink::PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON:
+      case blink::mojom::NotificationActionType::BUTTON:
         payload_action->set_type(
             NotificationDatabaseDataProto::NotificationAction::BUTTON);
         break;
-      case blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT:
+      case blink::mojom::NotificationActionType::TEXT:
         payload_action->set_type(
             NotificationDatabaseDataProto::NotificationAction::TEXT);
         break;

@@ -213,9 +213,9 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
   data.vibration_pattern = vibration_pattern;
   data.silent = true;
   data.actions.resize(2);
-  data.actions[0].type = blink::PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON;
+  data.actions[0].type = blink::mojom::NotificationActionType::BUTTON;
   data.actions[0].title = base::ASCIIToUTF16("Button 1");
-  data.actions[1].type = blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT;
+  data.actions[1].type = blink::mojom::NotificationActionType::TEXT;
   data.actions[1].title = base::ASCIIToUTF16("Button 2");
 
   NotificationResources notification_resources;

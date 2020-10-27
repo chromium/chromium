@@ -452,7 +452,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
     // the 1x bitmap - crbug.com/585815.
     button.icon =
         gfx::Image::CreateFrom1xBitmap(notification_resources.action_icons[i]);
-    if (action.type == blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT) {
+    if (action.type == blink::mojom::NotificationActionType::TEXT) {
       button.placeholder = action.placeholder.value_or(
           l10n_util::GetStringUTF16(IDS_NOTIFICATION_REPLY_PLACEHOLDER));
     }

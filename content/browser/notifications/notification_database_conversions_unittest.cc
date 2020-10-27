@@ -45,8 +45,8 @@ const int kTimeUntilFirstClickMillis = 11111;
 const int kTimeUntilLastClickMillis = 22222;
 const int kTimeUntilCloseMillis = 33333;
 
-const blink::PlatformNotificationActionType kNotificationActionType =
-    blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT;
+const blink::mojom::NotificationActionType kNotificationActionType =
+    blink::mojom::NotificationActionType::TEXT;
 const char kOrigin[] = "https://example.com/";
 const char kNotificationTitle[] = "My Notification";
 const char kNotificationLang[] = "nl";
@@ -221,11 +221,11 @@ TEST(NotificationDatabaseConversionsTest, ActionDeserializationIsNotAdditive) {
 }
 
 TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeActionTypes) {
-  blink::PlatformNotificationActionType action_types[] = {
-      blink::PLATFORM_NOTIFICATION_ACTION_TYPE_BUTTON,
-      blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT};
+  blink::mojom::NotificationActionType action_types[] = {
+      blink::mojom::NotificationActionType::BUTTON,
+      blink::mojom::NotificationActionType::TEXT};
 
-  for (blink::PlatformNotificationActionType action_type : action_types) {
+  for (blink::mojom::NotificationActionType action_type : action_types) {
     blink::PlatformNotificationData notification_data;
 
     blink::PlatformNotificationAction action;
