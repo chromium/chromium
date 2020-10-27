@@ -88,9 +88,11 @@ ASH_EXPORT bool ShouldExcludeForCycleList(const aura::Window* window);
 ASH_EXPORT bool ShouldExcludeForOverview(const aura::Window* window);
 
 // Removes all windows in |out_window_list| whose transient root is also in
-// |out_window_list|. This is used by overview and window cycler to avoid
-// showing multiple previews for windows linked by transient.
-ASH_EXPORT void RemoveTransientDescendants(
+// |out_window_list|. Also replaces transient descendants with their transient
+// roots, ensuring only one unique instance of each transient root. This is used
+// by overview and window cycler to avoid showing multiple previews for windows
+// linked by transient and creating items using transient descendants.
+ASH_EXPORT void EnsureTransientRoots(
     std::vector<aura::Window*>* out_window_list);
 
 // Minimizes a hides list of |windows| without any animations.

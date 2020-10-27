@@ -282,7 +282,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       return true;
     // Since overview allows moving windows, don't show window that can't be
     // moved. If they are a transient ancestor of a postionable window then they
-    // can be shown and movied with their transient root.
+    // can be shown and moved with their transient root.
     return w == wm::GetTransientRoot(w) &&
            !WindowState::Get(w)->IsUserPositionable();
   };
@@ -294,7 +294,13 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   // Overview windows will handle showing their transient related windows, so if
   // a window in |windows| has a transient root also in |windows|, we can remove
   // it as the transient root will handle showing the window.
-  window_util::RemoveTransientDescendants(&windows);
+  // Additionally, |windows| may contain transient children and not their
+  // transient root. This can lead to situations where the transient child is
+  // destroyed causing its respective overview item to be destroyed, leaving its
+  // transient root with no overview item. Creating the overview item with the
+  // transient root instead of the transient child fixes this. See
+  // crbug.com/972015.
+  window_util::EnsureTransientRoots(&windows);
 
   if (InOverviewSession()) {
     DCHECK(CanEndOverview(type));

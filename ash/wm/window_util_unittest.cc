@@ -195,38 +195,57 @@ TEST_F(WindowUtilTest, MoveWindowToDisplayAndLockScreen) {
             screen->GetDisplayNearestWindow(window.get()).id());
 }
 
-TEST_F(WindowUtilTest, RemoveTransientDescendants) {
+TEST_F(WindowUtilTest, EnsureTransientRoots) {
   // Create two windows which have no transient children or parents. Test that
-  // neither of them get removed when running RemoveTransientDescendants.
+  // neither of them get removed when running EnsureTransientRoots.
   auto window1 = CreateTestWindow();
   auto window2 = CreateTestWindow();
   std::vector<aura::Window*> window_list = {window1.get(), window2.get()};
-  RemoveTransientDescendants(&window_list);
+  EnsureTransientRoots(&window_list);
   ASSERT_EQ(2u, window_list.size());
 
   // Create two windows whose transient roots are |window1|. One is a direct
   // transient child and one is a transient descendant. Test that both get
-  // removed when calling RemoveTransientDescendants.
+  // removed when calling EnsureTransientRoots.
   auto descendant1 = CreateTestWindow();
   auto descendant2 = CreateTestWindow();
   ::wm::AddTransientChild(descendant1.get(), descendant2.get());
   ::wm::AddTransientChild(window1.get(), descendant1.get());
   window_list.push_back(descendant1.get());
   window_list.push_back(descendant2.get());
-  RemoveTransientDescendants(&window_list);
+  EnsureTransientRoots(&window_list);
   ASSERT_EQ(2u, window_list.size());
   ASSERT_TRUE(base::Contains(window_list, window1.get()));
   ASSERT_TRUE(base::Contains(window_list, window2.get()));
 
   // Create a window which has a transient parent that is not in |window_list|.
-  // Test that the window is not removed when calling
-  // RemoveTransientDescendants.
+  // Test that the window is replaced with its transient root when calling
+  // EnsureTransientRoots.
   auto window3 = CreateTestWindow();
   auto descendant3 = CreateTestWindow();
   ::wm::AddTransientChild(window3.get(), descendant3.get());
   window_list.push_back(descendant3.get());
-  RemoveTransientDescendants(&window_list);
+  EnsureTransientRoots(&window_list);
   EXPECT_EQ(3u, window_list.size());
+  EXPECT_TRUE(base::Contains(window_list, window3.get()));
+  EXPECT_FALSE(base::Contains(window_list, descendant3.get()));
+
+  // Create two windows which have the same transient parent that is not in
+  // |window_list|. Test that one of the windows is replaced with its transient
+  // root and the other is removed from |window_list| when calling
+  // EnsureTransientRoots.
+  auto window4 = CreateTestWindow();
+  auto descendant4 = CreateTestWindow();
+  auto descendant5 = CreateTestWindow();
+  ::wm::AddTransientChild(window4.get(), descendant4.get());
+  ::wm::AddTransientChild(window4.get(), descendant5.get());
+  window_list.push_back(descendant4.get());
+  window_list.push_back(descendant5.get());
+  EnsureTransientRoots(&window_list);
+  EXPECT_EQ(4u, window_list.size());
+  EXPECT_TRUE(base::Contains(window_list, window4.get()));
+  EXPECT_FALSE(base::Contains(window_list, descendant4.get()));
+  EXPECT_FALSE(base::Contains(window_list, descendant5.get()));
 }
 
 TEST_F(WindowUtilTest,

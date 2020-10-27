@@ -165,7 +165,7 @@ WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
   // windows, so if a window in |window_list| has a transient root also in
   // |window_list|, we can remove it as the transient root will handle showing
   // the window.
-  window_util::RemoveTransientDescendants(&window_list);
+  window_util::EnsureTransientRoots(&window_list);
   return window_list;
 }
 

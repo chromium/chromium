@@ -251,12 +251,16 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
   return ShouldExcludeForCycleList(window);
 }
 
-void RemoveTransientDescendants(std::vector<aura::Window*>* out_window_list) {
+void EnsureTransientRoots(std::vector<aura::Window*>* out_window_list) {
   for (auto it = out_window_list->begin(); it != out_window_list->end();) {
     aura::Window* transient_root = ::wm::GetTransientRoot(*it);
-    if (*it != transient_root &&
-        base::Contains(*out_window_list, transient_root)) {
-      it = out_window_list->erase(it);
+    if (*it != transient_root) {
+      if (base::Contains(*out_window_list, transient_root)) {
+        it = out_window_list->erase(it);
+      } else {
+        *it = transient_root;
+        ++it;
+      }
     } else {
       ++it;
     }

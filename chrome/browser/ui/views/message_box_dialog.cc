@@ -28,6 +28,11 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/ui/base/window_properties.h"
+#include "ui/aura/window.h"  // nogncheck
+#endif
+
 #if defined(OS_WIN)
 #include "ui/base/win/message_box_win.h"
 #include "ui/views/win/hwnd_util.h"
@@ -190,6 +195,15 @@ bool MessageBoxDialog::ShouldShowCloseButton() const {
 
 void MessageBoxDialog::OnWidgetActivationChanged(views::Widget* widget,
                                                  bool active) {
+#if defined(OS_CHROMEOS)
+  if (GetWidget()->GetNativeWindow()->GetProperty(
+          chromeos::kIsShowingInOverviewKey)) {
+    // Prevent this from closing while starting overview mode for better UX.
+    // See crbug.com/972015.
+    return;
+  }
+#endif
+
   if (!active)
     GetWidget()->Close();
 }
