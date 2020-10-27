@@ -14094,9 +14094,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 // reload. This avoids showing crashed subframes if a hidden tab is eventually
 // shown. Similar to the test above, except that the crashed subframe is
 // scrolled out of view.
-// Disabled for being flaky: https://crbug.com/1135072.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
-                       DISABLED_ReloadHiddenTabWithCrashedSubframeOutOfView) {
+                       ReloadHiddenTabWithCrashedSubframeOutOfView) {
   // Set WebContents to VISIBLE to avoid hitting the |!did_first_set_visible_|
   // case when we hide it later.
   web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
@@ -14109,8 +14108,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   NavigateIframeToURL(web_contents(), "test_iframe",
                       embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  // Verify the OOPIF isn't visible at the moment.
+  // This will ensure that the layout has completed and visibility of the OOPIF
+  // has been updated in the browser process.
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  EXPECT_EQ(true,
+            EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "true"));
+
+  // Verify the OOPIF isn't visible at the moment.
   RenderFrameProxyHost* proxy_to_parent =
       root->child_at(0)->render_manager()->GetProxyToParent();
   CrossProcessFrameConnector* connector =
