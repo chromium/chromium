@@ -11,6 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
+import androidx.annotation.Px;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.widget.R;
 
@@ -54,8 +56,8 @@ public class ViewHighlighter {
 
         PulseDrawable pulseDrawable = circular
                 ? createCircle(view.getContext(), new NumberPulser(view, numPulses))
-                : PulseDrawable.createHighlight(
-                        view.getContext(), new NumberPulser(view, numPulses));
+                : PulseDrawable.createRoundedRectangle(
+                        view.getContext(), 0 /*cornerRadius*/, new NumberPulser(view, numPulses));
 
         attachViewAsHighlight(view, pulseDrawable);
     }
@@ -69,7 +71,21 @@ public class ViewHighlighter {
         if (view == null) return;
 
         PulseDrawable pulseDrawable = circular ? PulseDrawable.createCircle(view.getContext())
-                                               : PulseDrawable.createHighlight(view.getContext());
+                                               : PulseDrawable.createRectangle(view.getContext());
+
+        attachViewAsHighlight(view, pulseDrawable);
+    }
+
+    /**
+     * Create a rectangle highlight layer over the view.
+     * @param view The view to be highlighted.
+     * @param cornerRadius The corner radius in pixels of the rectangle.
+     */
+    public static void turnOnRectangularHighlight(View view, @Px int cornerRadius) {
+        if (view == null) return;
+
+        PulseDrawable pulseDrawable =
+                PulseDrawable.createRoundedRectangle(view.getContext(), cornerRadius);
 
         attachViewAsHighlight(view, pulseDrawable);
     }
@@ -91,7 +107,7 @@ public class ViewHighlighter {
         Resources resources = view.getContext().getResources();
         Drawable background = view.getBackground();
         if (background != null) {
-            background = background.getConstantState().newDrawable(resources);
+            background = background.getConstantState().newDrawable();
         }
 
         Drawable[] layers = background == null ? new Drawable[] {pulseDrawable}

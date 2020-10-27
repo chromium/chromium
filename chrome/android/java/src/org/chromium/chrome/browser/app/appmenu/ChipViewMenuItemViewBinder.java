@@ -104,9 +104,8 @@ class ChipViewMenuItemViewBinder implements CustomViewBinder {
                     v -> appMenuClickHandler.onItemClick(finalChipViewMenuItem));
 
             if (highlightedItemId != null && chipViewMenuItem.getItemId() == highlightedItemId) {
-                // TODO(crbug.com/1136169): Should not remove the background once the bug fixed.
-                holder.chipView.setBackgroundResource(0);
-                ViewHighlighter.turnOnHighlight(holder.chipView, true);
+                ViewHighlighter.turnOnRectangularHighlight(
+                        holder.chipView, holder.chipView.getCornerRadius());
             } else {
                 ViewHighlighter.turnOffHighlight(holder.chipView);
             }

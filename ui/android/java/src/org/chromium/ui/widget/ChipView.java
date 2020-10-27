@@ -48,6 +48,7 @@ public class ChipView extends LinearLayout {
     private final int mEndIconHeight;
     private final int mEndIconStartPadding;
     private final int mEndIconEndPadding;
+    private final int mCornerRadius;
 
     private ViewGroup mEndIconWrapper;
     private TextView mSecondaryText;
@@ -101,7 +102,7 @@ public class ChipView extends LinearLayout {
                 a.getResourceId(R.styleable.ChipView_chipColor, R.color.chip_background_color);
         int rippleColorId =
                 a.getResourceId(R.styleable.ChipView_rippleColor, R.color.chip_ripple_color);
-        int cornerRadius = a.getDimensionPixelSize(R.styleable.ChipView_cornerRadius,
+        mCornerRadius = a.getDimensionPixelSize(R.styleable.ChipView_cornerRadius,
                 getContext().getResources().getDimensionPixelSize(R.dimen.chip_corner_radius));
         int iconWidth = a.getDimensionPixelSize(R.styleable.ChipView_iconWidth,
                 getResources().getDimensionPixelSize(R.dimen.chip_icon_size));
@@ -161,7 +162,7 @@ public class ChipView extends LinearLayout {
 
         // Reset icon and background:
         mRippleBackgroundHelper = new RippleBackgroundHelper(this, chipColorId, rippleColorId,
-                cornerRadius, R.color.chip_stroke_color, chipBorderWidthId, verticalInset);
+                mCornerRadius, R.color.chip_stroke_color, chipBorderWidthId, verticalInset);
         setIcon(INVALID_ICON_ID, false);
     }
 
@@ -284,5 +285,12 @@ public class ChipView extends LinearLayout {
         } else {
             ApiCompatibilityUtils.setImageTintList(mStartIcon, null);
         }
+    }
+
+    /**
+     * @return The corner radius in pixels of this ChipView.
+     */
+    public @Px int getCornerRadius() {
+        return mCornerRadius;
     }
 }
