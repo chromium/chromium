@@ -510,8 +510,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
 // Validate that the root widget's window segments are correctly propagated
 // via the SynchronizeVisualProperties cascade.
-// Flaky on Mac and Linux (http://crbug/1089994).
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Flaky on Mac, Linux and Android (http://crbug/1089994).
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_ANDROID)
 #define MAYBE_VisualPropertiesPropagation_RootWindowSegments \
   DISABLED_VisualPropertiesPropagation_RootWindowSegments
 #else
