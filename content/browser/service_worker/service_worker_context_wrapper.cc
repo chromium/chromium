@@ -278,25 +278,7 @@ void ServiceWorkerContextWrapper::Shutdown() {
   storage_partition_ = nullptr;
   process_manager_->Shutdown();
 
-  // Use explicit feature check here instead of RunOrPostTaskOnThread(), since
-  // the feature may be disabled but in unit tests we are considered both on the
-  // UI and IO thread here, and not posting a task causes a race with callers
-  // setting the |resource_context_|.
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    ShutdownOnCoreThread();
-  } else {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceWorkerContextWrapper::ShutdownOnCoreThread,
-                       this));
-  }
-}
-
-void ServiceWorkerContextWrapper::InitializeResourceContext(
-    ResourceContext* resource_context) {
-  DCHECK(!ServiceWorkerContext::IsServiceWorkerOnUIEnabled());
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  resource_context_ = resource_context;
+  ShutdownOnCoreThread();
 }
 
 void ServiceWorkerContextWrapper::DeleteAndStartOver() {
@@ -326,12 +308,6 @@ void ServiceWorkerContextWrapper::set_storage_partition(
 BrowserContext* ServiceWorkerContextWrapper::browser_context() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return process_manager()->browser_context();
-}
-
-ResourceContext* ServiceWorkerContextWrapper::resource_context() {
-  DCHECK(!ServiceWorkerContext::IsServiceWorkerOnUIEnabled());
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return resource_context_;
 }
 
 // static
@@ -1564,7 +1540,6 @@ ServiceWorkerContextWrapper::~ServiceWorkerContextWrapper() {
   core_observer_list_->RemoveObserver(this);
   if (identifiability_metrics_)
     core_observer_list_->RemoveObserver(identifiability_metrics_.get());
-  DCHECK(!resource_context_);
 }
 
 void ServiceWorkerContextWrapper::InitOnCoreThread(
@@ -1618,8 +1593,6 @@ void ServiceWorkerContextWrapper::FindRegistrationForScopeImpl(
 
 void ServiceWorkerContextWrapper::ShutdownOnCoreThread() {
   DCHECK_CURRENTLY_ON(GetCoreThreadId());
-  if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled())
-    resource_context_ = nullptr;
   context_core_.reset();
 }
 

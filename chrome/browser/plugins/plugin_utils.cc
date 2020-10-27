@@ -11,6 +11,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/common/webplugininfo.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

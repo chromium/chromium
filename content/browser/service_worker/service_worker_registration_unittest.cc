@@ -77,16 +77,7 @@ void SaveStatusCallback(bool* called,
 
 class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
  public:
-  AllowServiceWorkerResult AllowServiceWorkerOnIO(
-      const GURL& scope,
-      const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
-      const GURL& script_url,
-      content::ResourceContext* context) override {
-    return AllowServiceWorkerResult::No();
-  }
-
-  AllowServiceWorkerResult AllowServiceWorkerOnUI(
+  AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const GURL& site_for_cookies,
       const base::Optional<url::Origin>& top_frame_origin,

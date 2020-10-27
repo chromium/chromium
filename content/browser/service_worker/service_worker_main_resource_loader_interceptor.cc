@@ -101,11 +101,7 @@ void MaybeCreateLoaderOnCoreThread(
 
   ServiceWorkerContextCore* context_core =
       handle_core->context_wrapper()->context();
-  ResourceContext* resource_context =
-      ServiceWorkerContext::IsServiceWorkerOnUIEnabled()
-          ? nullptr
-          : handle_core->context_wrapper()->resource_context();
-  if (!context_core || (!resource_context && !browser_context)) {
+  if (!context_core || !browser_context) {
     LoaderCallbackWrapperOnCoreThread(handle_core, std::move(interceptor_on_ui),
                                       std::move(loader_callback),
                                       /*handler=*/{});
@@ -168,7 +164,7 @@ void MaybeCreateLoaderOnCoreThread(
   // It's safe to bind the raw |handle_core| to the callback because it owns the
   // interceptor, which invokes the callback.
   handle_core->interceptor()->MaybeCreateLoader(
-      tentative_resource_request, browser_context, resource_context,
+      tentative_resource_request, browser_context,
       base::BindOnce(&LoaderCallbackWrapperOnCoreThread, handle_core,
                      interceptor_on_ui, std::move(loader_callback)),
       base::BindOnce(&FallbackCallbackWrapperOnCoreThread, interceptor_on_ui,

@@ -472,15 +472,6 @@ void StoragePartitionImplMap::PostCreateInitialization(
     partition->GetCacheStorageContext()->SetBlobParametersForCache(
         ChromeBlobStorageContext::GetFor(browser_context_));
 
-    if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &ServiceWorkerContextWrapper::InitializeResourceContext,
-              partition->GetServiceWorkerContext(),
-              browser_context_->GetResourceContext()));
-    }
-
     // Use PostTask() instead of RunOrPostTaskOnThread() because not posting a
     // task causes it to run before the CacheStorageManager has been
     // initialized, and then CacheStorageContextImpl::CacheManager() ends up

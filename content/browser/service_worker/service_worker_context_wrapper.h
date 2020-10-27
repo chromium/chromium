@@ -46,7 +46,6 @@ namespace content {
 
 class BrowserContext;
 class ChromeBlobStorageContext;
-class ResourceContext;
 class ServiceWorkerContextObserver;
 class StoragePartitionImpl;
 class URLLoaderFactoryGetter;
@@ -95,9 +94,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
             URLLoaderFactoryGetter* url_loader_factory_getter);
   void Shutdown();
 
-  // Non-ServiceWorkerOnUI only. Must be called on the IO thread.
-  void InitializeResourceContext(ResourceContext* resource_context);
-
   // Deletes all files on disk and restarts the system asynchronously. This
   // leaves the system in a disabled state until it's done. This should be
   // called on the core thread.
@@ -111,11 +107,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // UI thread.
   BrowserContext* browser_context();
-
-  // Non-ServiceWorkerOnUI only. The ResourceContext for the associated
-  // BrowserContext. This should only be accessed on the IO thread, and can be
-  // null during initialization and shutdown.
-  ResourceContext* resource_context();
 
   // The process manager can be used on either UI or IO.
   ServiceWorkerProcessManager* process_manager() {
@@ -593,10 +584,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // Raw pointer to the StoragePartitionImpl owning |this|.
   StoragePartitionImpl* storage_partition_ = nullptr;
-
-  // Non-ServiceWorkerOnUI only. The ResourceContext associated with this
-  // context.
-  ResourceContext* resource_context_ = nullptr;
 
   // Map that contains all service workers that are considered "running". Used
   // to dispatch OnVersionStartedRunning()/OnVersionStoppedRunning() events.

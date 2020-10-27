@@ -23,7 +23,6 @@
 #include "chrome/browser/extensions/extension_webkit_preferences.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_host/chrome_extension_message_filter.h"
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
@@ -568,24 +567,7 @@ bool ChromeContentBrowserClientExtensionsPart::
 }
 
 // static
-bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorkerOnIO(
-    const GURL& scope,
-    const GURL& first_party_url,
-    const GURL& script_url,
-    content::ResourceContext* context) {
-  // We only care about extension urls.
-  if (!first_party_url.SchemeIs(kExtensionScheme))
-    return true;
-
-  ProfileIOData* io_data = ProfileIOData::FromResourceContext(context);
-  InfoMap* extension_info_map = io_data->GetExtensionInfoMap();
-  const Extension* extension =
-      extension_info_map->extensions().GetExtensionOrAppByURL(first_party_url);
-  return AllowServiceWorker(scope, script_url, extension);
-}
-
-// static
-bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorkerOnUI(
+bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorker(
     const GURL& scope,
     const GURL& first_party_url,
     const GURL& script_url,
@@ -597,7 +579,7 @@ bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorkerOnUI(
   const Extension* extension = ExtensionRegistry::Get(context)
                                    ->enabled_extensions()
                                    .GetExtensionOrAppByURL(first_party_url);
-  return AllowServiceWorker(scope, script_url, extension);
+  return ::extensions::AllowServiceWorker(scope, script_url, extension);
 }
 
 // static

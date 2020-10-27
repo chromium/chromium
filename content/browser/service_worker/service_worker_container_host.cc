@@ -953,16 +953,10 @@ bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
                                                     const GURL& script_url) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(context_);
-  AllowServiceWorkerResult allowed = AllowServiceWorkerResult::No();
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    allowed = GetContentClient()->browser()->AllowServiceWorkerOnUI(
-        scope, site_for_cookies().RepresentativeUrl(), top_frame_origin(),
-        script_url, context_->wrapper()->browser_context());
-  } else {
-    allowed = GetContentClient()->browser()->AllowServiceWorkerOnIO(
-        scope, site_for_cookies().RepresentativeUrl(), top_frame_origin(),
-        script_url, context_->wrapper()->resource_context());
-  }
+  AllowServiceWorkerResult allowed =
+      GetContentClient()->browser()->AllowServiceWorker(
+          scope, site_for_cookies().RepresentativeUrl(), top_frame_origin(),
+          script_url, context_->wrapper()->browser_context());
   RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
                         base::BindOnce(&ReportServiceWorkerAccess, process_id_,
                                        frame_id_, scope, allowed));

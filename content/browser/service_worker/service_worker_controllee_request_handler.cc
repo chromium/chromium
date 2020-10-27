@@ -117,7 +117,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
 void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
     BrowserContext* browser_context,
-    ResourceContext* resource_context,
     ServiceWorkerLoaderCallback callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
   // InitializeContainerHost() will update the host. This is important to do
@@ -166,7 +165,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   fallback_callback_ = std::move(fallback_callback);
   registration_lookup_start_time_ = base::TimeTicks::Now();
   browser_context_ = browser_context;
-  resource_context_ = resource_context;
 
   // Look up a registration.
   context_->registry()->FindRegistrationForClientUrl(
@@ -283,22 +281,11 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
   }
 
   AllowServiceWorkerResult allow_service_worker =
-      AllowServiceWorkerResult::No();
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    allow_service_worker =
-        GetContentClient()->browser()->AllowServiceWorkerOnUI(
-            registration->scope(),
-            container_host_->site_for_cookies().RepresentativeUrl(),
-            container_host_->top_frame_origin(), /*script_url=*/GURL(),
-            browser_context_);
-  } else {
-    allow_service_worker =
-        GetContentClient()->browser()->AllowServiceWorkerOnIO(
-            registration->scope(),
-            container_host_->site_for_cookies().RepresentativeUrl(),
-            container_host_->top_frame_origin(), /*script_url=*/GURL(),
-            resource_context_);
-  }
+      GetContentClient()->browser()->AllowServiceWorker(
+          registration->scope(),
+          container_host_->site_for_cookies().RepresentativeUrl(),
+          container_host_->top_frame_origin(), /*script_url=*/GURL(),
+          browser_context_);
 
   RunOrPostTaskOnThread(
       FROM_HERE, BrowserThread::UI,

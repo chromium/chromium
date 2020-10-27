@@ -118,7 +118,7 @@ class ServiceWorkerAccessContentBrowserClient
 
   void SetCookiesAllowed(bool allowed) { cookies_allowed_ = allowed; }
 
-  AllowServiceWorkerResult AllowServiceWorkerOnUI(
+  AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const GURL& site_for_cookies,
       const base::Optional<url::Origin>& top_frame_origin,

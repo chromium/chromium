@@ -20,7 +20,6 @@
 namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
-class ResourceContext;
 class VpnServiceProxy;
 }
 
@@ -66,15 +65,10 @@ class ChromeContentBrowserClientExtensionsPart
       content::SiteInstance* site_instance,
       const GURL& current_effective_url,
       const GURL& destination_effective_url);
-  // TODO(crbug.com/824858): Remove the OnIO method.
-  static bool AllowServiceWorkerOnIO(const GURL& scope,
-                                     const GURL& first_party_url,
-                                     const GURL& script_url,
-                                     content::ResourceContext* context);
-  static bool AllowServiceWorkerOnUI(const GURL& scope,
-                                     const GURL& first_party_url,
-                                     const GURL& script_url,
-                                     content::BrowserContext* context);
+  static bool AllowServiceWorker(const GURL& scope,
+                                 const GURL& first_party_url,
+                                 const GURL& script_url,
+                                 content::BrowserContext* context);
   static std::vector<url::Origin> GetOriginsRequiringDedicatedProcess();
 
   // Helper function to call InfoMap::SetSigninProcess().

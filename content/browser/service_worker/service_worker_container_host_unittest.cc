@@ -79,17 +79,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
 
   ServiceWorkerTestContentBrowserClient() {}
 
-  AllowServiceWorkerResult AllowServiceWorkerOnIO(
-      const GURL& scope,
-      const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
-      const GURL& script_url,
-      content::ResourceContext* context) override {
-    logs_.emplace_back(scope, site_for_cookies, top_frame_origin, script_url);
-    return AllowServiceWorkerResult::No();
-  }
-
-  AllowServiceWorkerResult AllowServiceWorkerOnUI(
+  AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const GURL& site_for_cookies,
       const base::Optional<url::Origin>& top_frame_origin,

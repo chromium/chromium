@@ -21,7 +21,6 @@
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_browser_client.h"
@@ -65,8 +64,8 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
       resource_request.url = request_->url();
       resource_request.resource_type = static_cast<int>(resource_type_);
       resource_request.headers = request()->extra_request_headers();
-      handler_->MaybeCreateLoader(resource_request, nullptr, nullptr,
-                                  base::DoNothing(), base::DoNothing());
+      handler_->MaybeCreateLoader(resource_request, nullptr, base::DoNothing(),
+                                  base::DoNothing());
     }
 
     ServiceWorkerMainResourceLoader* loader() { return handler_->loader(); }
@@ -150,16 +149,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
 class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
  public:
   ServiceWorkerTestContentBrowserClient() = default;
-  AllowServiceWorkerResult AllowServiceWorkerOnIO(
-      const GURL& scope,
-      const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
-      const GURL& script_url,
-      content::ResourceContext* context) override {
-    return AllowServiceWorkerResult::No();
-  }
-
-  AllowServiceWorkerResult AllowServiceWorkerOnUI(
+  AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const GURL& site_for_cookies,
       const base::Optional<url::Origin>& top_frame_origin,

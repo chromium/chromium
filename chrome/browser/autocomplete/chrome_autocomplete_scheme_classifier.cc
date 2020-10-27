@@ -9,6 +9,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/android/chrome_jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
 #endif
+#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #if defined(OS_ANDROID)

@@ -336,16 +336,7 @@ bool ContentBrowserClient::AllowAppCache(
   return true;
 }
 
-AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorkerOnIO(
-    const GURL& scope,
-    const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
-    const GURL& script_url,
-    ResourceContext* context) {
-  return AllowServiceWorkerResult::Yes();
-}
-
-AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorkerOnUI(
+AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
     const GURL& scope,
     const GURL& site_for_cookies,
     const base::Optional<url::Origin>& top_frame_origin,

@@ -207,7 +207,6 @@ class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
 class RenderViewHost;
-class ResourceContext;
 class SerialDelegate;
 class SiteInstance;
 class SpeechRecognitionManagerDelegate;
@@ -635,15 +634,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // made to access the registration but there is no specific service worker in
   // the registration being acted on.
   //
-  // This is called on the IO thread.
-  virtual AllowServiceWorkerResult AllowServiceWorkerOnIO(
-      const GURL& scope,
-      const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
-      const GURL& script_url,
-      ResourceContext* context);
-  // Same but for the UI thread.
-  virtual AllowServiceWorkerResult AllowServiceWorkerOnUI(
+  // This is called on the UI thread.
+  virtual AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const GURL& site_for_cookies,
       const base::Optional<url::Origin>& top_frame_origin,

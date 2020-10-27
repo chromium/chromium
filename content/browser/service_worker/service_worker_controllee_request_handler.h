@@ -27,7 +27,6 @@
 
 namespace content {
 
-class ResourceContext;
 class ServiceWorkerContainerHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerRegistration;
@@ -58,7 +57,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_request,
       BrowserContext* browser_context,
-      ResourceContext* resource_context,
       ServiceWorkerLoaderCallback callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
   // Returns params with the ControllerServiceWorkerInfoPtr if we have found
@@ -115,7 +113,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
   BrowserContext* browser_context_;
-  ResourceContext* resource_context_;
   GURL stripped_url_;
   bool force_update_started_;
   base::TimeTicks registration_lookup_start_time_;

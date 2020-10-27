@@ -6,69 +6,31 @@
 
 #include <stddef.h>
 
-#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/net/chrome_network_delegate.h"
-#include "chrome/browser/net/profile_network_context_service.h"
-#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "components/content_settings/core/browser/content_settings_provider.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/cookie_config/cookie_store_util.h"
 #include "components/dom_distiller/core/url_constants.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_service.h"
-#include "components/net_log/chrome_net_log.h"
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/sync/base/pref_names.h"
-#include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/devtools_network_transaction_factory.h"
-#include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/resource_context.h"
-#include "content/public/common/content_switches.h"
-#include "extensions/buildflags/buildflags.h"
-#include "services/network/network_service.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/public_buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_protocols.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -223,15 +185,6 @@ void ProfileIOData::InitializeOnUIThread(Profile* profile) {
 
   auto params = std::make_unique<ProfileParams>();
 
-  params->cookie_settings = CookieSettingsFactory::GetForProfile(profile);
-  params->host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  params->extension_info_map =
-      extensions::ExtensionSystem::Get(profile)->info_map();
-#endif
-
 #if defined(OS_CHROMEOS)
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
@@ -341,25 +294,6 @@ content::ResourceContext* ProfileIOData::GetResourceContext() const {
   return resource_context_.get();
 }
 
-extensions::InfoMap* ProfileIOData::GetExtensionInfoMap() const {
-  DCHECK(initialized_) << "ExtensionSystem not initialized";
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  return extension_info_map_.get();
-#else
-  return nullptr;
-#endif
-}
-
-content_settings::CookieSettings* ProfileIOData::GetCookieSettings() const {
-  DCHECK(initialized_);
-  return cookie_settings_.get();
-}
-
-HostContentSettingsMap* ProfileIOData::GetHostContentSettingsMap() const {
-  DCHECK(initialized_);
-  return host_content_settings_map_.get();
-}
-
 ProfileIOData::ResourceContext::ResourceContext(ProfileIOData* io_data)
     : io_data_(io_data) {
   DCHECK(io_data);
@@ -371,13 +305,6 @@ void ProfileIOData::Init() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!initialized_);
   DCHECK(profile_params_.get());
-
-  // Take ownership over these parameters.
-  cookie_settings_ = profile_params_->cookie_settings;
-  host_content_settings_map_ = profile_params_->host_content_settings_map;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_info_map_ = profile_params_->extension_info_map;
-#endif
 
 #if defined(OS_CHROMEOS)
   username_hash_ = profile_params_->username_hash;
