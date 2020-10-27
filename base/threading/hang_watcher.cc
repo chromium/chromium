@@ -264,7 +264,9 @@ HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
   static debug::CrashKeyString* crash_key = AllocateCrashKeyString(
       "seconds-since-last-memory-pressure", kCrashKeyContentSize);
 
-  if (last_critical_memory_pressure_.is_null()) {
+  const base::TimeTicks last_critical_memory_pressure_time =
+      last_critical_memory_pressure_.load(std::memory_order_relaxed);
+  if (last_critical_memory_pressure_time.is_null()) {
     constexpr char kNoMemoryPressureMsg[] = "No critical memory pressure";
     static_assert(
         base::size(kNoMemoryPressureMsg) <=
@@ -273,7 +275,7 @@ HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
     return debug::ScopedCrashKeyString(crash_key, kNoMemoryPressureMsg);
   } else {
     base::TimeDelta time_since_last_critical_memory_pressure =
-        base::TimeTicks::Now() - last_critical_memory_pressure_;
+        base::TimeTicks::Now() - last_critical_memory_pressure_time;
     return debug::ScopedCrashKeyString(
         crash_key, base::NumberToString(
                        time_since_last_critical_memory_pressure.InSeconds()));
@@ -283,11 +285,10 @@ HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
 
 void HangWatcher::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  DCHECK_CALLED_ON_VALID_THREAD(hang_watcher_thread_checker_);
-
   if (memory_pressure_level ==
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    last_critical_memory_pressure_ = base::TimeTicks::Now();
+    last_critical_memory_pressure_.store(base::TimeTicks::Now(),
+                                         std::memory_order_relaxed);
   }
 }
 
