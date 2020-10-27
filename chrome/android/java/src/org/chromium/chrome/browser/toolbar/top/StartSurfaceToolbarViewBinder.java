@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -66,6 +67,8 @@ class StartSurfaceToolbarViewBinder {
             view.setNewTabButtonHighlight(model.get(NEW_TAB_BUTTON_HIGHLIGHT));
         } else if (propertyKey == NEW_TAB_BUTTON_IS_VISIBLE) {
             view.setNewTabButtonVisibility(model.get(NEW_TAB_BUTTON_IS_VISIBLE));
+        } else if (propertyKey == TRANSLATION_Y) {
+            view.setTranslationY(model.get(TRANSLATION_Y));
         }
     }
 }

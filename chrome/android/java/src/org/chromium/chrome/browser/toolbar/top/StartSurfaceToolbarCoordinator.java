@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.toolbar.TabSwitcherButtonView;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -60,8 +60,7 @@ public class StartSurfaceToolbarCoordinator {
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
-            Supplier<ButtonData> identityDiscButtonSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            Supplier<ButtonData> identityDiscButtonSupplier) {
         mStub = startSurfaceToolbarStub;
 
         overviewModeBehaviorSupplier.onAvailable(
@@ -96,8 +95,7 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
-                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
-                startSurfaceSupplier);
+                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -162,14 +160,6 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
-     * Called to set the visibility in Start Surface mode.
-     * @param shouldShowStartSurfaceToolbar whether the toolbar should be visible.
-     */
-    void setStartSurfaceToolbarVisibility(boolean shouldShowStartSurfaceToolbar) {
-        mToolbarMediator.setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
-    }
-
-    /**
      * Called when accessibility status changes.
      * @param enabled whether accessibility status is enabled.
      */
@@ -217,6 +207,32 @@ public class StartSurfaceToolbarCoordinator {
         } else {
             mTabSwitcherLongClickListener = listener;
         }
+    }
+
+    /**
+     * Called when start surface state is changed.
+     * @param newState The new {@link StartSurfaceState}.
+     * @param shouldShowStartSurfaceToolbar Whether or not should show start surface toolbar.
+     */
+    void onStartSurfaceStateChanged(
+            @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
+        mToolbarMediator.onStartSurfaceStateChanged(newState, shouldShowStartSurfaceToolbar);
+    }
+
+    /**
+     * Triggered when the offset of start surface header view is changed.
+     * @param verticalOffset The start surface header view's offset.
+     */
+    void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
+        mToolbarMediator.onStartSurfaceHeaderOffsetChanged(verticalOffset);
+    }
+
+    /**
+     * @param toolbarHeight The height of start surface toolbar.
+     * @return Whether or not toolbar container view should be hidden.
+     */
+    boolean shouldHideToolbarContainer(int toolbarHeight) {
+        return mToolbarMediator.shouldHideToolbarContainer(toolbarHeight);
     }
 
     void onNativeLibraryReady() {

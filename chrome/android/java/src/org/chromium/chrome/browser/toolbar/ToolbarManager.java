@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
@@ -214,6 +216,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     private StartSurface mStartSurface;
     private StartSurface.StateObserver mStartSurfaceStateObserver;
+    private AppBarLayout.OnOffsetChangedListener mStartSurfaceHeaderOffsetChangeListener;
 
     private OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
     private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
@@ -357,7 +360,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
                 browsingModeThemeColorProvider, startSurfaceMenuButtonCoordinator, invalidator,
-                identityDiscController, startSurfaceSupplier);
+                identityDiscController);
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
@@ -666,9 +669,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mStartSurface = startSurface;
             mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
                 assert StartSurfaceConfiguration.isStartSurfaceEnabled();
-                mToolbar.updateTabSwitcherToolbarState(shouldShowToolbar);
+                mStartSurfaceState = newState;
+                mToolbar.updateStartSurfaceToolbarState(newState, shouldShowToolbar);
             };
             mStartSurface.addStateChangeObserver(mStartSurfaceStateObserver);
+
+            mStartSurfaceHeaderOffsetChangeListener = (appbarLayout, verticalOffset) -> {
+                assert StartSurfaceConfiguration.isStartSurfaceEnabled();
+                mToolbar.onStartSurfaceHeaderOffsetChanged(verticalOffset);
+            };
+            mStartSurface.addHeaderOffsetChangeListener(mStartSurfaceHeaderOffsetChangeListener);
         }));
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
@@ -679,26 +689,20 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
             MenuButtonCoordinator startSurfaceMenuButtonCoordinator, Invalidator invalidator,
-            IdentityDiscController identityDiscController,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            IdentityDiscController identityDiscController) {
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
                 mLocationBarModel, mToolbarTabController,
                 new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile),
                 buttonDataProviders, mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
-                mHomeButtonVisibilitySupplier, mIdentityDiscStateSupplier,
-                (client)
-                        -> {
+                mHomeButtonVisibilitySupplier, mIdentityDiscStateSupplier, (client) -> {
                     if (invalidator != null) {
                         invalidator.invalidate(client);
                     } else {
                         client.run();
                     }
-                },
-                ()
-                        -> identityDiscController.getForStartSurface(mStartSurfaceState),
-                startSurfaceSupplier);
+                }, () -> identityDiscController.getForStartSurface(mStartSurfaceState));
         mHomepageStateListener = () -> {
             mHomeButtonVisibilitySupplier.set(HomepageManager.isHomepageEnabled());
             mHomepageManagedByPolicySupplier.set(HomepagePolicyManager.isHomepageManagedByPolicy());
@@ -1026,8 +1030,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         if (mStartSurface != null) {
             mStartSurface.removeStateChangeObserver(mStartSurfaceStateObserver);
+            mStartSurface.removeHeaderOffsetChangeListener(mStartSurfaceHeaderOffsetChangeListener);
             mStartSurface = null;
             mStartSurfaceStateObserver = null;
+            mStartSurfaceHeaderOffsetChangeListener = null;
         }
 
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);

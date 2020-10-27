@@ -7,6 +7,8 @@ package org.chromium.chrome.features.start_surface;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -150,6 +152,23 @@ public class StartSurfaceCoordinator implements StartSurface {
         mIsInitPending = false;
         if (mTasksSurface != null) {
             mTasksSurface.initialize();
+        }
+    }
+
+    @Override
+    public void addHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
+        // TODO (crbug.com/1113852): Add a header offset change listener for incognito homepage.
+        if (mTasksSurface != null) {
+            mTasksSurface.addHeaderOffsetChangeListener(onOffsetChangedListener);
+        }
+    }
+
+    @Override
+    public void removeHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
+        if (mTasksSurface != null) {
+            mTasksSurface.removeHeaderOffsetChangeListener(onOffsetChangedListener);
         }
     }
 

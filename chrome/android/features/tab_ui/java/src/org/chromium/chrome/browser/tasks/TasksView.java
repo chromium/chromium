@@ -338,4 +338,26 @@ class TasksView extends CoordinatorLayoutForPointer {
     void setTrendyTermsVisibility(boolean isVisible) {
         findViewById(R.id.trendy_terms_recycler_view).setVisibility(isVisible ? VISIBLE : GONE);
     }
+
+    /**
+     * Add a header offset change listener.
+     * @param onOffsetChangedListener The given header offset change listener.
+     */
+    void addHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
+        if (mHeaderView != null) {
+            mHeaderView.addOnOffsetChangedListener(onOffsetChangedListener);
+        }
+    }
+
+    /**
+     * Remove the given header offset change listener.
+     * @param onOffsetChangedListener The header offset change listener which should be removed.
+     */
+    void removeHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
+        if (mHeaderView != null) {
+            mHeaderView.removeOnOffsetChangedListener(onOffsetChangedListener);
+        }
+    }
 }

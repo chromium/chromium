@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -162,5 +164,17 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             mTabSwitcher.getController().addOverviewModeObserver(mMediator);
             TrendyTermsCache.maybeFetch(Profile.getLastUsedRegularProfile());
         }
+    }
+
+    @Override
+    public void addHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
+        mView.addHeaderOffsetChangeListener(onOffsetChangedListener);
+    }
+
+    @Override
+    public void removeHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
+        mView.removeHeaderOffsetChangeListener(onOffsetChangedListener);
     }
 }

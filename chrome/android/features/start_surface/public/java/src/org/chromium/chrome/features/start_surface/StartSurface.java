@@ -6,6 +6,8 @@ package org.chromium.chrome.features.start_surface;
 
 import android.os.SystemClock;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 
@@ -35,6 +37,20 @@ public interface StartSurface {
         void onStateChanged(
                 @StartSurfaceState int overviewModeState, boolean shouldShowTabSwitcherToolbar);
     }
+
+    /**
+     * @param onOffsetChangedListener Registers listener for the offset changes on top of the start
+     *         surface.
+     */
+    void addHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
+
+    /**
+     * @param onOffsetChangedListener Unregisters listener for the offset changes on top of the
+     *         start surface.
+     */
+    void removeHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
 
     /**
      * @param observer Registers {@code observer} for the {@link StartSurfaceState} changes.

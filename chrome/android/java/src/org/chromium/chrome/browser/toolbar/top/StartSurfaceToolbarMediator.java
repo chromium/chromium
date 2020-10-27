@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import android.view.View;
 
@@ -29,7 +30,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -68,16 +67,14 @@ class StartSurfaceToolbarMediator {
     private int mOverviewModeState;
     private boolean mIsGoogleSearchEngine;
 
-    private StartSurface mStartSurface;
-    private StartSurface.StateObserver mStartSurfaceStateObserver;
     private CallbackController mCallbackController = new CallbackController();
+    private float mNonIncognitoHomepageTranslationY;
 
     StartSurfaceToolbarMediator(PropertyModel model, Callback<IPHCommandBuilder> showIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, boolean hideIncognitoSwitchOnHomePage,
             boolean showNewTabAndIdentityDiscAtStart, MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
-            Supplier<ButtonData> identityDiscButtonSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            Supplier<ButtonData> identityDiscButtonSupplier) {
         mPropertyModel = model;
         mOverviewModeState = StartSurfaceState.NOT_SHOWN;
         mShowIPHCallback = showIPHCallback;
@@ -91,20 +88,6 @@ class StartSurfaceToolbarMediator {
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
             updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         });
-
-        startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable(this::setStartSurface));
-    }
-
-    void setStartSurface(StartSurface startSurface) {
-        mStartSurface = startSurface;
-        mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
-            mOverviewModeState = newState;
-            updateIncognitoSwitchVisibility();
-            updateNewTabButtonVisibility();
-            updateLogoVisibility(mIsGoogleSearchEngine);
-            updateIdentityDisc(mIdentityDiscButtonSupplier.get());
-        };
-        startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
     }
 
     void onNativeLibraryReady() {
@@ -132,13 +115,35 @@ class StartSurfaceToolbarMediator {
         if (mOverviewModeObserver != null) {
             mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
         }
-        if (mStartSurface != null) {
-            mStartSurface.removeStateChangeObserver(mStartSurfaceStateObserver);
-        }
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
         }
+    }
+
+    void onStartSurfaceStateChanged(
+            @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
+        mOverviewModeState = newState;
+        setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
+        updateIncognitoSwitchVisibility();
+        updateNewTabButtonVisibility();
+        updateLogoVisibility(mIsGoogleSearchEngine);
+        updateIdentityDisc(mIdentityDiscButtonSupplier.get());
+        updateTranslationY(mNonIncognitoHomepageTranslationY);
+    }
+
+    void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
+        updateTranslationY(verticalOffset);
+    }
+
+    boolean shouldHideToolbarContainer(int toolbarHeight) {
+        // If it's on the non-incognito homepage, start surface toolbar is visible (omnibox has no
+        // focus), and scrolling offset is smaller than toolbar's height, we need to hide toolbar
+        // container until start surface toolbar is disappearing.
+        return mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
+                && !mPropertyModel.get(IS_INCOGNITO) && mPropertyModel.get(IS_VISIBLE)
+                && -mPropertyModel.get(TRANSLATION_Y) != 0
+                && -mPropertyModel.get(TRANSLATION_Y) < toolbarHeight;
     }
 
     void setOnNewTabClickHandler(View.OnClickListener listener) {
@@ -284,6 +289,19 @@ class StartSurfaceToolbarMediator {
                 || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS
                 || ChromeAccessibilityUtil.get().isAccessibilityEnabled();
         mPropertyModel.set(NEW_TAB_BUTTON_IS_VISIBLE, isShownTabswitcherState);
+    }
+
+    private void updateTranslationY(float transY) {
+        if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
+                && !mPropertyModel.get(IS_INCOGNITO)) {
+            // If it's on the non-incognito homepage, document the homepage translationY.
+            mNonIncognitoHomepageTranslationY = transY;
+            // Update the translationY of the toolbarView.
+            mPropertyModel.set(TRANSLATION_Y, transY);
+        } else {
+            // If it's not on the non-incognito homepage, set the translationY as 0.
+            mPropertyModel.set(TRANSLATION_Y, 0);
+        }
     }
 
     @VisibleForTesting

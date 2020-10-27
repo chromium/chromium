@@ -42,8 +42,8 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 
 import java.util.List;
@@ -91,6 +91,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
 
     private Callback<ClipDrawableProgressBar.DrawingInfo> mProgressDrawInfoCallback;
+    private ToolbarControlContainer mControlContainer;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -125,8 +126,9 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> homeButtonVisibilitySupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
-            Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            Callback<Runnable> invalidatorCallback,
+            Supplier<ButtonData> identityDiscButtonSupplier) {
+        mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
         mOptionalButtonController = new OptionalBrowsingModeButtonController(buttonDataProviders,
@@ -147,8 +149,7 @@ public class TopToolbarCoordinator implements Toolbar {
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
                         userEducationHelper, overviewModeBehaviorSupplier,
                         identityDiscStateSupplier, overviewThemeColorProvider,
-                        overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
-                        startSurfaceSupplier);
+                        overviewModeMenuButtonCoordinator, identityDiscButtonSupplier);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
@@ -287,6 +288,9 @@ public class TopToolbarCoordinator implements Toolbar {
         if (mTabModelSelectorSupplier != null) {
             mTabModelSelectorSupplier = null;
         }
+        if (mControlContainer != null) {
+            mControlContainer = null;
+        }
     }
 
     @Override
@@ -311,18 +315,6 @@ public class TopToolbarCoordinator implements Toolbar {
     @Override
     public int getPrimaryColor() {
         return mToolbarLayout.getToolbarDataProvider().getPrimaryColor();
-    }
-
-    @Override
-    public void updateTabSwitcherToolbarState(boolean requestToShow) {
-        // TODO(https://crbug.com/1041123): Investigate whether isInOverviewAndShowingOmnibox check
-        // is needed.
-        if (mStartSurfaceToolbarCoordinator == null
-                || mToolbarLayout.getToolbarDataProvider() == null
-                || !mToolbarLayout.getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
-            return;
-        }
-        mStartSurfaceToolbarCoordinator.setStartSurfaceToolbarVisibility(requestToShow);
     }
 
     @Override
@@ -632,6 +624,41 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public LocationBar getLocationBar() {
         return mToolbarLayout.getLocationBar();
+    }
+
+    /**
+     * Update the start surface toolbar state.
+     * @param newState New Start Surface State.
+     * @param requestToShow Whether or not request showing the start surface toolbar.
+     */
+    public void updateStartSurfaceToolbarState(
+            @StartSurfaceState int newState, boolean requestToShow) {
+        if (mStartSurfaceToolbarCoordinator == null
+                || mToolbarLayout.getToolbarDataProvider() == null) {
+            return;
+        }
+        mStartSurfaceToolbarCoordinator.onStartSurfaceStateChanged(newState, requestToShow);
+        updateToolbarContainerVisibility();
+    }
+
+    /**
+     * Triggered when the offset of start surface header view is changed.
+     * @param verticalOffset The start surface header view's offset.
+     */
+    public void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
+        if (mStartSurfaceToolbarCoordinator != null) {
+            mStartSurfaceToolbarCoordinator.onStartSurfaceHeaderOffsetChanged(verticalOffset);
+            updateToolbarContainerVisibility();
+        }
+    }
+
+    private void updateToolbarContainerVisibility() {
+        if (mStartSurfaceToolbarCoordinator != null) {
+            boolean shouldHideToolbarContainer =
+                    mStartSurfaceToolbarCoordinator.shouldHideToolbarContainer(getHeight());
+            mControlContainer.setToolbarContainerVisibility(
+                    shouldHideToolbarContainer ? View.INVISIBLE : View.VISIBLE);
+        }
     }
 
     @Override
