@@ -28,13 +28,13 @@ class Gamepads;
 namespace blink {
 
 class GamepadListener;
-class LocalFrame;
+class LocalDOMWindow;
 
 class GamepadSharedMemoryReader
     : public GarbageCollected<GamepadSharedMemoryReader>,
       public device::mojom::blink::GamepadObserver {
  public:
-  explicit GamepadSharedMemoryReader(LocalFrame& frame);
+  explicit GamepadSharedMemoryReader(LocalDOMWindow&);
   ~GamepadSharedMemoryReader() override;
   void Trace(Visitor*) const;
 

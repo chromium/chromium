@@ -10,7 +10,7 @@
 
 namespace blink {
 class PlatformEventController;
-class LocalFrame;
+class LocalDOMWindow;
 
 class CORE_EXPORT PlatformEventDispatcher : public GarbageCollectedMixin {
  public:
@@ -27,7 +27,7 @@ class CORE_EXPORT PlatformEventDispatcher : public GarbageCollectedMixin {
   // DOMWindow.
   // TODO(crbug.com/850619): fix all the callsites, currently not all of them
   // (and unittests) are guaranteed to pass a non-nullptr frame.
-  void AddController(PlatformEventController*, LocalFrame* frame);
+  void AddController(PlatformEventController*, LocalDOMWindow*);
 
   // Removes a controller from |controllers_| and stops listening if there are
   // no more registered controllers.
@@ -40,7 +40,7 @@ class CORE_EXPORT PlatformEventDispatcher : public GarbageCollectedMixin {
 
   void NotifyControllers();
 
-  virtual void StartListening(LocalFrame* frame) = 0;
+  virtual void StartListening(LocalDOMWindow*) = 0;
   virtual void StopListening() = 0;
 
  private:

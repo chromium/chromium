@@ -7,7 +7,7 @@
 #include "services/device/public/mojom/battery_status.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
@@ -50,12 +50,12 @@ void BatteryDispatcher::UpdateBatteryStatus(
   NotifyControllers();
 }
 
-void BatteryDispatcher::StartListening(LocalFrame* frame) {
+void BatteryDispatcher::StartListening(LocalDOMWindow* window) {
   DCHECK(!monitor_.is_bound());
   // See https://bit.ly/2S0zRAS for task types.
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       monitor_.BindNewPipeAndPassReceiver(
-          frame->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+          window->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   QueryNextStatus();
 }
 

@@ -88,7 +88,7 @@ void BatteryManager::DidUpdateData() {
 }
 
 void BatteryManager::RegisterWithDispatcher() {
-  BatteryDispatcher::Instance().AddController(this, GetFrame());
+  BatteryDispatcher::Instance().AddController(this, DomWindow());
 }
 
 void BatteryManager::UnregisterWithDispatcher() {

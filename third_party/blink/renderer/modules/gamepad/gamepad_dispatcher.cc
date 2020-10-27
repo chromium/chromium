@@ -87,10 +87,10 @@ void GamepadDispatcher::DispatchDidConnectOrDisconnectGamepad(
   NotifyControllers();
 }
 
-void GamepadDispatcher::StartListening(LocalFrame* frame) {
+void GamepadDispatcher::StartListening(LocalDOMWindow* window) {
   if (!reader_) {
-    DCHECK(frame);
-    reader_ = MakeGarbageCollected<GamepadSharedMemoryReader>(*frame);
+    DCHECK(window);
+    reader_ = MakeGarbageCollected<GamepadSharedMemoryReader>(*window);
   }
   reader_->Start(this);
 }

@@ -35,7 +35,7 @@ class MODULES_EXPORT BatteryDispatcher final
   void UpdateBatteryStatus(const BatteryStatus&);
 
   // Inherited from PlatformEventDispatcher.
-  void StartListening(LocalFrame* frame) override;
+  void StartListening(LocalDOMWindow*) override;
   void StopListening() override;
 
   HeapMojoRemote<device::mojom::blink::BatteryMonitor> monitor_;

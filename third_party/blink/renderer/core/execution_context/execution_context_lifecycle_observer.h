@@ -114,10 +114,6 @@ class CORE_EXPORT ExecutionContextLifecycleObserver
   // execution context is not a window or if it has been detached.
   LocalDOMWindow* DomWindow() const;
 
-  // If associated with a live document, returns the associated frame.
-  // Returns null otherwise.
-  LocalFrame* GetFrame() const;
-
   enum Type {
     kGenericType,
     kStateObjectType,

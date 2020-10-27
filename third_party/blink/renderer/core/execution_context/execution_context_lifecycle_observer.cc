@@ -54,11 +54,6 @@ LocalDOMWindow* ExecutionContextLifecycleObserver::DomWindow() const {
   return DynamicTo<LocalDOMWindow>(GetExecutionContext());
 }
 
-LocalFrame* ExecutionContextLifecycleObserver::GetFrame() const {
-  auto* window = DomWindow();
-  return window ? window->GetFrame() : nullptr;
-}
-
 void ExecutionContextLifecycleObserver::Trace(Visitor* visitor) const {
   ContextLifecycleObserver::Trace(visitor);
 }

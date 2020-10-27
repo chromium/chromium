@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_photo_capabilities.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/imagecapture/image_capture_frame_grabber.h"
@@ -916,10 +916,10 @@ ImageCapture::ImageCapture(ExecutionContext* context,
 
   // This object may be constructed over an ExecutionContext that has already
   // been detached. In this case the ImageCapture service will not be available.
-  if (!GetFrame())
+  if (!DomWindow())
     return;
 
-  GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+  DomWindow()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(
           context->GetTaskRunner(TaskType::kDOMManipulation)));
 
@@ -1221,9 +1221,7 @@ void ImageCapture::ResolveWithPhotoCapabilities(
 }
 
 bool ImageCapture::IsPageVisible() {
-  LocalFrame* frame = GetFrame();
-  Document* doc = frame ? frame->GetDocument() : nullptr;
-  return doc ? doc->IsPageVisible() : false;
+  return DomWindow() ? DomWindow()->document()->IsPageVisible() : false;
 }
 
 void ImageCapture::Trace(Visitor* visitor) const {

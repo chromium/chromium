@@ -810,7 +810,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
 
   // TODO(crbug.com/825270): Reject with SecurityError DOMException if triggered
   // without user activation.
-  bool is_user_gesture = LocalFrame::HasTransientUserActivation(GetFrame());
+  bool is_user_gesture =
+      LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame());
   if (!is_user_gesture) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kPaymentRequestShowWithoutGesture);
@@ -827,7 +828,7 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
 
   // TODO(crbug.com/779126): add support for handling payment requests in
   // immersive mode.
-  if (GetFrame()->GetDocument()->GetSettings()->GetImmersiveModeEnabled()) {
+  if (DomWindow()->GetFrame()->GetSettings()->GetImmersiveModeEnabled()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Page popups are suppressed");
     return ScriptPromise();
@@ -1301,7 +1302,7 @@ PaymentRequest::PaymentRequest(
         std::move(mock_payment_provider),
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   } else {
-    GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+    DomWindow()->GetBrowserInterfaceBroker().GetInterface(
         payment_provider_.BindNewPipeAndPassReceiver(task_runner));
   }
   payment_provider_.set_disconnect_handler(

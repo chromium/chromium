@@ -11,18 +11,16 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_listener.h"
 
 namespace blink {
 
-GamepadSharedMemoryReader::GamepadSharedMemoryReader(LocalFrame& frame)
-    : receiver_(this, frame.DomWindow()),
-      gamepad_monitor_remote_(frame.DomWindow()) {
+GamepadSharedMemoryReader::GamepadSharedMemoryReader(LocalDOMWindow& window)
+    : receiver_(this, &window), gamepad_monitor_remote_(&window) {
   // See https://bit.ly/2S0zRAS for task types
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      frame.GetTaskRunner(TaskType::kMiscPlatformAPI);
-  frame.GetBrowserInterfaceBroker().GetInterface(
+      window.GetTaskRunner(TaskType::kMiscPlatformAPI);
+  window.GetBrowserInterfaceBroker().GetInterface(
       gamepad_monitor_remote_.BindNewPipeAndPassReceiver(task_runner));
   gamepad_monitor_remote_->SetObserver(
       receiver_.BindNewPipeAndPassRemote(task_runner));

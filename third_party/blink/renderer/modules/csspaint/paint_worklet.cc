@@ -71,7 +71,8 @@ void PaintWorklet::ResetIsPaintOffThreadForTesting() {
 // This approach ensures non-deterministic of global scope selecting, and that
 // there is a max of one switching within one frame.
 wtf_size_t PaintWorklet::SelectGlobalScope() {
-  size_t current_paint_frame_count = GetFrame()->View()->PaintFrameCount();
+  size_t current_paint_frame_count =
+      DomWindow()->GetFrame()->View()->PaintFrameCount();
   // Whether a new frame starts or not.
   bool frame_changed = current_paint_frame_count != active_frame_count_;
   if (frame_changed) {

@@ -138,7 +138,7 @@ class CanvasRenderingContext2DTest : public ::testing::Test {
       LatencyMode = kNormalLatency,
       ReadFrequencyMode = ReadFrequencyMode::kWillNotReadFrequency);
   ScriptState* GetScriptState() {
-    return ToScriptStateForMainWorld(canvas_element_->GetFrame());
+    return ToScriptStateForMainWorld(canvas_element_->DomWindow()->GetFrame());
   }
 
   void TearDown() override;
