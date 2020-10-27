@@ -299,6 +299,7 @@ component("core") {
     ":core_generated",
     ":core_hot",
     "//third_party/blink/renderer/core/animation",
+    "//third_party/blink/renderer/core/exported",
     "//third_party/blink/renderer/core/probe",
     "//third_party/blink/renderer/core/xml:xpath_generated",
   ]
@@ -1083,7 +1084,6 @@ target(core_generated_target_type, "core_generated") {
   }
   deps = [
     "//services/metrics/public/cpp:ukm_builders",
-    "//third_party/blink/renderer/core/exported:exported",
     "//third_party/blink/renderer/core/probe:probe",
   ]
   public_deps = [ ":all_generators" ]

@@ -192,9 +192,6 @@ no_check_targets = [
   "//sandbox/mac:*",  # 14 errors
   "//sandbox/win:*",  # 7 errors
 
-  # //third_party/blink/*, https://crbug.com/800764
-  "//third_party/blink/renderer/core/exported:*",  # 470 errors
-
   "//third_party/breakpad:*",  # 34 errors
   "//third_party/ced/*",
   "//third_party/crashpad/crashpad/client:*",  # 1 error
