@@ -694,7 +694,6 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     INTERNAL_READ_ERROR(SET_UP_METADATA);
     return s;
   }
-  std::vector<base::FilePath> empty_blobs_to_delete;
   indexed_db::ReportSchemaVersion(db_schema_version, origin_);
   if (!found) {
     // Initialize new backing store.
@@ -716,85 +715,20 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
       return InternalInconsistencyStatus();
 
     // Upgrade old backing store.
-    // TODO(dmurph): Clean up this logic, https://crbug.com/984163
-    if (db_schema_version < 1) {
-      db_schema_version = 1;
-      ignore_result(
-          PutInt(write_batch.get(), schema_version_key, db_schema_version));
-      const std::string start_key =
-          DatabaseNameKey::EncodeMinKeyForOrigin(origin_identifier_);
-      const std::string stop_key =
-          DatabaseNameKey::EncodeStopKeyForOrigin(origin_identifier_);
-      std::unique_ptr<TransactionalLevelDBIterator> it =
-          db_->CreateIterator(db_->DefaultReadOptions());
-      for (s = it->Seek(start_key);
-           s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0;
-           s = it->Next()) {
-        int64_t database_id = 0;
-        found = false;
-        s = GetInt(db_.get(), it->Key(), &database_id, &found);
-        if (!s.ok()) {
-          INTERNAL_READ_ERROR(SET_UP_METADATA);
-          return s;
-        }
-        if (!found) {
-          INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
-          return InternalInconsistencyStatus();
-        }
-        std::string version_key = DatabaseMetaDataKey::Encode(
-            database_id, DatabaseMetaDataKey::USER_VERSION);
-        ignore_result(PutVarInt(write_batch.get(), version_key,
-                                IndexedDBDatabaseMetadata::DEFAULT_VERSION));
-      }
+    if (s.ok() && db_schema_version < 1) {
+      s = MigrateToV1(write_batch.get());
     }
     if (s.ok() && db_schema_version < 2) {
-      db_schema_version = 2;
-      ignore_result(
-          PutInt(write_batch.get(), schema_version_key, db_schema_version));
+      s = MigrateToV2(write_batch.get());
       db_data_version = latest_known_data_version;
-      ignore_result(PutInt(write_batch.get(), data_version_key,
-                           db_data_version.Encode()));
     }
-    if (db_schema_version < 3) {
-      // Up until http://crrev.com/3c0d175b, this migration path did not write
-      // the updated schema version to disk. In consequence, any database that
-      // started out as schema version <= 2 will remain at schema version 2
-      // indefinitely. Furthermore, this migration path used to call
-      // "base::DeletePathRecursively(blob_path_)", so databases stuck at
-      // version 2 would lose their stored Blobs on every open call.
-      //
-      // In order to prevent corrupt databases, when upgrading from 2 to 3 this
-      // will consider any v2 databases with BlobEntryKey entries as corrupt.
-      // https://crbug.com/756447, https://crbug.com/829125,
-      // https://crbug.com/829141
-      db_schema_version = 3;
-      bool has_blobs = false;
-      s = AnyDatabaseContainsBlobs(db_.get(), &has_blobs);
-      if (!s.ok()) {
-        INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
-        return InternalInconsistencyStatus();
-      }
-      indexed_db::ReportV2Schema(has_blobs, origin_);
-      if (has_blobs) {
-        INTERNAL_CONSISTENCY_ERROR(UPGRADING_SCHEMA_CORRUPTED_BLOBS);
-        if (origin_.host() != "docs.google.com")
-          return InternalInconsistencyStatus();
-      } else {
-        ignore_result(
-            PutInt(write_batch.get(), schema_version_key, db_schema_version));
-      }
+    if (s.ok() && db_schema_version < 3) {
+      s = MigrateToV3(write_batch.get());
     }
-    if (db_schema_version < 4) {
-      s = UpgradeBlobEntriesToV4(db_.get(), write_batch.get(),
-                                 &empty_blobs_to_delete);
-      if (!s.ok()) {
-        INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
-        return InternalInconsistencyStatus();
-      }
-      db_schema_version = 4;
-      ignore_result(
-          PutInt(write_batch.get(), schema_version_key, db_schema_version));
+    if (s.ok() && db_schema_version < 4) {
+      s = MigrateToV4(write_batch.get());
     }
+    db_schema_version = indexed_db::kLatestKnownSchemaVersion;
   }
 
   if (!s.ok()) {
@@ -842,14 +776,6 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
         origin_);
     INTERNAL_WRITE_ERROR(SET_UP_METADATA);
     return s;
-  }
-
-  // Delete all empty files that resulted from the migration to v4. If this
-  // fails it's not a big deal.
-  if (filesystem_proxy_) {
-    for (const auto& path : empty_blobs_to_delete) {
-      filesystem_proxy_->DeleteFile(path);
-    }
   }
 
   if (clean_active_journal) {
@@ -2999,6 +2925,113 @@ void IndexedDBBackingStore::Transaction::Begin(std::vector<ScopeLock> locks) {
   // constructor snapshots the leveldb.
   for (const auto& iter : backing_store_->incognito_external_object_map_)
     incognito_external_object_map_[iter.first] = iter.second->Clone();
+}
+
+Status IndexedDBBackingStore::MigrateToV1(LevelDBWriteBatch* write_batch) {
+  const int64_t db_schema_version = 1;
+  const std::string schema_version_key = SchemaVersionKey::Encode();
+  const std::string data_version_key = DataVersionKey::Encode();
+  Status s;
+
+  ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
+  const std::string start_key =
+      DatabaseNameKey::EncodeMinKeyForOrigin(origin_identifier_);
+  const std::string stop_key =
+      DatabaseNameKey::EncodeStopKeyForOrigin(origin_identifier_);
+  std::unique_ptr<TransactionalLevelDBIterator> it =
+      db_->CreateIterator(db_->DefaultReadOptions());
+  for (s = it->Seek(start_key);
+       s.ok() && it->IsValid() && CompareKeys(it->Key(), stop_key) < 0;
+       s = it->Next()) {
+    int64_t database_id = 0;
+    bool found = false;
+    s = GetInt(db_.get(), it->Key(), &database_id, &found);
+    if (!s.ok()) {
+      INTERNAL_READ_ERROR(SET_UP_METADATA);
+      return s;
+    }
+    if (!found) {
+      INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
+      return InternalInconsistencyStatus();
+    }
+    std::string version_key = DatabaseMetaDataKey::Encode(
+        database_id, DatabaseMetaDataKey::USER_VERSION);
+    ignore_result(PutVarInt(write_batch, version_key,
+                            IndexedDBDatabaseMetadata::DEFAULT_VERSION));
+  }
+
+  return s;
+}
+
+Status IndexedDBBackingStore::MigrateToV2(LevelDBWriteBatch* write_batch) {
+  const int64_t db_schema_version = 2;
+  const std::string schema_version_key = SchemaVersionKey::Encode();
+  const std::string data_version_key = DataVersionKey::Encode();
+  Status s;
+
+  ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
+  ignore_result(PutInt(write_batch, data_version_key,
+                       IndexedDBDataFormatVersion::GetCurrent().Encode()));
+  return s;
+}
+
+Status IndexedDBBackingStore::MigrateToV3(LevelDBWriteBatch* write_batch) {
+  const int64_t db_schema_version = 3;
+  const std::string schema_version_key = SchemaVersionKey::Encode();
+  const std::string data_version_key = DataVersionKey::Encode();
+  Status s;
+
+  // Up until http://crrev.com/3c0d175b, this migration path did not write
+  // the updated schema version to disk. In consequence, any database that
+  // started out as schema version <= 2 will remain at schema version 2
+  // indefinitely. Furthermore, this migration path used to call
+  // "base::DeletePathRecursively(blob_path_)", so databases stuck at
+  // version 2 would lose their stored Blobs on every open call.
+  //
+  // In order to prevent corrupt databases, when upgrading from 2 to 3 this
+  // will consider any v2 databases with BlobEntryKey entries as corrupt.
+  // https://crbug.com/756447, https://crbug.com/829125,
+  // https://crbug.com/829141
+  bool has_blobs = false;
+  s = AnyDatabaseContainsBlobs(db_.get(), &has_blobs);
+  if (!s.ok()) {
+    INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
+    return InternalInconsistencyStatus();
+  }
+  indexed_db::ReportV2Schema(has_blobs, origin_);
+  if (has_blobs) {
+    INTERNAL_CONSISTENCY_ERROR(UPGRADING_SCHEMA_CORRUPTED_BLOBS);
+    if (origin_.host() != "docs.google.com")
+      return InternalInconsistencyStatus();
+  } else {
+    ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
+  }
+
+  return s;
+}
+
+Status IndexedDBBackingStore::MigrateToV4(LevelDBWriteBatch* write_batch) {
+  const int64_t db_schema_version = 4;
+  const std::string schema_version_key = SchemaVersionKey::Encode();
+  Status s;
+
+  std::vector<base::FilePath> empty_blobs_to_delete;
+  s = UpgradeBlobEntriesToV4(db_.get(), write_batch, &empty_blobs_to_delete);
+  if (!s.ok()) {
+    INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
+    return InternalInconsistencyStatus();
+  }
+  ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
+
+  // Delete all empty files that resulted from the migration to v4. If this
+  // fails it's not a big deal.
+  if (filesystem_proxy_) {
+    for (const auto& path : empty_blobs_to_delete) {
+      filesystem_proxy_->DeleteFile(path);
+    }
+  }
+
+  return s;
 }
 
 Status IndexedDBBackingStore::Transaction::HandleBlobPreTransaction() {

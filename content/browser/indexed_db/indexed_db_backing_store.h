@@ -564,6 +564,11 @@ class CONTENT_EXPORT IndexedDBBackingStore {
  private:
   friend class AutoDidCommitTransaction;
 
+  leveldb::Status MigrateToV1(LevelDBWriteBatch* write_batch);
+  leveldb::Status MigrateToV2(LevelDBWriteBatch* write_batch);
+  leveldb::Status MigrateToV3(LevelDBWriteBatch* write_batch);
+  leveldb::Status MigrateToV4(LevelDBWriteBatch* write_batch);
+
   leveldb::Status FindKeyInIndex(
       IndexedDBBackingStore::Transaction* transaction,
       int64_t database_id,
