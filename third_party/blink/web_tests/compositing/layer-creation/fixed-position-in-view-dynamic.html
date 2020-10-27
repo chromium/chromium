@@ -16,6 +16,7 @@
     if (window.testRunner && window.internals) {
       testRunner.dumpAsText();
       internals.settings.setPreferCompositingToLCDTextEnabled(true);
+      internals.settings.setThreadedScrollingEnabled(true);
 
       addEventListener("load", function() {
         var fixed = document.createElement("div");

@@ -164,6 +164,7 @@
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/common/security/security_style.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -2465,6 +2466,9 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   }
 
   prefs.viewport_enabled = command_line.HasSwitch(switches::kEnableViewport);
+
+  prefs.threaded_scrolling_enabled =
+      !command_line.HasSwitch(blink::switches::kDisableThreadedScrolling);
 
   if (IsOverridingUserAgent())
     prefs.viewport_meta_enabled = false;

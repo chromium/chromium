@@ -16,8 +16,10 @@
   </style>
 
   <script type="text/javascript">
-    if (window.internals)
+    if (window.internals) {
       internals.settings.setPreferCompositingToLCDTextEnabled(true);
+      internals.settings.setThreadedScrollingEnabled(true);
+    }
 
     if (window.testRunner) {
       testRunner.dumpAsText();

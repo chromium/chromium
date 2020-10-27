@@ -91,6 +91,7 @@ WebPreferences::WebPreferences()
       should_print_backgrounds(false),
       should_clear_document_background(true),
       enable_scroll_animator(false),
+      threaded_scrolling_enabled(true),
       prefers_reduced_motion(false),
       touch_event_feature_detection_enabled(false),
       pointer_events_max_touch_points(0),
