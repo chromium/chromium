@@ -68,6 +68,8 @@ enum Milestone {
   kM87 = 87,
   kM88 = 88,
   kM89 = 89,
+  kM90 = 90,
+  kM91 = 91,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
@@ -124,6 +126,10 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
       return {2021, 1, 0, 19, 4};
     case kM89:
       return {2021, 3, 0, 2, 4};
+    case kM90:
+      return {2021, 4, 0, 13, 4};
+    case kM91:
+      return {2021, 5, 0, 25, 4};
   }
 
   NOTREACHED();
@@ -573,6 +579,11 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               ReplacedWillBeRemoved("Comma separator in iframe allow attribute",
                                     "semicolons", kM89, "5740835259809792")};
 
+    case WebFeature::kRTCConstraintEnableRtpDataChannelsTrue:
+      return {"RTP data channel", kM88,
+              ReplacedWillBeRemoved("RTP data channels",
+                                    "standard SCTP data channels", kM90,
+                                    "6485681910054912")};
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};

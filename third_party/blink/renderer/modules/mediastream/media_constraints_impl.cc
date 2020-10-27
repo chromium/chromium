@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -369,8 +370,8 @@ static void ParseOldStyleNames(
     } else if (constraint.name_.Equals(kEnableRtpDataChannels)) {
       bool value = ToBoolean(constraint.value_);
       if (value) {
-        UseCounter::Count(context,
-                          WebFeature::kRTCConstraintEnableRtpDataChannelsTrue);
+        Deprecation::CountDeprecation(
+            context, WebFeature::kRTCConstraintEnableRtpDataChannelsTrue);
       } else {
         UseCounter::Count(context,
                           WebFeature::kRTCConstraintEnableRtpDataChannelsFalse);
