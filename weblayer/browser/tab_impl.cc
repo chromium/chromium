@@ -45,6 +45,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -231,6 +232,15 @@ std::set<TabImpl*>& GetTabs() {
   static base::NoDestructor<std::set<TabImpl*>> s_all_tab_impl;
   return *s_all_tab_impl;
 }
+
+// Simulates a WeakPtr for WebContents. Specifically if the WebContents
+// supplied to the constructor is destroyed then web_contents() returns
+// null.
+class WebContentsTracker : public content::WebContentsObserver {
+ public:
+  explicit WebContentsTracker(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+};
 
 }  // namespace
 
@@ -850,15 +860,15 @@ content::WebContents* TabImpl::OpenURLFromTab(
   std::unique_ptr<content::WebContents> new_tab_contents =
       content::WebContents::Create(content::WebContents::CreateParams(
           web_contents()->GetBrowserContext()));
-  content::WebContents* new_tab_contents_raw = new_tab_contents.get();
+  WebContentsTracker tracker(new_tab_contents.get());
   bool was_blocked = false;
   AddNewContents(web_contents(), std::move(new_tab_contents), params.url,
                  params.disposition, {}, params.user_gesture, &was_blocked);
-  if (was_blocked)
+  if (was_blocked || !tracker.web_contents())
     return nullptr;
-  new_tab_contents_raw->GetController().LoadURLWithParams(
+  tracker.web_contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
-  return new_tab_contents_raw;
+  return tracker.web_contents();
 }
 
 void TabImpl::ShowRepostFormWarningDialog(content::WebContents* source) {
