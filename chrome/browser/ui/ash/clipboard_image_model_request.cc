@@ -180,6 +180,11 @@ void ClipboardImageModelRequest::CopySurface() {
 }
 
 void ClipboardImageModelRequest::OnCopyComplete(const SkBitmap& bitmap) {
+  if (!deliver_image_model_callback_) {
+    Stop();
+    return;
+  }
+
   std::move(deliver_image_model_callback_)
       .Run(ui::ImageModel::FromImageSkia(
           gfx::ImageSkia::CreateFrom1xBitmap(bitmap)));
