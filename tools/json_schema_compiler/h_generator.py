@@ -116,6 +116,7 @@ class _Generator(object):
       for event in self._namespace.events.values():
         c.Cblock(self._GenerateEvent(event))
     (c.Concat(cpp_util.CloseNamespace(cpp_namespace))
+      .Append()
       .Append('#endif  // %s' % ifndef_name)
       .Append()
     )
@@ -232,6 +233,8 @@ class _Generator(object):
       (c.Sblock('struct %(classname)s {')
         .Append('%(classname)s();')
         .Append('~%(classname)s();')
+        .Append('%(classname)s(const %(classname)s&) = delete;')
+        .Append('%(classname)s& operator=(const %(classname)s&) = delete;')
         .Append('%(classname)s(%(classname)s&& rhs);')
         .Append('%(classname)s& operator=(%(classname)s&& rhs);')
       )
@@ -293,12 +296,7 @@ class _Generator(object):
                       self._type_helper.GetCppType(type_.additional_properties,
                                                    is_in_container=True))
             )
-      (c.Eblock()
-        .Append()
-        .Sblock(' private:')
-          .Append('DISALLOW_COPY_AND_ASSIGN(%(classname)s);')
-        .Eblock('};')
-      )
+      (c.Eblock('};'))
     return c.Substitute({'classname': classname})
 
   def _GenerateEvent(self, event):
@@ -344,6 +342,8 @@ class _Generator(object):
     (c.Sblock('struct Params {')
       .Append('static std::unique_ptr<Params> Create(%s);' %
                   self._GenerateParams(('const base::ListValue& args',)))
+      .Append('Params(const Params&) = delete;')
+      .Append('Params& operator=(const Params&) = delete;')
       .Append('~Params();')
       .Append()
       .Cblock(self._GenerateTypes(p.type_ for p in function.params))
@@ -352,8 +352,6 @@ class _Generator(object):
       .Append()
       .Sblock(' private:')
         .Append('Params();')
-        .Append()
-        .Append('DISALLOW_COPY_AND_ASSIGN(Params);')
       .Eblock('};')
     )
     return c

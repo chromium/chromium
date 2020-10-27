@@ -12,7 +12,7 @@ import os
 import re
 
 CHROMIUM_LICENSE = (
-"""// Copyright (c) %d The Chromium Authors. All rights reserved.
+"""// Copyright %d The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.""" % datetime.now().year
 )

@@ -135,7 +135,7 @@ class _Generator(object):
 
       (c.Append('%s::%s()' % (classname_in_namespace, classname))
         .Cblock(self._GenerateInitializersAndBody(type_))
-        .Append('%s::~%s() {}' % (classname_in_namespace, classname))
+        .Append('%s::~%s() = default;' % (classname_in_namespace, classname))
       )
       # Note: we use 'rhs' because some API objects have a member 'other'.
       (c.Append('%s::%s(%s&& rhs)' %
@@ -335,7 +335,7 @@ class _Generator(object):
         .Eblock('}'))
 
       if type_.properties or type_.additional_properties is not None:
-        c.Append('const base::DictionaryValue* dict = '
+        c.Append('const auto* dict = '
                      'static_cast<const base::DictionaryValue*>(&value);')
         if self._generate_error_messages:
           c.Append('std::set<std::string> keys;')
@@ -393,7 +393,7 @@ class _Generator(object):
     """
     c = Code()
     value_var = prop.unix_name + '_value'
-    c.Append('const base::Value* %(value_var)s = NULL;')
+    c.Append('const base::Value* %(value_var)s = nullptr;')
     if prop.optional:
       (c.Sblock(
           'if (%(src)s->GetWithoutPathExpansion("%(key)s", &%(value_var)s)) {')
@@ -437,7 +437,7 @@ class _Generator(object):
     )
     if self._generate_error_messages:
       c.Append('DCHECK(error);')
-    (c.Append('  std::unique_ptr<%s> out(new %s());' % (classname, classname))
+    (c.Append('  auto out = std::make_unique<%s>();' % classname)
       .Append('  if (!Populate(%s))' % self._GenerateArgs(
           ('value', 'out.get()')))
       .Append('    return nullptr;')
@@ -681,8 +681,8 @@ class _Generator(object):
     c = Code()
     (c.Sblock('std::unique_ptr<base::DictionaryValue> %s::ToValue() const {' %
           cpp_namespace)
-        .Append('std::unique_ptr<base::DictionaryValue> to_value_result('
-                    'new base::DictionaryValue());')
+        .Append('auto to_value_result =')
+        .Append('    std::make_unique<base::DictionaryValue>();')
         .Append()
     )
 
@@ -772,8 +772,8 @@ class _Generator(object):
     # Params::Populate function
     if function.params:
       c.Concat(self._GeneratePropertyFunctions('Params', function.params))
-      (c.Append('Params::Params() {}')
-        .Append('Params::~Params() {}')
+      (c.Append('Params::Params() = default;')
+        .Append('Params::~Params() = default;')
         .Append()
         .Cblock(self._GenerateFunctionParamsCreate(function))
       )
@@ -875,16 +875,11 @@ class _Generator(object):
         var = '*%s' % var
       return 'std::make_unique<base::Value>(%s)' % var
     elif underlying_type.property_type == PropertyType.ARRAY:
-      return '%s' % self._util_cc_helper.CreateValueFromArray(
-          var,
-          is_ptr)
+      return '%s' % self._util_cc_helper.CreateValueFromArray(var, is_ptr)
     elif underlying_type.property_type.is_fundamental:
       if is_ptr:
         var = '*%s' % var
-      if underlying_type.property_type == PropertyType.STRING:
-        return 'std::make_unique<base::Value>(%s)' % var
-      else:
-        return 'std::make_unique<base::Value>(%s)' % var
+      return 'std::make_unique<base::Value>(%s)' % var
     else:
       raise NotImplementedError('Conversion of %s to base::Value not '
                                 'implemented' % repr(type_.type_))
@@ -945,7 +940,7 @@ class _Generator(object):
       failure_value = 'std::unique_ptr<Params>()'
       c.Append()
       value_var = param.unix_name + '_value'
-      (c.Append('const base::Value* %(value_var)s = NULL;')
+      (c.Append('const base::Value* %(value_var)s = nullptr;')
         .Append('if (args.Get(%(i)s, &%(value_var)s) &&')
         .Sblock('    !%(value_var)s->is_none()) {')
         .Concat(self._GeneratePopulatePropertyFromValue(
@@ -989,7 +984,7 @@ class _Generator(object):
                                          failure_value,
                                          is_ptr=False):
     """Generates code to populate a variable |dst_var| of type |type_| from a
-    Value* at |src_var|. The Value* is assumed to be non-NULL. In the generated
+    Value* at |src_var|. The Value* is assumed to be non-null. In the generated
     code, if |dst_var| fails to be populated then Populate will return
     |failure_value|.
     """
@@ -1012,7 +1007,7 @@ class _Generator(object):
           c.Append('return %(failure_value)s;')
         (c.Eblock('}')
           .Append('else')
-          .Append('  %(dst_var)s.reset(new %(cpp_type)s(temp));')
+          .Append('  %(dst_var)s = std::make_unique<%(cpp_type)s>(temp);')
         )
       else:
         (c.Sblock('if (!%s) {' % cpp_util.GetAsFundamentalValue(
@@ -1029,7 +1024,7 @@ class _Generator(object):
         )
     elif underlying_type.property_type == PropertyType.OBJECT:
       if is_ptr:
-        (c.Append('const base::DictionaryValue* dictionary = NULL;')
+        (c.Append('const base::DictionaryValue* dictionary = nullptr;')
           .Sblock('if (!%(src_var)s->GetAsDictionary(&dictionary)) {')
           .Concat(self._GenerateError(
             '"\'%%(key)s\': expected dictionary, got " + ' +
@@ -1041,7 +1036,7 @@ class _Generator(object):
           c.Append('return %(failure_value)s;')
         (c.Eblock('}')
           .Sblock('else {')
-          .Append('std::unique_ptr<%(cpp_type)s> temp(new %(cpp_type)s());')
+          .Append('auto temp = std::make_unique<%(cpp_type)s>();')
           .Append('if (!%%(cpp_type)s::Populate(%s)) {' % self._GenerateArgs(
             ('*dictionary', 'temp.get()')))
           .Append('  return %(failure_value)s;')
@@ -1052,7 +1047,7 @@ class _Generator(object):
           .Eblock('}')
         )
       else:
-        (c.Append('const base::DictionaryValue* dictionary = NULL;')
+        (c.Append('const base::DictionaryValue* dictionary = nullptr;')
           .Sblock('if (!%(src_var)s->GetAsDictionary(&dictionary)) {')
           .Concat(self._GenerateError(
             '"\'%%(key)s\': expected dictionary, got " + ' +
@@ -1066,12 +1061,12 @@ class _Generator(object):
         )
     elif underlying_type.property_type == PropertyType.FUNCTION:
       if is_ptr:
-        c.Append('%(dst_var)s.reset(new base::DictionaryValue());')
+        c.Append('%(dst_var)s = std::make_unique<base::DictionaryValue>();')
     elif underlying_type.property_type == PropertyType.ANY:
       c.Append('%(dst_var)s = %(src_var)s->CreateDeepCopy();')
     elif underlying_type.property_type == PropertyType.ARRAY:
       # util_cc_helper deals with optional and required arrays
-      (c.Append('const base::ListValue* list = NULL;')
+      (c.Append('const base::ListValue* list = nullptr;')
         .Sblock('if (!%(src_var)s->GetAsList(&list)) {')
           .Concat(self._GenerateError(
             '"\'%%(key)s\': expected list, got " + ' +
@@ -1105,7 +1100,7 @@ class _Generator(object):
       c.Eblock('}')
     elif underlying_type.property_type == PropertyType.CHOICES:
       if is_ptr:
-        (c.Append('std::unique_ptr<%(cpp_type)s> temp(new %(cpp_type)s());')
+        (c.Append('auto temp = std::make_unique<%(cpp_type)s>();')
           .Append('if (!%%(cpp_type)s::Populate(%s))' % self._GenerateArgs(
             ('*%(src_var)s', 'temp.get()')))
           .Append('  return %(failure_value)s;')
@@ -1132,8 +1127,8 @@ class _Generator(object):
         .Sblock('else {')
       )
       if is_ptr:
-        c.Append('%(dst_var)s.reset(new std::vector<uint8_t>('
-                 '%(src_var)s->GetBlob()));')
+        c.Append('%(dst_var)s = std::make_unique<std::vector<uint8_t>>('
+                 '%(src_var)s->GetBlob());')
       else:
         c.Append('%(dst_var)s = %(src_var)s->GetBlob();')
       c.Eblock('}')
@@ -1165,7 +1160,7 @@ class _Generator(object):
     if is_ptr:
       accessor = '->'
       cpp_type = self._type_helper.GetCppType(item_type, is_in_container=True)
-      c.Append('%s.reset(new std::vector<%s>);' %
+      c.Append('%s = std::make_unique<std::vector<%s>>();' %
                    (dst_var, cpp_type))
     (c.Sblock('for (const auto& it : *(%s)) {' % src_var)
       .Append('%s tmp;' % self._type_helper.GetCppType(item_type))
@@ -1309,8 +1304,7 @@ class _Generator(object):
 
     (c.Sblock('std::unique_ptr<base::ListValue> %(function_scope)s'
                   'Create(%(declaration_list)s) {')
-      .Append('std::unique_ptr<base::ListValue> create_results('
-              'new base::ListValue());')
+      .Append('auto create_results = std::make_unique<base::ListValue>();')
     )
     declaration_list = []
     for param in params:
