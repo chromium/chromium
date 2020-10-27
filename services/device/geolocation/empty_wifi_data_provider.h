@@ -21,7 +21,6 @@ class EmptyWifiDataProvider : public WifiDataProvider {
   void StopDataProvider() override {}
   bool DelayedByPolicy() override;
   bool GetData(WifiData* data) override;
-  void ForceRescan() override;
 
  private:
   ~EmptyWifiDataProvider() override;

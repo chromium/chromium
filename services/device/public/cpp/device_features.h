@@ -22,7 +22,6 @@ DEVICE_FEATURES_EXPORT extern const base::Feature
     kWinrtGeolocationImplementation;
 DEVICE_FEATURES_EXPORT extern const base::Feature
     kMacCoreLocationImplementation;
-DEVICE_FEATURES_EXPORT extern const base::Feature kMacCoreLocationBackend;
 
 #if defined(OS_WIN)
 DEVICE_FEATURES_EXPORT extern const base::Feature kUseSerialBusEnumerator;

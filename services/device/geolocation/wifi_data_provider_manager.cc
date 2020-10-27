@@ -79,10 +79,6 @@ bool WifiDataProviderManager::GetData(WifiData* data) {
   return impl_->GetData(data);
 }
 
-void WifiDataProviderManager::ForceRescan() {
-  impl_->ForceRescan();
-}
-
 void WifiDataProviderManager::AddCallback(WifiDataUpdateCallback* callback) {
   impl_->AddCallback(callback);
 }

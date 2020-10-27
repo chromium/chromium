@@ -65,8 +65,6 @@ class WifiDataProviderManager {
   // obtain.
   bool GetData(WifiData* data);
 
-  void ForceRescan();
-
  private:
   // Private constructor and destructor, callers access singleton through
   // Register and Unregister.

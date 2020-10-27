@@ -1310,11 +1310,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "enable-core-location-backend",
-    "owners": [ "jameshollyer@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-core-location-implementation",
     "owners": [ "jameshollyer@google.com" ],
     "expiry_milestone": 88

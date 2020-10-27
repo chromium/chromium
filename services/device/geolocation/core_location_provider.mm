@@ -137,7 +137,7 @@ void CoreLocationProvider::SetManagerForTesting(
 
 // static
 std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
-  if (!base::FeatureList::IsEnabled(features::kMacCoreLocationBackend))
+  if (!base::FeatureList::IsEnabled(features::kMacCoreLocationImplementation))
     return nullptr;
 
   return std::make_unique<CoreLocationProvider>();
