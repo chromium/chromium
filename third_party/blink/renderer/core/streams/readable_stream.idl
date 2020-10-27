@@ -13,8 +13,8 @@
     [RaisesException, CallWith=ScriptState] Promise<any> cancel(optional any reason);
     [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamGetReader] ReadableStreamDefaultReader getReader(optional any mode);
     [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeThrough] any pipeThrough(
-        any transformStream, optional any options);
+        any transformStream, optional StreamPipeOptions options);
     [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(
-        any destination, optional any option);
+        any destination, optional StreamPipeOptions options);
     [RaisesException, CallWith=ScriptState] any tee();
 };

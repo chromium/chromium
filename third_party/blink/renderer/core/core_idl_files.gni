@@ -736,6 +736,7 @@ core_dictionary_idl_files =
                     "mojo/test/mojo_interface_request_event_init.idl",
                     "page/scrolling/scroll_state_init.idl",
                     "resize_observer/resize_observer_options.idl",
+                    "streams/stream_pipe_options.idl",
                     "streams/queuing_strategy_init.idl",
                     "timing/measure_memory/measure_memory.idl",
                     "timing/measure_memory/measure_memory_breakdown.idl",

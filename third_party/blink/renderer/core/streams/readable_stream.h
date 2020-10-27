@@ -25,6 +25,7 @@ class ScriptPromise;
 class ScriptState;
 class StrategySizeAlgorithm;
 class StreamAlgorithm;
+class StreamPipeOptions;
 class StreamPromiseResolver;
 class StreamStartAlgorithm;
 class UnderlyingSourceBase;
@@ -40,9 +41,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   class PipeOptions : public GarbageCollected<PipeOptions> {
    public:
     PipeOptions();
-    PipeOptions(ScriptState* script_state,
-                ScriptValue options,
-                ExceptionState& exception_state);
+    explicit PipeOptions(const StreamPipeOptions* options);
 
     bool PreventClose() const { return prevent_close_; }
     bool PreventAbort() const { return prevent_abort_; }
@@ -123,7 +122,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#rs-pipe-through
   ScriptValue pipeThrough(ScriptState*,
                           ScriptValue transform_stream,
-                          ScriptValue options,
+                          const StreamPipeOptions* options,
                           ExceptionState&);
 
   ScriptPromise pipeTo(ScriptState*, ScriptValue destination, ExceptionState&);
@@ -131,7 +130,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#rs-pipe-to
   ScriptPromise pipeTo(ScriptState*,
                        ScriptValue destination_value,
-                       ScriptValue options,
+                       const StreamPipeOptions* options,
                        ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-tee

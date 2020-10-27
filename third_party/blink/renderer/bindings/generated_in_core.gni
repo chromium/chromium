@@ -295,6 +295,8 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_stream_pipe_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_stream_pipe_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_submit_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_submit_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_text_format_update_event_init.cc",
