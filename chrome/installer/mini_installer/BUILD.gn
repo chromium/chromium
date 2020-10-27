@@ -228,7 +228,7 @@ template("generate_mini_installer") {
     if (v8_use_external_startup_data) {
       deps += [ "//v8" ]
       if (use_v8_context_snapshot) {
-        inputs += [ "$root_out_dir/v8_context_snapshot.bin" ]
+        inputs += [ "$root_out_dir/$v8_context_snapshot_filename" ]
         deps += [ "//tools/v8_context_snapshot" ]
       } else {
         inputs += [ "$root_out_dir/snapshot_blob.bin" ]
