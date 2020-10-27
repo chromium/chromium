@@ -90,7 +90,7 @@ SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor,
       is_root_app_grid_page_switcher ? SkColorSetARGB(255, 232, 234, 237)
-                                     : SkColorSetARGB(255, 232, 234, 237));
+                                     : SkColorSetA(SK_ColorBLACK, 138));
 }
 
 SkColor AppListColorProviderImpl::GetPageSwitcherInkDropBaseColor(
@@ -98,14 +98,14 @@ SkColor AppListColorProviderImpl::GetPageSwitcherInkDropBaseColor(
   return DeprecatedGetInkDropRippleColor(
       is_root_app_grid_page_switcher
           ? SkColorSetA(SkColorSetRGB(241, 243, 244), 15)
-          : SkColorSetA(SkColorSetRGB(241, 243, 244), 8));
+          : SkColorSetA(SkColorSetARGB(255, 95, 99, 104), 8));
 }
 
 SkColor AppListColorProviderImpl::GetPageSwitcherInkDropHighlightColor(
     bool is_root_app_grid_page_switcher) const {
   return DeprecatedGetInkDropHighlightColor(
       is_root_app_grid_page_switcher
-          ? SkColorSetA(SkColorSetARGB(255, 95, 99, 104), 20)
+          ? SkColorSetA(SkColorSetRGB(241, 243, 244), 20)
           : SkColorSetA(SkColorSetARGB(255, 95, 99, 104), 24));
 }
 
