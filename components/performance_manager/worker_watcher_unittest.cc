@@ -306,7 +306,7 @@ class TestServiceWorkerContext : public content::FakeServiceWorkerContext {
   // Starts an existing service worker.
   void StartServiceWorker(int64_t version_id, int worker_process_id);
 
-  // Stops a service shared worker.
+  // Destroys a service shared worker.
   void StopServiceWorker(int64_t version_id);
 
   // Adds a new client to an existing service worker and returns its generated
@@ -826,7 +826,10 @@ TEST_F(WorkerWatcherTest, SimpleSharedWorker) {
 }
 
 // This test creates one service worker with one client frame.
-TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
+//
+// TODO(pmonette): Enable this test when the WorkerWatcher starts tracking
+// service worker clients.
+TEST_F(WorkerWatcherTest, DISABLED_ServiceWorkerFrameClient) {
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create and start the service worker.
@@ -874,6 +877,8 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
         EXPECT_TRUE(graph->NodeInGraph(worker_node));
         EXPECT_EQ(worker_node->worker_type(), WorkerNode::WorkerType::kService);
         EXPECT_EQ(worker_node->process_node(), process_node);
+
+        // Now is it correctly hooked up.
         EXPECT_TRUE(IsWorkerClient(worker_node, client_frame_node));
       }));
 
@@ -922,7 +927,9 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientDestroyedBeforeCommit) {
   service_worker_context()->DestroyServiceWorker(service_worker_version_id);
 }
 
-TEST_F(WorkerWatcherTest, AllTypesOfServiceWorkerClients) {
+// TODO(pmonette): Enable this test when the WorkerWatcher starts tracking
+// service worker clients.
+TEST_F(WorkerWatcherTest, DISABLED_AllTypesOfServiceWorkerClients) {
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create and start the service worker.
@@ -994,7 +1001,11 @@ TEST_F(WorkerWatcherTest, AllTypesOfServiceWorkerClients) {
 // starts after it has been assigned a client. In this case, the clients are not
 // connected to the service worker until it starts. It also tests that when the
 // service worker stops, its existing clients are also disconnected.
-TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
+//
+// TODO(pmonette): Enable this test when the WorkerWatcher starts tracking
+// service worker clients.
+TEST_F(WorkerWatcherTest,
+       DISABLED_ServiceWorkerStartsAndStopsWithExistingClients) {
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create the worker.
@@ -1297,7 +1308,9 @@ TEST_F(WorkerWatcherTest, FrameDestroyed) {
         EXPECT_TRUE(graph->NodeInGraph(service_worker_node));
         EXPECT_TRUE(IsWorkerClient(dedicated_worker_node, client_frame_node));
         EXPECT_TRUE(IsWorkerClient(shared_worker_node, client_frame_node));
-        EXPECT_TRUE(IsWorkerClient(service_worker_node, client_frame_node));
+        // TODO(pmonette): Change this to EXPECT_TRUE() when the WorkerWatcher
+        // starts tracking service worker clients.
+        EXPECT_FALSE(IsWorkerClient(service_worker_node, client_frame_node));
       }));
 
   frame_node_source()->DeleteFrameNode(render_frame_host_id);

@@ -356,117 +356,19 @@ void WorkerWatcher::OnControlleeAdded(
     int64_t version_id,
     const std::string& client_uuid,
     const content::ServiceWorkerClientInfo& client_info) {
-  switch (client_info.type()) {
-    case blink::mojom::ServiceWorkerClientType::kWindow: {
-      // For window clients, it is necessary to wait until the navigation has
-      // committed to a render frame host.
-      bool inserted = client_frames_awaiting_commit_.insert(client_uuid).second;
-      DCHECK(inserted);
-      break;
-    }
-    case blink::mojom::ServiceWorkerClientType::kDedicatedWorker: {
-      blink::DedicatedWorkerToken dedicated_worker_token =
-          client_info.GetDedicatedWorkerToken();
-
-      bool inserted = service_worker_clients_[version_id]
-                          .emplace(client_uuid, dedicated_worker_token)
-                          .second;
-      DCHECK(inserted);
-
-      // If the service worker is already started, connect it to the client.
-      WorkerNodeImpl* service_worker_node = GetServiceWorkerNode(version_id);
-      if (service_worker_node)
-        ConnectDedicatedWorkerClient(service_worker_node,
-                                     dedicated_worker_token);
-      break;
-    }
-    case blink::mojom::ServiceWorkerClientType::kSharedWorker: {
-      blink::SharedWorkerToken shared_worker_token =
-          client_info.GetSharedWorkerToken();
-
-      bool inserted = service_worker_clients_[version_id]
-                          .emplace(client_uuid, shared_worker_token)
-                          .second;
-      DCHECK(inserted);
-
-      // If the service worker is already started, connect it to the client.
-      WorkerNodeImpl* service_worker_node = GetServiceWorkerNode(version_id);
-      if (service_worker_node)
-        ConnectSharedWorkerClient(service_worker_node, shared_worker_token);
-      break;
-    }
-    case blink::mojom::ServiceWorkerClientType::kAll:
-      NOTREACHED();
-      break;
-  }
+  // TODO(pmonette): Handle service worker clients.
 }
 
 void WorkerWatcher::OnControlleeRemoved(int64_t version_id,
                                         const std::string& client_uuid) {
-  // Nothing to do for a frame client whose navigation never committed.
-  size_t removed = client_frames_awaiting_commit_.erase(client_uuid);
-  if (removed) {
-#if DCHECK_IS_ON()
-    // |client_uuid| should not be part of this service worker's clients.
-    auto it = service_worker_clients_.find(version_id);
-    if (it != service_worker_clients_.end())
-      DCHECK(!base::Contains(it->second, client_uuid));
-#endif  // DCHECK_IS_ON()
-    return;
-  }
-
-  // First get clients for this worker.
-  auto it = service_worker_clients_.find(version_id);
-  DCHECK(it != service_worker_clients_.end());
-
-  base::flat_map<std::string /*client_uuid*/, ServiceWorkerClient>& clients =
-      it->second;
-
-  auto it2 = clients.find(client_uuid);
-  DCHECK(it2 != clients.end());
-  const ServiceWorkerClient client = it2->second;
-  clients.erase(it2);
-
-  if (clients.empty())
-    service_worker_clients_.erase(it);
-
-  // Now disconnect the client if the service worker is still running.
-  WorkerNodeImpl* worker_node = GetServiceWorkerNode(version_id);
-  if (!worker_node)
-    return;
-
-  switch (client.type()) {
-    case blink::mojom::ServiceWorkerClientType::kWindow:
-      DisconnectFrameClient(worker_node, client.GetRenderFrameHostId());
-      break;
-    case blink::mojom::ServiceWorkerClientType::kDedicatedWorker:
-      DisconnectDedicatedWorkerClient(worker_node,
-                                      client.GetDedicatedWorkerToken());
-      break;
-    case blink::mojom::ServiceWorkerClientType::kSharedWorker:
-      DisconnectSharedWorkerClient(worker_node, client.GetSharedWorkerToken());
-      break;
-    case blink::mojom::ServiceWorkerClientType::kAll:
-      NOTREACHED();
-      break;
-  }
+  // TODO(pmonette): Handle service worker clients.
 }
 
 void WorkerWatcher::OnControlleeNavigationCommitted(
     int64_t version_id,
     const std::string& client_uuid,
     content::GlobalFrameRoutingId render_frame_host_id) {
-  size_t removed = client_frames_awaiting_commit_.erase(client_uuid);
-  DCHECK_EQ(removed, 1u);
-
-  bool inserted = service_worker_clients_[version_id]
-                      .emplace(client_uuid, render_frame_host_id)
-                      .second;
-  DCHECK(inserted);
-
-  WorkerNodeImpl* service_worker_node = GetServiceWorkerNode(version_id);
-  if (service_worker_node)
-    ConnectFrameClient(service_worker_node, render_frame_host_id);
+  // TODO(pmonette): Handle service worker clients.
 }
 
 void WorkerWatcher::ConnectFrameClient(
