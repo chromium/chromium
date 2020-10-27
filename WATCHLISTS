@@ -1187,6 +1187,11 @@
     'ios_web': {
       'filepath': 'ios/web(_view)?/',
     },
+    'ios_widget_kit': {
+      'filepath': 'ios/chrome/common/widget_kit|'\
+                  'ios/chrome/browser/widget_kit|'\
+                  'ios/chrome/widget_kit_extension',
+    },
     'isolated_prefetch': {
       'filepath': 'chrome/browser/prerender/isolated',
     },
@@ -2564,6 +2569,7 @@
                      'marq+watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org',
                 'eugenebut@chromium.org'],
+    'ios_widget_kit': ['javierrobles+watch@chromium.org'],
     'isolated_prefetch': ['robertogden+watch@chromium.org',
                           'marcinjb+p4watch@google.com'],
     'language': ['language-reviews@chromium.org'],
