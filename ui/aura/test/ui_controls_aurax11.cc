@@ -189,7 +189,7 @@ void UIControlsX11::RunClosureAfterAllPendingUIEvents(
 }
 
 void UIControlsX11::SetKeycodeAndSendThenMask(x11::KeyEvent* xevent,
-                                              KeySym keysym,
+                                              uint32_t keysym,
                                               x11::KeyButMask mask) {
   xevent->detail = x11::Connection::Get()->KeysymToKeycode(keysym);
   PostEventToWindowTreeHost(host_, xevent);
@@ -198,7 +198,7 @@ void UIControlsX11::SetKeycodeAndSendThenMask(x11::KeyEvent* xevent,
 
 void UIControlsX11::UnmaskAndSetKeycodeThenSend(x11::KeyEvent* xevent,
                                                 x11::KeyButMask mask,
-                                                KeySym keysym) {
+                                                uint32_t keysym) {
   xevent->state = static_cast<x11::KeyButMask>(
       static_cast<uint32_t>(xevent->state) ^ static_cast<uint32_t>(mask));
   xevent->detail = x11::Connection::Get()->KeysymToKeycode(keysym);

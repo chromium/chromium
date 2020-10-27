@@ -50,7 +50,7 @@ class VaapiTFPPicture : public VaapiPicture {
 
   x11::Connection* const connection_;
 
-  ::Pixmap x_pixmap_;
+  x11::Pixmap x_pixmap_;
   scoped_refptr<gl::GLImageGLX> glx_image_;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiTFPPicture);

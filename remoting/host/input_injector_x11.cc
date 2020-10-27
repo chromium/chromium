@@ -140,7 +140,7 @@ class InputInjectorX11 : public InputInjector {
     void SetAutoRepeatEnabled(bool enabled);
 
     // Check if the given scan code is caps lock or num lock.
-    bool IsLockKey(KeyCode keycode);
+    bool IsLockKey(x11::KeyCode keycode);
 
     // Sets the keyboard lock states to those provided.
     void SetLockStates(base::Optional<bool> caps_lock,
@@ -168,7 +168,6 @@ class InputInjectorX11 : public InputInjector {
 
     // X11 graphics context.
     x11::Connection connection_;
-    Display* display_ = connection_.display();
 
     // Number of buttons we support.
     // Left, Right, Middle, VScroll Up/Down, HScroll Left/Right, back, forward.
@@ -237,7 +236,7 @@ InputInjectorX11::Core::Core(
     : task_runner_(task_runner) {}
 
 bool InputInjectorX11::Core::Init() {
-  CHECK(display_);
+  CHECK(connection_.Ready());
 
   if (!task_runner_->BelongsToCurrentThread())
     task_runner_->PostTask(FROM_HERE,
@@ -293,7 +292,7 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
       connection_.xtest().FakeInput({x11::KeyEvent::Release, keycode});
     }
 
-    if (!IsLockKey(keycode)) {
+    if (!IsLockKey(static_cast<x11::KeyCode>(keycode))) {
       base::Optional<bool> caps_lock;
       base::Optional<bool> num_lock;
 
@@ -380,13 +379,13 @@ void InputInjectorX11::Core::SetAutoRepeatEnabled(bool mode) {
   connection_.Flush();
 }
 
-bool InputInjectorX11::Core::IsLockKey(KeyCode keycode) {
+bool InputInjectorX11::Core::IsLockKey(x11::KeyCode keycode) {
   auto state = connection_.xkb().GetState({}).Sync();
   if (!state)
     return false;
   auto mods = state->baseMods | state->latchedMods | state->lockedMods;
-  auto keysym = connection_.KeycodeToKeysym(static_cast<x11::KeyCode>(keycode),
-                                            static_cast<unsigned>(mods));
+  auto keysym =
+      connection_.KeycodeToKeysym(keycode, static_cast<unsigned>(mods));
   if (state && keysym)
     return keysym == XK_Caps_Lock || keysym == XK_Num_Lock;
   else
@@ -569,7 +568,7 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
                             abs(ticks_x));
   }
 
-  XFlush(display_);
+  connection_.Flush();
 }
 
 void InputInjectorX11::Core::InitMouseButtonMap() {

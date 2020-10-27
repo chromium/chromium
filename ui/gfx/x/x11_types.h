@@ -12,17 +12,6 @@
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/x/connection.h"
 
-typedef unsigned long XID;
-typedef unsigned long VisualID;
-typedef union _XEvent XEvent;
-typedef struct _XImage XImage;
-typedef struct _XGC* GC;
-typedef struct _XDisplay XDisplay;
-typedef struct _XRegion XRegion;
-typedef struct __GLXFBConfigRec* GLXFBConfig;
-typedef XID GLXWindow;
-typedef XID GLXDrawable;
-
 extern "C" {
 int XFree(void*);
 }

@@ -1891,7 +1891,7 @@ bool VaapiWrapper::MapAndCopyAndExecute(
 
 #if defined(USE_X11)
 bool VaapiWrapper::PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
-                                        Pixmap x_pixmap,
+                                        x11::Pixmap x_pixmap,
                                         gfx::Size dest_size) {
   DCHECK(!features::IsUsingOzonePlatform());
   base::AutoLock auto_lock(*va_lock_);
@@ -1900,12 +1900,10 @@ bool VaapiWrapper::PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
 
   // Put the data into an X Pixmap.
-  va_res = vaPutSurface(va_display_,
-                        va_surface_id,
-                        x_pixmap,
-                        0, 0, dest_size.width(), dest_size.height(),
-                        0, 0, dest_size.width(), dest_size.height(),
-                        NULL, 0, 0);
+  va_res =
+      vaPutSurface(va_display_, va_surface_id, static_cast<uint32_t>(x_pixmap),
+                   0, 0, dest_size.width(), dest_size.height(), 0, 0,
+                   dest_size.width(), dest_size.height(), nullptr, 0, 0);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAPutSurface, false);
   return true;
 }

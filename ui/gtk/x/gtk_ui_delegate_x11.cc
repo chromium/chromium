@@ -17,12 +17,12 @@
 
 extern "C" {
 GdkWindow* gdk_x11_window_foreign_new_for_display(GdkDisplay* display,
-                                                  Window window);
+                                                  unsigned long window);
 
 GdkWindow* gdk_x11_window_lookup_for_display(GdkDisplay* display,
-                                             Window window);
+                                             unsigned long window);
 
-Window gdk_x11_window_get_xid(GdkWindow* window);
+unsigned long gdk_x11_window_get_xid(GdkWindow* window);
 }
 
 namespace ui {

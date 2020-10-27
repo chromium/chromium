@@ -35,7 +35,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if defined(USE_X11)
-#include "ui/gfx/x/x11.h"  // nogncheck
+#include "ui/gfx/x/xproto.h"  // nogncheck
 #endif  // USE_X11
 
 namespace gfx {
@@ -352,7 +352,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Put data from |va_surface_id| into |x_pixmap| of size
   // |dest_size|, converting/scaling to it.
   bool PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
-                            Pixmap x_pixmap,
+                            x11::Pixmap x_pixmap,
                             gfx::Size dest_size) WARN_UNUSED_RESULT;
 #endif  // USE_X11
 

@@ -35,7 +35,6 @@ class X11KeyboardImpl : public X11Keyboard {
  private:
   // X11 graphics context.
   x11::Connection* connection_;
-  Display* display_;
 
   DISALLOW_COPY_AND_ASSIGN(X11KeyboardImpl);
 };

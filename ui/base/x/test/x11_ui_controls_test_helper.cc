@@ -181,7 +181,7 @@ void X11UIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
 void X11UIControlsTestHelper::SetKeycodeAndSendThenMask(
     gfx::AcceleratedWidget widget,
     x11::KeyEvent* xevent,
-    KeySym keysym,
+    uint32_t keysym,
     x11::KeyButMask mask) {
   xevent->detail = x11::Connection::Get()->KeysymToKeycode(keysym);
   PostEventToWindowTreeHost(widget, xevent);
@@ -192,7 +192,7 @@ void X11UIControlsTestHelper::UnmaskAndSetKeycodeThenSend(
     gfx::AcceleratedWidget widget,
     x11::KeyEvent* xevent,
     x11::KeyButMask mask,
-    KeySym keysym) {
+    uint32_t keysym) {
   xevent->state = static_cast<x11::KeyButMask>(
       static_cast<uint32_t>(xevent->state) ^ static_cast<uint32_t>(mask));
   xevent->detail = x11::Connection::Get()->KeysymToKeycode(keysym);

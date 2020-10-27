@@ -8,6 +8,8 @@
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_export.h"
 
+using GLXFBConfig = struct __GLXFBConfigRec*;
+
 namespace gl {
 
 GL_EXPORT GLXFBConfig GetFbConfigForWindow(x11::Connection* connection,

@@ -39,7 +39,7 @@ GLImageGLX::~GLImageGLX() {
     glXDestroyGLXPixmap(gfx::GetXDisplay(), glx_pixmap_);
 }
 
-bool GLImageGLX::Initialize(XID pixmap) {
+bool GLImageGLX::Initialize(x11::Pixmap pixmap) {
   auto fbconfig_id =
       GLVisualPickerGLX::GetInstance()->GetFbConfigForFormat(format_);
 
@@ -53,8 +53,8 @@ bool GLImageGLX::Initialize(XID pixmap) {
 
   int pixmap_attribs[] = {GLX_TEXTURE_TARGET_EXT, GLX_TEXTURE_2D_EXT,
                           GLX_TEXTURE_FORMAT_EXT, TextureFormat(format_), 0};
-  glx_pixmap_ =
-      glXCreatePixmap(gfx::GetXDisplay(), *configs, pixmap, pixmap_attribs);
+  glx_pixmap_ = glXCreatePixmap(gfx::GetXDisplay(), *configs,
+                                static_cast<::Pixmap>(pixmap), pixmap_attribs);
   if (!glx_pixmap_) {
     DVLOG(0) << "glXCreatePixmap failed.";
     return false;

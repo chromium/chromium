@@ -22,7 +22,7 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
  public:
   GLImageEGLPixmap(const gfx::Size& size, gfx::BufferFormat format);
 
-  bool Initialize(XID pixmap);
+  bool Initialize(x11::Pixmap pixmap);
 
   // Overridden from GLImage:
   gfx::Size GetSize() override;

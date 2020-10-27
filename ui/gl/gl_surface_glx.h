@@ -15,9 +15,12 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface.h"
+
+using GLXFBConfig = struct __GLXFBConfigRec*;
 
 namespace gfx {
 class VSyncProvider;
@@ -113,7 +116,7 @@ class GL_EXPORT NativeViewGLSurfaceGLX : public GLSurfaceGLX {
 
  private:
   // The handle for the drawable to make current or swap.
-  GLXDrawable GetDrawableHandle() const;
+  uint32_t GetDrawableHandle() const;
 
   // Window passed in at creation. Always valid.
   gfx::AcceleratedWidget parent_window_;
@@ -122,7 +125,7 @@ class GL_EXPORT NativeViewGLSurfaceGLX : public GLSurfaceGLX {
   x11::Window window_;
 
   // GLXDrawable for the window.
-  GLXWindow glx_window_;
+  x11::Glx::Window glx_window_;
 
   GLXFBConfig config_;
   gfx::Size size_;
@@ -161,7 +164,7 @@ class GL_EXPORT UnmappedNativeViewGLSurfaceGLX : public GLSurfaceGLX {
   x11::Window window_;
 
   // GLXDrawable for the window.
-  GLXWindow glx_window_;
+  x11::Glx::Window glx_window_;
 
   DISALLOW_COPY_AND_ASSIGN(UnmappedNativeViewGLSurfaceGLX);
 };

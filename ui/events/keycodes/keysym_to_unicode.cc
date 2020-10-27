@@ -14,7 +14,7 @@
 namespace ui {
 
 const struct {
-  KeySym keysym;
+  uint32_t keysym;
   uint16_t unicode;
 } g_keysym_to_unicode_table[] = {
   // Control characters
@@ -819,7 +819,7 @@ class KeySymToUnicode {
     }
   }
 
-  uint16_t UnicodeFromKeySym(KeySym keysym) const {
+  uint16_t UnicodeFromKeySym(uint32_t keysym) const {
     // Latin-1 characters have the same representation.
     if ((0x0020 <= keysym && keysym <= 0x007e) ||
         (0x00a0 <= keysym && keysym <= 0x00ff))
@@ -839,7 +839,7 @@ class KeySymToUnicode {
   }
 
  private:
-  typedef std::unordered_map<KeySym, uint16_t> KeySymToUnicodeMap;
+  typedef std::unordered_map<uint32_t, uint16_t> KeySymToUnicodeMap;
   KeySymToUnicodeMap keysym_to_unicode_map_;
 
   DISALLOW_COPY_AND_ASSIGN(KeySymToUnicode);
@@ -850,7 +850,7 @@ static base::LazyInstance<KeySymToUnicode>::Leaky g_keysym_to_unicode =
 
 uint16_t GetUnicodeCharacterFromXKeySym(unsigned long keysym) {
   return g_keysym_to_unicode.Get().UnicodeFromKeySym(
-      static_cast<KeySym>(keysym));
+      static_cast<uint32_t>(keysym));
 }
 
 }  // namespace ui

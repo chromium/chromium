@@ -49,7 +49,7 @@ bool FindKeycodeForKeySym(x11::Connection* connection,
 namespace remoting {
 
 X11KeyboardImpl::X11KeyboardImpl(x11::Connection* connection)
-    : connection_(connection), display_(connection->display()) {}
+    : connection_(connection) {}
 
 X11KeyboardImpl::~X11KeyboardImpl() = default;
 
@@ -122,7 +122,7 @@ bool X11KeyboardImpl::ChangeKeyMapping(uint32_t keycode, uint32_t code_point) {
 }
 
 void X11KeyboardImpl::Flush() {
-  XFlush(display_);
+  connection_->Flush();
 }
 
 void X11KeyboardImpl::Sync() {

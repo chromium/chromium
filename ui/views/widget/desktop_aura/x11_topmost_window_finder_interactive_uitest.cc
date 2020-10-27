@@ -125,13 +125,13 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
 #endif
     // Make X11 synchronous for our display connection. This does not force the
     // window manager to behave synchronously.
-    XSynchronize(xdisplay(), true);
+    connection()->SynchronizeForTest(true);
     DesktopWidgetTestInteractive::SetUp();
   }
 
   void TearDown() override {
     if (!IsSkipped())
-      XSynchronize(xdisplay(), false);
+      connection()->SynchronizeForTest(false);
     DesktopWidgetTestInteractive::TearDown();
   }
 
@@ -179,7 +179,6 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
   }
 
   x11::Connection* connection() { return x11::Connection::Get(); }
-  Display* xdisplay() { return gfx::GetXDisplay(); }
 
   // Returns the topmost X window at the passed in screen position.
   x11::Window FindTopmostXWindowAt(int screen_x, int screen_y) {

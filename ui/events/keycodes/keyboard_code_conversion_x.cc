@@ -133,7 +133,7 @@ namespace {
 // Please refer to crbug.com/386066.
 //
 const struct MAP0 {
-  KeySym ch0;
+  uint32_t ch0;
   uint8_t vk;
   bool operator()(const MAP0& m1, const MAP0& m2) const {
     return m1.ch0 < m2.ch0;
@@ -193,7 +193,7 @@ const struct MAP0 {
 };
 
 const struct MAP1 {
-  KeySym ch0;
+  uint32_t ch0;
   unsigned sc;
   uint8_t vk;
   bool operator()(const MAP1& m1, const MAP1& m2) const {
@@ -382,9 +382,9 @@ const struct MAP1 {
 };
 
 const struct MAP2 {
-  KeySym ch0;
+  uint32_t ch0;
   unsigned sc;
-  KeySym ch1;
+  uint32_t ch1;
   uint8_t vk;
   bool operator()(const MAP2& m1, const MAP2& m2) const {
     if (m1.ch0 == m2.ch0 && m1.sc == m2.sc)
@@ -423,10 +423,10 @@ const struct MAP2 {
 };
 
 const struct MAP3 {
-  KeySym ch0;
+  uint32_t ch0;
   unsigned sc;
-  KeySym ch1;
-  KeySym ch2;
+  uint32_t ch1;
+  uint32_t ch2;
   uint8_t vk;
   bool operator()(const MAP3& m1, const MAP3& m2) const {
     if (m1.ch0 == m2.ch0 && m1.sc == m2.sc && m1.ch1 == m2.ch1)
@@ -545,10 +545,10 @@ KeyboardCode FindVK(const T_MAP& key, const T_MAP* map, size_t size) {
 // based on KeySym, and never fall back to MAP0~MAP3, since some layouts
 // generate them by applying the Control/AltGr modifier to some other key.
 // e.g. in de(neo), AltGr+V generates XK_Enter.
-bool IsTtyFunctionOrSpaceKey(KeySym keysym) {
-  KeySym keysyms[] = {XK_BackSpace, XK_Tab,    XK_Linefeed,    XK_Clear,
-                      XK_Return,    XK_Pause,  XK_Scroll_Lock, XK_Sys_Req,
-                      XK_Escape,    XK_Delete, XK_space};
+bool IsTtyFunctionOrSpaceKey(uint32_t keysym) {
+  uint32_t keysyms[] = {XK_BackSpace, XK_Tab,    XK_Linefeed,    XK_Clear,
+                        XK_Return,    XK_Pause,  XK_Scroll_Lock, XK_Sys_Req,
+                        XK_Escape,    XK_Delete, XK_space};
 
   for (unsigned long i : keysyms) {
     if (i == keysym)
@@ -658,7 +658,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
-    KeySym keysym_shift{};
+    uint32_t keysym_shift{};
     modifiers |= static_cast<int>(x11::KeyButMask::Shift);
     keysym_shift = TranslateKey(xkeycode, modifiers);
     MAP2 key2 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0};
@@ -666,7 +666,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
-    KeySym keysym_altgr{};
+    uint32_t keysym_altgr{};
     modifiers &= ~static_cast<int>(x11::KeyButMask::Shift);
     modifiers |= static_cast<int>(x11::KeyButMask::Mod1);
     keysym_altgr = TranslateKey(xkeycode, modifiers);
@@ -999,7 +999,7 @@ uint16_t GetCharacterFromXEvent(const x11::Event& xev) {
   uint32_t xkeycode = 0;
   uint32_t modifiers = 0;
   GetKeycodeAndModifiers(xev, &xkeycode, &modifiers);
-  KeySym keysym = TranslateKey(xkeycode, modifiers);
+  uint32_t keysym = TranslateKey(xkeycode, modifiers);
   return GetUnicodeCharacterFromXKeySym(keysym);
 }
 
@@ -1017,7 +1017,7 @@ DomKey GetDomKeyFromXEvent(const x11::Event& xev) {
   // no keyboard combinations with ctrl key are mapped to printable character.
   // https://crbug.com/633838
   modifiers &= ~static_cast<int>(x11::KeyButMask::Control);
-  KeySym keysym = TranslateKey(xkeycode, modifiers);
+  uint32_t keysym = TranslateKey(xkeycode, modifiers);
   base::char16 ch = GetUnicodeCharacterFromXKeySym(keysym);
   return XKeySymToDomKey(keysym, ch);
 }

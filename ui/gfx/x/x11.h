@@ -17,33 +17,15 @@
 
 extern "C" {
 
-using Status = int;
-using Bool = int;
-using XID = unsigned long;
-using KeySym = XID;
-using KeyCode = unsigned char;
-using Window = XID;
-using Pixmap = XID;
-using Font = XID;
-using VisualID = unsigned long;
-using XPointer = char*;
-using Colormap = XID;
-using Cursor = XID;
-using Atom = unsigned long;
-using Time = unsigned long;
-using GC = struct _XGC*;
-using Display = struct _XDisplay;
-using xcb_connection_t = struct xcb_connection_t;
-
 enum XEventQueueOwner { XlibOwnsEventQueue = 0, XCBOwnsEventQueue };
 
-Status XInitThreads(void);
-Display* XOpenDisplay(const char*);
-int XCloseDisplay(Display*);
-int XFlush(Display*);
-xcb_connection_t* XGetXCBConnection(Display* dpy);
-void XSetEventQueueOwner(Display* dpy, enum XEventQueueOwner owner);
-int (*XSynchronize(Display*, Bool))(Display*);
+int XInitThreads(void);
+struct _XDisplay* XOpenDisplay(const char*);
+int XCloseDisplay(struct _XDisplay*);
+int XFlush(struct _XDisplay*);
+struct xcb_connection_t* XGetXCBConnection(struct _XDisplay* dpy);
+void XSetEventQueueOwner(struct _XDisplay* dpy, enum XEventQueueOwner owner);
+int (*XSynchronize(struct _XDisplay*, int))(struct _XDisplay*);
 }
 
 #endif  // UI_GFX_X_X11_H_

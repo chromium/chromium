@@ -40,7 +40,7 @@ GLImageEGLPixmap::~GLImageEGLPixmap() {
     eglDestroySurface(display_, surface_);
 }
 
-bool GLImageEGLPixmap::Initialize(XID pixmap) {
+bool GLImageEGLPixmap::Initialize(x11::Pixmap pixmap) {
   if (eglInitialize(display_, nullptr, nullptr) != EGL_TRUE)
     return false;
 
@@ -72,7 +72,8 @@ bool GLImageEGLPixmap::Initialize(XID pixmap) {
   std::vector<EGLint> attrs = {EGL_TEXTURE_FORMAT, EGL_TEXTURE_RGBA,
                                EGL_TEXTURE_TARGET, EGL_TEXTURE_2D, EGL_NONE};
 
-  surface_ = eglCreatePixmapSurface(display_, config, pixmap, attrs.data());
+  surface_ = eglCreatePixmapSurface(
+      display_, config, static_cast<::Pixmap>(pixmap), attrs.data());
   return surface_ != EGL_NO_SURFACE;
 }
 

@@ -17,10 +17,10 @@ namespace media {
 
 namespace {
 
-inline ::Pixmap CreatePixmap(const gfx::Size& size) {
+x11::Pixmap CreatePixmap(const gfx::Size& size) {
   auto* connection = x11::Connection::Get();
   if (!connection->Ready())
-    return base::strict_cast<::Pixmap>(x11::Pixmap::None);
+    return x11::Pixmap::None;
 
   auto root = connection->default_root();
 
@@ -28,20 +28,20 @@ inline ::Pixmap CreatePixmap(const gfx::Size& size) {
   if (auto reply = connection->GetGeometry({root}).Sync())
     depth = reply->depth;
   else
-    return base::strict_cast<::Pixmap>(x11::Pixmap::None);
+    return x11::Pixmap::None;
 
   // TODO(tmathmeyer) should we use the depth from libva instead of root window?
   auto pixmap = connection->GenerateId<x11::Pixmap>();
   uint16_t pixmap_width, pixmap_height;
   if (!base::CheckedNumeric<int>(size.width()).AssignIfValid(&pixmap_width) ||
       !base::CheckedNumeric<int>(size.height()).AssignIfValid(&pixmap_height)) {
-    return base::strict_cast<::Pixmap>(x11::Pixmap::None);
+    return x11::Pixmap::None;
   }
   auto req = connection->CreatePixmap(
       {depth, pixmap, root, pixmap_width, pixmap_height});
   if (req.Sync().error)
     pixmap = x11::Pixmap::None;
-  return base::strict_cast<::Pixmap>(pixmap);
+  return pixmap;
 }
 
 }  // namespace
@@ -79,8 +79,8 @@ VaapiPictureNativePixmapAngle::~VaapiPictureNativePixmapAngle() {
     DCHECK_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 
-  if (x_pixmap_)
-    x11::Connection::Get()->FreePixmap({static_cast<x11::Pixmap>(x_pixmap_)});
+  if (x_pixmap_ != x11::Pixmap::None)
+    x11::Connection::Get()->FreePixmap({x_pixmap_});
 }
 
 Status VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
@@ -98,7 +98,7 @@ Status VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
     return StatusCode::kVaapiNoImage;
 
   x_pixmap_ = CreatePixmap(visible_size_);
-  if (!x_pixmap_)
+  if (x_pixmap_ == x11::Pixmap::None)
     return StatusCode::kVaapiNoPixmap;
 
   if (!image->Initialize(x_pixmap_))

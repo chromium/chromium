@@ -640,7 +640,7 @@ GLSurfaceGLX::~GLSurfaceGLX() = default;
 NativeViewGLSurfaceGLX::NativeViewGLSurfaceGLX(gfx::AcceleratedWidget window)
     : parent_window_(window),
       window_(x11::Window::None),
-      glx_window_(0),
+      glx_window_(),
       config_(nullptr),
       has_swapped_buffers_(false) {}
 
@@ -696,9 +696,9 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
     LOG(ERROR) << "Failed to get GLXConfig";
     return false;
   }
-  glx_window_ = glXCreateWindow(gfx::GetXDisplay(), config_,
-                                static_cast<uint32_t>(window_), nullptr);
-  if (!glx_window_) {
+  glx_window_ = static_cast<x11::Glx::Window>(glXCreateWindow(
+      gfx::GetXDisplay(), config_, static_cast<uint32_t>(window_), nullptr));
+  if (!GetDrawableHandle()) {
     LOG(ERROR) << "glXCreateWindow failed";
     return false;
   }
@@ -734,9 +734,9 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
 void NativeViewGLSurfaceGLX::Destroy() {
   presentation_helper_ = nullptr;
   vsync_provider_ = nullptr;
-  if (glx_window_) {
-    glXDestroyWindow(gfx::GetXDisplay(), glx_window_);
-    glx_window_ = 0;
+  if (GetDrawableHandle()) {
+    glXDestroyWindow(gfx::GetXDisplay(), GetDrawableHandle());
+    glx_window_ = {};
   }
   if (window_ != x11::Window::None) {
     UnregisterEvents();
@@ -837,7 +837,7 @@ void NativeViewGLSurfaceGLX::SetVSyncEnabled(bool enabled) {
   DCHECK(GLContext::GetCurrent() && GLContext::GetCurrent()->IsCurrent(this));
   int interval = enabled ? 1 : 0;
   if (GLSurfaceGLX::IsEXTSwapControlSupported()) {
-    glXSwapIntervalEXT(gfx::GetXDisplay(), glx_window_, interval);
+    glXSwapIntervalEXT(gfx::GetXDisplay(), GetDrawableHandle(), interval);
   } else if (GLSurfaceGLX::IsMESASwapControlSupported()) {
     glXSwapIntervalMESA(interval);
   } else if (interval == 0) {
@@ -863,16 +863,13 @@ bool NativeViewGLSurfaceGLX::CanHandleEvent(x11::Event* x11_event) {
   return expose && expose->window == static_cast<x11::Window>(window_);
 }
 
-GLXDrawable NativeViewGLSurfaceGLX::GetDrawableHandle() const {
-  return glx_window_;
+uint32_t NativeViewGLSurfaceGLX::GetDrawableHandle() const {
+  return static_cast<uint32_t>(glx_window_);
 }
 
 UnmappedNativeViewGLSurfaceGLX::UnmappedNativeViewGLSurfaceGLX(
     const gfx::Size& size)
-    : size_(size),
-      config_(nullptr),
-      window_(x11::Window::None),
-      glx_window_(0) {
+    : size_(size), config_(nullptr), window_(x11::Window::None), glx_window_() {
   // Ensure that we don't create a window with zero size.
   if (size_.GetArea() == 0)
     size_.SetSize(1, 1);
@@ -902,9 +899,9 @@ bool UnmappedNativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
     LOG(ERROR) << "Failed to get GLXConfig";
     return false;
   }
-  glx_window_ = glXCreateWindow(gfx::GetXDisplay(), config_,
-                                static_cast<uint32_t>(window_), nullptr);
-  if (!glx_window_) {
+  glx_window_ = static_cast<x11::Glx::Window>(glXCreateWindow(
+      gfx::GetXDisplay(), config_, static_cast<uint32_t>(window_), nullptr));
+  if (glx_window_ == x11::Glx::Window{}) {
     LOG(ERROR) << "glXCreateWindow failed";
     return false;
   }
@@ -913,9 +910,9 @@ bool UnmappedNativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
 
 void UnmappedNativeViewGLSurfaceGLX::Destroy() {
   config_ = nullptr;
-  if (glx_window_) {
-    glXDestroyWindow(gfx::GetXDisplay(), glx_window_);
-    glx_window_ = 0;
+  if (glx_window_ != x11::Glx::Window{}) {
+    glXDestroyWindow(gfx::GetXDisplay(), static_cast<uint32_t>(glx_window_));
+    glx_window_ = {};
   }
   if (window_ != x11::Window::None) {
     x11::Connection::Get()->DestroyWindow({window_});

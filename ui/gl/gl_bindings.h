@@ -37,7 +37,14 @@
 #elif defined(OS_APPLE)
 #include <OpenGL/OpenGL.h>
 #elif defined(USE_GLX)
+using Display = struct _XDisplay;
+using Bool = int;
+using Status = int;
 using XID = unsigned long;
+using Colormap = XID;
+using Font = XID;
+using Pixmap = XID;
+using Window = XID;
 using GLXPixmap = XID;
 using GLXWindow = XID;
 using GLXDrawable = XID;

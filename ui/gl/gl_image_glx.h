@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
@@ -19,7 +20,7 @@ class GL_EXPORT GLImageGLX : public GLImage {
  public:
   GLImageGLX(const gfx::Size& size, gfx::BufferFormat format);
 
-  bool Initialize(XID pixmap);
+  bool Initialize(x11::Pixmap pixmap);
 
   // Overridden from GLImage:
   gfx::Size GetSize() override;
@@ -50,7 +51,7 @@ class GL_EXPORT GLImageGLX : public GLImage {
   gfx::BufferFormat format() const { return format_; }
 
  private:
-  XID glx_pixmap_;
+  uint32_t glx_pixmap_;
   const gfx::Size size_;
   gfx::BufferFormat format_;
 

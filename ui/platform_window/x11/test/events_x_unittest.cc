@@ -65,8 +65,7 @@ void InitButtonEvent(x11::Event* event,
 
 #if !defined(OS_CHROMEOS)
 // Initializes the passed-in x11::Event.
-void InitKeyEvent(Display* display,
-                  x11::Event* event,
+void InitKeyEvent(x11::Event* event,
                   bool is_press,
                   int keycode,
                   x11::KeyButMask state) {
@@ -478,8 +477,6 @@ TEST_F(EventsXTest, DisableMouse) {
 
 #if !defined(OS_CHROMEOS)
 TEST_F(EventsXTest, ImeFabricatedKeyEvents) {
-  Display* display = gfx::GetXDisplay();
-
   x11::KeyButMask state_to_be_fabricated[] = {
       {},
       x11::KeyButMask::Shift,
@@ -489,7 +486,7 @@ TEST_F(EventsXTest, ImeFabricatedKeyEvents) {
   for (auto state : state_to_be_fabricated) {
     for (int is_char = 0; is_char < 2; ++is_char) {
       x11::Event x_event;
-      InitKeyEvent(display, &x_event, true, 0, state);
+      InitKeyEvent(&x_event, true, 0, state);
       auto key_event = ui::BuildKeyEventFromXEvent(x_event);
       if (is_char) {
         KeyEventTestApi test_event(key_event.get());
@@ -508,7 +505,7 @@ TEST_F(EventsXTest, ImeFabricatedKeyEvents) {
   for (auto state : state_to_be_not_fabricated) {
     for (int is_char = 0; is_char < 2; ++is_char) {
       x11::Event x_event;
-      InitKeyEvent(display, &x_event, true, 0, state);
+      InitKeyEvent(&x_event, true, 0, state);
       auto key_event = ui::BuildKeyEventFromXEvent(x_event);
       if (is_char) {
         KeyEventTestApi test_event(key_event.get());

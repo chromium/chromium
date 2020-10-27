@@ -56,13 +56,13 @@ class COMPONENT_EXPORT(UI_BASE_X) X11UIControlsTestHelper {
  private:
   void SetKeycodeAndSendThenMask(gfx::AcceleratedWidget widget,
                                  x11::KeyEvent* xevent,
-                                 KeySym keysym,
+                                 uint32_t keysym,
                                  x11::KeyButMask mask);
 
   void UnmaskAndSetKeycodeThenSend(gfx::AcceleratedWidget widget,
                                    x11::KeyEvent* xevent,
                                    x11::KeyButMask mask,
-                                   KeySym keysym);
+                                   uint32_t keysym);
 
   // Our X11 state.
   x11::Connection* connection_ = nullptr;
