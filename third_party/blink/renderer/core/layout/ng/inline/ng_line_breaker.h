@@ -183,11 +183,7 @@ class CORE_EXPORT NGLineBreaker {
   void HandleOverflow(NGLineInfo*);
   void RewindOverflow(unsigned new_end, NGLineInfo*);
   void Rewind(unsigned new_end, NGLineInfo*);
-  void ResetRewindLoopDetector() {
-#if DCHECK_IS_ON()
-    last_rewind_from_item_index_ = last_rewind_to_item_index_ = 0;
-#endif
-  }
+  void ResetRewindLoopDetector() { last_rewind_.reset(); }
 
   const ComputedStyle& ComputeCurrentStyle(unsigned item_result_index,
                                            NGLineInfo*) const;
@@ -338,11 +334,12 @@ class CORE_EXPORT NGLineBreaker {
   LayoutUnit cloned_box_decorations_end_size_;
   bool has_cloned_box_decorations_ = false;
 
-#if DCHECK_IS_ON()
   // These fields are to detect rewind-loop.
-  unsigned last_rewind_from_item_index_ = 0;
-  unsigned last_rewind_to_item_index_ = 0;
-#endif
+  struct RewindIndex {
+    wtf_size_t from_item_index;
+    wtf_size_t to_index;
+  };
+  base::Optional<RewindIndex> last_rewind_;
 };
 
 }  // namespace blink

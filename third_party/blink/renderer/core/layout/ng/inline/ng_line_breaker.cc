@@ -743,12 +743,12 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
 
     // Hanging trailing spaces may resolve the overflow.
     if (item_result->has_only_trailing_spaces) {
+      state_ = LineBreakState::kTrailing;
       if (item_result->item->Style()->WhiteSpace() == EWhiteSpace::kPreWrap &&
           IsBreakableSpace(Text()[item_result->EndOffset() - 1])) {
         unsigned end_index = item_result - line_info->Results().begin();
         Rewind(end_index, line_info);
       }
-      state_ = LineBreakState::kTrailing;
       return;
     }
 
@@ -1977,7 +1977,7 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
 
           // If this is the last item, adjust it to accommodate the change.
           const unsigned new_end = i + 1;
-          DCHECK_LE(new_end, item_results->size());
+          CHECK_LE(new_end, item_results->size());
           if (new_end == item_results->size()) {
             position_ =
                 available_width + width_to_rewind + item_result->inline_size;
@@ -1989,11 +1989,8 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
             return;
           }
 
+          state_ = LineBreakState::kTrailing;
           Rewind(new_end, line_info);
-          if (new_end < item_results->size())
-            state_ = LineBreakState::kTrailing;
-          else
-            HandleTrailingSpaces(item, line_info);
           return;
         }
 
@@ -2011,11 +2008,11 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
   if (!override_break_anywhere_ && has_break_anywhere_if_overflow) {
     override_break_anywhere_ = true;
     break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
+    state_ = LineBreakState::kContinue;
     // TODO(kojii): Not all items need to rewind, but such case is rare and
     // rewinding all items simplifes the code.
     if (!item_results->IsEmpty())
       Rewind(0, line_info);
-    state_ = LineBreakState::kContinue;
     ResetRewindLoopDetector();
     return;
   }
@@ -2078,11 +2075,12 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
           }
           // If this item starts with spaces followed by non-space characters,
           // the line should break after the spaces. Rewind to before this item.
-          Rewind(index, line_info);
-          // Now we want to |HandleTrailingSpaces| in this |item|, but |Rewind|
-          // may have failed when we have floats. Set the |state_| to
-          // |kTrailing| and let the next |HandleText| to handle this.
+          //
+          // After the rewind, we want to |HandleTrailingSpaces| in this |item|,
+          // but |Rewind| may have failed when we have floats. Set the |state_|
+          // to |kTrailing| and let the next |HandleText| to handle this.
           state_ = LineBreakState::kTrailing;
+          Rewind(index, line_info);
           return;
         }
       }
@@ -2145,18 +2143,19 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
 }
 
 void NGLineBreaker::Rewind(unsigned new_end, NGLineInfo* line_info) {
-#if DCHECK_IS_ON()
-  // Detect rewind-loop. If we're trying to rewind to the same index twice,
-  // we're in the infinite loop.
-  DCHECK(item_index_ != last_rewind_from_item_index_ ||
-         new_end != last_rewind_to_item_index_)
-      << item_index_ << ", " << offset_ << "->" << new_end;
-  last_rewind_from_item_index_ = item_index_;
-  last_rewind_to_item_index_ = new_end;
-#endif
-
   NGInlineItemResults& item_results = *line_info->MutableResults();
   DCHECK_LT(new_end, item_results.size());
+  if (last_rewind_) {
+    // Detect rewind-loop. If we're trying to rewind to the same index twice,
+    // we're in the infinite loop.
+    if (item_index_ == last_rewind_->from_item_index &&
+        new_end == last_rewind_->to_index) {
+      NOTREACHED();
+      state_ = LineBreakState::kDone;
+      return;
+    }
+    last_rewind_.emplace(RewindIndex{item_index_, new_end});
+  }
 
   // Avoid rewinding floats if possible. They will be added back anyway while
   // processing trailing items even when zero available width. Also this saves
