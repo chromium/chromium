@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   std::unique_ptr<ClipboardData> WriteClipboardData(
       std::unique_ptr<ClipboardData> data);
 
+  // Clipboard overrides:
+  uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
+
  private:
   friend class Clipboard;
   friend class ClipboardNonBackedTest;
@@ -47,7 +50,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
 
   // Clipboard overrides:
   void OnPreShutdown() override;
-  uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const ClipboardDataEndpoint* data_dst) const override;

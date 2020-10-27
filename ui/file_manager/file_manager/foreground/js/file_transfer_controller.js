@@ -286,6 +286,23 @@ class FileTransferController {
         !this.selectionHandler_.isAvailable());
     this.appendUriList_(
         clipboardData, this.selectionHandler_.selection.entries);
+    if (util.isCopyImageEnabled()) {
+      const entries = this.selectionHandler_.selection.entries;
+      if (entries.length == 1 && FileType.isImage(entries[0])) {
+        // We are using setTimeout to ensure that the previous copy commands
+        // execute successfully, so we can append our image to the system
+        // clipboard at the end of the event loop.
+        setTimeout(() => {
+          chrome.fileManagerPrivate.copyImageToClipboard(entries[0],
+            () => {
+              if (chrome.runtime.lastError) {
+                console.error(chrome.runtime.lastError.message);
+                return;
+              }
+          });
+        });
+      }
+    }
   }
 
   /**
@@ -314,15 +331,6 @@ class FileTransferController {
 
     clipboardData.setData(
         'fs/missingFileContents', missingFileContents.toString());
-
-    if(util.isCopyImageEnabled()) {
-      if ((entries.length == 1) && FileType.isImage(entries[0])) {
-        chrome.fileManagerPrivate.copyImageToClipboard(entries[0],
-          () => {
-            console.log("Image is being copied!");
-        });
-      }
-    }
   }
 
   /**

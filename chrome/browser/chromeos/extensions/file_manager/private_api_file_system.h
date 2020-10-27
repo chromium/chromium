@@ -274,10 +274,16 @@ class FileManagerPrivateInternalCopyImageToClipboardFunction
   ResponseAction Run() override;
 
  private:
-  void RespondWith(scoped_refptr<base::RefCountedString> bytes);
+  // `is_on_clipboard` specifies whether or not the image was copied to the
+  // clipboard.
+  void RespondWith(bool is_on_clipboard);
+  void MoveBytesToClipboard(scoped_refptr<base::RefCountedString> bytes);
 
   const ChromeExtensionFunctionDetails chrome_details_;
   std::unique_ptr<storage::FileStreamStringConverter> converter_;
+  // Stores the clipboard copy sequence number to validate the clipboard did not
+  // change during an async operation.
+  uint64_t clipboard_sequence_ = 0;
 };
 
 // Implements the chrome.fileManagerPrivate.startCopy method.

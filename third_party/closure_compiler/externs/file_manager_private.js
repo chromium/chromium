@@ -794,7 +794,7 @@ chrome.fileManagerPrivate.startCopy = function(entry, parentEntry, newName,
  * Copies an image to the system clipboard. |entry| Entry of the image to copy
  * to the system clipboard.
  * @param {!Entry} entry
- * @param {function()} callback
+ * @param {function((boolean|undefined))} callback
  */
 chrome.fileManagerPrivate.copyImageToClipboard = function(entry, callback) {};
 
