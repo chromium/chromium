@@ -175,7 +175,7 @@ public class ApplicationTestUtils {
      */
     public static void assertWaitForPageScaleFactorMatch(
             final ChromeActivity activity, final float expectedScale) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             Tab tab = activity.getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
 

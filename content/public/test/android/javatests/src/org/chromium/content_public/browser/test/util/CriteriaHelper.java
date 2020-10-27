@@ -88,12 +88,19 @@ public class CriteriaHelper {
 
     private static void pollThreadInternal(
             Runnable criteria, long maxTimeoutMs, long checkIntervalMs, boolean shouldNest) {
-        CriteriaNotSatisfiedException throwable;
+        Throwable throwable;
         try {
             criteria.run();
             return;
-        } catch (CriteriaNotSatisfiedException cnse) {
-            throwable = cnse;
+        } catch (Throwable e) {
+            // Espresso catches, wraps, and re-throws the exception we want the CriteriaHelper
+            // to catch.
+            if (e instanceof CriteriaNotSatisfiedException
+                    || e.getCause() instanceof CriteriaNotSatisfiedException) {
+                throwable = e;
+            } else {
+                throw e;
+            }
         }
         TimeoutTimer timer = new TimeoutTimer(maxTimeoutMs);
         while (!timer.isTimedOut()) {
@@ -105,8 +112,13 @@ public class CriteriaHelper {
             try {
                 criteria.run();
                 return;
-            } catch (CriteriaNotSatisfiedException cnse) {
-                throwable = cnse;
+            } catch (Throwable e) {
+                if (e instanceof CriteriaNotSatisfiedException
+                        || e.getCause() instanceof CriteriaNotSatisfiedException) {
+                    throwable = e;
+                } else {
+                    throw e;
+                }
             }
         }
         throw new AssertionError(throwable);
