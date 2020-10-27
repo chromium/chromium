@@ -387,13 +387,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityActions) {
   RunHtmlTest(FILE_PATH_LITERAL("actions.html"));
 }
 
-// crbug.com/1135774. Flaky due to missing invalidation when adding or removing
-// a mouse button listener.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityAddClickListener) {
-  RunHtmlTest(FILE_PATH_LITERAL("add-click-listener.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAddress) {
   RunHtmlTest(FILE_PATH_LITERAL("address.html"));
 }

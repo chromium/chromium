@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -2716,6 +2717,8 @@ void Node::AddedEventListener(const AtomicString& event_type,
       frame->AddedSuddenTerminationDisablerListener(*this, event_type);
     }
   }
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
+    cache->HandleEventListenerAdded(*this, event_type);
 }
 
 void Node::RemovedEventListener(
@@ -2734,15 +2737,22 @@ void Node::RemovedEventListener(
       frame->RemovedSuddenTerminationDisablerListener(*this, event_type);
     }
   }
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
+    cache->HandleEventListenerRemoved(*this, event_type);
 }
 
 void Node::RemoveAllEventListeners() {
+  Vector<AtomicString> event_types = EventTypes();
   if (HasEventListeners() && GetDocument().GetPage())
     GetDocument()
         .GetFrame()
         ->GetEventHandlerRegistry()
         .DidRemoveAllEventHandlers(*this);
   EventTarget::RemoveAllEventListeners();
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+    for (const AtomicString& event_type : event_types)
+      cache->HandleEventListenerRemoved(*this, event_type);
+  }
 }
 
 void Node::RemoveAllEventListenersRecursively() {
@@ -3095,10 +3105,7 @@ bool Node::WillRespondToMouseClickEvents() {
     return false;
   GetDocument().UpdateStyleAndLayoutTree();
   return HasEditableStyle(*this) ||
-         HasEventListeners(event_type_names::kMouseup) ||
-         HasEventListeners(event_type_names::kMousedown) ||
-         HasEventListeners(event_type_names::kClick) ||
-         HasEventListeners(event_type_names::kDOMActivate);
+         HasAnyEventListeners(event_util::MouseButtonEventTypes());
 }
 
 unsigned Node::ConnectedSubframeCount() const {

@@ -125,6 +125,10 @@ class MODULES_EXPORT AXObjectCacheImpl
                               Element*) override;
   void HandleValidationMessageVisibilityChanged(
       const Node* form_control) override;
+  void HandleEventListenerAdded(const Node& node,
+                                const AtomicString& event_type) override;
+  void HandleEventListenerRemoved(const Node& node,
+                                  const AtomicString& event_type) override;
   void HandleFocusedUIElementChanged(Element* old_focused_element,
                                      Element* new_focused_element) override;
   void HandleInitialFocus() override;
@@ -471,6 +475,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChangedWithCleanLayout(Node* node);
   void HandleAttributeChangedWithCleanLayout(const QualifiedName& attr_name,
                                              Element* element);
+
+  bool DoesEventListenerImpactIgnoredState(
+      const AtomicString& event_type) const;
+  void HandleEventSubscriptionChanged(const Node& node,
+                                      const AtomicString& event_type);
 
   //
   // aria-modal support

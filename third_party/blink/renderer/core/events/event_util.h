@@ -5,15 +5,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_EVENT_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_EVENT_UTIL_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+#include <vector>
 
 namespace blink {
 
 namespace event_util {
 
-bool IsPointerEventType(const AtomicString& event_type);
+CORE_EXPORT const Vector<AtomicString>& MouseButtonEventTypes();
 
-bool IsDOMMutationEventType(const AtomicString& event_type);
+CORE_EXPORT bool IsMouseButtonEventType(const AtomicString& event_type);
+
+CORE_EXPORT bool IsPointerEventType(const AtomicString& event_type);
+
+CORE_EXPORT bool IsDOMMutationEventType(const AtomicString& event_type);
 
 }  // namespace event_util
 

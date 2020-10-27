@@ -118,6 +118,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void HandleClicked(Node*) = 0;
   virtual void HandleValidationMessageVisibilityChanged(
       const Node* form_control) = 0;
+  virtual void HandleEventListenerAdded(const Node& node,
+                                        const AtomicString& event_type) = 0;
+  virtual void HandleEventListenerRemoved(const Node& node,
+                                          const AtomicString& event_type) = 0;
 
   // Handle any notifications which arrived while layout was dirty.
   virtual void ProcessDeferredAccessibilityEvents(Document&) = 0;

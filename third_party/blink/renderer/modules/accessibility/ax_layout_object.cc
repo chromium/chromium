@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -722,11 +723,14 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (block_flow && block_flow->ChildrenInline()) {
     // If the layout object has any plain text in it, that text will be
     // inside a LineBox, so the layout object will have a first LineBox.
-    bool has_any_text = HasLineBox(*block_flow);
+    const bool has_any_text = HasLineBox(*block_flow);
 
     // Always include interesting-looking objects.
-    if (has_any_text || MouseButtonListener())
+    if (has_any_text ||
+        (GetNode() && GetNode()->HasAnyEventListeners(
+                          event_util::MouseButtonEventTypes()))) {
       return false;
+    }
 
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));

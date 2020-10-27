@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -2004,6 +2005,44 @@ void AXObjectCacheImpl::HandleValidationMessageVisibilityChangedWithCleanLayout(
   // If the form control is invalid, it will now have an error message relation
   // to the message container.
   MarkElementDirty(form_control, false);
+}
+
+void AXObjectCacheImpl::HandleEventListenerAdded(
+    const Node& node,
+    const AtomicString& event_type) {
+  // If this is the first |event_type| listener for |node|, handle the
+  // subscription change.
+  if (node.NumberOfEventListeners(event_type) == 1)
+    HandleEventSubscriptionChanged(node, event_type);
+}
+
+void AXObjectCacheImpl::HandleEventListenerRemoved(
+    const Node& node,
+    const AtomicString& event_type) {
+  // If there are no more |event_type| listeners for |node|, handle the
+  // subscription change.
+  if (node.NumberOfEventListeners(event_type) == 0)
+    HandleEventSubscriptionChanged(node, event_type);
+}
+
+bool AXObjectCacheImpl::DoesEventListenerImpactIgnoredState(
+    const AtomicString& event_type) const {
+  return event_util::IsMouseButtonEventType(event_type);
+}
+
+void AXObjectCacheImpl::HandleEventSubscriptionChanged(
+    const Node& node,
+    const AtomicString& event_type) {
+  // Adding or Removing an event listener for certain events may affect whether
+  // a node or its descendants should be accessibility ignored.
+  if (!DoesEventListenerImpactIgnoredState(event_type))
+    return;
+
+  // If the |event_type| may affect the ignored state of |node|, invalidate all
+  // cached values then mark |node| dirty so it may reconsider its accessibility
+  // ignored state.
+  modification_count_++;
+  MarkElementDirty(&node, /*subtree=*/false);
 }
 
 void AXObjectCacheImpl::LabelChangedWithCleanLayout(Element* element) {

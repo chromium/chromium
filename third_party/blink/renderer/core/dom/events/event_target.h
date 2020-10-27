@@ -172,6 +172,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
 
   bool HasEventListeners() const override;
   bool HasEventListeners(const AtomicString& event_type) const;
+  bool HasAnyEventListeners(const Vector<AtomicString>& event_types) const;
   bool HasCapturingEventListeners(const AtomicString& event_type);
   bool HasJSBasedEventListeners(const AtomicString& event_type) const;
   EventListenerVector* GetEventListeners(const AtomicString& event_type);
@@ -331,6 +332,16 @@ inline bool EventTarget::HasEventListeners(
   if (const EventTargetData* d =
           const_cast<EventTarget*>(this)->GetEventTargetData())
     return d->event_listener_map.Contains(event_type);
+  return false;
+}
+
+DISABLE_CFI_PERF
+inline bool EventTarget::HasAnyEventListeners(
+    const Vector<AtomicString>& event_types) const {
+  for (const AtomicString& event_type : event_types) {
+    if (HasEventListeners(event_type))
+      return true;
+  }
   return false;
 }
 

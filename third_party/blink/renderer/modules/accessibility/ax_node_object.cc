@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -1144,10 +1145,7 @@ Element* AXNodeObject::MouseButtonListener() const {
 
   for (element = To<Element>(node); element;
        element = element->parentElement()) {
-    if (element->HasEventListeners(event_type_names::kClick) ||
-        element->HasEventListeners(event_type_names::kMousedown) ||
-        element->HasEventListeners(event_type_names::kMouseup) ||
-        element->HasEventListeners(event_type_names::kDOMActivate))
+    if (element->HasAnyEventListeners(event_util::MouseButtonEventTypes()))
       return element;
   }
 
@@ -1403,12 +1401,8 @@ bool AXNodeObject::IsClickable() const {
 
   // Note: we can't call |node->WillRespondToMouseClickEvents()| because that
   // triggers a style recalc and can delete this.
-  if (node->HasEventListeners(event_type_names::kMouseup) ||
-      node->HasEventListeners(event_type_names::kMousedown) ||
-      node->HasEventListeners(event_type_names::kClick) ||
-      node->HasEventListeners(event_type_names::kDOMActivate)) {
+  if (node->HasAnyEventListeners(event_util::MouseButtonEventTypes()))
     return true;
-  }
 
   return IsTextControl() || AXObject::IsClickable();
 }

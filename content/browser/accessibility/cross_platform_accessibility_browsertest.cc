@@ -92,6 +92,11 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
   virtual void ChooseFeatures(std::vector<base::Feature>* enabled_features,
                               std::vector<base::Feature>* disabled_features);
 
+  void ExecuteScript(const char* script) {
+    shell()->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+        base::ASCIIToUTF16(script), base::NullCallback());
+  }
+
   void LoadInitialAccessibilityTreeFromUrl(
       const GURL& url,
       ui::AXMode accessibility_mode = ui::kAXModeComplete) {
@@ -1646,5 +1651,47 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_GT(num_batches, 1000 / kDelayForDeferredUpdatesAfterPageLoad);
 }
 #endif  // IS_FAST_BUILD
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       AccessibilityAddClickListener) {
+  // This is a regression test for a bug where a node is ignored in the
+  // accessibility tree (in this case the BODY), and then by adding a click
+  // listener to it we can make it no longer ignored without correctly firing
+  // the right notifications - with the end result being that the whole
+  // accessibility tree is broken.
+  LoadInitialAccessibilityTreeFromUrl(GURL(R"HTML(data:text/html,
+      <!DOCTYPE html>
+      <body>
+        <div>
+          <button>This should be accessible</button>
+        </div>
+      </body></html>)HTML"));
+
+  BrowserAccessibilityManager* browser_accessibility_manager = GetManager();
+  BrowserAccessibility* root_browser_accessibility =
+      browser_accessibility_manager->GetRoot();
+  ASSERT_NE(root_browser_accessibility, nullptr);
+
+  const ui::AXNode* root_node = root_browser_accessibility->node();
+  ASSERT_NE(root_node, nullptr);
+  const ui::AXNode* html_node = root_node->children()[0];
+  ASSERT_NE(html_node, nullptr);
+  const ui::AXNode* body_node = html_node->children()[0];
+  ASSERT_NE(body_node, nullptr);
+
+  // Make sure this is actually the body element.
+  ASSERT_EQ(body_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag),
+            "body");
+  ASSERT_TRUE(body_node->IsIgnored());
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::IGNORED_CHANGED);
+  ExecuteScript("document.body.addEventListener('mousedown', function() {});");
+  waiter.WaitForNotification();
+
+  // The body should no longer be ignored after adding a mouse button listener.
+  ASSERT_FALSE(body_node->IsIgnored());
+}
 
 }  // namespace content
