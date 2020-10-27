@@ -101,7 +101,6 @@ DateView::DateView(UnifiedSystemTrayController* controller)
   Shell::Get()->system_tray_model()->clock()->AddObserver(this);
   SetEnabled(Shell::Get()->system_tray_model()->clock()->IsSettingsAvailable());
   SetInstallFocusRingOnFocus(true);
-  SetFocusForPlatform();
   SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
 }
 
@@ -294,7 +293,6 @@ ManagedStateView::ManagedStateView(views::ButtonListener* listener,
       gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
 
   SetInstallFocusRingOnFocus(true);
-  SetFocusForPlatform();
   SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
 }
 

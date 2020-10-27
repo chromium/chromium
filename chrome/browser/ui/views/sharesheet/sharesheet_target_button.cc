@@ -86,8 +86,6 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   AddChildView(std::move(label_view));
   SetAccessibleName(accessible_name);
-
-  SetFocusForPlatform();
 }
 
 void SharesheetTargetButton::SetLabelProperties(views::Label* label) {

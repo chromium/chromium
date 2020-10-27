@@ -44,8 +44,7 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
                    .CopyAddressTo(&button)
                    .SetIsDefault(true)
                    .SetEnabled(true)
-                   .SetText(base::ASCIIToUTF16("Test"))
-                   .SetFocusForPlatform(),
+                   .SetText(base::ASCIIToUTF16("Test")),
                views::Builder<views::ScrollView>()
                    .CopyAddressTo(&scroll_view)
                    .SetContents(views::Builder<views::LabelButton>()

@@ -31,7 +31,6 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
           vector_icons::kHelpOutlineIcon));
   learn_more_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
-  learn_more_button->SetFocusForPlatform();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ECHO);
 
   if (params.echo_enabled) {

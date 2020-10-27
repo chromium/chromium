@@ -148,8 +148,6 @@ void AssistantOptInView::InitLayout() {
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 
-  container_->SetFocusForPlatform();
-
   UpdateLabel(AssistantState::Get()->consent_status().value_or(
       chromeos::assistant::prefs::ConsentStatus::kUnknown));
 }

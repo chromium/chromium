@@ -150,7 +150,6 @@ std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
       std::move(callback), vector_icons::kCloseRoundedIcon);
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SizeToPreferredSize();
-  close_button->SetFocusForPlatform();
 
   InstallCircleHighlightPathGenerator(close_button.get());
 
@@ -165,7 +164,6 @@ std::unique_ptr<Button> BubbleFrameView::CreateMinimizeButton(
   minimize_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
   minimize_button->SizeToPreferredSize();
-  minimize_button->SetFocusForPlatform();
 
   InstallCircleHighlightPathGenerator(minimize_button.get());
 

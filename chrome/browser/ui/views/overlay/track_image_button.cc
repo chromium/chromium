@@ -32,7 +32,6 @@ TrackImageButton::TrackImageButton(PressedCallback callback,
   SetImage(views::Button::STATE_NORMAL, image_);
 
   // Accessibility.
-  SetFocusForPlatform();
   SetAccessibleName(label);
   SetTooltipText(label);
   SetInstallFocusRingOnFocus(true);

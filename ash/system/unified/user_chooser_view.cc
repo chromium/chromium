@@ -103,7 +103,6 @@ AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIGN_IN_ANOTHER_ACCOUNT));
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
-  SetFocusForPlatform();
 }
 
 void AddUserButton::ButtonPressed(views::Button* sender,
@@ -261,7 +260,6 @@ UserItemButton::UserItemButton(int user_index,
 
   SetTooltipText(GetUserItemAccessibleString(user_index));
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
-  SetFocusForPlatform();
 }
 
 void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {

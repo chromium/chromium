@@ -125,7 +125,6 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
                                   gfx::kPlaceholderColor);
     close_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
-    close_button->SetFocusForPlatform();
     gfx::Insets close_button_spacing = GetCloseButtonSpacing();
     close_button->SetProperty(views::kMarginsKey,
                               gfx::Insets(close_button_spacing.top(), 0,

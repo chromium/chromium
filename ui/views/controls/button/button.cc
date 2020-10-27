@@ -160,15 +160,6 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
 
 Button::~Button() = default;
 
-void Button::SetFocusForPlatform() {
-#if defined(OS_APPLE)
-  // On Mac, buttons are focusable only in full keyboard access mode.
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-#else
-  SetFocusBehavior(FocusBehavior::ALWAYS);
-#endif
-}
-
 void Button::SetTooltipText(const base::string16& tooltip_text) {
   if (tooltip_text == tooltip_text_)
     return;

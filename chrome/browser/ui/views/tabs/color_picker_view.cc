@@ -71,7 +71,6 @@ class ColorPickerElementView : public views::Button {
     DCHECK(selected_callback_);
 
     SetAccessibleName(color_name);
-    SetFocusForPlatform();
     SetInstallFocusRingOnFocus(true);
     views::HighlightPathGenerator::Install(
         this, std::make_unique<ColorPickerHighlightPathGenerator>());

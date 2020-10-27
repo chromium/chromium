@@ -367,7 +367,6 @@ void UserNoticeView::AddDogfoodButton() {
                             kDogfoodButtonColor));
   dogfood_button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_DOGFOOD_BUTTON_TOOLTIP_TEXT));
-  dogfood_button->SetFocusForPlatform();
   dogfood_button_ = dogfood_view->AddChildView(std::move(dogfood_button));
 }
 

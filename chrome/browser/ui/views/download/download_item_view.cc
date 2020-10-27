@@ -147,7 +147,6 @@ class TransparentButton : public views::Button {
 
   explicit TransparentButton(DownloadItemView* parent)
       : Button(Button::PressedCallback()) {
-    SetFocusForPlatform();
     views::InstallRectHighlightPathGenerator(this);
     SetInkDropMode(InkDropMode::ON);
     set_context_menu_controller(parent);
@@ -306,7 +305,6 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
       IDS_DOWNLOAD_ITEM_DROPDOWN_BUTTON_ACCESSIBLE_TEXT));
   dropdown_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets(10)));
   dropdown_button_->SetHasInkDropActionOnClick(false);
-  dropdown_button_->SetFocusForPlatform();
   dropdown_button_->SizeToPreferredSize();
 
   complete_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(2500));

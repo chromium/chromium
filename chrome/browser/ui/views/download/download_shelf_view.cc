@@ -80,7 +80,6 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
       base::BindRepeating(&DownloadShelf::Close, base::Unretained(this))));
   close_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
-  close_button_->SetFocusForPlatform();
   close_button_->SizeToPreferredSize();
 
   accessible_alert_ = AddChildView(std::make_unique<views::View>());

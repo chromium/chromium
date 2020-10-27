@@ -74,7 +74,6 @@ BluetoothStatusContainer::BluetoothStatusContainer(
       re_scan_button.get(), chooser_controller));
   re_scan_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN_TOOLTIP));
-  re_scan_button->SetFocusForPlatform();
   re_scan_button_ = rescan_container->AddChildView(std::move(re_scan_button));
 
   auto* scan_container = AddChildView(std::make_unique<views::View>());
@@ -286,7 +285,6 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
         base::BindRepeating(&ChooserController::OpenHelpCenterUrl,
                             base::Unretained(chooser_controller_.get())),
         vector_icons::kHelpOutlineIcon);
-    help_button->SetFocusForPlatform();
     help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
     return help_button;
   };

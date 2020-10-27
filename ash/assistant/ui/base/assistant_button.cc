@@ -46,9 +46,6 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
   // a custom highlight on focus.
   SetInstallFocusRingOnFocus(false);
 
-  // Focus.
-  SetFocusForPlatform();
-
   // Image.
   SetFlipCanvasOnPaintForRTLUI(false);
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);

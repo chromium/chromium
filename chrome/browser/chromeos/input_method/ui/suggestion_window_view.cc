@@ -196,7 +196,6 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
       views::ImageButton::ALIGN_CENTER);
   learn_more_button_->SetImageVerticalAlignment(
       views::ImageButton::ALIGN_MIDDLE);
-  learn_more_button_->SetFocusForPlatform();
   learn_more_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
   const auto update_button_highlight = [](views::Button* button) {
     SetHighlighted(*button, ShouldHighlight(*button));

@@ -21,6 +21,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/resources/grit/views_resources.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 
 using base::ASCIIToUTF16;
@@ -61,7 +62,6 @@ void ButtonExample::CreateExampleView(View* container) {
               {Builder<LabelButton>()
                    .CopyAddressTo(&label_button_)
                    .SetText(ASCIIToUTF16(kLabelButton))
-                   .SetFocusForPlatform()
                    .SetRequestFocusOnPress(true)
                    .SetCallback(base::BindRepeating(
                        &ButtonExample::LabelButtonPressed,
@@ -85,7 +85,6 @@ void ButtonExample::CreateExampleView(View* container) {
                                                     md_default_button_)),
                Builder<ImageButton>()
                    .CopyAddressTo(&image_button_)
-                   .SetFocusForPlatform()
                    .SetRequestFocusOnPress(true)
                    .SetCallback(
                        base::BindRepeating(&ButtonExample::ImageButtonPressed,
@@ -127,7 +126,8 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
       // Toggle focusability.
       label_button->IsAccessibilityFocusable()
           ? label_button->SetFocusBehavior(View::FocusBehavior::NEVER)
-          : label_button->SetFocusForPlatform();
+          : label_button->SetFocusBehavior(
+                PlatformStyle::DefaultFocusBehavior());
     }
   } else if (event.IsAltDown()) {
     label_button->SetIsDefault(!label_button->GetIsDefault());

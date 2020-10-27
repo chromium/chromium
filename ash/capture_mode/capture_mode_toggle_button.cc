@@ -25,7 +25,6 @@ CaptureModeToggleButton::CaptureModeToggleButton(
   GetViewAccessibility().OverrideIsLeaf(true);
 
   SetInstallFocusRingOnFocus(true);
-  SetFocusForPlatform();
   const auto* color_provider = AshColorProvider::Get();
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));

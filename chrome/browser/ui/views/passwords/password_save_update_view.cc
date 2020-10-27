@@ -160,7 +160,6 @@ std::unique_ptr<views::ToggleImageButton> CreatePasswordViewButton(
     views::Button::PressedCallback callback,
     bool are_passwords_revealed) {
   auto button = std::make_unique<views::ToggleImageButton>(std::move(callback));
-  button->SetFocusForPlatform();
   button->SetInstallFocusRingOnFocus(true);
   button->SetRequestFocusOnPress(true);
   button->SetTooltipText(

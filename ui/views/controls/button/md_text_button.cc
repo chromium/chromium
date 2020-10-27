@@ -39,7 +39,6 @@ MdTextButton::MdTextButton(PressedCallback callback,
   SetShowInkDropWhenHotTracked(true);
   SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_LOW));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetFocusForPlatform();
 
   const int minimum_width = LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH);

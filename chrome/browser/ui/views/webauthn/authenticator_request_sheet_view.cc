@@ -104,7 +104,6 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   if (model()->IsBackButtonVisible()) {
     auto back_arrow = views::CreateVectorImageButton(base::BindRepeating(
         &AuthenticatorRequestSheetModel::OnBack, base::Unretained(model())));
-    back_arrow->SetFocusForPlatform();
     back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_BACK_BUTTON_AUTHENTICATOR_REQUEST_DIALOG));
 

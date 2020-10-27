@@ -593,7 +593,6 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
           bubble->content_setting_bubble_model_->OnLearnMoreClicked();
         },
         base::Unretained(this)));
-    learn_more_button->SetFocusForPlatform();
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
     learn_more_button_ = learn_more_button.get();

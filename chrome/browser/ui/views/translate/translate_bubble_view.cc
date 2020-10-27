@@ -1012,7 +1012,6 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateOptionsMenuButton() {
       &TranslateBubbleView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(tab_translate_options_button.get())));
   InstallCircleHighlightPathGenerator(tab_translate_options_button.get());
-  tab_translate_options_button->SetFocusForPlatform();
   tab_translate_options_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPTIONS_MENU_BUTTON));
   tab_translate_options_button->SetRequestFocusOnPress(true);

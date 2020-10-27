@@ -30,7 +30,6 @@ BackToTabImageButton::BackToTabImageButton(PressedCallback callback)
                                  kBackToTabIconColor));
 
   // Accessibility.
-  SetFocusForPlatform();
   const base::string16 back_to_tab_button_label(l10n_util::GetStringUTF16(
       IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));
   SetAccessibleName(back_to_tab_button_label);

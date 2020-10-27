@@ -86,7 +86,6 @@ ChosenObjectView::ChosenObjectView(
       delete_button.get(), vector_icons::kCloseRoundedIcon,
       views::style::GetColor(*this, views::style::CONTEXT_DIALOG_BODY_TEXT,
                              views::style::STYLE_PRIMARY));
-  delete_button->SetFocusForPlatform();
   delete_button->SetRequestFocusOnPress(true);
   delete_button->SetTooltipText(
       l10n_util::GetStringUTF16(info_->ui_info.delete_tooltip_string_id));

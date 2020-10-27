@@ -795,7 +795,6 @@ TEST_F(ButtonTest, NoLayerAddedForWidgetVisibilityChanges) {
 // key-release on other platforms.
 TEST_F(ButtonTest, ActionOnSpace) {
   // Give focus to the button.
-  button()->SetFocusForPlatform();
   button()->RequestFocus();
   EXPECT_TRUE(button()->HasFocus());
 
@@ -827,7 +826,6 @@ TEST_F(ButtonTest, ActionOnSpace) {
 // with a dialog, even if a button has focus.
 TEST_F(ButtonTest, ActionOnReturn) {
   // Give focus to the button.
-  button()->SetFocusForPlatform();
   button()->RequestFocus();
   EXPECT_TRUE(button()->HasFocus());
 
@@ -851,7 +849,6 @@ TEST_F(ButtonTest, ActionOnReturn) {
 // Verify that a subclass may customize the action for a key pressed event.
 TEST_F(ButtonTest, CustomActionOnKeyPressedEvent) {
   // Give focus to the button.
-  button()->SetFocusForPlatform();
   button()->RequestFocus();
   EXPECT_TRUE(button()->HasFocus());
 

@@ -31,7 +31,6 @@ CaptureModeCloseButton::CaptureModeCloseButton(
   GetViewAccessibility().OverrideName(GetClassName());
 
   SetInstallFocusRingOnFocus(true);
-  SetFocusForPlatform();
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
   focus_ring()->SetPathGenerator(

@@ -45,7 +45,6 @@ ConfirmBubbleViews::ConfirmBubbleViews(
               },
               base::Unretained(this)),
           vector_icons::kHelpOutlineIcon));
-  help_button->SetFocusForPlatform();
   help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(

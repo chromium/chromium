@@ -90,7 +90,6 @@ PlatformVerificationDialog::PlatformVerificationDialog(
           vector_icons::kHelpOutlineIcon));
   learn_more_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
-  learn_more_button->SetFocusForPlatform();
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(

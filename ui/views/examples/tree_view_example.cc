@@ -97,19 +97,16 @@ void TreeViewExample::CreateExampleView(View* container) {
   auto add = std::make_unique<LabelButton>(
       base::BindRepeating(&TreeViewExample::AddNewNode, base::Unretained(this)),
       GetStringUTF16(IDS_TREE_VIEW_ADD_BUTTON_LABEL));
-  add->SetFocusForPlatform();
   add->SetRequestFocusOnPress(true);
   auto remove = std::make_unique<LabelButton>(
       base::BindRepeating(&TreeViewExample::RemoveSelectedNode,
                           base::Unretained(this)),
       GetStringUTF16(IDS_TREE_VIEW_REMOVE_BUTTON_LABEL));
-  remove->SetFocusForPlatform();
   remove->SetRequestFocusOnPress(true);
   auto change_title = std::make_unique<LabelButton>(
       base::BindRepeating(&TreeViewExample::SetSelectedNodeTitle,
                           base::Unretained(this)),
       GetStringUTF16(IDS_TREE_VIEW_CHANGE_TITLE_LABEL));
-  change_title->SetFocusForPlatform();
   change_title->SetRequestFocusOnPress(true);
 
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())

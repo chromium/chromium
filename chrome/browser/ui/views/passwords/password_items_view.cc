@@ -184,7 +184,6 @@ void PasswordItemsView::PasswordRow::AddUndoRow(views::GridLayout* layout) {
       base::BindRepeating(&PasswordRow::UndoButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UNDO)));
-  undo_button->SetFocusForPlatform();
   undo_button->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_MANAGE_PASSWORDS_UNDO_TOOLTIP, GetDisplayUsername(*password_form_)));
 }
@@ -236,7 +235,6 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
           base::BindRepeating(&PasswordRow::DeleteButtonPressed,
                               base::Unretained(this)),
           kTrashCanIcon));
-  delete_button->SetFocusForPlatform();
   delete_button->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_MANAGE_PASSWORDS_DELETE, GetDisplayUsername(*password_form_)));
 }

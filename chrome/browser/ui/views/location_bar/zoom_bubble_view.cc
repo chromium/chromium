@@ -82,7 +82,6 @@ std::unique_ptr<views::ImageButton> CreateZoomButton(
     int tooltip_id) {
   auto zoom_button =
       views::CreateVectorImageButtonWithNativeTheme(std::move(callback), icon);
-  zoom_button->SetFocusForPlatform();
   zoom_button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
   views::HighlightPathGenerator::Install(
       zoom_button.get(), std::make_unique<ZoomButtonHighlightPathGenerator>());

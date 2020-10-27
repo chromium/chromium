@@ -65,7 +65,6 @@ class RevokeButton : public views::ImageButton {
 
     // Make the button focusable & give it alt-text so permissions can be
     // revoked using only the keyboard.
-    SetFocusForPlatform();
     SetRequestFocusOnPress(true);
     SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_APPLICATION_INFO_REVOKE_PERMISSION_ALT_TEXT, permission_message));

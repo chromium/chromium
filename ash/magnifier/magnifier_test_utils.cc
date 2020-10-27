@@ -40,10 +40,7 @@ class TestFocusView : public views::WidgetDelegateView {
  public:
   TestFocusView()
       : button_1_(AddChildView(std::make_unique<views::LabelButton>())),
-        button_2_(AddChildView(std::make_unique<views::LabelButton>())) {
-    button_1_->SetFocusForPlatform();
-    button_2_->SetFocusForPlatform();
-  }
+        button_2_(AddChildView(std::make_unique<views::LabelButton>())) {}
 
   ~TestFocusView() override = default;
 

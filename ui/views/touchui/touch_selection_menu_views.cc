@@ -153,7 +153,6 @@ LabelButton* TouchSelectionMenuViews::CreateButton(
       std::move(callback), label, style::CONTEXT_TOUCH_MENU));
   constexpr gfx::Size kMenuButtonMinSize = gfx::Size(63, 38);
   button->SetMinSize(kMenuButtonMinSize);
-  button->SetFocusForPlatform();
   button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   return button;
 }

@@ -170,7 +170,6 @@ class CircularImageButton : public views::ImageButton {
         show_border_(show_border) {
     SetTooltipText(text);
     SetInkDropMode(views::Button::InkDropMode::ON);
-    SetFocusForPlatform();
 
     InstallCircleHighlightPathGenerator(this);
   }

@@ -81,7 +81,6 @@ void CastDialogNoSinksView::SetHelpIconView() {
                                   vector_icons::kHelpOutlineIcon),
                               0);
   icon->SetInstallFocusRingOnFocus(true);
-  icon->SetFocusForPlatform();
   icon->SetBorder(views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
   icon->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));

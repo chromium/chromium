@@ -56,7 +56,6 @@ namespace {
 void SetCommonButtonAttributes(views::ImageButton* button) {
   views::ConfigureVectorImageButton(button);
   views::InstallCircleHighlightPathGenerator(button);
-  button->SetFocusForPlatform();
 }
 }  // namespace
 

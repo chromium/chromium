@@ -55,7 +55,6 @@ UserAvatarButton::UserAvatarButton(views::ButtonListener* listener)
 
   SetTooltipText(GetUserItemAccessibleString(0 /* user_index */));
   SetInstallFocusRingOnFocus(true);
-  SetFocusForPlatform();
 
   views::InstallCircleHighlightPathGenerator(this);
   focus_ring()->SetColor(AshColorProvider::Get()->GetControlsLayerColor(

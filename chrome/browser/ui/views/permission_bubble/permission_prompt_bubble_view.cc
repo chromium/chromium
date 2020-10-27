@@ -108,7 +108,6 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
                 },
                 base::Unretained(browser)),
             vector_icons::kHelpOutlineIcon));
-    learn_more_button->SetFocusForPlatform();
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
   }

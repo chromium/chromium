@@ -394,7 +394,6 @@ std::unique_ptr<views::ImageButton> CaptionBubble::BuildImageButton(
   button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
   button->SetInkDropBaseColor(SkColor(gfx::kGoogleGrey600));
   button->SizeToPreferredSize();
-  button->SetFocusForPlatform();
   views::InstallCircleHighlightPathGenerator(
       button.get(), gfx::Insets(kButtonCircleHighlightPaddingDip));
   return button;

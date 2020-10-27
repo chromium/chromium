@@ -94,7 +94,6 @@ ToolbarActionsBarBubbleViews::CreateExtraInfoView() {
           base::BindRepeating(&ToolbarActionsBarBubbleViews::ButtonPressed,
                               base::Unretained(this)),
           vector_icons::kHelpOutlineIcon);
-      image_button->SetFocusForPlatform();
       image_button->SetTooltipText(text);
       learn_more_button_ = image_button.get();
       extra_view = std::move(image_button);

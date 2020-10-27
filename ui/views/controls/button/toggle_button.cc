@@ -126,7 +126,6 @@ ToggleButton::ToggleButton(PressedCallback callback)
   slide_animation_.SetTweenType(gfx::Tween::LINEAR);
   thumb_view_ = AddChildView(std::make_unique<ThumbView>());
   SetInkDropMode(InkDropMode::ON);
-  SetFocusForPlatform();
   // TODO(pbos): Update the highlight-path shape so that a FocusRing can be used
   // on top of it to increase contrast. Disabling it for now addresses a
   // regression in crbug.com/1031983, but a matching FocusRing would probably be

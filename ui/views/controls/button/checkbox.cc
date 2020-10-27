@@ -48,7 +48,6 @@ Checkbox::Checkbox(const base::string16& label, PressedCallback callback)
     : LabelButton(std::move(callback), label) {
   SetImageCentered(false);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  SetFocusForPlatform();
 
   SetRequestFocusOnPress(false);
   SetInkDropMode(InkDropMode::ON);
