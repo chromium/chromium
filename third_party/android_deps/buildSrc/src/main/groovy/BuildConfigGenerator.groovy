@@ -500,6 +500,8 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ignore_proguard_configs = true\n')
                 break
             case 'com_google_android_gms_play_services_basement':
+                sb.append('  # https://crbug.com/989505\n')
+                sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
                 // Deprecated deps jar but still needed by play services basement.
                 sb.append('  input_jars_paths=["\\$android_sdk/optional/org.apache.http.legacy.jar"]\n')
                 break
