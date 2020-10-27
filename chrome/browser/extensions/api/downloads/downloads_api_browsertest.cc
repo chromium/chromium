@@ -56,6 +56,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -2602,10 +2603,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_Cancel) {
   LoadExtension("downloads_split");
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &content::SlowDownloadHttpResponse::HandleSlowDownloadRequest));
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(spawned_test_server()->Start());
   std::string download_url =
-      spawned_test_server()->GetURL("download-known-size").spec();
+      embedded_test_server()->GetURL("/download-known-size").spec();
   GoOnTheRecord();
 
   std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
