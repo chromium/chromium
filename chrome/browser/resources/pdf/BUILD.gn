@@ -167,7 +167,6 @@ js_library("pdf_viewer") {
     "elements:viewer-pdf-sidenav",
     "elements:viewer-pdf-toolbar",
     "elements:viewer-pdf-toolbar-new",
-    "elements:viewer-thumbnail",
     "elements:viewer-zoom-toolbar",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",

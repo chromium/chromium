@@ -7,6 +7,7 @@ import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_man
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PluginController} from '../controller.js';
 import {ViewerThumbnailElement} from './viewer-thumbnail.js';
 
 export class ViewerThumbnailBarElement extends PolymerElement {
@@ -59,11 +60,19 @@ export class ViewerThumbnailBarElement extends PolymerElement {
         if (thumbnail.isPainted()) {
           return;
         }
-
         thumbnail.setPainted();
-        this.dispatchEvent(new CustomEvent(
-            'paint-thumbnail',
-            {detail: thumbnail, bubbles: true, composed: true}));
+
+        const pluginController = PluginController.getInstance();
+        if (!pluginController.isActive) {
+          return;
+        }
+
+        pluginController.requestThumbnail(thumbnail.pageNumber)
+            .then(response => {
+              const array = new Uint8ClampedArray(response.imageData);
+              const imageData = new ImageData(array, response.width);
+              thumbnail.image = imageData;
+            });
       });
     }, {
       root: thumbnailsDiv,

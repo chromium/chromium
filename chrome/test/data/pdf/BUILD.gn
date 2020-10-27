@@ -195,6 +195,7 @@ js_library("viewer_thumbnail_bar_test") {
   deps = [
     ":test_util",
     "../webui:test_util.m",
+    "//chrome/browser/resources/pdf:controller",
     "//chrome/browser/resources/pdf/elements:viewer-thumbnail",
     "//chrome/browser/resources/pdf/elements:viewer-thumbnail-bar",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
+import {eventToPromise, whenAttributeIs} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
+import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/controller.js';
 import {ViewerThumbnailBarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-thumbnail-bar.js';
-import {ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-thumbnail.js';
+import {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-thumbnail.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,6 +18,11 @@ function createThumbnailBar() {
   const thumbnailBar = /** @type {!ViewerThumbnailBarElement} */ (
       document.createElement('viewer-thumbnail-bar'));
   document.body.appendChild(thumbnailBar);
+
+  // Deactivate the PluginController, because the plugin element's references
+  // are dangling now that it has been removed from the DOM.
+  PluginController.getInstance().isActive = false;
+
   return thumbnailBar;
 }
 
@@ -38,6 +44,22 @@ function getTestThumbnailBarHeight() {
  */
 function keydown(element, key) {
   keyDownOn(element, 0, [], key);
+}
+
+/**
+ * @param {!ViewerThumbnailElement} thumbnail
+ * @return {!Promise}
+ */
+function whenThumbnailPainted(thumbnail) {
+  return whenAttributeIs(thumbnail, PAINTED_ATTRIBUTE, '');
+}
+
+/**
+ * @param {!ViewerThumbnailElement} thumbnail
+ * @return {!Promise}
+ */
+function whenThumbnailCleared(thumbnail) {
+  return whenAttributeIs(thumbnail, PAINTED_ATTRIBUTE, null);
 }
 
 // Unit tests for the viewer-thumbnail-bar element.
@@ -104,27 +126,11 @@ const tests = [
         /** @type {!NodeList<!ViewerThumbnailElement>} */ (
             thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail'));
 
-    /**
-     * @param {!ViewerThumbnailElement} thumbnail
-     * @return {!Promise}
-     */
-    function paintThumbnailToPromise(thumbnail) {
-      return new Promise(resolve => {
-        const eventType = 'paint-thumbnail';
-        thumbnailBar.addEventListener(eventType, function f(e) {
-          if (e.detail === thumbnail) {
-            thumbnailBar.removeEventListener(eventType, f);
-            resolve(e);
-          }
-        });
-      });
-    }
-
     testAsync(async () => {
       // Only two thumbnails should be "painted" upon load.
       const whenRequestedPaintingFirst = [
-        paintThumbnailToPromise(thumbnails[0]),
-        paintThumbnailToPromise(thumbnails[1]),
+        whenThumbnailPainted(thumbnails[0]),
+        whenThumbnailPainted(thumbnails[1]),
       ];
       await Promise.all(whenRequestedPaintingFirst);
 
@@ -139,7 +145,7 @@ const tests = [
       // of the 500% top and 100% bottom root margins.
       const whenRequestedPaintingNext = [];
       for (let i = 2; i < 7; i++) {
-        whenRequestedPaintingNext.push(paintThumbnailToPromise(thumbnails[i]));
+        whenRequestedPaintingNext.push(whenThumbnailPainted(thumbnails[i]));
       }
       scroller.scrollTop = 5 * thumbnailBarHeight;
       await Promise.all(whenRequestedPaintingNext);
@@ -153,9 +159,9 @@ const tests = [
       // thumbnails outside the root margin, namely the first two. A paint
       // should also be triggered for the eighth thumbnail.
       const whenRequestedPaintingLast = [
-        paintThumbnailToPromise(thumbnails[7]),
-        eventToPromise('clear-thumbnail-for-testing', thumbnails[0]),
-        eventToPromise('clear-thumbnail-for-testing', thumbnails[1]),
+        whenThumbnailPainted(thumbnails[7]),
+        whenThumbnailCleared(thumbnails[0]),
+        whenThumbnailCleared(thumbnails[1]),
       ];
       scroller.scrollTop = 7 * thumbnailBarHeight;
       await Promise.all(whenRequestedPaintingLast);

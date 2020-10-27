@@ -17,7 +17,7 @@ const PORTRAIT_WIDTH = 108;
 const LANDSCAPE_WIDTH = 140;
 
 /** @type {string} */
-const PAINTED_ATTRIBUTE = 'painted';
+export const PAINTED_ATTRIBUTE = 'painted';
 
 export class ViewerThumbnailElement extends PolymerElement {
   static get is() {
@@ -83,9 +83,6 @@ export class ViewerThumbnailElement extends PolymerElement {
       canvas.remove();
     }
     this.removeAttribute(PAINTED_ATTRIBUTE);
-
-    // For tests
-    this.dispatchEvent(new CustomEvent('clear-thumbnail-for-testing'));
   }
 
   /** @return {!HTMLElement} */
