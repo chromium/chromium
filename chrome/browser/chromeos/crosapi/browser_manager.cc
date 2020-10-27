@@ -303,6 +303,7 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
                                    "--enable-oop-rasterization",
                                    "--lang=en-US",
                                    "--enable-crashpad",
+                                   "--enable-wayland-ime",
                                    "--breakpad-dump-location=" + crash_dir};
 
   // CrAS is the default audio server in Chrome OS.
