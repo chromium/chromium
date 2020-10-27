@@ -426,6 +426,13 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
                                    /* is_new_fc */ true);
   builder.SetTextDirection(fieldset_content.Style().Direction());
   builder.SetAvailableSize(padding_box_size);
+  // We pass the container's PercentageResolutionSize because percentage
+  // padding for the fieldset content should be computed as they are in
+  // the container.
+  //
+  // https://html.spec.whatwg.org/C/#anonymous-fieldset-content-box
+  // > * For the purpose of calculating percentage padding, act as if the
+  // >   padding was calculated for the fieldset element.
   builder.SetPercentageResolutionSize(
       ConstraintSpace().PercentageResolutionSize());
   builder.SetIsFixedBlockSize(padding_box_size.block_size != kIndefiniteSize);

@@ -4790,6 +4790,7 @@ bool LayoutBox::StretchesToViewportInQuirksMode() const {
 
 bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
     const LayoutBox* containing_block) {
+  const bool in_quirks_mode = containing_block->GetDocument().InQuirksMode();
   // Anonymous blocks should not impede percentage resolution on a child.
   // Examples of such anonymous blocks are blocks wrapped around inlines that
   // have block siblings (from the CSS spec) and multicol flow threads (an
@@ -4798,6 +4799,9 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
   // objects, such as table-cells, will be treated just as if they were
   // non-anonymous.
   if (containing_block->IsAnonymous()) {
+    if (!in_quirks_mode && containing_block->Parent() &&
+        containing_block->Parent()->IsLayoutNGFieldset())
+      return false;
     EDisplay display = containing_block->StyleRef().Display();
     return display == EDisplay::kBlock || display == EDisplay::kInlineBlock ||
            display == EDisplay::kFlowRoot;
@@ -4805,8 +4809,7 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
 
   // For quirks mode, we skip most auto-height containing blocks when computing
   // percentages.
-  if (!containing_block->GetDocument().InQuirksMode() ||
-      !containing_block->StyleRef().LogicalHeight().IsAuto())
+  if (!in_quirks_mode || !containing_block->StyleRef().LogicalHeight().IsAuto())
     return false;
 
   const Node* node = containing_block->GetNode();
