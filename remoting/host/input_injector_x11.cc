@@ -385,8 +385,8 @@ bool InputInjectorX11::Core::IsLockKey(KeyCode keycode) {
   if (!state)
     return false;
   auto mods = state->baseMods | state->latchedMods | state->lockedMods;
-  auto keysym = static_cast<uint32_t>(
-      connection_.KeycodeToKeysym(keycode, static_cast<unsigned>(mods)));
+  auto keysym = connection_.KeycodeToKeysym(static_cast<x11::KeyCode>(keycode),
+                                            static_cast<unsigned>(mods));
   if (state && keysym)
     return keysym == XK_Caps_Lock || keysym == XK_Num_Lock;
   else

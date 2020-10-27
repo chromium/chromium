@@ -102,7 +102,7 @@ bool GlobalShortcutListenerX11::RegisterAcceleratorImpl(
 
   auto modifiers = GetNativeModifiers(accelerator);
   auto keysym = XKeysymForWindowsKeyCode(accelerator.key_code(), false);
-  auto keycode = connection_->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
+  auto keycode = connection_->KeysymToKeycode(keysym);
 
   // Because XGrabKey only works on the exact modifiers mask, we should register
   // our hot keys with modifiers that we want to ignore, including Num lock,
@@ -134,7 +134,7 @@ void GlobalShortcutListenerX11::UnregisterAcceleratorImpl(
 
   auto modifiers = GetNativeModifiers(accelerator);
   auto keysym = XKeysymForWindowsKeyCode(accelerator.key_code(), false);
-  auto keycode = connection_->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
+  auto keycode = connection_->KeysymToKeycode(keysym);
 
   for (auto mask : kModifiersMasks)
     connection_->UngrabKey({keycode, x_root_window_, modifiers | mask});

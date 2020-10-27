@@ -557,9 +557,9 @@ bool IsTtyFunctionOrSpaceKey(KeySym keysym) {
   return false;
 }
 
-::KeySym TranslateKey(uint32_t keycode, uint32_t modifiers) {
-  auto* connection = x11::Connection::Get();
-  return static_cast<::KeySym>(connection->KeycodeToKeysym(keycode, modifiers));
+uint32_t TranslateKey(uint32_t keycode, uint32_t modifiers) {
+  return x11::Connection::Get()->KeycodeToKeysym(
+      static_cast<x11::KeyCode>(keycode), modifiers);
 }
 
 void GetKeycodeAndModifiers(const x11::Event& event,
@@ -1484,9 +1484,8 @@ unsigned int XKeyCodeForWindowsKeyCode(ui::KeyboardCode key_code,
   // crbug.com/386066 and crbug.com/390263 are examples of problems
   // associated with this.
   //
-  auto keysym =
-      static_cast<x11::KeySym>(XKeysymForWindowsKeyCode(key_code, false));
-  return static_cast<unsigned int>(connection->KeysymToKeycode(keysym));
+  return static_cast<uint8_t>(
+      connection->KeysymToKeycode(XKeysymForWindowsKeyCode(key_code, false)));
 }
 
 }  // namespace ui

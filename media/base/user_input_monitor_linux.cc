@@ -124,9 +124,9 @@ void UserInputMonitorLinuxCore::DispatchXEvent(x11::Event* event) {
                            ? ui::ET_KEY_PRESSED
                            : ui::ET_KEY_RELEASED;
 
-  auto key_sym = connection_->KeycodeToKeysym(raw->detail, 0);
-  ui::KeyboardCode key_code =
-      ui::KeyboardCodeFromXKeysym(static_cast<uint32_t>(key_sym));
+  auto key_sym =
+      connection_->KeycodeToKeysym(static_cast<x11::KeyCode>(raw->detail), 0);
+  ui::KeyboardCode key_code = ui::KeyboardCodeFromXKeysym(key_sym);
   counter_.OnKeyboardEvent(type, key_code);
 
   // Update count value in shared memory.

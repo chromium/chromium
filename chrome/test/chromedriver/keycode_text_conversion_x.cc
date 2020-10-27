@@ -112,10 +112,8 @@ bool GetXModifierMask(x11::Connection* connection,
   int max_mod_keys = mod_map->keycodes_per_modifier;
   for (int mod_index = 0; mod_index <= 8; ++mod_index) {
     for (int key_index = 0; key_index < max_mod_keys; ++key_index) {
-      auto key = static_cast<uint8_t>(
-          mod_map->keycodes[mod_index * max_mod_keys + key_index]);
-      int keysym =
-          static_cast<int>(x11::Connection::Get()->KeycodeToKeysym(key, 0));
+      auto key = mod_map->keycodes[mod_index * max_mod_keys + key_index];
+      auto keysym = x11::Connection::Get()->KeycodeToKeysym(key, 0);
       if (modifier == kAltKeyModifierMask)
         found = keysym == XK_Alt_L || keysym == XK_Alt_R;
       else if (modifier == kMetaKeyModifierMask)

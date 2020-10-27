@@ -78,7 +78,7 @@ void X11UIControlsTestHelper::SendKeyPressEvent(gfx::AcceleratedWidget widget,
   if (alt)
     SetKeycodeAndSendThenMask(widget, &xevent, XK_Alt_L, x11::KeyButMask::Mod1);
   xevent.detail = x11::Connection::Get()->KeysymToKeycode(
-      static_cast<x11::KeySym>(ui::XKeysymForWindowsKeyCode(key, shift)));
+      ui::XKeysymForWindowsKeyCode(key, shift));
   PostEventToWindowTreeHost(widget, &xevent);
 
   // Send key release events.
@@ -183,8 +183,7 @@ void X11UIControlsTestHelper::SetKeycodeAndSendThenMask(
     x11::KeyEvent* xevent,
     KeySym keysym,
     x11::KeyButMask mask) {
-  xevent->detail =
-      x11::Connection::Get()->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
+  xevent->detail = x11::Connection::Get()->KeysymToKeycode(keysym);
   PostEventToWindowTreeHost(widget, xevent);
   xevent->state = xevent->state | mask;
 }
@@ -196,8 +195,7 @@ void X11UIControlsTestHelper::UnmaskAndSetKeycodeThenSend(
     KeySym keysym) {
   xevent->state = static_cast<x11::KeyButMask>(
       static_cast<uint32_t>(xevent->state) ^ static_cast<uint32_t>(mask));
-  xevent->detail =
-      x11::Connection::Get()->KeysymToKeycode(static_cast<x11::KeySym>(keysym));
+  xevent->detail = x11::Connection::Get()->KeysymToKeycode(keysym);
   PostEventToWindowTreeHost(widget, xevent);
 }
 

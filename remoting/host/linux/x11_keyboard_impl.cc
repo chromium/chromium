@@ -16,11 +16,10 @@
 namespace {
 
 bool FindKeycodeForKeySym(x11::Connection* connection,
-                          x11::KeySym key_sym,
+                          uint32_t key_sym,
                           uint32_t* keycode,
                           uint32_t* modifiers) {
-  auto found_keycode =
-      static_cast<uint32_t>(connection->KeysymToKeycode(key_sym));
+  auto found_keycode = connection->KeysymToKeycode(key_sym);
 
   const x11::KeyButMask kModifiersToTry[] = {
       {},
@@ -38,7 +37,7 @@ bool FindKeycodeForKeySym(x11::Connection* connection,
     auto mods = static_cast<uint32_t>(i);
     if (connection->KeycodeToKeysym(found_keycode, mods) == key_sym) {
       *modifiers = mods;
-      *keycode = found_keycode;
+      *keycode = static_cast<uint8_t>(found_keycode);
       return true;
     }
   }
@@ -97,10 +96,8 @@ bool X11KeyboardImpl::FindKeycode(uint32_t code_point,
                                   uint32_t* keycode,
                                   uint32_t* modifiers) {
   for (uint32_t keysym : GetKeySymsForUnicode(code_point)) {
-    if (FindKeycodeForKeySym(connection_, static_cast<x11::KeySym>(keysym),
-                             keycode, modifiers)) {
+    if (FindKeycodeForKeySym(connection_, keysym, keycode, modifiers))
       return true;
-    }
   }
   return false;
 }

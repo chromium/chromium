@@ -238,8 +238,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEventKeyPadKeyCode) {
 
     xev.InitKeyEvent(ET_KEY_PRESSED, test_case.ui_keycode, EF_NONE);
     x11::Event* x11_event = xev;
-    auto keycode = x11::Connection::Get()->KeysymToKeycode(
-        static_cast<x11::KeySym>(test_case.x_keysym));
+    auto keycode = x11::Connection::Get()->KeysymToKeycode(test_case.x_keysym);
     if (keycode == x11::KeyCode{})
       continue;
     x11_event->As<x11::KeyEvent>()->detail = keycode;

@@ -98,6 +98,8 @@ component("xprotos") {
               "event.cc",
               "error.h",
               "error.cc",
+              "keyboard_state.h",
+              "keyboard_state.cc",
               "scoped_ignore_errors.h",
               "scoped_ignore_errors.cc",
               "x11_switches.cc",

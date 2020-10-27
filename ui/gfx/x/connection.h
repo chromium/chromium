@@ -17,6 +17,8 @@
 
 namespace x11 {
 
+class KeyboardState;
+
 // Represents a socket to the X11 server.
 class COMPONENT_EXPORT(X11) Connection : public XProto,
                                          public ExtensionManager {
@@ -130,9 +132,9 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // doesn't exist or only exists on a non-default screen.
   const VisualInfo* GetVisualInfoFromId(VisualId id) const;
 
-  KeyCode KeysymToKeycode(KeySym keysym);
+  KeyCode KeysymToKeycode(uint32_t keysym) const;
 
-  KeySym KeycodeToKeysym(uint32_t keycode, unsigned int modifiers);
+  uint32_t KeycodeToKeysym(KeyCode keycode, uint32_t modifiers) const;
 
   // Access the event buffer.  Clients can add, delete, or modify events.
   std::list<Event>& events() {
@@ -176,12 +178,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   int ScreenIndexFromRootWindow(x11::Window root) const;
 
-  void ResetKeyboardState();
-
-  KeySym KeyCodetoKeySym(KeyCode keycode, int column) const;
-
-  KeySym TranslateKey(uint32_t keycode, unsigned int modifiers) const;
-
   // This function is implemented in the generated read_error.cc.
   void InitErrorParsers();
 
@@ -203,12 +199,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   std::unordered_map<VisualId, VisualInfo> default_screen_visuals_;
 
-  // Keyboard state.
-  GetKeyboardMappingReply keyboard_mapping_;
-  GetModifierMappingReply modifier_mapping_;
-  uint16_t lock_meaning_ = 0;
-  uint8_t mode_switch_ = 0;
-  uint8_t num_lock_ = 0;
+  std::unique_ptr<KeyboardState> keyboard_state_;
 
   std::list<Event> events_;
 

@@ -27,14 +27,13 @@
 #include "ui/events/x/events_x_utils.h"
 #include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
 
 namespace {
-
-constexpr x11::KeySym kEscKeysym = static_cast<x11::KeySym>(0xff1b);
 
 // XGrabKey requires the modifier mask to explicitly be specified.
 constexpr x11::ModMask kModifiersMasks[] = {
@@ -224,7 +223,7 @@ void X11WholeScreenMoveLoop::EndMoveLoop() {
     UpdateCursor(initial_cursor_);
 
   auto* connection = x11::Connection::Get();
-  auto esc_keycode = connection->KeysymToKeycode(kEscKeysym);
+  auto esc_keycode = connection->KeysymToKeycode(XK_Escape);
   for (auto mask : kModifiersMasks)
     connection->UngrabKey({esc_keycode, grab_input_window_, mask});
 
@@ -255,7 +254,7 @@ bool X11WholeScreenMoveLoop::GrabPointer(scoped_refptr<X11Cursor> cursor) {
 
 void X11WholeScreenMoveLoop::GrabEscKey() {
   auto* connection = x11::Connection::Get();
-  auto esc_keycode = connection->KeysymToKeycode(kEscKeysym);
+  auto esc_keycode = connection->KeysymToKeycode(XK_Escape);
   for (auto mask : kModifiersMasks) {
     connection->GrabKey({false, grab_input_window_, mask, esc_keycode,
                          x11::GrabMode::Async, x11::GrabMode::Async});

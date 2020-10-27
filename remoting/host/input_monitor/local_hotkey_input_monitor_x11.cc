@@ -188,18 +188,17 @@ void LocalHotkeyInputMonitorX11::Core::DispatchXEvent(x11::Event* event) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
 
   // Ignore input if we've already initiated a disconnect.
-  if (!disconnect_callback_) {
+  if (!disconnect_callback_)
     return;
-  }
 
-  auto* raw = event->As<x11::Input::RawDeviceEvent>();
+  const auto* raw = event->As<x11::Input::RawDeviceEvent>();
   DCHECK(raw);
   DCHECK(raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress ||
          raw->opcode == x11::Input::RawDeviceEvent::RawKeyRelease);
 
-  bool down = raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress;
-  auto key_sym =
-      static_cast<uint32_t>(connection_->KeycodeToKeysym(raw->detail, 0));
+  const bool down = raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress;
+  const auto key_sym =
+      connection_->KeycodeToKeysym(static_cast<x11::KeyCode>(raw->detail), 0);
 
   if (key_sym == XK_Control_L || key_sym == XK_Control_R)
     ctrl_pressed_ = down;
