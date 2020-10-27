@@ -3189,6 +3189,10 @@ const char kUpdateNotificationSchedulingIntegrationDescription[] =
     "if enable update notification will hook up to notification scheduling "
     "system in native side";
 
+const char kUserMediaScreenCapturingName[] = "Screen Capture API";
+const char kUserMediaScreenCapturingDescription[] =
+    "Allows sites to request a video stream of your screen.";
+
 const char kPrefetchNotificationSchedulingIntegrationName[] =
     "Enable prefetch notification using notification scheduling system";
 const char kPrefetchNotificationSchedulingIntegrationDescription[] =

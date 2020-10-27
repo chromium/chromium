@@ -4436,6 +4436,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kUpdateNotificationSchedulingIntegration)},
+
+    {"screen-capture-android", flag_descriptions::kUserMediaScreenCapturingName,
+     flag_descriptions::kUserMediaScreenCapturingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kUserMediaScreenCapturing)},
 #endif
 
 #if defined(OS_ANDROID)

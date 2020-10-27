@@ -1838,6 +1838,9 @@ extern const char kUpdateNotificationSchedulingIntegrationDescription[];
 extern const char kUpdateNotificationServiceImmediateShowOptionName[];
 extern const char kUpdateNotificationServiceImmediateShowOptionDescription[];
 
+extern const char kUserMediaScreenCapturingName[];
+extern const char kUserMediaScreenCapturingDescription[];
+
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
 extern const char kVideoTutorialsInstantFetchName[];

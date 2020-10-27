@@ -251,8 +251,6 @@ bool ScreenCaptureMachineAndroid::Start(
   }
 
   DCHECK(params.requested_format.frame_size.GetArea());
-  DCHECK(!(params.requested_format.frame_size.width() % 2));
-  DCHECK(!(params.requested_format.frame_size.height() % 2));
 
   jboolean ret =
       Java_ScreenCapture_allocate(AttachCurrentThread(), j_capture_,
