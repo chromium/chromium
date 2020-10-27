@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 
 #include "base/auto_reset.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
@@ -40,9 +41,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -95,9 +94,8 @@ bool Document::execCommand(const String& command_name,
   TidyUpHTMLStructure(*this);
   const EditorCommand editor_command = GetCommand(this, command_name);
 
-  DEFINE_STATIC_LOCAL(SparseHistogram, editor_command_histogram,
-                      ("WebCore.Document.execCommand"));
-  editor_command_histogram.Sample(editor_command.IdForHistogram());
+  base::UmaHistogramSparse("WebCore.Document.execCommand",
+                           editor_command.IdForHistogram());
   return editor_command.Execute(value);
 }
 

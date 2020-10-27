@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -71,7 +72,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -1963,9 +1963,8 @@ bool EditorCommand::Execute(const String& parameter,
 
   GetFrame().GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kEditing);
-  DEFINE_STATIC_LOCAL(SparseHistogram, command_histogram,
-                      ("WebCore.Editing.Commands"));
-  command_histogram.Sample(static_cast<int>(command_->command_type));
+  base::UmaHistogramSparse("WebCore.Editing.Commands",
+                           static_cast<int>(command_->command_type));
   return command_->execute(*frame_, triggering_event, source_, parameter);
 }
 
