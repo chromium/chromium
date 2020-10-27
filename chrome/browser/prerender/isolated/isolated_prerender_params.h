@@ -86,4 +86,7 @@ size_t IsolatedPrerenderMaxSubresourcesPerPrerender();
 // complete.
 bool IsolatedPrerenderStartsSpareRenderer();
 
+// Whether the given position of a predicted link should be prefetched.
+bool IsolatedPrerenderShouldPrefetchPosition(size_t position);
+
 #endif  // CHROME_BROWSER_PRERENDER_ISOLATED_ISOLATED_PRERENDER_PARAMS_H_

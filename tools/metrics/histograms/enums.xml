@@ -39270,6 +39270,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     and the origin probe failed and the prefetch was not used.
   </int>
   <int value="25" label="Subresource throttled"/>
+  <int value="26" label="Prediction position not eligible"/>
 </enum>
 
 <enum name="IsPinnedToTaskbarResult">

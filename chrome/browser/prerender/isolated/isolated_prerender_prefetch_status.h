@@ -89,6 +89,10 @@ enum class IsolatedPrerenderPrefetchStatus {
   // A subresource which was not fetched because it was throttled by an
   // experimental control for the max number of subresources per prerender.
   kSubresourceThrottled = 25,
+
+  // The position of the link in the navigation prediction was not eligible to
+  // be prefetch due to experiment controls.
+  kPrefetchPositionIneligible = 26,
 };
 
 #endif  // CHROME_BROWSER_PRERENDER_ISOLATED_ISOLATED_PRERENDER_PREFETCH_STATUS_H_

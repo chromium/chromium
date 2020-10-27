@@ -393,6 +393,7 @@ IsolatedPrerenderTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
     case IsolatedPrerenderPrefetchStatus::kPrefetchSuccessful:
     case IsolatedPrerenderPrefetchStatus::kNavigatedToLinkNotOnSRP:
     case IsolatedPrerenderPrefetchStatus::kSubresourceThrottled:
+    case IsolatedPrerenderPrefetchStatus::kPrefetchPositionIneligible:
       return status;
     // These statuses we are going to update to, and this is the only place that
     // they are set so they are not expected to be passed in.
@@ -1253,6 +1254,12 @@ void IsolatedPrerenderTabHelper::OnGotEligibilityResult(
         sizeof(page_->srp_metrics_->ordered_eligible_pages_bitmask_) * 8) {
       page_->srp_metrics_->ordered_eligible_pages_bitmask_ |=
           1 << original_prediction_index;
+    }
+
+    if (!IsolatedPrerenderShouldPrefetchPosition(original_prediction_index)) {
+      OnPrefetchStatusUpdate(
+          url, IsolatedPrerenderPrefetchStatus::kPrefetchPositionIneligible);
+      return;
     }
   }
 

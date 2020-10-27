@@ -918,6 +918,34 @@ TEST_F(IsolatedPrerenderTabHelperTest, NonHTML) {
       "IsolatedPrerender.Prefetch.Mainframe.TotalRedirects", 0, 1);
 }
 
+TEST_F(IsolatedPrerenderTabHelperTest, EligiblePredictionPositions) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"prefetch_positions", "0"}});
+
+  NavigateSomewhere();
+  GURL doc_url("https://www.google.com/search?q=cats");
+  GURL ineligible_url("http://www.meow.com/");
+  GURL eligible_url("https://www.cat-food.com/");
+  MakeNavigationPrediction(web_contents(), doc_url,
+                           {ineligible_url, eligible_url});
+
+  EXPECT_EQ(RequestCount(), 0);
+  EXPECT_EQ(predicted_urls_count(), 2U);
+  EXPECT_EQ(prefetch_eligible_count(), 1U);
+  EXPECT_EQ(prefetch_attempted_count(), 0U);
+  EXPECT_EQ(prefetch_successful_count(), 0U);
+  EXPECT_EQ(prefetch_total_redirect_count(), 0U);
+  EXPECT_FALSE(navigation_to_prefetch_start().has_value());
+
+  NavigateAndVerifyPrefetchStatus(
+      eligible_url,
+      IsolatedPrerenderPrefetchStatus::kPrefetchPositionIneligible);
+  EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
+  EXPECT_EQ(base::Optional<size_t>(1), after_srp_clicked_link_srp_position());
+}
+
 TEST_F(IsolatedPrerenderTabHelperTest, UserSettingDisabled) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;

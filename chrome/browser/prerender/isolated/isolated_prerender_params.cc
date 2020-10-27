@@ -5,11 +5,14 @@
 #include "chrome/browser/prerender/isolated/isolated_prerender_params.h"
 
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
@@ -197,4 +200,19 @@ bool IsolatedPrerenderStartsSpareRenderer() {
              "isolated-prerender-start-spare-renderer") ||
          base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
                                                  "start_spare_renderer", false);
+}
+
+bool IsolatedPrerenderShouldPrefetchPosition(size_t position) {
+  std::string csv = base::GetFieldTrialParamValueByFeature(
+      features::kIsolatePrerenders, "prefetch_positions");
+  if (csv.empty()) {
+    return true;
+  }
+
+  // Using a static set that is parsed from |csv| causes tests to fail when the
+  // tests share the same process. This approach is faster than having to parse
+  // each value as a number then check for contains.
+  return base::Contains(base::SplitString(csv, ",", base::TRIM_WHITESPACE,
+                                          base::SPLIT_WANT_NONEMPTY),
+                        base::NumberToString(position));
 }
