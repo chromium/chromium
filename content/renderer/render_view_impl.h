@@ -201,7 +201,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   int HistoryBackListCount() override;
   int HistoryForwardListCount() override;
   bool CanHandleGestureEvent() override;
-  bool AllowPopupsDuringPageUnload() override;
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
   void OnSetRendererPreferences(

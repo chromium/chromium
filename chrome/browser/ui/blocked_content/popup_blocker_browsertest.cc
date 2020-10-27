@@ -472,60 +472,6 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
   NavigateAndCheckPopupShown(url, kExpectPopup);
 }
 
-// This only exists for the AllowPopupsWhenTabIsClosedWithSpecialPolicy test.
-// Remove this in Chrome 88. https://crbug.com/937569
-class PopupBlockerSpecialPolicyBrowserTest : public PopupBlockerBrowserTest {
- public:
-  PopupBlockerSpecialPolicyBrowserTest() {}
-  ~PopupBlockerSpecialPolicyBrowserTest() override {}
-
- protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
-
-    policy::PolicyMap policy_map;
-
-    policy_map.Set(policy::key::kAllowPopupsDuringPageUnload,
-                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                   policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-    policy_provider_.UpdateChromePolicy(policy_map);
-
-#if defined(OS_CHROMEOS)
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-#else
-    policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
-#endif
-  }
-
- private:
-  policy::MockConfigurationPolicyProvider policy_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupBlockerSpecialPolicyBrowserTest);
-};
-
-// Remove this in Chrome 88. https://crbug.com/937569
-IN_PROC_BROWSER_TEST_F(PopupBlockerSpecialPolicyBrowserTest,
-                       AllowPopupsWhenTabIsClosedWithSpecialPolicy) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      embedder_support::kDisablePopupBlocking);
-  GURL url(
-      embedded_test_server()->GetURL("/popup_blocker/popup-on-unload.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
-  // Make sure the same-site navigation below will not create a new
-  // RenderFrameHost, otherwise the unload handler of the old RenderFrameHost
-  // will run after the new RenderFrameHost gets rendered.
-  // TODO(crbug.com/1110744): Support running unload handlers before the new
-  // RenderFrameHost renders on same-site cross-RenderFrameHost navigations.
-  DisableProactiveBrowsingInstanceSwapFor(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
-
-  NavigateAndCheckPopupShown(
-      embedded_test_server()->GetURL("/popup_blocker/popup-success.html"),
-      kExpectPopup);
-}
-
 // Verify that when you unblock popup, the popup shows in history and omnibox.
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
                        UnblockedPopupShowsInHistoryAndOmnibox) {

@@ -2974,10 +2974,6 @@ const char kEnterpriseHardwarePlatformAPIEnabled[] =
 // Boolean that specifies whether Signed HTTP Exchange (SXG) loading is enabled.
 const char kSignedHTTPExchangeEnabled[] = "web_package.signed_exchange.enabled";
 
-// Boolean that allows a page to show popups during its unloading.
-// TODO(https://crbug.com/937569): Remove this in Chrome 88.
-const char kAllowPopupsDuringPageUnload[] = "allow_popups_during_page_unload";
-
 // Boolean that allows a page to perform synchronous XHR requests during page
 // dismissal.
 // TODO(https://crbug.com/1003101): Remove this in Chrome 88.

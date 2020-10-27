@@ -2277,11 +2277,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
       MaybeAppendSecureOriginsAllowlistSwitch(command_line);
 
-      if (prefs->HasPrefPath(prefs::kAllowPopupsDuringPageUnload) &&
-          prefs->GetBoolean(prefs::kAllowPopupsDuringPageUnload)) {
-        command_line->AppendSwitch(switches::kAllowPopupsDuringPageUnload);
-      }
-
       if (prefs->HasPrefPath(prefs::kAllowSyncXHRInPageDismissal) &&
           prefs->GetBoolean(prefs::kAllowSyncXHRInPageDismissal)) {
         command_line->AppendSwitch(switches::kAllowSyncXHRInPageDismissal);

@@ -111,55 +111,6 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
   EXPECT_EQ(url, entry->GetVirtualURL());
 }
 
-class ChromeContentBrowserClientPopupsTest : public InProcessBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Required setup for kAllowPopupsDuringPageUnload switch
-    // as its being checked (whether its going to be enabled or not)
-    // only if the process type is renderer process.
-    command_line_.AppendSwitchASCII(switches::kProcessType,
-                                    switches::kRendererProcess);
-  }
-  void SetUpOnMainThread() override {
-    kChildProcessId = browser()
-                          ->tab_strip_model()
-                          ->GetActiveWebContents()
-                          ->GetMainFrame()
-                          ->GetProcess()
-                          ->GetID();
-  }
-  ChromeContentBrowserClientPopupsTest()
-      : command_line_(base::CommandLine::NO_PROGRAM) {}
-
-  void AppendContentBrowserClientSwitches() {
-    client_.AppendExtraCommandLineSwitches(&command_line_, kChildProcessId);
-  }
-
-  const base::CommandLine& command_line() const { return command_line_; }
-
- private:
-  ChromeContentBrowserClient client_;
-  base::CommandLine command_line_;
-  int kChildProcessId;
-};
-
-IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientPopupsTest,
-                       AllowPopupsDuringPageUnload) {
-  // Verify that the switch is included only when the
-  // pref AllowPopupsDuringPageUnload value is true.
-
-  PrefService* pref_service = browser()->profile()->GetPrefs();
-  pref_service->SetBoolean(prefs::kAllowPopupsDuringPageUnload, false);
-  AppendContentBrowserClientSwitches();
-  EXPECT_FALSE(
-      command_line().HasSwitch(switches::kAllowPopupsDuringPageUnload));
-  // When the pref value is being set to true
-  // the switch should be included.
-  pref_service->SetBoolean(prefs::kAllowPopupsDuringPageUnload, true);
-  AppendContentBrowserClientSwitches();
-  EXPECT_TRUE(command_line().HasSwitch(switches::kAllowPopupsDuringPageUnload));
-}
-
 // Helper class to mark "https://ntp.com/" as an isolated origin.
 class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {

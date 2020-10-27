@@ -663,16 +663,6 @@ bool RenderViewImpl::CanHandleGestureEvent() {
   return true;
 }
 
-// TODO(https://crbug.com/937569): Remove this in Chrome 88.
-bool RenderViewImpl::AllowPopupsDuringPageUnload() {
-  // The switch version is for enabling via enterprise policy. The feature
-  // version is for enabling via about:flags and Finch policy.
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  return command_line.HasSwitch(switches::kAllowPopupsDuringPageUnload) ||
-         base::FeatureList::IsEnabled(features::kAllowPopupsDuringPageUnload);
-}
-
 void RenderViewImpl::OnPageVisibilityChanged(PageVisibilityState visibility) {
 #if defined(OS_ANDROID)
   SuspendVideoCaptureDevices(visibility != PageVisibilityState::kVisible);

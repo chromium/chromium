@@ -167,10 +167,6 @@ class WebViewClient {
 
   virtual bool CanHandleGestureEvent() { return false; }
 
-  // Policies -------------------------------------------------------------
-
-  virtual bool AllowPopupsDuringPageUnload() { return false; }
-
   // History -------------------------------------------------------------
   virtual void OnSetHistoryOffsetAndLength(int history_offset,
                                            int history_length) {}

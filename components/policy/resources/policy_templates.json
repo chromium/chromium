@@ -19934,12 +19934,13 @@
       'owners': ['avi@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:74-', 'chrome_os:74-', 'android:74-'],
+      'deprecated': True,
+      'supported_on': ['chrome.*:74-87', 'chrome_os:74-87', 'android:74-87'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
       },
-      'default_for_enterprise_users': True,
+      'default_for_enterprise_users': False,
       'example_value': False,
       'id': 533,
       'caption': '''Allows a page to show popups during its unloading''',
@@ -19948,7 +19949,7 @@
 
       Setting the policy to False or leaving it unset prevents pages from showing pop-ups while the pages unload.
 
-      This policy will be removed in Chrome 88.
+      This policy was removed in Chrome 88 and is ignored if set.
 
       See https://www.chromestatus.com/feature/5989473649164288.''',
     },

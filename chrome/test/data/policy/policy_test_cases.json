@@ -3737,15 +3737,7 @@
   },
 
   "AllowPopupsDuringPageUnload": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "AllowPopupsDuringPageUnload": true
-        },
-        "prefs": { "allow_popups_during_page_unload": {} }
-      }
-    ]
+    "note": "This policy has been removed, as of M88."
   },
 
   "CommandLineFlagSecurityWarningsEnabled": {

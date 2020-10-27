@@ -46,12 +46,6 @@ const char kAllowInsecureLocalhostDescription[] =
     "Allows requests to localhost over HTTPS even when an invalid certificate "
     "is presented.";
 
-const char kAllowPopupsDuringPageUnloadName[] =
-    "Allows a page to show popups during its unloading";
-const char kAllowPopupsDuringPageUnloadDescription[] =
-    "When the flag is set to enabled, pages are allowed to show popups while "
-    "they are being unloaded.";
-
 const char kAllowSignedHTTPExchangeCertsWithoutExtensionName[] =
     "Allow Signed HTTP Exchange certificates without extension";
 const char kAllowSignedHTTPExchangeCertsWithoutExtensionDescription[] =

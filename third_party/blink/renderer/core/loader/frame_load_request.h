@@ -135,9 +135,7 @@ struct CORE_EXPORT FrameLoadRequest {
   }
   void SetFeaturesForWindowOpen(const WebWindowFeatures& features) {
     window_features_ = features;
-    is_window_open_ = true;
   }
-  bool IsWindowOpen() const { return is_window_open_; }
 
   void SetNoOpener() { window_features_.noopener = true; }
   void SetNoReferrer() {
@@ -175,7 +173,6 @@ struct CORE_EXPORT FrameLoadRequest {
   mojom::RequestContextFrameType frame_type_ =
       mojom::RequestContextFrameType::kNone;
   WebWindowFeatures window_features_;
-  bool is_window_open_ = false;
   base::Optional<WebImpression> impression_;
 };
 

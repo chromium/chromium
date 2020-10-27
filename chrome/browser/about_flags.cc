@@ -5465,12 +5465,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillPruneSuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillPruneSuggestions)},
 
-    {"allow-popups-during-page-unload",
-     flag_descriptions::kAllowPopupsDuringPageUnloadName,
-     flag_descriptions::kAllowPopupsDuringPageUnloadDescription,
-     kOsAll | kDeprecated,
-     FEATURE_VALUE_TYPE(features::kAllowPopupsDuringPageUnload)},
-
 #if defined(OS_CHROMEOS)
     {"enable-advanced-ppd-attributes",
      flag_descriptions::kEnableAdvancedPpdAttributesName,
