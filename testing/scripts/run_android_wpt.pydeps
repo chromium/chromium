@@ -140,6 +140,7 @@
 //third_party/catapult/third_party/typ/typ/pool.py
 //third_party/catapult/third_party/typ/typ/printer.py
 //third_party/catapult/third_party/typ/typ/python_2_3_compat.py
+//third_party/catapult/third_party/typ/typ/result_sink.py
 //third_party/catapult/third_party/typ/typ/runner.py
 //third_party/catapult/third_party/typ/typ/stats.py
 //third_party/catapult/third_party/typ/typ/test_case.py
