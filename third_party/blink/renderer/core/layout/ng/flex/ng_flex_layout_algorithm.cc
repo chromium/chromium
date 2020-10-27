@@ -415,6 +415,7 @@ namespace {
 LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
+    const base::Optional<LayoutUnit> definite_block_size,
     const MinMaxSizes& used_min_max_block_sizes) {
   DCHECK(node.HasAspectRatio());
   LogicalSize aspect_ratio = node.GetAspectRatio();
@@ -422,16 +423,27 @@ LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
   NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
 
-  DCHECK_NE(style.LogicalHeight().GetType(), Length::Type::kFixed)
-      << "Flex will not use this function if the block size of the replaced "
-         "element is definite.";
-
   base::Optional<LayoutUnit> intrinsic_inline;
   base::Optional<LayoutUnit> intrinsic_block;
-  node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
 
-  // intrinsic_inline and intrinsic_block can be empty independent of each
-  // other.
+  base::Optional<LayoutUnit> block_size_border_box;
+  if (definite_block_size.has_value()) {
+    block_size_border_box = definite_block_size;
+  } else {
+    node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
+    if (intrinsic_block) {
+      block_size_border_box = *intrinsic_block + border_padding.BlockSum();
+    }
+  }
+
+  if (block_size_border_box) {
+    LayoutUnit clamped_intrinsic_block_border_box =
+        used_min_max_block_sizes.ClampSizeToMinAndMax(*block_size_border_box);
+    return InlineSizeFromAspectRatio(border_padding, aspect_ratio,
+                                     EBoxSizing::kContentBox,
+                                     clamped_intrinsic_block_border_box);
+  }
+
   if (intrinsic_inline) {
     MinMaxSizes inline_min_max = ComputeTransferredMinMaxInlineSizes(
         aspect_ratio, used_min_max_block_sizes, border_padding,
@@ -439,14 +451,6 @@ LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
     LayoutUnit intrinsic_inline_border_box =
         *intrinsic_inline + border_padding.InlineSum();
     return inline_min_max.ClampSizeToMinAndMax(intrinsic_inline_border_box);
-  }
-
-  if (intrinsic_block) {
-    intrinsic_block = *intrinsic_block + border_padding.BlockSum();
-    intrinsic_block =
-        used_min_max_block_sizes.ClampSizeToMinAndMax(*intrinsic_block);
-    return InlineSizeFromAspectRatio(border_padding, aspect_ratio,
-                                     EBoxSizing::kContentBox, *intrinsic_block);
   }
 
   // If control flow reaches here, the item has aspect ratio only, no natural
@@ -706,10 +710,15 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           if (RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
             // Legacy uses child.PreferredLogicalWidths() for this case, which
             // is not exactly correct.
+            // ComputeIntrinsicInlineSizeForAspectRatioElement would honor the
+            // definite block size parameter by multipying it by the aspect
+            // ratio, but if control flow reaches here, we know we don't have a
+            // definite inline size. If we did, we would have fallen into the
+            // "part B" section above, not this "part C, D, E" section.
             flex_base_border_box =
                 ComputeIntrinsicInlineSizeForAspectRatioElement(
-                    child, flex_basis_space,
-                    min_max_sizes_in_cross_axis_direction);
+                    child, flex_basis_space, /* definite_block_size */
+                    base::nullopt, min_max_sizes_in_cross_axis_direction);
           } else {
             MinMaxSizesInput input(child_percentage_size_.block_size,
                                    MinMaxSizesType::kContent);
@@ -768,8 +777,27 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     if (algorithm_->ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
       LayoutUnit content_size_suggestion;
       if (MainAxisIsInlineAxis(child)) {
-        content_size_suggestion =
-            MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.min_size;
+        if (child.IsReplaced() && child.HasAspectRatio() &&
+            RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
+          base::Optional<LayoutUnit> definite_block_size;
+          if (!BlockLengthUnresolvable(flex_basis_space,
+                                       child_style.LogicalHeight(),
+                                       LengthResolvePhase::kLayout)) {
+            definite_block_size = ResolveMainBlockLength(
+                flex_basis_space, child_style,
+                border_padding_in_child_writing_mode,
+                child_style.LogicalHeight(), IntrinsicBlockSizeFunc,
+                LengthResolvePhase::kLayout);
+          }
+
+          content_size_suggestion =
+              ComputeIntrinsicInlineSizeForAspectRatioElement(
+                  child, flex_basis_space, definite_block_size,
+                  min_max_sizes_in_cross_axis_direction);
+        } else {
+          content_size_suggestion =
+              MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.min_size;
+        }
       } else {
         LayoutUnit intrinsic_block_size;
         if (child.IsReplaced()) {
