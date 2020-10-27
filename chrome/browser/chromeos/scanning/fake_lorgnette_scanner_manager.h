@@ -30,8 +30,9 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
                               GetScannerCapabilitiesCallback callback) override;
   void Scan(const std::string& scanner_name,
             const lorgnette::ScanSettings& settings,
+            ProgressCallback progress_callback,
             PageCallback page_callback,
-            ScanCallback callback) override;
+            CompletionCallback completion_callback) override;
 
   // Sets the response returned by GetScannerNames().
   void SetGetScannerNamesResponse(

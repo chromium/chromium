@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager_factory.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
@@ -80,7 +81,7 @@ void DocumentScanScanFunction::OnNamesReceived(
   chromeos::LorgnetteScannerManagerFactory::GetForBrowserContext(
       browser_context())
       ->Scan(
-          scanner_name, settings,
+          scanner_name, settings, base::NullCallback(),
           base::BindRepeating(&DocumentScanScanFunction::OnPageReceived, this),
           base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
 }

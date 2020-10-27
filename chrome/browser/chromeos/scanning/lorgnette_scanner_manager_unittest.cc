@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -171,7 +172,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   void Scan(const std::string& scanner_name,
             const lorgnette::ScanSettings& settings) {
     lorgnette_scanner_manager_->Scan(
-        scanner_name, settings,
+        scanner_name, settings, base::NullCallback(),
         base::BindRepeating(&LorgnetteScannerManagerTest::PageCallback,
                             base::Unretained(this)),
         base::Bind(&LorgnetteScannerManagerTest::ScanCallback,

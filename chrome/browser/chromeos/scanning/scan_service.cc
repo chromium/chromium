@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
@@ -63,6 +64,7 @@ void ScanService::Scan(const base::UnguessableToken& scanner_id,
   save_failed_ = false;
   lorgnette_scanner_manager_->Scan(
       scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
+      base::NullCallback(),
       base::BindRepeating(&ScanService::OnPageReceived,
                           weak_ptr_factory_.GetWeakPtr(), settings->file_type),
       base::BindOnce(&ScanService::OnScanCompleted,

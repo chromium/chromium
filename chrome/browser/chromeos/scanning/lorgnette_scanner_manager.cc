@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
@@ -111,18 +110,19 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // LorgnetteScannerManager:
   void Scan(const std::string& scanner_name,
             const lorgnette::ScanSettings& settings,
+            ProgressCallback progress_callback,
             PageCallback page_callback,
-            ScanCallback callback) override {
+            CompletionCallback completion_callback) override {
     std::string device_name;
     ScanProtocol protocol;  // Unused.
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
-      std::move(callback).Run(false);
+      std::move(completion_callback).Run(false);
       return;
     }
 
     GetLorgnetteManagerClient()->StartScan(
-        device_name, settings, std::move(callback), std::move(page_callback),
-        base::NullCallback());
+        device_name, settings, std::move(completion_callback),
+        std::move(page_callback), std::move(progress_callback));
   }
 
  private:

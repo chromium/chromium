@@ -32,16 +32,25 @@ void FakeLorgnetteScannerManager::GetScannerCapabilities(
 
 void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
                                        const lorgnette::ScanSettings& settings,
+                                       ProgressCallback progress_callback,
                                        PageCallback page_callback,
-                                       ScanCallback callback) {
+                                       CompletionCallback completion_callback) {
   if (scan_data_.has_value()) {
+    if (progress_callback) {
+      for (int progress : {7, 22, 40, 42, 59, 74, 95}) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, base::BindOnce(progress_callback, progress));
+      }
+    }
+
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(page_callback, scan_data_.value(), /*page_number=*/0));
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), scan_data_.has_value()));
+      FROM_HERE,
+      base::BindOnce(std::move(completion_callback), scan_data_.has_value()));
 }
 
 void FakeLorgnetteScannerManager::SetGetScannerNamesResponse(
