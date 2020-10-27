@@ -2551,6 +2551,9 @@ extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];
 extern const char kSchedulerConfigurationPerformance[];
 
+extern const char kSelectToSpeakNavigationControlName[];
+extern const char kSelectToSpeakNavigationControlDescription[];
+
 extern const char kSeparatePointingStickSettingsName[];
 extern const char kSeparatePointingStickSettingsDescription[];
 

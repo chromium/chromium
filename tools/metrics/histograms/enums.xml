@@ -42030,6 +42030,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentElideToRegistrableDomain:enabled"/>
   <int value="-1751928267" label="disable-icon-ntp"/>
   <int value="-1750008152" label="UsernameFirstFlow:enabled"/>
+  <int value="-1749689559" label="SelectToSpeakNavigationControl:disabled"/>
   <int value="-1749176684" label="PauseBackgroundTabs:disabled"/>
   <int value="-1748485814" label="SuggestedContentToggle:disabled"/>
   <int value="-1747383699" label="QueryTilesInNTP:disabled"/>
@@ -45053,6 +45054,7 @@ from previous Chrome versions.
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>
   <int value="1245889469" label="enable-surface-worker"/>
   <int value="1247293682" label="topchrome-md"/>
+  <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
   <int value="1253698118" label="ash-disable-stable-overview-order"/>
   <int value="1254472299" label="PrivacySettingsRedesign:disabled"/>

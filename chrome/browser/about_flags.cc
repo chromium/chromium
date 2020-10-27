@@ -5382,6 +5382,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"webui-dark-mode", flag_descriptions::kWebuiDarkModeName,
      flag_descriptions::kWebuiDarkModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebUIDarkMode)},
+
+    {"select-to-speak-navigation-control",
+     flag_descriptions::kSelectToSpeakNavigationControlName,
+     flag_descriptions::kSelectToSpeakNavigationControlDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kSelectToSpeakNavigationControl)},
 #endif  // OS_CHROMEOS
 
     {"autofill-off-no-server-data",

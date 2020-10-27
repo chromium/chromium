@@ -4363,6 +4363,11 @@ const char kSchedulerConfigurationConservative[] =
 const char kSchedulerConfigurationPerformance[] =
     "Enables Hyper-Threading on relevant CPUs.";
 
+const char kSelectToSpeakNavigationControlName[] =
+    "Select-to-speak navigation control";
+const char kSelectToSpeakNavigationControlDescription[] =
+    "Enables enhanced Select-to-speak navigation features.";
+
 const char kSeparatePointingStickSettingsName[] =
     "Separate pointing stick settings";
 const char kSeparatePointingStickSettingsDescription[] =

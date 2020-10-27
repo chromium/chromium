@@ -4179,6 +4179,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "select-to-speak-navigation-control",
+    "owners": [ "joelriley" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "send-uma-cellular",
     "owners": [ "thegreenfrog", "bling-flags" ],
     "expiry_milestone": 80

@@ -100,4 +100,14 @@ bool IsUseAXPositionForDocumentMarkersEnabled() {
       ::features::kUseAXPositionForDocumentMarkers);
 }
 
+#if defined(OS_CHROMEOS)
+const base::Feature kSelectToSpeakNavigationControl{
+    "SelectToSpeakNavigationControl", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsSelectToSpeakNavigationControlEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kSelectToSpeakNavigationControl);
+}
+#endif  // defined(OS_CHROMEOS)
+
 }  // namespace features

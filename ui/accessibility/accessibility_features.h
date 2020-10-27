@@ -89,6 +89,15 @@ AX_BASE_EXPORT extern const base::Feature kUseAXPositionForDocumentMarkers;
 // nodes and which is different for each platform.
 AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 
+#if defined(OS_CHROMEOS)
+// Enables enhanced Select-to-speak features that allow users broader control
+// of TTS (pause, resume, skip between sentences and paragraphs).
+AX_BASE_EXPORT extern const base::Feature kSelectToSpeakNavigationControl;
+
+// Returns true if enhanced Select-to-speak features are enabled.
+AX_BASE_EXPORT bool IsSelectToSpeakNavigationControlEnabled();
+#endif  // defined(OS_CHROMEOS)
+
 }  // namespace features
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_FEATURES_H_
