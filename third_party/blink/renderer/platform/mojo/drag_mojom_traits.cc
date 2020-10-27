@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/mojo/drag_mojom_traits.h"
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -176,6 +177,7 @@ int64_t StructTraits<
 WTF::String StructTraits<blink::mojom::DragItemFileSystemFileDataView,
                          blink::WebDragData::Item>::
     file_system_id(const blink::WebDragData::Item& item) {
+  DCHECK(item.file_system_id.IsNull());
   return item.file_system_id;
 }
 
@@ -185,7 +187,7 @@ StructTraits<blink::mojom::DragItemFileDataView, blink::WebDragData::Item>::
     native_file_system_token(const blink::WebDragData::Item& item) {
   // Should never have to send a transfer token information from the renderer
   // to the browser.
-  NOTREACHED();
+  DCHECK(!item.native_file_system_entry);
   return mojo::NullRemote();
 }
 

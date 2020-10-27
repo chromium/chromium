@@ -76,7 +76,7 @@ struct DragItemBinary {
 struct DragItemFileSystemFile {
   url.mojom.Url url;
   int64 size;
-  string file_system_id;
+  string? file_system_id;
 };
 
 union DragItem {
