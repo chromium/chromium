@@ -5773,90 +5773,11 @@
                     },
                     "enable_features": [
                         "QueryTiles",
+                        "QueryTilesInNTP",
                         "QueryTilesInOmnibox"
                     ],
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
-                        "QueryTilesLocalOrdering"
-                    ]
-                },
-                {
-                    "name": "EnabledStitchAndLocalOrdering",
-                    "params": {
-                        "base_url": "https://chromeupboarding-pa.googleapis.com",
-                        "experiment_tag": "",
-                        "image_prefetch_mode": "top",
-                        "is_unmetered_network_required": "false",
-                        "most_visited_max_rows_normal_screen": "2",
-                        "most_visited_max_rows_small_screen": "1",
-                        "small_screen_height_threshold_dp": "700"
-                    },
-                    "enable_features": [
-                        "QueryTiles",
-                        "QueryTilesInOmnibox",
-                        "QueryTilesLocalOrdering"
-                    ],
-                    "disable_features": [
-                        "QueryTilesEnableQueryEditing"
-                    ]
-                },
-                {
-                    "name": "EnabledStitchAndTrending",
-                    "params": {
-                        "base_url": "https://chromeupboarding-pa.googleapis.com",
-                        "experiment_tag": "enableTrending : true",
-                        "image_prefetch_mode": "top",
-                        "is_unmetered_network_required": "false",
-                        "most_visited_max_rows_normal_screen": "2",
-                        "most_visited_max_rows_small_screen": "1",
-                        "small_screen_height_threshold_dp": "700"
-                    },
-                    "enable_features": [
-                        "QueryTiles",
-                        "QueryTilesInOmnibox"
-                    ],
-                    "disable_features": [
-                        "QueryTilesEnableQueryEditing",
-                        "QueryTilesLocalOrdering"
-                    ]
-                },
-                {
-                    "name": "EnabledExplore",
-                    "params": {
-                        "base_url": "https://chromeupboarding-pa.googleapis.com",
-                        "experiment_tag": "maxLevels : 1",
-                        "image_prefetch_mode": "top",
-                        "is_unmetered_network_required": "false",
-                        "most_visited_max_rows_normal_screen": "2",
-                        "most_visited_max_rows_small_screen": "1",
-                        "small_screen_height_threshold_dp": "700"
-                    },
-                    "enable_features": [
-                        "QueryTiles",
-                        "QueryTilesInOmnibox"
-                    ],
-                    "disable_features": [
-                        "QueryTilesEnableQueryEditing",
-                        "QueryTilesLocalOrdering"
-                    ]
-                },
-                {
-                    "name": "EnabledStart",
-                    "params": {
-                        "base_url": "https://chromeupboarding-pa.googleapis.com",
-                        "experiment_tag": "maxLevels : 1",
-                        "image_prefetch_mode": "top",
-                        "is_unmetered_network_required": "false",
-                        "most_visited_max_rows_normal_screen": "2",
-                        "most_visited_max_rows_small_screen": "1",
-                        "small_screen_height_threshold_dp": "700"
-                    },
-                    "enable_features": [
-                        "QueryTiles",
-                        "QueryTilesEnableQueryEditing",
-                        "QueryTilesInOmnibox"
-                    ],
-                    "disable_features": [
                         "QueryTilesLocalOrdering"
                     ]
                 }
