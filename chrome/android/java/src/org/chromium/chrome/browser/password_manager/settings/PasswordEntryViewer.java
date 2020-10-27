@@ -36,7 +36,6 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -223,10 +222,6 @@ public class PasswordEntryViewer
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.password_entry_viewer_action_bar_menu, menu);
-        menu.findItem(R.id.action_edit_saved_password)
-                .setVisible(
-                        ChromeFeatureList.isEnabled(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
-                        && !mException);
     }
 
     @Override
@@ -234,12 +229,6 @@ public class PasswordEntryViewer
         int id = item.getItemId();
         if (id == R.id.action_delete_saved_password) {
             removeItem();
-            return true;
-        }
-        if (id == R.id.action_edit_saved_password) {
-            PasswordManagerHandlerProvider.getInstance()
-                    .getPasswordManagerHandler()
-                    .showPasswordEntryEditingView(getContext(), mID);
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -453,6 +453,12 @@ public class PasswordSettings
                     Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getAccountDashboardURL()));
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
+        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)) {
+            // Launch preference activity with a PasswordEntryEditor fragment.
+            PasswordManagerHandlerProvider.getInstance()
+                    .getPasswordManagerHandler()
+                    .showPasswordEntryEditingView(getContext(),
+                            preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID));
         } else {
             // Launch preference activity with PasswordEntryViewer fragment with
             // intent extras specifying the object.

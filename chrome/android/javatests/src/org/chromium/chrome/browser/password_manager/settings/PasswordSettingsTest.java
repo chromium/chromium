@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
-import static android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
-
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -39,8 +37,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.chrome.test.util.ViewUtils.VIEW_INVISIBLE;
@@ -59,7 +55,6 @@ import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IdRes;
@@ -93,8 +88,6 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryActivity;
@@ -153,9 +146,6 @@ public class PasswordSettingsTest {
     public SettingsActivityTestRule<PasswordSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PasswordSettings.class);
 
-    @Rule
-    public SettingsActivityTestRule<PasswordEntryEditor> mEditorActivityTestRule =
-            new SettingsActivityTestRule<>(PasswordEntryEditor.class);
     @Mock
     private PasswordCheck mPasswordCheck;
 
@@ -390,30 +380,6 @@ public class PasswordSettingsTest {
     }
 
     /**
-     * Matches any {@link EditText} which has the content visibility matching to |shouldBeVisible|.
-     * @return The matcher checking the input type.
-     */
-    private static Matcher<View> isVisiblePasswordInput(final boolean shouldBeVisible) {
-        return new BoundedMatcher<View, EditText>(EditText.class) {
-            @Override
-            public boolean matchesSafely(EditText editText) {
-                return ((editText.getInputType() & TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
-                               == TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
-                        == shouldBeVisible;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                if (shouldBeVisible) {
-                    description.appendText("The content should be visible.");
-                } else {
-                    description.appendText("The content should not be visible.");
-                }
-            }
-        };
-    }
-
-    /**
      * Looks for the icon by id. If it cannot be found, it's probably hidden in the overflow
      * menu. In that case, open the menu and search for its title.
      * @return Returns either the icon button or the menu option.
@@ -436,15 +402,6 @@ public class PasswordSettingsTest {
      */
     public static Matcher<View> withSearchMenuIdOrText() {
         return withMenuIdOrText(R.id.menu_id_search, R.string.search);
-    }
-
-    /**
-     * Looks for the edit saved password icon by id or by its title.
-     * @return Returns either the icon button or the menu option.
-     */
-    public static Matcher<View> withEditMenuIdOrText() {
-        return withMenuIdOrText(R.id.action_edit_saved_password,
-                R.string.password_entry_viewer_edit_stored_password_action_title);
     }
 
     /**
@@ -886,62 +843,7 @@ public class PasswordSettingsTest {
                 .perform(scrollToHolder(hasTextInViewHolder("test user")));
         Espresso.onView(withText(containsString("test user"))).perform(click());
 
-        Espresso.onView(withEditMenuIdOrText()).perform(click());
-
         Assert.assertEquals(mHandler.getLastEntryIndex(), 1);
-    }
-
-    /**
-     * Check that the password editing activity displays the data received through arguments.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
-    public void testPasswordDataDisplayedInEditingActivity() {
-        PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
-                mMockPasswordEditingDelegate);
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putString(PasswordEntryEditor.CREDENTIAL_URL, "https://example.com");
-        fragmentArgs.putString(PasswordEntryEditor.CREDENTIAL_NAME, "test user");
-        fragmentArgs.putString(PasswordEntryEditor.CREDENTIAL_PASSWORD, "test password");
-        mEditorActivityTestRule.startSettingsActivity(fragmentArgs);
-
-        Espresso.onView(withId(R.id.site_edit)).check(matches(withText("https://example.com")));
-        Espresso.onView(withId(R.id.username_edit)).check(matches(withText("test user")));
-        Espresso.onView(withId(R.id.password_edit)).check(matches(withText("test password")));
-    }
-
-    /**
-     * Check that the password editing method from the PasswordEditingDelegate was called when the
-     * save button in the password editing activity was clicked.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
-    @DisabledTest(message = "crbug.com/1122310")
-    public void testPasswordEditingMethodWasCalled() throws Exception {
-        PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
-                mMockPasswordEditingDelegate);
-        setPasswordSource(new SavedPasswordEntry("https://example.com", "test user", "password"));
-
-        startPasswordSettingsFromMainSettings();
-
-        Espresso.onView(withId(R.id.recycler_view))
-                .perform(scrollToHolder(hasTextInViewHolder("test user")));
-        Espresso.onView(withText(containsString("test user"))).perform(click());
-
-        Espresso.onView(withEditMenuIdOrText()).perform(click());
-
-        Espresso.onView(withId(R.id.username_edit)).perform(typeText(" new"));
-
-        Espresso.onView(withSaveMenuIdOrText()).perform(click());
-
-        verify(mMockPasswordEditingDelegate).editSavedPasswordEntry("test user new", "password");
-
-        // Verify that the delegate was destroyed when the password editing activity finished.
-        waitForEvent().destroy();
     }
 
     /**
@@ -963,55 +865,16 @@ public class PasswordSettingsTest {
                 .perform(scrollToHolder(hasTextInViewHolder("test user")));
         Espresso.onView(withText(containsString("test user"))).perform(click());
 
-        Espresso.onView(withEditMenuIdOrText()).perform(click());
-
         // Performing a change of saved credentials.
         mHandler.mSavedPasswords.set(
                 0, new SavedPasswordEntry("https://example.com", "test user new", "password"));
 
         Espresso.onView(withSaveMenuIdOrText()).perform(click());
 
-        // Check if the password viewing activity has the updated data.
-        Espresso.onView(withText("test user new")).check(matches(isDisplayed()));
-
-        Espresso.pressBack();
         // Check if the password preferences activity has the updated data in the list of passwords.
         Espresso.onView(withId(R.id.recycler_view))
                 .perform(scrollToHolder(hasTextInViewHolder("test user new")));
         Espresso.onView(withText("test user new")).check(matches(isDisplayed()));
-    }
-
-    /**
-     * Check that the stored password is visible after clicking the unmasking icon and invisible
-     * after another click.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
-    public void testStoredPasswordCanBeUnmaskedAndMaskedAgain() {
-        PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
-                mMockPasswordEditingDelegate);
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putString(PasswordSettings.PASSWORD_LIST_NAME, "test user");
-        fragmentArgs.putString(PasswordSettings.PASSWORD_LIST_URL, "https://example.com");
-        fragmentArgs.putString(PasswordSettings.PASSWORD_LIST_PASSWORD, "test password");
-        mEditorActivityTestRule.startSettingsActivity(fragmentArgs);
-
-        ReauthenticationManager.setApiOverride(ReauthenticationManager.OverrideState.AVAILABLE);
-        ReauthenticationManager.setScreenLockSetUpOverride(
-                ReauthenticationManager.OverrideState.AVAILABLE);
-
-        ReauthenticationManager.recordLastReauth(
-                System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
-
-        Espresso.onView(withId(R.id.password_entry_editor_view_password)).perform(click());
-
-        Espresso.onView(withId(R.id.password_edit)).check(matches(isVisiblePasswordInput(true)));
-
-        Espresso.onView(withId(R.id.password_entry_editor_view_password)).perform(click());
-
-        Espresso.onView(withId(R.id.password_edit)).check(matches(isVisiblePasswordInput(false)));
     }
 
     /**
@@ -1847,26 +1710,6 @@ public class PasswordSettingsTest {
     }
 
     /**
-     * Check that the icon for editing saved passwords is visible if the Feature is enabled.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
-    @FlakyTest(message = "https://crbug.com/1139520")
-    public void testEditSavedPasswordIconVisibleInActionBarWithFeature() {
-        setPasswordSource( // Initialize preferences
-                new SavedPasswordEntry("https://example.com", "test user", "test password"));
-
-        startPasswordSettingsFromMainSettings();
-        Espresso.onView(withId(R.id.recycler_view))
-                .perform(scrollToHolder(hasTextInViewHolder("test user")));
-        Espresso.onView(withText(containsString("test user"))).perform(click());
-
-        Espresso.onView(withEditMenuIdOrText()).check(matches(isDisplayed()));
-    }
-
-    /**
      * Check that the search item is visible if the Feature is enabled.
      */
     @Test
@@ -2261,11 +2104,6 @@ public class PasswordSettingsTest {
         Assert.assertNotNull(PasswordCheckFactory.getPasswordCheckInstance());
         // Clean up the password check component.
         PasswordCheckFactory.destroy();
-    }
-
-    PasswordEditingDelegate waitForEvent() {
-        return verify(mMockPasswordEditingDelegate,
-                timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
     }
 
     PrefService getPrefService() {

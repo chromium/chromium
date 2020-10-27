@@ -27,7 +27,6 @@ import org.chromium.ui.widget.Toast;
 /**
  * Password entry editor that allows editing passwords stored in Chrome.
  */
-
 public class PasswordEntryEditor extends Fragment {
     private EditText mSiteText;
     private EditText mUsernameText;
