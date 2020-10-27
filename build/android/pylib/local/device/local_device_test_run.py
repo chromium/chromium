@@ -193,7 +193,7 @@ class LocalDeviceTestRun(test_run.TestRun):
           self._env.IncrementCurrentTry()
           tests = self._GetTestsToRetry(tests, try_results)
 
-          logging.info('FINISHED TRY #%d/%d', tries, self._env.max_tries)
+          logging.info('FINISHED TRY #%d/%d', tries + 1, self._env.max_tries)
           if tests:
             logging.info('%d failed tests remain.', len(tests))
           else:
