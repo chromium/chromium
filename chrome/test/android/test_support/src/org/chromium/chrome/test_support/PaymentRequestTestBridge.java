@@ -31,20 +31,48 @@ public class PaymentRequestTestBridge {
      * answers about the state of the system, in order to control which paths should be tested in
      * the ChromePaymentRequestService.
      */
+    private static class ChromePaymentRequestDelegateForTest
+            extends PaymentRequestDelegateForTest implements ChromePaymentRequestService.Delegate {
+        private final boolean mSkipUiForBasicCard;
+        private final String mTwaPackageName;
+
+        ChromePaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
+                boolean isWebContentsActive, boolean prefsCanMakePayment, String twaPackageName,
+                boolean skipUiForBasicCard) {
+            super(isOffTheRecord, isValidSsl, isWebContentsActive, prefsCanMakePayment);
+            mSkipUiForBasicCard = skipUiForBasicCard;
+            mTwaPackageName = twaPackageName;
+        }
+
+        @Override
+        public boolean skipUiForBasicCard() {
+            return mSkipUiForBasicCard;
+        }
+
+        @Override
+        @Nullable
+        public String getTwaPackageName() {
+            return mTwaPackageName;
+        }
+    }
+
+    /**
+     * A test override of the PaymentRequestService's Delegate. Allows tests to control the
+     * answers about the state of the system, in order to control which paths should be tested in
+     * the ChromePaymentRequestService.
+     */
     private static class PaymentRequestDelegateForTest implements PaymentRequestService.Delegate {
         private final boolean mIsOffTheRecord;
         private final boolean mIsValidSsl;
         private final boolean mIsWebContentsActive;
         private final boolean mPrefsCanMakePayment;
-        private final String mTwaPackageName;
 
         PaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
-                boolean isWebContentsActive, boolean prefsCanMakePayment, String twaPackageName) {
+                boolean isWebContentsActive, boolean prefsCanMakePayment) {
             mIsOffTheRecord = isOffTheRecord;
             mIsValidSsl = isValidSsl;
             mIsWebContentsActive = isWebContentsActive;
             mPrefsCanMakePayment = prefsCanMakePayment;
-            mTwaPackageName = twaPackageName;
         }
 
         @Override
@@ -66,17 +94,6 @@ public class PaymentRequestTestBridge {
         @Override
         public boolean prefsCanMakePayment() {
             return mPrefsCanMakePayment;
-        }
-
-        @Override
-        public boolean skipUiForBasicCard() {
-            return false;
-        }
-
-        @Override
-        @Nullable
-        public String getTwaPackageName() {
-            return mTwaPackageName;
         }
     }
 
@@ -196,9 +213,9 @@ public class PaymentRequestTestBridge {
             boolean isValidSsl, boolean isWebContentsActive, boolean prefsCanMakePayment,
             boolean skipUiForBasicCard, String twaPackageName) {
         if (useDelegate) {
-            ChromePaymentRequestFactory.sDelegateForTest =
-                    new PaymentRequestDelegateForTest(isOffTheRecord, isValidSsl,
-                            isWebContentsActive, prefsCanMakePayment, twaPackageName);
+            ChromePaymentRequestFactory.sDelegateForTest = new ChromePaymentRequestDelegateForTest(
+                    isOffTheRecord, isValidSsl, isWebContentsActive, prefsCanMakePayment,
+                    twaPackageName, skipUiForBasicCard);
         } else {
             ChromePaymentRequestFactory.sDelegateForTest = null;
         }

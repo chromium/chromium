@@ -31,6 +31,8 @@ import org.chromium.chrome.browser.autofill.CardUnmaskPrompt;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskObserverForTest;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorTextField;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory.ChromePaymentRequestDelegateImpl;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory.ChromePaymentRequestDelegateImplObserverForTest;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.OptionRow;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
@@ -73,7 +75,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         implements PaymentRequestObserverForTest, PaymentRequestServiceObserverForTest,
-                   CardUnmaskObserverForTest, EditorObserverForTest {
+                   ChromePaymentRequestDelegateImplObserverForTest, CardUnmaskObserverForTest,
+                   EditorObserverForTest {
     @IntDef({AppPresence.NO_APPS, AppPresence.HAVE_APPS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AppPresence {
@@ -145,7 +148,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     final CallbackHelper mPaymentResponseReady;
     final CallbackHelper mCompleteReplied;
     final CallbackHelper mRendererClosedMojoConnection;
-    PaymentRequestService mPaymentRequestService;
+    private ChromePaymentRequestDelegateImpl mChromePaymentRequestDelegateImpl;
     PaymentRequestUI mUI;
 
     private final boolean mDelayStartActivity;
@@ -255,6 +258,8 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
             PaymentRequestUI.setEditorObserverForTest(PaymentRequestTestRule.this);
             PaymentRequestUI.setPaymentRequestObserverForTest(PaymentRequestTestRule.this);
             PaymentRequestService.setObserverForTest(PaymentRequestTestRule.this);
+            ChromePaymentRequestFactory.setChromePaymentRequestDelegateImplObserverForTest(
+                    PaymentRequestTestRule.this);
             CardUnmaskPrompt.setObserverForTest(PaymentRequestTestRule.this);
         });
         assertWaitForPageScaleFactorMatch(1);
@@ -1001,7 +1006,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     /** Allows to skip UI into paymenthandler for"basic-card". */
     protected void enableSkipUIForBasicCard() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mPaymentRequestService.setSkipUiForNonUrlPaymentMethodIdentifiersForTest());
+                () -> mChromePaymentRequestDelegateImpl.setSkipUiForBasicCard());
     }
 
     @Override
@@ -1059,9 +1064,10 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     }
 
     @Override
-    public void onPaymentRequestCreated(PaymentRequestService paymentRequestService) {
+    public void onCreatedChromePaymentRequestDelegateImpl(
+            ChromePaymentRequestDelegateImpl delegateImpl) {
         ThreadUtils.assertOnUiThread();
-        mPaymentRequestService = paymentRequestService;
+        mChromePaymentRequestDelegateImpl = delegateImpl;
     }
 
     @Override

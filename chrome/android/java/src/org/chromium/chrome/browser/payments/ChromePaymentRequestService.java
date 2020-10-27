@@ -50,7 +50,6 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
 import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestService;
-import org.chromium.components.payments.PaymentRequestService.Delegate;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.PaymentUIsObserver;
@@ -100,6 +99,7 @@ public class ChromePaymentRequestService
                    PaymentUIsObserver {
     private static final String TAG = "PaymentRequest";
     private static boolean sIsLocalCanMakePaymentQueryQuotaEnforcedForTest;
+
     /**
      * Hold the currently showing PaymentRequest. Used to prevent showing more than one
      * PaymentRequest UI per browser process.
@@ -199,6 +199,23 @@ public class ChromePaymentRequestService
 
     /** A helper to manage the Skip-to-GPay experimental flow. */
     private SkipToGPayHelper mSkipToGPayHelper;
+
+    /** The delegate of this class */
+    public interface Delegate extends PaymentRequestService.Delegate {
+        /**
+         * @return True if the UI can be skipped for "basic-card" scenarios. This will only ever be
+         *         true in tests.
+         */
+        boolean skipUiForBasicCard();
+
+        /**
+         * @return If the merchant's WebContents is running inside of a Trusted Web Activity,
+         *         returns the package name for Trusted Web Activity. Otherwise returns an empty
+         *         string or null.
+         */
+        @Nullable
+        String getTwaPackageName();
+    }
 
     /**
      * Builds the PaymentRequest service implementation.
@@ -412,8 +429,7 @@ public class ChromePaymentRequestService
             // Calculate skip ui and build ui only after all payment apps are ready and
             // request.show() is called.
             mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
-                    mURLPaymentMethodIdentifiersSupported,
-                    mPaymentRequestService.skipUiForNonUrlPaymentMethodIdentifiers(),
+                    mURLPaymentMethodIdentifiersSupported, mDelegate.skipUiForBasicCard(),
                     mPaymentOptions);
             if (!buildUI(chromeActivity)) return;
             if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi()
@@ -1570,8 +1586,7 @@ public class ChromePaymentRequestService
             // is determined.
             assert mIsFinishedQueryingPaymentApps;
             mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
-                    mURLPaymentMethodIdentifiersSupported,
-                    mPaymentRequestService.skipUiForNonUrlPaymentMethodIdentifiers(),
+                    mURLPaymentMethodIdentifiersSupported, mDelegate.skipUiForBasicCard(),
                     mPaymentOptions);
             if (!buildUI(chromeActivity)) return;
             if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi()

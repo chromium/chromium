@@ -66,7 +66,6 @@ public class PaymentRequestService {
     private final boolean mRequestPayerPhone;
     private final boolean mRequestPayerEmail;
     private final Delegate mDelegate;
-    private boolean mSkipUiForNonUrlPaymentMethodIdentifiers;
     private PaymentRequestLifecycleObserver mPaymentRequestLifecycleObserver;
     private boolean mHasClosed;
 
@@ -124,32 +123,12 @@ public class PaymentRequestService {
          * @return Whether the preferences allow CAN_MAKE_PAYMENT.
          */
         boolean prefsCanMakePayment();
-
-        /**
-         * @return True if the UI can be skipped for "basic-card" scenarios. This will only ever be
-         *         true in tests.
-         */
-        boolean skipUiForBasicCard();
-
-        /**
-         * @return If the merchant's WebContents is running inside of a Trusted Web Activity,
-         *         returns the package name for Trusted Web Activity. Otherwise returns an empty
-         *         string or null.
-         */
-        @Nullable
-        String getTwaPackageName();
     }
 
     /**
      * A test-only observer for the PaymentRequest service implementation.
      */
     public interface PaymentRequestServiceObserverForTest {
-        /**
-         * Called after an instance of {@link PaymentRequestService} has been created.
-         *
-         * @param paymentRequestService The newly created instance of PaymentRequestService.
-         */
-        void onPaymentRequestCreated(PaymentRequestService paymentRequestService);
 
         /**
          * Called when an abort request was denied.
@@ -212,20 +191,18 @@ public class PaymentRequestService {
      * @param isOffTheRecord Whether the merchant page is in a off-the-record (e.g., incognito,
      *         guest mode) Tab.
      * @param delegate The delegate of this class.
-     * @param skipUiForBasicCard True if the PaymentRequest UI should be skipped when the request
-     *         only supports basic-card methods.
      * @param browserPaymentRequestFactory The factory that generates BrowserPaymentRequest.
      * @return The created instance.
      */
     public static PaymentRequest createPaymentRequest(RenderFrameHost renderFrameHost,
-            boolean isOffTheRecord, boolean skipUiForBasicCard, Delegate delegate,
+            boolean isOffTheRecord, Delegate delegate,
             BrowserPaymentRequest.Factory browserPaymentRequestFactory) {
         return new MojoPaymentRequestGateKeeper(
                 (client, methodData, details, options, googlePayBridgeEligible, onClosedListener)
                         -> PaymentRequestService.createIfParamsValid(renderFrameHost,
-                                isOffTheRecord, skipUiForBasicCard, browserPaymentRequestFactory,
-                                client, methodData, details, options, googlePayBridgeEligible,
-                                onClosedListener, delegate));
+                                isOffTheRecord, browserPaymentRequestFactory, client, methodData,
+                                details, options, googlePayBridgeEligible, onClosedListener,
+                                delegate));
     }
 
     /**
@@ -234,8 +211,7 @@ public class PaymentRequestService {
      */
     @Nullable
     private static PaymentRequestService createIfParamsValid(RenderFrameHost renderFrameHost,
-            boolean isOffTheRecord, boolean skipUiForBasicCard,
-            BrowserPaymentRequest.Factory browserPaymentRequestFactory,
+            boolean isOffTheRecord, BrowserPaymentRequest.Factory browserPaymentRequestFactory,
             @Nullable PaymentRequestClient client, @Nullable PaymentMethodData[] methodData,
             @Nullable PaymentDetails details, @Nullable PaymentOptions options,
             boolean googlePayBridgeEligible, Runnable onClosedListener, Delegate delegate) {
@@ -286,10 +262,8 @@ public class PaymentRequestService {
             return null;
         }
 
-        PaymentRequestService instance =
-                new PaymentRequestService(client, renderFrameHost, webContents, journeyLogger,
-                        options, skipUiForBasicCard, isOffTheRecord, onClosedListener, delegate);
-        instance.onCreated();
+        PaymentRequestService instance = new PaymentRequestService(client, renderFrameHost,
+                webContents, journeyLogger, options, isOffTheRecord, onClosedListener, delegate);
         boolean valid = instance.initAndValidate(
                 browserPaymentRequestFactory, methodData, details, googlePayBridgeEligible);
         if (!valid) {
@@ -297,11 +271,6 @@ public class PaymentRequestService {
             return null;
         }
         return instance;
-    }
-
-    private void onCreated() {
-        if (sObserverForTest == null) return;
-        sObserverForTest.onPaymentRequestCreated(this);
     }
 
     /** Abort the request, used before this class's instantiation. */
@@ -315,8 +284,7 @@ public class PaymentRequestService {
 
     private PaymentRequestService(PaymentRequestClient client, RenderFrameHost renderFrameHost,
             WebContents webContents, JourneyLogger journeyLogger, PaymentOptions options,
-            boolean skipUiForBasicCard, boolean isOffTheRecord, Runnable onClosedListener,
-            Delegate delegate) {
+            boolean isOffTheRecord, Runnable onClosedListener, Delegate delegate) {
         assert client != null;
         assert renderFrameHost != null;
         assert webContents != null;
@@ -344,7 +312,6 @@ public class PaymentRequestService {
         mMerchantName = mWebContents.getTitle();
         mCertificateChain = CertificateChainHelper.getCertificateChain(mWebContents);
         mIsOffTheRecord = isOffTheRecord;
-        mSkipUiForNonUrlPaymentMethodIdentifiers = skipUiForBasicCard;
         mClient = client;
         mJourneyLogger = journeyLogger;
         mOnClosedListener = onClosedListener;
@@ -579,19 +546,6 @@ public class PaymentRequestService {
     public static void setObserverForTest(PaymentRequestServiceObserverForTest observerForTest) {
         assert observerForTest != null;
         sObserverForTest = observerForTest;
-    }
-
-    /**
-     * @return True when skip UI is available for non-url based payment method identifiers (e.g.
-     * basic-card).
-     */
-    public boolean skipUiForNonUrlPaymentMethodIdentifiers() {
-        return mSkipUiForNonUrlPaymentMethodIdentifiers;
-    }
-
-    @VisibleForTesting
-    public void setSkipUiForNonUrlPaymentMethodIdentifiersForTest() {
-        mSkipUiForNonUrlPaymentMethodIdentifiers = true;
     }
 
     /** Invokes {@link PaymentRequestClient.onPaymentMethodChange}. */

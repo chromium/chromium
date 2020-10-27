@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.payments;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -29,20 +30,35 @@ import org.chromium.services.service_manager.InterfaceFactory;
  */
 public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
     // Tests can inject behaviour on future PaymentRequests via these objects.
-    public static PaymentRequestService.Delegate sDelegateForTest;
-
+    public static ChromePaymentRequestService.Delegate sDelegateForTest;
+    private static ChromePaymentRequestDelegateImplObserverForTest sObserver;
     private final RenderFrameHost mRenderFrameHost;
+
+    /** Observes the {@link ChromePaymentRequestDelegateImpl} for testing. */
+    @VisibleForTesting
+    /* package */ interface ChromePaymentRequestDelegateImplObserverForTest {
+        /**
+         * Called after an instance of {@link ChromePaymentRequestDelegateImpl} has just been
+         * created.
+         * @param delegateImpl The {@link ChromePaymentRequestDelegateImpl}.
+         */
+        void onCreatedChromePaymentRequestDelegateImpl(
+                ChromePaymentRequestDelegateImpl delegateImpl);
+    }
 
     /**
      * Production implementation of the ChromePaymentRequestService's Delegate. Gives true answers
      * about the system.
      */
-    public static class PaymentRequestDelegateImpl implements PaymentRequestService.Delegate {
+    @VisibleForTesting
+    public static class ChromePaymentRequestDelegateImpl
+            implements ChromePaymentRequestService.Delegate {
         private final TwaPackageManagerDelegate mPackageManagerDelegate =
                 new TwaPackageManagerDelegate();
         private final RenderFrameHost mRenderFrameHost;
+        private boolean mSkipUiForBasicCard;
 
-        /* package */ PaymentRequestDelegateImpl(RenderFrameHost renderFrameHost) {
+        private ChromePaymentRequestDelegateImpl(RenderFrameHost renderFrameHost) {
             mRenderFrameHost = renderFrameHost;
         }
 
@@ -88,7 +104,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
 
         @Override
         public boolean skipUiForBasicCard() {
-            return false; // Only tests do this.
+            return mSkipUiForBasicCard; // Only tests may set it to true.
         }
 
         @Override
@@ -98,6 +114,11 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
             if (liveWebContents == null) return null;
             ChromeActivity activity = ChromeActivity.fromWebContents(liveWebContents);
             return activity != null ? mPackageManagerDelegate.getTwaPackageName(activity) : null;
+        }
+
+        @VisibleForTesting
+        public void setSkipUiForBasicCard() {
+            mSkipUiForBasicCard = true;
         }
 
         @Nullable
@@ -116,6 +137,14 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         mRenderFrameHost = renderFrameHost;
     }
 
+    /** Set an observer for the payment request service, cannot be null. */
+    @VisibleForTesting
+    public static void setChromePaymentRequestDelegateImplObserverForTest(
+            ChromePaymentRequestDelegateImplObserverForTest observer) {
+        assert observer != null;
+        sObserver = observer;
+    }
+
     @Override
     public PaymentRequest createImpl() {
         if (mRenderFrameHost == null) return new InvalidPaymentRequest();
@@ -129,19 +158,21 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
             return new InvalidPaymentRequest();
         }
 
-        PaymentRequestService.Delegate delegate;
+        ChromePaymentRequestService.Delegate delegate;
         if (sDelegateForTest != null) {
             delegate = sDelegateForTest;
         } else {
-            delegate = new PaymentRequestDelegateImpl(mRenderFrameHost);
+            ChromePaymentRequestDelegateImpl delegateImpl =
+                    new ChromePaymentRequestDelegateImpl(mRenderFrameHost);
+            sObserver.onCreatedChromePaymentRequestDelegateImpl(/*delegateImpl=*/delegateImpl);
+            delegate = delegateImpl;
         }
 
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
 
         return PaymentRequestService.createPaymentRequest(mRenderFrameHost,
-                /*isOffTheRecord=*/delegate.isOffTheRecord(),
-                /*skipUiForBasicCard=*/delegate.skipUiForBasicCard(), delegate,
+                /*isOffTheRecord=*/delegate.isOffTheRecord(), delegate,
                 (paymentRequestService)
                         -> new ChromePaymentRequestService(paymentRequestService, delegate));
     }
