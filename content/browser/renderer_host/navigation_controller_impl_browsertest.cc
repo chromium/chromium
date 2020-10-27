@@ -7092,8 +7092,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(ExecuteScript(root, kAddNamedFrameScript));
   EXPECT_EQ(1U, root->child_count());
   EXPECT_EQ(1U, nav_entry->root_node()->children.size());
-  // |tree_node| will becoma a dangling pointer when the frame is removed below.
-  auto* tree_node = nav_entry->root_node()->children[0].get();
+  scoped_refptr<FrameNavigationEntry> old_fne =
+      nav_entry->root_node()->children[0]->frame_entry;
 
   EXPECT_TRUE(ExecJs(root, kRemoveFrameScript));
   EXPECT_EQ(0U, root->child_count());
@@ -7106,7 +7106,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(ExecuteScript(root, kAddNamedFrameScript));
   EXPECT_EQ(1U, root->child_count());
   EXPECT_EQ(1U, nav_entry->root_node()->children.size());
-  EXPECT_NE(tree_node, nav_entry->root_node()->children[0].get());
+  scoped_refptr<FrameNavigationEntry> new_fne =
+      nav_entry->root_node()->children[0]->frame_entry;
+  EXPECT_TRUE(old_fne->HasOneRef());  // Only the test keeps the old FNE alive.
+  EXPECT_NE(old_fne.get(), new_fne.get());
 
   EXPECT_TRUE(ExecJs(root, kRemoveFrameScript));
   EXPECT_EQ(0U, root->child_count());
