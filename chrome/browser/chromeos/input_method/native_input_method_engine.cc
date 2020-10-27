@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
-
 #include "base/feature_list.h"
 #include "base/i18n/i18n_constants.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -12,7 +11,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -126,19 +124,14 @@ void NativeInputMethodEngine::Initialize(
     std::unique_ptr<InputMethodEngineBase::Observer> observer,
     const char* extension_id,
     Profile* profile) {
-  // TODO(crbug/1141231): refactor the mix of unique and raw ptr here.
   std::unique_ptr<AssistiveSuggester> assistive_suggester =
       std::make_unique<AssistiveSuggester>(this, profile);
-  assistive_suggester_ = assistive_suggester.get();
-  std::unique_ptr<AutocorrectManager> autocorrect_manager =
-      std::make_unique<AutocorrectManager>(this);
-  autocorrect_manager_ = autocorrect_manager.get();
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
+  assistive_suggester_ = assistive_suggester.get();
   auto native_observer =
       std::make_unique<chromeos::NativeInputMethodEngine::ImeObserver>(
-          std::move(observer), std::move(assistive_suggester),
-          std::move(autocorrect_manager));
+          std::move(observer), std::move(assistive_suggester));
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
 }
@@ -151,12 +144,6 @@ bool NativeInputMethodEngine::IsConnectedForTesting() const {
   return GetNativeObserver()->IsConnectedForTesting();
 }
 
-void NativeInputMethodEngine::Autocorrect(std::string typed_word,
-                                          std::string corrected_word,
-                                          int start_index) {
-  autocorrect_manager_->MarkAutocorrectRange(corrected_word, start_index);
-}
-
 NativeInputMethodEngine::ImeObserver*
 NativeInputMethodEngine::GetNativeObserver() const {
   return static_cast<ImeObserver*>(observer_.get());
@@ -164,12 +151,11 @@ NativeInputMethodEngine::GetNativeObserver() const {
 
 NativeInputMethodEngine::ImeObserver::ImeObserver(
     std::unique_ptr<InputMethodEngineBase::Observer> base_observer,
-    std::unique_ptr<AssistiveSuggester> assistive_suggester,
-    std::unique_ptr<AutocorrectManager> autocorrect_manager)
+    std::unique_ptr<AssistiveSuggester> assistive_suggester)
     : base_observer_(std::move(base_observer)),
       receiver_from_engine_(this),
-      assistive_suggester_(std::move(assistive_suggester)),
-      autocorrect_manager_(std::move(autocorrect_manager)) {}
+      assistive_suggester_(std::move(assistive_suggester)) {
+}
 
 NativeInputMethodEngine::ImeObserver::~ImeObserver() = default;
 
@@ -217,10 +203,9 @@ void NativeInputMethodEngine::ImeObserver::ProcessMessage(
 
 void NativeInputMethodEngine::ImeObserver::OnFocus(
     const IMEEngineHandlerInterface::InputContext& context) {
-  if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
+  if (assistive_suggester_->IsAssistiveFeatureEnabled())
     assistive_suggester_->OnFocus(context.id);
-  }
-  autocorrect_manager_->OnFocus(context.id);
+
   if (active_engine_id_ && ShouldUseFstMojoEngine(*active_engine_id_) &&
       remote_to_engine_.is_bound()) {
     remote_to_engine_->OnFocus(ime::mojom::InputFieldInfo::New(
@@ -256,7 +241,7 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
       return;
     }
   }
-  autocorrect_manager_->OnKeyEvent();
+
   auto key_event = ime::mojom::PhysicalKeyEvent::New(
       event.type == "keydown" ? ime::mojom::KeyEventType::kKeyDown
                               : ime::mojom::KeyEventType::kKeyUp,

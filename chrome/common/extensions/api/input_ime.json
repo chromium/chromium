@@ -659,35 +659,7 @@
           {"type": "string", "name": "requestId", "description": "Request id of the event that was handled.  This should come from keyEvent.requestId"},
           {"type": "boolean", "name": "response", "description": "True if the keystroke was handled, false if not"}
         ]
-      },
-      {
-            "name": "autocorrect",
-            "type": "function",
-            "description": "Called after a word has been autocorrected to show some UI for autocorrect.",
-            "platforms": ["chromeos"],
-            "parameters": [{
-                "name": "parameters",
-                "type": "object",
-                "properties": {
-                    "contextID": {
-                        "description": "ID of the context owning the assistive window.",
-                        "type": "integer"
-                    },
-                    "typedWord": {
-                        "type": "string",
-                        "description": "typed word"
-                    },
-                    "correctedWord": {
-                        "type": "string",
-                        "description": "corrected word"
-                    },
-                    "startIndex": {
-                        "type": "integer",
-                        "description": "Offset index in surrounding text for the start of the autocorrected text"
-                    }
-                }
-            }]
-        }
+      }
     ],
     "events": [
       {
