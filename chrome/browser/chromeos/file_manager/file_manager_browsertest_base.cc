@@ -57,6 +57,8 @@
 #include "chrome/browser/ui/app_list/search/launcher_search/launcher_search_provider.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -721,6 +723,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(browser)
   PRINT_IF_NOT_DEFAULT(documents_provider)
   PRINT_IF_NOT_DEFAULT(files_ng)
+  PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
   PRINT_IF_NOT_DEFAULT(native_smb)
   PRINT_IF_NOT_DEFAULT(offline)
@@ -1851,6 +1854,13 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   // The test resources are setup: enable and add default ChromeOS component
   // extensions now and not before: crbug.com/831074, crbug.com/804413
   test::AddDefaultComponentExtensionsOnMainThread(profile());
+
+  // Enable System Web Apps if needed.
+  if (options.media_swa) {
+    auto& system_web_app_manager =
+        web_app::WebAppProvider::Get(profile())->system_web_app_manager();
+    system_web_app_manager.InstallSystemAppsForTesting();
+  }
 
   // For tablet mode tests, enable the Ash virtual keyboard.
   if (options.tablet_mode) {

@@ -12,8 +12,6 @@
 #include "chrome/browser/chromeos/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_service.h"
@@ -75,6 +73,11 @@ struct TestCase {
 
   TestCase& DisableFilesNg() {
     options.files_ng = false;
+    return *this;
+  }
+
+  TestCase& MediaSwa() {
+    options.media_swa = true;
     return *this;
   }
 
@@ -222,26 +225,6 @@ IN_PROC_BROWSER_TEST_P(FilesAppBrowserTest, Test) {
   StartTest();
 }
 
-// Files app tests that require SWA (System Web Apps).
-class SWAsFilesAppBrowserTest : public FilesAppBrowserTest {
- public:
-  SWAsFilesAppBrowserTest() = default;
-  SWAsFilesAppBrowserTest(const SWAsFilesAppBrowserTest&) = delete;
-  SWAsFilesAppBrowserTest& operator=(const SWAsFilesAppBrowserTest&) = delete;
-
-  void SetUpOnMainThread() override {
-    web_app::WebAppProvider::Get(profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
-
-    FilesAppBrowserTest::SetUpOnMainThread();
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(SWAsFilesAppBrowserTest, Test) {
-  StartTest();
-}
-
 // A version of the FilesAppBrowserTest that supports spanning browser restart
 // to allow testing prefs and other things.
 class ExtendedFilesAppBrowserTest : public FilesAppBrowserTest {
@@ -342,9 +325,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenImageBacklight, /* open_image_backlight.js */
-    SWAsFilesAppBrowserTest,
-    ::testing::Values(TestCase("imageOpenBacklight").InGuestMode(),
-                      TestCase("imageOpenBacklight")));
+    FilesAppBrowserTest,
+    ::testing::Values(TestCase("imageOpenBacklight").MediaSwa().InGuestMode(),
+                      TestCase("imageOpenBacklight").MediaSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenImageFiles, /* open_image_files.js */
