@@ -28,7 +28,7 @@
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 122
+    "kCurrentDataVersion": 123
   },
 
   // The following engines are included in country lists and are added to the
@@ -538,7 +538,7 @@
       "favicon_url": "https://yastatic.net/lego/_/pDu9OWAQKB0s2J9IojKpiS_Eho.ico",
       "logo_url": "https://storage.ape.yandex.net/get/browser/Doodles/yandex/drawable-xxhdpi/yandex.png",
       "search_url": "https://yandex.by/{yandex:searchPath}?text={searchTerms}",
-      "suggest_url": "https://suggest.yandex.by/suggest-ff.cgi?part={searchTerms}{google:cursorPosition}",
+      "suggest_url": "https://suggest.yandex.by/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.by/images/search/?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.by/chrome/newtab",
@@ -551,7 +551,7 @@
       "keyword": "yandex.com",
       "favicon_url": "https://yastatic.net/lego/_/rBTjd6UOPk5913OSn5ZQVYMTQWQ.ico",
       "search_url": "https://yandex.com/search/?text={searchTerms}&from=os&clid=1836588",
-      "suggest_url": "https://suggest.yandex.com/suggest-ff.cgi?part={searchTerms}{google:cursorPosition}&uil=en&v=3&sn=5",
+      "suggest_url": "https://suggest.yandex.com/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}&uil=en&v=3&sn=5",
       "image_url": "https://yandex.com/images/search?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "type": "SEARCH_ENGINE_YANDEX",
@@ -564,7 +564,7 @@
       "favicon_url": "https://yastatic.net/lego/_/pDu9OWAQKB0s2J9IojKpiS_Eho.ico",
       "logo_url": "https://storage.ape.yandex.net/get/browser/Doodles/yandex/drawable-xxhdpi/yandex.png",
       "search_url": "https://yandex.kz/{yandex:searchPath}?text={searchTerms}",
-      "suggest_url": "https://suggest.yandex.kz/suggest-ff.cgi?part={searchTerms}{google:cursorPosition}",
+      "suggest_url": "https://suggest.yandex.kz/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.kz/images/search/?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.kz/chrome/newtab",
@@ -578,7 +578,7 @@
       "favicon_url": "https://yastatic.net/lego/_/pDu9OWAQKB0s2J9IojKpiS_Eho.ico",
       "logo_url": "https://storage.ape.yandex.net/get/browser/Doodles/yandex/drawable-xxhdpi/yandex.png",
       "search_url": "https://yandex.ru/{yandex:searchPath}?text={searchTerms}&{yandex:referralID}",
-      "suggest_url": "https://suggest.yandex.ru/suggest-ff.cgi?part={searchTerms}{google:cursorPosition}",
+      "suggest_url": "https://suggest.yandex.ru/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.ru/images/search/?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.ru/chrome/newtab",
@@ -591,7 +591,7 @@
       "keyword": "yandex.com.tr",
       "favicon_url": "https://yastatic.net/lego/_/rBTjd6UOPk5913OSn5ZQVYMTQWQ.ico",
       "search_url": "https://www.yandex.com.tr/{yandex:searchPath}?text={searchTerms}",
-      "suggest_url": "https://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}{google:cursorPosition}",
+      "suggest_url": "https://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.com.tr/gorsel/search?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.com.tr/chrome/newtab",
@@ -605,7 +605,7 @@
       "favicon_url": "https://yastatic.net/lego/_/pDu9OWAQKB0s2J9IojKpiS_Eho.ico",
       "logo_url": "https://storage.ape.yandex.net/get/browser/Doodles/yandex/drawable-xxhdpi/yandex.png",
       "search_url": "https://yandex.ua/{yandex:searchPath}?text={searchTerms}",
-      "suggest_url": "https://suggest.yandex.ua/suggest-ff.cgi?part={searchTerms}{google:cursorPosition}",
+      "suggest_url": "https://suggest.yandex.ua/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.ua/images/search/?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.ua/chrome/newtab",
