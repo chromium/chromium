@@ -463,8 +463,12 @@ WebInputEventResult PointerEventManager::DispatchTouchPointerEvent(
             ? pointer_event_target.target_element->GetDocument().domWindow()
             : nullptr);
 
-    result = SendTouchPointerEvent(pointer_event_target.target_element,
-                                   pointer_event, web_pointer_event.hovering);
+    if (pointer_event) {
+      result = SendTouchPointerEvent(pointer_event_target.target_element,
+                                     pointer_event, web_pointer_event.hovering);
+    } else {
+      result = WebInputEventResult::kNotHandled;
+    }
 
     // If a pointerdown has been canceled, queue the unique id to allow
     // suppressing mouse events from gesture events. For mouse events

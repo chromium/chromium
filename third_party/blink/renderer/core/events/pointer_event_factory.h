@@ -30,6 +30,8 @@ class CORE_EXPORT PointerEventFactory {
   PointerEventFactory();
   ~PointerEventFactory();
 
+  // Returns nullptr if the |web_pointer_event| is invalid from event stream
+  // perspective (e.g. it is a pointercancel for a non-existent id).
   PointerEvent* Create(const WebPointerEvent& web_pointer_event,
                        const Vector<WebPointerEvent>& coalesced_events,
                        const Vector<WebPointerEvent>& predicted_events,
@@ -128,9 +130,14 @@ class CORE_EXPORT PointerEventFactory {
 
   PointerId AddIdAndActiveButtons(const IncomingId,
                                   bool is_active_buttons,
-                                  bool hovering);
+                                  bool hovering,
+                                  WebInputEvent::Type event_type);
   bool IsPrimary(const PointerId) const;
+
+  // Returns nullptr when the event is unexpected.  E.g. pointercancel for a
+  // non-existent id (see crbug.com/1007164).
   PointerEventInit* ConvertIdTypeButtonsEvent(const WebPointerEvent&);
+
   void SetEventSpecificFields(PointerEventInit*, const AtomicString& type);
 
   // Creates pointerevents like boundary and capture events from another

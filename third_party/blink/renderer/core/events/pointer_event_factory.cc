@@ -222,6 +222,7 @@ PointerEventInit* PointerEventFactory::ConvertIdTypeButtonsEvent(
     const WebPointerEvent& web_pointer_event) {
   WebPointerProperties::PointerType pointer_type =
       web_pointer_event.pointer_type;
+
   unsigned buttons;
   if (web_pointer_event.hovering) {
     buttons = MouseEvent::WebInputEventModifiersToButtons(
@@ -248,12 +249,16 @@ PointerEventInit* PointerEventFactory::ConvertIdTypeButtonsEvent(
     }
     pointer_type = WebPointerProperties::PointerType::kPen;
   }
-  PointerEventInit* pointer_event_init = PointerEventInit::Create();
-  pointer_event_init->setButtons(buttons);
 
   const IncomingId incoming_id(pointer_type, web_pointer_event.id);
   PointerId pointer_id = AddIdAndActiveButtons(incoming_id, buttons != 0,
-                                               web_pointer_event.hovering);
+                                               web_pointer_event.hovering,
+                                               web_pointer_event.GetType());
+  if (pointer_id == kInvalidId)
+    return nullptr;
+
+  PointerEventInit* pointer_event_init = PointerEventInit::Create();
+  pointer_event_init->setButtons(buttons);
   pointer_event_init->setPointerId(pointer_id);
   pointer_event_init->setPointerType(
       PointerTypeNameForWebPointPointerType(pointer_type));
@@ -293,6 +298,8 @@ PointerEvent* PointerEventFactory::Create(
 
   PointerEventInit* pointer_event_init =
       ConvertIdTypeButtonsEvent(web_pointer_event);
+  if (!pointer_event_init)
+    return nullptr;
 
   AtomicString type = PointerEventNameForEventType(event_type);
   if (event_type == WebInputEvent::Type::kPointerDown ||
@@ -491,7 +498,7 @@ PointerEventFactory::~PointerEventFactory() {
 void PointerEventFactory::Clear() {
   for (int type = 0;
        type <= ToInt(WebPointerProperties::PointerType::kMaxValue); type++) {
-    primary_id_[type] = PointerEventFactory::kInvalidId;
+    primary_id_[type] = kInvalidId;
     id_count_[type] = 0;
   }
   pointer_incoming_id_mapping_.clear();
@@ -510,9 +517,11 @@ void PointerEventFactory::Clear() {
   current_id_ = PointerEventFactory::kMouseId + 1;
 }
 
-PointerId PointerEventFactory::AddIdAndActiveButtons(const IncomingId p,
-                                                     bool is_active_buttons,
-                                                     bool hovering) {
+PointerId PointerEventFactory::AddIdAndActiveButtons(
+    const IncomingId p,
+    bool is_active_buttons,
+    bool hovering,
+    WebInputEvent::Type event_type) {
   // Do not add extra mouse pointer as it was added in initialization.
   if (p.GetPointerType() == WebPointerProperties::PointerType::kMouse) {
     pointer_id_mapping_.Set(kMouseId,
@@ -526,6 +535,12 @@ PointerId PointerEventFactory::AddIdAndActiveButtons(const IncomingId p,
                             PointerAttributes(p, is_active_buttons, hovering));
     return mapped_id;
   }
+
+  // TODO(crbug.com/1141595): We should filter out bad pointercancel events
+  // further upstream.
+  if (event_type == WebInputEvent::Type::kPointerCancel)
+    return kInvalidId;
+
   int type_int = p.PointerTypeInt();
   // We do not handle the overflow of |current_id_| as it should be very rare.
   PointerId mapped_id = current_id_++;
@@ -549,7 +564,7 @@ bool PointerEventFactory::Remove(const PointerId mapped_id) {
   pointer_incoming_id_mapping_.erase(p);
   RemoveLastPosition(mapped_id);
   if (primary_id_[type_int] == mapped_id)
-    primary_id_[type_int] = PointerEventFactory::kInvalidId;
+    primary_id_[type_int] = kInvalidId;
   id_count_[type_int]--;
   return true;
 }
@@ -594,8 +609,7 @@ bool PointerEventFactory::IsPrimary(
     return true;
 
   PointerId pointer_id = GetPointerEventId(properties);
-  return (pointer_id != PointerEventFactory::kInvalidId &&
-          IsPrimary(pointer_id));
+  return (pointer_id != kInvalidId && IsPrimary(pointer_id));
 }
 
 bool PointerEventFactory::IsActiveButtonsState(
@@ -618,7 +632,7 @@ PointerId PointerEventFactory::GetPointerEventId(
   IncomingId id(properties.pointer_type, properties.id);
   if (pointer_incoming_id_mapping_.Contains(id))
     return pointer_incoming_id_mapping_.at(id);
-  return PointerEventFactory::kInvalidId;
+  return kInvalidId;
 }
 
 }  // namespace blink
