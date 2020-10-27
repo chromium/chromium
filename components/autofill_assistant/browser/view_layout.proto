@@ -54,6 +54,7 @@ message ClientDimensionProto {
     float width_factor = 2;
     // Factor to multiply with the client's total height.
     float height_factor = 3;
+    int32 size_in_pixel = 4;
   }
 }
 

@@ -444,7 +444,7 @@ public class AutofillAssistantOverlayIntegrationTest {
     public void testShowImageOnOverlay() throws Exception {
         String redDotBase64Url =
                 "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-        int imageSize = 50;
+        int imageSizeInPixel = 50;
         ClientSettingsProto clientSettings =
                 (ClientSettingsProto) ClientSettingsProto.newBuilder()
                         .setOverlayImage(
@@ -453,11 +453,15 @@ public class AutofillAssistantOverlayIntegrationTest {
                                                 BitmapDrawableProto.newBuilder()
                                                         .setUrl(redDotBase64Url)
                                                         .setWidth(ClientDimensionProto.newBuilder()
-                                                                          .setDp(imageSize))
-                                                        .setHeight(ClientDimensionProto.newBuilder()
-                                                                           .setDp(imageSize))))
+                                                                          .setSizeInPixel(
+                                                                                  imageSizeInPixel))
+                                                        .setHeight(
+                                                                ClientDimensionProto.newBuilder()
+                                                                        .setSizeInPixel(
+                                                                                imageSizeInPixel))))
                                         .setImageSize(
-                                                ClientDimensionProto.newBuilder().setDp(imageSize)))
+                                                ClientDimensionProto.newBuilder().setSizeInPixel(
+                                                        imageSizeInPixel)))
                         .build();
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
@@ -483,7 +487,7 @@ public class AutofillAssistantOverlayIntegrationTest {
                                         .getRootUiCoordinatorForTesting()
                                         .getBrowserControlsManager()
                                         .getContentOffset();
-        int image_center_y = yTopContentOffset + imageSize / 2;
+        int image_center_y = yTopContentOffset + imageSizeInPixel / 2;
 
         // Testing that central pixel of overlay image is different from (0,0) pixel
         waitUntil(()

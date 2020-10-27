@@ -107,15 +107,14 @@ base::Optional<int> GetPixelSize(
   switch (proto.size_case()) {
     case ClientDimensionProto::kDp:
       return Java_AssistantDimension_getPixelSizeDp(env, jcontext, proto.dp());
-      break;
     case ClientDimensionProto::kWidthFactor:
       return Java_AssistantDimension_getPixelSizeWidthFactor(
           env, jcontext, proto.width_factor());
-      break;
     case ClientDimensionProto::kHeightFactor:
       return Java_AssistantDimension_getPixelSizeHeightFactor(
           env, jcontext, proto.height_factor());
-      break;
+    case ClientDimensionProto::kSizeInPixel:
+      return proto.size_in_pixel();
     case ClientDimensionProto::SIZE_NOT_SET:
       return base::nullopt;
   }
