@@ -7,6 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
+      "name": "LayoutImage (positioned) IMG",
+      "position": [10, 10],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000"
+    },
+    {
       "name": "HorizontalScrollbar",
       "position": [0, 585],
       "bounds": [785, 15]
@@ -21,13 +28,6 @@
       "position": [785, 585],
       "bounds": [15, 15],
       "contentsOpaque": true
-    },
-    {
-      "name": "LayoutImage (positioned) IMG",
-      "position": [10, 10],
-      "bounds": [50, 50],
-      "contentsOpaque": true,
-      "backgroundColor": "#000000"
     }
   ]
 }

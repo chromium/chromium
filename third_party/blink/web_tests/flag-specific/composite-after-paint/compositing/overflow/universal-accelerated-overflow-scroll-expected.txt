@@ -7,11 +7,6 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow DIV id='container-absolute-grandchildren-not-contained' class='overflow'",
       "position": [2, 2],
       "bounds": [85, 85],
@@ -483,6 +478,11 @@
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 24
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

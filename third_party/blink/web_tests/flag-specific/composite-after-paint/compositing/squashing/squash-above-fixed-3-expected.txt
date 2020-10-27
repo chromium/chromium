@@ -12,11 +12,6 @@ CASE 1, original layer tree:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='backgroundFixed'",
       "bounds": [400, 400],
       "contentsOpaque": true,
@@ -42,6 +37,11 @@ CASE 1, original layer tree:
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FF00"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -66,11 +66,6 @@ CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "transform": 1
-    },
-    {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='backgroundFixed'",
@@ -100,6 +95,11 @@ CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll
       "contentsOpaque": true,
       "backgroundColor": "#00FF00",
       "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -135,11 +135,6 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
       "transform": 1
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='backgroundFixed'",
       "bounds": [400, 400],
       "contentsOpaque": true,
@@ -161,6 +156,11 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

@@ -52,10 +52,6 @@ crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Fail
 
 compositing/gestures/gesture-tapHighlight-composited-img.html [ Pass Failure ]
 
-# CompositeAfterPaint positions and scales root scrollbars incorrectly when
-# a page scale factor is applied.
-crbug.com/1106550 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html [ Failure ]
-
 # Need to force the video to be composited in this case, or change pre-CAP
 # to match CAP behavior.
 crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure ]

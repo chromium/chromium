@@ -42,20 +42,20 @@ Case: Displaying movie
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutVideo VIDEO",
       "bounds": [352, 288],
       "transform": 1
     },
     {
-      "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-scrubbing'",
+      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-scrubbing'",
       "bounds": [352, 288],
       "drawsContent": false,
       "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

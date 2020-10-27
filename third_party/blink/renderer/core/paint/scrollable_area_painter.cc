@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -143,7 +144,7 @@ void ScrollableAreaPainter::PaintOverflowControls(
 
   // Overlay overflow controls are painted in the dedicated paint phase, and
   // normal overflow controls are painted in the background paint phase.
-  if (GetScrollableArea().HasOverlayOverflowControls()) {
+  if (GetScrollableArea().ShouldOverflowControlsPaintAsOverlay()) {
     if (paint_info.phase != PaintPhase::kOverlayOverflowControls)
       return;
   } else if (!ShouldPaintSelfBlockBackground(paint_info.phase)) {
@@ -155,17 +156,36 @@ void ScrollableAreaPainter::PaintOverflowControls(
   if (!fragment)
     return;
 
-  base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
+  const ClipPaintPropertyNode* clip = nullptr;
   const auto* properties = fragment->PaintProperties();
   // TODO(crbug.com/849278): Remove either the DCHECK or the if condition
   // when we figure out in what cases that the box doesn't have properties.
   DCHECK(properties);
-  if (properties) {
-    if (const auto* clip = properties->OverflowControlsClip()) {
-      scoped_paint_chunk_properties.emplace(context.GetPaintController(), *clip,
-                                            box,
-                                            DisplayItem::kOverflowControls);
-    }
+  if (properties)
+    clip = properties->OverflowControlsClip();
+
+  const TransformPaintPropertyNode* transform = nullptr;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+      box.IsGlobalRootScroller()) {
+    LocalFrameView* frame_view = box.GetFrameView();
+    DCHECK(frame_view);
+    const auto* page = frame_view->GetPage();
+    const auto& viewport = page->GetVisualViewport();
+    transform = viewport.GetOverscrollElasticityTransformNode();
+  }
+
+  base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
+  if (clip || transform) {
+    PaintController& paint_controller = context.GetPaintController();
+    PropertyTreeStateOrAlias modified_properties(
+        paint_controller.CurrentPaintChunkProperties());
+    if (clip)
+      modified_properties.SetClip(*clip);
+    if (transform)
+      modified_properties.SetTransform(*transform);
+
+    scoped_paint_chunk_properties.emplace(paint_controller, modified_properties,
+                                          box, DisplayItem::kOverflowControls);
   }
 
   if (GetScrollableArea().HorizontalScrollbar() &&

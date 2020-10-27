@@ -8,11 +8,6 @@
       "transform": 1
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='test'",
       "position": [50, 50],
       "bounds": [100, 100],
@@ -22,6 +17,11 @@
         [0, 0, 100, 100]
       ],
       "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

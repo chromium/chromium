@@ -7,11 +7,6 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (positioned) DIV class='clipping-container'",
       "position": [100, 100],
       "bounds": [100, 100],
@@ -38,6 +33,11 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00",
       "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

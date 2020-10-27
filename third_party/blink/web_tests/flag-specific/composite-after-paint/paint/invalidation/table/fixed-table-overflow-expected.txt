@@ -12,11 +12,6 @@
       "transform": 1
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (positioned) TD id='moveMe' class='fixed'",
       "position": [-100, 0],
       "bounds": [200, 100],
@@ -26,6 +21,11 @@
         [0, 0, 200, 100]
       ],
       "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

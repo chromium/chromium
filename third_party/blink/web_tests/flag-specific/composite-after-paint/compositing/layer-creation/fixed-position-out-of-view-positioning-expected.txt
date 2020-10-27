@@ -14,6 +14,14 @@ BEFORE:
       "backgroundColor": "#FFFFFF"
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
+      "position": [0, 100],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 1
+    },
+    {
       "name": "HorizontalScrollbar",
       "position": [0, 585],
       "bounds": [785, 15]
@@ -28,14 +36,6 @@ BEFORE:
       "position": [785, 585],
       "bounds": [15, 15],
       "contentsOpaque": true
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
-      "position": [0, 100],
-      "bounds": [50, 50],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
     }
   ],
   "transforms": [
@@ -62,6 +62,14 @@ AFTER:
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
+      "position": [0, 100],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 2
+    },
+    {
       "name": "HorizontalScrollbar",
       "position": [0, 585],
       "bounds": [785, 15]
@@ -76,14 +84,6 @@ AFTER:
       "position": [785, 585],
       "bounds": [15, 15],
       "contentsOpaque": true
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
-      "position": [0, 100],
-      "bounds": [50, 50],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 2
     }
   ],
   "transforms": [

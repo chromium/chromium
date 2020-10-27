@@ -10,15 +10,15 @@
       ]
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow DIV id='background'",
       "position": [8, 428],
       "bounds": [769, 300],
       "drawsContent": false
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ]
 }

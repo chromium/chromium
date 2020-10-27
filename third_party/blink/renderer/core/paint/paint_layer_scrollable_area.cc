@@ -1876,6 +1876,19 @@ bool PaintLayerScrollableArea::NeedsScrollCorner() const {
   return HasScrollbar() && !HasOverlayScrollbars();
 }
 
+bool PaintLayerScrollableArea::ShouldOverflowControlsPaintAsOverlay() const {
+  if (HasOverlayOverflowControls())
+    return true;
+
+  // In CAP the global root scrollbars and corner also paint as overlay so that
+  // they appear on top of all content within the viewport. This is important
+  // since these scrollbar's transform parent is the 'overscroll elasticity'
+  // transform node of the visual viewport, i.e. they don't move during elastic
+  // overscroll or on pinch zoom.
+  return (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+          GetLayoutBox() && GetLayoutBox()->IsGlobalRootScroller());
+}
+
 void PaintLayerScrollableArea::PositionOverflowControls() {
   if (!HasOverflowControls())
     return;

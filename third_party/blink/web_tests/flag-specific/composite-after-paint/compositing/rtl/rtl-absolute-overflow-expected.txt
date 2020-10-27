@@ -8,6 +8,13 @@
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='positioned layer'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
       "name": "HorizontalScrollbar",
       "position": [0, 585],
       "bounds": [785, 15]
@@ -22,13 +29,6 @@
       "position": [785, 585],
       "bounds": [15, 15],
       "contentsOpaque": true
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='positioned layer'",
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 2
     }
   ],
   "transforms": [

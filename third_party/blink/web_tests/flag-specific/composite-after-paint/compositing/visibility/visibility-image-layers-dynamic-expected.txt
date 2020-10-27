@@ -8,11 +8,6 @@ Initial
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
@@ -22,6 +17,11 @@ Initial
       "name": "LayoutImage IMG class='visible composited box'",
       "bounds": [100, 100],
       "transform": 3
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -66,11 +66,6 @@ After step 1
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
@@ -85,6 +80,11 @@ After step 1
       "name": "LayoutImage IMG class='visible composited box'",
       "bounds": [100, 100],
       "transform": 4
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -139,11 +139,6 @@ After step 2
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
@@ -169,6 +164,11 @@ After step 2
       "name": "LayoutImage IMG class='visible composited box'",
       "bounds": [100, 100],
       "transform": 6
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

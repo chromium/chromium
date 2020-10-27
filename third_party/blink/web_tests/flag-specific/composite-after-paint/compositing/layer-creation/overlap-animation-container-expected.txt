@@ -8,11 +8,6 @@ Before:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
       "bounds": [100, 100],
       "contentsOpaque": true,
@@ -31,6 +26,11 @@ Before:
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 4
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -85,11 +85,6 @@ After:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
       "bounds": [100, 100],
       "contentsOpaque": true,
@@ -114,6 +109,11 @@ After:
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg'",
       "position": [18, 328],
       "bounds": [174, 464]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

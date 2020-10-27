@@ -7,6 +7,11 @@
       "backgroundColor": "#FFFFFF"
     },
     {
+      "name": "LayoutNGBlockFlow DIV id='targetDiv'",
+      "bounds": [2000, 2000],
+      "transform": 2
+    },
+    {
       "name": "HorizontalScrollbar",
       "position": [0, 585],
       "bounds": [785, 15]
@@ -21,11 +26,6 @@
       "position": [785, 585],
       "bounds": [15, 15],
       "contentsOpaque": true
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV id='targetDiv'",
-      "bounds": [2000, 2000],
-      "transform": 2
     }
   ],
   "transforms": [

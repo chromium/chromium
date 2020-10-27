@@ -7,16 +7,16 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "HorizontalScrollbar",
-      "position": [0, 1170],
-      "bounds": [1600, 30]
-    },
-    {
       "name": "LayoutNGBlockFlow DIV id='composited'",
       "bounds": [3600, 20],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 1170],
+      "bounds": [1600, 30]
     }
   ],
   "transforms": [

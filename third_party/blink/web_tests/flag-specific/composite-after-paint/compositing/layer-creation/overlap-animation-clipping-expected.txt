@@ -7,11 +7,6 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
       "bounds": [100, 100],
       "contentsOpaque": true,
@@ -43,6 +38,11 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='box yellow'",
       "position": [18, 571],
       "bounds": [151, 231]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

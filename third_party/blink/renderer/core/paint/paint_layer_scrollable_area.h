@@ -405,6 +405,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool HasOverlayOverflowControls() const;
   bool NeedsScrollCorner() const;
 
+  bool ShouldOverflowControlsPaintAsOverlay() const;
+
   bool HasOverflow() const {
     return HasHorizontalOverflow() || HasVerticalOverflow();
   }

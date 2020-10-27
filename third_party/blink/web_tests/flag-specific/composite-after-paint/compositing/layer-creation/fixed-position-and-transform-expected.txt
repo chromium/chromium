@@ -8,11 +8,6 @@
       "transform": 1
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='indicator'",
       "bounds": [256, 256],
       "contentsOpaque": true,
@@ -24,6 +19,11 @@
       "bounds": [500, 500],
       "contentsOpaque": true,
       "backgroundColor": "#008000"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

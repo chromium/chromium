@@ -8,11 +8,6 @@ In all iframes, the green fixed-position element should not be composited.
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutNGBlockFlow (positioned) DIV class='composited box'",
       "bounds": [300, 100],
       "contentsOpaque": true,
@@ -28,6 +23,11 @@ In all iframes, the green fixed-position element should not be composited.
       "name": "LayoutIFrame (positioned) IFRAME id='iframe3'",
       "position": [10, 380],
       "bounds": [154, 154]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

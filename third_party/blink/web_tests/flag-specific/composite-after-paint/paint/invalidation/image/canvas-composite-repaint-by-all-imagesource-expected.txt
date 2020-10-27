@@ -53,20 +53,20 @@
       ]
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
       "name": "LayoutVideo VIDEO id='video'",
       "bounds": [150, 60],
       "transform": 1
     },
     {
-      "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-stopped'",
+      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-stopped'",
       "bounds": [150, 60],
       "drawsContent": false,
       "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
