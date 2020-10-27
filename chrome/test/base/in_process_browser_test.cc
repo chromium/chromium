@@ -31,6 +31,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -220,6 +221,10 @@ void InProcessBrowserTest::Initialize() {
 #if defined(OS_MAC)
   bundle_swizzler_ = std::make_unique<ScopedBundleSwizzlerMac>();
 #endif
+
+  // Preconnecting can cause non-deterministic test behavior especially with
+  // various test fixtures that mock servers.
+  scoped_feature_list_.InitAndDisableFeature(features::kPreconnectToSearch);
 }
 
 InProcessBrowserTest::~InProcessBrowserTest() = default;
