@@ -23,15 +23,16 @@
 
 namespace blink {
 
-static bool SetupNonScalingStrokeContext(
-    AffineTransform& stroke_transform,
+static base::Optional<AffineTransform> SetupNonScalingStrokeContext(
+    const LayoutSVGShape& layout_svg_shape,
     GraphicsContextStateSaver& state_saver) {
-  if (!stroke_transform.IsInvertible())
-    return false;
-
+  const AffineTransform& non_scaling_stroke_transform =
+      layout_svg_shape.NonScalingStrokeTransform();
+  if (!non_scaling_stroke_transform.IsInvertible())
+    return base::nullopt;
   state_saver.Save();
-  state_saver.Context().ConcatCTM(stroke_transform.Inverse());
-  return true;
+  state_saver.Context().ConcatCTM(non_scaling_stroke_transform.Inverse());
+  return non_scaling_stroke_transform;
 }
 
 static SkPathFillType FillRuleFromStyle(const PaintInfo& paint_info,
@@ -85,27 +86,23 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
           case PT_STROKE:
             if (svg_style.HasVisibleStroke()) {
               GraphicsContextStateSaver state_saver(paint_info.context, false);
-              AffineTransform non_scaling_transform;
-              const AffineTransform* additional_paint_server_transform =
-                  nullptr;
+              base::Optional<AffineTransform> non_scaling_transform;
 
               if (layout_svg_shape_.HasNonScalingStroke()) {
-                non_scaling_transform =
-                    layout_svg_shape_.NonScalingStrokeTransform();
-                if (!SetupNonScalingStrokeContext(non_scaling_transform,
-                                                  state_saver))
-                  return;
-
                 // Non-scaling stroke needs to reset the transform back to the
                 // host transform.
-                additional_paint_server_transform = &non_scaling_transform;
+                non_scaling_transform = SetupNonScalingStrokeContext(
+                    layout_svg_shape_, state_saver);
+                if (!non_scaling_transform)
+                  return;
               }
 
               PaintFlags stroke_flags;
               if (!SVGObjectPainter(layout_svg_shape_)
-                       .PreparePaint(paint_info, layout_svg_shape_.StyleRef(),
-                                     kApplyToStrokeMode, stroke_flags,
-                                     additional_paint_server_transform))
+                       .PreparePaint(
+                           paint_info, layout_svg_shape_.StyleRef(),
+                           kApplyToStrokeMode, stroke_flags,
+                           base::OptionalOrNullptr(non_scaling_transform)))
                 break;
               stroke_flags.setAntiAlias(should_anti_alias);
 
