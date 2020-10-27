@@ -171,8 +171,7 @@ TEST_F(CastContentGestureHandlerTest, VerifyNotFarEnoughRightIsNotBack) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*delegate_, GestureProgress(Eq(GestureType::GO_BACK),
                                           Eq(kOngoingBackGesturePoint1)));
-  EXPECT_CALL(*delegate_, CancelGesture(Eq(GestureType::GO_BACK),
-                                        Eq(kOngoingBackGesturePoint2)));
+  EXPECT_CALL(*delegate_, CancelGesture(Eq(GestureType::GO_BACK)));
   dispatcher_.CanHandleSwipe(CastSideSwipeOrigin::LEFT);
   dispatcher_.HandleSideSwipe(CastSideSwipeEvent::BEGIN,
                               CastSideSwipeOrigin::LEFT, kLeftSidePoint);
@@ -194,8 +193,7 @@ TEST_F(CastContentGestureHandlerTest, VerifyNotFarEnoughRightAndEndIsNotBack) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*delegate_, GestureProgress(Eq(GestureType::GO_BACK),
                                           Eq(kOngoingBackGesturePoint1)));
-  EXPECT_CALL(*delegate_, CancelGesture(Eq(GestureType::GO_BACK),
-                                        Eq(kOngoingBackGesturePoint2)));
+  EXPECT_CALL(*delegate_, CancelGesture(Eq(GestureType::GO_BACK)));
   dispatcher_.CanHandleSwipe(CastSideSwipeOrigin::LEFT);
   dispatcher_.HandleSideSwipe(CastSideSwipeEvent::BEGIN,
                               CastSideSwipeOrigin::LEFT, kLeftSidePoint);

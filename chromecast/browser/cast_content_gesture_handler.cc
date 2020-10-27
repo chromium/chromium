@@ -93,7 +93,7 @@ void CastContentGestureHandler::HandleSideSwipe(
       if (gesture_type == GestureType::GO_BACK &&
           touch_location.x() < back_horizontal_threshold_) {
         DVLOG(1) << "swipe gesture cancelled";
-        delegate_->CancelGesture(GestureType::GO_BACK, touch_location);
+        delegate_->CancelGesture(GestureType::GO_BACK);
         return;
       }
       delegate_->ConsumeGesture(gesture_type, base::DoNothing());

@@ -22,9 +22,7 @@ class MockCastContentWindowDelegate
   MOCK_METHOD2(ConsumeGesture,
                void(GestureType gesture_type,
                     base::RepeatingCallback<void(bool)> handled_callback));
-  MOCK_METHOD2(CancelGesture,
-               void(GestureType gesture_type,
-                    const gfx::Point& touch_location));
+  MOCK_METHOD1(CancelGesture, void(GestureType gesture_type));
   MOCK_METHOD2(GestureProgress,
                void(GestureType gesture_type,
                     const gfx::Point& touch_location));
