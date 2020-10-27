@@ -4,6 +4,8 @@
 
 /** @fileoverview Assertion helper functions wrapping the chaijs API. */
 
+import './chai.js';
+
 /**
  * @param {boolean} value The value to check.
  * @param {string=} opt_message Additional error message.
@@ -127,4 +129,13 @@ export function assertThrows(
   chai.assert.throws(
       testFunction,
       /** @type{string} */ (opt_expected_or_constructor), opt_message);
+}
+
+/**
+ * Verifies that the contents of the expected and observed arrays match.
+ * @param {!Array} expected The expected result.
+ * @param {!Array} actual The actual result.
+ */
+export function assertArrayEquals(expected, actual) {
+  assertDeepEquals(expected, actual);
 }

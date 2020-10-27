@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/js/cr.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
@@ -22,4 +23,21 @@ js_modulizer("modulize") {
   ]
 
   namespace_rewrites = cr_namespace_rewrites
+}
+
+js_library("array_data_model_test.m") {
+  sources = [
+    "$root_gen_dir/chrome/test/data/webui/js/cr/ui/array_data_model_test.m.js",
+  ]
+  deps = [ "//ui/webui/resources/js/cr/ui:array_data_model.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_type_check("closure_compile") {
+  uses_js_modules = true
+
+  deps = [
+    ":array_data_model_test.m",
+    "../../..:chai_assert",
+  ]
 }

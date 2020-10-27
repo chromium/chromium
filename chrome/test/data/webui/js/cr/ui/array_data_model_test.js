@@ -4,16 +4,17 @@
 
 // clang-format off
 // #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// #import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
 // clang-format on
 
-/* #export */ function testSlice() {
+function testSlice() {
   var m = new cr.ui.ArrayDataModel([0, 1, 2]);
   assertArrayEquals([0, 1, 2], m.slice());
   assertArrayEquals([1, 2], m.slice(1));
   assertArrayEquals([1], m.slice(1, 2));
 }
 
-/* #export */ function testPush() {
+function testPush() {
   var m = new cr.ui.ArrayDataModel([0, 1, 2]);
 
   var count = 0;
@@ -31,7 +32,7 @@
   assertEquals(1, count, 'The splice event should only fire once');
 }
 
-/* #export */ function testSplice() {
+function testSplice() {
   function compare(array, args) {
     var m = new cr.ui.ArrayDataModel(array.slice());
     var expected = array.slice();
@@ -50,7 +51,7 @@
   compare([1, 2, 3], [5, 3, 1, 2, 3]);
 }
 
-/* #export */ function testPermutation() {
+function testPermutation() {
   function doTest(sourceArray, spliceArgs) {
     var m = new cr.ui.ArrayDataModel(sourceArray.slice());
     var permutation;
@@ -77,7 +78,7 @@
   doTest([1, 2, 3], [0, 3, 1, 2, 3]);
 }
 
-/* #export */ function testUpdateIndexes() {
+function testUpdateIndexes() {
   var m = new cr.ui.ArrayDataModel([1, 2, 3]);
   var changedIndexes = [];
   m.addEventListener('change', function(event) {
@@ -87,7 +88,7 @@
   assertArrayEquals([0, 1, 2], changedIndexes);
 }
 
-/* #export */ function testReplaceItem() {
+function testReplaceItem() {
   var m = new cr.ui.ArrayDataModel([1, 2, 3]);
   var permutation = null;
   var changeIndex;
@@ -102,9 +103,11 @@
   assertEquals(1, changeIndex);
 }
 
-window.testSlice = testSlice;
-window.testPush = testPush;
-window.testSplice = testSplice;
-window.testPermutation = testPermutation;
-window.testUpdateIndexes = testUpdateIndexes;
-window.testReplaceItem = testReplaceItem;
+Object.assign(window, {
+  testSlice,
+  testPush,
+  testSplice,
+  testPermutation,
+  testUpdateIndexes,
+  testReplaceItem,
+});

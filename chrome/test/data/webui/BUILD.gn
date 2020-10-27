@@ -484,6 +484,7 @@ group("closure_compile") {
     "cr_components:closure_compile",
     "cr_elements:closure_compile",
     "inline_login:closure_compile",
+    "js/cr/ui:closure_compile",
     "new_tab_page:closure_compile",
     "print_preview:closure_compile",
     "read_later:closure_compile",
