@@ -36,10 +36,11 @@ class ReportScheduler {
   // The trigger leading to report generation. Values are bitmasks in the
   // |pending_triggers_| bitfield.
   enum ReportTrigger : uint32_t {
-    kTriggerNone = 0,              // No trigger.
-    kTriggerTimer = 1U << 0,       // The periodic timer expired.
-    kTriggerUpdate = 1U << 1,      // An update was detected.
-    kTriggerNewVersion = 1U << 2,  // A new version is running.
+    kTriggerNone = 0,                    // No trigger.
+    kTriggerTimer = 1U << 0,             // The periodic timer expired.
+    kTriggerUpdate = 1U << 1,            // An update was detected.
+    kTriggerNewVersion = 1U << 2,        // A new version is running.
+    kTriggerExtensionRequest = 1U << 3,  // Pending extension requests updated.
   };
 
   using ReportTriggerCallback = base::RepeatingCallback<void(ReportTrigger)>;
@@ -55,11 +56,17 @@ class ReportScheduler {
     void SetReportTriggerCallback(ReportTriggerCallback callback);
 
     virtual PrefService* GetLocalState() = 0;
+
+    // Browser version
     virtual void StartWatchingUpdatesIfNeeded(
         base::Time last_upload,
         base::TimeDelta upload_interval) = 0;
     virtual void StopWatchingUpdates() = 0;
-    virtual void SaveLastUploadVersion() = 0;
+    virtual void OnBrowserVersionUploaded() = 0;
+
+    // Extension request
+    virtual void StopWatchingExtensionRequest() = 0;
+    virtual void OnExtensionRequestUploaded() = 0;
 
    protected:
     ReportTriggerCallback trigger_report_callback_;
@@ -86,6 +93,8 @@ class ReportScheduler {
   void SetReportUploaderForTesting(std::unique_ptr<ReportUploader> uploader);
 
   void OnDMTokenUpdated();
+
+  Delegate* GetDelegateForTesting();
 
  private:
   // Observes CloudReportingEnabled policy.

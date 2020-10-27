@@ -30,7 +30,15 @@ void ReportSchedulerIOS::StopWatchingUpdates() {
   // Not used on iOS because there is no in-app auto-update.
 }
 
-void ReportSchedulerIOS::SaveLastUploadVersion() {
+void ReportSchedulerIOS::OnBrowserVersionUploaded() {
+  // Not used on iOS because there is no in-app auto-update.
+}
+
+void ReportSchedulerIOS::StopWatchingExtensionRequest() {
+  // Not used on iOS because there is no in-app auto-update.
+}
+
+void ReportSchedulerIOS::OnExtensionRequestUploaded() {
   // Not used on iOS because there is no in-app auto-update.
 }
 

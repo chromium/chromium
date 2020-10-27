@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
+#include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -48,10 +49,8 @@ constexpr char kClientId[] = "client_id";
 constexpr base::TimeDelta kDefaultUploadInterval =
     base::TimeDelta::FromHours(24);
 
-#if !defined(OS_CHROMEOS)
 constexpr char kUploadTriggerMetricName[] =
     "Enterprise.CloudReportingUploadTrigger";
-#endif
 
 }  // namespace
 
@@ -180,6 +179,11 @@ class ReportSchedulerTest : public ::testing::Test {
         .WillOnce(WithArgs<0>(
             Invoke(client_, &policy::MockCloudPolicyClient::SetDMToken)));
 #endif
+  }
+
+  void TriggerExtensionRequestReport() {
+    static_cast<ReportSchedulerDesktop*>(scheduler_->GetDelegateForTesting())
+        ->OnExtensionRequest();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -431,6 +435,35 @@ TEST_F(ReportSchedulerTest, OnUpdate) {
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 2, 1);
 }
 
+TEST_F(ReportSchedulerTest, OnUpdateAndPersistentError) {
+  // Pretend that a periodic report was generated recently so that one isn't
+  // kicked off during startup.
+  SetLastUploadInHour(base::TimeDelta::FromHours(1));
+  EXPECT_CALL_SetupRegistration();
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowserVersion, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
+      .WillOnce(RunOnceCallback<1>(ReportUploader::kPersistentError));
+
+  CreateScheduler();
+  g_browser_process->GetBuildState()->SetUpdate(
+      BuildState::UpdateType::kNormalUpdate,
+      base::Version("1" + version_info::GetVersionNumber()), base::nullopt);
+  task_environment_.RunUntilIdle();
+
+  // The timestamp should not have been updated, since a periodic report was not
+  // generated/uploaded.
+  ExpectLastUploadTimestampUpdated(false);
+
+  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 2, 1);
+
+  // The report should be stopped in case of persistent error.
+  g_browser_process->GetBuildState()->SetUpdate(
+      BuildState::UpdateType::kNormalUpdate,
+      base::Version("2" + version_info::GetVersionNumber()), base::nullopt);
+  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 2, 1);
+}
+
 // Tests that a full report is generated and uploaded following a basic report
 // if the timer fires while the basic report is being uploaded.
 TEST_F(ReportSchedulerTest, DeferredTimer) {
@@ -541,6 +574,77 @@ TEST_F(ReportSchedulerTest, OnNewVersionRegularReport) {
   ExpectLastUploadVersion(chrome::kChromeVersion);
 
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 1, 1);
+}
+
+#endif  // !defined(OS_CHROMEOS)
+
+TEST_F(ReportSchedulerTest, OnExtensionRequest) {
+  SetLastUploadInHour(base::TimeDelta::FromHours(1));
+
+  EXPECT_CALL_SetupRegistration();
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kExtensionRequest, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
+      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
+
+  CreateScheduler();
+
+  TriggerExtensionRequestReport();
+
+  task_environment_.RunUntilIdle();
+
+  // The timestamp should not have been updated, since a periodic report was not
+  // generated/uploaded.
+  ExpectLastUploadTimestampUpdated(false);
+
+  histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 4, 1);
+}
+
+#if !defined(OS_CHROMEOS)
+
+TEST_F(ReportSchedulerTest, OnExtensionRequestAndUpdate) {
+  SetLastUploadInHour(base::TimeDelta::FromHours(1));
+
+  ReportUploader::ReportCallback saved_callback;
+  auto new_uploader = std::make_unique<MockReportUploader>();
+
+  EXPECT_CALL_SetupRegistration();
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kExtensionRequest, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowserVersion, _))
+      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
+
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
+      .WillOnce([&saved_callback](ReportUploader::ReportRequests requests,
+                                  ReportUploader::ReportCallback callback) {
+        saved_callback = std::move(callback);
+      });
+
+  CreateScheduler();
+
+  g_browser_process->GetBuildState()->SetUpdate(
+      BuildState::UpdateType::kNormalUpdate,
+      base::Version("1" + version_info::GetVersionNumber()), base::nullopt);
+  TriggerExtensionRequestReport();
+
+  task_environment_.RunUntilIdle();
+
+  // Release the first request and set uploader for the second request.
+  EXPECT_CALL(*new_uploader, SetRequestAndUpload(_, _))
+      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
+  std::move(saved_callback).Run(ReportUploader::kSuccess);
+  uploader_ = new_uploader.get();
+  scheduler_->SetReportUploaderForTesting(std::move(new_uploader));
+
+  task_environment_.RunUntilIdle();
+
+  // The timestamp should not have been updated, since a periodic report was not
+  // generated/uploaded.
+  ExpectLastUploadTimestampUpdated(false);
+
+  histogram_tester_.ExpectTotalCount(kUploadTriggerMetricName, 2);
+  histogram_tester_.ExpectBucketCount(kUploadTriggerMetricName, 2, 1);
+  histogram_tester_.ExpectBucketCount(kUploadTriggerMetricName, 4, 1);
 }
 
 #endif  // !defined(OS_CHROMEOS)

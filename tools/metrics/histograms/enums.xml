@@ -63422,6 +63422,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
   <int value="2" label="kTriggerUpdate">An update was detected</int>
   <int value="3" label="kTriggerNewVersion">A new version is running</int>
+  <int value="4" label="kTriggerExtensionRequest">
+    A new extension request is added
+  </int>
 </enum>
 
 <enum name="RequestAction">

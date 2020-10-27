@@ -72,6 +72,8 @@ void ReportSchedulerDesktop::StartWatchingUpdatesIfNeeded(
     trigger_report_callback_.Run(
         ReportScheduler::ReportTrigger::kTriggerNewVersion);
   }
+
+  // TODO(zmin): Observes extension request update.
 }
 
 void ReportSchedulerDesktop::StopWatchingUpdates() {
@@ -80,11 +82,19 @@ void ReportSchedulerDesktop::StopWatchingUpdates() {
   }
 }
 
-void ReportSchedulerDesktop::SaveLastUploadVersion() {
+void ReportSchedulerDesktop::OnBrowserVersionUploaded() {
   if (ShouldReportUpdates()) {
     // Remember what browser version made this upload.
     GetLocalState()->SetString(kLastUploadVersion, chrome::kChromeVersion);
   }
+}
+
+void ReportSchedulerDesktop::StopWatchingExtensionRequest() {
+  // TODO(zmin): Stop uploading extension requests for all profiles.
+}
+
+void ReportSchedulerDesktop::OnExtensionRequestUploaded() {
+  // TODO(zmin): Request is uploaded, erase all pending uploaded record.
 }
 
 void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
@@ -95,6 +105,13 @@ void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
   if (!trigger_report_callback_.is_null()) {
     trigger_report_callback_.Run(
         ReportScheduler::ReportTrigger::kTriggerUpdate);
+  }
+}
+
+void ReportSchedulerDesktop::OnExtensionRequest() {
+  if (!trigger_report_callback_.is_null()) {
+    trigger_report_callback_.Run(
+        ReportScheduler::ReportTrigger::kTriggerExtensionRequest);
   }
 }
 
