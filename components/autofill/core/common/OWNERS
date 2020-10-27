@@ -1,5 +1,3 @@
-per-file *password*=dvadym@chromium.org
-per-file *password*=kolos@chromium.org
-per-file *password*=vasilii@chromium.org
+per-file *password*=file://components/password_manager/OWNERS
 
 per-file autofill_payments_features.*=file://components/autofill/core/browser/payments/OWNERS
