@@ -21933,6 +21933,7 @@ Called by update_document_policy_enum.py.-->
   <int value="788" label="MediaRecommendationsEnabled"/>
   <int value="789" label="DeviceFamilyLinkAccountsAllowed"/>
   <int value="790" label="EduCoexistenceToSVersion"/>
+  <int value="801" label="TosDialogBehavior"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

@@ -616,7 +616,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if defined(OS_ANDROID)
   ::android::RegisterPrefs(registry);
 
-  registry->RegisterBooleanPref(first_run::kCCTToSDialogEnabled, true);
+  registry->RegisterIntegerPref(first_run::kTosDialogBehavior, 0);
 #else  // defined(OS_ANDROID)
   enterprise_connectors::RegisterLocalStatePrefs(registry);
   enterprise_reporting::RegisterLocalStatePrefs(registry);

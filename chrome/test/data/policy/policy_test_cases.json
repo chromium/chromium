@@ -8083,11 +8083,14 @@
     ]
   },
   "CCTToSDialogEnabled": {
+    "note": "This policy has been removed. See https://crbug.com/1141198"
+  },
+  "TosDialogBehavior": {
     "os": ["android"],
     "policy_pref_mapping_test": [
       {
-        "policies": { "CCTToSDialogEnabled": false },
-        "prefs": { "policy.cct_tos_dialog_enabled": { "local_state": true } }
+        "policies": { "TosDialogBehavior": 2 },
+        "prefs": { "policy.cct_tos_dialog_behavior": { "local_state": true } }
       }
     ]
   },

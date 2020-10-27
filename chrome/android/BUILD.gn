@@ -1188,6 +1188,8 @@ android_library("chrome_test_java") {
 
   deps += feed_test_deps
 
+  srcjar_deps = [ "//chrome/browser:tos_dialog_behavior_generated_enum" ]
+
   data = [
     "//chrome/test/data/android/",
     "//chrome/test/data/autofill/",

@@ -140,10 +140,10 @@ public class FirstRunIntegrationTest {
         EnterpriseInfo.setInstanceForTest(mEnterpriseInfo);
     }
 
-    private void setCctTosDialogEnabledPolicy(boolean enabled) {
+    private void skipTosDialogViaPolicy() {
         setHasAppRestrictionForMock();
         Bundle restrictions = new Bundle();
-        restrictions.putBoolean("CCTToSDialogEnabled", enabled);
+        restrictions.putInt("TosDialogBehavior", TosDialogBehavior.SKIP);
         AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
         setDeviceOwnedForMock();
     }
@@ -204,7 +204,7 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testDefaultSearchEngine_WithCctPolicy() throws Exception {
-        setCctTosDialogEnabledPolicy(false);
+        skipTosDialogViaPolicy();
 
         runSearchEnginePromptTest(LocaleManager.SearchEnginePromoType.SHOW_EXISTING);
     }
@@ -287,7 +287,7 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     public void testExitFirstRunWithPolicy() {
-        setCctTosDialogEnabledPolicy(false);
+        skipTosDialogViaPolicy();
 
         Intent intent =
                 CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "https://test.com");
@@ -312,7 +312,7 @@ public class FirstRunIntegrationTest {
     // TODO(https://crbug.com/1111490): Change this test case when policy can handle cases when ToS
     // is accepted in Browser App.
     public void testSkipTosPage_WithCctPolicy() throws Exception {
-        setCctTosDialogEnabledPolicy(false);
+        skipTosDialogViaPolicy();
         FirstRunStatus.setSkipWelcomePage(true);
 
         Intent intent =

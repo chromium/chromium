@@ -23208,17 +23208,20 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['skym@chromium.org', 'wenyufu@chromium.org', 'twellington@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['android:86-'],
+      'supported_on': ['android:86-86'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
         'platform_only': True,
       },
+      'deprecated': True,
       'example_value': True,
       'id': 760,
       'caption': 'Enable ToS during first-run for CCT',
       'tags': [],
-      'desc': '''By default the Terms of Service are shown when CCT is first-run. Setting this policy to Disabled will cause the Terms of Service dialog to not appear during the first-run-experience or subsequent runs. Setting this policy to Enabled or leaving it unset will cause the Terms of Service dialog to appear during the first-run-experience. The other caveats are:
+      'desc': '''This policy is deprecated, please use the <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME">ToSDialogBehavior</ph> policy instead.
+
+      By default the Terms of Service are shown when CCT is first-run. Setting this policy to Disabled will cause the Terms of Service dialog to not appear during the first-run-experience or subsequent runs. Setting this policy to Enabled or leaving it unset will cause the Terms of Service dialog to appear during the first-run-experience. The other caveats are:
 
       - This policy only works on fully managed Android devices that can be configured by Unified Endpoint Management vendors.
 
@@ -23229,6 +23232,53 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       - If this policy is Disabled the browser will have limited functionality.
 
       - If this policy is Disabled admins must communicate this to end users of the device.''',
+    },
+    {
+      'name': 'TosDialogBehavior',
+      'owners': ['skym@chromium.org', 'wenyufu@chromium.org', 'twellington@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 0, 1, 2],
+      },
+      'items': [
+        {
+          'name': 'Unset',
+          'value': 0,
+          'caption': '''Use default browser behavior, shows the ToS and waits for the user to accept.''',
+        },
+        {
+          'name': 'StandardTosDialog',
+          'value': 1,
+          'caption': '''Use default browser behavior, shows the ToS and waits for the user to accept.''',
+        },
+        {
+          'name': 'SkipTosDialog',
+          'value': 2,
+          'caption': '''Automatically skips ToS and loads the browser.''',
+        }
+      ],
+      'supported_on': ['android:87-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+        'platform_only': True,
+      },
+      'example_value': 2,
+      'id': 801,
+      'caption': 'Configuring the ToS behavior during first-run for CCT',
+      'tags': [],
+      'desc': '''By default the Terms of Service are shown when CCT is first-run. Setting this policy to <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> will cause the Terms of Service dialog to not appear during the first-run-experience or subsequent runs. Setting this policy to <ph name="STANDARD_TOS_DIALOG">StandardTosDialog</ph> or leaving it unset will cause the Terms of Service dialog to appear during the first-run-experience. The other caveats are:
+
+      - This policy only works on fully managed Android devices that can be configured by Unified Endpoint Management vendors.
+
+      - If this policy is <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> the BrowserSignin policy will have no effect.
+
+      - If this policy is <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> metrics​ will not be sent to the server.
+
+      - If this policy is <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> the browser will have limited functionality.
+
+      - If this policy is <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> admins must communicate this to end users of the device.''',
     },
     {
       'name': 'CloudPrintWarningsSuppressed',
@@ -24438,7 +24488,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
-  'highest_id_currently_used': 790,
+  'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800],
+  'highest_id_currently_used': 801,
   'highest_atomic_group_id_currently_used': 40
 }
