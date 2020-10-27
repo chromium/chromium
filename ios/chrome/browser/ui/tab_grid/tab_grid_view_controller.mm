@@ -305,9 +305,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                    : gridViewController.selectedCellVisible;
 }
 
-- (GridTransitionLayout*)transitionLayout {
+- (GridTransitionLayout*)transitionLayout:(TabGridPage)activePage {
   GridViewController* gridViewController =
-      [self gridViewControllerForPage:self.activePage];
+      [self gridViewControllerForPage:activePage];
   if (!gridViewController)
     return nil;
 

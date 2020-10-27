@@ -183,10 +183,16 @@
   // If a BVC is currently being presented, dismiss it.  This will trigger any
   // necessary animations.
   if (self.bvcContainer) {
+    [self.baseViewController contentWillAppearAnimated:animated];
     // This is done with a dispatch to make sure that the view isn't added to
     // the view hierarchy right away, as it is not the expectations of the
     // API.
-    [self.baseViewController contentWillAppearAnimated:animated];
+    // Store the currentActivePage at this point in code, to be used during
+    // execution of the dispatched block to get the transition from Browser to
+    // Tab Grid. That is because in some instances the active page might change
+    // before the block gets executed, for example when closing the last tab in
+    // incognito (crbug.com/1136882).
+    TabGridPage currentActivePage = self.baseViewController.activePage;
     dispatch_async(dispatch_get_main_queue(), ^{
       self.baseViewController.childViewControllerForStatusBarStyle = nil;
 
@@ -196,6 +202,7 @@
       [self.transitionHandler
           transitionFromBrowser:self.bvcContainer
                       toTabGrid:self.baseViewController
+                     activePage:currentActivePage
                  withCompletion:^{
                    self.bvcContainer = nil;
                    [self.baseViewController contentDidAppear];
@@ -258,11 +265,13 @@
   self.transitionHandler = [[TabGridTransitionHandler alloc]
       initWithLayoutProvider:self.baseViewController];
   self.transitionHandler.animationDisabled = !animated;
-  [self.transitionHandler transitionFromTabGrid:self.baseViewController
-                                      toBrowser:self.bvcContainer
-                                 withCompletion:^{
-                                   extendedCompletion();
-                                 }];
+  [self.transitionHandler
+      transitionFromTabGrid:self.baseViewController
+                  toBrowser:self.bvcContainer
+                 activePage:self.baseViewController.activePage
+             withCompletion:^{
+               extendedCompletion();
+             }];
 }
 
 #pragma mark - ChromeCoordinator

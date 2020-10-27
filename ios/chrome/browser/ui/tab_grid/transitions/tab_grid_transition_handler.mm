@@ -42,8 +42,8 @@ const CGFloat kReducedMotionDuration = 0.25;
 
 - (void)transitionFromBrowser:(UIViewController*)browser
                     toTabGrid:(UIViewController*)tabGrid
+                   activePage:(TabGridPage)activePage
                withCompletion:(void (^)(void))completion {
-
   [browser willMoveToParentViewController:nil];
 
   if (UIAccessibilityIsReduceMotionEnabled()) {
@@ -60,7 +60,8 @@ const CGFloat kReducedMotionDuration = 0.25;
 
   CGFloat duration = self.animationDisabled ? 0 : kBrowserToGridDuration;
   self.animation = [[GridTransitionAnimation alloc]
-      initWithLayout:[self transitionLayoutForTabInViewController:browser]
+      initWithLayout:[self transitionLayoutForTabInViewController:browser
+                                                       activePage:activePage]
             duration:duration
            direction:GridAnimationDirectionContracting];
 
@@ -94,6 +95,7 @@ const CGFloat kReducedMotionDuration = 0.25;
 
 - (void)transitionFromTabGrid:(UIViewController*)tabGrid
                     toBrowser:(UIViewController*)browser
+                   activePage:(TabGridPage)activePage
                withCompletion:(void (^)(void))completion {
   [tabGrid addChildViewController:browser];
 
@@ -127,7 +129,8 @@ const CGFloat kReducedMotionDuration = 0.25;
 
   CGFloat duration = self.animationDisabled ? 0 : kGridToBrowserDuration;
   self.animation = [[GridTransitionAnimation alloc]
-      initWithLayout:[self transitionLayoutForTabInViewController:browser]
+      initWithLayout:[self transitionLayoutForTabInViewController:browser
+                                                       activePage:activePage]
             duration:duration
            direction:GridAnimationDirectionExpanding];
 
@@ -160,10 +163,13 @@ const CGFloat kReducedMotionDuration = 0.25;
 
 #pragma mark - Private
 
-// Returns the transition layout based on the |browser|.
+// Returns the transition layout for the |activePage|, based on the |browser|.
 - (GridTransitionLayout*)transitionLayoutForTabInViewController:
-    (UIViewController*)viewControllerForTab {
-  GridTransitionLayout* layout = [self.layoutProvider transitionLayout];
+                             (UIViewController*)viewControllerForTab
+                                                     activePage:(TabGridPage)
+                                                                    activePage {
+  GridTransitionLayout* layout =
+      [self.layoutProvider transitionLayout:activePage];
 
   // Get the fram for the snapshotted content of the active tab.
   // Conceptually the transition is dismissing/presenting a tab (a BVC).

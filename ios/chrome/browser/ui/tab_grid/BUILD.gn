@@ -16,6 +16,7 @@ source_set("tab_grid") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":tab_grid_paging",
     ":tab_grid_ui",
     "grid:grid_ui",
     "//base",
@@ -71,6 +72,12 @@ source_set("tab_grid_ui_constants") {
   deps = [ "resources:grid_background_color" ]
 }
 
+source_set("tab_grid_paging") {
+  sources = [ "tab_grid_paging.h" ]
+  deps = [ "//base" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("tab_grid_ui") {
   sources = [
     "tab_grid_bottom_toolbar.h",
@@ -81,7 +88,6 @@ source_set("tab_grid_ui") {
     "tab_grid_new_tab_button.mm",
     "tab_grid_page_control.h",
     "tab_grid_page_control.mm",
-    "tab_grid_paging.h",
     "tab_grid_top_toolbar.h",
     "tab_grid_top_toolbar.mm",
     "tab_grid_view_controller.h",
@@ -92,6 +98,7 @@ source_set("tab_grid_ui") {
 
   deps = [
     ":features",
+    ":tab_grid_paging",
     ":tab_grid_ui_constants",
     "grid:grid_ui",
     "grid:grid_ui_constants",

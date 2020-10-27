@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_grid/tab_grid_paging.h"
+
 @class GridTransitionLayout;
 
 // Objects conforming to this protocol can provide information for the
@@ -17,9 +19,9 @@
 @property(nonatomic, readonly, getter=isSelectedCellVisible)
     BOOL selectedCellVisible;
 
-// Asks the provider for the information on the layout of the grid of cells,
-// used in transition animations.
-- (GridTransitionLayout*)transitionLayout;
+// Asks the provider for the layout of the grid for the |activePage|, used in
+// transition animations.
+- (GridTransitionLayout*)transitionLayout:(TabGridPage)activePage;
 
 // Asks the provider for the view to which the animation views should be added.
 - (UIView*)animationViewsContainer;

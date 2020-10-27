@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_grid/tab_grid_paging.h"
+
 @protocol GridTransitionAnimationLayoutProviding;
 
 // Handler for the transitions between the TabGrid and the Browser.
@@ -22,17 +24,21 @@
 @property(nonatomic, assign) BOOL animationDisabled;
 
 // Starts the transition from the |browser| to the |tabGrid|. Assumes that the
-// |browser| is currently a child ViewController of the |tabGrid|. Calls
-// |completion| when the transition finishes.
+// |browser| is currently a child ViewController of the |tabGrid|. The active
+// page of the |tabGrid| for the transition is |activePage|. Calls |completion|
+// when the transition finishes.
 - (void)transitionFromBrowser:(UIViewController*)browser
                     toTabGrid:(UIViewController*)tabGrid
+                   activePage:(TabGridPage)activePage
                withCompletion:(void (^)(void))completion;
 
 // Starts the transition from |tabGrid| to |browser|. Adds |browser| as a child
-// ViewController of |tabGrid|, covering it. calls |completion| when the
-// transition finishes.
+// ViewController of |tabGrid|, covering it. The active page of the |tabGrid|
+// for the transition is |activePage|. Calls |completion| when the transition
+// finishes.
 - (void)transitionFromTabGrid:(UIViewController*)tabGrid
                     toBrowser:(UIViewController*)browser
+                   activePage:(TabGridPage)activePage
                withCompletion:(void (^)(void))completion;
 
 @end
