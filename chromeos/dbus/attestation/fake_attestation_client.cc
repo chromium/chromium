@@ -57,7 +57,15 @@ FakeAttestationClient::mutable_certificate_request_reply() {
 void FakeAttestationClient::GetKeyInfo(
     const ::attestation::GetKeyInfoRequest& request,
     GetKeyInfoCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::GetKeyInfoReply reply;
+  auto iter = key_info_database_.find(request);
+  if (iter != key_info_database_.end()) {
+    reply = iter->second;
+  } else {
+    reply.set_status(::attestation::STATUS_INVALID_PARAMETER);
+  }
+
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::GetEndorsementInfo(
@@ -228,7 +236,17 @@ void FakeAttestationClient::SignSimpleChallenge(
 void FakeAttestationClient::SetKeyPayload(
     const ::attestation::SetKeyPayloadRequest& request,
     SetKeyPayloadCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::GetKeyInfoRequest get_key_info_request;
+  get_key_info_request.set_username(request.username());
+  get_key_info_request.set_key_label(request.key_label());
+  auto iter = key_info_database_.find(get_key_info_request);
+  ::attestation::SetKeyPayloadReply reply;
+  if (iter == key_info_database_.end()) {
+    reply.set_status(::attestation::STATUS_INVALID_PARAMETER);
+  } else {
+    iter->second.set_payload(request.payload());
+  }
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::DeleteKeys(
@@ -328,6 +346,16 @@ void FakeAttestationClient::set_cached_enrollment_id(const std::string& id) {
 
 void FakeAttestationClient::set_enrollment_id_dbus_error_count(int count) {
   enrollment_id_dbus_error_count_ = count;
+}
+
+::attestation::GetKeyInfoReply* FakeAttestationClient::GetMutableKeyInfoReply(
+    const std::string& username,
+    const std::string& label) {
+  ::attestation::GetKeyInfoRequest request;
+  request.set_username(username);
+  request.set_key_label(label);
+  // If there doesn't exist the entry yet, just create a new one.
+  return &(key_info_database_[request]);
 }
 
 AttestationClient::TestInterface* FakeAttestationClient::GetTestInterface() {

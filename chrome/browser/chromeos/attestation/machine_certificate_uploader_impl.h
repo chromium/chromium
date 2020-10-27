@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/attestation/machine_certificate_uploader.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 
 namespace policy {
@@ -71,19 +72,14 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
 
   // Checks if a certificate has already been uploaded and, if not, upload.
   void CheckIfUploaded(const std::string& pem_certificate_chain,
-                       const std::string& key_payload);
-
-  // Gets the payload associated with the EMK and sends it to |callback|,
-  // or call |on_failure| with no arguments if the payload cannot be obtained.
-  void GetKeyPayload(base::RepeatingCallback<void(const std::string&)> callback,
-                     base::RepeatingCallback<void()> on_failure);
+                       const ::attestation::GetKeyInfoReply& reply);
 
   // Called when a certificate upload operation completes.  On success, |status|
   // will be true.
   void OnUploadComplete(bool status);
 
   // Marks a key as uploaded in the payload proto.
-  void MarkAsUploaded(const std::string& key_payload);
+  void MarkAsUploaded(const ::attestation::GetKeyInfoReply& reply);
 
   // Handles failure of getting a certificate.
   void HandleGetCertificateFailure(AttestationStatus status);

@@ -126,6 +126,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     // Sets the returned status of `GetEnrollmentId()` to be D-Bus error for
     // `count` times to emulate D-Bus late availability.
     virtual void set_enrollment_id_dbus_error_count(int count) = 0;
+
+    // Gets the reply to the key info query as a fake database.
+    virtual ::attestation::GetKeyInfoReply* GetMutableKeyInfoReply(
+        const std::string& username,
+        const std::string& label) = 0;
   };
 
   // Not copyable or movable.

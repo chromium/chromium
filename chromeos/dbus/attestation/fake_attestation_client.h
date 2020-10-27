@@ -8,6 +8,7 @@
 #include "chromeos/dbus/attestation/attestation_client.h"
 
 #include <deque>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -113,6 +114,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   void set_enrollment_id_ignore_cache(const std::string& id) override;
   void set_cached_enrollment_id(const std::string& id) override;
   void set_enrollment_id_dbus_error_count(int count) override;
+  ::attestation::GetKeyInfoReply* GetMutableKeyInfoReply(
+      const std::string& username,
+      const std::string& label) override;
 
   AttestationClient::TestInterface* GetTestInterface() override;
 
@@ -145,6 +149,22 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   std::string enrollment_id_;
   std::string enrollment_id_ignore_cache_;
   int enrollment_id_dbus_error_count_ = 0;
+
+  class GetKeyInfoRequestComparator {
+   public:
+    bool operator()(const ::attestation::GetKeyInfoRequest& r1,
+                    const ::attestation::GetKeyInfoRequest& r2) const {
+      return r1.username() == r2.username() ? r1.key_label() < r2.key_label()
+                                            : r1.username() < r2.username();
+    }
+  };
+  // The fake key info database. std::map is chosen because we don't have to
+  // implement the hash function for the `GetKeyInfoRequest`, which could be
+  // expensive and contributes unreasonable overhead at smaller scale, anyway.
+  std::map<::attestation::GetKeyInfoRequest,
+           ::attestation::GetKeyInfoReply,
+           GetKeyInfoRequestComparator>
+      key_info_database_;
 };
 
 }  // namespace chromeos

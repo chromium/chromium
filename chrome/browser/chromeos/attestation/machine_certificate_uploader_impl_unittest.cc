@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/attestation/machine_certificate_uploader_impl.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
+#include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -38,6 +39,11 @@ const int64_t kCertExpiringSoon = 20;
 const int64_t kCertExpired = -20;
 
 void CertCallbackSuccess(AttestationFlow::CertificateCallback callback) {
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
+      ->set_certificate("fake_cert");
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ATTESTATION_SUCCESS, "fake_cert"));
@@ -67,9 +73,11 @@ void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
 class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
  public:
   MachineCertificateUploaderTest() {
+    AttestationClient::InitializeFake();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     policy_client_.SetDMToken("fake_dm_token");
   }
+  ~MachineCertificateUploaderTest() override { AttestationClient::Shutdown(); }
 
  protected:
   enum MockOptions {
@@ -88,12 +96,20 @@ class MachineCertificateUploaderTest : public ::testing::TestWithParam<bool> {
     if (key_exists) {
       cryptohome_client_.SetTpmAttestationDeviceCertificate(
           kEnterpriseMachineKey, certificate);
+      ::attestation::GetKeyInfoReply* key_info =
+          AttestationClient::Get()->GetTestInterface()->GetMutableKeyInfoReply(
+              /*username=*/"", kEnterpriseMachineKey);
+      key_info->set_certificate(certificate);
     }
 
     // Setup expected key payload queries.
     bool key_uploaded = refresh || (mock_options & MOCK_KEY_UPLOADED);
-    cryptohome_client_.SetTpmAttestationDeviceKeyPayload(
-        kEnterpriseMachineKey, key_uploaded ? CreatePayload() : std::string());
+    if (key_uploaded) {
+      ::attestation::GetKeyInfoReply* key_info =
+          AttestationClient::Get()->GetTestInterface()->GetMutableKeyInfoReply(
+              /*username=*/"", kEnterpriseMachineKey);
+      key_info->set_payload(key_uploaded ? CreatePayload() : std::string());
+    }
 
     // Setup expected key uploads.  Use WillOnce() so StrictMock will trigger an
     // error if our expectations are not met exactly.  We want to verify that
@@ -165,8 +181,10 @@ TEST_P(MachineCertificateUploaderTest, NewCertificate) {
   SetupMocks(MOCK_NEW_KEY, "");
   Run();
   EXPECT_EQ(CreatePayload(),
-            cryptohome_client_.GetTpmAttestationDeviceKeyPayload(
-                kEnterpriseMachineKey));
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
+                ->payload());
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsNotUploaded) {
@@ -176,8 +194,10 @@ TEST_P(MachineCertificateUploaderTest, KeyExistsNotUploaded) {
   SetupMocks(MOCK_KEY_EXISTS, certificate);
   Run();
   EXPECT_EQ(CreatePayload(),
-            cryptohome_client_.GetTpmAttestationDeviceKeyPayload(
-                kEnterpriseMachineKey));
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
+                ->payload());
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsAlreadyUploaded) {
@@ -227,8 +247,10 @@ TEST_P(MachineCertificateUploaderTest, DBusFailureRetry) {
                      base::Unretained(&cryptohome_client_)));
   Run();
   EXPECT_EQ(CreatePayload(),
-            cryptohome_client_.GetTpmAttestationDeviceKeyPayload(
-                kEnterpriseMachineKey));
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
+                ->payload());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

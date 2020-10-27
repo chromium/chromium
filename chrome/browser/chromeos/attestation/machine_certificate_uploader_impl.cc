@@ -19,6 +19,8 @@
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -266,12 +268,13 @@ void MachineCertificateUploaderImpl::CheckCertificateExpiry(
   if (num_certificates == 0) {
     LOG(WARNING) << "Failed to parse certificate chain, cannot check expiry.";
   }
-  // Get the payload and check if the certificate has already been uploaded.
-  GetKeyPayload(
-      base::BindRepeating(&MachineCertificateUploaderImpl::CheckIfUploaded,
-                          weak_factory_.GetWeakPtr(), pem_certificate_chain),
-      base::BindRepeating(&MachineCertificateUploaderImpl::Reschedule,
-                          weak_factory_.GetWeakPtr()));
+  ::attestation::GetKeyInfoRequest request;
+  request.set_username("");
+  request.set_key_label(kEnterpriseMachineKey);
+  AttestationClient::Get()->GetKeyInfo(
+      request,
+      base::BindOnce(&MachineCertificateUploaderImpl::CheckIfUploaded,
+                     weak_factory_.GetWeakPtr(), pem_certificate_chain));
 }
 
 void MachineCertificateUploaderImpl::UploadCertificate(
@@ -284,9 +287,14 @@ void MachineCertificateUploaderImpl::UploadCertificate(
 
 void MachineCertificateUploaderImpl::CheckIfUploaded(
     const std::string& pem_certificate_chain,
-    const std::string& key_payload) {
+    const ::attestation::GetKeyInfoReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    Reschedule();
+    return;
+  }
+
   AttestationKeyPayload payload_pb;
-  if (!key_payload.empty() && payload_pb.ParseFromString(key_payload) &&
+  if (!reply.payload().empty() && payload_pb.ParseFromString(reply.payload()) &&
       payload_pb.is_certificate_uploaded()) {
     // Already uploaded... nothing more to do.
     return;
@@ -294,45 +302,35 @@ void MachineCertificateUploaderImpl::CheckIfUploaded(
   UploadCertificate(pem_certificate_chain);
 }
 
-void MachineCertificateUploaderImpl::GetKeyPayload(
-    base::RepeatingCallback<void(const std::string&)> callback,
-    base::RepeatingCallback<void()> on_failure) {
-  cryptohome_client_->TpmAttestationGetKeyPayload(
-      KEY_DEVICE,
-      cryptohome::AccountIdentifier(),  // Not used.
-      kEnterpriseMachineKey,
-      base::BindOnce(DBusStringCallback, callback, on_failure, FROM_HERE));
-}
-
 void MachineCertificateUploaderImpl::OnUploadComplete(bool status) {
   if (status) {
     VLOG(1) << "Enterprise Machine Certificate uploaded to DMServer.";
-    GetKeyPayload(
-        base::BindRepeating(&MachineCertificateUploaderImpl::MarkAsUploaded,
-                            weak_factory_.GetWeakPtr()),
-        base::DoNothing());
+    ::attestation::GetKeyInfoRequest request;
+    request.set_username("");
+    request.set_key_label(kEnterpriseMachineKey);
+    AttestationClient::Get()->GetKeyInfo(
+        request, base::BindOnce(&MachineCertificateUploaderImpl::MarkAsUploaded,
+                                weak_factory_.GetWeakPtr()));
   }
   std::move(callback_).Run(status);
 }
 
 void MachineCertificateUploaderImpl::MarkAsUploaded(
-    const std::string& key_payload) {
+    const ::attestation::GetKeyInfoReply& reply) {
   AttestationKeyPayload payload_pb;
-  if (!key_payload.empty())
-    payload_pb.ParseFromString(key_payload);
+  if (!reply.payload().empty())
+    payload_pb.ParseFromString(reply.payload());
   payload_pb.set_is_certificate_uploaded(true);
   std::string new_payload;
   if (!payload_pb.SerializeToString(&new_payload)) {
     LOG(WARNING) << "Failed to serialize key payload.";
     return;
   }
-  cryptohome_client_->TpmAttestationSetKeyPayload(
-      KEY_DEVICE,
-      cryptohome::AccountIdentifier(),  // Not used.
-      kEnterpriseMachineKey, new_payload,
-      base::BindOnce(DBusBoolRedirectCallback, base::RepeatingClosure(),
-                     base::RepeatingClosure(), base::RepeatingClosure(),
-                     FROM_HERE));
+  ::attestation::SetKeyPayloadRequest request;
+  request.set_username("");
+  request.set_key_label(kEnterpriseMachineKey);
+  request.set_payload(new_payload);
+  AttestationClient::Get()->SetKeyPayload(request, base::DoNothing());
 }
 
 void MachineCertificateUploaderImpl::HandleGetCertificateFailure(
