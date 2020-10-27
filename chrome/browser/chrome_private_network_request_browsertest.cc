@@ -142,9 +142,25 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
   EXPECT_THAT(GetAddressSpaceFeatureBucketCounts(histogram_tester), IsEmpty());
 }
 
-// TODO(crbug.com/1124358): Verifiy that when a secure context served from the
-// public address space loads a resource from the local network, the correct
-// WebFeature is use-counted.
+// This test verifies that when a secure context served from the public address
+// space loads a resource from the local network, the correct WebFeature is
+// use-counted.
+IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
+                       RecordsAddressSpaceFeatureForFetch) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), PublicSecureURL(*server)));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    fetch("defaultresponse")
+  )"));
+  EXPECT_TRUE(NavigateAndFlushHistograms());
+
+  EXPECT_THAT(
+      GetAddressSpaceFeatureBucketCounts(histogram_tester),
+      ElementsAre(Pair(
+          WebFeature::kAddressSpaceLocalEmbeddedInPublicSecureContext, 1)));
+}
 
 // This test verifies that when a non-secure context served from the public
 // address space loads a resource from the local network, the correct WebFeature
