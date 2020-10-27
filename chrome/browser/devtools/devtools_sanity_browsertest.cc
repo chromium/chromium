@@ -1883,16 +1883,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutoOpenerTest, TestAutoOpenForTabs) {
   observer_->CloseAllSync();
 }
 
-// Flaky timeouts on Win7 Tests (dbg)(1); see https://crbug.com/985255.
-// Flaky timeouts and failures on Win7 (32) Tests; see
-// https://crbug.com/1025411.
-#if defined(OS_WIN)
-#define MAYBE_DevToolsReattachAfterCrashTest \
-  DISABLED_DevToolsReattachAfterCrashTest
-#else
-#define MAYBE_DevToolsReattachAfterCrashTest DevToolsReattachAfterCrashTest
-#endif
-class MAYBE_DevToolsReattachAfterCrashTest : public DevToolsSanityTest {
+class DevToolsReattachAfterCrashTest : public DevToolsSanityTest {
  protected:
   void RunTestWithPanel(const char* panel_name) {
     OpenDevToolsWindow("about:blank", false);
@@ -1910,12 +1901,12 @@ class MAYBE_DevToolsReattachAfterCrashTest : public DevToolsSanityTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_DevToolsReattachAfterCrashTest,
+IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
                        TestReattachAfterCrashOnTimeline) {
   RunTestWithPanel("timeline");
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_DevToolsReattachAfterCrashTest,
+IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
                        TestReattachAfterCrashOnNetwork) {
   RunTestWithPanel("network");
 }
