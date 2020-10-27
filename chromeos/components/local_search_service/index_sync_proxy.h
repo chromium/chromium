@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_PROXY_H_
-#define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_PROXY_H_
+#ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_SYNC_PROXY_H_
+#define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_SYNC_PROXY_H_
 
 #include <vector>
 
@@ -17,14 +17,14 @@ namespace local_search_service {
 
 class IndexSync;
 
-class IndexProxy : public mojom::IndexProxy {
+class IndexSyncProxy : public mojom::IndexSyncProxy {
  public:
-  explicit IndexProxy(IndexSync* index);
-  ~IndexProxy() override;
+  explicit IndexSyncProxy(IndexSync* index);
+  ~IndexSyncProxy() override;
 
-  void BindReceiver(mojo::PendingReceiver<mojom::IndexProxy> receiver);
+  void BindReceiver(mojo::PendingReceiver<mojom::IndexSyncProxy> receiver);
 
-  // mojom::IndexProxy:
+  // mojom::IndexSyncProxy:
   void GetSize(GetSizeCallback callback) override;
   void AddOrUpdate(const std::vector<Data>& data,
                    AddOrUpdateCallback callback) override;
@@ -37,10 +37,10 @@ class IndexProxy : public mojom::IndexProxy {
 
  private:
   IndexSync* const index_;
-  mojo::ReceiverSet<mojom::IndexProxy> receivers_;
+  mojo::ReceiverSet<mojom::IndexSyncProxy> receivers_;
 };
 
 }  // namespace local_search_service
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_PROXY_H_
+#endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_SYNC_PROXY_H_

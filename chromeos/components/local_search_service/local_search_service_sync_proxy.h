@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_LOCAL_SEARCH_SERVICE_PROXY_H_
-#define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_LOCAL_SEARCH_SERVICE_PROXY_H_
+#ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_LOCAL_SEARCH_SERVICE_SYNC_PROXY_H_
+#define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_LOCAL_SEARCH_SERVICE_SYNC_PROXY_H_
 
 #include <map>
 
@@ -18,48 +18,49 @@ namespace chromeos {
 namespace local_search_service {
 
 class LocalSearchServiceSync;
-class IndexProxy;
+class IndexSyncProxy;
 enum class IndexId;
 enum class Backend;
 
-class LocalSearchServiceProxy : public mojom::LocalSearchServiceProxy,
-                                public KeyedService {
+class LocalSearchServiceSyncProxy : public mojom::LocalSearchServiceSyncProxy,
+                                    public KeyedService {
  public:
-  explicit LocalSearchServiceProxy(
+  explicit LocalSearchServiceSyncProxy(
       LocalSearchServiceSync* local_search_service);
-  ~LocalSearchServiceProxy() override;
+  ~LocalSearchServiceSyncProxy() override;
 
-  LocalSearchServiceProxy(const LocalSearchServiceProxy&) = delete;
-  LocalSearchServiceProxy& operator=(const LocalSearchServiceProxy) = delete;
+  LocalSearchServiceSyncProxy(const LocalSearchServiceSyncProxy&) = delete;
+  LocalSearchServiceSyncProxy& operator=(const LocalSearchServiceSyncProxy) =
+      delete;
 
-  // mojom::LocalSearchServiceProxy:
+  // mojom::LocalSearchServiceSyncProxy:
   void GetIndex(
       IndexId index_id,
       Backend backend,
-      mojo::PendingReceiver<mojom::IndexProxy> index_receiver) override;
+      mojo::PendingReceiver<mojom::IndexSyncProxy> index_receiver) override;
 
   void BindReceiver(
-      mojo::PendingReceiver<mojom::LocalSearchServiceProxy> receiver);
+      mojo::PendingReceiver<mojom::LocalSearchServiceSyncProxy> receiver);
 
   // The version below allows an out-of-process client to directly obtain an
   // Index using their own delegate that runs in C++.
   // 1. Client's delegate obtains LocalSearchServicProxy from
-  // LocalSearchServiceProxyFactory.
+  // LocalSearchServiceSyncProxyFactory.
   // 2. Client's delegate calls GetIndex to obtain an Index and binds the
-  // IndexProxy remote
-  //    to the IndexProxy implementation.
+  // IndexSyncProxy remote
+  //    to the IndexSyncProxy implementation.
   void GetIndex(IndexId index_id,
                 Backend backend,
                 PrefService* local_state,
-                mojo::PendingReceiver<mojom::IndexProxy> index_receiver);
+                mojo::PendingReceiver<mojom::IndexSyncProxy> index_receiver);
 
  private:
   LocalSearchServiceSync* const service_;
-  mojo::ReceiverSet<mojom::LocalSearchServiceProxy> receivers_;
-  std::map<IndexId, std::unique_ptr<IndexProxy>> indices_;
+  mojo::ReceiverSet<mojom::LocalSearchServiceSyncProxy> receivers_;
+  std::map<IndexId, std::unique_ptr<IndexSyncProxy>> indices_;
 };
 
 }  // namespace local_search_service
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_LOCAL_SEARCH_SERVICE_PROXY_H_
+#endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_LOCAL_SEARCH_SERVICE_SYNC_PROXY_H_

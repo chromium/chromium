@@ -9,7 +9,7 @@
 
 #include "chromeos/components/help_app_ui/help_app_ui.mojom.h"
 #include "chromeos/components/help_app_ui/help_app_ui_delegate.h"
-#include "chromeos/components/local_search_service/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/local_search_service_sync_proxy.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -32,7 +32,7 @@ class HelpAppUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<help_app_ui::mojom::PageHandlerFactory> receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<local_search_service::mojom::IndexProxy>
+      mojo::PendingReceiver<local_search_service::mojom::IndexSyncProxy>
           index_receiver);
 
   HelpAppUIDelegate* delegate() { return delegate_.get(); }

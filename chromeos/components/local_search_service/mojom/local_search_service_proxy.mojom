@@ -18,17 +18,17 @@ enum Backend {
   kInvertedIndex = 1
 };
 
-// LocalSearchServiceProxy creates and owns content-specific IndexProxies.
-// Clients can call |GetIndex| to get an IndexProxy for a given index id.
-interface LocalSearchServiceProxy {
-  // A client can call this function to bind an IndexProxy for |index_id|. If
-  // the Index isn't created when this function is called, LocalSearchService
+// LocalSearchServiceSyncProxy creates and owns content-specific IndexProxies.
+// Clients can call |GetIndex| to get an IndexSyncProxy for a given index id.
+interface LocalSearchServiceSyncProxy {
+  // A client can call this function to bind an IndexSyncProxy for |index_id|.
+  // If the Index isn't created when this function is called, LocalSearchService
   // will create one.
   // Note, there should be one primary client that is the owner of the data and
   // can read/write the data to the Index. The other clients should only use
   // the Index for query search.
   GetIndex(IndexId index_id, Backend backend,
-      pending_receiver<IndexProxy> index_receiver);
+      pending_receiver<IndexSyncProxy> index_receiver);
 };
 
 // A proxy to a local search service Index.
@@ -36,7 +36,7 @@ interface LocalSearchServiceProxy {
 // runs a search function to find matching items for a given query.
 // Each Index can serve multiple clients, but only one client (the primary
 // client) that owns the data should be allowed to modify the Index.
-interface IndexProxy {
+interface IndexSyncProxy {
   // Returns number of data items.
   GetSize() => (uint64 num_items);
 

@@ -733,8 +733,8 @@ void PopulateChromeWebUIFrameBinders(
                                          chromeos::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::local_search_service::mojom::IndexProxy, chromeos::HelpAppUI>(
-      map);
+      chromeos::local_search_service::mojom::IndexSyncProxy,
+      chromeos::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       media_app_ui::mojom::PageHandlerFactory, chromeos::MediaAppUI>(map);

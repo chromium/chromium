@@ -48,12 +48,12 @@ source_set("local_search_service") {
 
 source_set("local_search_service_proxy") {
   sources = [
-    "index_proxy.cc",
-    "index_proxy.h",
-    "local_search_service_proxy.cc",
-    "local_search_service_proxy.h",
-    "local_search_service_proxy_factory.cc",
-    "local_search_service_proxy_factory.h",
+    "index_sync_proxy.cc",
+    "index_sync_proxy.h",
+    "local_search_service_sync_proxy.cc",
+    "local_search_service_sync_proxy.h",
+    "local_search_service_sync_proxy_factory.cc",
+    "local_search_service_sync_proxy_factory.h",
   ]
 
   deps = [
@@ -92,7 +92,7 @@ source_set("unit_tests") {
     "inverted_index_search_unittest.cc",
     "inverted_index_unittest.cc",
     "linear_map_search_unittest.cc",
-    "local_search_service_proxy_unittest.cc",
+    "local_search_service_sync_proxy_unittest.cc",
     "local_search_service_sync_unittest.cc",
     "search_metrics_reporter_sync_unittest.cc",
     "search_utils_unittest.cc",
