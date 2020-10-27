@@ -1024,6 +1024,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, MAYBE_AnnotationsFeatureEnabled) {
   RunTestsInJsModule("annotations_feature_enabled_test.js", "test.pdf");
 }
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, AnnotationsToolbar) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("annotations_toolbar_test.js", "test.pdf");
+}
 #endif  // defined(OS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */, PDFExtensionJSTest, testing::Bool());

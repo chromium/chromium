@@ -332,3 +332,17 @@ export async function testAsync(f) {
     chrome.test.fail(e.stack);
   }
 }
+
+/**
+ * Async spin until predicate() returns true.
+ * @param {function(): boolean} predicate
+ * @return {!Promise|undefined}
+ */
+export function waitFor(predicate) {
+  if (predicate()) {
+    return;
+  }
+  return new Promise(resolve => setTimeout(() => {
+                       resolve(waitFor(predicate));
+                     }, 0));
+}
