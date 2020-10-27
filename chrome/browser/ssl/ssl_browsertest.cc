@@ -872,8 +872,11 @@ class SSLUITestBase : public InProcessBrowserTest,
 class SSLUITest : public SSLUITestBase {
  public:
   SSLUITest() : SSLUITestBase() {
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kMixedContentAutoupgrade);
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */ {},
+        /* disabled_features */ {
+            blink::features::kMixedContentAutoupgrade,
+            safe_browsing::kEnhancedProtectionMessageInInterstitials});
   }
 
  protected:
@@ -8393,6 +8396,10 @@ class SSLUITestWithEnhancedProtectionMessage : public SSLUITest {
 
 IN_PROC_BROWSER_TEST_F(SSLUITestWithEnhancedProtectionMessage,
                        VerifyEnhancedProtectionMessageShown) {
+  base::HistogramTester histograms;
+  const std::string interaction_histogram =
+      "interstitial.ssl_overridable.interaction";
+
   safe_browsing::SetExtendedReportingPrefForTests(
       browser()->profile()->GetPrefs(), true);
   safe_browsing::SetSafeBrowsingState(
@@ -8409,6 +8416,14 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithEnhancedProtectionMessage,
                                   true /* expect_hidden */);
   ExpectInterstitialElementHidden(contents, "enhanced-protection-message",
                                   false /* expect_hidden */);
+
+  histograms.ExpectTotalCount(interaction_histogram, 2);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::TOTAL_VISITS, 1);
+  histograms.ExpectBucketCount(
+      interaction_histogram,
+      security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SSLUITestWithEnhancedProtectionMessage,
