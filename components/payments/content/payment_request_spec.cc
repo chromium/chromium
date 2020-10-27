@@ -111,6 +111,8 @@ PaymentRequestSpec::PaymentRequestSpec(
              ToString(request_payer_phone()), ToString(request_shipping())},
             nullptr)};
   }
+
+  app_store_billing_methods_.insert(methods::kGooglePlayBilling);
 }
 PaymentRequestSpec::~PaymentRequestSpec() {}
 
@@ -364,6 +366,12 @@ bool PaymentRequestSpec::IsSecurePaymentConfirmationRequested() const {
   return payment_method_identifiers_set_.size() == 1 &&
          *payment_method_identifiers_set_.begin() ==
              methods::kSecurePaymentConfirmation;
+}
+
+bool PaymentRequestSpec::IsAppStoreBillingAlsoRequested() const {
+  return !base::STLSetIntersection<std::set<std::string>>(
+              app_store_billing_methods_, payment_method_identifiers_set_)
+              .empty();
 }
 
 base::WeakPtr<PaymentRequestSpec> PaymentRequestSpec::AsWeakPtr() {

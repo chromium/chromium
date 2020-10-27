@@ -207,6 +207,10 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   bool IsSecurePaymentConfirmationRequested() const;
 
+  // Returns true if one of the payment methods being requested is an app store
+  // billing method, such as "https://play.google.com/billing".
+  bool IsAppStoreBillingAlsoRequested() const;
+
   base::WeakPtr<PaymentRequestSpec> AsWeakPtr();
 
  private:
@@ -256,9 +260,9 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   // |supported_card_networks_set_| to check merchant support.
   std::set<std::string> basic_card_specified_networks_;
 
-  // A list of supported url-based payment method identifers specified by the
+  // A list of supported url-based payment method identifiers specified by the
   // merchant. This encompasses one of the two types of payment method
-  // identifers, the other being standardized payment method identifiers i.e.,
+  // identifiers, the other being standardized payment method identifiers i.e.,
   // basic-card.
   std::vector<GURL> url_payment_method_identifiers_;
 
@@ -288,6 +292,8 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   base::string16 retry_error_message_;
   mojom::PayerErrorsPtr payer_errors_;
+
+  std::set<std::string> app_store_billing_methods_;
 
   base::WeakPtrFactory<PaymentRequestSpec> weak_ptr_factory_{this};
 

@@ -26,6 +26,7 @@ void PaymentRequestDisplayManager::DisplayHandle::Show(
     base::WeakPtr<PaymentRequest> request) {
   DCHECK(request);
   DCHECK(delegate_);
+  was_shown_ = true;
   delegate_->ShowDialog(request);
 }
 

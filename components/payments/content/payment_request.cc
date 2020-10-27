@@ -301,7 +301,11 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
         spec_->details().total->amount->value, false /*completed*/);
   }
 
-  display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
+  // If an app store billing payment method is one of the payment methods being
+  // requested, then don't show any user interface until its known whether it's
+  // possible to skip UI directly into an app store billing payment app.
+  if (!spec_->IsAppStoreBillingAlsoRequested())
+    display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
 
   state_->set_is_show_user_gesture(is_show_user_gesture_);
   state_->AreRequestedMethodsSupported(
@@ -387,8 +391,14 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
         spec_->details().total->amount->value, false /*completed*/);
     if (SatisfiesSkipUIConstraints()) {
       Pay();
-    } else if (spec_->request_shipping()) {
-      state_->SelectDefaultShippingAddressAndNotifyObservers();
+    } else {
+      // If not skipping UI, then make sure that the browser payment sheet is
+      // being displayed.
+      if (!display_handle_->was_shown())
+        display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
+
+      if (spec_->request_shipping())
+        state_->SelectDefaultShippingAddressAndNotifyObservers();
     }
   }
 }
@@ -590,8 +600,13 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
   }
 
   if (methods_supported) {
-    if (SatisfiesSkipUIConstraints())
+    if (SatisfiesSkipUIConstraints()) {
       Pay();
+    } else if (!display_handle_->was_shown()) {
+      // If not skipping UI, then make sure that the browser payment sheet is
+      // being displayed.
+      display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
+    }
   } else {
     VLOG(2) << "PaymentRequest (" << *spec_->details().id
             << "): requested method not supported.";
@@ -826,6 +841,13 @@ void PaymentRequest::Pay() {
   DCHECK(state_->selected_app());
   VLOG(2) << "PaymentRequest (" << *spec_->details().id
           << "): paying with app: " << state_->selected_app()->GetLabel();
+
+  if (!display_handle_->was_shown() &&
+      state_->selected_app()->type() != PaymentApp::Type::NATIVE_MOBILE_APP) {
+    // If not paying with a native mobile app (such as app store billing), then
+    // make sure that the browser payment sheet is being displayed.
+    display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
+  }
 
   state_->selected_app()->SetPaymentHandlerHost(
       payment_handler_host_->AsWeakPtr());

@@ -43,9 +43,13 @@ class PaymentRequestDisplayManager : public KeyedService {
     void DisplayPaymentHandlerWindow(const GURL& url,
                                      PaymentHandlerOpenWindowCallback callback);
 
+    // Returns true after Show() was called.
+    bool was_shown() const { return was_shown_; }
+
    private:
     PaymentRequestDisplayManager* display_manager_;
     ContentPaymentRequestDelegate* delegate_;
+    bool was_shown_ = false;
     DISALLOW_COPY_AND_ASSIGN(DisplayHandle);
   };
 
