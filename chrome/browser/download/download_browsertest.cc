@@ -4214,13 +4214,8 @@ IN_PROC_BROWSER_TEST_F(DownloadWakeLockTest,
 }
 
 // Downloading a data URL that's bigger than url::kMaxURLChars should work.
-#if defined(OS_LINUX)
-// Flaky on Linux. https://crbug.com/1141278
-#define MAYBE_DownloadLargeDataURL DISABLED_DownloadLargeDataURL
-#else
-#define MAYBE_DownloadLargeDataURL DownloadLargeDataURL
-#endif
-IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadLargeDataURL) {
+// Flaky: https://crbug.com/1141278
+IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadLargeDataURL) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
 
