@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.screenshot;
+package org.chromium.chrome.browser.share.screenshot;
 
 import android.graphics.Bitmap;
 

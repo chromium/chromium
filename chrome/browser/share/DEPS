@@ -11,8 +11,6 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/init/ChromeBrowserInitializer.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/notifications",
-  "+chrome/android/java/src/org/chromium/chrome/browser/screenshot/EditorScreenshotSource.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/screenshot/EditorScreenshotTask.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/share",
   "+chrome/services/qrcode_generator",
   "+components/browser_ui/notifications/android",
@@ -22,5 +20,6 @@ include_rules = [
   "+components/infobars/android",
   "+components/shared_highlighting/core/common",
   "+content/public/android/java/src/org/chromium/content_public/browser/RenderWidgetHostView.java",
+  "+content/public/android/java/src/org/chromium/content_public/browser/UiThreadTaskTraits.java",
   "+content/public/android/java/src/org/chromium/content_public/browser/WebContents.java",
 ]

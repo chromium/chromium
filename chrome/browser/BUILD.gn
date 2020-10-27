@@ -2749,7 +2749,6 @@ static_library("browser") {
       "android/rlz/revenue_stats.cc",
       "android/rlz/rlz_ping_handler.cc",
       "android/rlz/rlz_ping_handler.h",
-      "android/screenshot/editor_screenshot_task.cc",
       "android/search_permissions/search_geolocation_disclosure_infobar_delegate.cc",
       "android/search_permissions/search_geolocation_disclosure_infobar_delegate.h",
       "android/search_permissions/search_geolocation_disclosure_tab_helper.cc",

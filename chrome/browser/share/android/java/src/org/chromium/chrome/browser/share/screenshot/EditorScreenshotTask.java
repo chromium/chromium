@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.screenshot;
+package org.chromium.chrome.browser.share.screenshot;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -16,7 +16,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -138,7 +137,7 @@ public final class EditorScreenshotTask implements EditorScreenshotSource {
         if (!currentTab.isUserInteractable()) return true;
         // If the tab focused and not showing Android widget based content, then use the Compositor
         // based screenshot.
-        if (currentTab.getNativePage() == null && !SadTab.isShowing(currentTab)) return true;
+        if (currentTab.getNativePage() == null && !currentTab.isShowingCustomView()) return true;
 
         // Assume the UI is drawn primarily by Android widgets, so do not use the Compositor
         // screenshot.

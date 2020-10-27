@@ -9,6 +9,7 @@ import("//chrome/browser/buildflags.gni")
 source_set("share") {
   sources = [
     "bitmap_download_request.cc",
+    "editor_screenshot_task.cc",
     "features.cc",
     "features.h",
     "link_to_text_metrics_bridge.cc",
@@ -23,7 +24,9 @@ source_set("share") {
     "//components/shared_highlighting/core/common",
     "//content/public/browser",
     "//skia",
+    "//ui/android",
     "//ui/gfx",
+    "//ui/snapshot",
   ]
 }
 

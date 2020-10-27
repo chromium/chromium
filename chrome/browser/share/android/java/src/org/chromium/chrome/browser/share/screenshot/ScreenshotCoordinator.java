@@ -12,8 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_editor.ImageEditorDialogCoordinator;
 import org.chromium.chrome.browser.modules.ModuleInstallUi;
-import org.chromium.chrome.browser.screenshot.EditorScreenshotSource;
-import org.chromium.chrome.browser.screenshot.EditorScreenshotTask;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
