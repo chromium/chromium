@@ -532,6 +532,8 @@ void HIDDetectionScreen::TryInitiateBTDevicesUpdate() {
                      weak_ptr_factory_.GetWeakPtr()),
           base::Bind(&HIDDetectionScreen::SetPoweredError,
                      weak_ptr_factory_.GetWeakPtr()));
+    } else if (!discovery_session_ || !discovery_session_->IsActive()) {
+      StartBTDiscoverySession();
     } else {
       UpdateBTDevices();
     }
