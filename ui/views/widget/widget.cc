@@ -292,11 +292,13 @@ bool Widget::RequiresNonClientView(InitParams::Type type) {
 void Widget::Init(InitParams params) {
   TRACE_EVENT0("views", "Widget::Init");
 
-  // If an internal name was not provided the class name of the contents view
-  // is a reasonable default.
-  if (params.name.empty() && params.delegate &&
-      params.delegate->GetContentsView())
-    params.name = params.delegate->GetContentsView()->GetClassName();
+  if (params.name.empty() && params.delegate) {
+    params.name = params.delegate->internal_name();
+    // If an internal name was not provided the class name of the contents view
+    // is a reasonable default.
+    if (params.name.empty() && params.delegate->GetContentsView())
+      params.name = params.delegate->GetContentsView()->GetClassName();
+  }
 
   params.child |= (params.type == InitParams::TYPE_CONTROL);
   is_top_level_ = !params.child;

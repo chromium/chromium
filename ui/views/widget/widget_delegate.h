@@ -68,6 +68,11 @@ class VIEWS_EXPORT WidgetDelegate {
     // this WidgetDelegate is used to initialize a Widget.
     base::Optional<View*> initially_focused_view;
 
+    // The widget's internal name, used to identify it in window-state
+    // restoration (if this widget participates in that) and in debugging
+    // contexts. Never displayed to the user, and not translated.
+    std::string internal_name;
+
     // The widget's modality type. Note that MODAL_TYPE_SYSTEM does not work at
     // all on Mac.
     ui::ModalType modal_type = ui::MODAL_TYPE_NONE;
@@ -349,6 +354,9 @@ class VIEWS_EXPORT WidgetDelegate {
 
   bool focus_traverses_out() const { return params_.focus_traverses_out; }
   bool owned_by_widget() const { return params_.owned_by_widget; }
+
+  void set_internal_name(std::string name) { params_.internal_name = name; }
+  std::string internal_name() const { return params_.internal_name; }
 
  private:
   friend class Widget;

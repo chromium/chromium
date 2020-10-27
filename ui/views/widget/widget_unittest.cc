@@ -173,20 +173,60 @@ TEST_F(WidgetTest, WidgetInitParams) {
 
 // Tests that the internal name is propagated through widget initialization to
 // the native widget and back.
-class WidgetNameTest : public WidgetTest {
+class WidgetWithCustomParamsTest : public WidgetTest {
  public:
+  using InitFunction = base::RepeatingCallback<void(Widget::InitParams*)>;
+  void SetInitFunction(const InitFunction& init) { init_ = std::move(init); }
   Widget::InitParams CreateParams(Widget::InitParams::Type type) override {
     Widget::InitParams params = WidgetTest::CreateParams(type);
-    params.name = "MyWidget";
+    DCHECK(init_) << "If you don't need an init function, use WidgetTest";
+    init_.Run(&params);
     return params;
   }
+
+ private:
+  InitFunction init_;
 };
 
-TEST_F(WidgetNameTest, GetName) {
+TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromParams) {
+  SetInitFunction(base::BindLambdaForTesting(
+      [](Widget::InitParams* params) { params->name = "MyWidget"; }));
   std::unique_ptr<Widget> widget = CreateTestWidget();
 
   EXPECT_EQ("MyWidget", widget->native_widget_private()->GetName());
   EXPECT_EQ("MyWidget", widget->GetName());
+}
+
+TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromDelegate) {
+  WidgetDelegate delegate;
+  delegate.set_internal_name("Foobar");
+  SetInitFunction(base::BindLambdaForTesting(
+      [&](Widget::InitParams* params) { params->delegate = &delegate; }));
+
+  std::unique_ptr<Widget> widget = CreateTestWidget();
+
+  EXPECT_EQ(delegate.internal_name(),
+            widget->native_widget_private()->GetName());
+  EXPECT_EQ(delegate.internal_name(), widget->GetName());
+}
+
+TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromContentsViewClassName) {
+  class ViewWithClassName : public View {
+   public:
+    const char* GetClassName() const override { return "ViewWithClassName"; }
+  };
+
+  WidgetDelegate delegate;
+  auto view = std::make_unique<ViewWithClassName>();
+  auto* contents = delegate.SetContentsView(std::move(view));
+  SetInitFunction(base::BindLambdaForTesting(
+      [&](Widget::InitParams* params) { params->delegate = &delegate; }));
+
+  std::unique_ptr<Widget> widget = CreateTestWidget();
+
+  EXPECT_EQ(contents->GetClassName(),
+            widget->native_widget_private()->GetName());
+  EXPECT_EQ(contents->GetClassName(), widget->GetName());
 }
 
 TEST_F(WidgetTest, NativeWindowProperty) {
