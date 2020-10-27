@@ -26,9 +26,9 @@ cross-origin resources were cached.
 
 When modifying the list of files that behave differently with and without
 OOPIFs, please consider modifying all the locations below:
-- LayoutTests/VirtualTestSuites (virtual/not-site-per-process suite)
-- LayoutTests/virtual/not-site-per-process/README.md
-- LayoutTests/TestExpectations and/or LayoutTests/NeverFixTests
+- web_tests/VirtualTestSuites (virtual/not-site-per-process suite)
+- web_tests/virtual/not-site-per-process/README.md
+- web_tests/TestExpectations and/or web_tests/NeverFixTests
   ("Site Isolation failures" section)
 
 
@@ -37,9 +37,10 @@ OOPIFs, please consider modifying all the locations below:
 The following tests modify `document.domain` and are therefore incompatible with
 isolation of WPT origins.  The tests need to stay under
 `virtual/not-site-per-process` forever.  These tests are covered by
-`LayoutTests/NeverFixTests` expectations file.
+`web_tests/NeverFixTests` expectations file.
 
 - external/wpt/html/browsers/origin/relaxing-the-same-origin-restriction
+- external/wpt/html/browsers/windows/nested-browsing-contexts/frameElement-siblings.sub.html
 - external/wpt/FileAPI/url/multi-global-origin-serialization.sub.html
 - external/wpt/dom/events/EventListener-incumbent-global-1.sub.html
 - external/wpt/dom/events/EventListener-incumbent-global-2.sub.html
@@ -59,4 +60,4 @@ previously unknown OOPIF-related bugs or 2) expose known OOPIF-related
 differences in product behavior or 3) expose known OOPIF-support issues
 in tests or in the test harness.  Over time, such tests should be
 removed from `virtual/not-site-per-process`.  These tests are covered
-by `LayoutTests/TestExpectations` file.
+by `web_tests/TestExpectations` file.

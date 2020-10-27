@@ -475,6 +475,7 @@
     "prefix": "not-site-per-process",
     "bases": [
       "external/wpt/html/browsers/origin/relaxing-the-same-origin-restriction",
+      "external/wpt/html/browsers/windows/nested-browsing-contexts/frameElement-siblings.sub.html",
       "external/wpt/FileAPI/url/multi-global-origin-serialization.sub.html",
       "external/wpt/dom/events/EventListener-incumbent-global-1.sub.html",
       "external/wpt/dom/events/EventListener-incumbent-global-2.sub.html",

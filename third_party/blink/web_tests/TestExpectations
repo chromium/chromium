@@ -5981,7 +5981,6 @@ crbug.com/867532 [ Linux ] http/tests/workers/worker-usecounter.html [ Pass Time
 # Tests blocking WPT importer
 crbug.com/1098844 external/wpt/wasm/jsapi/functions/entry.html [ Pass Crash Timeout ]
 crbug.com/1098844 external/wpt/wasm/jsapi/functions/entry-different-function-realm.html [ Pass Crash Timeout ]
-crbug.com/1099689 [ Linux ] external/wpt/html/browsers/windows/nested-browsing-contexts/frameElement-siblings.sub.html [ Pass Failure ]
 
 #Sheriff 2020-06-25
 crbug.com/1010170 media/video-played-reset.html [ Pass Failure ]
