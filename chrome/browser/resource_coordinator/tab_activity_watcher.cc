@@ -196,7 +196,10 @@ class TabActivityWatcher::WebContentsData
   explicit WebContentsData(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {
     DCHECK(!web_contents->GetBrowserContext()->IsOffTheRecord());
-    web_contents->GetRenderViewHost()->GetWidget()->AddInputEventObserver(this);
+    web_contents->GetMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->AddInputEventObserver(this);
 
     creation_time_ = NowTicks();
 
