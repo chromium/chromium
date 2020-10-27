@@ -1,31 +1,30 @@
-From a5e85d98d5a0d68cd433c7022f960bd64de87291 Mon Sep 17 00:00:00 2001
+From febbe4508395a83f64e6f5e3cd55052fc8e16e8c Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
-Date: Fri, 21 Aug 2020 14:56:21 -0400
-Subject: [PATCH 2/3] Make class merging and outlining settable via
- command-line
+Date: Mon, 28 Sep 2020 15:51:32 -0400
+Subject: [PATCH 2/3] Command-line flags for class merging and outlining
 
 ---
  .../java/com/android/tools/r8/utils/InternalOptions.java  | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-index 69410dd4d..32a2918eb 100644
+index ea902d508..708961316 100644
 --- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
 +++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-@@ -217,9 +217,9 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+@@ -234,9 +234,9 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
    public boolean enableFieldAssignmentTracker = true;
    public boolean enableFieldBitAccessAnalysis =
        System.getProperty("com.android.tools.r8.fieldBitAccessAnalysis") != null;
 -  public boolean enableStaticClassMerging = true;
--  public boolean enableHorizontalClassMerging = false;
+-  public boolean enableHorizontalClassMerging = true;
 -  public boolean enableVerticalClassMerging = true;
-+  public boolean enableStaticClassMerging = System.getProperty("com.android.tools.r8.enableHorizontalClassMerging") != null;
-+  public boolean enableHorizontalClassMerging = System.getProperty("com.android.tools.r8.enableHorizontalClassMerging") != null;
-+  public boolean enableVerticalClassMerging = System.getProperty("com.android.tools.r8.enableVerticalClassMerging") != null;
++  public boolean enableStaticClassMerging = System.getProperty("com.android.tools.r8.staticClassMerging") != null;
++  public boolean enableHorizontalClassMerging = System.getProperty("com.android.tools.r8.horizontalClassMerging") != null;
++  public boolean enableVerticalClassMerging = System.getProperty("com.android.tools.r8.verticalClassMerging") != null;
    public boolean enableArgumentRemoval = true;
    public boolean enableUnusedInterfaceRemoval = true;
    public boolean enableDevirtualization = true;
-@@ -1097,7 +1097,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+@@ -1146,7 +1146,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
      public static final String CLASS_NAME = "com.android.tools.r8.GeneratedOutlineSupport";
      public static final String METHOD_PREFIX = "outline";
  
@@ -35,5 +34,5 @@ index 69410dd4d..32a2918eb 100644
      public int maxSize = 99;
      public int threshold = 20;
 -- 
-2.28.0.297.g1956fa8f8d-goog
+2.29.0.rc1.297.gfa9743e501-goog
 

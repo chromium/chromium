@@ -1,7 +1,7 @@
 Name: R8
 URL: https://r8.googlesource.com/r8
-Revision: e13467c2cee237bceaa4d002472ede43d9a116e8
-Version: unknown
+Revision: 3a9986617a11797df59b5d9613d605661a733171
+Version: 3.0.1-dev
 License: BSD 3-Clause
 License File: NOT_SHIPPED
 Security Critical: no
@@ -41,7 +41,7 @@ tools/gradle.py r8
 java -jar build/libs/r8.jar --debug --classfile --output r8.jar \
     --lib $CHROMIUM_SRC/third_party/jdk/current --pg-conf src/main/keep.txt \
     --no-minification --no-desugaring build/libs/r8.jar
-rm $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+mv $CHROMIUM_SRC/third_party/r8/lib/r8.jar{,.bak}
 cp r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
 
 # Create patches if conflicts / new patches. Change number if expecting
