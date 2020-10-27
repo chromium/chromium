@@ -2068,6 +2068,7 @@
 <translation id="3428419049384081277">你已登入帳戶！</translation>
 <translation id="3428747202529429621">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="3428800329481094896">正在擷取 Linux 容器安全殼層金鑰</translation>
+<translation id="3429271624041785769">網路內容語言</translation>
 <translation id="3429275422858276529">將這個網頁加入書籤，方便日後查看</translation>
 <translation id="3432227430032737297">將顯示的項目全部移除</translation>
 <translation id="3432757130254800023">傳送要在區域網路顯示的影音內容</translation>
@@ -2492,6 +2493,7 @@
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3881478300875776315">顯示較少行</translation>
 <translation id="3882165008614329320">相機或檔案中的現有影片</translation>
+<translation id="3884152383786131369">支援多種語言的網站內容會使用這個清單上第一個支援的語言。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">你想存取這個網站的要求已傳送給<ph name="NAME" /></translation>
 <translation id="3888550877729210209">使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
 <translation id="3892414795099177503">新增 OpenVPN/L2TP...</translation>

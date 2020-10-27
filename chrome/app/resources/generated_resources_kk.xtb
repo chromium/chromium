@@ -2066,6 +2066,7 @@
 <translation id="3428419049384081277">Кірдіңіз!</translation>
 <translation id="3428747202529429621">Есептік жазбаға кірген болсаңыз, сізді Chrome браузерінде қорғайды және басқа Google қолданбаларында қауіпсіздігіңізді жақсартуға пайдаланылуы мүмкін.</translation>
 <translation id="3428800329481094896">Linux контейнерінің SSH кілттері алынуда</translation>
+<translation id="3429271624041785769">Веб-мазмұн тілдері</translation>
 <translation id="3429275422858276529">Бетті кейінірек табу үшін оған бетбелгі қою</translation>
 <translation id="3432227430032737297">Барлық көрсетілгендерді өшіру</translation>
 <translation id="3432757130254800023">Жергілікті желідегі дисплейлерге аудио және бейне жіберу</translation>
@@ -2490,6 +2491,7 @@
 <translation id="3879748587602334249">Жүктеп алу менеджері</translation>
 <translation id="3881478300875776315">Жолдарды азырақ көрсету</translation>
 <translation id="3882165008614329320">Камерадан немесе файлдан алынған бейне</translation>
+<translation id="3884152383786131369">Бірнеше тілдегі веб-мазмұн осы тізімдегі бірінші тілді пайдаланады. Бұл параметрлер браузер параметрлерімен синхрондалады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Бұл сайтқа кіру сұрауыңыз <ph name="NAME" /> деген контактіге жіберілді</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> қолданбасымен жазбалар жазу</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP енгізу…</translation>
