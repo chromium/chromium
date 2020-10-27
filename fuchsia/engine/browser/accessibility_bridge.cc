@@ -87,13 +87,19 @@ void AccessibilityBridge::OnCommitComplete() {
 
 void AccessibilityBridge::AccessibilityEventReceived(
     const content::AXEventNotificationDetails& details) {
-  if (!enable_semantic_updates_) {
-    // No need to process events if Fuchsia is not receiving them.
+  // No need to process events if Fuchsia is not receiving them.
+  if (!enable_semantic_updates_)
     return;
-  }
 
   // Updates to AXTree must be applied first.
   for (const ui::AXTreeUpdate& update : details.updates) {
+    if (!update.has_tree_data &&
+        ax_tree_.GetAXTreeID() != ui::AXTreeIDUnknown() &&
+        ax_tree_.GetAXTreeID() != details.ax_tree_id) {
+      // TODO(https://crbug.com/1128954): Add support for combining AXTrees.
+      continue;
+    }
+
     if (!ax_tree_.Unserialize(update)) {
       // If this fails, it is a fatal error that will cause an early exit.
       std::move(on_error_callback_).Run(ZX_ERR_INTERNAL);
