@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -249,20 +250,14 @@ void XRFrameProvider::ScheduleNonImmersiveFrame(
     return;
   }
 
-  LocalFrame* frame = xr_->GetFrame();
-  if (!frame)
-    return;
-
-  // TODO(https://crbug.com/856224) Review the lifetime of this object and
-  // ensure that doc can never be null and remove this check.
-  Document* doc = frame->GetDocument();
-  if (!doc)
+  LocalDOMWindow* window = xr_->DomWindow();
+  if (!window)
     return;
 
   pending_non_immersive_vsync_ = true;
 
   // Calls |OnNonImmersiveVSync|
-  doc->RequestAnimationFrame(
+  window->document()->RequestAnimationFrame(
       MakeGarbageCollected<XRFrameProviderRequestCallback>(this));
 }
 
@@ -279,11 +274,8 @@ void XRFrameProvider::OnImmersiveFrameData(
     return;
   }
 
-  LocalFrame* frame = xr_->GetFrame();
-  if (!frame)
-    return;
-  Document* doc = frame->GetDocument();
-  if (!doc)
+  LocalDOMWindow* window = xr_->DomWindow();
+  if (!window)
     return;
 
   if (!first_immersive_frame_time_) {
@@ -299,7 +291,8 @@ void XRFrameProvider::OnImmersiveFrameData(
       *first_immersive_frame_time_ + current_frame_time_from_first_frame;
 
   double high_res_now_ms =
-      doc->Loader()
+      window->document()
+          ->Loader()
           ->GetTiming()
           .MonotonicTimeToZeroBasedDocumentTime(current_frame_time)
           .InMillisecondsF();
@@ -333,7 +326,7 @@ void XRFrameProvider::OnImmersiveFrameData(
   //
   // Used kInternalMedia since 1) this is not spec-ed and 2) this is media
   // related then tasks should not be throttled or frozen in background tabs.
-  frame->GetTaskRunner(blink::TaskType::kInternalMedia)
+  window->GetTaskRunner(blink::TaskType::kInternalMedia)
       ->PostTask(FROM_HERE, WTF::Bind(&XRFrameProvider::ProcessScheduledFrame,
                                       WrapWeakPersistent(this), std::move(data),
                                       high_res_now_ms));
@@ -349,11 +342,11 @@ void XRFrameProvider::OnNonImmersiveVSync(double high_res_now_ms) {
   if (immersive_session_)
     return;
 
-  LocalFrame* frame = xr_->GetFrame();
-  if (!frame)
+  LocalDOMWindow* window = xr_->DomWindow();
+  if (!window)
     return;
 
-  frame->GetTaskRunner(blink::TaskType::kInternalMedia)
+  window->GetTaskRunner(blink::TaskType::kInternalMedia)
       ->PostTask(FROM_HERE,
                  WTF::Bind(&XRFrameProvider::ProcessScheduledFrame,
                            WrapWeakPersistent(this), nullptr, high_res_now_ms));
@@ -366,12 +359,8 @@ void XRFrameProvider::OnNonImmersiveFrameData(
   DVLOG(2) << __FUNCTION__;
 
   // TODO(https://crbug.com/837834): add unit tests for this code path.
-
-  LocalFrame* frame = xr_->GetFrame();
-  if (!frame)
-    return;
-  Document* doc = frame->GetDocument();
-  if (!doc)
+  LocalDOMWindow* window = xr_->DomWindow();
+  if (!window)
     return;
 
   // Look up the request for this session. The session may have ended between
@@ -396,7 +385,7 @@ void XRFrameProvider::OnNonImmersiveFrameData(
     // Try to request a regular animation frame to avoid getting stuck.
     DVLOG(1) << __FUNCTION__ << ": NO FRAME DATA!";
     request->value = nullptr;
-    doc->RequestAnimationFrame(
+    window->document()->RequestAnimationFrame(
         MakeGarbageCollected<XRFrameProviderRequestCallback>(this));
   }
 }
@@ -439,10 +428,9 @@ void XRFrameProvider::ProcessScheduledFrame(
   TRACE_EVENT2("gpu", "XRFrameProvider::ProcessScheduledFrame", "frame",
                frame_id_, "timestamp", high_res_now_ms);
 
-  LocalFrame* frame = xr_->GetFrame();
-  if (!frame) {
+  LocalDOMWindow* window = xr_->DomWindow();
+  if (!window)
     return;
-  }
 
   if (!xr_->IsFrameFocused() && !immersive_session_) {
     return;  // Not currently focused, so we won't expose poses (except to
@@ -507,7 +495,7 @@ void XRFrameProvider::ProcessScheduledFrame(
     // Run immersive_session_->OnFrame() in a posted task to ensure that
     // createAnchor promises get a chance to run - the presentation frame state
     // is already updated.
-    frame->GetTaskRunner(blink::TaskType::kInternalMedia)
+    window->GetTaskRunner(blink::TaskType::kInternalMedia)
         ->PostTask(FROM_HERE,
                    WTF::Bind(&XRSession::OnFrame,
                              WrapWeakPersistent(immersive_session_.Get()),
@@ -566,7 +554,7 @@ void XRFrameProvider::ProcessScheduledFrame(
       // Note that rather than call session->OnFrame() directly, we dispatch to
       // a helper method who can determine if the state requirements are still
       // met that would allow the frame to be served.
-      frame->GetTaskRunner(blink::TaskType::kInternalMedia)
+      window->GetTaskRunner(blink::TaskType::kInternalMedia)
           ->PostTask(
               FROM_HERE,
               WTF::Bind(&XRFrameProvider::OnPreDispatchInlineFrame,

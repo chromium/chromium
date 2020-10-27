@@ -364,13 +364,10 @@ class XRSystem final : public EventTargetWithInlineData,
       XRSessionInit* session_init,
       mojom::ConsoleMessageLevel error_level);
 
-  void RequestImmersiveSession(LocalFrame* frame,
-                               Document* doc,
-                               PendingRequestSessionQuery* query,
+  void RequestImmersiveSession(PendingRequestSessionQuery* query,
                                ExceptionState* exception_state);
 
-  void RequestInlineSession(LocalFrame* frame,
-                            PendingRequestSessionQuery* query,
+  void RequestInlineSession(PendingRequestSessionQuery* query,
                             ExceptionState* exception_state);
 
   void DoRequestSession(
@@ -390,7 +387,6 @@ class XRSystem final : public EventTargetWithInlineData,
   void RejectSessionRequest(PendingRequestSessionQuery*);
 
   void EnsureDevice();
-  void ReportImmersiveSupported(bool supported);
 
   void AddedEventListener(const AtomicString& event_type,
                           RegisteredEventListener&) override;
