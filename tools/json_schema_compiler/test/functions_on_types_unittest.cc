@@ -54,11 +54,11 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetResultCreate) {
   functions_on_types::StorageArea::Get::Results::Items items;
   items.additional_properties.SetDouble("asdf", 0.1);
   items.additional_properties.SetString("sdfg", "zxcv");
-  std::unique_ptr<base::ListValue> results =
-      functions_on_types::StorageArea::Get::Results::Create(items);
-  base::DictionaryValue* item_result = NULL;
-  ASSERT_TRUE(results->GetDictionary(0, &item_result));
-  EXPECT_TRUE(item_result->Equals(&items.additional_properties));
+  base::Value results = base::Value::FromUniquePtrValue(
+      functions_on_types::StorageArea::Get::Results::Create(items));
+  ASSERT_TRUE(results.is_list());
+  ASSERT_EQ(1u, results.GetList().size());
+  EXPECT_EQ(items.additional_properties, results.GetList()[0]);
 }
 
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, ChromeSettingGetParamsCreate) {

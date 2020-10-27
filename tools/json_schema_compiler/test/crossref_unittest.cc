@@ -78,11 +78,11 @@ TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
   auto test_type = std::make_unique<simple_api::TestType>();
   EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
 
-  std::unique_ptr<base::ListValue> results =
-      crossref::GetTestType::Results::Create(*test_type);
-  base::DictionaryValue* result_dict = NULL;
-  results->GetDictionary(0, &result_dict);
-  EXPECT_TRUE(value->Equals(result_dict));
+  base::Value results = base::Value::FromUniquePtrValue(
+      crossref::GetTestType::Results::Create(*test_type));
+  ASSERT_TRUE(results.is_list());
+  ASSERT_EQ(1u, results.GetList().size());
+  EXPECT_EQ(*value, results.GetList()[0]);
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeInObjectParamsCreate) {

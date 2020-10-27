@@ -62,20 +62,23 @@ TEST(IdlCompiler, Basics) {
 
   // Test functions that take a callback function as a parameter, with varying
   // callback signatures.
-  std::unique_ptr<base::ListValue> f4_results = Function4::Results::Create();
+  base::Value f4_results =
+      base::Value::FromUniquePtrValue(Function4::Results::Create());
   base::ListValue expected;
-  EXPECT_TRUE(f4_results->Equals(&expected));
+  EXPECT_EQ(expected, f4_results);
 
-  std::unique_ptr<base::ListValue> f5_results(Function5::Results::Create(13));
-  base::Value* f5_result_int = NULL;
-  ASSERT_TRUE(f5_results->Get(0, &f5_result_int));
-  EXPECT_TRUE(f5_result_int->is_int());
+  base::Value f5_results =
+      base::Value::FromUniquePtrValue(Function5::Results::Create(13));
+  ASSERT_TRUE(f5_results.is_list());
+  ASSERT_EQ(1u, f5_results.GetList().size());
+  EXPECT_TRUE(f5_results.GetList()[0].is_int());
 
-  std::unique_ptr<base::ListValue> f6_results(Function6::Results::Create(a));
-  base::Value* f6_result_dict = NULL;
-  ASSERT_TRUE(f6_results->Get(0, &f6_result_dict));
+  base::Value f6_results =
+      base::Value::FromUniquePtrValue(Function6::Results::Create(a));
+  ASSERT_TRUE(f6_results.is_list());
+  ASSERT_EQ(1u, f6_results.GetList().size());
   MyType1 c;
-  EXPECT_TRUE(MyType1::Populate(*f6_result_dict, &c));
+  EXPECT_TRUE(MyType1::Populate(f6_results.GetList()[0], &c));
   EXPECT_EQ(a.x, c.x);
   EXPECT_EQ(a.y, c.y);
 }

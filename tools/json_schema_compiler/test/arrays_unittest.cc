@@ -252,15 +252,15 @@ TEST(JsonSchemaCompilerArrayTest, ReturnIntegerArrayResultCreate) {
   std::vector<int> integers;
   integers.push_back(1);
   integers.push_back(2);
-  std::unique_ptr<base::ListValue> results =
-      arrays::ReturnIntegerArray::Results::Create(integers);
+  base::Value results = base::Value::FromUniquePtrValue(
+      arrays::ReturnIntegerArray::Results::Create(integers));
 
-  base::ListValue expected;
-  auto expected_argument = std::make_unique<base::ListValue>();
-  expected_argument->AppendInteger(1);
-  expected_argument->AppendInteger(2);
+  base::Value expected(base::Value::Type::LIST);
+  base::Value expected_argument(base::Value::Type::LIST);
+  expected_argument.Append(1);
+  expected_argument.Append(2);
   expected.Append(std::move(expected_argument));
-  EXPECT_TRUE(results->Equals(&expected));
+  EXPECT_EQ(expected, results);
 }
 
 TEST(JsonSchemaCompilerArrayTest, ReturnRefArrayResultCreate) {
@@ -269,8 +269,8 @@ TEST(JsonSchemaCompilerArrayTest, ReturnRefArrayResultCreate) {
   items.push_back(arrays::Item());
   items[0].val = 1;
   items[1].val = 2;
-  std::unique_ptr<base::ListValue> results =
-      arrays::ReturnRefArray::Results::Create(items);
+  base::Value results = base::Value::FromUniquePtrValue(
+      arrays::ReturnRefArray::Results::Create(items));
 
   base::ListValue expected;
   auto expected_argument = std::make_unique<base::ListValue>();
@@ -281,5 +281,5 @@ TEST(JsonSchemaCompilerArrayTest, ReturnRefArrayResultCreate) {
   second->SetInteger("val", 2);
   expected_argument->Append(std::move(second));
   expected.Append(std::move(expected_argument));
-  EXPECT_TRUE(results->Equals(&expected));
+  EXPECT_EQ(expected, results);
 }

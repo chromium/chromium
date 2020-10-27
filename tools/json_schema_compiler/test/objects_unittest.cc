@@ -57,28 +57,29 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
   test::api::objects::ReturnsObject::Results::Info info;
   info.state = test::api::objects::FIRST_STATE_FOO;
-  std::unique_ptr<base::ListValue> results =
-      test::api::objects::ReturnsObject::Results::Create(info);
+  base::Value results = base::Value::FromUniquePtrValue(
+      test::api::objects::ReturnsObject::Results::Create(info));
+  ASSERT_TRUE(results.is_list());
+  ASSERT_EQ(1u, results.GetList().size());
 
   base::DictionaryValue expected;
   expected.SetString("state", "foo");
-  base::DictionaryValue* result = NULL;
-  ASSERT_TRUE(results->GetDictionary(0, &result));
-  ASSERT_TRUE(result->Equals(&expected));
+  EXPECT_EQ(expected, results.GetList()[0]);
 }
 
 TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
   test::api::objects::OnObjectFired::SomeObject object;
   object.state = test::api::objects::FIRST_STATE_BAR;
-  std::unique_ptr<base::ListValue> results(
+  base::Value results = base::Value::FromUniquePtrValue(
       test::api::objects::OnObjectFired::Create(object));
+  ASSERT_TRUE(results.is_list());
+  ASSERT_EQ(1u, results.GetList().size());
 
   base::DictionaryValue expected;
   expected.SetString("state", "bar");
-  base::DictionaryValue* result = NULL;
-  ASSERT_TRUE(results->GetDictionary(0, &result));
-  ASSERT_TRUE(result->Equals(&expected));
+  EXPECT_EQ(expected, results.GetList()[0]);
 }
+
 TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   std::vector<objects_movable::MovablePod> pods;
   {
