@@ -18,6 +18,7 @@ import '../settings_shared_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -68,6 +69,7 @@ const ChromeCleanupCardFlags = {
   SHOW_LOGS_PERMISSIONS: 1 << 0,
   WAITING_FOR_RESULT: 1 << 1,
   SHOW_ITEMS_TO_REMOVE: 1 << 2,
+  SHOW_NOTIFICATION_PERMISSION: 1 << 3,
 };
 
 /**
@@ -189,6 +191,12 @@ Polymer({
 
     /** @private */
     showLogsPermission_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    showNotificationPermission_: {
       type: Boolean,
       value: false,
     },
@@ -544,6 +552,12 @@ Polymer({
         (flags & ChromeCleanupCardFlags.WAITING_FOR_RESULT) !== 0;
     this.showItemsToRemove_ =
         (flags & ChromeCleanupCardFlags.SHOW_ITEMS_TO_REMOVE) !== 0;
+    this.showNotificationPermission_ =
+        (flags & ChromeCleanupCardFlags.SHOW_NOTIFICATION_PERMISSION) !== 0 &&
+        loadTimeData.valueExists(
+            'chromeCleanupScanCompletedNotificationEnabled') &&
+        loadTimeData.getBoolean(
+            'chromeCleanupScanCompletedNotificationEnabled');
 
     // Files to remove list should only be expandable if details are being
     // shown, otherwise it will add extra padding at the bottom of the card.
@@ -566,7 +580,8 @@ Polymer({
    */
   startScanning_() {
     this.browserProxy_.startScanning(
-        this.$.chromeCleanupLogsUploadControl.checked);
+        this.$.chromeCleanupLogsUploadControl.checked,
+        this.$.chromeCleanupShowNotificationControl.checked);
   },
 
   /**
@@ -685,7 +700,8 @@ Polymer({
           title: this.i18n('chromeCleanupTitleFindAndRemove'),
           explanation: this.i18n('chromeCleanupExplanationFindAndRemove'),
           actionButton: actionButtons.FIND,
-          flags: ChromeCleanupCardFlags.SHOW_LOGS_PERMISSIONS,
+          flags: ChromeCleanupCardFlags.SHOW_LOGS_PERMISSIONS |
+              ChromeCleanupCardFlags.SHOW_NOTIFICATION_PERMISSION,
         }
       ],
       [

@@ -43,6 +43,13 @@
           disabled$="[[!cleanupEnabled_]]">
       </settings-checkbox>
     </div>
+    <div class="cr-row continuation">
+      <settings-checkbox hidden="[[!showNotificationPermission_]]"
+          id="chromeCleanupShowNotificationControl"
+          sub-label="$i18n{chromeCleanupExplanationNotificationPermission}"
+          disabled$="[[!cleanupEnabled_]]">
+      </settings-checkbox>
+    </div>
     <cr-expand-button
         alt="[[showItemsLinkLabel_]]"
         class="cr-row"

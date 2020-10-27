@@ -40,8 +40,9 @@ class TestChromeCleanupProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  startScanning(logsUploadEnabled) {
-    this.methodCalled('startScanning', logsUploadEnabled);
+  startScanning(logsUploadEnabled, notificationEnabled) {
+    this.methodCalled(
+        'startScanning', [logsUploadEnabled, notificationEnabled]);
   }
 
   /** @override */
@@ -375,24 +376,45 @@ suite('ChromeCleanupHandler', function() {
     assertFalse(!!actionButton);
   });
 
-  test('startScanFromIdle', function() {
+  /**
+   * @param {boolean} clickNotification Whether to test the case
+   *     where the user clicks on the completion notification option.
+   * @return {!Promise}
+   */
+  async function startScanFromIdle(clickNotification) {
     updateReportingEnabledPref(false);
     webUIListenerCallback(
         'chrome-cleanup-on-idle', ChromeCleanupIdleReason.INITIAL);
     flush();
 
+    if (clickNotification) {
+      const notificationControl =
+          chromeCleanupPage.$$('#chromeCleanupShowNotificationControl');
+      assertTrue(!!notificationControl);
+      notificationControl.$.checkbox.click();
+    }
+
     const actionButton = chromeCleanupPage.$$('#action-button');
     assertTrue(!!actionButton);
     actionButton.click();
-    return chromeCleanupProxy.whenCalled('startScanning')
-        .then(function(logsUploadEnabled) {
-          assertFalse(logsUploadEnabled);
-          webUIListenerCallback('chrome-cleanup-on-scanning', false);
-          flush();
+    const [logsUploadEnabled, notificationEnabled] =
+        await chromeCleanupProxy.whenCalled('startScanning');
+    assertFalse(logsUploadEnabled);
+    // Notification is disabled by default, hence a click enables it.
+    assertEquals(clickNotification, notificationEnabled);
+    webUIListenerCallback('chrome-cleanup-on-scanning', false);
+    flush();
 
-          const spinner = chromeCleanupPage.$$('#waiting-spinner');
-          assertTrue(spinner.active);
-        });
+    const spinner = chromeCleanupPage.$$('#waiting-spinner');
+    assertTrue(spinner.active);
+  }
+
+  test('startScanFromIdle_NotificationDisabled', function() {
+    return startScanFromIdle(false);
+  });
+
+  test('startScanFromIdle_NotificationEnabled', function() {
+    return startScanFromIdle(true);
   });
 
   test('scanFoundNothing', function() {
