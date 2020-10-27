@@ -89,9 +89,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
 // Install some apps on both clients, some on only one client, some on only the
 // other, and sync.  Both clients should end up with all apps, and the app and
 // page ordinals should be identical.
-// Disabled due to flake: https://crbug.com/1069843
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
-                       DISABLED_StartWithDifferentApps) {
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, StartWithDifferentApps) {
   ASSERT_TRUE(SetupClients());
 
   int i = 0;
