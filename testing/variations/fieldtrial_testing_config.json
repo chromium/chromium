@@ -5098,6 +5098,24 @@
             ]
         }
     ],
+    "PDFViewerUpdate": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PDFViewerUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaintHoldingCrossOrigin": [
         {
             "platforms": [
@@ -5403,24 +5421,6 @@
                     "enable_features": [
                         "PdfIncrementalLoading",
                         "PdfPartialLoading"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PdfViewerUpdate": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PdfViewerUpdate"
                     ]
                 }
             ]

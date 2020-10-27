@@ -2107,12 +2107,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TemporaryAddressSpoof) {
   // the guest WebContents as there is no longer a BrowserPlugin involved.
   web_contents_for_click = inner_web_contents[0];
 
-  // The actual PDF page coordinates that this click goes to is (346, 333),
-  // after several space transformations, not (400, 400). This clicks on a link
-  // to "http://www.facebook.com:83".
+  // (400, 300) in `web_contents_for_click` translates to a different coordinate
+  // in the PDF Viewer. The exact coordinate depends on the PDF Viewer's UI
+  // layout. In the test PDF embedded in pdf_extension_test.html, the entire PDF
+  // content area is a giant link to http://www.facebook.com:83. As long as this
+  // click hits that link target, it triggers the navigation required for test.
   content::SimulateMouseClickAt(web_contents_for_click, 0,
                                 blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point(400, 400));
+                                gfx::Point(400, 300));
 
   ASSERT_TRUE(navigation_manager.WaitForRequestStart());
 
