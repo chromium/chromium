@@ -48,6 +48,7 @@ source_set("quick_answers") {
     "//chromeos/services/assistant/public/shared",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
+    "//chromeos/strings:strings_grit",
     "//components/prefs:prefs",
     "//net:net",
     "//services/data_decoder/public/cpp",

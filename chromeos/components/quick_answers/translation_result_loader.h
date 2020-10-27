@@ -33,7 +33,8 @@ class TranslationResultLoader : public ResultLoader {
   // ResultLoader:
   void BuildRequest(const PreprocessedOutput& preprocessed_output,
                     BuildRequestCallback callback) const override;
-  void ProcessResponse(std::unique_ptr<std::string> response_body,
+  void ProcessResponse(const PreprocessedOutput& preprocessed_output,
+                       std::unique_ptr<std::string> response_body,
                        ResponseParserCallback complete_callback) override;
 
  private:

@@ -66,10 +66,11 @@ void ResultLoader::Fetch(const PreprocessedOutput& preprocessed_output) {
   // Load the resource.
   BuildRequest(preprocessed_output,
                base::BindOnce(&ResultLoader::OnBuildRequestComplete,
-                              weak_factory_.GetWeakPtr()));
+                              weak_factory_.GetWeakPtr(), preprocessed_output));
 }
 
 void ResultLoader::OnBuildRequestComplete(
+    const PreprocessedOutput& preprocessed_output,
     std::unique_ptr<network::ResourceRequest> resource_request,
     const std::string& request_body) {
   loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
@@ -81,10 +82,11 @@ void ResultLoader::OnBuildRequestComplete(
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       network_loader_factory_,
       base::BindOnce(&ResultLoader::OnSimpleURLLoaderComplete,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), preprocessed_output));
 }
 
 void ResultLoader::OnSimpleURLLoaderComplete(
+    const PreprocessedOutput& preprocessed_output,
     std::unique_ptr<std::string> response_body) {
   base::TimeDelta duration = base::TimeTicks::Now() - fetch_start_time_;
 
@@ -95,7 +97,7 @@ void ResultLoader::OnSimpleURLLoaderComplete(
     return;
   }
 
-  ProcessResponse(std::move(response_body),
+  ProcessResponse(preprocessed_output, std::move(response_body),
                   base::BindOnce(&ResultLoader::OnResultParserComplete,
                                  weak_factory_.GetWeakPtr()));
 }

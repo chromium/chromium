@@ -35,10 +35,12 @@ class TranslationResponseParser {
       delete;
 
   // Starts processing the search response.
-  void ProcessResponse(std::unique_ptr<std::string> response_body);
+  void ProcessResponse(std::unique_ptr<std::string> response_body,
+                       const std::string& title_text);
 
  private:
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnJsonParsed(const std::string& title_text,
+                    data_decoder::DataDecoder::ValueOrError result);
 
   TranslationResponseParserCallback complete_callback_;
 

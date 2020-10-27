@@ -37,7 +37,8 @@ class TestResultLoader : public ResultLoader {
     return std::move(callback).Run(std::make_unique<network::ResourceRequest>(),
                                    std::string());
   }
-  void ProcessResponse(std::unique_ptr<std::string> response_body,
+  void ProcessResponse(const PreprocessedOutput& preprocessed_output,
+                       std::unique_ptr<std::string> response_body,
                        ResponseParserCallback complete_callback) override {}
 };
 

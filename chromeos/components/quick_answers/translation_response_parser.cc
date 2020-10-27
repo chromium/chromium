@@ -23,14 +23,16 @@ TranslationResponseParser::~TranslationResponseParser() {
 }
 
 void TranslationResponseParser::ProcessResponse(
-    std::unique_ptr<std::string> response_body) {
+    std::unique_ptr<std::string> response_body,
+    const std::string& title_text) {
   data_decoder::DataDecoder::ParseJsonIsolated(
       response_body->c_str(),
       base::BindOnce(&TranslationResponseParser::OnJsonParsed,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), title_text));
 }
 
 void TranslationResponseParser::OnJsonParsed(
+    const std::string& title_text,
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK(complete_callback_);
 
@@ -60,6 +62,8 @@ void TranslationResponseParser::OnJsonParsed(
   auto quick_answer = std::make_unique<QuickAnswer>();
   quick_answer->result_type = ResultType::kTranslationResult;
   quick_answer->primary_answer = *translated_text;
+  quick_answer->secondary_answer = title_text;
+  quick_answer->title.push_back(std::make_unique<QuickAnswerText>(title_text));
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>(*translated_text));
 

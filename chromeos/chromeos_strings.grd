@@ -565,6 +565,11 @@ Try tapping the mic to ask me anything.
         Used memory
       </message>
 
+      <!-- Quick Answers -->
+      <message name="IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT" desc="The title text format string used for Quick Answers translation result card. The first placeholder contains the source text in foreign language and the second placeholder contains the detected source language name displayed in system locale.">
+        <ph name="QUERY_TEXT">$1<ex>prodotto</ex></ph> · <ph name="SOURCE_LANGUAGE_NAME">$2<ex>Italian</ex></ph>
+      </message>
+
     </messages>
   </release>
 </grit>

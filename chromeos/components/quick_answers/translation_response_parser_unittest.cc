@@ -64,11 +64,13 @@ TEST_F(TranslationResponseParserTest, ProcessResponseSuccess) {
       }
     }
   )";
+  constexpr char kTranslationTitle[] = "testo tradotto · Italian";
   translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>(kTranslationResponse));
+      std::make_unique<std::string>(kTranslationResponse), kTranslationTitle);
   WaitForResponse();
   EXPECT_TRUE(quick_answer_);
   EXPECT_EQ("translated text", quick_answer_->primary_answer);
+  EXPECT_EQ(kTranslationTitle, quick_answer_->secondary_answer);
   EXPECT_EQ(ResultType::kTranslationResult, quick_answer_->result_type);
 }
 
@@ -77,14 +79,14 @@ TEST_F(TranslationResponseParserTest, ProcessResponseNoResults) {
     {}
   )";
   translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>(kTranslationResponse));
+      std::make_unique<std::string>(kTranslationResponse), std::string());
   WaitForResponse();
   EXPECT_FALSE(quick_answer_);
 }
 
 TEST_F(TranslationResponseParserTest, ProcessResponseInvalidResponse) {
   translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>("results {}"));
+      std::make_unique<std::string>("results {}"), std::string());
   WaitForResponse();
   EXPECT_FALSE(quick_answer_);
 }
