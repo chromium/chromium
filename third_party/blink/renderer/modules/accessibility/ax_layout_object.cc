@@ -1479,14 +1479,18 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
       return nullptr;
   }
 
-  LayoutObject* obj = node->GetLayoutObject();
-
-  // Retarget to respect https://dom.spec.whatwg.org/#retarget.
-  if (auto* elem = DynamicTo<Element>(node)) {
-    Element* element = &(GetDocument()->Retarget(*elem));
-    obj = element->GetLayoutObject();
+  // If |node| is in a user-agent shadow tree, reassign it as the host to hide
+  // details in the shadow tree. Previously this was implemented by using
+  // Retargeting (https://dom.spec.whatwg.org/#retarget), but this caused
+  // elements inside regular shadow DOMs to be ignored by screen reader. See
+  // crbug.com/1111800 and crbug.com/1048959.
+  const TreeScope& tree_scope = node->GetTreeScope();
+  if (auto* shadow_root = DynamicTo<ShadowRoot>(tree_scope.RootNode())) {
+    if (shadow_root->IsUserAgent())
+      node = &shadow_root->host();
   }
 
+  LayoutObject* obj = node->GetLayoutObject();
   if (!obj)
     return nullptr;
 
