@@ -104,9 +104,19 @@ void QuickAnswersMenuObserver::InitMenu(
   if (!is_eligible_ || !proxy_ || !quick_answers_client_)
     return;
 
-  if (params.is_editable)
+  // Skip password input field.
+  if (params.input_field_type ==
+      blink::ContextMenuDataInputFieldType::kPassword) {
     return;
+  }
 
+  // Skip editable text selection if the feature is not enabled.
+  if (params.is_editable &&
+      !chromeos::features::IsQuickAnswersOnEditableTextEnabled()) {
+    return;
+  }
+
+  // Skip if no text selected.
   auto selected_text = base::UTF16ToUTF8(SanitizeText(params.selection_text));
   if (selected_text.empty())
     return;
@@ -144,9 +154,19 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
   if (!quick_answers_controller_)
     return;
 
-  if (params.is_editable)
+  // Skip password input field.
+  if (params.input_field_type ==
+      blink::ContextMenuDataInputFieldType::kPassword) {
     return;
+  }
 
+  // Skip editable text selection if the feature is not enabled.
+  if (params.is_editable &&
+      !chromeos::features::IsQuickAnswersOnEditableTextEnabled()) {
+    return;
+  }
+
+  // Skip if no text selected.
   auto selected_text = base::UTF16ToUTF8(params.selection_text);
   if (selected_text.empty())
     return;
