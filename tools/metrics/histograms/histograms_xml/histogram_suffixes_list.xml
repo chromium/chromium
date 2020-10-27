@@ -8922,6 +8922,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="MediaTimelineWidths" separator=".">
+  <obsolete>
+    Deprecated as of 2020/10.
+  </obsolete>
   <suffix name="32_47" label=""/>
   <suffix name="48_79" label=""/>
   <suffix name="80_127" label=""/>

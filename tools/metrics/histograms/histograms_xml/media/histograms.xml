@@ -3220,7 +3220,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.Timeline.DragGestureDuration" units="ms"
-    expires_after="M88">
+    expires_after="2020-10-23">
+  <obsolete>
+    Deprecated as of 2020/10.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
 
   <owner>mlamouri@google.com</owner>
@@ -3233,7 +3236,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.Timeline.DragPercent"
-    enum="MediaTimelinePercent" expires_after="M88">
+    enum="MediaTimelinePercent" expires_after="2020-10-23">
+  <obsolete>
+    Deprecated as of 2020/10.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
 
   <owner>mlamouri@google.com</owner>
@@ -3247,7 +3253,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.Timeline.DragSumAbsTimeDelta"
-    enum="MediaTimelineAbsTimeDelta" expires_after="M88">
+    enum="MediaTimelineAbsTimeDelta" expires_after="2020-10-23">
+  <obsolete>
+    Deprecated as of 2020/10.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
 
   <owner>mlamouri@google.com</owner>
@@ -3265,7 +3274,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.Timeline.DragTimeDelta"
-    enum="MediaTimelineTimeDelta" expires_after="M88">
+    enum="MediaTimelineTimeDelta" expires_after="2020-10-23">
+  <obsolete>
+    Deprecated as of 2020/10.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
 
   <owner>mlamouri@google.com</owner>
@@ -3279,7 +3291,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.Timeline.SeekType"
-    enum="MediaTimelineSeekType" expires_after="M88">
+    enum="MediaTimelineSeekType" expires_after="2020-10-23">
+  <obsolete>
+    Deprecated as of 2020/10.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="MediaTimelineWidths" -->
 
   <owner>mlamouri@google.com</owner>

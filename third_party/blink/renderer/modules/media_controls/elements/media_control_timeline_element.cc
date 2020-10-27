@@ -110,31 +110,19 @@ void MediaControlTimelineElement::DefaultEventHandler(Event& event) {
     Platform::Current()->RecordAction(
         UserMetricsAction("Media.Controls.ScrubbingBegin"));
     GetMediaControls().BeginScrubbing(MediaControlsImpl::IsTouchEvent(&event));
-    Element* thumb = UserAgentShadowRoot()->getElementById(
-        shadow_element_names::kIdSliderThumb);
-    bool started_from_thumb = thumb && thumb == event.target()->ToNode();
-    metrics_.StartGesture(started_from_thumb);
   } else if (EndScrubbingEvent(event)) {
     Platform::Current()->RecordAction(
         UserMetricsAction("Media.Controls.ScrubbingEnd"));
     GetMediaControls().EndScrubbing();
-    metrics_.RecordEndGesture(TrackWidth(), MediaElement().duration());
   }
 
   if (event.type() == event_type_names::kFocus)
     UpdateAria();
 
-  if (event.type() == event_type_names::kKeydown)
-    metrics_.StartKey();
-
-  auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-  if (event.type() == event_type_names::kKeyup && keyboard_event)
-    metrics_.RecordEndKey(TrackWidth(), keyboard_event->keyCode());
-
   MediaControlInputElement::DefaultEventHandler(event);
 
-  if (IsA<MouseEvent>(event) || keyboard_event || IsA<GestureEvent>(event) ||
-      IsA<PointerEvent>(event)) {
+  if (IsA<MouseEvent>(event) || IsA<KeyboardEvent>(event) ||
+      IsA<GestureEvent>(event) || IsA<PointerEvent>(event)) {
     MaybeRecordInteracted();
   }
 
@@ -159,8 +147,6 @@ void MediaControlTimelineElement::DefaultEventHandler(Event& event) {
   // this happens and scrubber is dragged near the max, seek to duration.
   if (time > duration)
     time = duration;
-
-  metrics_.OnInput(MediaElement().currentTime(), time);
 
   // FIXME: This will need to take the timeline offset into consideration
   // once that concept is supported, see https://crbug.com/312699

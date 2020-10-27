@@ -71,8 +71,6 @@ blink_modules_sources("media_controls") {
     "elements/media_control_time_display_element.h",
     "elements/media_control_timeline_element.cc",
     "elements/media_control_timeline_element.h",
-    "elements/media_control_timeline_metrics.cc",
-    "elements/media_control_timeline_metrics.h",
     "elements/media_control_toggle_closed_captions_button_element.cc",
     "elements/media_control_toggle_closed_captions_button_element.h",
     "elements/media_control_volume_control_container_element.cc",
