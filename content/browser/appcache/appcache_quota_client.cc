@@ -151,11 +151,6 @@ void AppCacheQuotaClient::DeleteOriginData(const url::Origin& origin,
   }
 
   current_delete_request_callback_ = std::move(callback);
-  if (type != StorageType::kTemporary) {
-    DidDeleteAppCachesForOrigin(net::OK);
-    return;
-  }
-
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&AppCacheServiceImpl::DeleteAppCachesForOrigin, service_,
