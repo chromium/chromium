@@ -117,7 +117,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
 
 void LayoutSVGInline::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientDestroyed(*this);
+  SVGResourcesCache::RemoveResources(*this);
   SVGResources::ClearClipPathFilterMask(To<SVGElement>(*GetNode()), Style());
   SVGResources::ClearPaints(To<SVGElement>(*GetNode()), Style());
   LayoutInline::WillBeDestroyed();
@@ -162,7 +162,10 @@ void LayoutSVGInline::RemoveChild(LayoutObject* child) {
 void LayoutSVGInline::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutInline::InsertedIntoTree();
-  SVGResourcesCache::ClientWasAddedToTree(*this);
+  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
+                                                                         false);
+  if (SVGResourcesCache::AddResources(*this))
+    SetNeedsPaintPropertyUpdate();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
@@ -171,7 +174,10 @@ void LayoutSVGInline::InsertedIntoTree() {
 
 void LayoutSVGInline::WillBeRemovedFromTree() {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientWillBeRemovedFromTree(*this);
+  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
+                                                                         false);
+  if (SVGResourcesCache::RemoveResources(*this))
+    SetNeedsPaintPropertyUpdate();
   LayoutInline::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {

@@ -125,26 +125,17 @@ void SVGResourcesCache::ClientStyleChanged(LayoutObject& layout_object,
       layout_object, needs_layout);
 }
 
-void SVGResourcesCache::ClientWasAddedToTree(LayoutObject& layout_object) {
+bool SVGResourcesCache::AddResources(LayoutObject& layout_object) {
   DCHECK(LayoutObjectCanHaveResources(layout_object));
-  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
-      layout_object, false);
-
   SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
-  if (cache.AddResourcesFromLayoutObject(layout_object,
-                                         layout_object.StyleRef()))
-    layout_object.SetNeedsPaintPropertyUpdate();
+  return cache.AddResourcesFromLayoutObject(layout_object,
+                                            layout_object.StyleRef());
 }
 
-void SVGResourcesCache::ClientWillBeRemovedFromTree(
-    LayoutObject& layout_object) {
+bool SVGResourcesCache::RemoveResources(LayoutObject& layout_object) {
   DCHECK(LayoutObjectCanHaveResources(layout_object));
-  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
-      layout_object, false);
-
   SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
-  if (cache.RemoveResourcesFromLayoutObject(layout_object))
-    layout_object.SetNeedsPaintPropertyUpdate();
+  return cache.RemoveResourcesFromLayoutObject(layout_object);
 }
 
 bool SVGResourcesCache::UpdateResources(LayoutObject& layout_object) {
@@ -152,11 +143,6 @@ bool SVGResourcesCache::UpdateResources(LayoutObject& layout_object) {
   SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
   return cache.UpdateResourcesFromLayoutObject(layout_object,
                                                layout_object.StyleRef());
-}
-
-void SVGResourcesCache::ClientDestroyed(LayoutObject& layout_object) {
-  SVGResourcesCache& cache = ResourcesCache(layout_object.GetDocument());
-  cache.RemoveResourcesFromLayoutObject(layout_object);
 }
 
 SVGResourcesCache::TemporaryStyleScope::TemporaryStyleScope(

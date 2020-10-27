@@ -42,18 +42,16 @@ class SVGResourcesCache {
 
   static SVGResources* CachedResourcesForLayoutObject(const LayoutObject&);
 
-  // Called from all SVG layoutObjects addChild() methods.
-  static void ClientWasAddedToTree(LayoutObject&);
-
-  // Called from all SVG layoutObjects removeChild() methods.
-  static void ClientWillBeRemovedFromTree(LayoutObject&);
-
-  // Called from all SVG layoutObjects destroy() methods - except for
-  // LayoutSVGResourceContainer.
-  static void ClientDestroyed(LayoutObject&);
-
   // Called from all SVG layoutObjects styleDidChange() methods.
   static void ClientStyleChanged(LayoutObject&, StyleDifference);
+
+  // Called when an SVG LayoutObject has been added to the tree.
+  // Returns true if an SVGResources object was created.
+  static bool AddResources(LayoutObject&);
+
+  // Called when an SVG LayoutObject has been removed from the tree.
+  // Returns true if an SVGResources object was destroyed.
+  static bool RemoveResources(LayoutObject&);
 
   // Called when the target element of a resource referenced by the
   // LayoutObject may have changed and we need to recreate the

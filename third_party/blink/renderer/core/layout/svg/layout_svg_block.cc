@@ -47,7 +47,7 @@ SVGElement* LayoutSVGBlock::GetElement() const {
 
 void LayoutSVGBlock::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientDestroyed(*this);
+  SVGResourcesCache::RemoveResources(*this);
   SVGResources::ClearClipPathFilterMask(*GetElement(), Style());
   LayoutBlockFlow::WillBeDestroyed();
 }
@@ -55,7 +55,10 @@ void LayoutSVGBlock::WillBeDestroyed() {
 void LayoutSVGBlock::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBlockFlow::InsertedIntoTree();
-  SVGResourcesCache::ClientWasAddedToTree(*this);
+  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
+                                                                         false);
+  if (SVGResourcesCache::AddResources(*this))
+    SetNeedsPaintPropertyUpdate();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
@@ -64,7 +67,10 @@ void LayoutSVGBlock::InsertedIntoTree() {
 
 void LayoutSVGBlock::WillBeRemovedFromTree() {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientWillBeRemovedFromTree(*this);
+  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
+                                                                         false);
+  if (SVGResourcesCache::RemoveResources(*this))
+    SetNeedsPaintPropertyUpdate();
   LayoutBlockFlow::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {

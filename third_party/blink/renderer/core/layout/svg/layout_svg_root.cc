@@ -318,7 +318,7 @@ void LayoutSVGRoot::PaintReplaced(const PaintInfo& paint_info,
 
 void LayoutSVGRoot::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientDestroyed(*this);
+  SVGResourcesCache::RemoveResources(*this);
   SVGResources::ClearClipPathFilterMask(To<SVGSVGElement>(*GetNode()), Style());
   LayoutReplaced::WillBeDestroyed();
 }
@@ -434,12 +434,18 @@ void LayoutSVGRoot::DescendantIsolationRequirementsChanged(
 void LayoutSVGRoot::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutReplaced::InsertedIntoTree();
-  SVGResourcesCache::ClientWasAddedToTree(*this);
+  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
+                                                                         false);
+  if (SVGResourcesCache::AddResources(*this))
+    SetNeedsPaintPropertyUpdate();
 }
 
 void LayoutSVGRoot::WillBeRemovedFromTree() {
   NOT_DESTROYED();
-  SVGResourcesCache::ClientWillBeRemovedFromTree(*this);
+  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
+                                                                         false);
+  if (SVGResourcesCache::RemoveResources(*this))
+    SetNeedsPaintPropertyUpdate();
   LayoutReplaced::WillBeRemovedFromTree();
 }
 
