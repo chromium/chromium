@@ -26,6 +26,10 @@ class PerformanceManagerLifetime {
   PerformanceManagerLifetime(Decorators, GraphCreatedCallback);
   ~PerformanceManagerLifetime();
 
+  // Allows specifying an additional callback that will be invoked in tests.
+  static void SetAdditionalGraphCreatedCallbackForTesting(
+      GraphCreatedCallback graph_created_callback);
+
  private:
   std::unique_ptr<PerformanceManager> performance_manager_;
   std::unique_ptr<PerformanceManagerRegistry> performance_manager_registry_;

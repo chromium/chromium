@@ -6,6 +6,7 @@
 
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
+#include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -19,6 +20,16 @@ namespace performance_manager {
 
 PerformanceManagerBrowserTestHarness::~PerformanceManagerBrowserTestHarness() =
     default;
+
+void PerformanceManagerBrowserTestHarness::SetUp() {
+  PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
+      base::BindLambdaForTesting(
+          [self = this](Graph* graph) { self->OnGraphCreated(graph); }));
+
+  // The PM gets initialized in the following, so this must occur after
+  // setting the callback.
+  Super::SetUp();
+}
 
 void PerformanceManagerBrowserTestHarness::PreRunTestOnMainThread() {
   Super::PreRunTestOnMainThread();
@@ -36,6 +47,8 @@ void PerformanceManagerBrowserTestHarness::SetUpCommandLine(
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "PerformanceManagerInstrumentation");
 }
+
+void PerformanceManagerBrowserTestHarness::OnGraphCreated(Graph* graph) {}
 
 content::Shell* PerformanceManagerBrowserTestHarness::CreateShell() {
   content::Shell* shell = CreateBrowser();

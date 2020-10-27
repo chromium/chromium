@@ -5,6 +5,7 @@
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
@@ -27,6 +28,12 @@ namespace performance_manager {
 
 namespace {
 
+GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
+  static base::NoDestructor<GraphCreatedCallback>
+      additional_graph_created_callback;
+  return additional_graph_created_callback.get();
+}
+
 void DefaultGraphCreatedCallback(
     GraphCreatedCallback external_graph_created_callback,
     GraphImpl* graph) {
@@ -43,13 +50,19 @@ void DefaultGraphCreatedCallback(
 #if !defined(OS_ANDROID)
   graph->PassToGraph(std::make_unique<SiteDataRecorder>());
 #endif
+
+  // Run graph created callbacks.
   std::move(external_graph_created_callback).Run(graph);
+  if (*GetAdditionalGraphCreatedCallback())
+    std::move(*GetAdditionalGraphCreatedCallback()).Run(graph);
 }
 
 void NullGraphCreatedCallback(
     GraphCreatedCallback external_graph_created_callback,
     GraphImpl* graph) {
   std::move(external_graph_created_callback).Run(graph);
+  if (*GetAdditionalGraphCreatedCallback())
+    std::move(*GetAdditionalGraphCreatedCallback()).Run(graph);
 }
 
 base::OnceCallback<void(GraphImpl*)> AddDecorators(
@@ -82,6 +95,12 @@ PerformanceManagerLifetime::~PerformanceManagerLifetime() {
   performance_manager_registry_.reset();
   performance_manager::DestroyPerformanceManager(
       std::move(performance_manager_));
+}
+
+// static
+void PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
+    GraphCreatedCallback graph_created_callback) {
+  *GetAdditionalGraphCreatedCallback() = std::move(graph_created_callback);
 }
 
 std::unique_ptr<PerformanceManager>
