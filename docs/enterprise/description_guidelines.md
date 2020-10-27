@@ -6,6 +6,7 @@ how various product names and the like should be referenced.
 * Chrome Browser Cloud Management: `<ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`
 * Linux: `<ph name="LINUX_OS_NAME">Linux</ph>`
 * Internet Explorer: `<ph name="IE_PRODUCT_NAME">Internet® Explorer®</ph>`
+* Google Admin console: `<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>`
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
 * macOS: `<ph name="MAC_OS_NAME">macOS</ph>`
