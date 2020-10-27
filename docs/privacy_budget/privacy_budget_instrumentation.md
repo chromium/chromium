@@ -17,10 +17,10 @@ Follow the instructions below for adding instrumentation for an API.
 1. Determine the `UkmSourceId` and `UkmRecorder` to use for reporting, which
    depends on what you have. See the table below:
 
-   |You have this              |Use this                                                                 |
-   |---------------------------|-------------------------------------------------------------------------|
-   |[`blink::Document`]        |`Document::UkmRecorder()` and `Document::UkmSourceID()`                  |
-   |[`blink::ExecutionContext`]|`ExecutionContext::UkmRecorder()` and `ExecutionContext::UkmSourceID()`  |
+   | You have this              | Use this                                                                |
+   |----------------------------|-------------------------------------------------------------------------|
+   |[`blink::Document`]         |`Document::UkmRecorder()` and `Document::UkmSourceID()`                  |
+   |[`blink::ExecutionContext`] |`ExecutionContext::UkmRecorder()` and `ExecutionContext::UkmSourceID()`  |
 
    Several classes inherit `blink::ExecutionContext` and therefore implement
    `UkmRecorder()` and `UkmSourceID()` methods. E.g.:
@@ -38,12 +38,12 @@ Follow the instructions below for adding instrumentation for an API.
    source ID can be mapped to a top level navigation.
 
 1. Decide on the [`blink::IdentifiableSurface`] to use, and the method for
-   constructing it. If there's no corresponding surface type, see the [Surface
-   Types](#surface-types) section for instructions on adding a new type.
+   constructing it. If there's no corresponding surface type, see the
+   [Surface Types](#surface-types) section for instructions on adding a new type.
 
    *** note
-   When constructing the [`blink::IdentifiableSurface`] instance, prefer
-   `FromTypeAndToken` instead of `FromTypeFromInput`.
+   What's a good candidate for [`blink::IdentifiableSurface`]?
+   See [What's a good candidate for IdentifiableSurface?] below.
    ***
 
 1. Condition all additional work on whether the study is active and whether the
@@ -236,7 +236,7 @@ belong to two different types. I.e. two different
 [`blink::IdentifiableSurface::Type`]`s`. If a matching type doesn't exist,
 you'll need to add one. See the next section for how to do that.
 
-### Adding a Surface Type
+### Adding a Surface Type {#adding-a-surface-type}
 
 All surface types and their parameters must be documented in
 [`identifiable_surface.h`]. When adding a new type, you should document:
@@ -291,8 +291,6 @@ Here's a sample CL that shows what needs to be done:
   * http://crrev.com/c/2351957: Adds IDL based instrumentation for
     `Screen.internal` and `Screen.primary`.
 
-TODO(dylancutler@google.com): Add examples of adding support for new V8 types.
-
 Don't add custom `UseCounter` enums and instead rely on the generated
 `UseCounter` name whenever possible.
 
@@ -327,7 +325,7 @@ detail that doesn't belong in the IDL. It also adds unnecessary noise.
 
 *** note
 **IMPORTANT** Make sure that each API has its own `UseCounter` name. Otherwise
-multiple APIs will have their samples accumulate within the same bucket. This
+multiple APIs will have their samples aggregated within the same bucket. This
 alters the observed characteristics of the API from what it really is.
 ***
 
@@ -337,12 +335,15 @@ alters the observed characteristics of the API from what it really is.
 [`blink::IdentifiabilityStudySettings`]: ../../third_party/blink/public/common/privacy_budget/identifiability_study_settings.h
 [`blink::IdentifiableSurface::Type`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
 [`blink::IdentifiableSurface`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
+[`blink::WebFeature`]: ../../third_party/blink/public/mojom/web_feature/web_feature.mojom
+[`HighEntropy`]: ../../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#HighEntropy_m_a_c
 [`identifiability_digest_helpers.h`]: ../../third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h
 [`identifiable_surface.h`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
 [`identifiable_token.h`]: ../../third_party/blink/public/common/privacy_budget/identifiable_token.h
+[`Measure`]: ../../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#Measure_i_m_a_c
 [`Plugin`]: ../../third_party/blink/renderer/modules/plugins/plugin.idl
 [`Screen`]: ../../third_party/blink/renderer/core/frame/screen.idl
 [direct surface]: privacy_budget_glossary.md#directsurface
+[Use Counter]: ../use_counter_wiki.md
 [volatile surface]: privacy_budget_glossary.md#volatilesurface
-[`HighEntropy`]: ../../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#HighEntropy_m_a_c
-[`Measure`]: ../../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#Measure_i_m_a_c
+[What's a good candidate for IdentifiableSurface?]: good_identifiable_surface.md
