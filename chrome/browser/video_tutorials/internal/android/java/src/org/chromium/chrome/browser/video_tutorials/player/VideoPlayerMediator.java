@@ -143,7 +143,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
 
     private void changeLanguage() {
         mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, true);
-        mLanguagePicker.showLanguagePicker(this::onLanguageSelected, () -> {} /* closeCallback */);
+        mLanguagePicker.showLanguagePicker(this::onLanguageSelected, this::onLanguagePickerClosed);
         VideoTutorialMetrics.recordUserAction(mTutorial.featureType, UserAction.CHANGE_LANGUAGE);
     }
 
@@ -161,6 +161,10 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, false);
         updateChangeLanguageButtonText();
         mVideoTutorialService.getTutorial(mTutorial.featureType, this::startVideo);
+    }
+
+    private void onLanguagePickerClosed() {
+        mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, false);
     }
 
     private void tryNow() {

@@ -132,12 +132,8 @@ class TutorialManagerTest : public testing::Test {
   }
 
   void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups) {
-    base::RunLoop loop;
-    manager()->SaveGroups(
-        std::move(groups),
-        base::BindOnce(&TutorialManagerTest::OnComplete, base::Unretained(this),
-                       loop.QuitClosure()));
-    loop.Run();
+    manager()->SaveGroups(std::move(groups));
+    base::RunLoop().RunUntilIdle();
   }
 
  protected:

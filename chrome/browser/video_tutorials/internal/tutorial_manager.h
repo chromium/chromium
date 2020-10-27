@@ -34,8 +34,8 @@ class TutorialManager {
 
   // Saves a fresh set of video tutorials into database. Called after a network
   // fetch.
-  virtual void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups,
-                          SuccessCallback callback) = 0;
+  virtual void SaveGroups(
+      std::unique_ptr<std::vector<TutorialGroup>> groups) = 0;
 
   virtual ~TutorialManager() = default;
 

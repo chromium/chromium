@@ -82,12 +82,12 @@ void TutorialManagerImpl::OnInitialDataLoaded(
     bool success,
     std::unique_ptr<std::vector<TutorialGroup>> all_groups) {
   if (all_groups) {
+    supported_languages_.clear();
     for (auto& tutorial_group : *all_groups) {
       supported_languages_.emplace_back(tutorial_group.language);
     }
   }
 
-  DCHECK(!init_success_.has_value());
   init_success_ = success;
 
   // Flush all cached calls in FIFO sequence.
@@ -121,8 +121,7 @@ void TutorialManagerImpl::OnTutorialsLoaded(
 }
 
 void TutorialManagerImpl::SaveGroups(
-    std::unique_ptr<std::vector<TutorialGroup>> groups,
-    SuccessCallback callback) {
+    std::unique_ptr<std::vector<TutorialGroup>> groups) {
   std::vector<std::string> new_locales;
   std::vector<std::pair<std::string, TutorialGroup>> key_entry_pairs;
   for (auto& group : *groups.get()) {
@@ -140,7 +139,9 @@ void TutorialManagerImpl::SaveGroups(
     }
   }
 
-  store_->UpdateAll(key_entry_pairs, keys_to_delete, std::move(callback));
+  store_->UpdateAll(key_entry_pairs, keys_to_delete,
+                    base::BindOnce(&TutorialManagerImpl::OnInitCompleted,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TutorialManagerImpl::MaybeCacheApiCall(base::OnceClosure api_call) {

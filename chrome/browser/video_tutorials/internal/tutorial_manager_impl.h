@@ -32,8 +32,7 @@ class TutorialManagerImpl : public TutorialManager {
   const std::vector<std::string>& GetSupportedLanguages() override;
   base::Optional<std::string> GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
-  void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups,
-                  SuccessCallback callback) override;
+  void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups) override;
 
   void Initialize();
   void OnInitCompleted(bool success);

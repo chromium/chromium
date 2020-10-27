@@ -9,17 +9,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_bg_color"
-    android:paddingEnd="12dp"
-    android:paddingTop="12dp"
-    android:paddingStart="16dp" >
+    android:paddingTop="12dp" >
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/close_button"
-        android:layout_height="24dp"
-        android:layout_width="24dp"
+        android:layout_height="48dp"
+        android:layout_width="48dp"
         android:layout_alignParentEnd="true"
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/close"
+        android:scaleType="center"
         android:src="@drawable/btn_close" />
 
     <TextView
@@ -27,10 +26,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="36dp"
+        android:layout_marginStart="24dp"
         android:layout_above="@id/recycler_view"
         android:layout_centerHorizontal="true"
         android:text="@string/video_tutorials_language_picker_title"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

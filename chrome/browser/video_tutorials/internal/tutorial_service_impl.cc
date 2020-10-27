@@ -80,9 +80,7 @@ void TutorialServiceImpl::OnFetchFinished(
   auto tutorial_groups = std::make_unique<std::vector<TutorialGroup>>();
   TutorialGroupsFromServerResponseProto(&response_proto, tutorial_groups.get());
 
-  auto lambda = [](bool success) {};
-  tutorial_manager_->SaveGroups(std::move(tutorial_groups),
-                                base::BindOnce(std::move(lambda)));
+  tutorial_manager_->SaveGroups(std::move(tutorial_groups));
 }
 
 const std::vector<std::string>& TutorialServiceImpl::GetSupportedLanguages() {

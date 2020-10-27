@@ -12,22 +12,22 @@
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/close_button"
-        android:layout_height="24dp"
-        android:layout_width="24dp"
+        android:layout_height="48dp"
+        android:layout_width="48dp"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/close"
+        android:scaleType="center"
         android:src="@drawable/btn_close" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/share_button"
-        android:layout_height="24dp"
-        android:layout_width="24dp"
+        android:layout_height="48dp"
+        android:layout_width="48dp"
         android:layout_toStartOf="@id/close_button"
-        android:layout_marginEnd="16dp"
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/share"
+        android:scaleType="center"
         android:src="@drawable/ic_share_white_24dp" />
 
     <View
