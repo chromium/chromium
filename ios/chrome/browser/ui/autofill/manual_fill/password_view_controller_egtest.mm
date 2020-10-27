@@ -4,7 +4,10 @@
 
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -14,12 +17,14 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::ManualFallbackKeyboardIconMatcher;
 using chrome_test_util::ManualFallbackPasswordIconMatcher;
@@ -59,6 +64,19 @@ id<GREYMatcher> NotSecureWebsiteAlert() {
       IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
 }
 
+// Matcher for the confirmation dialog Continue button.
+id<GREYMatcher> ConfirmUsingOtherPasswordButton() {
+  return grey_allOf(ButtonWithAccessibilityLabelId(
+                        IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE),
+                    grey_interactable(), nullptr);
+}
+
+// Matcher for the confirmation dialog Cancel button.
+id<GREYMatcher> CancelUsingOtherPasswordButton() {
+  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_CANCEL),
+                    grey_interactable(), nullptr);
+}
+
 // Polls the JavaScript query |java_script_condition| until the returned
 // |boolValue| is YES with a kWaitForActionTimeout timeout.
 BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
@@ -78,6 +96,10 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
 
 // Integration Tests for Mannual Fallback Passwords View Controller.
 @interface PasswordViewControllerTestCase : ChromeTestCase
+
+// URL of the current page.
+@property(assign) GURL URL;
+
 @end
 
 @implementation PasswordViewControllerTestCase
@@ -85,8 +107,8 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
 - (void)setUp {
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
+  self.URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:self.URL];
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
   [AutofillAppInterface saveExamplePasswordForm];
 }
@@ -200,10 +222,45 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
       performAction:grey_tap()];
 
+  base::string16 origin = base::ASCIIToUTF16(
+      password_manager::GetShownOrigin(url::Origin::Create(self.URL)));
+  NSString* title = l10n_util::GetNSStringF(
+      IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION, origin);
+  [[EarlGrey selectElementWithMatcher:grey_text(title)]
+      assertWithMatcher:grey_notNil()];
+
+  // Acknowledge concerns using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
+      performAction:grey_tap()];
+
   // Verify the use other passwords opened.
   [[EarlGrey
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the "Use Other Password..." screen won't open if canceled.
+- (void)testUseOtherPasswordActionCloses {
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the "Manage Passwords..." action.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      performAction:grey_tap()];
+
+  // Cancel using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:CancelUsingOtherPasswordButton()]
+      performAction:grey_tap()];
+
+  // Verify the use other passwords not opened.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that returning from "Use Other Password..." leaves the view and icons
@@ -223,6 +280,10 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
 
   // Tap the "Manage Passwords..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      performAction:grey_tap()];
+
+  // Acknowledge concerns using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
       performAction:grey_tap()];
 
   // Verify the use other passwords opened.

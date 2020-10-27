@@ -230,6 +230,8 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/password_manager/core/browser",
+    "//components/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/autofill:feature_flags",
@@ -241,6 +243,7 @@ source_set("eg2_tests") {
     "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
+    "//ui/base",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]

@@ -1774,6 +1774,17 @@ Follow the steps below:
       <message name="IDS_IOS_CANCEL_PASSWORD_EDIT" desc="Cancel button inside confirmation alert when the user is trying to edit password [iOS only]" meaning="Cancels editing">
         Cancel
       </message>
+      <message name="IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_TITLE" desc="Title for the confirmation dialog which is shown when user wants to use other passwords. [iOS only]">
+        Use other password
+      </message>
+      <message name="IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION" desc="Description for the confirmation dialog which is shown when user wants to use other passwords. [iOS only]">
+        If you trust <ph name="TIME">$1<ex>example.com</ex></ph>, you can use a saved password from another site.
+
+Try to use a unique password for every site.
+      </message>
+      <message name="IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE" desc="Action button for confirmation dialog which is shown when user wants to use other passwords. [iOS only]" meaning="User acknowledge warning and wants to proceed.">
+        Continue
+      </message>
       <message name="IDS_IOS_LAST_COMPLETED_CHECK" desc="Footer for Password Check section which shows the timestamp of the last check." meaning="Time when passwords were checked last time.">
         Last checked <ph name="TIME">$1<ex>10 minutes ago</ex></ph>.
       </message>
