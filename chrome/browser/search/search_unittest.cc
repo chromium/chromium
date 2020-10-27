@@ -204,7 +204,7 @@ TEST_F(SearchTest, ProcessIsolation) {
     const content::RenderProcessHost* start_rph =
         contents->GetMainFrame()->GetProcess();
     const content::RenderViewHost* start_rvh =
-        contents->GetRenderViewHost();
+        contents->GetMainFrame()->GetRenderViewHost();
 
     // Navigate to end URL.
     NavigateAndCommitActiveTab(GURL(test.end_url));
@@ -215,7 +215,7 @@ TEST_F(SearchTest, ProcessIsolation) {
               start_site_instance.get() == contents->GetSiteInstance())
         << test.description;
     EXPECT_EQ(test.same_site_instance,
-              start_rvh == contents->GetRenderViewHost())
+              start_rvh == contents->GetMainFrame()->GetRenderViewHost())
         << test.description;
     EXPECT_EQ(test.same_process,
               start_rph == contents->GetMainFrame()->GetProcess())
@@ -241,7 +241,7 @@ TEST_F(SearchTest, ProcessIsolation_RendererInitiated) {
     const content::RenderProcessHost* start_rph =
         contents->GetMainFrame()->GetProcess();
     const content::RenderViewHost* start_rvh =
-        contents->GetRenderViewHost();
+        contents->GetMainFrame()->GetRenderViewHost();
 
     // Navigate to end URL via a renderer-initiated navigation.
     content::NavigationSimulator::NavigateAndCommitFromDocument(
@@ -254,7 +254,7 @@ TEST_F(SearchTest, ProcessIsolation_RendererInitiated) {
               start_site_instance.get() == contents->GetSiteInstance())
         << test.description;
     EXPECT_EQ(test.same_site_instance,
-              start_rvh == contents->GetRenderViewHost())
+              start_rvh == contents->GetMainFrame()->GetRenderViewHost())
         << test.description;
     EXPECT_EQ(test.same_process,
               start_rph == contents->GetMainFrame()->GetProcess())
