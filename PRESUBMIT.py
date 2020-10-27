@@ -391,7 +391,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^google_apis/drive/',
   '^ios/chrome/',
   '^ios/components/',
-  '^ios/net/',
   '^ios/web/',
   '^ios/web_view/',
   '^ipc/',
