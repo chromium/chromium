@@ -125,6 +125,7 @@ html_to_js("web_components") {
     "scan_settings_section.js",
     "scanner_select.js",
     "scanning_app.js",
+    "scanning_shared_css.js",
     "source_select.js",
     "throbber_css.js",
   ]
