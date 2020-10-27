@@ -951,6 +951,9 @@
     'diagnostics_ui': {
       'filepath': 'chromeos/components/diagnostics_ui/',
     },
+    'discardable_memory': {
+        'filepath': 'components/discardable_memory/',
+    },
     'disk_cache': {
       'filepath': 'net/disk_cache/|http_cache',
     },
@@ -2475,6 +2478,7 @@
                        'joonbug+diagnostics-watch@chromium.org',
                        'michaelcheco+diagnostics-watch@google.com',
                        'zentaro+diagnostics-watch@chromium.org'],
+    'discardable_memory': ['thiabaud+watch-discardable-memory@google.com'],
     'disk_cache': ['gavinp+disk@chromium.org'],
     'dom_storage': ['dmurph+watchingdomstorage@chromium.org'],
     'download': ['dtrainor+watch@chromium.org'],
