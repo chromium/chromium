@@ -36,6 +36,20 @@ compile_entitlements("entitlements") {
 ios_appex_bundle("widget_kit_extension") {
   sources = []
 
+  deps = [
+    "resources:widget_actions_row_background_color",
+    "resources:widget_background_color",
+    "resources:widget_chrome_logo",
+    "resources:widget_dino_background",
+    "resources:widget_dino_background_placeholder",
+    "resources:widget_incognito_icon",
+    "resources:widget_qr_icon",
+    "resources:widget_search_bar_color",
+    "resources:widget_separator_color",
+    "resources:widget_text_color",
+    "resources:widget_voice_search_icon",
+  ]
+
   configs += [ "//build/config/compiler:enable_arc" ]
 
   frameworks = [
