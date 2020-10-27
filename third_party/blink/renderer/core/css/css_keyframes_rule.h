@@ -52,7 +52,7 @@ class StyleRuleKeyframes final : public StyleRuleBase {
   void WrapperAppendKeyframe(StyleRuleKeyframe*);
   void WrapperRemoveKeyframe(unsigned);
 
-  String GetName() const { return name_; }
+  AtomicString GetName() const { return name_; }
   void SetName(const String& name) { name_ = AtomicString(name); }
 
   bool IsVendorPrefixed() const { return is_prefixed_; }

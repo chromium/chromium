@@ -57,7 +57,7 @@ class CORE_EXPORT ScopedStyleResolver final
   ScopedStyleResolver* Parent() const;
 
   StyleRuleKeyframes* KeyframeStylesForAnimation(
-      const StringImpl* animation_name);
+      const AtomicString& animation_name);
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
   void CollectMatchingAuthorRules(ElementRuleCollector&,
@@ -107,7 +107,7 @@ class CORE_EXPORT ScopedStyleResolver final
   MediaQueryResultList device_dependent_media_query_results_;
 
   using KeyframesRuleMap =
-      HeapHashMap<const StringImpl*, Member<StyleRuleKeyframes>>;
+      HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
 
   class RuleSubSet final : public GarbageCollected<RuleSubSet> {

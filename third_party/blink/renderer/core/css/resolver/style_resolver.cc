@@ -1459,7 +1459,7 @@ StyleRuleKeyframes* StyleResolver::FindKeyframesRule(
 
   for (auto& resolver : resolvers) {
     if (StyleRuleKeyframes* keyframes_rule =
-            resolver->KeyframeStylesForAnimation(animation_name.Impl()))
+            resolver->KeyframeStylesForAnimation(animation_name))
       return keyframes_rule;
   }
 
