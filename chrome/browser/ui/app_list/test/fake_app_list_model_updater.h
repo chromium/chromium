@@ -19,6 +19,8 @@ class ChromeAppListItem;
 class FakeAppListModelUpdater : public AppListModelUpdater {
  public:
   explicit FakeAppListModelUpdater(Profile* profile = nullptr);
+  FakeAppListModelUpdater(const FakeAppListModelUpdater&) = delete;
+  FakeAppListModelUpdater& operator=(const FakeAppListModelUpdater&) = delete;
   ~FakeAppListModelUpdater() override;
 
   // For AppListModel:
@@ -91,8 +93,6 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
       const std::string& oem_folder_name,
       const syncer::StringOrdinal& preferred_oem_position);
   syncer::StringOrdinal GetOemFolderPos();
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppListModelUpdater);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_TEST_FAKE_APP_LIST_MODEL_UPDATER_H_

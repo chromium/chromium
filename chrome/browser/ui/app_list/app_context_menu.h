@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -28,7 +27,9 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
                  Profile* profile,
                  const std::string& app_id,
                  AppListControllerDelegate* controller);
-  ~AppContextMenu() override;
+  AppContextMenu(const AppContextMenu&) = delete;
+  AppContextMenu& operator=(const AppContextMenu&) = delete;
+  ~AppContextMenu() override = default;
 
   using GetMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
@@ -69,8 +70,6 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
   Profile* profile_;
   const std::string app_id_;
   AppListControllerDelegate* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppContextMenu);
 };
 
 }  // namespace app_list

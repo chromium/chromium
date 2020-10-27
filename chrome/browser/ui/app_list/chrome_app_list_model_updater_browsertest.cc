@@ -38,6 +38,8 @@ class OemAppPositionTest : public chromeos::LoginManagerTest {
   OemAppPositionTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(1);
   }
+  OemAppPositionTest(const OemAppPositionTest&) = delete;
+  OemAppPositionTest& operator=(const OemAppPositionTest&) = delete;
   ~OemAppPositionTest() override = default;
 
   // LoginManagerTest:
@@ -66,9 +68,6 @@ class OemAppPositionTest : public chromeos::LoginManagerTest {
   }
 
   chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OemAppPositionTest);
 };
 
 class AppPositionReorderingTest : public extensions::ExtensionBrowserTest {

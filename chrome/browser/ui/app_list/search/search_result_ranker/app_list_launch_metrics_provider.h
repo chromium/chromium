@@ -13,7 +13,6 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_list_launch_recorder.h"
@@ -33,6 +32,9 @@ class AppListLaunchMetricsProviderTest;
 // logging events should be sent to AppListLaunchRecorder.
 class AppListLaunchMetricsProvider : public metrics::MetricsProvider {
  public:
+  AppListLaunchMetricsProvider(const AppListLaunchMetricsProvider&) = delete;
+  AppListLaunchMetricsProvider& operator=(const AppListLaunchMetricsProvider&) =
+      delete;
   ~AppListLaunchMetricsProvider() override;
 
   // metrics::MetricsProvider:
@@ -69,8 +71,6 @@ class AppListLaunchMetricsProvider : public metrics::MetricsProvider {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AppListLaunchMetricsProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppListLaunchMetricsProvider);
 };
 
 }  // namespace app_list

@@ -23,6 +23,9 @@ class ChromeAppListItem;
 class ChromeAppListModelUpdater : public AppListModelUpdater {
  public:
   explicit ChromeAppListModelUpdater(Profile* profile);
+  ChromeAppListModelUpdater(const ChromeAppListModelUpdater&) = delete;
+  ChromeAppListModelUpdater& operator=(const ChromeAppListModelUpdater&) =
+      delete;
   ~ChromeAppListModelUpdater() override;
 
   void SetActive(bool active) override;
@@ -116,8 +119,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   bool search_engine_is_google_ = false;
 
   base::WeakPtrFactory<ChromeAppListModelUpdater> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppListModelUpdater);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_CHROME_APP_LIST_MODEL_UPDATER_H_

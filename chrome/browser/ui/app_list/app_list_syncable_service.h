@@ -10,9 +10,9 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -82,19 +82,22 @@ class AppListSyncableService : public syncer::SyncableService,
    public:
     explicit ScopedModelUpdaterFactoryForTest(
         const ModelUpdaterFactoryCallback& factory);
+    ScopedModelUpdaterFactoryForTest(const ScopedModelUpdaterFactoryForTest&) =
+        delete;
+    ScopedModelUpdaterFactoryForTest& operator=(
+        const ScopedModelUpdaterFactoryForTest&) = delete;
     ~ScopedModelUpdaterFactoryForTest();
 
    private:
     ModelUpdaterFactoryCallback factory_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedModelUpdaterFactoryForTest);
   };
 
   using SyncItemMap = std::map<std::string, std::unique_ptr<SyncItem>>;
 
   // Populates the model when |profile|'s extension system is ready.
   explicit AppListSyncableService(Profile* profile);
-
+  AppListSyncableService(const AppListSyncableService&) = delete;
+  AppListSyncableService& operator=(const AppListSyncableService&) = delete;
   ~AppListSyncableService() override;
 
   // Registers prefs to support local storage.
@@ -345,8 +348,8 @@ class AppListSyncableService : public syncer::SyncableService,
   // another.
   SyncItemMap pending_transfer_map_;
   syncer::SyncableService::StartSyncFlare flare_;
-  bool initial_sync_data_processed_;
-  bool first_app_list_sync_;
+  bool initial_sync_data_processed_ = false;
+  bool first_app_list_sync_ = true;
   std::string oem_folder_name_;
   // Callback to install default page breaks.
   // Only set for first time user for tablet form devices.
@@ -358,8 +361,6 @@ class AppListSyncableService : public syncer::SyncableService,
   base::OneShotEvent on_initialized_;
 
   base::WeakPtrFactory<AppListSyncableService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppListSyncableService);
 };
 
 }  // namespace app_list

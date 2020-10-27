@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/bind.h"
@@ -213,6 +216,9 @@ std::string GetLastPositionString() {
 class AppListSyncableServiceTest : public AppListTestBase {
  public:
   AppListSyncableServiceTest() = default;
+  AppListSyncableServiceTest(const AppListSyncableServiceTest&) = delete;
+  AppListSyncableServiceTest& operator=(const AppListSyncableServiceTest&) =
+      delete;
   ~AppListSyncableServiceTest() override = default;
 
   void SetUp() override {
@@ -303,8 +309,6 @@ class AppListSyncableServiceTest : public AppListTestBase {
   std::unique_ptr<
       app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>
       model_updater_factory_scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListSyncableServiceTest);
 };
 
 TEST_F(AppListSyncableServiceTest, OEMFolderForConflictingPos) {

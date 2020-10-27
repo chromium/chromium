@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/arc/mojom/app.mojom-forward.h"
 #include "components/arc/session/connection_holder.h"
@@ -31,6 +30,8 @@ class ArcAppListPrefsFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<ArcAppListPrefsFactory>;
 
   ArcAppListPrefsFactory();
+  ArcAppListPrefsFactory(const ArcAppListPrefsFactory&) = delete;
+  ArcAppListPrefsFactory& operator=(const ArcAppListPrefsFactory&) = delete;
   ~ArcAppListPrefsFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
@@ -45,8 +46,6 @@ class ArcAppListPrefsFactory : public BrowserContextKeyedServiceFactory {
       std::unique_ptr<
           arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>>>
       sync_test_app_connection_holders_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppListPrefsFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_LIST_PREFS_FACTORY_H_

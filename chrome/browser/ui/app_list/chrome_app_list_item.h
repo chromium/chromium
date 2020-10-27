@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "ui/gfx/image/image_skia.h"
@@ -45,6 +44,8 @@ class ChromeAppListItem {
   ChromeAppListItem(Profile* profile,
                     const std::string& app_id,
                     AppListModelUpdater* model_updater);
+  ChromeAppListItem(const ChromeAppListItem&) = delete;
+  ChromeAppListItem& operator=(const ChromeAppListItem&) = delete;
   virtual ~ChromeAppListItem();
 
   // AppListControllerDelegate is not properly implemented in tests. Use mock
@@ -141,8 +142,6 @@ class ChromeAppListItem {
   std::unique_ptr<ash::AppListItemMetadata> metadata_;
   Profile* profile_;
   AppListModelUpdater* model_updater_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppListItem);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_CHROME_APP_LIST_ITEM_H_

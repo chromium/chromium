@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 
@@ -23,7 +22,9 @@ class AppListModelBuilder {
   // |controller| is owned by implementation of AppListService.
   AppListModelBuilder(AppListControllerDelegate* controller,
                       const char* item_type);
-  virtual ~AppListModelBuilder();
+  AppListModelBuilder(const AppListModelBuilder&) = delete;
+  AppListModelBuilder& operator=(const AppListModelBuilder&) = delete;
+  virtual ~AppListModelBuilder() = default;
 
   // Initialize to use app-list sync and sets |service_| to |service|.
   // |service| is the owner of this instance.
@@ -71,8 +72,6 @@ class AppListModelBuilder {
 
   // Global constant defined for each item type.
   const char* item_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListModelBuilder);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_MODEL_BUILDER_H_

@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 
 #include <algorithm>
+#include <set>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/one_shot_event.h"
 #include "base/stl_util.h"
 #include "base/values.h"
@@ -235,7 +235,8 @@ class AppListSyncableService::ModelUpdaterObserver
     DVLOG(2) << owner_ << ": ModelUpdaterObserver Added";
     owner_->GetModelUpdater()->AddObserver(this);
   }
-
+  ModelUpdaterObserver(const ModelUpdaterObserver&) = delete;
+  ModelUpdaterObserver& operator=(const ModelUpdaterObserver&) = delete;
   ~ModelUpdaterObserver() override {
     owner_->GetModelUpdater()->RemoveObserver(this);
     DVLOG(2) << owner_ << ": ModelUpdaterObserver Removed";
@@ -285,8 +286,6 @@ class AppListSyncableService::ModelUpdaterObserver
 
   AppListSyncableService* owner_;
   std::string adding_item_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModelUpdaterObserver);
 };
 
 // AppListSyncableService
@@ -312,9 +311,7 @@ void AppListSyncableService::SetAppIsDefaultForTest(Profile* profile,
 AppListSyncableService::AppListSyncableService(Profile* profile)
     : profile_(profile),
       extension_system_(extensions::ExtensionSystem::Get(profile)),
-      extension_registry_(extensions::ExtensionRegistry::Get(profile)),
-      initial_sync_data_processed_(false),
-      first_app_list_sync_(true) {
+      extension_registry_(extensions::ExtensionRegistry::Get(profile)) {
   if (g_model_updater_factory_callback_for_test_)
     model_updater_ = g_model_updater_factory_callback_for_test_->Run();
   else

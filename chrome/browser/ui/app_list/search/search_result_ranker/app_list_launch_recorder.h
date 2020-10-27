@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -52,6 +51,9 @@ class AppListLaunchRecorder {
   };
 
   static AppListLaunchRecorder* GetInstance();
+
+  AppListLaunchRecorder(const AppListLaunchRecorder&) = delete;
+  AppListLaunchRecorder& operator=(const AppListLaunchRecorder&) = delete;
 
  private:
   friend class base::NoDestructor<AppListLaunchRecorder>;
@@ -98,8 +100,6 @@ class AppListLaunchRecorder {
   LaunchEventCallbackList callback_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AppListLaunchRecorder);
 };
 
 }  // namespace app_list

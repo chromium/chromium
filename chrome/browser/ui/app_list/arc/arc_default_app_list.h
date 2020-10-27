@@ -15,7 +15,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 
@@ -58,6 +57,8 @@ class ArcDefaultAppList : public arc::ArcSessionManagerObserver {
   using AppInfoMap = std::map<std::string, std::unique_ptr<AppInfo>>;
 
   ArcDefaultAppList(Profile* profile, base::OnceClosure ready_callback);
+  ArcDefaultAppList(const ArcDefaultAppList&) = delete;
+  ArcDefaultAppList& operator=(const ArcDefaultAppList&) = delete;
   ~ArcDefaultAppList() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -123,8 +124,6 @@ class ArcDefaultAppList : public arc::ArcSessionManagerObserver {
   base::RepeatingClosure barrier_closure_;
 
   base::WeakPtrFactory<ArcDefaultAppList> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDefaultAppList);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_DEFAULT_APP_LIST_H_

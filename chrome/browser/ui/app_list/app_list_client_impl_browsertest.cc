@@ -10,7 +10,6 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -425,13 +424,14 @@ IN_PROC_BROWSER_TEST_F(AppListClientSearchResultsBrowserTest,
 
 class AppListClientGuestModeBrowserTest : public InProcessBrowserTest {
  public:
-  AppListClientGuestModeBrowserTest() {}
+  AppListClientGuestModeBrowserTest() = default;
+  AppListClientGuestModeBrowserTest(const AppListClientGuestModeBrowserTest&) =
+      delete;
+  AppListClientGuestModeBrowserTest& operator=(
+      const AppListClientGuestModeBrowserTest&) = delete;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppListClientGuestModeBrowserTest);
 };
 
 void AppListClientGuestModeBrowserTest::SetUpCommandLine(
@@ -458,6 +458,8 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
   AppListAppLaunchTest() : extensions::ExtensionBrowserTest() {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
+  AppListAppLaunchTest(const AppListAppLaunchTest&) = delete;
+  AppListAppLaunchTest& operator=(const AppListAppLaunchTest&) = delete;
   ~AppListAppLaunchTest() override = default;
 
   // InProcessBrowserTest:
@@ -482,8 +484,6 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
 
  private:
   AppListModelUpdater* model_updater_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListAppLaunchTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,

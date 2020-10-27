@@ -51,8 +51,7 @@ ArcAppListPrefsFactory::ArcAppListPrefsFactory()
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
-ArcAppListPrefsFactory::~ArcAppListPrefsFactory() {
-}
+ArcAppListPrefsFactory::~ArcAppListPrefsFactory() = default;
 
 KeyedService* ArcAppListPrefsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

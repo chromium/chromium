@@ -16,7 +16,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -250,6 +249,8 @@ class ArcAppListPrefs : public KeyedService,
 
   static void UprevCurrentIconsVersionForTesting();
 
+  ArcAppListPrefs(const ArcAppListPrefs&) = delete;
+  ArcAppListPrefs& operator=(const ArcAppListPrefs&) = delete;
   ~ArcAppListPrefs() override;
 
   // Returns a list of all app ids, including ready and non-ready apps.
@@ -604,8 +605,6 @@ class ArcAppListPrefs : public KeyedService,
   base::OnceClosure app_list_refreshed_callback_;
 
   base::WeakPtrFactory<ArcAppListPrefs> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppListPrefs);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_LIST_PREFS_H_
