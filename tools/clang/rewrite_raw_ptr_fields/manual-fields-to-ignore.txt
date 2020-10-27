@@ -8,49 +8,11 @@
 # There is no need to specify template arguments:
 #     my_namespace::my_subnamespace::MyTemplate::my_field_
 
-# Populated manually - need to keep it constexpr:
-base::BasicStringPiece::ptr_
-base::CheckedContiguousIterator::current_
-base::CheckedContiguousIterator::end_
-base::CheckedContiguousIterator::start_
-base::CheckedContiguousRange::container_
-base::FeatureParam<base::TimeDelta, false>::feature
-base::FeatureParam<bool, false>::feature
-base::FeatureParam<double, false>::feature
-base::FeatureParam<int, false>::feature
-base::FeatureParam<std::__1::basic_string<char>, false>::feature
-base::FeatureParam<type-parameter-0-0, true>::feature
-base::FeatureParam<type-parameter-0-0, true>::options
-base::span::data_
-crash_reporter::internal::CrashKeyStringCombinedImpl::breakpad_key_
-crash_reporter::internal::CrashKeyStringCombinedImpl::crashpad_key_
-crash_reporter::internal::CrashKeyStringImpl::index_array_
-crash_reporter::internal::CrashKeyStringImpl::index_array_
-flags_ui::FeatureEntry::FeatureVariation::params
-gfx::VectorIcon::reps
-gfx::VectorIconRep::path
-safe_browsing::(anonymous namespace)::(anonymous struct)::feature
-tracing::MessageInfo::accepted_field_ids
-tracing::MessageInfo::sub_messages
-ui::(anonymous namespace)::I18nTestParam::test
-(anonymous namespace)::Node::next # from nt_registry.cc
-
 # Populated manually - double implicit-cast required.
 PaintManager::instance_
 
-# Populated manually - needed to avoid global constructors
-base::(anonymous namespace)::Provider::next
-
 # Populated manually - needed for lock annotations
 base::trace_event::TraceLog::OptionalAutoLock::lock_
-
-# Populated manually to avoid hitting tokens limit explicitly
-# enforced in check.cc:
-# // check.h is a widely included header and its size has significant impact on
-# // build time. Try not to raise this limit unless absolutely necessary. See
-# // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-# #pragma clang max_tokens_here 17000
-logging::CheckError::log_message_
 
 # Populated manually - templates make it difficult for the rewriter to see that
 # |.get()| needs to be appended.
@@ -107,11 +69,6 @@ x11::Connection::display_
 gtk::GtkKeyBindingsHandler::fake_window_
 gtk::GtkKeyBindingsHandler::handler_
 gtk::SelectFileDialogImplGTK::preview_
-net::(anonymous namespace)::SettingGetterImplGSettings::client_
-net::(anonymous namespace)::SettingGetterImplGSettings::http_client_
-net::(anonymous namespace)::SettingGetterImplGSettings::https_client_
-net::(anonymous namespace)::SettingGetterImplGSettings::ftp_client_
-net::(anonymous namespace)::SettingGetterImplGSettings::socks_client_
 remoting::(anonymous namespace)::DisconnectWindowGtk::disconnect_window_
 remoting::(anonymous namespace)::DisconnectWindowGtk::message_
 remoting::(anonymous namespace)::GtkFileChooserOnUiThread::file_dialog_
@@ -138,7 +95,6 @@ blink::VTTScanner::(anonymous union)::characters16
 
 # Populated manually, because of in-out-arg usage.
 blink::PaintController::IdAsHashKey::client
-ui::AXPlatformNodeAuraLinux::document_parent_
 ui::AXPlatformNodeAuraLinux::atk_object_
 
 # Populated manually - problems related to passing to a templated && parameter,
@@ -146,7 +102,6 @@ ui::AXPlatformNodeAuraLinux::atk_object_
 # rewriter has no visibility into where the parameter is forwarded to.
 ProfileDestroyer::profile_
 (anonymous namespace)::BluetoothLowEnergyApiTest::mock_adapter_
-base::trace_event::TraceValue::as_convertable
 content::RenderProcessHostImpl::browser_context_
 device::BluetoothDevice::adapter_
 
@@ -170,7 +125,6 @@ performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest:trac
 content::(anonymous namespace)::BackForwardCacheMessageFilter::interface_name_
 
 # Populated manually - other compile-time reasons
-logging::CheckOpResult::message_  # cyclic #include
 views::internal::ClassPropertySetter::property_  # passed to templated param T*
 (anonymous namespace)::ScopedFunctionHelper::function_ # function pointer template
 
@@ -193,7 +147,6 @@ blink::NGPhysicalContainerFragment::buffer_
 blink::DisplayItem::client_
 cc::FrameSequenceMetrics::throughput_ukm_reporter_
 cc::(anonymous namespace)::RasterTaskImpl::tile_tracing_id_
-content::MediaPlayerId::render_frame_host
 content::RenderViewImpl::webview_
 mojo::core::WatcherDispatcher::last_watch_to_block_arming_
 net::IOBuffer::data_
@@ -221,33 +174,10 @@ WTF::ListHashSet::head_
 WTF::ListHashSet::tail_
 
 # Populated manually - exit-time destructor
-gpu::GpuControlList::Conditions::devices
-gpu::GpuControlList::Conditions::driver_info
-gpu::GpuControlList::Conditions::gl_strings
-gpu::GpuControlList::Conditions::machine_model_info
-gpu::GpuControlList::Conditions::intel_gpu_series_list
-gpu::GpuControlList::Conditions::more
-gpu::GpuControlList::Entry::features
-gpu::GpuControlList::Entry::disabled_extensions
-gpu::GpuControlList::Entry::disabled_webgl_extensions
-gpu::GpuControlList::Entry::cr_bugs
-gpu::GpuControlList::Entry::exceptions
-media::ListElementInfo::id_info_
-media::SupportedTypeInfo::codecs
-tracing::(anonymous namespace)::AllowlistEntry::arg_name_filter
-net::(anonymous namespace)::CTRequiredPolicy::roots
-net::(anonymous namespace)::CTRequiredPolicy::exceptions
-net::HttpCache::Transaction::SetRequest(const net::NetLogWithSource &)::(anonymous struct)::search
-net::TransportSecurityStateSource::Pinset::accepted_pins
-net::TransportSecurityStateSource::Pinset::rejected_pins
-net::TransportSecurityStateSource::expect_ct_report_uris
-net::TransportSecurityStateSource::pinsets
 WTF::StaticSingleton::InstanceStorage::pointer_
 
 # Populated manually - attempt to use a deleted function (union's destructor is
 # deleted, because an inner struct has CheckedPtr field)
-flags_ui::FeatureEntry::(anonymous union)::(anonymous struct)::feature
-ui::NativeTheme::MenuSeparatorExtraParams::paint_rect
 
 # Populated manually - flexible array with non-trivial destruction
 blink::ShapeResultView::(anonymous struct)::alignment
@@ -261,7 +191,6 @@ WTF::LruCache::MappedListNodeWithKey::prev_
 
 # Populated manually - these pointers crash, due to use-after-move.
 gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
-gpu::gles2::ProgramCache::ScopedCacheUse::cache_
 
 #######
 # End of BackupRefPtr-specific sections
