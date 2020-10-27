@@ -112,7 +112,6 @@ vs-chromium-project.txt
 /chrome/browser/resources/media_router_internal/
 /chrome/browser/resources/settings_internal/
 /chrome/browser/resources/software_rendering_list
-/chrome/browser/resources/tab_search
 # Asset files downloaded by gclient runhooks.
 /chrome/browser/resources/vr/assets/google_chrome/*.png
 /chrome/browser/resources/vr/assets/google_chrome/*.wav
@@ -165,7 +164,6 @@ vs-chromium-project.txt
 /chrome/test/data/plugin/
 /chrome/test/data/vr/
 /chrome/test/data/webrtc/resources
-/chrome/test/data/webui/tab_search
 /chrome/test/data/xr/ar_playback_datasets/*.mp4
 /chrome/test/data/xr/webvr_info/
 /chrome/test/media_router/internal
