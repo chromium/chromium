@@ -2952,6 +2952,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.KeyUpdate.PotentialPeerKeyUpdateAttemptCount"
+    units="count" expires_after="2021-05-11">
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Count of packets received that appeared to attempt a key update but failed
+    decryption which have been received since the last successfully decrypted
+    packet, recorded on connection close. Only logged for connections which
+    reached the 1-RTT level and supported key update.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.KeyUpdate.Reason" enum="QuicKeyUpdateReason"
     expires_after="2021-05-11">
   <owner>mattm@chromium.org</owner>

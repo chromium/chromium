@@ -1895,6 +1895,9 @@ void QuicChromiumClientSession::OnConnectionClosed(
     if (config()->KeyUpdateSupportedForConnection()) {
       base::UmaHistogramCounts100("Net.QuicSession.KeyUpdate.PerConnection2",
                                   connection()->GetStats().key_update_count);
+      base::UmaHistogramCounts100(
+          "Net.QuicSession.KeyUpdate.PotentialPeerKeyUpdateAttemptCount",
+          connection()->PotentialPeerKeyUpdateAttemptCount());
       if (last_key_update_reason_ != quic::KeyUpdateReason::kInvalid) {
         std::string suffix =
             last_key_update_reason_ == quic::KeyUpdateReason::kRemote ? "Remote"
