@@ -8,8 +8,13 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
+#include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 
 namespace ash {
 
@@ -17,13 +22,15 @@ class HoldingSpaceTray;
 class PinnedFilesContainer;
 class RecentFilesContainer;
 
-class ASH_EXPORT HoldingSpaceTrayBubble {
+class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
+                                          public ShelfObserver,
+                                          public TabletModeObserver {
  public:
   HoldingSpaceTrayBubble(HoldingSpaceTray* holding_space_tray,
                          bool show_by_click);
   HoldingSpaceTrayBubble(const HoldingSpaceTrayBubble&) = delete;
   HoldingSpaceTrayBubble& operator=(const HoldingSpaceTrayBubble&) = delete;
-  ~HoldingSpaceTrayBubble();
+  ~HoldingSpaceTrayBubble() override;
 
   void AnchorUpdated();
 
@@ -33,6 +40,18 @@ class ASH_EXPORT HoldingSpaceTrayBubble {
  private:
   // Return the maximum height available for the holding space bubble.
   int CalculateMaxHeight() const;
+
+  void UpdateBubbleBounds();
+
+  // ScreenLayoutObserver:
+  void OnDisplayConfigurationChanged() override;
+
+  // ShelfObserver:
+  void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
   // The owner of this class.
   HoldingSpaceTray* const holding_space_tray_;
@@ -45,6 +64,10 @@ class ASH_EXPORT HoldingSpaceTrayBubble {
   RecentFilesContainer* recent_files_container_ = nullptr;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
+
+  ScopedObserver<Shelf, ShelfObserver> shelf_observer_{this};
+  ScopedObserver<TabletModeController, TabletModeObserver>
+      tablet_mode_observer_{this};
 };
 
 }  // namespace ash

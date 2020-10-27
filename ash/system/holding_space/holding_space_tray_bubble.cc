@@ -12,7 +12,6 @@
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
@@ -165,6 +164,9 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   std::vector<const HoldingSpaceItem*> visible_items;
   FindVisibleHoldingSpaceItems(bubble_view, &visible_items);
   holding_space_metrics::RecordItemCounts(visible_items);
+
+  shelf_observer_.Add(holding_space_tray_->shelf());
+  tablet_mode_observer_.Add(Shell::Get()->tablet_mode_controller());
 }
 
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
@@ -204,6 +206,28 @@ int HoldingSpaceTrayBubble::CalculateMaxHeight() const {
   const int bubble_vertical_margin = insets.top() + insets.bottom();
 
   return free_space_height_above_anchor - bubble_vertical_margin;
+}
+
+void HoldingSpaceTrayBubble::UpdateBubbleBounds() {
+  bubble_wrapper_->bubble_view()->SetMaxHeight(CalculateMaxHeight());
+  bubble_wrapper_->bubble_view()->ChangeAnchorRect(
+      holding_space_tray_->shelf()->GetSystemTrayAnchorRect());
+}
+
+void HoldingSpaceTrayBubble::OnDisplayConfigurationChanged() {
+  UpdateBubbleBounds();
+}
+
+void HoldingSpaceTrayBubble::OnAutoHideStateChanged(ShelfAutoHideState state) {
+  UpdateBubbleBounds();
+}
+
+void HoldingSpaceTrayBubble::OnTabletModeStarted() {
+  UpdateBubbleBounds();
+}
+
+void HoldingSpaceTrayBubble::OnTabletModeEnded() {
+  UpdateBubbleBounds();
 }
 
 }  // namespace ash
