@@ -8,6 +8,3 @@ file://ui/android/java/res/LAYOUT_OWNERS
 # New Tab Page changes only:
 mvanouwerkerk@chromium.org
 peconn@chromium.org
-
-# COMPONENT: UI>Browser>Mobile
-# OS: Android
