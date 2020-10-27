@@ -109,11 +109,6 @@ const run_parent = () => {
 };
 
 const run_iframe_child = () => {
-  // This is the child iframe. Set up and run the test, its result will
-  // be fetched by the parent.
-
-  document.body.appendChild(document.createElement('canvas'));
-
   xr_session_promise_test(
     "DOM Overlay in iframe",
     testBasicProperties.bind(this, document.body),
