@@ -5,6 +5,7 @@
 module payments.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // https://github.com/WICG/digital-goods/blob/master/explainer.md
 
@@ -49,6 +50,12 @@ struct ItemDetails {
   string title;
   string description;
   PaymentCurrencyAmount price;
+  // Periods are specified as ISO 8601 durations.
+  // https://en.wikipedia.org/wiki/ISO_8601#Durations
+  string? subscription_period;
+  string? free_trial_period;
+  PaymentCurrencyAmount? introductory_price;
+  string? introductory_price_period;
 };
 
 enum CreateDigitalGoodsResponseCode {
