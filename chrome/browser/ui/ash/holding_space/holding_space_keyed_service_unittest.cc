@@ -548,8 +548,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
           auto stale_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
                   type,
-                  base::FilePath(base::UnguessableToken::Create().ToString()),
-                  GURL(),
+                  downloads_mount.GetRootPath().AppendASCII(
+                      base::UnguessableToken::Create().ToString()),
+                  GURL("filesystem:fake_file_system_url"),
                   std::make_unique<HoldingSpaceImage>(
                       /*placeholder=*/gfx::ImageSkia(),
                       /*async_bitmap_resolver=*/base::DoNothing()));
@@ -643,11 +644,13 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistance) {
                 std::move(fresh_holding_space_item));
           }
 
+          const base::FilePath stale_item_file =
+              downloads_mount.GetRootPath().AppendASCII(
+                  base::UnguessableToken::Create().ToString());
           auto stale_holding_space_item =
               HoldingSpaceItem::CreateFileBackedItem(
-                  type,
-                  base::FilePath(base::UnguessableToken::Create().ToString()),
-                  GURL(),
+                  type, stale_item_file,
+                  GetFileSystemUrl(GetProfile(), stale_item_file),
                   std::make_unique<HoldingSpaceImage>(
                       /*placeholder=*/gfx::ImageSkia(),
                       /*async_bitmap_resolver=*/base::DoNothing()));

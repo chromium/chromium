@@ -41,6 +41,7 @@ class HoldingSpaceFileSystemDelegate : public HoldingSpaceKeyedServiceDelegate {
   void Init() override;
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
   // Invoked when the specified `file_path` has changed.
   void OnFilePathChanged(const base::FilePath& file_path, bool error);

@@ -63,6 +63,8 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     const base::FilePath& file_path,
     const GURL& file_system_url,
     std::unique_ptr<HoldingSpaceImage> image) {
+  DCHECK(!file_system_url.is_empty());
+
   // Note: std::make_unique does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, GetFileBackedItemId(type, file_path), file_path, file_system_url,
@@ -74,7 +76,6 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
 // serialization versions are supported, care must be taken to handle each.
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
     const base::DictionaryValue& dict,
-    FileSystemUrlResolver file_system_url_resolver,
     ImageResolver image_resolver) {
   const base::Optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
@@ -83,11 +84,10 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
   const base::FilePath file_path = DeserializeFilePath(dict);
 
   // NOTE: `std::make_unique` does not work with private constructors.
-  return base::WrapUnique(
-      new HoldingSpaceItem(type, DeserializeId(dict), file_path,
-                           std::move(file_system_url_resolver).Run(file_path),
-                           file_path.BaseName().LossyDisplayName(),
-                           std::move(image_resolver).Run(type, file_path)));
+  return base::WrapUnique(new HoldingSpaceItem(
+      type, DeserializeId(dict), file_path,
+      /*file_system_url=*/GURL(), file_path.BaseName().LossyDisplayName(),
+      std::move(image_resolver).Run(type, file_path)));
 }
 
 // static
@@ -143,5 +143,15 @@ HoldingSpaceItem::HoldingSpaceItem(Type type,
       file_system_url_(file_system_url),
       text_(text),
       image_(std::move(image)) {}
+
+bool HoldingSpaceItem::IsFinalized() const {
+  return !file_system_url_.is_empty();
+}
+
+void HoldingSpaceItem::Finalize(const GURL& file_system_url) {
+  DCHECK(!IsFinalized());
+  DCHECK(!file_system_url.is_empty());
+  file_system_url_ = file_system_url;
+}
 
 }  // namespace ash

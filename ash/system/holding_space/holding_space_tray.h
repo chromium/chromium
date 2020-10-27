@@ -63,6 +63,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
   // views::WidgetObserver:
   void OnWidgetDragWillStart(views::Widget* widget) override;

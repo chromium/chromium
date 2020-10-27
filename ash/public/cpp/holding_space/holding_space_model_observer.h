@@ -20,6 +20,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModelObserver
 
   // Called when an item gets removed from the holding space model.
   virtual void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) = 0;
+
+  // Called when a partially initialized holding space `item` gets finalized.
+  virtual void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) = 0;
 };
 
 }  // namespace ash

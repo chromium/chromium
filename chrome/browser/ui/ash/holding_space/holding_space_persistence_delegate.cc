@@ -86,18 +86,26 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
 
   for (const auto& persisted_holding_space_item :
        persisted_holding_space_items->GetList()) {
-    holding_space_items.push_back(HoldingSpaceItem::Deserialize(
-        base::Value::AsDictionaryValue(persisted_holding_space_item),
-        base::BindOnce(&holding_space_util::ResolveFileSystemUrl,
-                       base::Unretained(profile())),
-        base::BindOnce(&holding_space_util::ResolveImage,
-                       base::Unretained(thumbnail_loader_))));
+    std::unique_ptr<HoldingSpaceItem> holding_space_item =
+        HoldingSpaceItem::Deserialize(
+            base::Value::AsDictionaryValue(persisted_holding_space_item),
+            base::BindOnce(&holding_space_util::ResolveImage,
+                           base::Unretained(thumbnail_loader_)));
+    const GURL file_system_url = holding_space_util::ResolveFileSystemUrl(
+        profile(), holding_space_item->file_path());
+
+    // TODO(https://crbug.com/1140150): Better handle the case an item file
+    // path cannot be resolved to a file system URL.
+    if (!file_system_url.is_empty())
+      holding_space_item->Finalize(file_system_url);
+
     holding_space_util::ValidityRequirement requirements;
-    HoldingSpaceItem* holding_space_item = holding_space_items.back().get();
     if (holding_space_item->type() != HoldingSpaceItem::Type::kPinnedFile)
       requirements.must_be_newer_than = kMaxFileAge;
     file_paths_with_requirements.push_back(
         {holding_space_item->file_path(), requirements});
+
+    holding_space_items.push_back(std::move(holding_space_item));
   }
 
   holding_space_util::PartitionFilePathsByValidity(
@@ -115,8 +123,10 @@ void HoldingSpacePersistenceDelegate::RestoreModelByValidity(
 
   // Restore valid holding space items.
   for (auto& holding_space_item : holding_space_items) {
-    if (base::Contains(valid_file_paths, holding_space_item->file_path()))
+    if (holding_space_item->IsFinalized() &&
+        base::Contains(valid_file_paths, holding_space_item->file_path())) {
       item_restored_callback_.Run(std::move(holding_space_item));
+    }
   }
 
   // Clean up invalid holding space items from persistence.

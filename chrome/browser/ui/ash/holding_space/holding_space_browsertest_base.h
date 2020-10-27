@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
@@ -62,6 +63,12 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
 
   // Adds and returns an arbitrary screenshot file to the holding space.
   HoldingSpaceItem* AddScreenshotFile();
+
+  // Adds and returns a holding space item of the specified `type` backed by the
+  // file at the specified `file_path`.
+  HoldingSpaceItem* AddItem(Profile* profile,
+                            HoldingSpaceItem::Type type,
+                            const base::FilePath& file_path);
 
   // Returns the collection of download chips in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.

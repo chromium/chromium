@@ -49,6 +49,7 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
   // Invoked when holding space persistence has been restored.
   virtual void OnPersistenceRestored();

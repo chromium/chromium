@@ -18,6 +18,7 @@
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
+#include "base/containers/adapters.h"
 #include "base/optional.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -149,12 +150,25 @@ void PinnedFilesContainer::ViewHierarchyChanged(
 void PinnedFilesContainer::AddHoldingSpaceItemView(
     const HoldingSpaceItem* item) {
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
+  DCHECK(item->IsFinalized());
 
-  if (item->type() == HoldingSpaceItem::Type::kPinnedFile) {
-    views_by_item_id_[item->id()] = item_chips_container_->AddChildViewAt(
-        std::make_unique<HoldingSpaceItemChipView>(delegate_, item),
-        /*index=*/0);
+  if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+    return;
+
+  // Find the position to which the view should be added.
+  size_t index = 0;
+  for (const auto& candidate :
+       base::Reversed(HoldingSpaceController::Get()->model()->items())) {
+    if (candidate->id() == item->id())
+      break;
+    if (candidate->IsFinalized() &&
+        candidate->type() == HoldingSpaceItem::Type::kPinnedFile) {
+      ++index;
+    }
   }
+
+  views_by_item_id_[item->id()] = item_chips_container_->AddChildViewAt(
+      std::make_unique<HoldingSpaceItemChipView>(delegate_, item), index);
 }
 
 void PinnedFilesContainer::RemoveAllHoldingSpaceItemViews() {

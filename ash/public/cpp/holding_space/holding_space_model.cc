@@ -43,6 +43,28 @@ void HoldingSpaceModel::RemoveItem(const std::string& id) {
     observer.OnHoldingSpaceItemRemoved(item.get());
 }
 
+void HoldingSpaceModel::FinalizeOrRemoveItem(const std::string& id,
+                                             const GURL& file_system_url) {
+  if (file_system_url.is_empty()) {
+    RemoveItem(id);
+    return;
+  }
+
+  auto item_it = std::find_if(
+      items_.begin(), items_.end(),
+      [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {
+        return id == item->id();
+      });
+  DCHECK(item_it != items_.end());
+
+  HoldingSpaceItem* item = item_it->get();
+  DCHECK(!item->IsFinalized());
+
+  item->Finalize(file_system_url);
+  for (auto& observer : observers_)
+    observer.OnHoldingSpaceItemFinalized(item);
+}
+
 void HoldingSpaceModel::RemoveIf(Predicate predicate) {
   for (int i = items_.size() - 1; i >= 0; --i) {
     const HoldingSpaceItem* item = items_.at(i).get();

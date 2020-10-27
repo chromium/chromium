@@ -32,24 +32,6 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-// Adds and returns a holding space item of the specified `type` backed by the
-// file at the specified `file_path`.
-HoldingSpaceItem* AddItem(Profile* profile,
-                          HoldingSpaceItem::Type type,
-                          const base::FilePath& file_path) {
-  auto item = HoldingSpaceItem::CreateFileBackedItem(
-      type, file_path,
-      holding_space_util::ResolveFileSystemUrl(profile, file_path),
-      /*image=*/
-      std::make_unique<HoldingSpaceImage>(
-          /*placeholder=*/gfx::ImageSkia(),
-          /*async_bitmap_resolver=*/base::DoNothing()));
-
-  auto* item_ptr = item.get();
-  HoldingSpaceController::Get()->model()->AddItem(std::move(item));
-  return item_ptr;
-}
-
 // Returns the path of the downloads mount point for the given `profile`.
 base::FilePath GetDownloadsPath(Profile* profile) {
   base::FilePath result;
@@ -186,6 +168,23 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddPinnedFile() {
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddScreenshotFile() {
   return AddItem(GetProfile(), HoldingSpaceItem::Type::kScreenshot,
                  /*file_path=*/CreateImageFile(GetProfile()));
+}
+
+HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
+    Profile* profile,
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
+  auto item = HoldingSpaceItem::CreateFileBackedItem(
+      type, file_path,
+      holding_space_util::ResolveFileSystemUrl(profile, file_path),
+      /*image=*/
+      std::make_unique<HoldingSpaceImage>(
+          /*placeholder=*/gfx::ImageSkia(),
+          /*async_bitmap_resolver=*/base::DoNothing()));
+
+  auto* item_ptr = item.get();
+  HoldingSpaceController::Get()->model()->AddItem(std::move(item));
+  return item_ptr;
 }
 
 std::vector<views::View*> HoldingSpaceBrowserTestBase::GetDownloadChips() {
