@@ -5,7 +5,6 @@
 #include "content/public/browser/picture_in_picture_window_controller.h"
 
 #include "base/bind.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
