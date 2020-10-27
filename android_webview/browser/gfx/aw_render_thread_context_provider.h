@@ -36,7 +36,10 @@ class AwRenderThreadContextProvider
  public:
   static scoped_refptr<AwRenderThreadContextProvider> Create(
       scoped_refptr<gl::GLSurface> surface,
-      gpu::CommandBufferTaskExecutor* task_executor);
+      gpu::CommandBufferTaskExecutor* task_executor,
+      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_helper,
+      gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
+          display_compositor_controller_on_gpu);
 
   // Gives the GL internal format that should be used for calling CopyTexImage2D
   // on the default framebuffer.
@@ -60,8 +63,12 @@ class AwRenderThreadContextProvider
  protected:
   friend class base::RefCountedThreadSafe<AwRenderThreadContextProvider>;
 
-  AwRenderThreadContextProvider(scoped_refptr<gl::GLSurface> surface,
-                                gpu::CommandBufferTaskExecutor* task_executor);
+  AwRenderThreadContextProvider(
+      scoped_refptr<gl::GLSurface> surface,
+      gpu::CommandBufferTaskExecutor* task_executor,
+      gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_helper,
+      gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
+          display_compositor_controller_on_gpu);
   ~AwRenderThreadContextProvider() override;
 
  private:

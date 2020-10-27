@@ -335,9 +335,11 @@ class RendererPerfTest : public testing::Test {
     std::unique_ptr<DisplayCompositorMemoryAndTaskController>
         display_controller;
     if (renderer_settings_.use_skia_renderer) {
+      auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
+          gpu_service, gpu::kNullSurfaceHandle);
       display_controller =
           std::make_unique<DisplayCompositorMemoryAndTaskController>(
-              gpu_service);
+              std::move(skia_deps));
     } else {
       auto* task_executor =
           TestGpuServiceHolder::GetInstance()->task_executor();
@@ -726,8 +728,6 @@ RendererPerfTest<SkiaRenderer>::CreateOutputSurface(
     GpuServiceImpl* gpu_service,
     DisplayCompositorMemoryAndTaskController* display_controller) {
   return SkiaOutputSurfaceImpl::Create(
-      std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-          gpu_service, gpu::kNullSurfaceHandle),
       display_controller, renderer_settings_, &debug_settings_);
 }
 

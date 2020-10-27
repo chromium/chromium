@@ -104,14 +104,17 @@ OutputSurfaceProviderImpl::~OutputSurfaceProviderImpl() = default;
 std::unique_ptr<DisplayCompositorMemoryAndTaskController>
 OutputSurfaceProviderImpl::CreateGpuDependency(
     bool gpu_compositing,
+    gpu::SurfaceHandle surface_handle,
     const RendererSettings& renderer_settings) {
   if (!gpu_compositing)
     return nullptr;
 
   if (renderer_settings.use_skia_renderer) {
     gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
+    auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
+        gpu_service_impl_, surface_handle);
     return std::make_unique<DisplayCompositorMemoryAndTaskController>(
-        gpu_service_impl_);
+        std::move(skia_deps));
   } else {
     DCHECK(task_executor_);
     gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
@@ -144,8 +147,6 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
     {
       gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
       output_surface = SkiaOutputSurfaceImpl::Create(
-          std::make_unique<SkiaOutputSurfaceDependencyImpl>(gpu_service_impl_,
-                                                            surface_handle),
           gpu_dependency, renderer_settings, debug_settings);
     }
     if (!output_surface) {

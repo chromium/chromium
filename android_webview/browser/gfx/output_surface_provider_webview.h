@@ -32,7 +32,11 @@ class OutputSurfaceProviderWebview {
       AwVulkanContextProvider* vulkan_context_provider);
   ~OutputSurfaceProviderWebview();
 
-  std::unique_ptr<viz::OutputSurface> CreateOutputSurface();
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayController();
+  std::unique_ptr<viz::OutputSurface> CreateOutputSurface(
+      viz::DisplayCompositorMemoryAndTaskController*
+          display_compositor_controller);
 
   const viz::RendererSettings& renderer_settings() const {
     return renderer_settings_;

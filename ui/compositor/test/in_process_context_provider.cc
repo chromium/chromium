@@ -104,6 +104,8 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentThread() {
       /*surface=*/nullptr,
       /*is_offscreen=*/window_ == gpu::kNullSurfaceHandle, window_, attribs_,
       gpu::SharedMemoryLimits(), gpu_memory_buffer_manager_, image_factory_,
+      /*gpu_task_scheduler=*/nullptr,
+      /*display_controller_on_gpu=*/nullptr,
       base::ThreadTaskRunnerHandle::Get());
 
   if (bind_result_ != gpu::ContextResult::kSuccess)

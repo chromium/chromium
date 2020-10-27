@@ -110,8 +110,10 @@ HardwareRendererViz::OnViz::OnViz(
       viz_frame_submission_(features::IsUsingVizFrameSubmissionForWebView()) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
 
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+      display_controller = output_surface_provider->CreateDisplayController();
   std::unique_ptr<viz::OutputSurface> output_surface =
-      output_surface_provider->CreateOutputSurface();
+      output_surface_provider->CreateOutputSurface(display_controller.get());
 
   stub_begin_frame_source_ = std::make_unique<viz::StubBeginFrameSource>();
   auto scheduler =
@@ -126,7 +128,7 @@ HardwareRendererViz::OnViz::OnViz(
       nullptr /* shared_bitmap_manager */,
       output_surface_provider->renderer_settings(),
       output_surface_provider->debug_settings(), frame_sink_id_,
-      nullptr /*gpu_task_scheduler */, std::move(output_surface),
+      std::move(display_controller), std::move(output_surface),
       std::move(overlay_processor), std::move(scheduler),
       nullptr /* current_task_runner */);
   display_->Initialize(this, GetFrameSinkManager()->surface_manager(),

@@ -11564,8 +11564,14 @@ class FrameSinkClient : public TestLayerTreeFrameSinkClient {
       scoped_refptr<viz::ContextProvider> display_context_provider)
       : display_context_provider_(std::move(display_context_provider)) {}
 
-  std::unique_ptr<viz::SkiaOutputSurface> CreateDisplaySkiaOutputSurface()
-      override {
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayController() override {
+    // In this implementation, no output surface has a real gpu thread, and
+    // there is no overlay support.
+    return nullptr;
+  }
+  std::unique_ptr<viz::SkiaOutputSurface> CreateDisplaySkiaOutputSurface(
+      viz::DisplayCompositorMemoryAndTaskController*) override {
     return viz::FakeSkiaOutputSurface::Create3d(
         std::move(display_context_provider_));
   }

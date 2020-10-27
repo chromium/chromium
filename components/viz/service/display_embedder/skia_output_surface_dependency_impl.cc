@@ -34,13 +34,6 @@ SkiaOutputSurfaceDependencyImpl::CreateSequence() {
       gpu_service_impl_->GetGpuScheduler());
 }
 
-std::unique_ptr<DisplayCompositorMemoryAndTaskController>
-SkiaOutputSurfaceDependencyImpl::
-    CreateDisplayCompositorMemoryAndTaskController() {
-  return std::make_unique<DisplayCompositorMemoryAndTaskController>(
-      gpu_service_impl_);
-}
-
 gpu::SharedImageManager*
 SkiaOutputSurfaceDependencyImpl::GetSharedImageManager() {
   return gpu_service_impl_->shared_image_manager();

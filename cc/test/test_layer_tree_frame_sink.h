@@ -36,8 +36,11 @@ class TestLayerTreeFrameSinkClient {
  public:
   virtual ~TestLayerTreeFrameSinkClient() {}
 
+  virtual std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayController() = 0;
   virtual std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurface() = 0;
+  CreateDisplaySkiaOutputSurface(
+      viz::DisplayCompositorMemoryAndTaskController*) = 0;
 
   // This passes the ContextProvider being used by LayerTreeHostImpl which
   // can be used for the OutputSurface optionally.

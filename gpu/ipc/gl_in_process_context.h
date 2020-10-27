@@ -16,6 +16,7 @@
 #include "ui/gl/gl_surface.h"
 
 namespace gpu {
+class GpuTaskSchedulerHelper;
 class SharedImageInterface;
 class TransferBuffer;
 struct GpuFeatureInfo;
@@ -50,6 +51,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
       const SharedMemoryLimits& memory_limits,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       ImageFactory* image_factory,
+      GpuTaskSchedulerHelper* gpu_task_scheduler,
+      DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller_on_gpu,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   const Capabilities& GetCapabilities() const;

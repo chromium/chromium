@@ -34,16 +34,6 @@ DisplayCompositorMemoryAndTaskControllerOnGpu::
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 }
 
-// Used for WebView. WebView doesn't use a memory tracker and don't need to know
-// about the shared context state.
-DisplayCompositorMemoryAndTaskControllerOnGpu::
-    DisplayCompositorMemoryAndTaskControllerOnGpu()
-    : shared_context_state_(nullptr),
-      command_buffer_id_(g_next_shared_route_id.GetNext() + 1),
-      should_have_memory_tracker_(false) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-}
-
 // Used for InProcessCommandBuffer.
 DisplayCompositorMemoryAndTaskControllerOnGpu::
     DisplayCompositorMemoryAndTaskControllerOnGpu(

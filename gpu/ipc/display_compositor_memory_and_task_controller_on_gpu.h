@@ -26,8 +26,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT
   // Used for SkiaRenderer.
   explicit DisplayCompositorMemoryAndTaskControllerOnGpu(
       scoped_refptr<SharedContextState> shared_context_state);
-  // Used for WebView where there is no memory tracker.
-  DisplayCompositorMemoryAndTaskControllerOnGpu();
   // Used for InProcessCommandBuffer.
   explicit DisplayCompositorMemoryAndTaskControllerOnGpu(
       CommandBufferTaskExecutor* task_executor);

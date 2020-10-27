@@ -20,21 +20,18 @@ class ImageFactory;
 }
 
 namespace viz {
-class GpuServiceImpl;
+class SkiaOutputSurfaceDependency;
 
 // This class holds onwership of task posting sequence to the gpu thread and
 // memory tracking for the display compositor. This class has a 1:1 relationship
 // to the display compositor class. This class is only used for gpu compositing.
+// TODO(weiliangc): After GLRenderer is removed, this should merge with
+// SkiaOutputSurfaceDependency.
 class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
  public:
   // For SkiaRenderer.
   explicit DisplayCompositorMemoryAndTaskController(
-      GpuServiceImpl* gpu_service_impl);
-  // For WebView SkiaRenderer.
-  // TODO(weiliangc): Take in a SkiaOutputSurfaceDependency to avoid difference
-  // between WebView and non-WebView SkiaRenderer.
-  explicit DisplayCompositorMemoryAndTaskController(
-      std::unique_ptr<gpu::SingleTaskSequence> task_sequence);
+      std::unique_ptr<SkiaOutputSurfaceDependency> skia_dependency);
   // For VizProcessContextProvider that uses InProcessCommandBuffer.
   DisplayCompositorMemoryAndTaskController(
       gpu::CommandBufferTaskExecutor* task_executor,
@@ -45,6 +42,9 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
       const DisplayCompositorMemoryAndTaskController&) = delete;
   ~DisplayCompositorMemoryAndTaskController();
 
+  SkiaOutputSurfaceDependency* get_skia_dependency() {
+    return skia_dependency_.get();
+  }
   gpu::GpuTaskSchedulerHelper* get_gpu_task_scheduler() {
     return gpu_task_scheduler_.get();
   }
@@ -54,7 +54,7 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
   }
 
  private:
-  void InitializeOnGpuSkia(GpuServiceImpl* gpu_service_impl,
+  void InitializeOnGpuSkia(SkiaOutputSurfaceDependency* skia_dependency,
                            base::WaitableEvent* event);
   void InitializeOnGpuSkiaWebView(base::WaitableEvent* event);
   void InitializeOnGpuGL(gpu::CommandBufferTaskExecutor* task_executor,
@@ -62,6 +62,8 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
   void DestroyOnGpu(base::WaitableEvent* event);
 
   // Accessed on viz compositor thread.
+  std::unique_ptr<SkiaOutputSurfaceDependency> skia_dependency_;
+
   std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
 
   // Accessed on the gpu thread.

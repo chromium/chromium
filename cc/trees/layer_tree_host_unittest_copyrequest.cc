@@ -187,8 +187,16 @@ TEST_P(LayerTreeHostCopyRequestTestMultipleRequests, Test) {
 // which causes callbacks for sync queries to be sent in reverse order.
 class LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder
     : public LayerTreeHostCopyRequestTestMultipleRequests {
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayControllerOnThread() override {
+    // In this implementation, none of the output surface has a real gpu thread,
+    // and there is no overlay support.
+    return nullptr;
+  }
+
   std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread() override {
+  CreateDisplaySkiaOutputSurfaceOnThread(
+      viz::DisplayCompositorMemoryAndTaskController*) override {
     auto skia_output_surface = viz::FakeSkiaOutputSurface::Create3d();
     skia_output_surface->SetOutOfOrderCallbacks(true);
     return skia_output_surface;
@@ -824,8 +832,15 @@ TEST_P(LayerTreeHostTestAsyncTwoReadbacksWithoutDraw, Test) {
 class LayerTreeHostCopyRequestTestDeleteSharedImage
     : public LayerTreeHostCopyRequestTest {
  protected:
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayControllerOnThread() override {
+    // In this implementation, none of the output surface has a real gpu thread,
+    // and there is no overlay support.
+    return nullptr;
+  }
   std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread() override {
+  CreateDisplaySkiaOutputSurfaceOnThread(
+      viz::DisplayCompositorMemoryAndTaskController*) override {
     display_context_provider_ = viz::TestContextProvider::Create();
     display_context_provider_->BindToCurrentThread();
     return viz::FakeSkiaOutputSurface::Create3d(display_context_provider_);
@@ -967,8 +982,15 @@ TEST_P(LayerTreeHostCopyRequestTestDeleteSharedImage, Test) {
 class LayerTreeHostCopyRequestTestCountSharedImages
     : public LayerTreeHostCopyRequestTest {
  protected:
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayControllerOnThread() override {
+    // In this implementation, none of the output surface has a real gpu thread,
+    // and there is no overlay support.
+    return nullptr;
+  }
   std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread() override {
+  CreateDisplaySkiaOutputSurfaceOnThread(
+      viz::DisplayCompositorMemoryAndTaskController*) override {
     display_context_provider_ = viz::TestContextProvider::Create();
     display_context_provider_->BindToCurrentThread();
     return viz::FakeSkiaOutputSurface::Create3d(display_context_provider_);

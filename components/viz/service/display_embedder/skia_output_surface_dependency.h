@@ -64,13 +64,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   // Returns a new task execution sequence. Sequences should not outlive the
   // task executor.
   virtual std::unique_ptr<gpu::SingleTaskSequence> CreateSequence() = 0;
-  // Returns a new DisplayCompositorMemoryAndTaskController that contains a new
-  // task execution sequence. This is used for the case where there is no need
-  // to share a DisplayCompositorMemoryAndTaskController with overlay, and
-  // SkiaOutputSurface could just create its own
-  // DisplayCompositorMemoryAndTaskController.
-  virtual std::unique_ptr<DisplayCompositorMemoryAndTaskController>
-  CreateDisplayCompositorMemoryAndTaskController() = 0;
 
   virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
   virtual gpu::SyncPointManager* GetSyncPointManager() = 0;

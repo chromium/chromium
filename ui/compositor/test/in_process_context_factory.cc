@@ -323,14 +323,14 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       display_dependency;
 
   if (renderer_settings_.use_skia_renderer) {
+    auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
+        viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
+        gpu::kNullSurfaceHandle);
     display_dependency =
         std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
-            viz::TestGpuServiceHolder::GetInstance()->gpu_service());
+            std::move(skia_deps));
     display_output_surface = viz::SkiaOutputSurfaceImpl::Create(
-        std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
-            viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
-            gpu::kNullSurfaceHandle),
-        nullptr, renderer_settings_, &debug_settings_);
+        display_dependency.get(), renderer_settings_, &debug_settings_);
   } else if (use_test_surface_) {
     // The |context_provider| will contain an InProcessCommandBuffer, which will
     // make a gpu::GpuTaskSchedulerHelper if one is not provided.

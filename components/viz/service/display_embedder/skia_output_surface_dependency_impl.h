@@ -27,8 +27,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
   ~SkiaOutputSurfaceDependencyImpl() override;
 
   std::unique_ptr<gpu::SingleTaskSequence> CreateSequence() override;
-  std::unique_ptr<DisplayCompositorMemoryAndTaskController>
-  CreateDisplayCompositorMemoryAndTaskController() override;
   gpu::SharedImageManager* GetSharedImageManager() override;
   gpu::SyncPointManager* GetSyncPointManager() override;
   const gpu::GpuDriverBugWorkarounds& GetGpuDriverBugWorkarounds() override;

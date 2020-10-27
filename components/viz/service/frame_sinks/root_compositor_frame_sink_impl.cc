@@ -42,7 +42,7 @@ RootCompositorFrameSinkImpl::Create(
   mojo::Remote<mojom::DisplayClient> display_client(
       std::move(params->display_client));
   auto display_controller = output_surface_provider->CreateGpuDependency(
-      params->gpu_compositing, params->renderer_settings);
+      params->gpu_compositing, params->widget, params->renderer_settings);
   auto output_surface = output_surface_provider->CreateOutputSurface(
       params->widget, params->gpu_compositing, display_client.get(),
       display_controller.get(), params->renderer_settings, debug_settings);

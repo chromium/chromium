@@ -8,36 +8,23 @@
 
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
-#include "components/viz/service/gl/gpu_service_impl.h"
+#include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/ipc/scheduler_sequence.h"
 
 namespace viz {
 
 DisplayCompositorMemoryAndTaskController::
-    DisplayCompositorMemoryAndTaskController(GpuServiceImpl* gpu_service_impl)
-    : gpu_task_scheduler_(std::make_unique<gpu::GpuTaskSchedulerHelper>(
-          gpu_service_impl->GetGpuScheduler())) {
+    DisplayCompositorMemoryAndTaskController(
+        std::unique_ptr<SkiaOutputSurfaceDependency> skia_dependency)
+    : skia_dependency_(std::move(skia_dependency)),
+      gpu_task_scheduler_(std::make_unique<gpu::GpuTaskSchedulerHelper>(
+          skia_dependency_->CreateSequence())) {
   DCHECK(gpu_task_scheduler_);
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
   auto callback = base::BindOnce(
       &DisplayCompositorMemoryAndTaskController::InitializeOnGpuSkia,
-      base::Unretained(this), gpu_service_impl, &event);
-  gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
-  event.Wait();
-}
-
-DisplayCompositorMemoryAndTaskController::
-    DisplayCompositorMemoryAndTaskController(
-        std::unique_ptr<gpu::SingleTaskSequence> task_sequence)
-    : gpu_task_scheduler_(std::make_unique<gpu::GpuTaskSchedulerHelper>(
-          std::move(task_sequence))) {
-  DCHECK(gpu_task_scheduler_);
-  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-  auto callback = base::BindOnce(
-      &DisplayCompositorMemoryAndTaskController::InitializeOnGpuSkiaWebView,
-      base::Unretained(this), &event);
+      base::Unretained(this), skia_dependency_.get(), &event);
   gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
   event.Wait();
 }
@@ -75,20 +62,12 @@ DisplayCompositorMemoryAndTaskController::
 }
 
 void DisplayCompositorMemoryAndTaskController::InitializeOnGpuSkia(
-    GpuServiceImpl* gpu_service_impl,
+    SkiaOutputSurfaceDependency* skia_dependency,
     base::WaitableEvent* event) {
   DCHECK(event);
   controller_on_gpu_ =
       std::make_unique<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu>(
-          gpu_service_impl->GetContextState());
-  event->Signal();
-}
-
-void DisplayCompositorMemoryAndTaskController::InitializeOnGpuSkiaWebView(
-    base::WaitableEvent* event) {
-  DCHECK(event);
-  controller_on_gpu_ =
-      std::make_unique<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu>();
+          skia_dependency->GetSharedContextState());
   event->Signal();
 }
 

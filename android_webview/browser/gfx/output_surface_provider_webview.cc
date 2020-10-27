@@ -122,29 +122,41 @@ void OutputSurfaceProviderWebview::InitializeContext() {
   }
 }
 
-std::unique_ptr<viz::OutputSurface>
-OutputSurfaceProviderWebview::CreateOutputSurface() {
+std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+OutputSurfaceProviderWebview::CreateDisplayController() {
   DCHECK(gl_surface_)
       << "InitializeContext() must be called before CreateOutputSurface()";
 
   if (renderer_settings_.use_skia_renderer) {
-    // TODO(weiliangc): Move creation of dependency to InitializeContext() so
-    // DisplayCompositorMemoryAndTaskControllerOnGpu can be created there.
     auto skia_dependency = std::make_unique<SkiaOutputSurfaceDependencyWebView>(
         TaskQueueWebView::GetInstance(), GpuServiceWebView::GetInstance(),
         shared_context_state_.get(), gl_surface_.get());
-    // We are not passing in a gpu_task_scheduler here, so SkiaOutputSurface
-    // will create one from its skia_dependency. This is because Android WebView
-    // does not support overlays and do not need to share the gpu_task_scheduler
-    // with OverlayProcessor.
-    // TODO(weiliangc): Android WebView should support overlays. Change
-    // initialization order to make this happen.
-    return viz::SkiaOutputSurfaceImpl::Create(std::move(skia_dependency),
-                                              nullptr, renderer_settings_,
-                                              debug_settings());
+    return std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
+        std::move(skia_dependency));
+  } else {
+    return std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
+        DeferredGpuCommandService::GetInstance(), nullptr);
+  }
+}
+
+std::unique_ptr<viz::OutputSurface>
+OutputSurfaceProviderWebview::CreateOutputSurface(
+    viz::DisplayCompositorMemoryAndTaskController*
+        display_compositor_controller) {
+  DCHECK(gl_surface_)
+      << "InitializeContext() must be called before CreateOutputSurface()";
+  DCHECK(display_compositor_controller)
+      << "CreateDisplayController() must be called before "
+         "CreateOutputSurface()";
+
+  if (renderer_settings_.use_skia_renderer) {
+    return viz::SkiaOutputSurfaceImpl::Create(
+        display_compositor_controller, renderer_settings_, debug_settings());
   } else {
     auto context_provider = AwRenderThreadContextProvider::Create(
-        gl_surface_, DeferredGpuCommandService::GetInstance());
+        gl_surface_, DeferredGpuCommandService::GetInstance(),
+        display_compositor_controller->get_gpu_task_scheduler(),
+        display_compositor_controller->get_controller_on_gpu());
     return std::make_unique<ParentOutputSurface>(gl_surface_,
                                                  std::move(context_provider));
   }

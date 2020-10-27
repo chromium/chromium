@@ -18,7 +18,7 @@ class DisplayCompositorMemoryAndTaskController;
 namespace gpu {
 class CommandBufferTaskExecutor;
 class CommandBufferHelper;
-class Scheduler;
+class GLInProcessContext;
 class SingleTaskSequence;
 class InProcessCommandBuffer;
 
@@ -35,15 +35,9 @@ class InProcessCommandBuffer;
 // would hold a reference.
 class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
  public:
-  // This constructor is only used for SkiaOutputSurface when a
-  // SkiaOutputSurfaceDependency is already set up.
+  // This constructor is only used for SkiaOutputSurface.
   explicit GpuTaskSchedulerHelper(
       std::unique_ptr<SingleTaskSequence> task_sequence);
-  // This constructor is used for SkiaOutputSurface in OutputSurfaceProviderImpl
-  // and for testing cases.
-  // TODO(weiliangc): After changing to proper initialization order, make this
-  // constructor for testing only.
-  explicit GpuTaskSchedulerHelper(Scheduler* scheduler);
   // This constructor is used for command buffer GLOutputSurface.
   explicit GpuTaskSchedulerHelper(
       CommandBufferTaskExecutor* command_buffer_task_executor);
@@ -75,6 +69,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
   // SkiaOutputSurface.
   bool using_command_buffer_;
 
+  friend class gpu::GLInProcessContext;
   friend class gpu::InProcessCommandBuffer;
   friend class viz::VizProcessContextProvider;
   friend class viz::DisplayCompositorMemoryAndTaskController;

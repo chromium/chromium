@@ -58,7 +58,7 @@ class SkiaOutputSurfaceImplTest : public testing::Test {
  protected:
   DebugRendererSettings debug_settings_;
   gl::DisableNullDrawGLBindings enable_pixel_output_;
-  std::unique_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
+  std::unique_ptr<DisplayCompositorMemoryAndTaskController> display_controller_;
   std::unique_ptr<SkiaOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   base::WaitableEvent wait_;
@@ -77,12 +77,13 @@ SkiaOutputSurfaceImplTest::~SkiaOutputSurfaceImplTest() {
 void SkiaOutputSurfaceImplTest::SetUpSkiaOutputSurfaceImpl() {
   RendererSettings settings;
   settings.use_skia_renderer = true;
-  gpu_task_scheduler_ = std::make_unique<gpu::GpuTaskSchedulerHelper>(
-      GetGpuService()->GetGpuScheduler());
-  output_surface_ = SkiaOutputSurfaceImpl::Create(
-      std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-          GetGpuService(), gpu::kNullSurfaceHandle),
-      nullptr, settings, &debug_settings_);
+  auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
+      GetGpuService(), gpu::kNullSurfaceHandle);
+  display_controller_ =
+      std::make_unique<DisplayCompositorMemoryAndTaskController>(
+          std::move(skia_deps));
+  output_surface_ = SkiaOutputSurfaceImpl::Create(display_controller_.get(),
+                                                  settings, &debug_settings_);
   output_surface_->BindToClient(&output_surface_client_);
 }
 

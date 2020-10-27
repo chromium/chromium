@@ -42,6 +42,7 @@
 #include "cc/trees/single_thread_proxy.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/fake_output_surface.h"
@@ -585,9 +586,14 @@ class LayerTreeTestLayerTreeFrameSinkClient
       : hooks_(hooks) {}
 
   // TestLayerTreeFrameSinkClient implementation.
-  std::unique_ptr<viz::SkiaOutputSurface> CreateDisplaySkiaOutputSurface()
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayController() override {
+    return hooks_->CreateDisplayControllerOnThread();
+  }
+  std::unique_ptr<viz::SkiaOutputSurface> CreateDisplaySkiaOutputSurface(
+      viz::DisplayCompositorMemoryAndTaskController* display_controller)
       override {
-    return hooks_->CreateDisplaySkiaOutputSurfaceOnThread();
+    return hooks_->CreateDisplaySkiaOutputSurfaceOnThread(display_controller);
   }
 
   std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurface(
@@ -1164,8 +1170,16 @@ std::unique_ptr<TestLayerTreeFrameSink> LayerTreeTest::CreateLayerTreeFrameSink(
       refresh_rate, begin_frame_source_);
 }
 
+std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+LayerTreeTest::CreateDisplayControllerOnThread() {
+  // In this implementation, none of the output surface has a real gpu thread,
+  // and there is no overlay support.
+  return nullptr;
+}
+
 std::unique_ptr<viz::SkiaOutputSurface>
-LayerTreeTest::CreateDisplaySkiaOutputSurfaceOnThread() {
+LayerTreeTest::CreateDisplaySkiaOutputSurfaceOnThread(
+    viz::DisplayCompositorMemoryAndTaskController*) {
   return viz::FakeSkiaOutputSurface::Create3d();
 }
 

@@ -291,15 +291,13 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   // Set up the GPU service.
   gpu_service_holder_ = viz::TestGpuServiceHolder::GetInstance();
 
-  // Set up the skia renderer. Pass in nullptr for
-  // DisplayCompositorMemoryAndTaskController so that the SkiaOutputSurface
-  // itself will create its own since this doesn't need to be shared with
-  // overlay processor.
+  auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
+      gpu_service(), gpu::kNullSurfaceHandle);
+  display_controller_ =
+      std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
+          std::move(skia_deps));
   output_surface_ = viz::SkiaOutputSurfaceImpl::Create(
-      std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
-          gpu_service(), gpu::kNullSurfaceHandle),
-      nullptr /* DisplayCompositorMemoryAndTaskController */,
-      renderer_settings_, &debug_settings_);
+      display_controller_.get(), renderer_settings_, &debug_settings_);
   output_surface_->BindToClient(output_surface_client_.get());
   static_cast<viz::SkiaOutputSurfaceImpl*>(output_surface_.get())
       ->SetCapabilitiesForTesting(output_surface_origin);

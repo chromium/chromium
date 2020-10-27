@@ -71,9 +71,13 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   frame_sink_manager_ =
       std::make_unique<viz::FrameSinkManagerImpl>(shared_bitmap_manager_.get());
 
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+      display_controller;
   std::unique_ptr<viz::OutputSurface> display_output_surface;
   if (renderer_settings_.use_skia_renderer) {
-    auto output_surface = test_client_->CreateDisplaySkiaOutputSurface();
+    display_controller = test_client_->CreateDisplayController();
+    auto output_surface =
+        test_client_->CreateDisplaySkiaOutputSurface(display_controller.get());
     display_output_surface = std::move(output_surface);
   } else {
     display_output_surface =
@@ -113,7 +117,7 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   // need to pass in an gpu::GpuTaskSchedulerHelper here.
   display_ = std::make_unique<viz::Display>(
       shared_bitmap_manager_.get(), renderer_settings_, debug_settings_,
-      frame_sink_id_, nullptr /* DisplayCompositorMemoryAndTaskController */,
+      frame_sink_id_, std::move(display_controller),
       std::move(display_output_surface), std::move(overlay_processor),
       std::move(scheduler), compositor_task_runner_);
 

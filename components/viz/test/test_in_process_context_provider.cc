@@ -12,6 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/resources/platform_color.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -21,6 +22,7 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/ipc/gl_in_process_context.h"
+#include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/raster_in_process_context.h"
 #include "gpu/ipc/test_gpu_thread_holder.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
@@ -38,7 +40,8 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
     TestGpuMemoryBufferManager* gpu_memory_buffer_manager,
     TestImageFactory* image_factory,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    bool oop_raster) {
+    bool oop_raster,
+    DisplayCompositorMemoryAndTaskController* display_controller) {
   const bool is_offscreen = true;
   gpu::ContextCreationAttribs attribs;
   attribs.alpha_size = -1;
@@ -51,20 +54,31 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
   attribs.enable_oop_rasterization = oop_raster;
 
   auto context = std::make_unique<gpu::GLInProcessContext>();
-  auto result = context->Initialize(
-      TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
-      is_offscreen, gpu::kNullSurfaceHandle, attribs, gpu::SharedMemoryLimits(),
-      gpu_memory_buffer_manager, image_factory, std::move(task_runner));
+  if (display_controller) {
+    auto result = context->Initialize(
+        TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
+        is_offscreen, gpu::kNullSurfaceHandle, attribs,
+        gpu::SharedMemoryLimits(), gpu_memory_buffer_manager, image_factory,
+        display_controller->get_gpu_task_scheduler(),
+        display_controller->get_controller_on_gpu(), std::move(task_runner));
 
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+    DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+  } else {
+    auto result = context->Initialize(
+        TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
+        is_offscreen, gpu::kNullSurfaceHandle, attribs,
+        gpu::SharedMemoryLimits(), gpu_memory_buffer_manager, image_factory,
+        nullptr, nullptr, std::move(task_runner));
+    DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+  }
   return context;
 }
 
 }  // namespace
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext() {
-  return CreateGLInProcessContext(nullptr, nullptr,
-                                  base::ThreadTaskRunnerHandle::Get(), false);
+  return CreateGLInProcessContext(
+      nullptr, nullptr, base::ThreadTaskRunnerHandle::Get(), false, nullptr);
 }
 
 TestInProcessContextProvider::TestInProcessContextProvider(
@@ -113,9 +127,15 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
 
     caps_ = raster_context_->GetCapabilities();
   } else {
+    display_controller_ =
+        std::make_unique<DisplayCompositorMemoryAndTaskController>(
+            TestGpuServiceHolder::GetInstance()->task_executor(),
+            &image_factory_);
+
     gles2_context_ = CreateGLInProcessContext(
         &gpu_memory_buffer_manager_, &image_factory_,
-        base::ThreadTaskRunnerHandle::Get(), false /* oop_raster */);
+        base::ThreadTaskRunnerHandle::Get(), false /* oop_raster */,
+        display_controller_.get());
     cache_controller_.reset(
         new ContextCacheController(gles2_context_->GetImplementation(),
                                    base::ThreadTaskRunnerHandle::Get()));

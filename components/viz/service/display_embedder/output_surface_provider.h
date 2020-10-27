@@ -32,6 +32,7 @@ class OutputSurfaceProvider {
   // of this should feed into the CreateOutputSurface function.
   virtual std::unique_ptr<DisplayCompositorMemoryAndTaskController>
   CreateGpuDependency(bool gpu_compositing,
+                      gpu::SurfaceHandle surface_handle,
                       const RendererSettings& renderer_settings) = 0;
 
   // Creates a new OutputSurface for |surface_handle|. If creating an

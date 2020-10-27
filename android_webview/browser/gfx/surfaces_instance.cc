@@ -73,8 +73,10 @@ SurfacesInstance::SurfacesInstance()
   support_ = std::make_unique<viz::CompositorFrameSinkSupport>(
       this, frame_sink_manager_.get(), frame_sink_id_, is_root);
 
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+      display_controller = output_surface_provider_.CreateDisplayController();
   std::unique_ptr<viz::OutputSurface> output_surface =
-      output_surface_provider_.CreateOutputSurface();
+      output_surface_provider_.CreateOutputSurface(display_controller.get());
 
   begin_frame_source_ = std::make_unique<viz::StubBeginFrameSource>();
   auto scheduler = std::make_unique<viz::DisplayScheduler>(
@@ -89,7 +91,7 @@ SurfacesInstance::SurfacesInstance()
       nullptr /* shared_bitmap_manager */,
       output_surface_provider_.renderer_settings(),
       output_surface_provider_.debug_settings(), frame_sink_id_,
-      nullptr /* gpu_task_scheduler */, std::move(output_surface),
+      std::move(display_controller), std::move(output_surface),
       std::move(overlay_processor), std::move(scheduler),
       nullptr /* current_task_runner */);
   display_->Initialize(this, frame_sink_manager_->surface_manager(),

@@ -27,13 +27,21 @@ namespace android_webview {
 scoped_refptr<AwRenderThreadContextProvider>
 AwRenderThreadContextProvider::Create(
     scoped_refptr<gl::GLSurface> surface,
-    gpu::CommandBufferTaskExecutor* task_executor) {
-  return new AwRenderThreadContextProvider(surface, task_executor);
+    gpu::CommandBufferTaskExecutor* task_executor,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_helper,
+    gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
+        display_compositor_controller_on_gpu) {
+  return new AwRenderThreadContextProvider(
+      surface, task_executor, gpu_task_scheduler_helper,
+      display_compositor_controller_on_gpu);
 }
 
 AwRenderThreadContextProvider::AwRenderThreadContextProvider(
     scoped_refptr<gl::GLSurface> surface,
-    gpu::CommandBufferTaskExecutor* task_executor) {
+    gpu::CommandBufferTaskExecutor* task_executor,
+    gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_helper,
+    gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
+        display_compositor_controller_on_gpu) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
 
   // This is an onscreen context, wrapping the GLSurface given to us from
@@ -67,7 +75,8 @@ AwRenderThreadContextProvider::AwRenderThreadContextProvider(
   context_ = std::make_unique<gpu::GLInProcessContext>();
   context_->Initialize(task_executor, surface, surface->IsOffscreen(),
                        gpu::kNullSurfaceHandle, attributes, limits, nullptr,
-                       nullptr, nullptr);
+                       nullptr, gpu_task_scheduler_helper,
+                       display_compositor_controller_on_gpu, nullptr);
 
   context_->GetImplementation()->SetLostContextCallback(base::BindOnce(
       &AwRenderThreadContextProvider::OnLostContext, base::Unretained(this)));
