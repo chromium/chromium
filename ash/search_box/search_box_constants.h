@@ -38,6 +38,10 @@ constexpr int kSearchBoxIconSize = 24;
 // The size of the image button in the search box.
 constexpr int kSearchBoxButtonSizeDip = 40;
 
+// Color of placeholder text in zero query state.
+constexpr SkColor kZeroQuerySearchboxColor =
+    SkColorSetARGB(0x8A, 0x00, 0x00, 0x00);
+
 }  // namespace ash
 
 #endif  // ASH_SEARCH_BOX_SEARCH_BOX_CONSTANTS_H_

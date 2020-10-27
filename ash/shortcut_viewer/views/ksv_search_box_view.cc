@@ -36,8 +36,7 @@ KSVSearchBoxView::KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate)
   UpdateBackgroundColor(kDefaultSearchBoxBackgroundColor);
   search_box()->SetBackgroundColor(SK_ColorTRANSPARENT);
   search_box()->SetColor(gfx::kGoogleGrey900);
-  search_box()->set_placeholder_text_color(gfx::kGoogleGrey900);
-  search_box()->set_placeholder_text_draw_flags(gfx::Canvas::TEXT_ALIGN_CENTER);
+  SetPlaceholderTextAttributes();
   const base::string16 search_box_name(
       l10n_util::GetStringUTF16(IDS_KSV_SEARCH_BOX_ACCESSIBILITY_NAME));
   search_box()->SetPlaceholderText(search_box_name);
@@ -137,6 +136,19 @@ void KSVSearchBoxView::SetupBackButton() {
   back->SetAccessibleName(back_button_label);
   back->SetTooltipText(back_button_label);
   back->SetVisible(false);
+}
+
+void KSVSearchBoxView::OnSearchBoxActiveChanged(bool active) {
+  // Update to override default placeholder attributes set by base class when
+  // the search box is no longer active.
+  SetPlaceholderTextAttributes();
+}
+
+void KSVSearchBoxView::SetPlaceholderTextAttributes() {
+  search_box()->set_placeholder_text_color(ash::kZeroQuerySearchboxColor);
+  search_box()->set_placeholder_text_draw_flags(
+      base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
+                          : gfx::Canvas::TEXT_ALIGN_LEFT);
 }
 
 }  // namespace keyboard_shortcut_viewer

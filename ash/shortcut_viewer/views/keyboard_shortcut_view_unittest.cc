@@ -183,13 +183,14 @@ TEST_F(KeyboardShortcutViewTest, FocusOnSearchBox) {
 
   // Press a key should enter search mode.
   KeyPress(ui::VKEY_A, /*should_insert=*/true);
-  EXPECT_TRUE(GetSearchBoxView()->back_button()->GetVisible());
+  EXPECT_FALSE(GetSearchBoxView()->back_button()->GetVisible());
+  EXPECT_TRUE(GetSearchBoxView()->close_button()->GetVisible());
   EXPECT_FALSE(GetSearchBoxView()->search_box()->GetText().empty());
 
-  // Case 2: Exit search mode by clicking |back_button|. The focus should be on
+  // Case 2: Exit search mode by clicking |close_button|. The focus should be on
   // search box.
   GetSearchBoxView()->ButtonPressed(
-      GetSearchBoxView()->back_button(),
+      GetSearchBoxView()->close_button(),
       ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
                      ui::EF_LEFT_MOUSE_BUTTON));

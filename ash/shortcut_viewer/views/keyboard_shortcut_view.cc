@@ -336,7 +336,6 @@ void KeyboardShortcutView::BackButtonPressed() {
 void KeyboardShortcutView::ActiveChanged(ash::SearchBoxViewBase* sender) {
   const bool is_search_box_active = sender->is_search_box_active();
   is_search_box_empty_ = sender->IsSearchBoxTrimmedQueryEmpty();
-  sender->ShowBackOrGoogleIcon(is_search_box_active);
   if (is_search_box_active) {
     base::RecordAction(
         base::UserMetricsAction("KeyboardShortcutViewer.Search"));

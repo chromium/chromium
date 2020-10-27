@@ -47,10 +47,6 @@ constexpr SkColor kSelectedColor = SkColorSetARGB(15, 0, 0, 0);
 
 constexpr SkColor kSearchTextColor = SkColorSetRGB(0x33, 0x33, 0x33);
 
-// Color of placeholder text in zero query state.
-constexpr SkColor kZeroQuerySearchboxColor =
-    SkColorSetARGB(0x8A, 0x00, 0x00, 0x00);
-
 }  // namespace
 
 // A background that paints a solid white rounded rect with a thin grey
