@@ -189,6 +189,7 @@ js_library("site_data") {
     ":local_data_browser_proxy",
     ":site_settings_behavior",
     "..:global_scroll_target_behavior.m",
+    "..:metrics_browser_proxy",
     "..:route",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -205,6 +206,7 @@ js_library("site_data") {
 js_library("site_data_details_subpage") {
   deps = [
     ":local_data_browser_proxy",
+    "..:metrics_browser_proxy",
     "..:route",
     "..:router.m",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
@@ -217,6 +219,7 @@ js_library("site_data_details_subpage") {
 js_library("site_data_entry") {
   deps = [
     ":local_data_browser_proxy",
+    "..:metrics_browser_proxy",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:icon.m",
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
@@ -229,6 +232,7 @@ js_library("site_details") {
     ":site_details_permission",
     ":site_settings_behavior",
     ":website_usage_browser_proxy",
+    "..:metrics_browser_proxy",
     "..:router.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",

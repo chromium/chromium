@@ -5,8 +5,13 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {cookieInfo, LocalDataBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {Router,routes} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router,routes} from 'chrome://settings/settings.js';
 import {TestLocalDataBrowserProxy} from 'chrome://test/settings/test_local_data_browser_proxy.js';
+
+import {flushTasks} from '../test_util.m.js';
+
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
 // clang-format on
 
 /** @fileoverview Suite of tests for site-data-details-subpage. */
@@ -16,6 +21,9 @@ suite('SiteDataDetailsSubpage', function() {
 
   /** @type {TestLocalDataBrowserProxy} */
   let browserProxy = null;
+
+  /** @type {!TestMetricsBrowserProxy} */
+  let testMetricsBrowserProxy;
 
   /** @type {!CookieDetails} */
   const cookieDetails = {
@@ -46,6 +54,8 @@ suite('SiteDataDetailsSubpage', function() {
     browserProxy = new TestLocalDataBrowserProxy();
     browserProxy.setCookieDetails(cookieList);
     LocalDataBrowserProxyImpl.instance_ = browserProxy;
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
     PolymerTest.clearBody();
     page = document.createElement('site-data-details-subpage');
     Router.getInstance().navigateTo(
@@ -81,4 +91,24 @@ suite('SiteDataDetailsSubpage', function() {
           });
         });
   });
+
+  test('InteractionMetrics', async function() {
+    // Confirm that various page interactions record the appropriate metric.
+    await flushTasks();
+    page.$$('.icon-clear').click();
+    let metric =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ITEM, metric);
+    testMetricsBrowserProxy.reset();
+
+    // removeAll is public on the element to allow it to be called from a button
+    // located in the enclosing settings-subpage element. It is not bound to
+    // interactions with any part of the element under test, and is thus called
+    // directly from the test.
+    page.removeAll();
+    metric =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ALL, metric);
+  });
+
 });

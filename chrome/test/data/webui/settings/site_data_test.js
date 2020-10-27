@@ -5,9 +5,11 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LocalDataBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {Router,routes} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router,routes} from 'chrome://settings/settings.js';
 import {TestLocalDataBrowserProxy} from 'chrome://test/settings/test_local_data_browser_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
+
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
@@ -18,8 +20,13 @@ suite('SiteDataTest', function() {
   /** @type {TestLocalDataBrowserProxy} */
   let testBrowserProxy;
 
+  /** @type {!TestMetricsBrowserProxy} */
+  let testMetricsBrowserProxy;
+
   setup(function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;
     testBrowserProxy = new TestLocalDataBrowserProxy();
     LocalDataBrowserProxyImpl.instance_ = testBrowserProxy;
     siteData = document.createElement('site-data');
@@ -44,6 +51,12 @@ suite('SiteDataTest', function() {
             })
             .then(function(path) {
               assertEquals('Hello', path);
+              return testMetricsBrowserProxy.whenCalled(
+                  'recordSettingsPageHistogram');
+            })
+            .then(metric => {
+              assertEquals(
+                  PrivacyElementInteractions.SITE_DATA_REMOVE_SITE, metric);
             });
     const sites = [
       {site: 'Hello', localData: 'Cookiez!'},
@@ -104,5 +117,29 @@ suite('SiteDataTest', function() {
     const filter = await testBrowserProxy.whenCalled('getDisplayList');
     assertEquals('test', filter);
     assertEquals(0, testBrowserProxy.getCallCount('reloadCookies'));
+  });
+
+  test('remove button records interaction metric', async function() {
+    // Check that the remove button correctly records an interaction metric
+    // based on whether the list is filtered or not.
+    document.body.appendChild(siteData);
+    siteData.$$('#removeShowingSites').click();
+    flush();
+
+    siteData.$$('.action-button').click();
+    let metric =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.SITE_DATA_REMOVE_ALL, metric);
+    testMetricsBrowserProxy.reset();
+
+    // Add a filter and repeat.
+    siteData.filter = 'Test';
+    siteData.$$('#removeShowingSites').click();
+    flush();
+
+    siteData.$$('.action-button').click();
+    metric =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.SITE_DATA_REMOVE_FILTERED, metric);
   });
 });

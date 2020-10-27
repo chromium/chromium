@@ -66249,6 +66249,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="Cookies block third radio"/>
   <int value="12" label="Cookies block all radio"/>
   <int value="13" label="Cookies session only toggle"/>
+  <int value="14" label="Remove all on site data page"/>
+  <int value="15" label="Remove based on current filter on site data page"/>
+  <int value="16" label="Remove site on site data page"/>
+  <int value="17" label="Remove all on cookie details page"/>
+  <int value="18" label="Remove item on cookie details page"/>
+  <int value="19" label="Clear data on site details page"/>
 </enum>
 
 <enum name="SettingsResetPromptConfigError">

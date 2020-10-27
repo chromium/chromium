@@ -27,6 +27,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorImpl} from '../global_scroll_target_behavior.m.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.m.js';
 
@@ -288,10 +289,14 @@ Polymer({
   onConfirmDelete_() {
     this.$.confirmDeleteDialog.close();
     if (this.filter.length === 0) {
+      MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
+          PrivacyElementInteractions.SITE_DATA_REMOVE_ALL);
       this.browserProxy_.removeAll().then(() => {
         this.sites = [];
       });
     } else {
+      MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
+          PrivacyElementInteractions.SITE_DATA_REMOVE_FILTERED);
       this.browserProxy_.removeShownItems();
       // We just deleted all items found by the filter, let's reset the filter.
       this.fire('clear-subpage-search');

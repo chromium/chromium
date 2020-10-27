@@ -19,6 +19,8 @@ import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 
 Polymer({
@@ -51,6 +53,8 @@ Polymer({
    */
   onRemove_(e) {
     e.stopPropagation();
+    MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
+        PrivacyElementInteractions.SITE_DATA_REMOVE_SITE);
     this.browserProxy_.removeItem(this.model.site);
   },
 });

@@ -13,6 +13,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.m.js';
 
@@ -164,6 +165,8 @@ Polymer({
    * @private
    */
   onRemove_(event) {
+    MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
+        PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ITEM);
     this.browserProxy_.removeCookie(
         /** @type {!CookieDetails} */ (event.currentTarget.dataset).idPath);
   },
@@ -172,6 +175,8 @@ Polymer({
    * A handler for when the user opts to remove all cookies.
    */
   removeAll() {
+    MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
+        PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ALL);
     this.browserProxy_.removeCookie(this.siteId_);
   },
 });
