@@ -1425,7 +1425,7 @@ void DevToolsWindow::OpenInNewTab(const std::string& url) {
   int child_id = content::ChildProcessHost::kInvalidUniqueID;
   if (inspected_web_contents) {
     content::RenderViewHost* render_view_host =
-        inspected_web_contents->GetRenderViewHost();
+        inspected_web_contents->GetMainFrame()->GetRenderViewHost();
     if (render_view_host)
       child_id = render_view_host->GetProcess()->GetID();
   }

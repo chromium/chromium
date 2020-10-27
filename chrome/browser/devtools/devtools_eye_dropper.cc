@@ -40,7 +40,8 @@ DevToolsEyeDropper::DevToolsEyeDropper(content::WebContents* web_contents,
       host_(nullptr) {
   mouse_event_callback_ =
       base::Bind(&DevToolsEyeDropper::HandleMouseEvent, base::Unretained(this));
-  content::RenderViewHost* rvh = web_contents->GetRenderViewHost();
+  content::RenderViewHost* rvh =
+      web_contents->GetMainFrame()->GetRenderViewHost();
   if (rvh)
     AttachToHost(rvh->GetWidget());
 }
