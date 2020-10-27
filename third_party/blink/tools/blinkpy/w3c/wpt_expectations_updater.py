@@ -86,8 +86,8 @@ class WPTExpectationsUpdater(object):
         log_level = logging.DEBUG if self.options.verbose else logging.INFO
         configure_logging(logging_level=log_level, include_time=True)
 
-        if not(self.options.android_product or
-                self.options.update_android_expectations_only):
+        if not (self.options.android_product
+                or self.options.update_android_expectations_only):
             assert not self.options.include_unexpected_pass, (
                 'Command line argument --include-unexpected-pass is not '
                 'supported in desktop mode.')
@@ -293,9 +293,9 @@ class WPTExpectationsUpdater(object):
         """
         test_dict = {}
         configs = self.get_builder_configs(build, web_test_results)
-        _log.debug('Getting failing results dictionary'
-                   ' for %s step in latest %s build' % (
-                       web_test_results.step_name(), build.builder_name))
+        _log.debug(
+            'Getting failing results dictionary for %s step in latest %s build',
+            web_test_results.step_name(), build.builder_name)
 
         if len(configs) > 1:
             raise ScriptError('More than one configs were produced for'
@@ -726,9 +726,8 @@ class WPTExpectationsUpdater(object):
         renamed_files = self._list_renamed_files()
 
         for path in self._test_expectations.expectations_dict:
-            _log.info(
-                'Updating %s for any removed or renamed tests.' %
-                self.host.filesystem.basename(path))
+            _log.info('Updating %s for any removed or renamed tests.',
+                      self.host.filesystem.basename(path))
             self._clean_single_test_expectations_file(
                 path, deleted_files, renamed_files)
         self._test_expectations.commit_changes()
@@ -737,7 +736,7 @@ class WPTExpectationsUpdater(object):
         # TODO(robertma): Improve Git.changed_files so that we can use
         # it here.
         paths = self.git.run(
-            ['diff', 'origin/master', '-M100%', '--diff-filter=D',
+            ['diff', 'origin/master', '--diff-filter=D',
              '--name-only']).splitlines()
         deleted_files = []
         for p in paths:
@@ -754,9 +753,10 @@ class WPTExpectationsUpdater(object):
 
         Returns a dictionary mapping source name to destination name.
         """
-        out = self.git.run(
-            ['diff', 'origin/master', '-M100%', '--diff-filter=R',
-             '--name-status'])
+        out = self.git.run([
+            'diff', 'origin/master', '-M90%', '--diff-filter=R',
+            '--name-status'
+        ])
         renamed_tests = {}
         for line in out.splitlines():
             _, source_path, dest_path = line.split()
