@@ -163,6 +163,12 @@ DownloadItemView::open_now_button_
 DownloadItemView::save_button_
 DownloadItemView::scan_button_
 
+# Populated manually - const char* incompatibilities with tracing and
+# gmock/EXPECT_THAT.
+cc::GpuImageDecodeCache::dark_mode_filter_
+performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest:tracker
+content::(anonymous namespace)::BackForwardCacheMessageFilter::interface_name_
+
 # Populated manually - other compile-time reasons
 logging::CheckOpResult::message_  # cyclic #include
 views::internal::ClassPropertySetter::property_  # passed to templated param T*
