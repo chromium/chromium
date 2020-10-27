@@ -1821,7 +1821,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
   WebContents* popup = controller->GetWebContents();
   ASSERT_TRUE(popup);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  content::RenderViewHost* webui_rvh = popup->GetRenderViewHost();
+  content::RenderViewHost* webui_rvh =
+      popup->GetMainFrame()->GetRenderViewHost();
   content::RenderFrameHost* webui_rfh = popup->GetMainFrame();
   EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
               webui_rfh->GetEnabledBindings());
@@ -1829,14 +1830,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
   // Navigate to another page in the popup.
   GURL nonwebui_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   ui_test_utils::NavigateToURL(browser(), nonwebui_url);
-  EXPECT_NE(webui_rvh, popup->GetRenderViewHost());
+  EXPECT_NE(webui_rvh, popup->GetMainFrame()->GetRenderViewHost());
 
   // Go back in the popup.  This should finish without crashing and should
   // reuse the old RenderViewHost.
   content::TestNavigationObserver back_load_observer(popup);
   controller->GoBack();
   back_load_observer.Wait();
-  EXPECT_EQ(webui_rvh, popup->GetRenderViewHost());
+  EXPECT_EQ(webui_rvh, popup->GetMainFrame()->GetRenderViewHost());
   EXPECT_TRUE(webui_rvh->IsRenderViewLive());
   EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
               webui_rvh->GetMainFrame()->GetEnabledBindings());

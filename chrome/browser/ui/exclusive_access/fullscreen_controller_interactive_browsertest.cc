@@ -62,14 +62,14 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
   bool IsMouseLocked() {
     // Verify that IsMouseLocked is consistent between the
     // Fullscreen Controller and the Render View Host View.
-    EXPECT_TRUE(browser()->IsMouseLocked() ==
-                browser()
-                    ->tab_strip_model()
-                    ->GetActiveWebContents()
-                    ->GetRenderViewHost()
-                    ->GetWidget()
-                    ->GetView()
-                    ->IsMouseLocked());
+    EXPECT_TRUE(browser()->IsMouseLocked() == browser()
+                                                  ->tab_strip_model()
+                                                  ->GetActiveWebContents()
+                                                  ->GetMainFrame()
+                                                  ->GetRenderViewHost()
+                                                  ->GetWidget()
+                                                  ->GetView()
+                                                  ->IsMouseLocked());
     return browser()->IsMouseLocked();
   }
 

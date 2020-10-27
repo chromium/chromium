@@ -155,7 +155,8 @@ void MouseLockController::UnlockMouse() {
     return;
 
   content::RenderWidgetHostView* mouse_lock_view = nullptr;
-  RenderViewHost* const rvh = exclusive_access_tab()->GetRenderViewHost();
+  RenderViewHost* const rvh =
+      exclusive_access_tab()->GetMainFrame()->GetRenderViewHost();
   if (rvh)
     mouse_lock_view = rvh->GetWidget()->GetView();
 

@@ -401,8 +401,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FocusTraversal) {
   chrome::FocusLocationBar(browser());
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_NO_FATAL_FAILURE(TestFocusTraversal(tab->GetRenderViewHost(), false));
-  EXPECT_NO_FATAL_FAILURE(TestFocusTraversal(tab->GetRenderViewHost(), true));
+  EXPECT_NO_FATAL_FAILURE(
+      TestFocusTraversal(tab->GetMainFrame()->GetRenderViewHost(), false));
+  EXPECT_NO_FATAL_FAILURE(
+      TestFocusTraversal(tab->GetMainFrame()->GetRenderViewHost(), true));
 }
 
 // Test that find-in-page UI can request focus, even when it is already open.

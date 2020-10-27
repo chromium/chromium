@@ -291,7 +291,8 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   // WebContentsDelegate::DidNavigateMainFramePostCommit is called.
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& details) override {
-    content::RenderViewHost* rvh = web_contents()->GetRenderViewHost();
+    content::RenderViewHost* rvh =
+        web_contents()->GetMainFrame()->GetRenderViewHost();
     render_view_sizes_[rvh].rwhv_commit_size =
         web_contents()->GetRenderWidgetHostView()->GetViewBounds().size();
     render_view_sizes_[rvh].wcv_commit_size =
@@ -2483,7 +2484,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
   ASSERT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::RenderViewHost* prev_rvh = web_contents->GetRenderViewHost();
+  content::RenderViewHost* prev_rvh =
+      web_contents->GetMainFrame()->GetRenderViewHost();
   const gfx::Size initial_wcv_size = web_contents->GetContainerBounds().size();
   RenderViewSizeObserver observer(web_contents, browser()->window());
 
@@ -2492,12 +2494,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
                                embedded_test_server()->GetURL("/title1.html"));
   ASSERT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   // A new RenderViewHost should be created.
-  EXPECT_NE(prev_rvh, web_contents->GetRenderViewHost());
-  prev_rvh = web_contents->GetRenderViewHost();
+  EXPECT_NE(prev_rvh, web_contents->GetMainFrame()->GetRenderViewHost());
+  prev_rvh = web_contents->GetMainFrame()->GetRenderViewHost();
   gfx::Size rwhv_create_size0, rwhv_commit_size0, wcv_commit_size0;
-  observer.GetSizeForRenderViewHost(web_contents->GetRenderViewHost(),
-                                    &rwhv_create_size0, &rwhv_commit_size0,
-                                    &wcv_commit_size0);
+  observer.GetSizeForRenderViewHost(
+      web_contents->GetMainFrame()->GetRenderViewHost(), &rwhv_create_size0,
+      &rwhv_commit_size0, &wcv_commit_size0);
   EXPECT_EQ(gfx::Size(initial_wcv_size.width(), initial_wcv_size.height()),
             rwhv_create_size0);
   // When a navigation entry is committed, the size of RenderWidgetHostView
@@ -2526,11 +2528,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
                                https_test_server.GetURL("/title2.html"));
   ASSERT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   // A new RenderVieHost should be created.
-  EXPECT_NE(prev_rvh, web_contents->GetRenderViewHost());
+  EXPECT_NE(prev_rvh, web_contents->GetMainFrame()->GetRenderViewHost());
   gfx::Size rwhv_create_size1, rwhv_commit_size1, wcv_commit_size1;
-  observer.GetSizeForRenderViewHost(web_contents->GetRenderViewHost(),
-                                    &rwhv_create_size1, &rwhv_commit_size1,
-                                    &wcv_commit_size1);
+  observer.GetSizeForRenderViewHost(
+      web_contents->GetMainFrame()->GetRenderViewHost(), &rwhv_create_size1,
+      &rwhv_commit_size1, &wcv_commit_size1);
   EXPECT_EQ(rwhv_create_size1, rwhv_commit_size1);
   EXPECT_EQ(rwhv_commit_size1,
             web_contents->GetRenderWidgetHostView()->GetViewBounds().size());
@@ -2545,9 +2547,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
                                embedded_test_server()->GetURL("/title2.html"));
   ASSERT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
   gfx::Size rwhv_create_size2, rwhv_commit_size2, wcv_commit_size2;
-  observer.GetSizeForRenderViewHost(web_contents->GetRenderViewHost(),
-                                    &rwhv_create_size2, &rwhv_commit_size2,
-                                    &wcv_commit_size2);
+  observer.GetSizeForRenderViewHost(
+      web_contents->GetMainFrame()->GetRenderViewHost(), &rwhv_create_size2,
+      &rwhv_commit_size2, &wcv_commit_size2);
 
   // The behavior on OSX and Views is incorrect in this edge case, but they are
   // differently incorrect.
