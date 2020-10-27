@@ -248,6 +248,10 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
+    name = "android-11-x86-fyi-rel",
+)
+
+try_.chromium_android_builder(
     name = "android-asan",
 )
 

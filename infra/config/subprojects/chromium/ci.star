@@ -1018,6 +1018,14 @@ ci.android_fyi_builder(
     schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
+ci.android_fyi_builder(
+    name = "android-11-x86-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "emulator|11|x86",
+        short_name = "rel",
+    ),
+)
+
 ci.chromium_builder(
     name = "android-archive-dbg",
     # Bump to 32 if needed.
