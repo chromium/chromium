@@ -12,13 +12,12 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}.
  */
-public interface LocationBar extends UrlBarDelegate, Destroyable {
+public interface LocationBar extends Destroyable {
     /** Handle all necessary tasks that can be delayed until initialization completes. */
     default void onDeferredStartup() {}
 

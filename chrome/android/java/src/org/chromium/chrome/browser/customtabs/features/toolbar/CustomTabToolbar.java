@@ -623,7 +623,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /**
      * Custom tab-specific implementation of the LocationBar interface.
      */
-    private class CustomTabLocationBar implements LocationBar {
+    private class CustomTabLocationBar implements LocationBar, UrlBar.UrlBarDelegate {
         private ToolbarDataProvider mToolbarDataProvider;
 
         public CustomTabLocationBar(ToolbarDataProvider toolbarDataProvider) {

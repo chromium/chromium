@@ -39,7 +39,8 @@ import java.util.List;
  *
  * <p>The coordinator creates and owns elements within this component.
  */
-public final class LocationBarCoordinator implements LocationBar, FakeboxDelegate {
+public final class LocationBarCoordinator
+        implements LocationBar, FakeboxDelegate, UrlBar.UrlBarDelegate {
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator extends Destroyable {}
 
