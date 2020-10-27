@@ -472,6 +472,13 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
         display: contents;
         background-image: url(img-contents.png);
       }
+      #inside-contents-parent {
+        display: contents;
+        background-image: url(img-inside-contents.png);
+      }
+      #inside-contents {
+        background-image: inherit;
+      }
       #non-slotted {
         background-image: url(img-non-slotted.png);
       }
@@ -496,6 +503,9 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
       <div id="inside-hidden"></div>
     </div>
     <div id="contents"></div>
+    <div id="inside-contents-parent">
+      <div id="inside-contents"></div>
+    </div>
     <div id="host">
       <div id="non-slotted"></div>
     </div>
@@ -514,6 +524,7 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
   auto* hidden = GetDocument().getElementById("hidden");
   auto* inside_hidden = GetDocument().getElementById("inside-hidden");
   auto* contents = GetDocument().getElementById("contents");
+  auto* inside_contents = GetDocument().getElementById("inside-contents");
   auto* non_slotted = GetDocument().getElementById("non-slotted");
   auto* no_pseudo = GetDocument().getElementById("no-pseudo");
   auto* first_line = GetDocument().getElementById("first-line");
@@ -549,8 +560,10 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
       << "Fetch for visibility:hidden";
   EXPECT_FALSE(GetBackgroundImageValue(inside_hidden).IsCachePending())
       << "Fetch for inherited visibility:hidden";
-  EXPECT_TRUE(GetBackgroundImageValue(contents).IsCachePending())
-      << "No fetch for display:contents";
+  EXPECT_FALSE(GetBackgroundImageValue(contents).IsCachePending())
+      << "Fetch for display:contents";
+  EXPECT_FALSE(GetBackgroundImageValue(inside_contents).IsCachePending())
+      << "Fetch for image inherited from display:contents";
   EXPECT_TRUE(GetBackgroundImageValue(non_slotted).IsCachePending())
       << "No fetch for element outside the flat tree";
 }
@@ -947,6 +960,80 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
               root.GetTreeScope());
   }
+}
+
+TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #parent {
+        display: contents;
+
+        background-image: url(1.png);
+        border-image-source: url(2.png);
+        cursor: url(3.ico), text;
+        list-style-image: url(4.png);
+        shape-outside: url(5.png);
+        -webkit-box-reflect: below 0 url(6.png);
+        -webkit-mask-box-image-source: url(7.png);
+        -webkit-mask-image: url(8.png);
+      }
+      #child {
+        background-image: inherit;
+        border-image-source: inherit;
+        cursor: inherit;
+        list-style-image: inherit;
+        shape-outside: inherit;
+        -webkit-box-reflect: inherit;
+        -webkit-mask-box-image-source: inherit;
+        -webkit-mask-image: inherit;
+      }
+    </style>
+    <div id="parent">
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* child = GetDocument().getElementById("child");
+  auto* style = child->GetComputedStyle();
+  ASSERT_TRUE(style);
+
+  ASSERT_TRUE(style->BackgroundLayers().GetImage());
+  EXPECT_FALSE(style->BackgroundLayers().GetImage()->IsPendingImage())
+      << "background-image is fetched";
+
+  ASSERT_TRUE(style->BorderImageSource());
+  EXPECT_FALSE(style->BorderImageSource()->IsPendingImage())
+      << "border-image-source is fetched";
+
+  ASSERT_TRUE(style->Cursors());
+  ASSERT_TRUE(style->Cursors()->size());
+  ASSERT_TRUE(style->Cursors()->at(0).GetImage());
+  EXPECT_FALSE(style->Cursors()->at(0).GetImage()->IsPendingImage())
+      << "cursor is fetched";
+
+  ASSERT_TRUE(style->ListStyleImage());
+  EXPECT_FALSE(style->ListStyleImage()->IsPendingImage())
+      << "list-style-image is fetched";
+
+  ASSERT_TRUE(style->ShapeOutside());
+  ASSERT_TRUE(style->ShapeOutside()->GetImage());
+  EXPECT_FALSE(style->ShapeOutside()->GetImage()->IsPendingImage())
+      << "shape-outside is fetched";
+
+  ASSERT_TRUE(style->BoxReflect());
+  ASSERT_TRUE(style->BoxReflect()->Mask().GetImage());
+  EXPECT_FALSE(style->BoxReflect()->Mask().GetImage()->IsPendingImage())
+      << "-webkit-box-reflect is fetched";
+
+  ASSERT_TRUE(style->MaskBoxImageSource());
+  EXPECT_FALSE(style->MaskBoxImageSource()->IsPendingImage())
+      << "-webkit-mask-box-image-source";
+
+  ASSERT_TRUE(style->MaskImage());
+  EXPECT_FALSE(style->MaskImage()->IsPendingImage())
+      << "-webkit-mask-image is fetched";
 }
 
 }  // namespace blink

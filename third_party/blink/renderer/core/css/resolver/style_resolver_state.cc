@@ -152,7 +152,6 @@ void StyleResolverState::LoadPendingResources() {
   if (pseudo_request_type_ == PseudoElementStyleRequest::kForComputedStyle ||
       (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone()) ||
       StyleRef().Display() == EDisplay::kNone ||
-      StyleRef().Display() == EDisplay::kContents ||
       StyleRef().IsEnsuredOutsideFlatTree())
     return;
 
