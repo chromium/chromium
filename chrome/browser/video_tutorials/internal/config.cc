@@ -17,7 +17,7 @@ constexpr char kDefaultBaseURL[] =
 // Default URL string for GetTutorials RPC.
 constexpr char kDefaultGetTutorialsPath[] = "/v1/videotutorials";
 
-// Hindi is the default locale.
+// The default locale.
 constexpr char kDefaultPreferredLocale[] = "en";
 
 // Finch parameter key for base server URL to retrieve the tutorials.

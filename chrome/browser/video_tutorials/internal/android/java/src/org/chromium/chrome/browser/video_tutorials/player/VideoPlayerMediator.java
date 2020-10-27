@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.video_tutorials.player;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.video_tutorials.Language;
@@ -92,7 +93,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     void playVideoTutorial(Tutorial tutorial) {
         mTutorial = tutorial;
 
-        if (mVideoTutorialService.getPreferredLocale() == null) {
+        if (TextUtils.isEmpty(mVideoTutorialService.getPreferredLocale())) {
             mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, true);
             mLanguagePicker.showLanguagePicker(this::onLanguageSelected, mCloseCallback);
         } else {

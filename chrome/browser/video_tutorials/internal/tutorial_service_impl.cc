@@ -89,7 +89,7 @@ const std::vector<std::string>& TutorialServiceImpl::GetSupportedLanguages() {
   return tutorial_manager_->GetSupportedLanguages();
 }
 
-std::string TutorialServiceImpl::GetPreferredLocale() {
+base::Optional<std::string> TutorialServiceImpl::GetPreferredLocale() {
   return tutorial_manager_->GetPreferredLocale();
 }
 

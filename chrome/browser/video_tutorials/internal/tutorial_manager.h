@@ -25,7 +25,7 @@ class TutorialManager {
   virtual const std::vector<std::string>& GetSupportedLanguages() = 0;
 
   // Returns the preferred locale for the video tutorials.
-  virtual std::string GetPreferredLocale() = 0;
+  virtual base::Optional<std::string> GetPreferredLocale() = 0;
 
   // Sets the user preferred locale for watching the video tutorials. This
   // doesn't update the cached tutorials. GetTutorials must be called for the

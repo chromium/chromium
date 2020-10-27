@@ -35,8 +35,8 @@ class VideoTutorialService : public KeyedService,
   // Called to retrieve all the supported locales.
   virtual const std::vector<std::string>& GetSupportedLanguages() = 0;
 
-  // Called to retrieve the preferred locale.
-  virtual std::string GetPreferredLocale() = 0;
+  // Called to retrieve the preferred locale, if it is set by the user.
+  virtual base::Optional<std::string> GetPreferredLocale() = 0;
 
   // Called to set the preferred locale.
   virtual void SetPreferredLocale(const std::string& locale) = 0;

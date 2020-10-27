@@ -25,7 +25,8 @@ extern const char kBaseURLKey[];
 // Finch parameter key for the default preferred locale.
 extern const char kPreferredLocaleConfigKey[];
 
-// Default preferred locale setting before users pick.
+// Default preferred locale setting before user picks the language.
+// This will be used as the language for the video tutorial promo cards.
 extern const char kDefaultPreferredLocale[];
 
 // Finch parameter key for the fetch frequency to retrieve the tutorials.

@@ -35,8 +35,13 @@ void TutorialManagerImpl::GetTutorials(GetTutorialsCallback callback) {
     return;
   }
 
-  // Find the data from cache.
-  std::string locale = GetPreferredLocale();
+  // Find the data from cache. If the preferred locale is not set, use a default
+  // locale value to show the tutorial promos. Users will be asked again to
+  // confirm their language before the video starts.
+  base::Optional<std::string> preferred_locale = GetPreferredLocale();
+  std::string locale = preferred_locale.has_value()
+                           ? preferred_locale.value()
+                           : Config::GetDefaultPreferredLocale();
   if (tutorial_group_.has_value() && tutorial_group_->language == locale) {
     std::move(callback).Run(tutorial_group_->tutorials);
     return;
@@ -54,10 +59,10 @@ const std::vector<std::string>& TutorialManagerImpl::GetSupportedLanguages() {
   return supported_languages_;
 }
 
-std::string TutorialManagerImpl::GetPreferredLocale() {
-  return prefs_->HasPrefPath(kPreferredLocaleKey)
-             ? prefs_->GetString(kPreferredLocaleKey)
-             : Config::GetDefaultPreferredLocale();
+base::Optional<std::string> TutorialManagerImpl::GetPreferredLocale() {
+  if (prefs_->HasPrefPath(kPreferredLocaleKey))
+    return prefs_->GetString(kPreferredLocaleKey);
+  return base::nullopt;
 }
 
 void TutorialManagerImpl::SetPreferredLocale(const std::string& locale) {
