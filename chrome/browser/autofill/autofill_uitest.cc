@@ -225,7 +225,7 @@ content::WebContents* AutofillUiTest::GetWebContents() {
 }
 
 content::RenderViewHost* AutofillUiTest::GetRenderViewHost() {
-  return GetWebContents()->GetRenderViewHost();
+  return GetWebContents()->GetMainFrame()->GetRenderViewHost();
 }
 
 AutofillManager* AutofillUiTest::GetAutofillManager() {
