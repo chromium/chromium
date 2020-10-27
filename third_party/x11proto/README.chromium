@@ -1,0 +1,19 @@
+Name: x11proto
+Short Name: x11proto
+URL: https://gitlab.freedesktop.org/xorg/proto/xproto/
+Version: 0657164905c607e1b2b1dbac2707b06460a9e2f4
+License: MIT
+License File: LICENSE
+Security Critical: no
+
+Description:
+X Window System Core Protocol
+
+Local Modifications:
+The code contained in this directory is not pulled directly from the upstream
+repo.  Only a subset of certain functions are ported.  Each function links back
+to its original upstream implementation.  The directory structure and original
+file names are preserved from upstream.  There's no build target for this
+directory; instead, source files are directly #include'd in //ui/gfx/x.  The
+LICENSE file is not copied from the upstream repo -- rather, it's obtained from
+the copyright header at the top of each source file copied from the repo.

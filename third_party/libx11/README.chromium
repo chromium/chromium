@@ -1,0 +1,19 @@
+Name: libx11
+Short Name: libx11
+URL: https://gitlab.freedesktop.org/xorg/lib/libx11
+Version: 9f9c5365816bdd036fd80d54b22e86764ea4b7a7
+License: MIT
+License File: LICENSE
+Security Critical: no
+
+Description:
+Core X11 protocol client library
+
+Local Modifications:
+The code contained in this directory is not pulled directly from the upstream
+repo.  Only a subset of certain functions are ported.  Each function links back
+to its original upstream implementation.  The directory structure and original
+file names are preserved from upstream.  There's no build target for this
+directory; instead, source files are directly #include'd in //ui/gfx/x.  The
+LICENSE file is not copied from the upstream repo -- rather, it's obtained from
+the copyright header at the top of each source file copied from the repo.
