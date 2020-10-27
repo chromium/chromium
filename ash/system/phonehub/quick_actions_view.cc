@@ -15,7 +15,7 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Insets kQuickActionsViewPadding(16, 4);
+constexpr gfx::Insets kQuickActionsViewPadding(16, 4, 28, 4);
 constexpr int kQuickActionsItemSpacing = 36;
 
 }  // namespace

@@ -21,7 +21,7 @@ using BrowserTabsModel = chromeos::phonehub::BrowserTabsModel;
 namespace {
 
 // Appearance constants in dip.
-constexpr gfx::Insets kTaskContinuationViewPadding(12, 0, 16, 0);
+constexpr gfx::Insets kTaskContinuationViewPadding(0, 0, 16, 0);
 constexpr gfx::Size kTaskContinuationChipSize(176, 96);
 constexpr int kTaskContinuationChipsInRow = 2;
 constexpr int kTaskContinuationChipSpacing = 8;
