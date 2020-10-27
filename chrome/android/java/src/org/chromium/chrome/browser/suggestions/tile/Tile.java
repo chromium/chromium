@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.suggestions.OfflinableSuggestion;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.ui.favicon.IconType;
+import org.chromium.components.favicon.IconType;
 import org.chromium.url.GURL;
 
 /**

@@ -12,6 +12,7 @@ android_library("internal_java") {
     ":java_resources",
     "//base:base_java",
     "//base:jni_java",
+    "//components/favicon/android:java",
 
     # TODO(crbug/951695): Cyclic dependency. Depend on public only when ready.
     "//chrome/android:chrome_java",

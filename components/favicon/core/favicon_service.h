@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/core_favicon_service.h"
+#include "components/favicon/core/large_favicon_provider.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/favicon_base/favicon_usage_data.h"
@@ -18,7 +19,7 @@ class GURL;
 
 namespace favicon {
 
-class FaviconService : public CoreFaviconService {
+class FaviconService : public CoreFaviconService, public LargeFaviconProvider {
  public:
   //////////////////////////////////////////////////////////////////////////////
   // Methods to request favicon bitmaps from the history backend for |icon_url|.
@@ -78,14 +79,6 @@ class FaviconService : public CoreFaviconService {
       const favicon_base::IconTypeSet& icon_types,
       int desired_size_in_pixel,
       bool fallback_to_host,
-      favicon_base::FaviconRawBitmapCallback callback,
-      base::CancelableTaskTracker* tracker) = 0;
-
-  // See HistoryService::GetLargestFaviconForPageURL().
-  virtual base::CancelableTaskTracker::TaskId GetLargestRawFaviconForPageURL(
-      const GURL& page_url,
-      const std::vector<favicon_base::IconTypeSet>& icon_types,
-      int minimum_size_in_pixels,
       favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 

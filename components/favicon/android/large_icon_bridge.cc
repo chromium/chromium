@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/large_icon_bridge.h"
+#include "components/favicon/android/large_icon_bridge.h"
 
 #include <jni.h>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
-#include "chrome/browser/favicon/large_icon_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/ui/android/favicon/jni_headers/LargeIconBridge_jni.h"
-#include "components/favicon/core/large_icon_service.h"
+#include "components/embedder_support/android/browser_context/browser_context_handle.h"
+#include "components/favicon/android/jni_headers/LargeIconBridge_jni.h"
+#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/core/core_favicon_service.h"
+#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/core/large_icon_worker.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -27,6 +28,8 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
+
+namespace favicon {
 
 namespace {
 
@@ -60,9 +63,8 @@ static jlong JNI_LargeIconBridge_Init(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new LargeIconBridge());
 }
 
-LargeIconBridge::LargeIconBridge() {}
-
-LargeIconBridge::~LargeIconBridge() {}
+LargeIconBridge::LargeIconBridge() = default;
+LargeIconBridge::~LargeIconBridge() = default;
 
 void LargeIconBridge::Destroy(JNIEnv* env) {
   delete this;
@@ -70,17 +72,13 @@ void LargeIconBridge::Destroy(JNIEnv* env) {
 
 jboolean LargeIconBridge::GetLargeIconForURL(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    const JavaParamRef<jobject>& j_browser_context,
     const JavaParamRef<jobject>& j_page_url,
     jint min_source_size_px,
     const JavaParamRef<jobject>& j_callback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  if (!profile)
-    return false;
-
-  favicon::LargeIconService* large_icon_service =
-      LargeIconServiceFactory::GetForBrowserContext(profile);
-  if (!large_icon_service)
+  content::BrowserContext* browser_context =
+      browser_context::BrowserContextFromJavaHandle(j_browser_context);
+  if (!browser_context)
     return false;
 
   favicon_base::LargeIconCallback callback_runner = base::BindOnce(
@@ -90,10 +88,12 @@ jboolean LargeIconBridge::GetLargeIconForURL(
 
   // Use desired_size = 0 for getting the icon from the cache (so that
   // the icon is not poorly rescaled by LargeIconService).
-  large_icon_service->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
-      *url, min_source_size_px,
-      /*desired_size_in_pixel=*/0, std::move(callback_runner),
+  LargeIconWorker::GetLargeIconRawBitmap(
+      GetLargeFaviconProvider(browser_context), *url, min_source_size_px,
+      /*desired_size_in_pixel=*/0, std::move(callback_runner), {},
       &cancelable_task_tracker_);
 
   return true;
 }
+
+}  // namespace favicon

@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.suggestions;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
 
 /**

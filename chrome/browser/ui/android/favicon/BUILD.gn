@@ -8,7 +8,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/favicon/FaviconHelper.java",
     "java/src/org/chromium/chrome/browser/ui/favicon/FaviconUtils.java",
-    "java/src/org/chromium/chrome/browser/ui/favicon/LargeIconBridge.java",
   ]
 
   deps = [
@@ -28,18 +27,14 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ "//components/favicon_base:favicon_base_enums_java" ]
-
   resources_package = "org.chromium.chrome.browser.ui.favicon"
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/favicon/FaviconHelper.java",
-    "java/src/org/chromium/chrome/browser/ui/favicon/LargeIconBridge.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/chrome/browser/ui/favicon/FaviconHelper.java" ]
 }
 
 android_resources("java_resources") {

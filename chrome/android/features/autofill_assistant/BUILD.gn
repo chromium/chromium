@@ -50,6 +50,7 @@ android_library("java") {
     "//components/browser_ui/android/bottomsheet:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/favicon/android:java",
     "//components/payments/content/android:java",
     "//components/policy/android:policy_java",
     "//components/signin/core/browser/android:java",

@@ -20,6 +20,7 @@ android_library("java") {
     "//chrome/browser/util:java",
     "//components/browser_ui/android/bottomsheet:java",
     "//components/embedder_support/android:util_java",
+    "//components/favicon/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_recyclerview_recyclerview_java",

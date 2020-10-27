@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSugg
 import org.chromium.chrome.browser.suggestions.tile.TileView;
 import org.chromium.chrome.browser.suggestions.tile.TileViewBinder;
 import org.chromium.chrome.browser.suggestions.tile.TileViewProperties;
-import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;

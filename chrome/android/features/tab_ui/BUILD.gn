@@ -201,6 +201,7 @@ android_library("java") {
     "//components/content_settings/android:content_settings_enums_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/favicon/android:java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/infobars/core:infobar_enums_java",
     "//components/policy/android:policy_java",

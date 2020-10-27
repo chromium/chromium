@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.favicon;
+package org.chromium.components.favicon;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
@@ -11,9 +11,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 /**
@@ -21,9 +22,10 @@ import org.chromium.url.GURL;
  *
  * An instance of this class must be created, used, and destroyed on the same thread.
  */
+@JNINamespace("favicon")
 public class LargeIconBridge {
     private static final int CACHE_ENTRY_MIN_SIZE_BYTES = ConversionUtils.BYTES_PER_KILOBYTE;
-    private final Profile mProfile;
+    private final BrowserContextHandle mBrowserContextHandle;
     private long mNativeLargeIconBridge;
     private LruCache<GURL, CachedFavicon> mFaviconCache;
 
@@ -62,11 +64,11 @@ public class LargeIconBridge {
 
     /**
      * Initializes the C++ side of this class.
-     * @param profile Profile to use when fetching icons.
+     * @param browserContext Browser context to use when fetching icons.
      */
-    public LargeIconBridge(Profile profile) {
+    public LargeIconBridge(BrowserContextHandle browserContext) {
         mNativeLargeIconBridge = LargeIconBridgeJni.get().init();
-        mProfile = profile;
+        mBrowserContextHandle = browserContext;
     }
 
     /**
@@ -77,7 +79,7 @@ public class LargeIconBridge {
     @VisibleForTesting
     public LargeIconBridge() {
         mNativeLargeIconBridge = 0;
-        mProfile = null;
+        mBrowserContextHandle = null;
     }
 
     /**
@@ -138,8 +140,8 @@ public class LargeIconBridge {
         assert callback != null;
 
         if (mFaviconCache == null) {
-            return LargeIconBridgeJni.get().getLargeIconForURL(
-                    mNativeLargeIconBridge, mProfile, pageUrl, desiredSizePx, callback);
+            return LargeIconBridgeJni.get().getLargeIconForURL(mNativeLargeIconBridge,
+                    mBrowserContextHandle, pageUrl, desiredSizePx, callback);
         } else {
             CachedFavicon cached = mFaviconCache.get(pageUrl);
             if (cached != null) {
@@ -159,8 +161,8 @@ public class LargeIconBridge {
                             icon, fallbackColor, isFallbackColorDefault, iconType);
                 }
             };
-            return LargeIconBridgeJni.get().getLargeIconForURL(
-                    mNativeLargeIconBridge, mProfile, pageUrl, desiredSizePx, callbackWrapper);
+            return LargeIconBridgeJni.get().getLargeIconForURL(mNativeLargeIconBridge,
+                    mBrowserContextHandle, pageUrl, desiredSizePx, callbackWrapper);
         }
     }
 
@@ -175,7 +177,8 @@ public class LargeIconBridge {
     interface Natives {
         long init();
         void destroy(long nativeLargeIconBridge);
-        boolean getLargeIconForURL(long nativeLargeIconBridge, Profile profile, GURL pageUrl,
-                int desiredSizePx, LargeIconCallback callback);
+        boolean getLargeIconForURL(long nativeLargeIconBridge,
+                BrowserContextHandle browserContextHandle, GURL pageUrl, int desiredSizePx,
+                LargeIconCallback callback);
     }
 }

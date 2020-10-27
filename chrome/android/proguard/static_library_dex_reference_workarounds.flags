@@ -33,8 +33,8 @@
 -keep,allowobfuscation class org.chromium.chrome.browser.contacts_picker.ContactsPickerDialog { *; }
 -keep,allowobfuscation class org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem { *; }
 -keep,allowobfuscation class org.chromium.chrome.browser.crash.LogcatExtractionRunnable { *; }
--keep,allowobfuscation class org.chromium.chrome.browser.ui.favicon.LargeIconBridge { *; }
--keep,allowobfuscation class org.chromium.chrome.browser.ui.favicon.LargeIconBridge$LargeIconCallback { *; }
+-keep,allowobfuscation class org.chromium.components.favicon.LargeIconBridge { *; }
+-keep,allowobfuscation class org.chromium.components.favicon.LargeIconBridge$LargeIconCallback { *; }
 -keep,allowobfuscation class org.chromium.chrome.browser.FileProviderHelper { *; }
 -keep,allowobfuscation class org.chromium.chrome.browser.firstrun.FirstRunPage { *; }
 -keep,allowobfuscation class org.chromium.chrome.browser.firstrun.FirstRunPagerAdapter { *; }

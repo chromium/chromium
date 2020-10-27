@@ -6,7 +6,6 @@
 #define COMPONENTS_FAVICON_CORE_LARGE_ICON_SERVICE_IMPL_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/feature_list.h"
 #include "base/macros.h"
@@ -104,11 +103,6 @@ class LargeIconServiceImpl : public LargeIconService {
   const favicon_base::IconType icon_type_for_server_requests_;
 
   const std::string google_server_client_param_;
-
-  // A pre-populated list of icon types to consider when looking for large
-  // icons. This is an optimization over populating an icon type vector on each
-  // request.
-  std::vector<favicon_base::IconTypeSet> large_icon_types_;
 
   // URL of the Google favicon server (overridable by tests).
   GURL server_url_;

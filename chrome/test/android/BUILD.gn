@@ -284,6 +284,7 @@ android_library("chrome_java_test_support") {
     "//components/browser_ui/widget/android:test_support_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/favicon/android:java",
     "//components/infobars/android:java",
     "//components/location/android:location_java",
     "//components/omnibox/browser:browser_java",

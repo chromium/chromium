@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.favicon.LargeIconBridge;
 
 /**
  * Interface used by UI components in the main bookmarks UI to broadcast UI change notifications

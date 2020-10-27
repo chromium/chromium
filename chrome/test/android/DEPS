@@ -3,6 +3,7 @@ include_rules = [
   "+components/browser_ui/android/bottomsheet",
   "+components/browser_ui/widget/android",
   "+components/embedder_support/android/java",
+  "+components/favicon/android/java",
   "+components/infobars/android/java",
   "+components/payments/content/android",
   # This test code needs to depend on sync related classes and test tools.

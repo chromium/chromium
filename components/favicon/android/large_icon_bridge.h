@@ -2,22 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_LARGE_ICON_BRIDGE_H_
-#define CHROME_BROWSER_ANDROID_LARGE_ICON_BRIDGE_H_
+#ifndef COMPONENTS_FAVICON_ANDROID_LARGE_ICON_BRIDGE_H_
+#define COMPONENTS_FAVICON_ANDROID_LARGE_ICON_BRIDGE_H_
 
 #include <jni.h>
 
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
+
+namespace favicon {
 
 // The C++ counterpart to Java's LargeIconBridge. Together these classes expose
 // LargeIconService to Java.
 class LargeIconBridge {
  public:
   LargeIconBridge();
+  LargeIconBridge(const LargeIconBridge& bridge) = delete;
+  LargeIconBridge& operator=(const LargeIconBridge& bridge) = delete;
+
   void Destroy(JNIEnv* env);
   jboolean GetLargeIconForURL(
       JNIEnv* env,
@@ -30,8 +34,8 @@ class LargeIconBridge {
   virtual ~LargeIconBridge();
 
   base::CancelableTaskTracker cancelable_task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(LargeIconBridge);
 };
 
-#endif  // CHROME_BROWSER_ANDROID_LARGE_ICON_BRIDGE_H_
+}  // namespace favicon
+
+#endif  // COMPONENTS_FAVICON_ANDROID_LARGE_ICON_BRIDGE_H_

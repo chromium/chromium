@@ -32,7 +32,7 @@ using FaviconID = int64_t;
 // data is returned.
 //
 // A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.favicon
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.favicon
 enum class IconType {
   kInvalid = 0,
   kFavicon,

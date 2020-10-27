@@ -12,12 +12,19 @@
 #include "chrome/browser/favicon/chrome_favicon_client.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/favicon_service_impl.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 
 namespace {
+
+favicon::LargeFaviconProvider* GetLargeFaviconProvider(
+    content::BrowserContext* context) {
+  return FaviconServiceFactory::GetInstance()->GetForProfile(
+      Profile::FromBrowserContext(context), ServiceAccessType::EXPLICIT_ACCESS);
+}
 
 std::unique_ptr<KeyedService> BuildFaviconService(
     content::BrowserContext* context) {
@@ -72,10 +79,11 @@ FaviconServiceFactory::FaviconServiceFactory()
         "FaviconService",
         BrowserContextDependencyManager::GetInstance()) {
   DependsOn(HistoryServiceFactory::GetInstance());
+  favicon::SetLargeFaviconProviderGetter(
+      base::BindRepeating(&GetLargeFaviconProvider));
 }
 
-FaviconServiceFactory::~FaviconServiceFactory() {
-}
+FaviconServiceFactory::~FaviconServiceFactory() = default;
 
 KeyedService* FaviconServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

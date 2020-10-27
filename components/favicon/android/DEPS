@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/browser_ui/util",
+  "+components/embedder_support",
+  "+third_party/skia",
+]
