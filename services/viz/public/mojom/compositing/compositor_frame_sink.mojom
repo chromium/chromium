@@ -53,6 +53,11 @@ interface CompositorFrameSink {
   // For successful swaps, the implementation must call
   // DidReceiveCompositorFrameAck() asynchronously when the frame has been
   // processed in order to unthrottle the next frame.
+  //
+  // TODO(crbug.com/1141980): Investigate whether it's possible to alter the
+  // CompositorFrame structure to be less likely to exceed soft message size
+  // limits and remove [UnlimitedSize] here.
+  [UnlimitedSize]
   SubmitCompositorFrame(LocalSurfaceId local_surface_id,
                         CompositorFrame frame,
                         HitTestRegionList? hit_test_region_list,

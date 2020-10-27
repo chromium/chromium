@@ -104,6 +104,10 @@ struct FileChooserResult {
 interface FileChooser {
   // Ask a user to choose files interactively.  Null |result| is returned if the
   // user canceled a dialog, or the request is not accepted.
+  //
+  // TODO(crbug.com/1142011): Consider chunking the reply into multiple messages
+  // on a separate interface to avoid one very large IPC in some corner cases.
+  [UnlimitedSize]
   OpenFileChooser(FileChooserParams params) => (FileChooserResult? result);
 
   // Ask to enumerate files which are descendants of the specified directory.

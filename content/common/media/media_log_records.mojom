@@ -10,5 +10,9 @@ import "media/mojo/mojom/media_types.mojom";
 // media pipeline. It sends media event logs from renderer to browser.
 interface MediaInternalLogRecords {
   // Sends batched media logs to MediaInternalLogRecordsImpl::Log
+  //
+  // TODO(crbug.com/1141985): Investigate whether we can avoid degenerate cases
+  // leading to the very large messages which necessitate [UnlimitedSize].
+  [UnlimitedSize]
   Log(array<media.mojom.MediaLogRecord> events);
 };

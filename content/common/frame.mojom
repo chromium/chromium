@@ -106,6 +106,10 @@ interface Frame {
   // Requests a one-time snapshot of the accessibility tree without enabling
   // accessibility if it wasn't already enabled.
   // See ui/accessibility/ax_mode.h for valid values of |ax_mode|.
+  //
+  // TODO(crbug.com/1141990): AXTreeUpdate can be quite large, hence the
+  // [UnlimitedSize] tag. It may be possible to remove this if AXTreeUpdate
+  // can be reworked to avoid very large serialized values.
   SnapshotAccessibilityTree(uint32 ax_mode)
       => (ax.mojom.AXTreeUpdate snapshot);
 
@@ -529,6 +533,10 @@ interface FrameHost {
       mojo_base.mojom.String16 source_id);
 
   // Notifies the browser that this frame has new session history information.
+  //
+  // NOTE: PageState can be quite large when serialized, and its message
+  // structure must remain stable; hence [UnlimitedSize] for this message.
+  [UnlimitedSize]
   UpdateState(PageState state);
 
   // Requests that the given URL be opened in the specified manner.

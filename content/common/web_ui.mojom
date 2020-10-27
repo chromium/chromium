@@ -10,6 +10,10 @@ import "mojo/public/mojom/base/values.mojom";
 interface WebUIHost {
   // A message from HTML-based UI. When (trusted) JavaScript calls
   // send(message, args), this message is sent to the browser.
+  //
+  // Because `args` may be an arbitrarily complex object, we tag this with
+  // [UnlimitedSize] to ignore soft message length limits within Mojo.
+  [UnlimitedSize]
   Send(string message, mojo_base.mojom.ListValue args);
 };
 

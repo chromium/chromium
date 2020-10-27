@@ -425,6 +425,11 @@ interface FileSystemInstance {
   // Requests MediaProvider to scan specified files.
   // When the specified file does not exist, the corresponding entry in
   // MediaProvider is removed.
+  //
+  // NOTE: We use [UnlimitedSize] here because `paths` may be arbitrarily large
+  // and there have been crash dumps indicating that it actually happens with
+  // this message. See https://crbug.com/1142019.
+  [UnlimitedSize]
   RequestMediaScan@0(array<string> paths);
 
   // Reloads and refreshes entries in MediaStore under |directory_path|.

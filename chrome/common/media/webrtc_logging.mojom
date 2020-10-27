@@ -15,6 +15,11 @@ struct WebRtcLoggingMessage {
 // Used to listen for new log messages and events from the agent.
 interface WebRtcLoggingClient {
   // New log messages are sent in batches to limit the frequency of calls.
+  //
+  // TODO(crbug.com/1142013): Investigate whether the [UnlimitedSize] tag can
+  // be removed here by either chunking the messages into multiple calls or
+  // using something like BigString for WebRtcLoggingMessage's data.
+  [UnlimitedSize]
   OnAddMessages(array<WebRtcLoggingMessage> messages);
 
   // Called in response to |Stop| being called on the agent. Any pending

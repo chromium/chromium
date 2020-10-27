@@ -142,11 +142,16 @@ interface DevToolsSessionHost {
   // |updates| are the session state deltas for future reattach (see
   // DevToolsAgent), may be missing if the state did not change since
   // last time.
+  //
+  // TODO(crbug.com/1142000): Investigate whether it's possible to remove
+  // [UnlimitedSize] from these messages.
+  [UnlimitedSize]
   DispatchProtocolResponse(DevToolsMessage message,
                            int32 call_id,
                            DevToolsSessionState? updates);
 
   // Dispatches protocol notification to a remote debugging client.
+  [UnlimitedSize]
   DispatchProtocolNotification(DevToolsMessage message,
                                DevToolsSessionState? updates);
 };
