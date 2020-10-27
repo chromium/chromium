@@ -149,6 +149,8 @@ static_library("test_support") {
   sources = [
     "variations_params_manager.cc",
     "variations_params_manager.h",
+    "variations_test_utils.cc",
+    "variations_test_utils.h",
   ]
 
   public_deps = [
@@ -158,6 +160,7 @@ static_library("test_support") {
 
   deps = [
     "field_trial_config:field_trial_config",
+    "proto",
     "//base/test:test_support",
   ]
 }
@@ -191,6 +194,7 @@ source_set("unit_tests") {
   }
 
   deps = [
+    ":test_support",
     ":variations",
     ":variations_features",
     ":variations_mojom",

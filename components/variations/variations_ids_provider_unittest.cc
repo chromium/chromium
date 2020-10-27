@@ -19,50 +19,10 @@
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_features.h"
+#include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
-
-namespace {
-
-// Decodes the variations header and extracts the variation ids.
-bool ExtractVariationIds(const std::string& variations,
-                         std::set<VariationID>* variation_ids,
-                         std::set<VariationID>* trigger_ids) {
-  std::string serialized_proto;
-  if (!base::Base64Decode(variations, &serialized_proto))
-    return false;
-  ClientVariations proto;
-  if (!proto.ParseFromString(serialized_proto))
-    return false;
-  for (int i = 0; i < proto.variation_id_size(); ++i)
-    variation_ids->insert(proto.variation_id(i));
-  for (int i = 0; i < proto.trigger_variation_id_size(); ++i)
-    trigger_ids->insert(proto.trigger_variation_id(i));
-  return true;
-}
-
-scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
-    const std::string& trial_name,
-    const std::string& default_group_name,
-    IDCollectionKey key,
-    VariationID id) {
-  AssociateGoogleVariationID(key, trial_name, default_group_name, id);
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::CreateFieldTrial(trial_name, default_group_name));
-  EXPECT_TRUE(trial);
-
-  if (trial) {
-    // Ensure the trial is registered under the correct key so we can look it
-    // up.
-    trial->group();
-  }
-
-  return trial;
-}
-
-}  // namespace
-
 class VariationsIdsProviderTest : public ::testing::Test {
  public:
   VariationsIdsProviderTest() {}
@@ -105,7 +65,6 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
   EXPECT_FALSE(headers->headers_map.empty());
   const std::string variations =
       headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
-
   std::set<VariationID> variation_ids;
   std::set<VariationID> trigger_ids;
   ASSERT_TRUE(ExtractVariationIds(variations, &variation_ids, &trigger_ids));
