@@ -73,10 +73,11 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     return;  // Could happen at tab shutdown.
 
   EventRouter::DispatchEventToSender(
-      owner->GetRenderViewHost(), guest->browser_context(), guest->owner_host(),
-      histogram_value, event_name, content::ChildProcessHost::kInvalidUniqueID,
-      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
-      std::move(event_args), info);
+      owner->GetMainFrame()->GetRenderViewHost(), guest->browser_context(),
+      guest->owner_host(), histogram_value, event_name,
+      content::ChildProcessHost::kInvalidUniqueID, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId, std::move(event_args),
+      info);
 }
 
 bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(

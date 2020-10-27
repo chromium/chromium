@@ -583,8 +583,12 @@ int WebViewGuest::GetTaskPrefix() const {
 
 void WebViewGuest::GuestDestroyed() {
   WebViewRendererState::GetInstance()->RemoveGuest(
-      web_contents()->GetRenderViewHost()->GetProcess()->GetID(),
-      web_contents()->GetRenderViewHost()->GetRoutingID());
+      web_contents()
+          ->GetMainFrame()
+          ->GetRenderViewHost()
+          ->GetProcess()
+          ->GetID(),
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID());
 }
 
 void WebViewGuest::GuestReady() {
@@ -1090,8 +1094,13 @@ void WebViewGuest::PushWebViewStateToIOThread() {
       web_view_info.embedder_process_id, web_view_info.instance_id);
 
   WebViewRendererState::GetInstance()->AddGuest(
-      web_contents()->GetRenderViewHost()->GetProcess()->GetID(),
-      web_contents()->GetRenderViewHost()->GetRoutingID(), web_view_info);
+      web_contents()
+          ->GetMainFrame()
+          ->GetRenderViewHost()
+          ->GetProcess()
+          ->GetID(),
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID(),
+      web_view_info);
 }
 
 void WebViewGuest::RequestMediaAccessPermission(
@@ -1315,14 +1324,22 @@ void WebViewGuest::SetAllowTransparency(bool allow) {
     return;
 
   allow_transparency_ = allow;
-  if (!web_contents()->GetRenderViewHost()->GetWidget()->GetView())
+  if (!web_contents()
+           ->GetMainFrame()
+           ->GetRenderViewHost()
+           ->GetWidget()
+           ->GetView())
     return;
 
   SetTransparency();
 }
 
 void WebViewGuest::SetTransparency() {
-  auto* view = web_contents()->GetRenderViewHost()->GetWidget()->GetView();
+  auto* view = web_contents()
+                   ->GetMainFrame()
+                   ->GetRenderViewHost()
+                   ->GetWidget()
+                   ->GetView();
   if (allow_transparency_)
     view->SetBackgroundColor(SK_ColorTRANSPARENT);
   else
@@ -1650,6 +1667,7 @@ void WebViewGuest::SetFullscreenState(bool is_fullscreen) {
   // Since we changed fullscreen state, sending a SynchronizeVisualProperties
   // message ensures that renderer/ sees the change.
   web_contents()
+      ->GetMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->SynchronizeVisualProperties();
