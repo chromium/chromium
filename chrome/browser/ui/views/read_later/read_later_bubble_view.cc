@@ -47,6 +47,3 @@ ReadLaterBubbleView::ReadLaterBubbleView(const Browser* browser,
     : WebBubbleDialogView(browser->profile(), anchor_view) {}
 
 ReadLaterBubbleView::~ReadLaterBubbleView() = default;
-
-void ReadLaterBubbleView::ReadingListModelLoaded(
-    const ReadingListModel* model) {}

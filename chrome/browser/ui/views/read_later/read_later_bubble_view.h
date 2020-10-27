@@ -14,8 +14,7 @@ class Browser;
 
 // This bubble view displays a list of read-later entries.
 // This class is only used with the kReadLater feature.
-class ReadLaterBubbleView : public views::WebBubbleDialogView,
-                            public ReadingListModelObserver {
+class ReadLaterBubbleView : public views::WebBubbleDialogView {
  public:
   // Displays the read-later dialog under |anchor_view|, attached to |browser|.
   static base::WeakPtr<ReadLaterBubbleView> Show(const Browser* browser,
@@ -27,9 +26,6 @@ class ReadLaterBubbleView : public views::WebBubbleDialogView,
   ~ReadLaterBubbleView() override;
 
  private:
-  // ReadingListModelObserver:
-  void ReadingListModelLoaded(const ReadingListModel* model) override;
-
   base::WeakPtrFactory<ReadLaterBubbleView> weak_factory_{this};
 };
 
