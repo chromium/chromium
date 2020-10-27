@@ -63,7 +63,11 @@ struct MojomSerializationImplTraits<
 template <typename MojomType, typename UserType>
 mojo::Message SerializeAsMessageImpl(UserType* input) {
   SerializationContext context;
-  mojo::Message message(0, 0, 0, 0, nullptr);
+  // Note that this is only called by application code serializing a structure
+  // manually (e.g. for storage). As such we don't want Mojo's soft message size
+  // limits to be applied.
+  mojo::Message message(0, 0, 0, 0, MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE,
+                        nullptr);
   typename MojomTypeTraits<MojomType>::Data::BufferWriter writer;
   MojomSerializationImplTraits<MojomType>::Serialize(
       *input, message.payload_buffer(), &writer, &context);
