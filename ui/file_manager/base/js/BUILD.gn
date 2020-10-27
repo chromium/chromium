@@ -5,16 +5,23 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 visibility = [ "//ui/file_manager/*" ]
 
 group("closure_compile") {
   testonly = true
   deps = [
+    ":closure_compile_jsmodules",
     ":closure_compile_module",
     ":js_test_gen_html_type_check_auto",
     ":test_support_type_check",
   ]
+}
+
+js_type_check("closure_compile_jsmodules") {
+  uses_js_modules = true
+  deps = [ ":app_util.m" ]
 }
 
 js_type_check("closure_compile_module") {
@@ -35,6 +42,14 @@ js_type_check("test_support_type_check") {
 
 js_library("app_util") {
   externs_list = [ "//ui/file_manager/externs/app_window_common.js" ]
+}
+
+js_library("app_util.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/base/js/app_util.m.js" ]
+  deps = [ "//ui/file_manager/externs:file_manager_private" ]
+  externs_list = [ "//ui/file_manager/externs/app_window_common.js" ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("error_counter") {
@@ -86,4 +101,8 @@ js_test_gen_html("js_test_gen_html") {
 }
 
 js_library("mediasession_types") {
+}
+
+js_modulizer("modulize") {
+  input_files = [ "app_util.js" ]
 }

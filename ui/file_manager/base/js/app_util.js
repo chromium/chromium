@@ -5,6 +5,7 @@
 /**
  * @fileoverview Utility functions for creating and operating on the packaged
  * AppWindow API.
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
 const appUtil = {};
@@ -175,3 +176,6 @@ appUtil.AppCache.cleanup_ = map => {
     delete map[keys[i]];
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {appUtil};
