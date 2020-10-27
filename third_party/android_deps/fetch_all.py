@@ -69,6 +69,8 @@ _JETIFY_CONFIG = os.path.join(_CHROMIUM_SRC, 'third_party',
                               'jetifier_standalone', 'config',
                               'ignore_R.config')
 
+_GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn')
+
 # The list of git-controlled files that are checked or updated by this tool.
 _UPDATED_ANDROID_DEPS_FILES = [
     os.path.join('..', '..', 'DEPS'),
@@ -574,7 +576,7 @@ def main():
         logging.info('# Reformat %s.',
                      os.path.join(args.android_deps_dir, _BUILD_GN))
         gn_args = [
-            'gn', 'format',
+            _GN_PATH, 'format',
             os.path.join(build_android_deps_dir, _BUILD_GN)
         ]
         RunCommand(gn_args, print_stdout=debug)
