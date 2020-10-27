@@ -411,8 +411,8 @@ class PasswordControllerTest : public ChromeWebTest {
   void InjectGeneratedPassword(FormRendererId form_id,
                                FieldRendererId field_id,
                                NSString* password) {
-    autofill::PasswordFormGenerationData generation_data(form_id, field_id,
-                                                         FieldRendererId());
+    autofill::PasswordFormGenerationData generation_data = {form_id, field_id,
+                                                            FieldRendererId()};
     [passwordController_.sharedPasswordController
         formEligibleForGenerationFound:generation_data];
     __block BOOL block_was_called = NO;

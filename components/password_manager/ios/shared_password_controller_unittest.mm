@@ -315,9 +315,9 @@ TEST_F(SharedPasswordControllerTest,
               IsGenerationEnabled)
       .WillOnce(Return(true));
 
-  autofill::PasswordFormGenerationData form_generation_data(
+  autofill::PasswordFormGenerationData form_generation_data = {
       form_query.uniqueFormID, form_query.uniqueFieldID,
-      form_query.uniqueFieldID);
+      form_query.uniqueFieldID};
   [controller_ formEligibleForGenerationFound:form_generation_data];
   __block BOOL completion_was_called = NO;
   [controller_
@@ -340,8 +340,8 @@ TEST_F(SharedPasswordControllerTest,
 TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
   autofill::FormRendererId form_id(0);
   autofill::FieldRendererId field_id(1);
-  autofill::PasswordFormGenerationData form_generation_data(form_id, field_id,
-                                                            field_id);
+  autofill::PasswordFormGenerationData form_generation_data = {
+      form_id, field_id, field_id};
   [controller_ formEligibleForGenerationFound:form_generation_data];
 
   FormSuggestion* suggestion = [FormSuggestion
@@ -370,8 +370,8 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
 TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
   autofill::FormRendererId form_id(0);
   autofill::FieldRendererId field_id(1);
-  autofill::PasswordFormGenerationData form_generation_data(form_id, field_id,
-                                                            field_id);
+  autofill::PasswordFormGenerationData form_generation_data = {
+      form_id, field_id, field_id};
   [controller_ formEligibleForGenerationFound:form_generation_data];
 
   FormSuggestion* suggestion = [FormSuggestion

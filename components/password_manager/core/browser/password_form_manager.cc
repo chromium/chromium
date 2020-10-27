@@ -795,21 +795,15 @@ void PasswordFormManager::Fill() {
     return;
 
   if (observed_password_form->is_new_password_reliable && !IsBlacklisted()) {
+    driver_->FormEligibleForGenerationFound({
 #if defined(OS_IOS)
-    driver_->FormEligibleForGenerationFound(
-        {/*form_renderer_id*/ observed_password_form->form_data
-             .unique_renderer_id,
-         /*new_password_element_renderer_id*/
-         observed_password_form->new_password_element_renderer_id,
-         /*confirmation_password_element_renderer_id*/
-         observed_password_form->confirmation_password_element_renderer_id});
-#else
-    driver_->FormEligibleForGenerationFound(
-        {/*new_password_renderer_id*/
-         observed_password_form->new_password_element_renderer_id,
-         /*confirmation_password_renderer_id*/
-         observed_password_form->confirmation_password_element_renderer_id});
+      .form_renderer_id = observed_password_form->form_data.unique_renderer_id,
 #endif
+      .new_password_renderer_id =
+          observed_password_form->new_password_element_renderer_id,
+      .confirmation_password_renderer_id =
+          observed_password_form->confirmation_password_element_renderer_id,
+    });
   }
 
 #if defined(OS_IOS)
