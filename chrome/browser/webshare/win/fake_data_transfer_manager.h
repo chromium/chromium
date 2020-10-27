@@ -9,16 +9,45 @@
 #include <wrl/implements.h>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 
 namespace webshare {
 
 // Provides an implementation of IDataTransferManager for use in GTests.
-class FakeDataTransferManager
+class __declspec(uuid("53CA4C00-6F19-40C1-A740-F66510E2DB40"))
+    FakeDataTransferManager
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>,
           ABI::Windows::ApplicationModel::DataTransfer::IDataTransferManager> {
  public:
+  // Represents a file surfaced to a DataRequested event
+  struct DataRequestedFile {
+    DataRequestedFile();
+    DataRequestedFile(const DataRequestedFile&) = delete;
+    DataRequestedFile& operator=(const DataRequestedFile&) = delete;
+    DataRequestedFile(DataRequestedFile&&);
+    ~DataRequestedFile();
+
+    std::string name;
+    Microsoft::WRL::ComPtr<ABI::Windows::Storage::IStorageFile> file;
+  };
+
+  // Represents the content surfaced to a DataRequested event
+  struct DataRequestedContent {
+    DataRequestedContent();
+    DataRequestedContent(const DataRequestedContent&) = delete;
+    DataRequestedContent& operator=(const DataRequestedContent&) = delete;
+    ~DataRequestedContent();
+
+    std::string text;
+    std::string title;
+    std::string uri;
+    std::vector<DataRequestedFile> files;
+  };
+
+  using PostDataRequestedCallback =
+      base::RepeatingCallback<void(const DataRequestedContent&)>;
+
   static bool IsSupportedEnvironment();
 
   FakeDataTransferManager();
@@ -49,6 +78,11 @@ class FakeDataTransferManager
 
   bool HasDataRequestedListener();
 
+  // Sets a callback that will be invoked after any DataRequested event is
+  // triggered and passed the content supplied by the DataRequested handler
+  void SetPostDataRequestedCallback(
+      PostDataRequestedCallback post_data_requested_callback);
+
  private:
   struct DataRequestedHandlerEntry {
     DataRequestedHandlerEntry();
@@ -63,6 +97,7 @@ class FakeDataTransferManager
 
   std::vector<DataRequestedHandlerEntry> data_requested_event_handlers_;
   int64_t latest_token_value_ = 0;
+  PostDataRequestedCallback post_data_requested_callback_;
 };
 
 }  // namespace webshare
