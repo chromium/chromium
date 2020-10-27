@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -100,7 +100,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    @DisabledTest(message = "https://crbug.com/1142481")
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1142481")
     public void showSignOutDialogBeforeSigningUserOut() {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         startGoogleServicesSettings();
