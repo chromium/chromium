@@ -1891,15 +1891,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)installFakeStatusBar {
-  if (IsThumbStripEnabled() && !ios::GetChromeBrowserProvider()
-                                    ->GetFullscreenProvider()
-                                    ->IsInitialized()) {
+  if (IsThumbStripEnabled()) {
     // A fake status bar on the browser view is not necessary when the thumb
     // strip feature is enabled because the view behind the browser view already
     // has a dark background. Adding a fake status bar would block the
     // visibility of the thumb strip thumbnails when moving the browser view.
-    // However, if the Fullscreen Provider is used, then the web content extends
-    // up to behind the tab strip, making the fake status bar necessary.
     return;
   }
   CGRect statusBarFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 0);
@@ -2238,21 +2234,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-// Sets up the frame for the fake status bar. View must be loaded.
-- (void)setupStatusBarLayout {
+// Set the frame for the various views. View must be loaded.
+- (void)setUpViewLayout:(BOOL)initialLayout {
+  DCHECK([self isViewLoaded]);
+
   CGFloat topInset = self.view.safeAreaInsets.top;
 
   // Update the fake toolbar background height.
   CGRect fakeStatusBarFrame = _fakeStatusBarView.frame;
   fakeStatusBarFrame.size.height = topInset;
   _fakeStatusBarView.frame = fakeStatusBarFrame;
-}
-
-// Set the frame for the various views. View must be loaded.
-- (void)setUpViewLayout:(BOOL)initialLayout {
-  DCHECK([self isViewLoaded]);
-
-  [self setupStatusBarLayout];
 
   if (initialLayout) {
     // Add the toolbars as child view controllers.
@@ -2834,6 +2825,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(
         FullscreenController::FromBrowser(_browser));
   }
+
   // Hide the tab strip and take a snapshot of it. If a snapshot of a hidden
   // view is taken, the snapshot will be a blank view. However, if the view's
   // parent is hidden but the view itself is not, the snapshot will not be a
@@ -2846,33 +2838,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                 0, self.tabStripView.frame.size.height);
   self.tabStripView.hidden = YES;
   [self.contentArea addSubview:self.tabStripSnapshot];
-
-  // Remove the fake status bar to allow the thumb strip animations to appear.
-  [_fakeStatusBarView removeFromSuperview];
-
-  if (currentViewRevealState == ViewRevealState::Hidden) {
-    // When the Fullscreen Provider is used, the web content extends up to the
-    // top of the BVC view. It has a visible background and blocks the thumb
-    // strip. Thus, when the view revealing process starts, the web content
-    // frame must be moved down. To prevent the actual web content from jumping,
-    // the content offset must be moved up by a corresponding amount.
-    if (self.currentWebState && ![self isNTPActiveForCurrentWebState] &&
-        ios::GetChromeBrowserProvider()
-            ->GetFullscreenProvider()
-            ->IsInitialized()) {
-      CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-      CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
-          [self viewForWebState:self.currentWebState].frame,
-          UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
-      [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
-
-      CRWWebViewScrollViewProxy* scrollProxy =
-          self.currentWebState->GetWebViewProxy().scrollViewProxy;
-      CGPoint scrollOffset = scrollProxy.contentOffset;
-      scrollOffset.y += toolbarHeight;
-      scrollProxy.contentOffset = scrollOffset;
-    }
-  }
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
@@ -2909,29 +2874,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (viewRevealState == ViewRevealState::Hidden) {
     // Stop disabling fullscreen.
     _fullscreenDisabler.reset();
-
-    // Add the status bar back to cover the web content.
-    [self installFakeStatusBar];
-    [self setupStatusBarLayout];
-
-    // See the comments in |-willAnimateViewReveal:| for the explantation of why
-    // this is necessary.
-    if (self.currentWebState && ![self isNTPActiveForCurrentWebState] &&
-        ios::GetChromeBrowserProvider()
-            ->GetFullscreenProvider()
-            ->IsInitialized()) {
-      CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-      CGRect webStateViewFrame = UIEdgeInsetsInsetRect(
-          [self viewForWebState:self.currentWebState].frame,
-          UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
-      [self viewForWebState:self.currentWebState].frame = webStateViewFrame;
-
-      CRWWebViewScrollViewProxy* scrollProxy =
-          self.currentWebState->GetWebViewProxy().scrollViewProxy;
-      CGPoint scrollOffset = scrollProxy.contentOffset;
-      scrollOffset.y -= toolbarHeight;
-      scrollProxy.contentOffset = scrollOffset;
-    }
   }
 }
 
