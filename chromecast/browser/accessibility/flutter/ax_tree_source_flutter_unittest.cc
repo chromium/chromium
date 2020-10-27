@@ -726,17 +726,6 @@ TEST_F(AXTreeSourceFlutterTest, NoClickable) {
 // Tests a new node with scopes route will focus and speak
 // a child with names route set.
 TEST_F(AXTreeSourceFlutterTest, ScopesRoute) {
-  // Install a mock tts platform
-  auto* tts_controller = content::TtsController::GetInstance();
-  content::MockTtsPlatformImpl mock_tts_platform;
-  tts_controller->SetTtsPlatform(&mock_tts_platform);
-
-  // Setup some mocks required for tts platform impl
-  content::MockContentBrowserClient mock_content_browser_client;
-  content::MockContentClient client;
-  content::SetContentClient(&client);
-  content::SetBrowserClientForTesting(&mock_content_browser_client);
-
   // Add node with scopes route and child with names route. Focus
   // should move to node with names route.
   //
@@ -790,15 +779,8 @@ TEST_F(AXTreeSourceFlutterTest, ScopesRoute) {
   CallGetTreeData(&tree_data);
   ASSERT_EQ(6, tree_data.focus_id);
 
-  // Child 3 should have been spoken
-  ASSERT_TRUE(mock_tts_platform.GetLastSpokenUtterance() == child_6_label);
-
-  mock_tts_platform.ClearLastSpokenUtterance();
-
   // Same tree should not speak the same scopes_route/names_route
   CallNotifyAccessibilityEvent(&event);
-
-  ASSERT_TRUE(mock_tts_platform.GetLastSpokenUtterance() == "");
 
   // Now setup another tree but with 5&6 removed. This should
   // make the tree source focus (but not speak) 3
@@ -828,11 +810,9 @@ TEST_F(AXTreeSourceFlutterTest, ScopesRoute) {
   CallGetTreeData(&tree_data);
   ASSERT_EQ(3, tree_data.focus_id);
 
-  // Nothings spoken
-  ASSERT_TRUE(mock_tts_platform.GetLastSpokenUtterance() == "");
+  // Now step to have removed node 3 and re-add node 3 back in the tree. In this
+  // case, node 3 should be refocused and spoken.
 
-  // Finally, remove 2&3
-  //
   OnAccessibilityEventRequest event3;
   event3.set_source_id(0);
   event3.set_window_id(1);
@@ -841,7 +821,51 @@ TEST_F(AXTreeSourceFlutterTest, ScopesRoute) {
   root = event3.add_node_data();
   root->set_node_id(0);
 
+  child1 = AddChild(&event3, root, 1, 0, 0, 1, 1, false);
+  child2 = AddChild(&event3, child1, 2, 0, 0, 1, 1, false);
+
+  // Set scopes on child2
+  boolean_properties = child2->mutable_boolean_properties();
+  boolean_properties->set_scopes_route(true);
+
   CallNotifyAccessibilityEvent(&event3);
+
+  OnAccessibilityEventRequest event4;
+  event4.set_source_id(0);
+  event4.set_window_id(1);
+  event4.set_event_type(OnAccessibilityEventRequest_EventType_CONTENT_CHANGED);
+
+  root = event4.add_node_data();
+  root->set_node_id(0);
+
+  child1 = AddChild(&event4, root, 1, 0, 0, 1, 1, false);
+  child2 = AddChild(&event4, child1, 2, 0, 0, 1, 1, false);
+  child3 = AddChild(&event4, child2, 3, 0, 0, 1, 1, false);
+  child3->set_label(child_3_label);
+
+  // Set scopes on child2, names on child3
+  boolean_properties = child2->mutable_boolean_properties();
+  boolean_properties->set_scopes_route(true);
+  boolean_properties = child3->mutable_boolean_properties();
+  boolean_properties->set_names_route(true);
+
+  CallNotifyAccessibilityEvent(&event4);
+
+  // Focus moves to 3
+  CallGetTreeData(&tree_data);
+  ASSERT_EQ(3, tree_data.focus_id);
+
+  // Finally, remove 2
+  //
+  OnAccessibilityEventRequest event5;
+  event5.set_source_id(0);
+  event5.set_window_id(1);
+  event5.set_event_type(OnAccessibilityEventRequest_EventType_CONTENT_CHANGED);
+
+  root = event5.add_node_data();
+  root->set_node_id(0);
+
+  CallNotifyAccessibilityEvent(&event5);
 
   CallGetTreeData(&tree_data);
   ASSERT_EQ(0, tree_data.focus_id);

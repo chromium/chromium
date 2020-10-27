@@ -662,20 +662,20 @@ void AXTreeSourceFlutter::HandleRoutes(std::vector<ui::AXEvent>* events) {
         focus_event.event_type = ax::mojom::Event::kFocus;
         focus_event.id = focused_id_;
         focus_event.event_from = ax::mojom::EventFrom::kNone;
-
-        // Speak it.
-        SubmitTTS(name);
       }
     }
   }
 
-  // Detect any removed nodes with scopes_route flag.
+  // Clean up the cache for those nodes that should not be in the cache anymore.
   bool need_refocus = false;
   for (std::vector<int32_t>::iterator it = scopes_route_cache_.begin();
        it != scopes_route_cache_.end();) {
     int32_t id = *it;
-    if (GetFromId(id) == nullptr) {
-      // This was removed.
+    FlutterSemanticsNode* scopes_route_node = GetFromId(id);
+    if (scopes_route_node == nullptr || !scopes_route_node->HasScopesRoute() ||
+        FindRoutesNode(scopes_route_node) == nullptr) {
+      // This was removed in the latest tree update or there are no more
+      // RoutesNode child.
       it = scopes_route_cache_.erase(it++);
       need_refocus = true;
     } else {
