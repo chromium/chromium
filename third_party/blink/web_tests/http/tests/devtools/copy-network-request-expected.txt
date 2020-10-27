@@ -29,13 +29,13 @@ fetch("http://example.org/path", {
 
 cURL Windows:
 curl "http://example.org/path" ^
-  --data-binary "123" ^
+  --data-raw "123" ^
   --compressed
 
 
 cURL Unix:
 curl 'http://example.org/path' \
-  --data-binary '123' \
+  --data-raw '123' \
   --compressed
 
 
@@ -109,14 +109,14 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/json" ^
-  --data-binary "^{^\^"a^\^":1^}" ^
+  --data-raw "^{^\^"a^\^":1^}" ^
   --compressed
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/json' \
-  --data-binary '{"a":1}' \
+  --data-raw '{"a":1}' \
   --compressed
 
 
@@ -153,7 +153,7 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-binary ^"1234^
+  --data-raw ^"1234^
 
 00^^^^'^\^"^!^" ^
   --compressed
@@ -162,7 +162,7 @@ curl "http://example.org/path" ^
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-binary $'1234\r\n00\u0002\u0003\u0004\u0005\'"\u0021' \
+  --data-raw $'1234\r\n00\u0002\u0003\u0004\u0005\'"\u0021' \
   --compressed
 
 
@@ -199,7 +199,7 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-binary ^"1234^
+  --data-raw ^"1234^
 
 ^00^^^^'^\^"^!^" ^
   --compressed
@@ -208,7 +208,7 @@ curl "http://example.org/path" ^
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-binary $'1234\r\n\u000100\u0002\u0003\u0004\u0005\'"\u0021' \
+  --data-raw $'1234\r\n\u000100\u0002\u0003\u0004\u0005\'"\u0021' \
   --compressed
 
 
@@ -245,7 +245,7 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-binary ^"^%^OS^%^
+  --data-raw ^"^%^OS^%^
 
 ^%^%^OS^%^%^
 
@@ -256,7 +256,7 @@ curl "http://example.org/path" ^
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-binary $'%OS%\r\n%%OS%%\r\n"\\"\'$&\u0021' \
+  --data-raw $'%OS%\r\n%%OS%%\r\n"\\"\'$&\u0021' \
   --compressed
 
 
@@ -293,7 +293,7 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-binary ^"^!^@^#^$^%^^^&*()_+~`1234567890-=^[^]^{^};':^\^",./^
+  --data-raw ^"^!^@^#^$^%^^^&*()_+~`1234567890-=^[^]^{^};':^\^",./^
 
 ^<^>?^
 
@@ -310,7 +310,7 @@ yuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM^" ^
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-binary $'\u0021@#$%^&*()_+~`1234567890-=[]{};\':",./\r<>?\r\nqwer\nt\n\nyuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM' \
+  --data-raw $'\u0021@#$%^&*()_+~`1234567890-=[]{};\':",./\r<>?\r\nqwer\nt\n\nyuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM' \
   --compressed
 
 
@@ -347,14 +347,14 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-binary "^^^^ÿ	^܀" ^
+  --data-raw "^^^^ÿ	^܀" ^
   --compressed
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-binary $'\u007f\u0080\u0090ÿ\u0009܀' \
+  --data-raw $'\u007f\u0080\u0090ÿ\u0009܀' \
   --compressed
 
 
@@ -420,14 +420,14 @@ fetch("http://labs.ft.com/?querystring=[]{}", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-binary "^%^PATH^%^$PATH" ^
+  --data-raw "^%^PATH^%^$PATH" ^
   --compressed
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: application/binary' \
-  --data-binary '%PATH%$PATH' \
+  --data-raw '%PATH%$PATH' \
   --compressed
 
 
@@ -666,14 +666,14 @@ fetch (for nodejs):
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: foo/bar" ^
-  --data-binary "baz" ^
+  --data-raw "baz" ^
   --compressed
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: foo/bar' \
-  --data-binary 'baz' \
+  --data-raw 'baz' \
   --compressed
 
 
@@ -710,14 +710,14 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: foo/bar" ^
-  --data-binary "baz" ^
+  --data-raw "baz" ^
   --compressed
 
 
 cURL Unix:
 curl 'http://example.org/path' \
   -H 'Content-Type: foo/bar' \
-  --data-binary 'baz' \
+  --data-raw 'baz' \
   --compressed
 
 
