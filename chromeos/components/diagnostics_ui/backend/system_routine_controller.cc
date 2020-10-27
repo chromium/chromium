@@ -10,6 +10,9 @@
 namespace chromeos {
 namespace diagnostics {
 
+SystemRoutineController::SystemRoutineController() = default;
+SystemRoutineController::~SystemRoutineController() = default;
+
 void SystemRoutineController::BindCrosHealthdDiagnosticsServiceIfNeccessary() {
   if (!diagnostics_service_ || !diagnostics_service_.is_connected()) {
     cros_healthd::ServiceConnection::GetInstance()->GetDiagnosticsService(
