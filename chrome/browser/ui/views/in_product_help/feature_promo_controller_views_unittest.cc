@@ -99,6 +99,15 @@ class FeaturePromoControllerViewsTest : public TestWithBrowserView {
   }
 };
 
+TEST_F(FeaturePromoControllerViewsTest, GetForView) {
+  EXPECT_EQ(controller_,
+            FeaturePromoControllerViews::GetForView(GetAnchorView()));
+
+  // For a view not in the BrowserView's hierarchy, it should return null.
+  views::View orphan_view;
+  EXPECT_EQ(nullptr, FeaturePromoControllerViews::GetForView(&orphan_view));
+}
+
 TEST_F(FeaturePromoControllerViewsTest, AsksBackendToShowPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .Times(1)

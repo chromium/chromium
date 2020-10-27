@@ -39,6 +39,11 @@ class FeaturePromoControllerViews : public FeaturePromoController,
   explicit FeaturePromoControllerViews(BrowserView* browser_view);
   ~FeaturePromoControllerViews() override;
 
+  // Get the appropriate instance for |view|. This finds the BrowserView
+  // that contains |view| and returns its instance. May return nullptr,
+  // but if |view| is in a BrowserView's hierarchy it shouldn't.
+  static FeaturePromoControllerViews* GetForView(views::View* view);
+
   // Repositions the bubble (if showing) relative to the anchor view.
   // This should be called whenever the anchor view is potentially
   // moved. It is safe to call this if a bubble is not showing.

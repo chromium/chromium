@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/in_product_help/feature_promo_registry.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "ui/views/view.h"
 
 FeaturePromoControllerViews::FeaturePromoControllerViews(
     BrowserView* browser_view)
@@ -41,6 +42,21 @@ FeaturePromoControllerViews::~FeaturePromoControllerViews() {
   DCHECK(current_iph_feature_);
 
   promo_bubble_->GetWidget()->Close();
+}
+
+// static
+FeaturePromoControllerViews* FeaturePromoControllerViews::GetForView(
+    views::View* view) {
+  views::Widget* widget = view->GetWidget();
+  if (!widget)
+    return nullptr;
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForNativeWindow(widget->GetNativeWindow());
+  if (!browser_view)
+    return nullptr;
+
+  return browser_view->feature_promo_controller();
 }
 
 bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
