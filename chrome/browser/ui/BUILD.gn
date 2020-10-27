@@ -908,6 +908,8 @@ static_library("ui") {
       "commander/apps_command_source.h",
       "commander/command_source.cc",
       "commander/command_source.h",
+      "commander/commander.cc",
+      "commander/commander.h",
       "commander/commander_backend.h",
       "commander/commander_controller.cc",
       "commander/commander_controller.h",
