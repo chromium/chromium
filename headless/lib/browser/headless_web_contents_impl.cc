@@ -90,7 +90,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   }
 
   void ActivateContents(content::WebContents* contents) override {
-    contents->GetRenderViewHost()->GetWidget()->Focus();
+    contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->Focus();
   }
 
   void CloseContents(content::WebContents* source) override {
