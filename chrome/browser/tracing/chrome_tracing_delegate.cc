@@ -70,7 +70,11 @@ void ChromeTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 ChromeTracingDelegate::ChromeTracingDelegate() : incognito_launched_(false) {
-  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  // Ensure that this code is called on the UI thread, except for
+  // tests where a UI thread might not have been initialized at this point.
+  DCHECK(
+      content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+      !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
 #if !defined(OS_ANDROID)
   BrowserList::AddObserver(this);
 #else

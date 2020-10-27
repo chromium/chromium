@@ -115,6 +115,9 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   bool HasTraceToUpload() override;
   std::string GetLatestTraceToUpload() override;
   void SetTraceToUpload(std::unique_ptr<std::string> trace_data);
+  std::string GetBackgroundTracingUploadUrl() override;
+  std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig()
+      override;
 
   // Add/remove EnabledStateObserver.
   CONTENT_EXPORT void AddEnabledStateObserver(EnabledStateObserver* observer);
@@ -142,6 +145,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   CONTENT_EXPORT void AbortScenarioForTesting() override;
   CONTENT_EXPORT void SetTraceToUploadForTesting(
       std::unique_ptr<std::string> trace_data) override;
+  void SetConfigTextFilterForTesting(
+      ConfigTextFilterForTesting predicate) override;
 
  private:
   friend class base::NoDestructor<BackgroundTracingManagerImpl>;
@@ -184,6 +189,9 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   // This field contains serialized trace log proto.
   std::string trace_to_upload_;
+
+  // Callback to override the background tracing config for testing.
+  ConfigTextFilterForTesting config_text_filter_for_testing_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundTracingManagerImpl);
 };

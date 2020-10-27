@@ -100,10 +100,24 @@ class BackgroundTracingManager {
   // the serialized trace proto.
   virtual std::string GetLatestTraceToUpload() = 0;
 
+  // Returns the URL to upload the trace files to.
+  virtual std::string GetBackgroundTracingUploadUrl() = 0;
+
+  // Returns the configuration for background tracing.
+  virtual std::unique_ptr<BackgroundTracingConfig>
+  GetBackgroundTracingConfig() = 0;
+
   // For tests
   virtual void AbortScenarioForTesting() = 0;
   virtual void SetTraceToUploadForTesting(
       std::unique_ptr<std::string> trace_data) = 0;
+
+  using ConfigTextFilterForTesting =
+      base::RepeatingCallback<std::string(const std::string&)>;
+
+  // Sets a callback to override the background tracing config for testing.
+  virtual void SetConfigTextFilterForTesting(
+      ConfigTextFilterForTesting predicate) = 0;
 
  protected:
   virtual ~BackgroundTracingManager() {}

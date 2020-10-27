@@ -5,14 +5,9 @@
 #ifndef CHROME_BROWSER_TRACING_BACKGROUND_TRACING_FIELD_TRIAL_H_
 #define CHROME_BROWSER_TRACING_BACKGROUND_TRACING_FIELD_TRIAL_H_
 
-#include <string>
-
 namespace tracing {
 
 void SetupBackgroundTracingFieldTrial();
-
-typedef void (*ConfigTextFilterForTesting)(std::string*);
-void SetConfigTextFilterForTesting(ConfigTextFilterForTesting predicate);
 
 }  // namespace tracing
 

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/macros.h"
@@ -19,6 +20,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/tracing/common/trace_startup_config.h"
+#include "components/variations/variations_associated_data.h"
 #include "content/browser/tracing/background_memory_tracing_observer.h"
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 #include "content/browser/tracing/background_tracing_active_scenario.h"
@@ -45,6 +47,10 @@
 #endif
 
 namespace content {
+
+const char kBackgroundTracingFieldTrial[] = "BackgroundTracing";
+const char kBackgroundTracingConfig[] = "config";
+const char kBackgroundTracingUploadUrl[] = "upload_url";
 
 // static
 void BackgroundTracingManagerImpl::RecordMetric(Metrics metric) {
@@ -237,7 +243,11 @@ std::string BackgroundTracingManagerImpl::GetLatestTraceToUpload() {
 
 void BackgroundTracingManagerImpl::AddEnabledStateObserver(
     EnabledStateObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Ensure that this code is called on the UI thread, except for
+  // tests where a UI thread might not have been initialized at this point.
+  DCHECK(
+      content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+      !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
   background_tracing_observers_.insert(observer);
 }
 
@@ -304,6 +314,11 @@ void BackgroundTracingManagerImpl::SetTraceToUploadForTesting(
   SetTraceToUpload(std::move(trace_data));
 }
 
+void BackgroundTracingManagerImpl::SetConfigTextFilterForTesting(
+    ConfigTextFilterForTesting predicate) {
+  config_text_filter_for_testing_ = std::move(predicate);
+}
+
 void BackgroundTracingManagerImpl::SetTraceToUpload(
     std::unique_ptr<std::string> trace_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -312,6 +327,33 @@ void BackgroundTracingManagerImpl::SetTraceToUpload(
   } else {
     trace_to_upload_.clear();
   }
+}
+
+std::string BackgroundTracingManagerImpl::GetBackgroundTracingUploadUrl() {
+  return variations::GetVariationParamValue(kBackgroundTracingFieldTrial,
+                                            kBackgroundTracingUploadUrl);
+}
+
+std::unique_ptr<content::BackgroundTracingConfig>
+BackgroundTracingManagerImpl::GetBackgroundTracingConfig() {
+  std::string config_text = variations::GetVariationParamValue(
+      kBackgroundTracingFieldTrial, kBackgroundTracingConfig);
+  if (config_text.empty())
+    return nullptr;
+
+  if (config_text_filter_for_testing_)
+    config_text = config_text_filter_for_testing_.Run(config_text);
+
+  auto value = base::JSONReader::Read(config_text);
+  if (!value)
+    return nullptr;
+
+  // TODO(crbug.com/646113): use the new base::Value API.
+  const base::DictionaryValue* dict = nullptr;
+  if (!value->GetAsDictionary(&dict))
+    return nullptr;
+
+  return BackgroundTracingConfig::FromDict(dict);
 }
 
 void BackgroundTracingManagerImpl::ValidateStartupScenario() {
