@@ -15,9 +15,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.NewTabCallback;
+import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -62,5 +65,42 @@ public final class PopupTest {
         // Click the button on the infobar to open the popup.
         EventUtils.simulateTouchCenterOfView(mActivity.findViewById(buttonId));
         callback.waitForNewTab();
+    }
+
+    @Test
+    @SmallTest
+    // This is a regression test for https://crbug.com/1142090 and verifies no crash when
+    // NewTabCallback.onNewTab() destroys the supplied tab.
+    public void testOpenPopupFromInfoBarAndNewTabCallbackDestroysTab() throws Exception {
+        CallbackHelper helper = new CallbackHelper();
+        NewTabCallback callback = new NewTabCallback() {
+            @Override
+            public void onNewTab(Tab tab, int mode) {
+                tab.getBrowser().destroyTab(tab);
+                helper.notifyCalled();
+            }
+            @Override
+            public void onCloseTab() {
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivity.getBrowser().getActiveTab().setNewTabCallback(callback); });
+
+        // Try to open a popup.
+        mActivityTestRule.executeScriptSync("window.open('about:blank')", true);
+
+        // Make sure the infobar shows up and the popup has not been opened.
+        int buttonId = ResourceUtil.getIdentifier(mRemoteContext, "id/button_primary");
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(mActivity.findViewById(buttonId), Matchers.notNullValue());
+        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertEquals(mActivity.getBrowser().getTabs().size(), 1); });
+
+        // Click the button on the infobar to open the popup.
+        EventUtils.simulateTouchCenterOfView(mActivity.findViewById(buttonId));
+
+        // Wait for tab to be destroyed.
+        helper.waitForFirst();
     }
 }
