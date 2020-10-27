@@ -436,6 +436,8 @@ void BubbleDialogDelegateView::AddedToWidget() {
     GetWidget()->GetRootView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kAlert, true);
   }
+  if (enable_arrow_key_traversal_)
+    GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
 }
 
 View* BubbleDialogDelegateView::GetContentsView() {
@@ -736,10 +738,14 @@ void BubbleDialogDelegateView::UpdateColorsFromTheme() {
                     : nullptr);
 }
 
-void BubbleDialogDelegateView::EnableUpDownKeyboardAccelerators() {
-  // The arrow keys can be used to tab between items.
-  AddAccelerator(ui::Accelerator(ui::VKEY_DOWN, ui::EF_NONE));
-  AddAccelerator(ui::Accelerator(ui::VKEY_UP, ui::EF_NONE));
+void BubbleDialogDelegateView::EnableArrowKeyTraversal() {
+  if (enable_arrow_key_traversal_)
+    return;
+  enable_arrow_key_traversal_ = true;
+
+  // Can't get the focus manager for a view that hasn't been added to a widget.
+  if (GetFocusManager())
+    GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
 }
 
 void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
