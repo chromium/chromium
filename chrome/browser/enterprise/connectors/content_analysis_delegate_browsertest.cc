@@ -24,6 +24,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 
 using extensions::SafeBrowsingPrivateEventRouter;
@@ -34,6 +35,8 @@ using ::testing::Mock;
 namespace enterprise_connectors {
 
 namespace {
+
+constexpr char kUserName[] = "test@chromium.org";
 
 base::string16 text() {
   return base::UTF8ToUTF16(std::string(100, 'a'));
@@ -216,6 +219,13 @@ class ContentAnalysisDelegateBrowserTest
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
         browser()->profile())
         ->SetBinaryUploadServiceForTesting(FakeBinaryUploadServiceStorage());
+    identity_test_environment_ =
+        std::make_unique<signin::IdentityTestEnvironment>();
+    identity_test_environment_->MakePrimaryAccountAvailable(kUserName);
+    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+        browser()->profile())
+        ->SetIdentityManagerForTesting(
+            identity_test_environment_->identity_manager());
   }
 
   void DestructorCalled(ContentAnalysisDialog* dialog) override {
@@ -231,6 +241,7 @@ class ContentAnalysisDelegateBrowserTest
 
  private:
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -314,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Files) {
       /*mimetypes*/ ExeMimeTypes(),
       /*size*/ std::string("bad file content").size(),
       /*result*/
-      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED));
+      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
+      /*username*/ kUserName);
 
   enterprise_connectors::ContentAnalysisResponse ok_response;
   auto* ok_result = ok_response.add_results();
@@ -406,7 +418,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Texts) {
       /*mimetype*/ TextMimeTypes(),
       /*size*/ 400,
       /*result*/
-      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED));
+      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
+      /*username*/ kUserName);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -515,7 +528,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegatePasswordProtectedFilesBrowserTest,
       expected_result() ? safe_browsing::EventResultToString(
                               safe_browsing::EventResult::ALLOWED)
                         : safe_browsing::EventResultToString(
-                              safe_browsing::EventResult::BLOCKED));
+                              safe_browsing::EventResult::BLOCKED),
+      /*username*/ kUserName);
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
@@ -610,7 +624,8 @@ IN_PROC_BROWSER_TEST_P(
       expected_result() ? safe_browsing::EventResultToString(
                               safe_browsing::EventResult::ALLOWED)
                         : safe_browsing::EventResultToString(
-                              safe_browsing::EventResult::BLOCKED));
+                              safe_browsing::EventResult::BLOCKED),
+      /*username*/ kUserName);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -712,7 +727,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockLargeFileTransferBrowserTest,
       expected_result() ? safe_browsing::EventResultToString(
                               safe_browsing::EventResult::ALLOWED)
                         : safe_browsing::EventResultToString(
-                              safe_browsing::EventResult::BLOCKED));
+                              safe_browsing::EventResult::BLOCKED),
+      /*username*/ kUserName);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -835,7 +851,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDelayDeliveryUntilVerdictTest,
       /*result*/
       safe_browsing::EventResultToString(
           expected_result() ? safe_browsing::EventResult::ALLOWED
-                            : safe_browsing::EventResult::BLOCKED));
+                            : safe_browsing::EventResult::BLOCKED),
+      /*username*/ kUserName);
 
   bool called = false;
   base::RunLoop run_loop;

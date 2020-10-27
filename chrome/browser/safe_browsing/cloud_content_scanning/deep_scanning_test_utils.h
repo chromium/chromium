@@ -42,7 +42,8 @@ class EventReportValidator {
       const std::string& expected_trigger,
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
-      const std::string& expected_result);
+      const std::string& expected_result,
+      const std::string& expected_username);
 
   void ExpectSensitiveDataEvent(
       const std::string& expected_url,
@@ -53,7 +54,8 @@ class EventReportValidator {
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
-      const std::string& expected_result);
+      const std::string& expected_result,
+      const std::string& expected_username);
 
   void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       const std::string& expected_url,
@@ -65,7 +67,8 @@ class EventReportValidator {
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
-      const std::string& expected_result);
+      const std::string& expected_result,
+      const std::string& expected_username);
 
   void ExpectSensitiveDataEventAndDangerousDeepScanningResult(
       const std::string& expected_url,
@@ -77,7 +80,8 @@ class EventReportValidator {
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
-      const std::string& expected_result);
+      const std::string& expected_result,
+      const std::string& expected_username);
 
   void ExpectUnscannedFileEvent(const std::string& expected_url,
                                 const std::string& expected_filename,
@@ -86,7 +90,8 @@ class EventReportValidator {
                                 const std::string& expected_reason,
                                 const std::set<std::string>* expected_mimetypes,
                                 int expected_content_size,
-                                const std::string& expected_result);
+                                const std::string& expected_result,
+                                const std::string& expected_username);
 
   void ExpectDangerousDownloadEvent(
       const std::string& expected_url,
@@ -96,7 +101,8 @@ class EventReportValidator {
       const std::string& expected_trigger,
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
-      const std::string& expected_result);
+      const std::string& expected_result,
+      const std::string& expected_username);
 
   void ExpectNoReport();
 
@@ -134,6 +140,7 @@ class EventReportValidator {
   base::Optional<int> content_size_ = base::nullopt;
   const std::set<std::string>* mimetypes_ = nullptr;
   base::Optional<std::string> result_ = base::nullopt;
+  std::string username_;
 
   base::RepeatingClosure done_closure_;
 };

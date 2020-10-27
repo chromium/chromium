@@ -141,7 +141,8 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_reason,
     const std::set<std::string>* expected_mimetypes,
     int expected_content_size,
-    const std::string& expected_result) {
+    const std::string& expected_result,
+    const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
   filename_ = expected_filename;
@@ -151,6 +152,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
   unscanned_reason_ = expected_reason;
   content_size_ = expected_content_size;
   result_ = expected_result;
+  username_ = expected_username;
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
@@ -168,7 +170,8 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_trigger,
     const std::set<std::string>* expected_mimetypes,
     int expected_content_size,
-    const std::string& expected_result) {
+    const std::string& expected_result,
+    const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filename_ = expected_filename;
@@ -178,6 +181,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
   trigger_ = expected_trigger;
   content_size_ = expected_content_size;
   result_ = expected_result;
+  username_ = expected_username;
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
@@ -196,7 +200,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
         expected_dlp_verdict,
     const std::set<std::string>* expected_mimetypes,
     int expected_content_size,
-    const std::string& expected_result) {
+    const std::string& expected_result,
+    const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
   dlp_verdict_ = expected_dlp_verdict;
@@ -206,6 +211,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   trigger_ = expected_trigger;
   content_size_ = expected_content_size;
   result_ = expected_result;
+  username_ = expected_username;
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
@@ -226,7 +232,8 @@ void EventReportValidator::
             expected_dlp_verdict,
         const std::set<std::string>* expected_mimetypes,
         int expected_content_size,
-        const std::string& expected_result) {
+        const std::string& expected_result,
+        const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filename_ = expected_filename;
@@ -236,6 +243,7 @@ void EventReportValidator::
   mimetypes_ = expected_mimetypes;
   content_size_ = expected_content_size;
   result_ = expected_result;
+  username_ = expected_username;
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
@@ -264,7 +272,8 @@ void EventReportValidator::
             expected_dlp_verdict,
         const std::set<std::string>* expected_mimetypes,
         int expected_content_size,
-        const std::string& expected_result) {
+        const std::string& expected_result,
+        const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
   filename_ = expected_filename;
@@ -274,6 +283,7 @@ void EventReportValidator::
   content_size_ = expected_content_size;
   result_ = expected_result;
   dlp_verdict_ = expected_dlp_verdict;
+  username_ = expected_username;
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
@@ -299,7 +309,8 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::string& expected_trigger,
     const std::set<std::string>* expected_mimetypes,
     int expected_content_size,
-    const std::string& expected_result) {
+    const std::string& expected_result,
+    const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filename_ = expected_filename;
@@ -309,6 +320,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
   trigger_ = expected_trigger;
   content_size_ = expected_content_size;
   result_ = expected_result;
+  username_ = expected_username;
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
       .WillOnce([this](base::Value& report,
                        base::OnceCallback<void(bool)>& callback) {
@@ -350,6 +362,8 @@ void EventReportValidator::ValidateReport(base::Value* report) {
                 threat_type_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUnscannedReason,
                 unscanned_reason_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
+                username_);
   ValidateMimeType(event);
   ValidateDlpVerdict(event);
 }

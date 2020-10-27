@@ -36,6 +36,7 @@
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/proto/webprotect.pb.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/test/browser_test.h"
@@ -46,6 +47,8 @@
 namespace safe_browsing {
 
 namespace {
+
+constexpr char kUserName[] = "test@chromium.org";
 
 // Extract the metadata proto from the raw request string. Returns true on
 // success.
@@ -119,6 +122,13 @@ class DownloadDeepScanningBrowserTest
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
         browser()->profile())
         ->SetCloudPolicyClientForTesting(client_.get());
+    identity_test_environment_ =
+        std::make_unique<signin::IdentityTestEnvironment>();
+    identity_test_environment_->MakePrimaryAccountAvailable(kUserName);
+    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+        browser()->profile())
+        ->SetIdentityManagerForTesting(
+            identity_test_environment_->identity_manager());
   }
 
   policy::MockCloudPolicyClient* client() { return client_.get(); }
@@ -357,6 +367,7 @@ class DownloadDeepScanningBrowserTest
   base::flat_set<download::DownloadItem*> download_items_;
 
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
 };
 
 IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest,
@@ -650,7 +661,8 @@ IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
-      /*result*/ EventResultToString(EventResult::WARNED));
+      /*result*/ EventResultToString(EventResult::WARNED),
+      /*username*/ kUserName);
 
   // The DLP scan finishes asynchronously, and finds nothing. The malware result
   // is attached to the response again.
@@ -736,7 +748,8 @@ IN_PROC_BROWSER_TEST_F(DownloadDeepScanningBrowserTest,
       /*dlp_verdict*/ *result,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
-      /*result*/ EventResultToString(EventResult::WARNED));
+      /*result*/ EventResultToString(EventResult::WARNED),
+      /*username*/ kUserName);
   WaitForDownloadToFinish();
 
   // The file should be blocked.
@@ -804,7 +817,8 @@ IN_PROC_BROWSER_TEST_F(DownloadRestrictionsDeepScanningBrowserTest,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
-      /*result*/ EventResultToString(EventResult::BLOCKED));
+      /*result*/ EventResultToString(EventResult::BLOCKED),
+      /*username*/ kUserName);
 
   WaitForDownloadToFinish();
 
@@ -1044,7 +1058,8 @@ IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         /*mimetypes*/ &zip_types,
         /*size*/ 276,
-        /*result*/ EventResultToString(EventResult::WARNED));
+        /*result*/ EventResultToString(EventResult::WARNED),
+        /*username*/ kUserName);
   }
 
   // The deep scanning malware verdict is returned asynchronously. It is not

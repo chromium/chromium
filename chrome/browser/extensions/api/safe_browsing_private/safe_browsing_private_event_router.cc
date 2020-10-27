@@ -155,6 +155,8 @@ SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
     content::BrowserContext* context)
     : context_(context) {
   event_router_ = EventRouter::Get(context_);
+  identity_manager_ = IdentityManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(context_));
 }
 
 SafeBrowsingPrivateEventRouter::~SafeBrowsingPrivateEventRouter() {
@@ -757,8 +759,6 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient() {
   // |identity_manager_| may be null in tests. If there is no identity
   // manager don't enable the real-time reporting API since the router won't
   // be able to fill in all the info needed for the reports.
-  identity_manager_ = IdentityManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(context_));
   if (!identity_manager_) {
     DVLOG(2) << "Safe browsing real-time event requires an identity manager.";
     return;

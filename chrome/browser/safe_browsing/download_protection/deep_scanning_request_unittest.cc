@@ -36,6 +36,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/webprotect.pb.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,6 +50,8 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 
 namespace {
+
+constexpr char kUserName[] = "test@chromium.org";
 
 const std::set<std::string>* ExeMimeTypes() {
   static std::set<std::string> set = {"application/x-msdownload",
@@ -409,6 +412,10 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->SetBinaryUploadServiceForTesting(
             download_protection_service_.GetFakeBinaryUploadService());
+    identity_test_environment_.MakePrimaryAccountAvailable(kUserName);
+    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+        ->SetIdentityManagerForTesting(
+            identity_test_environment_.identity_manager());
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetAuthForTesting(true);
 
@@ -424,6 +431,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 
  protected:
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
+  signin::IdentityTestEnvironment identity_test_environment_;
 };
 
 TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
@@ -477,7 +485,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
-        /*result*/ EventResultToString(EventResult::WARNED));
+        /*result*/ EventResultToString(EventResult::WARNED),
+        /*username*/ kUserName);
 
     request.Start();
 
@@ -527,7 +536,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
-        /*result*/ EventResultToString(EventResult::WARNED));
+        /*result*/ EventResultToString(EventResult::WARNED),
+        /*username*/ kUserName);
 
     request.Start();
 
@@ -567,7 +577,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
-        EventResultToString(EventResult::BLOCKED));
+        EventResultToString(EventResult::BLOCKED),
+        /*username*/ kUserName);
 
     request.Start();
 
@@ -607,7 +618,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
-        EventResultToString(EventResult::WARNED));
+        EventResultToString(EventResult::WARNED),
+        /*username*/ kUserName);
 
     request.Start();
 
@@ -651,7 +663,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*dlp_verdict*/ *dlp_result,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
-        EventResultToString(EventResult::BLOCKED));
+        EventResultToString(EventResult::BLOCKED),
+        /*username*/ kUserName);
 
     request.Start();
 
@@ -688,7 +701,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/
-        EventResultToString(EventResult::ALLOWED));
+        EventResultToString(EventResult::ALLOWED),
+        /*username*/ kUserName);
 
     request.Start();
 
@@ -725,7 +739,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/
-        EventResultToString(EventResult::ALLOWED));
+        EventResultToString(EventResult::ALLOWED),
+        /*username*/ kUserName);
 
     request.Start();
 
@@ -804,7 +819,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
-        /*result*/ EventResultToString(expected_event_result_for_malware()));
+        /*result*/ EventResultToString(expected_event_result_for_malware()),
+        /*username*/ kUserName);
 
     request.Start();
 
@@ -843,7 +859,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
-        /*result*/ EventResultToString(EventResult::WARNED));
+        /*result*/ EventResultToString(EventResult::WARNED),
+        /*username*/ kUserName);
 
     request.Start();
 
