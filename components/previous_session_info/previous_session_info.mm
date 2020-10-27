@@ -259,12 +259,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
   NSString* currentLanguage = [[NSLocale preferredLanguages] objectAtIndex:0];
   [defaults setObject:currentLanguage forKey:kLastRanLanguage];
 
-  // Set the current Multi-Window support state.
-  // TODO(crbug.com/1109280): Remove after the migration to Multi-Window
-  // sessions is done.
-  [defaults setBool:base::ios::IsMultiwindowSupported()
-             forKey:kPreviousSessionInfoMultiWindowEnabled];
-
   // Clear the memory warning flag.
   [defaults
       removeObjectForKey:previous_session_info_constants::
@@ -494,6 +488,15 @@ static PreviousSessionInfo* gSharedInstance = nil;
   [self synchronizeSceneSessionIDs];
 }
 
+- (void)updateMultiWindowSupportStatus {
+  gSharedInstance.isMultiWindowEnabledSession =
+      base::ios::IsMultiwindowSupported();
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setBool:gSharedInstance.isMultiWindowEnabledSession
+             forKey:kPreviousSessionInfoMultiWindowEnabled];
+  [defaults synchronize];
+}
+
 - (base::ScopedClosureRunner)startSessionRestoration {
   if (self.numberOfSessionsBeingRestored == 0) {
     [NSUserDefaults.standardUserDefaults
@@ -509,12 +512,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
     --self.numberOfSessionsBeingRestored;
     if (self.numberOfSessionsBeingRestored == 0) {
       [self resetSessionRestorationFlag];
-      // Once the first patch of sessions is restored. Update the Multi-Window
-      // flag so it's not used again in the same run.
-      // TODO(crbug.com/1109280): Remove after the migration to Multi-Window
-      // sessions is done.
-      gSharedInstance.isMultiWindowEnabledSession =
-          base::ios::IsMultiwindowSupported();
     }
   }));
 }
