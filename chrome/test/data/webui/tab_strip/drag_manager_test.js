@@ -690,6 +690,27 @@ suite('DragManager', () => {
         0, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
   });
 
+  test('DropWithoutMovingShowsContextMenu', async () => {
+    const draggedTab = delegate.children[0];
+    const dragDetails = {
+      bubbles: true,
+      composed: true,
+      clientX: 100,
+      clientY: 150,
+      dataTransfer: new MockDataTransfer(),
+    };
+    draggedTab.dispatchEvent(new DragEvent('dragstart', dragDetails));
+    draggedTab.dispatchEvent(new DragEvent('drop', dragDetails));
+
+    assertEquals(
+        1, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
+    const [tabId, clientX, clientY] =
+        await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
+    assertEquals(draggedTab.tab.id, tabId);
+    assertEquals(dragDetails.clientX, clientX);
+    assertEquals(dragDetails.clientY, clientY);
+  });
+
   test('DragEndWithDropEffectMoveDoesNotRemoveDraggedOutAttribute', () => {
     const draggedTab = delegate.children[0];
     const dataTransfer = new MockDataTransfer();
