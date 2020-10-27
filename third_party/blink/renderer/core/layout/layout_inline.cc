@@ -1115,7 +1115,22 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     // which case the element must have self painting layer.
     DCHECK(HasSelfPaintingLayer());
     NGInlineCursor cursor;
-    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
+    cursor.MoveTo(*this);
+    if (!cursor)
+      return false;
+    int target_fragment_idx = hit_test_location.FragmentIndex();
+    DCHECK(!CanTraversePhysicalFragments() || target_fragment_idx >= 0);
+    // Convert from inline fragment index to container fragment index, as the
+    // inline may not start in the first fragment generated for the inline
+    // formatting context.
+    if (target_fragment_idx != -1)
+      target_fragment_idx += cursor.CurrentContainerFragmentIndex();
+
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      if (target_fragment_idx != -1 &&
+          wtf_size_t(target_fragment_idx) !=
+              cursor.CurrentContainerFragmentIndex())
+        continue;
       if (const NGPaintFragment* paint_fragment =
               cursor.Current().PaintFragment()) {
         // NGBoxFragmentPainter::NodeAtPoint() takes an offset that is

@@ -254,6 +254,10 @@ class CORE_EXPORT NGInlineCursor {
   // Returns the |LayoutBlockFlow| containing this cursor.
   const LayoutBlockFlow* GetLayoutBlockFlow() const;
 
+  // Return the index of the current physical box fragment of the containing
+  // block. An inline formatting context may be block fragmented.
+  wtf_size_t CurrentContainerFragmentIndex() const { return fragment_index_; }
+
   //
   // Functions to query the current position.
   //

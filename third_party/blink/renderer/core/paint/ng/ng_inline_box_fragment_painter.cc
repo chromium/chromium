@@ -380,7 +380,17 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
 
   NGInlineCursor cursor(*block_flow);
   cursor.MoveTo(layout_inline);
+  if (!cursor)
+    return;
+  // Convert from inline fragment index to container fragment index, as the
+  // inline may not start in the first fragment generated for the inline
+  // formatting context.
+  wtf_size_t target_fragment_idx =
+      cursor.CurrentContainerFragmentIndex() +
+      paint_info.context.GetPaintController().CurrentFragment();
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+    if (target_fragment_idx != cursor.CurrentContainerFragmentIndex())
+      continue;
     const NGFragmentItem* item = cursor.CurrentItem();
     DCHECK(item);
     const NGPhysicalBoxFragment* box_fragment = item->BoxFragment();

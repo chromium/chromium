@@ -2254,8 +2254,18 @@ bool PaintLayer::HitTestContentsForFragments(
     inside_clip_rect = true;
     PhysicalOffset fragment_offset = offset;
     fragment_offset += fragment.layer_bounds.offset;
+
+    // When hit-testing a relatively positioned inline, we'll search for it in
+    // each fragment of the containing block. Each fragment has its own offset,
+    // and we need to do one fragment at a time.
+    int limit_to_fragment = -1;
+    if (GetLayoutObject().IsLayoutInline() &&
+        GetLayoutObject().CanTraversePhysicalFragments())
+      limit_to_fragment = i;
+
+    HitTestLocation location_for_fragment(hit_test_location, limit_to_fragment);
     if (HitTestContents(result, fragment.physical_fragment, fragment_offset,
-                        hit_test_location, hit_test_filter))
+                        location_for_fragment, hit_test_filter))
       return true;
   }
 

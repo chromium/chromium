@@ -61,11 +61,14 @@ class CORE_EXPORT HitTestLocation {
                            const PhysicalRect& bounding_box);
 
   HitTestLocation(const HitTestLocation&, const PhysicalOffset& offset);
+  HitTestLocation(const HitTestLocation&, wtf_size_t fragment_index);
   HitTestLocation(const HitTestLocation&);
   HitTestLocation& operator=(const HitTestLocation&);
 
   const PhysicalOffset& Point() const { return point_; }
   IntPoint RoundedPoint() const { return RoundedIntPoint(point_); }
+
+  int FragmentIndex() const { return fragment_index_; }
 
   // Rect-based hit test related methods.
   bool IsRectBasedTest() const { return is_rect_based_; }
@@ -103,6 +106,13 @@ class CORE_EXPORT HitTestLocation {
 
   FloatPoint transformed_point_;
   FloatQuad transformed_rect_;
+
+  // Index of fragment (FragmentData) to hit-test. If it's -1, all fragments
+  // will be hit-tested. This is used to hit test items inside one NG block
+  // fragment at a time. This is necessary for relatively positioned non-atomic
+  // inlines. Note that this member is intentionally NOT copied when copying the
+  // object.
+  int fragment_index_ = -1;
 
   bool is_rect_based_;
   bool is_rectilinear_;
