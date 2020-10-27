@@ -578,7 +578,7 @@ const base::Feature kParentAccessCode{"ParentAccessCode",
 // Enables usage of Parent Access Code in the login flow for reauth and add
 // user. Requires |kParentAccessCode| to be enabled.
 const base::Feature kParentAccessCodeForOnlineLogin{
-    "ParentAccessCodeForOnlineLogin", base::FEATURE_ENABLED_BY_DEFAULT};
+    "ParentAccessCodeForOnlineLogin", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables usage of Parent Access Code to authorize change of time actions on
 // child user device. Requires |kParentAccessCode| to be enabled.

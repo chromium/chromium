@@ -102,7 +102,7 @@ const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
 
 // Enables or disables entry point for child account sign in or creation.
 const base::Feature kChildSpecificSignin{"ChildSpecificSignin",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, options page for each input method will be opened in ChromeOS
 // settings. Otherwise it will be opened in a new web page in Chrome browser.
