@@ -59,7 +59,7 @@ public class ImageEditorModuleProvider {
      */
     public void maybeInstallModule(InstallListener listener) {
         if (isModuleInstalled()) {
-            listener.onComplete(false);
+            listener.onComplete(true);
             return;
         }
 
