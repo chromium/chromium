@@ -14,7 +14,7 @@ DesktopSessionDurationObserver::DesktopSessionDurationObserver(
     content::WebContents* web_contents,
     DesktopSessionDurationTracker* service)
     : content::WebContentsObserver(web_contents), service_(service) {
-  RegisterInputEventObserver(web_contents->GetRenderViewHost());
+  RegisterInputEventObserver(web_contents->GetMainFrame()->GetRenderViewHost());
 }
 
 DesktopSessionDurationObserver::~DesktopSessionDurationObserver() {}
