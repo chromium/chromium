@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Cryptohome.AsyncDBusRequest" units="ms"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
