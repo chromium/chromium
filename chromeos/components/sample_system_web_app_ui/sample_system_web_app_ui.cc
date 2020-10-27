@@ -21,10 +21,10 @@ namespace {
 content::WebUIDataSource* CreateUntrustedSampleSystemWebAppDataSource() {
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::Create(kChromeUIUntrustedSampleSystemWebAppURL);
-  untrusted_source->AddResourcePath("untrusted.html",
-                                    IDR_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_HTML);
-  untrusted_source->AddResourcePath("untrusted.js",
-                                    IDR_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_JS);
+  untrusted_source->AddResourcePath(
+      "untrusted.html", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_HTML);
+  untrusted_source->AddResourcePath(
+      "untrusted.js", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_JS);
   untrusted_source->AddFrameAncestor(GURL(kChromeUISampleSystemWebAppURL));
   return untrusted_source;
 }
@@ -35,18 +35,20 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   auto trusted_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUISampleSystemWebAppHost));
 
-  trusted_source->AddResourcePath("", IDR_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
-  trusted_source->AddResourcePath("sandbox.html",
-                                  IDR_SAMPLE_SYSTEM_WEB_APP_SANDBOX_HTML);
-  trusted_source->AddResourcePath("app_icon_192.png",
-                                  IDR_SAMPLE_SYSTEM_WEB_APP_ICON_192);
+  trusted_source->AddResourcePath(
+      "", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
+  trusted_source->AddResourcePath(
+      "sandbox.html", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_SANDBOX_HTML);
+  trusted_source->AddResourcePath(
+      "app_icon_192.png", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_APP_ICON_192_PNG);
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
   // is set, serve a default page so the user sees your default page instead
   // of an unexpected error. But if DCHECK is set, the user will be a
   // developer and be able to identify an error occurred.
-  trusted_source->SetDefaultResource(IDR_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
+  trusted_source->SetDefaultResource(
+      IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
 #endif  // !DCHECK_IS_ON()
 
   // We need a CSP override to use the chrome-untrusted:// scheme in the host.

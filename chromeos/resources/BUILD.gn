@@ -136,17 +136,34 @@ grit("help_app_bundle_resources") {
   output_dir = "$root_gen_dir/chromeos"
 }
 
-# Resources used by chrome://sample-system-web-app
-grit("sample_system_web_app_resources") {
-  source = "../components/sample_system_web_app_ui/resources/sample_system_web_app_resources.grd"
+if (!is_official_build) {
+  # Resources used by chrome://sample-system-web-app
+  grit("sample_system_web_app_resources") {
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "-E",
+      "root_src_dir=" + rebase_path("//", root_build_dir),
+    ]
 
-  outputs = [
-    "grit/chromeos_sample_system_web_app_resources.h",
-    "grit/chromeos_sample_system_web_app_resources_map.cc",
-    "grit/chromeos_sample_system_web_app_resources_map.h",
-    "chromeos_sample_system_web_app_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chromeos"
+    defines = [ "SHARED_INTERMEDIATE_DIR=" +
+                rebase_path(root_gen_dir, root_build_dir) ]
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    sample_system_web_app_gen_dir =
+        "$root_gen_dir/chromeos/components/sample_system_web_app_ui"
+    source = "$sample_system_web_app_gen_dir/chromeos_sample_system_web_app_resources.grd"
+    deps = [ "//chromeos/components/sample_system_web_app_ui:build_grd" ]
+
+    outputs = [
+      "grit/chromeos_sample_system_web_app_resources.h",
+      "grit/chromeos_sample_system_web_app_resources_map.cc",
+      "grit/chromeos_sample_system_web_app_resources_map.h",
+      "chromeos_sample_system_web_app_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chromeos"
+  }
 }
 
 # Resources used by chrome://telemetry-extension

@@ -4,6 +4,7 @@
 
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "Sample System Web App is Chrome OS only")
 assert(!is_official_build,
@@ -39,4 +40,18 @@ js2gtest("browser_tests_js") {
   sources = [ "test/sample_system_web_app_ui_browsertest.js" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+generate_grd("build_grd") {
+  input_files_base_dir = rebase_path("resources", "//")
+  input_files = [
+    "app_icon_192.png",
+    "index.html",
+    "sandbox.html",
+    "untrusted.html",
+    "untrusted.js",
+  ]
+  manifest_files = []
+  grd_prefix = "chromeos_sample_system_web_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
