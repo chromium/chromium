@@ -256,8 +256,11 @@ IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, DISABLED_KeyboardEventAck) {
       "document.body.addEventListener('keydown', () => {debugger;});"));
 
   auto filter = std::make_unique<InputMsgWatcher>(
-      RenderWidgetHostImpl::From(
-          shell()->web_contents()->GetRenderViewHost()->GetWidget()),
+      RenderWidgetHostImpl::From(shell()
+                                     ->web_contents()
+                                     ->GetMainFrame()
+                                     ->GetRenderViewHost()
+                                     ->GetWidget()),
       blink::WebInputEvent::Type::kRawKeyDown);
 
   SendCommand("Debugger.enable", nullptr);
@@ -282,8 +285,11 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventAck) {
       "document.body.addEventListener('mousedown', () => {debugger;});"));
 
   auto filter = std::make_unique<InputMsgWatcher>(
-      RenderWidgetHostImpl::From(
-          shell()->web_contents()->GetRenderViewHost()->GetWidget()),
+      RenderWidgetHostImpl::From(shell()
+                                     ->web_contents()
+                                     ->GetMainFrame()
+                                     ->GetRenderViewHost()
+                                     ->GetWidget()),
       blink::WebInputEvent::Type::kMouseDown);
 
   SendCommand("Debugger.enable", nullptr);
