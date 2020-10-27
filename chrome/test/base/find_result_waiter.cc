@@ -10,10 +10,12 @@
 
 namespace ui_test_utils {
 
-FindResultWaiter::FindResultWaiter(content::WebContents* parent_tab) {
+FindResultWaiter::FindResultWaiter(content::WebContents* parent_tab,
+                                   int request_offset) {
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(parent_tab);
-  current_find_request_id_ = find_tab_helper->current_find_request_id();
+  current_find_request_id_ = find_tab_helper->current_find_request_id() +
+      request_offset;
   observer_.Add(find_tab_helper);
 }
 

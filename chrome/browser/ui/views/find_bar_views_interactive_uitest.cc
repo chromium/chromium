@@ -121,24 +121,6 @@ class FindInPageTest : public InProcessBrowserTest {
     }
   }
 
-  bool SendKeyPressAndWait(const Browser* browser,
-                           ui::KeyboardCode key,
-                           bool control,
-                           bool shift,
-                           bool alt,
-                           bool command,
-                           int type,
-                           const content::NotificationSource& source) {
-    content::WindowedNotificationObserver observer(type, source);
-
-    if (!ui_test_utils::SendKeyPressSync(browser, key, control, shift, alt,
-                                         command))
-      return false;
-
-    observer.Wait();
-    return !testing::Test::HasFatalFailure();
-  }
-
  private:
   DISALLOW_COPY_AND_ASSIGN(FindInPageTest);
 };
@@ -770,4 +752,30 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, GlobalEscapeClosesFind) {
 
   // Find should be closed
   ASSERT_FALSE(IsFindBarVisible());
+}
+
+// See http://crbug.com/1142027
+IN_PROC_BROWSER_TEST_F(FindInPageTest, MatchOrdinalStableWhileTyping) {
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,foo foo foo"));
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  browser()->GetFindBarController()->Show();
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  ui_test_utils::FindResultWaiter waiter1(web_contents, 1 /*request_offset*/);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_F, false, false, false, false));
+  waiter1.Wait();
+  EXPECT_EQ(1, waiter1.active_match_ordinal());
+  EXPECT_EQ(3, waiter1.number_of_matches());
+
+  ui_test_utils::FindResultWaiter waiter2(web_contents, 1 /*request_offset*/);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_O, false, false, false, false));
+  waiter2.Wait();
+  EXPECT_EQ(1, waiter2.active_match_ordinal());
+  EXPECT_EQ(3, waiter2.number_of_matches());
 }
