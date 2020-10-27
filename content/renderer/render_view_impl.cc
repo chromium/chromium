@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "content/child/webthemeengine_impl_default.h"
 #include "content/common/page_messages.h"
 #include "content/common/view_messages.h"
 #include "content/public/common/content_client.h"
@@ -29,7 +30,6 @@
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_render_theme.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "ui/base/ui_base_features.h"
@@ -168,7 +168,7 @@ void RenderViewImpl::Initialize(
   if (params->window_was_created_with_opener)
     GetWebView()->SetOpenedByDOM();
 
-  OnSetRendererPreferences(params->renderer_preferences);
+  webview_->SetRendererPreferences(params->renderer_preferences);
 
   GetContentClient()->renderer()->RenderViewCreated(this);
 
@@ -457,7 +457,7 @@ WebView* RenderViewImpl::CreateView(
   DCHECK_EQ(GetRoutingID(), creator_frame->render_view()->GetRoutingID());
 
   view_params->window_was_created_with_opener = true;
-  view_params->renderer_preferences = renderer_preferences_;
+  view_params->renderer_preferences = GetRendererPreferences();
   view_params->web_preferences = webview_->GetWebPreferences();
   view_params->view_id = reply->route_id;
   view_params->main_frame_frame_token = reply->main_frame_frame_token;
@@ -636,7 +636,7 @@ void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
 }
 
 bool RenderViewImpl::AcceptsLoadDrops() {
-  return renderer_preferences_.can_accept_load_drops;
+  return GetRendererPreferences().can_accept_load_drops;
 }
 
 void RenderViewImpl::DidUpdateMainFrameLayout() {
@@ -647,6 +647,11 @@ void RenderViewImpl::DidUpdateMainFrameLayout() {
 void RenderViewImpl::RegisterRendererPreferenceWatcher(
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {
   renderer_preference_watchers_.Add(std::move(watcher));
+}
+
+const blink::RendererPreferences& RenderViewImpl::GetRendererPreferences()
+    const {
+  return webview_->GetRendererPreferences();
 }
 
 int RenderViewImpl::HistoryBackListCount() {
@@ -686,7 +691,7 @@ bool RenderViewImpl::CanUpdateLayout() {
 }
 
 blink::WebString RenderViewImpl::AcceptLanguages() {
-  return WebString::FromUTF8(renderer_preferences_.accept_languages);
+  return WebString::FromUTF8(GetRendererPreferences().accept_languages);
 }
 
 // RenderView implementation ---------------------------------------------------
@@ -724,52 +729,19 @@ blink::WebView* RenderViewImpl::GetWebView() {
   return webview_;
 }
 
-void RenderViewImpl::OnSetRendererPreferences(
-    const blink::RendererPreferences& renderer_prefs) {
-  std::string old_accept_languages = renderer_preferences_.accept_languages;
-
-  renderer_preferences_ = renderer_prefs;
-
+void RenderViewImpl::DidUpdateRendererPreferences() {
+  const blink::RendererPreferences& renderer_prefs = GetRendererPreferences();
   for (auto& watcher : renderer_preference_watchers_)
     watcher->NotifyUpdate(renderer_prefs);
 
-  UpdateFontRenderingFromRendererPrefs();
-  UpdateThemePrefs();
-  blink::SetCaretBlinkInterval(
-      renderer_prefs.caret_blink_interval.has_value()
-          ? renderer_prefs.caret_blink_interval.value()
-          : base::TimeDelta::FromMilliseconds(
-                blink::mojom::kDefaultCaretBlinkIntervalInMilliseconds));
-
-#if defined(USE_AURA)
-  if (renderer_prefs.use_custom_colors) {
-    blink::SetFocusRingColor(renderer_prefs.focus_ring_color);
-    blink::SetSelectionColors(renderer_prefs.active_selection_bg_color,
-                              renderer_prefs.active_selection_fg_color,
-                              renderer_prefs.inactive_selection_bg_color,
-                              renderer_prefs.inactive_selection_fg_color);
-    if (GetWebView() && GetWebView()->MainFrameWidget())
-      GetWebView()->MainFrameWidget()->ThemeChanged();
-  }
+#if defined(OS_WIN)
+  // Update Theme preferences on Windows.
+  WebThemeEngineDefault::cacheScrollBarMetrics(
+      renderer_prefs.vertical_scroll_bar_width_in_dips,
+      renderer_prefs.horizontal_scroll_bar_height_in_dips,
+      renderer_prefs.arrow_bitmap_height_vertical_scroll_bar_in_dips,
+      renderer_prefs.arrow_bitmap_width_horizontal_scroll_bar_in_dips);
 #endif
-
-  if (features::IsFormControlsRefreshEnabled() &&
-      renderer_prefs.use_custom_colors) {
-    blink::SetFocusRingColor(renderer_prefs.focus_ring_color);
-  }
-
-  if (GetWebView()) {
-    if (old_accept_languages != renderer_preferences_.accept_languages)
-      GetWebView()->AcceptLanguagesChanged();
-
-    GetWebView()->GetSettings()->SetCaretBrowsingEnabled(
-        renderer_preferences_.caret_browsing_enabled);
-  }
-
-#if defined(USE_X11) || defined(USE_OZONE)
-  GetWebView()->GetSettings()->SetSelectionClipboardBufferAvailable(
-      renderer_preferences_.selection_clipboard_buffer_available);
-#endif  // defined(USE_X11) || defined(USE_OZONE)
 }
 
 void RenderViewImpl::OnMoveOrResizeStarted() {

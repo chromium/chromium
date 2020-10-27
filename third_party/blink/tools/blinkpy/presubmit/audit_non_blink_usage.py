@@ -612,6 +612,7 @@ _CONFIG = [
             'cc::PaintBenchmarkResult',
             'cc::TaskGraphRunner',
             'gfx::DisplayColorSpaces',
+            'gfx::FontRenderParams',
             'ui::ImeTextSpan',
             'viz::FrameSinkId',
             'viz::LocalSurfaceId',

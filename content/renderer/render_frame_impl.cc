@@ -2788,7 +2788,7 @@ const blink::web_pref::WebPreferences& RenderFrameImpl::GetBlinkPreferences() {
 
 const blink::RendererPreferences& RenderFrameImpl::GetRendererPreferences()
     const {
-  return render_view_->renderer_preferences();
+  return render_view_->GetRendererPreferences();
 }
 
 int RenderFrameImpl::ShowContextMenu(
@@ -3832,7 +3832,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
   // non-PlzDedicatedWorker and worklets.
   scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
       WebWorkerFetchContextImpl::Create(
-          provider->context(), render_view_->renderer_preferences(),
+          provider->context(), render_view_->GetRendererPreferences(),
           std::move(watcher_receiver), GetLoaderFactoryBundle()->Clone(),
           GetLoaderFactoryBundle()->CloneWithoutAppCacheFactory(),
           /*pending_subresource_loader_updater=*/mojo::NullReceiver(),
@@ -3874,7 +3874,8 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
   scoped_refptr<WebWorkerFetchContextImpl> worker_fetch_context =
       static_cast<DedicatedWorkerHostFactoryClient*>(factory_client)
           ->CreateWorkerFetchContext(
-              render_view_->renderer_preferences(), std::move(watcher_receiver),
+              render_view_->GetRendererPreferences(),
+              std::move(watcher_receiver),
               std::move(pending_resource_load_info_notifier));
 
   worker_fetch_context->set_ancestor_frame_id(routing_id_);
@@ -4720,7 +4721,7 @@ void RenderFrameImpl::WillSendRequestInternal(
     bool for_main_frame,
     ui::PageTransition transition_type,
     ForRedirect for_redirect) {
-  if (render_view_->renderer_preferences_.enable_do_not_track) {
+  if (render_view_->GetRendererPreferences().enable_do_not_track) {
     request.SetHttpHeaderField(blink::WebString::FromUTF8(kDoNotTrackHeader),
                                "1");
   }
@@ -4771,7 +4772,7 @@ void RenderFrameImpl::WillSendRequestInternal(
   extra_data->set_force_ignore_site_for_cookies(force_ignore_site_for_cookies);
   extra_data->set_frame_request_blocker(frame_request_blocker_);
   extra_data->set_allow_cross_origin_auth_prompt(
-      render_view_->renderer_preferences().allow_cross_origin_auth_prompt);
+      render_view_->GetRendererPreferences().allow_cross_origin_auth_prompt);
 
   request.SetDownloadToNetworkCacheOnly(is_for_no_state_prefetch &&
                                         !for_main_frame);
@@ -4793,7 +4794,7 @@ void RenderFrameImpl::WillSendRequestInternal(
   request.SetRequestorID(render_view_->GetRoutingID());
   request.SetHasUserGesture(frame_->HasTransientUserActivation());
 
-  if (!render_view_->renderer_preferences_.enable_referrers) {
+  if (!render_view_->GetRendererPreferences().enable_referrers) {
     request.SetReferrerString(WebString());
     request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
   }
@@ -4939,7 +4940,7 @@ blink::WebEncryptedMediaClient* RenderFrameImpl::EncryptedMediaClient() {
 
 blink::WebString RenderFrameImpl::UserAgentOverride() {
   if (ShouldUseUserAgentOverride()) {
-    return WebString::FromUTF8(render_view_->renderer_preferences_
+    return WebString::FromUTF8(render_view_->GetRendererPreferences()
                                    .user_agent_override.ua_string_override);
   }
   return blink::WebString();
@@ -4948,16 +4949,16 @@ blink::WebString RenderFrameImpl::UserAgentOverride() {
 base::Optional<blink::UserAgentMetadata>
 RenderFrameImpl::UserAgentMetadataOverride() {
   if (ShouldUseUserAgentOverride()) {
-    return render_view_->renderer_preferences_.user_agent_override
-        .ua_metadata_override;
+    return render_view_->GetRendererPreferences()
+        .user_agent_override.ua_metadata_override;
   }
   return base::nullopt;
 }
 
 bool RenderFrameImpl::ShouldUseUserAgentOverride() const {
   if (!render_view_->GetWebView() || !render_view_->GetWebView()->MainFrame() ||
-      render_view_->renderer_preferences_.user_agent_override.ua_string_override
-          .empty()) {
+      render_view_->GetRendererPreferences()
+          .user_agent_override.ua_string_override.empty()) {
     return false;
   }
 
@@ -4979,7 +4980,7 @@ bool RenderFrameImpl::ShouldUseUserAgentOverride() const {
 }
 
 blink::WebString RenderFrameImpl::DoNotTrackValue() {
-  if (render_view_->renderer_preferences_.enable_do_not_track)
+  if (render_view_->GetRendererPreferences().enable_do_not_track)
     return WebString::FromUTF8("1");
   return WebString();
 }
@@ -5602,7 +5603,7 @@ void RenderFrameImpl::BeginNavigation(
 
   // If the browser is interested, then give it a chance to look at the request.
   if (IsTopLevelNavigation(frame_) &&
-      render_view_->renderer_preferences_
+      render_view_->GetRendererPreferences()
           .browser_handles_all_top_level_requests) {
     OpenURL(std::move(info));
     return;  // Suppress the load here.

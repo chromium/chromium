@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_range.h"
+#include "third_party/blink/public/web/web_render_theme.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/public/web/web_window_features.h"
@@ -170,11 +172,21 @@
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
-
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/skia_util.h"
 
 #if defined(OS_ANDROID)
 #include "components/viz/common/features.h"
+#endif
+
+#if !defined(OS_MAC)
+#include "skia/ext/legacy_display_globals.h"
+#include "third_party/blink/public/platform/web_font_render_style.h"
+#include "ui/gfx/font_render_params.h"
+#endif
+
+#if defined(OS_WIN)
+#include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
 // Get rid of WTF's pow define so we can use std::pow.
@@ -399,6 +411,44 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
   NOTREACHED() << "Unexpected NavigationPolicy";
   return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;
 }
+
+#if !defined(OS_MAC) && !defined(OS_WIN)
+SkFontHinting RendererPreferencesToSkiaHinting(
+    const blink::RendererPreferences& prefs) {
+#if defined(OS_LINUX)
+  if (!prefs.should_antialias_text) {
+    // When anti-aliasing is off, GTK maps all non-zero hinting settings to
+    // 'Normal' hinting so we do the same. Otherwise, folks who have 'Slight'
+    // hinting selected will see readable text in everything expect Chromium.
+    switch (prefs.hinting) {
+      case gfx::FontRenderParams::HINTING_NONE:
+        return SkFontHinting::kNone;
+      case gfx::FontRenderParams::HINTING_SLIGHT:
+      case gfx::FontRenderParams::HINTING_MEDIUM:
+      case gfx::FontRenderParams::HINTING_FULL:
+        return SkFontHinting::kNormal;
+      default:
+        NOTREACHED();
+        return SkFontHinting::kNormal;
+    }
+  }
+#endif
+
+  switch (prefs.hinting) {
+    case gfx::FontRenderParams::HINTING_NONE:
+      return SkFontHinting::kNone;
+    case gfx::FontRenderParams::HINTING_SLIGHT:
+      return SkFontHinting::kSlight;
+    case gfx::FontRenderParams::HINTING_MEDIUM:
+      return SkFontHinting::kNormal;
+    case gfx::FontRenderParams::HINTING_FULL:
+      return SkFontHinting::kFull;
+    default:
+      NOTREACHED();
+      return SkFontHinting::kNormal;
+  }
+}
+#endif  // OS_MAC
 
 }  // namespace
 
@@ -3786,6 +3836,48 @@ void WebViewImpl::UpdateBaseBackgroundColor() {
   }
 }
 
+void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
+#if !defined(OS_MAC)
+  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
+      gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+          renderer_preferences_.subpixel_rendering));
+#if defined(OS_WIN)
+  // Cache the system font metrics in blink.
+  WebFontRendering::SetMenuFontMetrics(
+      renderer_preferences_.menu_font_family_name.c_str(),
+      renderer_preferences_.menu_font_height);
+  WebFontRendering::SetSmallCaptionFontMetrics(
+      renderer_preferences_.small_caption_font_family_name.c_str(),
+      renderer_preferences_.small_caption_font_height);
+  WebFontRendering::SetStatusFontMetrics(
+      renderer_preferences_.status_font_family_name.c_str(),
+      renderer_preferences_.status_font_height);
+  WebFontRendering::SetAntialiasedTextEnabled(
+      renderer_preferences_.should_antialias_text);
+  WebFontRendering::SetLCDTextEnabled(
+      renderer_preferences_.subpixel_rendering !=
+      gfx::FontRenderParams::SUBPIXEL_RENDERING_NONE);
+#else
+  WebFontRenderStyle::SetHinting(
+      RendererPreferencesToSkiaHinting(renderer_preferences_));
+  WebFontRenderStyle::SetAutoHint(renderer_preferences_.use_autohinter);
+  WebFontRenderStyle::SetUseBitmaps(renderer_preferences_.use_bitmaps);
+  WebFontRenderStyle::SetAntiAlias(renderer_preferences_.should_antialias_text);
+  WebFontRenderStyle::SetSubpixelRendering(
+      renderer_preferences_.subpixel_rendering !=
+      gfx::FontRenderParams::SUBPIXEL_RENDERING_NONE);
+  WebFontRenderStyle::SetSubpixelPositioning(
+      renderer_preferences_.use_subpixel_positioning);
+#if defined(OS_LINUX) && !defined(OS_ANDROID)
+  if (!renderer_preferences_.system_font_family_name.empty()) {
+    WebFontRenderStyle::SetSystemFontFamily(blink::WebString::FromUTF8(
+        renderer_preferences_.system_font_family_name));
+  }
+#endif  // defined(OS_LINUX) && !defined(OS_ANDROID)
+#endif  // defined(OS_WIN)
+#endif  // !defined(OS_MAC)
+}
+
 void WebViewImpl::SetInsidePortal(bool inside_portal) {
   GetPage()->SetInsidePortal(inside_portal);
 
@@ -3794,6 +3886,61 @@ void WebViewImpl::SetInsidePortal(bool inside_portal) {
   // the main frame is remote.
   if (web_widget_)
     web_widget_->SetIsNestedMainFrameWidget(inside_portal);
+}
+
+void WebViewImpl::SetRendererPreferences(
+    const RendererPreferences& preferences) {
+  UpdateRendererPreferences(preferences);
+}
+
+const RendererPreferences& WebViewImpl::GetRendererPreferences() {
+  return renderer_preferences_;
+}
+
+void WebViewImpl::UpdateRendererPreferences(
+    const RendererPreferences& preferences) {
+  std::string old_accept_languages = renderer_preferences_.accept_languages;
+  renderer_preferences_ = preferences;
+
+  // TODO(crbug.com/1102442): Remove once we no longer need to update theme
+  // preferences on Windows via content::WebThemeEngineDefault.
+  web_view_client_->DidUpdateRendererPreferences();
+
+  UpdateFontRenderingFromRendererPrefs();
+
+  blink::SetCaretBlinkInterval(
+      renderer_preferences_.caret_blink_interval.has_value()
+          ? renderer_preferences_.caret_blink_interval.value()
+          : base::TimeDelta::FromMilliseconds(
+                mojom::blink::kDefaultCaretBlinkIntervalInMilliseconds));
+
+#if defined(USE_AURA)
+  if (renderer_preferences_.use_custom_colors) {
+    SetFocusRingColor(renderer_preferences_.focus_ring_color);
+    SetSelectionColors(renderer_preferences_.active_selection_bg_color,
+                       renderer_preferences_.active_selection_fg_color,
+                       renderer_preferences_.inactive_selection_bg_color,
+                       renderer_preferences_.inactive_selection_fg_color);
+    if (MainFrameWidget())
+      MainFrameWidget()->ThemeChanged();
+  }
+#endif
+
+  if (::features::IsFormControlsRefreshEnabled() &&
+      renderer_preferences_.use_custom_colors) {
+    SetFocusRingColor(renderer_preferences_.focus_ring_color);
+  }
+
+  if (old_accept_languages != renderer_preferences_.accept_languages)
+    AcceptLanguagesChanged();
+
+  GetSettings()->SetCaretBrowsingEnabled(
+      renderer_preferences_.caret_browsing_enabled);
+
+#if defined(USE_X11) || defined(USE_OZONE)
+  GetSettings()->SetSelectionClipboardBufferAvailable(
+      renderer_preferences_.selection_clipboard_buffer_available);
+#endif  // defined(USE_X11) || defined(USE_OZONE)
 }
 
 void WebViewImpl::SetWebPreferences(
@@ -3810,11 +3957,6 @@ void WebViewImpl::UpdateWebPreferences(
   web_preferences_ = preferences;
   ApplyWebPreferences(preferences, this);
   ApplyCommandLineToSettings(SettingsImpl());
-}
-
-void WebViewImpl::UpdateRendererPreferences(
-    const blink::RendererPreferences& preferences) {
-  web_view_client_->OnSetRendererPreferences(preferences);
 }
 
 void WebViewImpl::SetIsActive(bool active) {

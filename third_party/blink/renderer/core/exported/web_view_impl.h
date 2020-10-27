@@ -206,6 +206,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetDeviceColorSpaceForTesting(
       const gfx::ColorSpace& color_space) override;
   void PaintContent(cc::PaintCanvas*, const gfx::Rect&) override;
+  void SetRendererPreferences(const RendererPreferences& preferences) override;
+  const RendererPreferences& GetRendererPreferences() override;
   void SetWebPreferences(const web_pref::WebPreferences& preferences) override;
   const web_pref::WebPreferences& GetWebPreferences() override;
 
@@ -232,7 +234,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdateWebPreferences(
       const blink::web_pref::WebPreferences& preferences) override;
   void UpdateRendererPreferences(
-      const blink::RendererPreferences& preferences) override;
+      const RendererPreferences& preferences) override;
 
   void DispatchPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
@@ -578,6 +580,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
                                const IntSize& visible_viewport_size);
 
   void UpdateBaseBackgroundColor();
+  void UpdateFontRenderingFromRendererPrefs();
 
   // Request the window to close from the renderer by sending the request to the
   // browser.
@@ -823,6 +826,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   Persistent<EventListener> popup_mouse_wheel_event_listener_;
 
   web_pref::WebPreferences web_preferences_;
+
+  blink::RendererPreferences renderer_preferences_;
 
   // The local root whose document has |popup_mouse_wheel_event_listener_|
   // registered.

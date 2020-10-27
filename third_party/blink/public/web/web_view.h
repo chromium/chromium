@@ -33,6 +33,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"
@@ -434,6 +435,12 @@ class WebView {
   // be modified and should be saved before calling this method and restored
   // after.
   virtual void PaintContent(cc::PaintCanvas*, const gfx::Rect& viewport) = 0;
+
+  // Renderer preferences ---------------------------------------------------
+
+  virtual void SetRendererPreferences(
+      const RendererPreferences& preferences) = 0;
+  virtual const RendererPreferences& GetRendererPreferences() = 0;
 
   // Web preferences ---------------------------------------------------
 

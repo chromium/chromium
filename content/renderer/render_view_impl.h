@@ -140,10 +140,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // or not.
   bool widgets_never_composited() const { return widgets_never_composited_; }
 
-  const blink::RendererPreferences& renderer_preferences() const {
-    return renderer_preferences_;
-  }
-
   void set_send_content_state_immediately(bool value) {
     send_content_state_immediately_ = value;
   }
@@ -171,6 +167,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // blink::RendererPreferences.
   void RegisterRendererPreferenceWatcher(
       mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher);
+
+  // Returns the current instance of blink::RendererPreferences.
+  const blink::RendererPreferences& GetRendererPreferences() const;
 
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& msg) override;
@@ -203,8 +202,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   bool CanHandleGestureEvent() override;
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
-  void OnSetRendererPreferences(
-      const blink::RendererPreferences& renderer_prefs) override;
+  void DidUpdateRendererPreferences() override;
   void ZoomLevelChanged() override;
   void DidCommitCompositorFrameForLocalMainFrame(
       base::TimeTicks commit_start_time) override;
@@ -336,22 +334,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void SuspendVideoCaptureDevices(bool suspend);
 #endif
 
-#if defined(OS_MAC)
-  void UpdateFontRenderingFromRendererPrefs() {}
-#else
-  void UpdateFontRenderingFromRendererPrefs();
-#endif
-
   // In OOPIF-enabled modes, this tells each RenderFrame with a pending state
   // update to inform the browser process.
   void SendFrameStateUpdates();
-
-// Platform specific theme preferences if any are updated here.
-#if defined(OS_WIN)
-  void UpdateThemePrefs();
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  void UpdateThemePrefs() {}
-#endif
 
   // ---------------------------------------------------------------------------
   // ADDING NEW FUNCTIONS? Please keep private functions alphabetized and put
@@ -386,9 +371,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // Settings ------------------------------------------------------------------
 
-  blink::RendererPreferences renderer_preferences_;
-  // These are observing changes in |renderer_preferences_|. This is used for
-  // keeping WorkerFetchContext in sync.
+  // These are observing changes in the WebView's RendererPreferences. This is
+  // used for keeping WorkerFetchContext in sync.
   mojo::RemoteSet<blink::mojom::RendererPreferenceWatcher>
       renderer_preference_watchers_;
 

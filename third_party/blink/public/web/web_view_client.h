@@ -102,8 +102,7 @@ class WebViewClient {
 
   virtual void OnPageFrozenChanged(bool frozen) {}
 
-  virtual void OnSetRendererPreferences(
-      const blink::RendererPreferences& renderer_prefs) {}
+  virtual void DidUpdateRendererPreferences() {}
 
   // UI ------------------------------------------------------------------
 

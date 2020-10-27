@@ -12,5 +12,6 @@ specific_include_rules = {
     "+components/viz/common/features.h",
     "+media/base/media_switches.h",
     "+third_party/icu/source/common/unicode/uscript.h",
+    "+ui/gfx/font_render_params.h",
   ],
 }

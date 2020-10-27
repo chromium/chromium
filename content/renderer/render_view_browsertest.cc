@@ -993,9 +993,9 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
 }
 
 TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
-  blink::RendererPreferences prefs = view()->renderer_preferences();
+  blink::RendererPreferences prefs = view()->GetRendererPreferences();
   prefs.browser_handles_all_top_level_requests = true;
-  view()->OnSetRendererPreferences(prefs);
+  view()->GetWebView()->SetRendererPreferences(prefs);
 
   const blink::WebNavigationType kNavTypes[] = {
       blink::kWebNavigationTypeLinkClicked,

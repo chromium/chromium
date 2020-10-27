@@ -233,17 +233,11 @@ target(link_target_type, "renderer") {
       "seccomp_sandbox_status_android.h",
       "stream_texture_host_android.cc",
       "stream_texture_host_android.h",
-
-      # Android shares this file with Linux.
-      "render_view_linux.cc",
     ]
   }
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "render_view_linux.cc",
-      "renderer_main_platform_delegate_linux.cc",
-    ]
+    sources += [ "renderer_main_platform_delegate_linux.cc" ]
   }
 
   if (is_mac) {
@@ -255,10 +249,7 @@ target(link_target_type, "renderer") {
   }
 
   if (is_win) {
-    sources += [
-      "render_view_win.cc",
-      "renderer_main_platform_delegate_win.cc",
-    ]
+    sources += [ "renderer_main_platform_delegate_win.cc" ]
   }
 
   if (enable_cast_renderer) {
@@ -395,7 +386,6 @@ target(link_target_type, "renderer") {
     sources += [
       "media/fuchsia_renderer_factory.cc",
       "media/fuchsia_renderer_factory.h",
-      "render_view_fuchsia.cc",
       "renderer_main_platform_delegate_fuchsia.cc",
     ]
 
