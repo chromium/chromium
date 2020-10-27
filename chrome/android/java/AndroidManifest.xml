@@ -1105,9 +1105,6 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.chrome.browser.app.send_tab_to_self.SendTabToSelfNotificationReceiver"
             android:exported="false"/>
 
-        <receiver android:name="org.chromium.chrome.browser.customtabs.CustomTabsShareBroadcastReceiver"
-            android:exported="false"/>
-
         <receiver android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$TapReceiver"
             android:exported="false"/>
         <receiver android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardMessageHandler$TapReceiver"

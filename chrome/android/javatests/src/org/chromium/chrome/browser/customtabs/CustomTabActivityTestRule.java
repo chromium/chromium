@@ -12,10 +12,8 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -23,7 +21,6 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -54,10 +51,6 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
 
     @Override
     public void startActivityCompletely(Intent intent) {
-        if (!FeatureList.hasTestFeatures()) {
-            FeatureList.setTestFeatures(
-                    Collections.singletonMap(ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT, true));
-        }
         putCustomTabIdInIntent(intent);
         int currentIntentId = getCustomTabIdFromIntent(intent);
 
