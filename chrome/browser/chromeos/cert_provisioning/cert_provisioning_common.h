@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/cert/x509_certificate.h"
@@ -30,7 +31,7 @@ class PlatformKeysService;
 namespace cert_provisioning {
 
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix
-using DeleteVaKeyCallback = base::OnceCallback<void(base::Optional<bool>)>;
+using DeleteVaKeyCallback = base::OnceCallback<void(bool)>;
 
 const char kKeyNamePrefix[] = "cert-provis-";
 

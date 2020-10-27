@@ -291,10 +291,10 @@ void CertProvisioningSchedulerImpl::CleanVaKeysIfIdle() {
 }
 
 void CertProvisioningSchedulerImpl::OnCleanVaKeysIfIdleDone(
-    base::Optional<bool> delete_result) {
+    bool delete_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!delete_result.has_value() || !delete_result.value()) {
+  if (!delete_result) {
     LOG(ERROR) << "Failed to delete keys while idle";
   }
 

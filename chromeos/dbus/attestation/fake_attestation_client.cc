@@ -234,7 +234,10 @@ void FakeAttestationClient::SetKeyPayload(
 void FakeAttestationClient::DeleteKeys(
     const ::attestation::DeleteKeysRequest& request,
     DeleteKeysCallback callback) {
-  NOTIMPLEMENTED();
+  delete_keys_history_.push_back(request);
+  ::attestation::DeleteKeysReply reply;
+  reply.set_status(::attestation::STATUS_SUCCESS);
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::ResetIdentity(
@@ -294,6 +297,15 @@ void FakeAttestationClient::AllowlistLegacyCreateCertificateRequest(
   request.set_certificate_profile(profile);
   request.set_key_type(key_type);
   allowlisted_create_requests_.push_back(request);
+}
+
+const std::vector<::attestation::DeleteKeysRequest>&
+FakeAttestationClient::delete_keys_history() const {
+  return delete_keys_history_;
+}
+
+void FakeAttestationClient::ClearDeleteKeysHistory() {
+  delete_keys_history_.clear();
 }
 
 AttestationClient::TestInterface* FakeAttestationClient::GetTestInterface() {

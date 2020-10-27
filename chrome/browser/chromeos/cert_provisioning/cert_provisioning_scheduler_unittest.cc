@@ -16,6 +16,8 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -44,6 +46,28 @@ constexpr char kWifiServiceGuid[] = "wifi_guid";
 constexpr char kCertProfileId[] = "cert_profile_id_1";
 constexpr char kCertProfileVersion[] = "cert_profile_version_1";
 constexpr TimeDelta kCertProfileRenewalPeriod = TimeDelta::FromSeconds(0);
+
+void VerifyDeleteKeysByPrefixCalledOnce(CertScope cert_scope) {
+  const std::vector<::attestation::DeleteKeysRequest> delete_keys_history =
+      chromeos::AttestationClient::Get()
+          ->GetTestInterface()
+          ->delete_keys_history();
+  // Use `ASSERT_EQ()` so the checks that follows don't crash.
+  ASSERT_EQ(delete_keys_history.size(), 1);
+  EXPECT_EQ(delete_keys_history[0].username().empty(),
+            cert_scope != CertScope::kUser);
+  EXPECT_EQ(delete_keys_history[0].key_label_match(), kKeyNamePrefix);
+  EXPECT_EQ(delete_keys_history[0].match_behavior(),
+            ::attestation::DeleteKeysRequest::MATCH_BEHAVIOR_PREFIX);
+}
+
+void ExpectDeleteKeysByPrefixNeverCalled() {
+  const std::vector<::attestation::DeleteKeysRequest> delete_keys_history =
+      chromeos::AttestationClient::Get()
+          ->GetTestInterface()
+          ->delete_keys_history();
+  EXPECT_TRUE(delete_keys_history.empty());
+}
 
 //=============== TestCertProvisioningSchedulerObserver ========================
 
@@ -103,11 +127,13 @@ class CertProvisioningSchedulerTest : public testing::Test {
   }
 
   void SetUp() override {
+    chromeos::AttestationClient::InitializeFake();
     CertProvisioningWorkerFactory::SetFactoryForTesting(&mock_factory_);
   }
 
   void TearDown() override {
     CertProvisioningWorkerFactory::SetFactoryForTesting(nullptr);
+    chromeos::AttestationClient::Shutdown();
   }
 
   void AddOnlineWifiNetwork() {
@@ -148,7 +174,6 @@ class CertProvisioningSchedulerTest : public testing::Test {
   ProfileHelperForTesting profile_helper_for_testing_;
   platform_keys::MockPlatformKeysService platform_keys_service_;
   std::unique_ptr<CertificateHelperForTesting> certificate_helper_;
-  StrictMock<SpyingFakeCryptohomeClient> fake_cryptohome_client_;
   TestingPrefServiceSimple pref_service_;
   policy::MockCloudPolicyClient cloud_policy_client_;
   // Only expected creations are allowed.
@@ -171,12 +196,6 @@ TEST_F(CertProvisioningSchedulerTest, Success) {
       network_state_test_helper_.network_state_handler(),
       std::move(mock_invalidation_factory_obj));
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_USER, kKeyNamePrefix))
-      .Times(1);
-
   // The policy is empty, so no workers should be created yet.
   FastForwardBy(TimeDelta::FromSeconds(1));
   EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
@@ -185,6 +204,9 @@ TEST_F(CertProvisioningSchedulerTest, Success) {
       .Times(1)
       .WillOnce(
           Return(ByMove(nullptr)));  // nullptr is good enough for mock worker.
+
+  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // One worker will be created on prefs update.
   CertProfile cert_profile(kCertProfileId, kCertProfileVersion,
@@ -232,15 +254,13 @@ TEST_F(CertProvisioningSchedulerTest, WorkerFailed) {
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_DEVICE, kKeyNamePrefix))
-      .Times(1);
 
   // The policy is empty, so no workers should be created yet.
   FastForwardBy(TimeDelta::FromSeconds(1));
   EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // One worker will be created on prefs update.
   CertProfile cert_profile(kCertProfileId, kCertProfileVersion,
@@ -300,12 +320,6 @@ TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_USER, kKeyNamePrefix))
-      .Times(1);
-
   // Now one worker should be created.
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
@@ -325,6 +339,9 @@ TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
   // No workers should be created yet.
   FastForwardBy(TimeDelta::FromHours(20));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // Now list of failed profiles should be cleared that will cause a new attempt
   // to provision certificate.
@@ -352,15 +369,12 @@ TEST_F(CertProvisioningSchedulerTest, MultipleWorkers) {
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_DEVICE, kKeyNamePrefix))
-      .Times(1);
-
   // The policy is empty, so no workers should be created yet.
   FastForwardBy(TimeDelta::FromSeconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // New workers will be created on prefs update.
   const char kCertProfileId0[] = "cert_profile_id_0";
@@ -527,15 +541,12 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_DEVICE, kKeyNamePrefix))
-      .Times(1);
-
   // The policy is empty, so no workers should be created yet.
   FastForwardBy(TimeDelta::FromSeconds(1));
   EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   CertProfile cert_profile_v1(kCertProfileId, kCertProfileVersion1,
                               /*is_va_enabled=*/true,
@@ -650,14 +661,11 @@ TEST_F(CertProvisioningSchedulerTest, RetryAfterNoInternetConnection) {
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_DEVICE, kKeyNamePrefix))
-      .Times(1);
-
   FastForwardBy(TimeDelta::FromHours(72));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // Add a new worker to the factory.
   MockCertProvisioningWorker* worker =
@@ -689,12 +697,6 @@ TEST_F(CertProvisioningSchedulerTest, DeleteWorkerWithoutPolicy) {
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_DEVICE, kKeyNamePrefix))
-      .Times(1);
-
   // Add a new worker to the factory.
   MockCertProvisioningWorker* worker =
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
@@ -720,6 +722,9 @@ TEST_F(CertProvisioningSchedulerTest, DeleteWorkerWithoutPolicy) {
                               CertProvisioningWorkerState::kCanceled);
 
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 }
 
 TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
@@ -732,15 +737,15 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
         network_state_test_helper_.network_state_handler(),
         MakeFakeInvalidationFactory());
 
-    // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-    EXPECT_CALL(
-        fake_cryptohome_client_,
-        OnTpmAttestationDeleteKeysByPrefix(
-            attestation::AttestationKeyType::KEY_DEVICE, kKeyNamePrefix))
-        .Times(1);
-
     FastForwardBy(TimeDelta::FromSeconds(1));
+
+    // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+    VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
   }
+
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ClearDeleteKeysHistory();
 
   {
     CertProfile cert_profile(kCertProfileId, kCertProfileVersion,
@@ -778,10 +783,10 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
         network_state_test_helper_.network_state_handler(),
         MakeFakeInvalidationFactory());
 
-    EXPECT_CALL(fake_cryptohome_client_, OnTpmAttestationDeleteKeysByPrefix)
-        .Times(0);
 
     FastForwardBy(TimeDelta::FromSeconds(1));
+
+    ExpectDeleteKeysByPrefixNeverCalled();
   }
 }
 
@@ -797,9 +802,10 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
   CertProfile cert_profile(kCertProfileId, kCertProfileVersion,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_, OnTpmAttestationDeleteKeysByPrefix);
   FastForwardBy(TimeDelta::FromSeconds(1));
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // There is no policies yet, |kCertProfileId| will not be found.
   scheduler.UpdateOneCert(kCertProfileId);
@@ -905,16 +911,13 @@ TEST_F(CertProvisioningSchedulerTest, CertRenewal) {
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
 
-  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_USER, kKeyNamePrefix))
-      .Times(1);
-
   // The certificate already exists, nothing should happen on scheduler
   // creation.
   FastForwardBy(TimeDelta::FromSeconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // Also nothing should happen in the next ~6 days.
   FastForwardBy(TimeDelta::FromDays(5) + TimeDelta::FromHours(23));
@@ -993,15 +996,12 @@ TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
   TestCertProvisioningSchedulerObserver observer;
   scheduler.AddObserver(&observer);
 
-  // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
-  EXPECT_CALL(fake_cryptohome_client_,
-              OnTpmAttestationDeleteKeysByPrefix(
-                  attestation::AttestationKeyType::KEY_DEVICE, kKeyNamePrefix))
-      .Times(1);
-
   // The policy is empty, so no workers should be created yet.
   FastForwardBy(TimeDelta::FromSeconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // Two new workers will be created on prefs update.
   // Expect a state change notification for this.

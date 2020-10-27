@@ -156,7 +156,7 @@ class CertProvisioningSchedulerImpl
   void OnDeleteCertsWithoutPolicyDone(platform_keys::Status status);
   void CancelWorkersWithoutPolicy(const std::vector<CertProfile>& profiles);
   void CleanVaKeysIfIdle();
-  void OnCleanVaKeysIfIdleDone(base::Optional<bool> delete_result);
+  void OnCleanVaKeysIfIdleDone(bool delete_result);
   void RegisterForPrefsChanges();
 
   void InitiateRenewal(const CertProfileId& cert_profile_id);

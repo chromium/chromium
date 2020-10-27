@@ -817,11 +817,10 @@ void CertProvisioningWorkerImpl::CleanUpAndRunCallback() {
   OnCleanUpDone();
 }
 
-void CertProvisioningWorkerImpl::OnDeleteVaKeyDone(
-    base::Optional<bool> delete_result) {
+void CertProvisioningWorkerImpl::OnDeleteVaKeyDone(bool delete_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!delete_result.has_value() || !delete_result.value()) {
+  if (!delete_result) {
     LOG(ERROR) << "Failed to delete a va key";
   }
   OnCleanUpDone();

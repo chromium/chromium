@@ -211,7 +211,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   void InitAfterDeserialization();
 
   void CleanUpAndRunCallback();
-  void OnDeleteVaKeyDone(base::Optional<bool> delete_result);
+  void OnDeleteVaKeyDone(bool delete_result);
   void OnRemoveKeyDone(platform_keys::Status status);
   void OnCleanUpDone();
 
