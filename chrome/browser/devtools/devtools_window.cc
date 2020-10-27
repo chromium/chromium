@@ -1360,7 +1360,7 @@ void DevToolsWindow::Inspect(scoped_refptr<content::DevToolsAgentHost> host) {
 }
 
 void DevToolsWindow::SetInspectedPageBounds(const gfx::Rect& rect) {
-  DevToolsContentsResizingStrategy strategy(rect, is_docked_);
+  DevToolsContentsResizingStrategy strategy(rect);
   if (contents_resizing_strategy_.Equals(strategy))
     return;
 
