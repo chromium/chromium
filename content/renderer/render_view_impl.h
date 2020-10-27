@@ -371,11 +371,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // Settings ------------------------------------------------------------------
 
-  // These are observing changes in the WebView's RendererPreferences. This is
-  // used for keeping WorkerFetchContext in sync.
-  mojo::RemoteSet<blink::mojom::RendererPreferenceWatcher>
-      renderer_preference_watchers_;
-
   // Whether content state (such as form state, scroll position and page
   // contents) should be sent to the browser immediately. This is normally
   // false, but set to true by some tests.

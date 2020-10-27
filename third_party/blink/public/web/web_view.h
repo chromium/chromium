@@ -38,6 +38,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
+#include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-shared.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -437,6 +438,10 @@ class WebView {
   virtual void PaintContent(cc::PaintCanvas*, const gfx::Rect& viewport) = 0;
 
   // Renderer preferences ---------------------------------------------------
+
+  virtual void RegisterRendererPreferenceWatcher(
+      CrossVariantMojoRemote<mojom::RendererPreferenceWatcherInterfaceBase>
+          watcher) = 0;
 
   virtual void SetRendererPreferences(
       const RendererPreferences& preferences) = 0;

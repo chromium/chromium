@@ -646,7 +646,7 @@ void RenderViewImpl::DidUpdateMainFrameLayout() {
 
 void RenderViewImpl::RegisterRendererPreferenceWatcher(
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {
-  renderer_preference_watchers_.Add(std::move(watcher));
+  GetWebView()->RegisterRendererPreferenceWatcher(std::move(watcher));
 }
 
 const blink::RendererPreferences& RenderViewImpl::GetRendererPreferences()
@@ -730,12 +730,9 @@ blink::WebView* RenderViewImpl::GetWebView() {
 }
 
 void RenderViewImpl::DidUpdateRendererPreferences() {
-  const blink::RendererPreferences& renderer_prefs = GetRendererPreferences();
-  for (auto& watcher : renderer_preference_watchers_)
-    watcher->NotifyUpdate(renderer_prefs);
-
 #if defined(OS_WIN)
   // Update Theme preferences on Windows.
+  const blink::RendererPreferences& renderer_prefs = GetRendererPreferences();
   WebThemeEngineDefault::cacheScrollBarMetrics(
       renderer_prefs.vertical_scroll_bar_width_in_dips,
       renderer_prefs.horizontal_scroll_bar_height_in_dips,

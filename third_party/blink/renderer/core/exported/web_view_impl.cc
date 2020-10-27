@@ -3888,6 +3888,12 @@ void WebViewImpl::SetInsidePortal(bool inside_portal) {
     web_widget_->SetIsNestedMainFrameWidget(inside_portal);
 }
 
+void WebViewImpl::RegisterRendererPreferenceWatcher(
+    CrossVariantMojoRemote<mojom::RendererPreferenceWatcherInterfaceBase>
+        watcher) {
+  renderer_preference_watchers_.Add(std::move(watcher));
+}
+
 void WebViewImpl::SetRendererPreferences(
     const RendererPreferences& preferences) {
   UpdateRendererPreferences(preferences);
@@ -3902,10 +3908,12 @@ void WebViewImpl::UpdateRendererPreferences(
   std::string old_accept_languages = renderer_preferences_.accept_languages;
   renderer_preferences_ = preferences;
 
+  for (auto& watcher : renderer_preference_watchers_)
+    watcher->NotifyUpdate(renderer_preferences_);
+
   // TODO(crbug.com/1102442): Remove once we no longer need to update theme
   // preferences on Windows via content::WebThemeEngineDefault.
   web_view_client_->DidUpdateRendererPreferences();
-
   UpdateFontRenderingFromRendererPrefs();
 
   blink::SetCaretBlinkInterval(
