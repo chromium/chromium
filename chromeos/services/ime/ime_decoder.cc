@@ -28,6 +28,23 @@ base::FilePath GetImeDecoderLibPath() {
   return lib_path;
 }
 
+// Simple bridge between logging in the loaded shared library and logging in
+// Chrome.
+void ImeLoggerBridge(int severity, const char* message) {
+  switch (severity) {
+    case logging::LOG_INFO:
+      // TODO(b/162375823): VLOG_IF(INFO, is_debug_version).
+      break;
+    case logging::LOG_WARNING:
+      LOG(WARNING) << message;
+      break;
+    case logging::LOG_ERROR:
+      LOG(ERROR) << message;
+      break;
+    default:
+      break;
+  }
+}
 }  // namespace
 
 ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
@@ -53,6 +70,16 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
   if (!createMainEntry_) {
     status_ = Status::kFunctionMissing;
     return;
+  }
+
+  ImeEngineLoggerSetterFn loggerSetter =
+      reinterpret_cast<ImeEngineLoggerSetterFn>(
+          library.GetFunctionPointer("SetImeEngineLogger"));
+  if (loggerSetter) {
+    loggerSetter(ImeLoggerBridge);
+  } else {
+    // Not a blocking issue yet.
+    LOG(ERROR) << "Failed to load SetImeEngineLogger function.";
   }
 
   library_ = std::move(library);

@@ -71,6 +71,9 @@ typedef void (*SimpleDownloadCallback)(int status_code, const char* file_path);
 // A function pointer of a sequenced task.
 typedef void (*ImeSequencedTask)(int task_id);
 
+// A logger function pointer from chrome.
+typedef void (*ChromeLoggerFunc)(int severity, const char* message);
+
 // Based on RequestPriority defined at
 // https://cs.chromium.org/chromium/src/net/base/request_priority.h?rcl=f9c935b73381772d508eebba1e216c437139d475
 enum DownloadPriority {
@@ -245,6 +248,9 @@ class ImeEngineMainEntry {
 //
 // Returns an instance of ImeEngineMainEntry from the IME shared library.
 typedef ImeEngineMainEntry* (*ImeMainEntryCreateFn)(ImeCrosPlatform*);
+
+// For use when bridging logs logged in IME shared library to Chrome logging.
+typedef void (*ImeEngineLoggerSetterFn)(ChromeLoggerFunc);
 
 // Defined name of ImeMainEntryCreateFn exported from shared library.
 #define IME_MAIN_ENTRY_CREATE_FN_NAME "CreateImeMainEntry"
