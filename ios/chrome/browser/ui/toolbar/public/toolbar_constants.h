@@ -34,11 +34,6 @@ extern const CGFloat kProgressBarHeight;
 // Height of the separator. Should be aligned to upper pixel.
 extern const CGFloat kToolbarSeparatorHeight;
 
-// HandleBar width, height, and bottom anchor constant.
-extern const CGFloat kHandleBarWidth;
-extern const CGFloat kHandleBarHeight;
-extern const CGFloat kHandleBarBottomAnchorConstant;
-
 // Toolbar Buttons.
 extern const CGFloat kAdaptiveToolbarButtonHeight;
 extern const CGFloat kAdaptiveToolbarButtonWidth;
