@@ -320,8 +320,11 @@ void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   RunTest(test_case);
   blink::SyntheticWebTouchEvent touchEvent;
   touchEvent.PressPoint(5, 5);
-  RenderViewHost* rvh =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetRenderViewHost();
+  RenderViewHost* rvh = browser()
+                            ->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetMainFrame()
+                            ->GetRenderViewHost();
   auto watcher = content::RenderViewHostTester::CreateInputWatcher(
       rvh, blink::WebInputEvent::Type::kTouchStart);
 
