@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -160,6 +161,13 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
   WebAppEngagementBrowserTest& operator=(const WebAppEngagementBrowserTest&) =
       delete;
   ~WebAppEngagementBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    WebAppControllerBrowserTestBase::SetUpOnMainThread();
+    WebAppProvider::Get(browser()->profile())
+        ->os_integration_manager()
+        .SuppressOsHooksForTesting();
+  }
 
   void TestEngagementEventWebAppLaunch(const base::HistogramTester& tester,
                                        const Histograms& histograms) {

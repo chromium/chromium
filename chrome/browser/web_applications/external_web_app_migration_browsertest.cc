@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/external_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps.h"
@@ -91,6 +92,9 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
     SetUpExtensionTestExternalProvider();
 
     InProcessBrowserTest::SetUpOnMainThread();
+    WebAppProvider::Get(browser()->profile())
+        ->os_integration_manager()
+        .SuppressOsHooksForTesting();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandlerOverride(

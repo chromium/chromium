@@ -197,12 +197,13 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
         &ManifestUpdateManagerBrowserTest::RequestHandlerOverride,
         base::Unretained(this)));
     ASSERT_TRUE(http_server_.Start());
-
+    // Suppress globally to avoid OS hooks deployed for system web app during
+    // WebAppProvider setup.
+    OsIntegrationManager::GlobalSuppressOsHooksForTesting();
     InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    GetProvider().os_integration_manager().SuppressOsHooksForTesting();
     // Cannot construct RunLoop in constructor due to threading restrictions.
     shortcut_run_loop_.emplace();
   }

@@ -121,6 +121,7 @@ class OsIntegrationManager {
   // Getter for testing FileHandlerManager
   FileHandlerManager& file_handler_manager_for_testing();
 
+  static void GlobalSuppressOsHooksForTesting();
   void SuppressOsHooksForTesting();
 
  protected:

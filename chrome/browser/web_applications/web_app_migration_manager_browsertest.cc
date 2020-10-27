@@ -106,6 +106,7 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    provider().os_integration_manager().SuppressOsHooksForTesting();
 
     // We use a URLLoaderInterceptor, rather than the EmbeddedTestServer, since
     // a stable app_id across tests requires stable origin, whereas
@@ -146,8 +147,6 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
     chrome::SetAutoAcceptWebAppDialogForTesting(
         /*auto_accept=*/true,
         /*auto_open_in_window=*/true);
-
-    provider().os_integration_manager().SuppressOsHooksForTesting();
 
     AppId app_id;
     base::RunLoop run_loop;

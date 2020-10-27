@@ -37,16 +37,14 @@ class PendingAppManagerImplBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     // Allow different origins to be handled by the embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
+    WebAppProviderBase::GetProviderBase(browser()->profile())
+        ->os_integration_manager()
+        .SuppressOsHooksForTesting();
   }
 
   AppRegistrar& registrar() {
     return WebAppProviderBase::GetProviderBase(browser()->profile())
         ->registrar();
-  }
-
-  OsIntegrationManager& os_integration_manager() {
-    return WebAppProviderBase::GetProviderBase(browser()->profile())
-        ->os_integration_manager();
   }
 
   PendingAppManager& pending_app_manager() {
@@ -149,7 +147,6 @@ IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(PendingAppManagerImplBrowserTest,
                        PlaceholderInstallSucceedsWithShortcuts) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  os_integration_manager().SuppressOsHooksForTesting();
 
   GURL final_url = embedded_test_server()->GetURL(
       "other.origin.com", "/banners/manifest_test_page.html");

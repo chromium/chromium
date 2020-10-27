@@ -29,6 +29,18 @@ namespace web_app {
 class TwoClientWebAppsSyncTest : public SyncTest {
  public:
   TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) {}
+
+  bool SetupClients() override {
+    bool result = SyncTest::SetupClients();
+    if (!result)
+      return result;
+    for (Profile* profile : GetAllProfiles()) {
+      auto* web_app_provider = WebAppProvider::Get(profile);
+      web_app_provider->os_integration_manager().SuppressOsHooksForTesting();
+    }
+    return true;
+  }
+
   ~TwoClientWebAppsSyncTest() override = default;
 
   void SetUpOnMainThread() override {

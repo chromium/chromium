@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -29,6 +30,13 @@ class ExternalWebAppManagerBrowserTest
  public:
   ExternalWebAppManagerBrowserTest() {
     ExternalWebAppManager::SkipStartupForTesting();
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+    WebAppProvider::Get(browser()->profile())
+        ->os_integration_manager()
+        .SuppressOsHooksForTesting();
   }
 
   GURL GetAppUrl() const {
