@@ -124,7 +124,7 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::Hyphenate(
   const String& text = GetText();
   unsigned word_end = break_iterator_->NextBreakOpportunity(offset);
   if (word_end != offset && IsBreakableSpace(text[word_end - 1]))
-    word_end = std::max(start, FindNonHangableEnd(text, word_end - 1));
+    word_end = std::max(start + 1, FindNonHangableEnd(text, word_end - 1));
   if (word_end == offset) {
     DCHECK(IsBreakableSpace(text[offset]) ||
            offset == break_iterator_->PreviousBreakOpportunity(offset, start));
