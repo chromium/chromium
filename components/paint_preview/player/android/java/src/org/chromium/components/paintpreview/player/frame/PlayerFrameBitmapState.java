@@ -85,6 +85,7 @@ public class PlayerFrameBitmapState {
      */
     void lock() {
         mRequiredBitmaps = null;
+        mCompositorDelegate.cancelAllBitmapRequests();
     }
 
     /**
@@ -160,6 +161,8 @@ public class PlayerFrameBitmapState {
                 requestBitmapForAdjacentTiles(row, col);
             }
         }
+
+        cancelUnrequiredPendingRequests();
     }
 
     private void requestBitmapForAdjacentTiles(int row, int col) {
@@ -198,9 +201,14 @@ public class PlayerFrameBitmapState {
         BitmapRequestHandler bitmapRequestHandler =
                 new BitmapRequestHandler(row, col, mScaleFactor, mVisibleBitmaps[row][col]);
         mPendingBitmapRequests[row][col] = bitmapRequestHandler;
-        mCompositorDelegate.requestBitmap(mGuid,
+        int requestId = mCompositorDelegate.requestBitmap(mGuid,
                 new Rect(x, y, x + mTileSize.getWidth(), y + mTileSize.getHeight()), mScaleFactor,
                 bitmapRequestHandler, bitmapRequestHandler::onError);
+        // It is possible that the request failed immediately, so make sure the request still
+        // exists.
+        if (mPendingBitmapRequests[row][col] != null) {
+            mPendingBitmapRequests[row][col].setRequestId(requestId);
+        }
         return true;
     }
 
@@ -258,6 +266,27 @@ public class PlayerFrameBitmapState {
         }
     }
 
+    private void cancelUnrequiredPendingRequests() {
+        if (mPendingBitmapRequests == null || mRequiredBitmaps == null) return;
+
+        assert mPendingBitmapRequests.length == mRequiredBitmaps.length;
+        assert (mPendingBitmapRequests.length > 0)
+                ? mPendingBitmapRequests[0].length == mRequiredBitmaps[0].length
+                : true;
+
+        for (int row = 0; row < mPendingBitmapRequests.length; row++) {
+            for (int col = 0; col < mPendingBitmapRequests[row].length; col++) {
+                if (mPendingBitmapRequests[row][col] != null && !mRequiredBitmaps[row][col]) {
+                    // If the cancellation failed, the bitmap is being processed already. If this
+                    // happens don't delete the request.
+                    if (mPendingBitmapRequests[row][col].cancel()) {
+                        mPendingBitmapRequests[row][col] = null;
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Used as the callback for bitmap requests from the Paint Preview compositor.
      */
@@ -266,6 +295,7 @@ public class PlayerFrameBitmapState {
         int mRequestCol;
         float mRequestScaleFactor;
         boolean mVisible;
+        int mRequestId;
 
         private BitmapRequestHandler(
                 int requestRow, int requestCol, float requestScaleFactor, boolean visible) {
@@ -277,6 +307,14 @@ public class PlayerFrameBitmapState {
 
         private void setVisible(boolean visible) {
             mVisible = visible;
+        }
+
+        private void setRequestId(int requestId) {
+            mRequestId = requestId;
+        }
+
+        private boolean cancel() {
+            return mCompositorDelegate.cancelBitmapRequest(mRequestId);
         }
 
         /**

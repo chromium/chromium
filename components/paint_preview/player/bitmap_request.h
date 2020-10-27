@@ -1,0 +1,38 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PAINT_PREVIEW_PLAYER_BITMAP_REQUEST_H_
+#define COMPONENTS_PAINT_PREVIEW_PLAYER_BITMAP_REQUEST_H_
+
+#include "base/callback.h"
+#include "base/unguessable_token.h"
+#include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace paint_preview {
+
+struct BitmapRequest {
+  using BitmapRequestCallback =
+      base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
+                              const SkBitmap&)>;
+
+  BitmapRequest(const base::UnguessableToken& frame_guid,
+                const gfx::Rect& clip_rect,
+                float scale_factor,
+                BitmapRequestCallback callback);
+  ~BitmapRequest();
+
+  BitmapRequest& operator=(BitmapRequest&& other) noexcept;
+  BitmapRequest(BitmapRequest&& other) noexcept;
+
+  base::UnguessableToken frame_guid;
+  gfx::Rect clip_rect;
+  float scale_factor;
+  BitmapRequestCallback callback;
+};
+
+}  // namespace paint_preview
+
+#endif  // COMPONENTS_PAINT_PREVIEW_PLAYER_BITMAP_REQUEST_H_

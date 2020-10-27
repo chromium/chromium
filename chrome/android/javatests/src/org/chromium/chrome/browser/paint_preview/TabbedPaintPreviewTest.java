@@ -298,6 +298,8 @@ public class TabbedPaintPreviewTest {
      * Dummy implementation of {@link PlayerCompositorDelegate}.
      */
     public static class TestCompositorDelegate implements PlayerCompositorDelegate {
+        private int mNextRequestId;
+
         TestCompositorDelegate(NativePaintPreviewServiceProvider service, GURL url,
                 String directoryKey, @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
@@ -313,14 +315,25 @@ public class TabbedPaintPreviewTest {
         }
 
         @Override
-        public void requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
+        public int requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
                 Callback<Bitmap> bitmapCallback, Runnable errorCallback) {
             new Handler().postDelayed(() -> {
                 Bitmap emptyBitmap = Bitmap.createBitmap(
                         clipRect.width(), clipRect.height(), Bitmap.Config.ARGB_4444);
                 bitmapCallback.onResult(emptyBitmap);
             }, 100);
+            int requestId = mNextRequestId;
+            mNextRequestId++;
+            return requestId;
         }
+
+        @Override
+        public boolean cancelBitmapRequest(int requestId) {
+            return false;
+        }
+
+        @Override
+        public void cancelAllBitmapRequests() {}
 
         @Override
         public GURL onClick(UnguessableToken frameGuid, int x, int y) {

@@ -175,13 +175,25 @@ public class PlayerFrameMediatorTest {
     private class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
         List<RequestedBitmap> mRequestedBitmap = new ArrayList<>();
         List<ClickedPoint> mClickedPoints = new ArrayList<>();
+        private int mNextRequestId;
 
         @Override
-        public void requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
+        public int requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
                 Callback<Bitmap> bitmapCallback, Runnable errorCallback) {
             mRequestedBitmap.add(new RequestedBitmap(
                     frameGuid, new Rect(clipRect), scaleFactor, bitmapCallback, errorCallback));
+            int requestId = mNextRequestId;
+            mNextRequestId++;
+            return requestId;
         }
+
+        @Override
+        public boolean cancelBitmapRequest(int requestId) {
+            return false;
+        }
+
+        @Override
+        public void cancelAllBitmapRequests() {}
 
         @Override
         public GURL onClick(UnguessableToken frameGuid, int x, int y) {

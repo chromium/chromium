@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "components/paint_preview/browser/hit_tester.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
+#include "components/paint_preview/player/bitmap_request.h"
 #include "components/paint_preview/player/compositor_status.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
@@ -44,7 +45,8 @@ class PlayerCompositorDelegate {
                   const GURL& url,
                   const DirectoryKey& key,
                   base::OnceCallback<void(int)> compositor_error,
-                  base::TimeDelta timeout_duration);
+                  base::TimeDelta timeout_duration,
+                  size_t max_requests);
 
   // Returns whether initialization has happened.
   bool IsInitialized() const { return paint_preview_service_; }
@@ -60,13 +62,22 @@ class PlayerCompositorDelegate {
       mojom::PaintPreviewBeginCompositeResponsePtr composite_response) {}
 
   // Called when there is a request for a new bitmap. When the bitmap
-  // is ready, it will be passed to callback.
-  void RequestBitmap(
+  // is ready, it will be passed to callback. Returns an ID for the request.
+  // Pass this ID to `CancelBitmapRequest(int32_t)` to cancel the request if it
+  // hasn't already been sent.
+  int32_t RequestBitmap(
       const base::UnguessableToken& frame_guid,
       const gfx::Rect& clip_rect,
       float scale_factor,
       base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
                               const SkBitmap&)> callback);
+
+  // Cancels the bitmap request associated with `request_id` if possible.
+  // Returns true on success.
+  bool CancelBitmapRequest(int32_t request_id);
+
+  // Cancels all pending bitmap requests.
+  void CancelAllBitmapRequests();
 
   // Called on touch event on a frame.
   std::vector<const GURL*> OnClick(const base::UnguessableToken& frame_guid,
@@ -81,6 +92,7 @@ class PlayerCompositorDelegate {
       const DirectoryKey& key,
       base::OnceCallback<void(int)> compositor_error,
       base::TimeDelta timeout_duration,
+      size_t max_requests,
       std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
           fake_compositor_service);
 
@@ -100,7 +112,8 @@ class PlayerCompositorDelegate {
                           const GURL& expected_url,
                           const DirectoryKey& key,
                           base::OnceCallback<void(int)> compositor_error,
-                          base::TimeDelta timeout_duration);
+                          base::TimeDelta timeout_duration,
+                          size_t max_requests);
 
   void OnCompositorReadyStatusAdapter(
       mojom::PaintPreviewCompositor::BeginCompositeStatus status,
@@ -122,17 +135,33 @@ class PlayerCompositorDelegate {
   void SendCompositeRequest(
       mojom::PaintPreviewBeginCompositeRequestPtr begin_composite_request);
 
+  void ProcessBitmapRequestsFromQueue();
+  void BitmapRequestCallbackAdapter(
+      base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
+                              const SkBitmap&)> callback,
+      mojom::PaintPreviewCompositor::BitmapStatus status,
+      const SkBitmap& bitmap);
+
   PaintPreviewBaseService* paint_preview_service_{nullptr};
   DirectoryKey key_;
   bool compress_on_close_{true};
+
   std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
       paint_preview_compositor_service_;
   std::unique_ptr<PaintPreviewCompositorClient, base::OnTaskRunnerDeleter>
       paint_preview_compositor_client_;
+
   base::CancelableOnceClosure timeout_;
+  int max_requests_{1};
+
   base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>
       hit_testers_;
   std::unique_ptr<PaintPreviewProto> proto_;
+
+  int active_requests_{0};
+  int32_t next_request_id_{0};
+  base::queue<int32_t> bitmap_request_queue_;
+  std::map<int32_t, BitmapRequest> pending_bitmap_requests_;
 
   base::WeakPtrFactory<PlayerCompositorDelegate> weak_factory_{this};
 };

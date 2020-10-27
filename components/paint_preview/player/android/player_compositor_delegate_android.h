@@ -32,7 +32,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
   // Called from Java when there is a request for a new bitmap. When the bitmap
   // is ready, it will be passed to j_bitmap_callback. In case of any failure,
   // j_error_callback will be called.
-  void RequestBitmap(
+  jint RequestBitmap(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_frame_guid,
       const base::android::JavaParamRef<jobject>& j_bitmap_callback,
@@ -42,6 +42,10 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       jint j_clip_y,
       jint j_clip_width,
       jint j_clip_height);
+
+  jboolean CancelBitmapRequest(JNIEnv* env, jint j_request_id);
+
+  void CancelAllBitmapRequests(JNIEnv* env);
 
   // Called from Java on touch event on a frame.
   base::android::ScopedJavaLocalRef<jstring> OnClick(

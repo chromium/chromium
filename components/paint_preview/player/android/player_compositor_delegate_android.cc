@@ -31,6 +31,10 @@ namespace paint_preview {
 
 namespace {
 
+// To minimize peak memory usage limit the number of concurrent bitmap requests
+// to 4.
+constexpr size_t kMaxParallelBitmapRequests = 4;
+
 ScopedJavaLocalRef<jobjectArray> ToJavaUnguessableTokenArray(
     JNIEnv* env,
     const std::vector<base::UnguessableToken>& tokens) {
@@ -88,7 +92,7 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
           base::android::ConvertJavaStringToUTF8(env, j_directory_key)},
       base::BindOnce(&base::android::RunIntCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_compositor_error_callback)),
-      base::TimeDelta::FromSeconds(15));
+      base::TimeDelta::FromSeconds(15), kMaxParallelBitmapRequests);
   java_ref_.Reset(env, j_object);
 }
 
@@ -190,7 +194,7 @@ void PlayerCompositorDelegateAndroid::CompositeResponseFramesToVectors(
   }
 }
 
-void PlayerCompositorDelegateAndroid::RequestBitmap(
+jint PlayerCompositorDelegateAndroid::RequestBitmap(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_frame_guid,
     const JavaParamRef<jobject>& j_bitmap_callback,
@@ -204,7 +208,7 @@ void PlayerCompositorDelegateAndroid::RequestBitmap(
       "paint_preview", "PlayerCompositorDelegateAndroid::RequestBitmap",
       TRACE_ID_LOCAL(request_id_));
 
-  PlayerCompositorDelegate::RequestBitmap(
+  int32_t id = PlayerCompositorDelegate::RequestBitmap(
       base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
           env, j_frame_guid),
       gfx::Rect(j_clip_x, j_clip_y, j_clip_width, j_clip_height),
@@ -215,6 +219,19 @@ void PlayerCompositorDelegateAndroid::RequestBitmap(
                      ScopedJavaGlobalRef<jobject>(j_error_callback),
                      request_id_));
   ++request_id_;
+
+  return static_cast<jint>(id);
+}
+
+jboolean PlayerCompositorDelegateAndroid::CancelBitmapRequest(
+    JNIEnv* env,
+    jint j_request_id) {
+  return static_cast<jboolean>(PlayerCompositorDelegate::CancelBitmapRequest(
+      static_cast<int32_t>(j_request_id)));
+}
+
+void PlayerCompositorDelegateAndroid::CancelAllBitmapRequests(JNIEnv* env) {
+  PlayerCompositorDelegate::CancelAllBitmapRequests();
 }
 
 void PlayerCompositorDelegateAndroid::OnBitmapCallback(

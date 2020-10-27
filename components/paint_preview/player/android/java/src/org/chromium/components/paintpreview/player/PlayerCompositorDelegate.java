@@ -70,9 +70,23 @@ public interface PlayerCompositorDelegate {
      * @param bitmapCallback The callback that receives the bitmap once it's ready. Won't get called
      * if there are any errors.
      * @param errorCallback Gets notified if there are any errors. Won't get called otherwise.
+     * @return an int representing the ID for the bitmap request. Can be used with {@link
+     * cancelBitmapRequest(int)} to cancel the request if possible.
      */
-    void requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
+    int requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
             Callback<Bitmap> bitmapCallback, Runnable errorCallback);
+
+    /**
+     * Cancels the bitmap request for the provided ID.
+     * @param requestID the request to try to cancel.
+     * @return true on successful cancellation.
+     */
+    boolean cancelBitmapRequest(int requestId);
+
+    /**
+     * Cancels all outstanding bitmap requests.
+     */
+    void cancelAllBitmapRequests();
 
     /**
      * Sends a click event for a frame to native for link hit testing.

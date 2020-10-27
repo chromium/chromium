@@ -49,15 +49,35 @@ class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     }
 
     @Override
-    public void requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
+    public int requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
             Callback<Bitmap> bitmapCallback, Runnable errorCallback) {
+        if (mNativePlayerCompositorDelegate == 0) {
+            return -1;
+        }
+
+        return PlayerCompositorDelegateImplJni.get().requestBitmap(mNativePlayerCompositorDelegate,
+                frameGuid, bitmapCallback, errorCallback, scaleFactor, clipRect.left, clipRect.top,
+                clipRect.width(), clipRect.height());
+    }
+
+    @Override
+    public boolean cancelBitmapRequest(int requestId) {
+        if (mNativePlayerCompositorDelegate == 0) {
+            return false;
+        }
+
+        return PlayerCompositorDelegateImplJni.get().cancelBitmapRequest(
+                mNativePlayerCompositorDelegate, requestId);
+    }
+
+    @Override
+    public void cancelAllBitmapRequests() {
         if (mNativePlayerCompositorDelegate == 0) {
             return;
         }
 
-        PlayerCompositorDelegateImplJni.get().requestBitmap(mNativePlayerCompositorDelegate,
-                frameGuid, bitmapCallback, errorCallback, scaleFactor, clipRect.left, clipRect.top,
-                clipRect.width(), clipRect.height());
+        PlayerCompositorDelegateImplJni.get().cancelAllBitmapRequests(
+                mNativePlayerCompositorDelegate);
     }
 
     @Override
@@ -98,9 +118,11 @@ class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
         long initialize(PlayerCompositorDelegateImpl caller, long nativePaintPreviewBaseService,
                 String urlSpec, String directoryKey, Callback<Integer> compositorErrorCallback);
         void destroy(long nativePlayerCompositorDelegateAndroid);
-        void requestBitmap(long nativePlayerCompositorDelegateAndroid, UnguessableToken frameGuid,
+        int requestBitmap(long nativePlayerCompositorDelegateAndroid, UnguessableToken frameGuid,
                 Callback<Bitmap> bitmapCallback, Runnable errorCallback, float scaleFactor,
                 int clipX, int clipY, int clipWidth, int clipHeight);
+        boolean cancelBitmapRequest(long nativePlayerCompositorDelegateAndroid, int requestId);
+        void cancelAllBitmapRequests(long nativePlayerCompositorDelegateAndroid);
         String onClick(long nativePlayerCompositorDelegateAndroid, UnguessableToken frameGuid,
                 int x, int y);
         void setCompressOnClose(

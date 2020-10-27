@@ -116,7 +116,8 @@ void PlayerCompositorDelegate::Initialize(
     const GURL& expected_url,
     const DirectoryKey& key,
     base::OnceCallback<void(int)> compositor_error,
-    base::TimeDelta timeout_duration) {
+    base::TimeDelta timeout_duration,
+    size_t max_requests) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("paint_preview",
                                     "PlayerCompositorDelegate CreateCompositor",
                                     TRACE_ID_LOCAL(this));
@@ -126,7 +127,8 @@ void PlayerCompositorDelegate::Initialize(
           weak_factory_.GetWeakPtr()));
 
   InitializeInternal(paint_preview_service, expected_url, key,
-                     std::move(compositor_error), timeout_duration);
+                     std::move(compositor_error), timeout_duration,
+                     max_requests);
 }
 
 void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
@@ -135,6 +137,7 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
     const DirectoryKey& key,
     base::OnceCallback<void(int)> compositor_error,
     base::TimeDelta timeout_duration,
+    size_t max_requests,
     std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
         fake_compositor_service) {
   paint_preview_compositor_service_ = std::move(fake_compositor_service);
@@ -143,7 +146,8 @@ void PlayerCompositorDelegate::InitializeWithFakeServiceForTest(
                      weak_factory_.GetWeakPtr()));
 
   InitializeInternal(paint_preview_service, expected_url, key,
-                     std::move(compositor_error), timeout_duration);
+                     std::move(compositor_error), timeout_duration,
+                     max_requests);
 }
 
 void PlayerCompositorDelegate::InitializeInternal(
@@ -151,7 +155,9 @@ void PlayerCompositorDelegate::InitializeInternal(
     const GURL& expected_url,
     const DirectoryKey& key,
     base::OnceCallback<void(int)> compositor_error,
-    base::TimeDelta timeout_duration) {
+    base::TimeDelta timeout_duration,
+    size_t max_requests) {
+  max_requests_ = max_requests;
   compositor_error_ = std::move(compositor_error);
   paint_preview_service_ = paint_preview_service;
   key_ = key;
@@ -173,21 +179,46 @@ void PlayerCompositorDelegate::InitializeInternal(
   }
 }
 
-void PlayerCompositorDelegate::RequestBitmap(
+int32_t PlayerCompositorDelegate::RequestBitmap(
     const base::UnguessableToken& frame_guid,
     const gfx::Rect& clip_rect,
     float scale_factor,
     base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
                             const SkBitmap&)> callback) {
   DCHECK(IsInitialized());
+  const int32_t request_id = next_request_id_;
+  next_request_id_++;
   if (!paint_preview_compositor_client_) {
     std::move(callback).Run(
         mojom::PaintPreviewCompositor::BitmapStatus::kMissingFrame, SkBitmap());
-    return;
+    return request_id;
   }
 
-  paint_preview_compositor_client_->BitmapForSeparatedFrame(
-      frame_guid, clip_rect, scale_factor, std::move(callback));
+  bitmap_request_queue_.push(request_id);
+  pending_bitmap_requests_.emplace(
+      request_id,
+      BitmapRequest(frame_guid, clip_rect, scale_factor,
+                    base::BindOnce(
+                        &PlayerCompositorDelegate::BitmapRequestCallbackAdapter,
+                        weak_factory_.GetWeakPtr(), std::move(callback))));
+  ProcessBitmapRequestsFromQueue();
+  return request_id;
+}
+
+bool PlayerCompositorDelegate::CancelBitmapRequest(int32_t request_id) {
+  auto it = pending_bitmap_requests_.find(request_id);
+  if (it == pending_bitmap_requests_.end())
+    return false;
+
+  pending_bitmap_requests_.erase(it);
+  return true;
+}
+
+void PlayerCompositorDelegate::CancelAllBitmapRequests() {
+  while (bitmap_request_queue_.size())
+    bitmap_request_queue_.pop();
+
+  pending_bitmap_requests_.clear();
 }
 
 std::vector<const GURL*> PlayerCompositorDelegate::OnClick(
@@ -340,6 +371,35 @@ void PlayerCompositorDelegate::OnCompositorTimeout() {
     std::move(compositor_error_)
         .Run(static_cast<int>(CompositorStatus::TIMED_OUT));
   }
+}
+
+void PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue() {
+  while (active_requests_ < max_requests_ && bitmap_request_queue_.size()) {
+    int request_id = bitmap_request_queue_.front();
+    bitmap_request_queue_.pop();
+
+    auto it = pending_bitmap_requests_.find(request_id);
+    if (it == pending_bitmap_requests_.end())
+      continue;
+
+    BitmapRequest& request = it->second;
+    active_requests_++;
+    paint_preview_compositor_client_->BitmapForSeparatedFrame(
+        request.frame_guid, request.clip_rect, request.scale_factor,
+        std::move(request.callback));
+    pending_bitmap_requests_.erase(it);
+  }
+}
+
+void PlayerCompositorDelegate::BitmapRequestCallbackAdapter(
+    base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
+                            const SkBitmap&)> callback,
+    mojom::PaintPreviewCompositor::BitmapStatus status,
+    const SkBitmap& bitmap) {
+  std::move(callback).Run(status, bitmap);
+
+  active_requests_--;
+  ProcessBitmapRequestsFromQueue();
 }
 
 }  // namespace paint_preview

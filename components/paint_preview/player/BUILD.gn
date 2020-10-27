@@ -4,6 +4,8 @@
 
 source_set("player") {
   sources = [
+    "bitmap_request.cc",
+    "bitmap_request.h",
     "compositor_status.h",
     "player_compositor_delegate.cc",
     "player_compositor_delegate.h",
