@@ -48,7 +48,7 @@ void AndroidEnterpriseInfo::ServiceCallbacks(bool profile_owned,
 
 // JNI_EnterpriseInfo_UpdateNativeOwnedState() is static function, this makes
 // friending it a hassle because it must be declared in the file that the friend
-// declaration is in, but it's declaration can't be included in multiple places
+// declaration is in, but its declaration can't be included in multiple places
 // or things get messy and the linker gets mad. This helper class exists only to
 // friend the JNI function and is, in turn, friended by AndroidEnterpriseInfo
 // which allows for the private ServiceCallbacks() to be reached.
