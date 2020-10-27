@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -16,8 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 /**
  * Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}.
  */
-public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyable {
-
+public interface LocationBar extends UrlBarDelegate, Destroyable {
     /** Handle all necessary tasks that can be delayed until initialization completes. */
     default void onDeferredStartup() {}
 
@@ -93,4 +94,11 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
     /** Updates the state of the mic button if there is one. */
     void updateMicButtonState();
 
+    /**
+     * Returns a (@link FakeboxDelegate}.
+     *
+     * <p>TODO(crbug.com/1140287): Inject FakeboxDelegate where needed and remove this method.
+     */
+    @Nullable
+    FakeboxDelegate getFakeboxDelegate();
 }

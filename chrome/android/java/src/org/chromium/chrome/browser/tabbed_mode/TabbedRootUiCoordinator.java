@@ -369,7 +369,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         ObservableSupplierImpl<Boolean> isUrlBarFocusedSupplier = new ObservableSupplierImpl<>();
-        isUrlBarFocusedSupplier.set(mToolbarManager.getFakeboxDelegate().isUrlBarFocused());
+        isUrlBarFocusedSupplier.set(mToolbarManager.isUrlBarFocused());
         mUrlFocusChangeListener = new UrlFocusChangeListener() {
             @Override
             public void onUrlFocusChange(boolean hasFocus) {
@@ -389,7 +389,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         };
         mOfflineIndicatorController = new OfflineIndicatorControllerV2(mActivity,
                 mStatusIndicatorCoordinator, isUrlBarFocusedSupplier, mCanAnimateBrowserControls);
-        mToolbarManager.getFakeboxDelegate().addUrlFocusChangeListener(mUrlFocusChangeListener);
+        if (mToolbarManager.getFakeboxDelegate() != null) {
+            mToolbarManager.getFakeboxDelegate().addUrlFocusChangeListener(mUrlFocusChangeListener);
+        }
     }
 
     @Override

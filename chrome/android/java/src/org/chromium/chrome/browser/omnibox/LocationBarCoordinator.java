@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,7 +39,7 @@ import java.util.List;
  *
  * <p>The coordinator creates and owns elements within this component.
  */
-public final class LocationBarCoordinator implements LocationBar {
+public final class LocationBarCoordinator implements LocationBar, FakeboxDelegate {
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator extends Destroyable {}
 
@@ -258,6 +259,11 @@ public final class LocationBarCoordinator implements LocationBar {
     @Override
     public void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {
         mLocationBarLayout.removeUrlFocusChangeListener(listener);
+    }
+
+    @Override
+    public FakeboxDelegate getFakeboxDelegate() {
+        return this;
     }
 
     /**

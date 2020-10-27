@@ -379,14 +379,18 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLocationBar = locationBarCoordinator;
         }
 
-        mLocationBar.addUrlFocusChangeListener(this);
+        if (mLocationBar.getFakeboxDelegate() != null) {
+            mLocationBar.getFakeboxDelegate().addUrlFocusChangeListener(this);
+        }
         Runnable clickDelegate =
                 () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
         View scrimTarget = mActivity.getCompositorViewHolder();
         mLocationBarFocusHandler = new LocationBarFocusScrimHandler(scrimCoordinator,
                 tabObscuringHandler, activity, activity.getNightModeStateProvider(),
                 mLocationBarModel, clickDelegate, scrimTarget);
-        mLocationBar.addUrlFocusChangeListener(mLocationBarFocusHandler);
+        if (mLocationBar.getFakeboxDelegate() != null) {
+            mLocationBar.getFakeboxDelegate().addUrlFocusChangeListener(mLocationBarFocusHandler);
+        }
 
         mProgressBarCoordinator =
                 new LoadProgressCoordinator(mActivityTabProvider, mToolbar.getProgressBar());
@@ -736,7 +740,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @return  Whether the UrlBar currently has focus.
      */
     public boolean isUrlBarFocused() {
-        return mLocationBar.isUrlBarFocused();
+        if (mLocationBar.getFakeboxDelegate() == null) {
+            return false;
+        }
+        return mLocationBar.getFakeboxDelegate().isUrlBarFocused();
     }
 
     /**
@@ -1205,8 +1212,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      */
     public void setUrlBarFocus(boolean focused, @OmniboxFocusReason int reason) {
         if (!mInitializedWithNative) return;
-        boolean wasFocused = mLocationBar.isUrlBarFocused();
-        mLocationBar.setUrlBarFocus(focused, null, reason);
+        if (mLocationBar.getFakeboxDelegate() == null) return;
+        boolean wasFocused = mLocationBar.getFakeboxDelegate().isUrlBarFocused();
+        mLocationBar.getFakeboxDelegate().setUrlBarFocus(focused, null, reason);
         if (wasFocused && focused) {
             mLocationBar.selectAll();
         }
@@ -1382,9 +1390,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     /**
      * @return The {@link FakeboxDelegate}.
      */
+    @Nullable
     public FakeboxDelegate getFakeboxDelegate() {
         // TODO(crbug.com/1000295): Split fakebox component out of ntp package.
-        return mLocationBar;
+        return mLocationBar.getFakeboxDelegate();
     }
 
     private boolean shouldShowCursorInLocationBar() {

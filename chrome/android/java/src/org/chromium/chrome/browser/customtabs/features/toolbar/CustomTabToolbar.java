@@ -46,14 +46,13 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
+import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
-import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -63,7 +62,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.page_info.PageInfoController;
@@ -859,27 +857,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public void updateMicButtonState() {}
 
-        // Implements FakeBoxDelegate.
-        @Override
-        public boolean isUrlBarFocused() {
-            return false;
-        }
-
-        @Override
-        public void performSearchQuery(String query, List<String> searchParams) {}
-
-        @Override
-        public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText,
-                @OmniboxFocusReason int reason) {}
-
-        @Override
-        public boolean isCurrentPage(NativePage nativePage) {
-            return false;
-        }
-
         @Nullable
         @Override
-        public VoiceRecognitionHandler getVoiceRecognitionHandler() {
+        public FakeboxDelegate getFakeboxDelegate() {
             return null;
         }
     }
