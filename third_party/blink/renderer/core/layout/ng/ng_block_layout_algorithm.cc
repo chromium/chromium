@@ -60,6 +60,18 @@ bool HasLineEvenIfEmpty(LayoutBox* box) {
   return NGInlineNode(block_flow).HasLineEvenIfEmpty();
 }
 
+LogicalOffset CenterBlockChild(LogicalOffset offset,
+                               LayoutUnit available_block_size,
+                               LayoutUnit child_block_size) {
+  if (available_block_size == child_block_size)
+    return offset;
+  // We don't clamp a negative difference to zero. We'd like to center the
+  // child even if its taller than the container.
+  LayoutUnit block_size_diff = available_block_size - child_block_size;
+  offset.block_offset += block_size_diff / 2 + LayoutMod(block_size_diff, 2);
+  return offset;
+}
+
 inline scoped_refptr<const NGLayoutResult> LayoutBlockChild(
     const NGConstraintSpace& space,
     const NGBreakToken* break_token,
@@ -1367,6 +1379,12 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                                      previous_inflow_position))
     return NGLayoutResult::kBfcBlockOffsetResolved;
 
+  if (UNLIKELY(child.Style().AlignSelfBlockCenter() &&
+               ChildAvailableSize().block_size != kIndefiniteSize)) {
+    logical_offset = CenterBlockChild(
+        logical_offset, ChildAvailableSize().block_size, fragment.BlockSize());
+  }
+
   PropagateBaselineFromChild(physical_fragment, logical_offset.block_offset);
   container_builder_.AddResult(*layout_result, logical_offset);
 
@@ -1887,6 +1905,10 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   if (!PositionOrPropagateListMarker(*layout_result, &logical_offset,
                                      previous_inflow_position))
     return NGLayoutResult::kBfcBlockOffsetResolved;
+
+  // The box with -internal-align-self:center should create new
+  // formatting context.
+  DCHECK(child.IsInline() || !child.Style().AlignSelfBlockCenter());
 
   PropagateBaselineFromChild(physical_fragment, logical_offset.block_offset);
   container_builder_.AddResult(*layout_result, logical_offset);

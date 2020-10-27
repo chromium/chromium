@@ -438,10 +438,11 @@ input[type="search" i] {
 }
 
 input::-webkit-textfield-decoration-container {
-    display: flex;
+    display: flex !important;
     align-items: center;
     -webkit-user-modify: read-only !important;
     content: none !important;
+    -internal-align-self-block: center;
 }
 
 input::-webkit-clear-button {

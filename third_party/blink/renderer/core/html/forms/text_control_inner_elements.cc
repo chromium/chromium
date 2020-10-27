@@ -206,6 +206,9 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
     no_scrollbar_style->SetDisplay(EDisplay::kNone);
     text_block_style->AddCachedPseudoElementStyle(no_scrollbar_style);
     text_block_style->SetHasPseudoElementStyle(kPseudoIdScrollbar);
+
+    text_block_style->SetDisplay(EDisplay::kFlowRoot);
+    text_block_style->SetAlignSelfBlockCenter(true);
   }
 
   return text_block_style;

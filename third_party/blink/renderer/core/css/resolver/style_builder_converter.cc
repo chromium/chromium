@@ -2057,6 +2057,14 @@ StyleAspectRatio StyleBuilderConverter::ConvertAspectRatio(
   return StyleAspectRatio(type, ratio);
 }
 
+bool StyleBuilderConverter::ConvertInternalAlignSelfBlock(
+    StyleResolverState&,
+    const CSSValue& value) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  return identifier_value &&
+         identifier_value->GetValueID() == CSSValueID::kCenter;
+}
+
 bool StyleBuilderConverter::ConvertInternalEmptyLineHeight(
     StyleResolverState&,
     const CSSValue& value) {

@@ -6016,6 +6016,24 @@
       converter: "ConvertInternalEmptyLineHeight",
     },
 
+    // Name: -internal-align-self-block:
+    // Value: normal | center
+    // Applies to: A block child in a normal blow flow context
+    //    If 'center' is specified and the container's block size is not auto,
+    //    it works like "align-self: center" for grid/flex items.
+    //    The block child should create new block formatting context.
+    {
+      name: "-internal-align-self-block",
+      property_methods: ["ParseSingleValue"],
+      inherited: false,
+      field_group: "*",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      name_for_methods: "AlignSelfBlockCenter",
+      converter: "ConvertInternalAlignSelfBlock",
+    },
+
     // Aliases; these map to the same CSSPropertyID
     {
       name: "-epub-caption-side",
