@@ -68,9 +68,10 @@ ViewsTextServicesContextMenuMac::ViewsTextServicesContextMenuMac(
     menu->InsertItemAt(
         0, IDS_CONTENT_CONTEXT_LOOK_UP,
         l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP, text));
+
+    text_services_menu_.AppendToContextMenu(menu);
   }
 
-  text_services_menu_.AppendToContextMenu(menu);
   text_services_menu_.AppendEditableItems(menu);
 }
 
