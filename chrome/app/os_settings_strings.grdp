@@ -274,11 +274,11 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_CONFIRM_BUTTON_LABEL" desc="Label for the button where users can confirm the selected language and restart the device.">
     Confirm and restart
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE" desc="Title of section that lets users choose the language for apps and websites. The web content languages will be served in the order of the list.">
-    Languages for apps and websites
+  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE" desc="Title of section that lets users choose the language for web content. The web content languages will be served in the order of the list.">
+    Web content languages
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION" desc="Description for section that lets users choose the language for apps and websites. The web content languages will be served in the order of the list.">
-    Apps and websites that support multiple languages will use the first supported language from this list. Language preferences sync to Chrome browser. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION" desc="Description for section that lets users choose the language for web content. The web content languages will be served in the order of the list.">
+    Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL" desc="The label of the toggle that enables the prompt to translate a page to users.">
     Language used when translating pages
