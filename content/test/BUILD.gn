@@ -1518,6 +1518,7 @@ test("content_browsertests") {
 
   if (is_mac) {
     sources += [
+      "../browser/accessibility/accessibility_scripts_mac_browsertest.mm",
       "../browser/accessibility/accessibility_tree_formatter_mac_browsertest.mm",
       "../browser/accessibility/browser_accessibility_cocoa_browsertest.mm",
       "../browser/accessibility/hit_testing_mac_browsertest.mm",

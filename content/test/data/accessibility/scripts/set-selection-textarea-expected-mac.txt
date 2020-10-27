@@ -1,0 +1,4 @@
+AXWebArea
+++AXGroup
+++++AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>'
+brown

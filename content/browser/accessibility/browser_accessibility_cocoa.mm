@@ -3660,6 +3660,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return YES;
   }
 
+  if ([attribute
+          isEqualToString:NSAccessibilitySelectedTextMarkerRangeAttribute])
+    return YES;
+
   return NO;
 }
 
@@ -3781,6 +3785,15 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     manager->SetSelection(
         AXPlatformRange(_owner->CreatePositionAt(range.location),
                         _owner->CreatePositionAt(NSMaxRange(range))));
+  }
+  if ([attribute
+          isEqualToString:NSAccessibilitySelectedTextMarkerRangeAttribute]) {
+    AXPlatformRange range = CreateRangeFromTextMarkerRange(value);
+    if (range.IsNull())
+      return;
+    BrowserAccessibilityManager* manager = _owner->manager();
+    manager->SetSelection(AXPlatformRange(range.anchor()->AsLeafTextPosition(),
+                                          range.focus()->AsLeafTextPosition()));
   }
 }
 

@@ -1,0 +1,19 @@
+AXWebArea
+++AXTextArea AXValue='The quick brown foxes jumps over the lazy dog'
+++++AXGroup
+++++++AXStaticText AXValue='The quick brown foxes '
+++++++AXGroup
+++++++++AXStaticText AXValue='jumps'
+++++++AXStaticText AXValue=' over the '
+++++++AXStaticText AXValue='lazy'
+++++++AXStaticText AXValue=' dog'
+++AXTextArea AXValue='Pack my box<newline>with five dozen liquor jugs.'
+++++AXGroup
+++++++AXStaticText AXValue='Pack my box'
+++++++AXGroup AXTitle='<newline>'
+++++++AXStaticText AXValue='with five dozen liquor jugs.'
+The
+quick
+laz
+jumps
+with

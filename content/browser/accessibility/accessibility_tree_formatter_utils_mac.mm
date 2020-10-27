@@ -6,8 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/accessibility_tools_utils_mac.h"
-
-using base::SysNSStringToUTF8;
+#include "content/browser/accessibility/browser_accessibility_mac.h"
 
 namespace content {
 namespace a11y {
@@ -91,6 +90,20 @@ void LineIndexer::Build(const gfx::NativeViewAccessible node, int* counter) {
   }
 }
 
+// OptionalNSObject
+
+std::string OptionalNSObject::ToString() const {
+  if (IsNotApplicable()) {
+    return "<n/a>";
+  } else if (IsError()) {
+    return "<error>";
+  } else if (value == nil) {
+    return "<nil>";
+  } else {
+    return base::SysNSStringToUTF8([NSString stringWithFormat:@"%@", value]);
+  }
+}
+
 // AttributeInvoker
 
 AttributeInvoker::AttributeInvoker(const id node,
@@ -104,7 +117,7 @@ OptionalNSObject AttributeInvoker::Invoke(
     const PropertyNode& property_node) const {
   // Attributes
   for (NSString* attribute : attributes) {
-    if (property_node.IsMatching(SysNSStringToUTF8(attribute))) {
+    if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       return OptionalNSObject::NotNullOrNotApplicable(
           AttributeValueOf(node, attribute));
     }
@@ -112,7 +125,7 @@ OptionalNSObject AttributeInvoker::Invoke(
 
   // Parameterized attributes
   for (NSString* attribute : parameterized_attributes) {
-    if (property_node.IsMatching(SysNSStringToUTF8(attribute))) {
+    if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       OptionalNSObject param = ParamByPropertyNode(property_node);
       if (param.IsNotNil()) {
         return OptionalNSObject(
@@ -123,6 +136,40 @@ OptionalNSObject AttributeInvoker::Invoke(
   }
 
   return OptionalNSObject::NotApplicable();
+}
+
+OptionalNSObject AttributeInvoker::GetValue(
+    const std::string& property_name,
+    const OptionalNSObject& param) const {
+  NSString* attribute = base::SysUTF8ToNSString(property_name);
+  if ([parameterized_attributes containsObject:attribute]) {
+    if (param.IsNotNil()) {
+      return OptionalNSObject(
+          ParameterizedAttributeValueOf(node, attribute, *param));
+    } else {
+      return param;
+    }
+  }
+  return OptionalNSObject::NotApplicable();
+}
+
+OptionalNSObject AttributeInvoker::GetValue(
+    const std::string& property_name) const {
+  NSString* attribute = base::SysUTF8ToNSString(property_name);
+  if ([attributes containsObject:attribute]) {
+    return OptionalNSObject::NotNullOrNotApplicable(
+        AttributeValueOf(node, attribute));
+  }
+  return OptionalNSObject::NotApplicable();
+}
+
+void AttributeInvoker::SetValue(const std::string& property_name,
+                                const OptionalNSObject& value) const {
+  NSString* attribute = base::SysUTF8ToNSString(property_name);
+  if ([attributes containsObject:attribute] &&
+      IsAttributeSettable(node, attribute)) {
+    SetAttributeValueOf(node, attribute, *value);
+  }
 }
 
 OptionalNSObject AttributeInvoker::ParamByPropertyNode(
@@ -294,6 +341,50 @@ id AttributeInvoker::PropertyNodeToTextMarkerRange(
   }
 
   return content::AXTextMarkerRangeFrom(anchor_textmarker, focus_textmarker);
+}
+
+OptionalNSObject TextMarkerRangeGetStartMarker(const OptionalNSObject& obj) {
+  if (!IsAXTextMarkerRange(*obj))
+    return OptionalNSObject::NotApplicable();
+
+  BrowserAccessibilityPosition::AXRangeType range =
+      AXTextMarkerRangeToRange(*obj);
+  if (range.IsNull())
+    return OptionalNSObject::Error();
+
+  BrowserAccessibilityPosition::AXPositionInstance::pointer position =
+      range.anchor();
+  const BrowserAccessibility* node = position->GetAnchor();
+  const BrowserAccessibilityCocoa* cocoa_node =
+      ToBrowserAccessibilityCocoa(node);
+  return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
+      cocoa_node, position->text_offset(), position->affinity()));
+}
+
+OptionalNSObject TextMarkerRangeGetEndMarker(const OptionalNSObject& obj) {
+  if (!IsAXTextMarkerRange(*obj))
+    return OptionalNSObject::NotApplicable();
+
+  BrowserAccessibilityPosition::AXRangeType range =
+      AXTextMarkerRangeToRange(*obj);
+  if (range.IsNull())
+    return OptionalNSObject::Error();
+
+  BrowserAccessibilityPosition::AXPositionInstance::pointer position =
+      range.focus();
+  const BrowserAccessibility* node = position->GetAnchor();
+  const BrowserAccessibilityCocoa* cocoa_node =
+      ToBrowserAccessibilityCocoa(node);
+  return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
+      cocoa_node, position->text_offset(), position->affinity()));
+}
+
+OptionalNSObject MakePairArray(const OptionalNSObject& obj1,
+                               const OptionalNSObject& obj2) {
+  if (!obj1.IsNotNil() || !obj2.IsNotNil())
+    return OptionalNSObject::Error();
+  return OptionalNSObject::NotNilOrError(
+      [NSArray arrayWithObjects:*obj1, *obj2, nil]);
 }
 
 }  // namespace a11y

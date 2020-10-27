@@ -15,9 +15,9 @@ namespace a11y {
  * Converts accessible node object to a line index in the formatted
  * accessibility tree, the node is placed at, and vice versa.
  */
-class LineIndexer final {
+class CONTENT_EXPORT LineIndexer final {
  public:
-  LineIndexer(const gfx::NativeViewAccessible node);
+  explicit LineIndexer(const gfx::NativeViewAccessible node);
   virtual ~LineIndexer();
 
   std::string IndexBy(const gfx::NativeViewAccessible node) const;
@@ -32,7 +32,7 @@ class LineIndexer final {
 // Implements stateful id values. Can be either id or be in
 // error or not applciable state. Similar to base::Optional, but tri-state
 // allowing nullable values.
-class OptionalNSObject final {
+class CONTENT_EXPORT OptionalNSObject final {
  public:
   enum { ID, ERROR, NOT_APPLICABLE };
 
@@ -47,13 +47,16 @@ class OptionalNSObject final {
     return OptionalNSObject(other_value, other_value ? ID : NOT_APPLICABLE);
   }
 
-  OptionalNSObject(int flag) : value(nil), flag(flag) {}
-  OptionalNSObject(id value, int flag = ID) : value(value), flag(flag) {}
+  explicit OptionalNSObject(int flag) : value(nil), flag(flag) {}
+  explicit OptionalNSObject(id value, int flag = ID)
+      : value(value), flag(flag) {}
 
   bool IsNotApplicable() const { return flag == NOT_APPLICABLE; }
   bool IsError() const { return flag == ERROR; }
   bool IsNotNil() const { return value != nil; }
   constexpr const id& operator*() const& { return value; }
+
+  std::string ToString() const;
 
  private:
   id value;
@@ -61,12 +64,20 @@ class OptionalNSObject final {
 };
 
 // Invokes attributes matching the given property filter.
-class AttributeInvoker final {
+class CONTENT_EXPORT AttributeInvoker final {
  public:
   AttributeInvoker(const id node, const LineIndexer* line_indexer);
 
   // Invokes an attribute matching to a property filter.
   OptionalNSObject Invoke(const PropertyNode& property_node) const;
+  // Gets the value of a parameterized attribute by name.
+  OptionalNSObject GetValue(const std::string& property_name,
+                            const OptionalNSObject& param) const;
+  // Gets the value of a non-parameterized attribute by name.
+  OptionalNSObject GetValue(const std::string& property_name) const;
+  // Sets the value of a non-parameterized attribute by name.
+  void SetValue(const std::string& property_name,
+                const OptionalNSObject& value) const;
 
  private:
   // Returns a parameterized attribute parameter by a property node.
@@ -90,7 +101,17 @@ class AttributeInvoker final {
   const NSArray* parameterized_attributes;
 };
 
+// bindings
+CONTENT_EXPORT OptionalNSObject
+TextMarkerRangeGetStartMarker(const OptionalNSObject& obj);
+
+CONTENT_EXPORT OptionalNSObject
+TextMarkerRangeGetEndMarker(const OptionalNSObject& obj);
+
+CONTENT_EXPORT OptionalNSObject MakePairArray(const OptionalNSObject& obj1,
+                                              const OptionalNSObject& obj2);
+
 }  // namespace a11y
 }  // namespace content
 
-#endif
+#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UTILS_MAC_H_
