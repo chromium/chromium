@@ -60,6 +60,7 @@ AppCacheQuotaClient::~AppCacheQuotaClient() {
 
 void AppCacheQuotaClient::OnQuotaManagerDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DeletePendingRequests();
   if (!current_delete_request_callback_.is_null()) {
     current_delete_request_callback_.Reset();
@@ -169,6 +170,8 @@ void AppCacheQuotaClient::PerformStorageCleanup(blink::mojom::StorageType type,
 }
 
 void AppCacheQuotaClient::DidDeleteAppCachesForOrigin(int rv) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Finish the request by calling our callers callback.
   std::move(current_delete_request_callback_)
       .Run(NetErrorCodeToQuotaStatus(rv));
@@ -181,6 +184,7 @@ void AppCacheQuotaClient::DidDeleteAppCachesForOrigin(int rv) {
 
 void AppCacheQuotaClient::GetOriginsHelper(const std::string& opt_host,
                                            GetOriginsForTypeCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   if (service_is_destroyed_) {
@@ -215,7 +219,9 @@ void AppCacheQuotaClient::GetOriginsHelper(const std::string& opt_host,
 }
 
 void AppCacheQuotaClient::ProcessPendingRequests() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(appcache_is_ready_);
+
   while (!pending_batch_requests_.empty())
     RunFront(&pending_batch_requests_);
 
@@ -224,12 +230,15 @@ void AppCacheQuotaClient::ProcessPendingRequests() {
 }
 
 void AppCacheQuotaClient::DeletePendingRequests() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_batch_requests_.clear();
   pending_serial_requests_.clear();
 }
 
 net::CancelableCompletionRepeatingCallback*
 AppCacheQuotaClient::GetServiceDeleteCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Lazily created due to base::CancelableCallback's threading restrictions,
   // there is no way to detach from the thread created on.
   if (!service_delete_callback_) {
@@ -244,6 +253,7 @@ AppCacheQuotaClient::GetServiceDeleteCallback() {
 
 void AppCacheQuotaClient::NotifyAppCacheReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Can reoccur during reinitialization.
   if (!appcache_is_ready_) {
     appcache_is_ready_ = true;
