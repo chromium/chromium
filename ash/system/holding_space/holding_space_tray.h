@@ -18,11 +18,10 @@
 #include "base/scoped_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
-namespace views {
-class ImageView;
-}  // namespace views
-
 namespace ash {
+
+class HoldingSpaceTrayIcon;
+
 // The HoldingSpaceTray shows the tray button in the bottom area of the screen.
 // This class also controls the lifetime for all of the tools available in the
 // palette. HoldingSpaceTray has one instance per-display.
@@ -69,10 +68,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void OnWidgetDragWillStart(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  HoldingSpaceTrayIcon* icon_ = nullptr;  // Owned by `TrayContainer`.
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
-
-  // Weak pointer, will be parented by TrayContainer for its lifetime.
-  views::ImageView* icon_ = nullptr;
 
   ScopedObserver<HoldingSpaceController, HoldingSpaceControllerObserver>
       controller_observer_{this};

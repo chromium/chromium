@@ -6,24 +6,17 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/system_tray_client.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
+#include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_container.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/vector_icons.h"
 
 namespace ash {
 
@@ -31,14 +24,10 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   controller_observer_.Add(HoldingSpaceController::Get());
   SetVisible(false);
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  icon_ = tray_container()->AddChildView(std::make_unique<views::ImageView>());
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
-  icon_->SetImage(CreateVectorIcon(kHoldingSpaceIcon,
-                                   ShelfConfig::Get()->shelf_icon_color()));
-
-  tray_container()->SetMargin(kHoldingSpaceTrayMainAxisMargin, 0);
+  // Icon.
+  auto* container = tray_container();
+  icon_ = container->AddChildView(std::make_unique<HoldingSpaceTrayIcon>());
+  container->SetMargin(icon_->GetPreferredMainAxisMargin(), 0);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
@@ -52,7 +41,7 @@ base::string16 HoldingSpaceTray::GetAccessibleNameForTray() {
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
+  icon_->OnLocaleChanged();
 }
 
 void HoldingSpaceTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
