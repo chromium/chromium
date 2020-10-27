@@ -21,7 +21,6 @@ using BrowserTabsModel = chromeos::phonehub::BrowserTabsModel;
 namespace {
 
 // Appearance constants in dip.
-constexpr gfx::Insets kTaskContinuationViewPadding(0, 0, 16, 0);
 constexpr gfx::Size kTaskContinuationChipSize(176, 96);
 constexpr int kTaskContinuationChipsInRow = 2;
 constexpr int kTaskContinuationChipSpacing = 8;
@@ -68,7 +67,7 @@ TaskContinuationView::TaskContinuationView(
   phone_model_->AddObserver(this);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kTaskContinuationViewPadding));
+      views::BoxLayout::Orientation::kVertical));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 

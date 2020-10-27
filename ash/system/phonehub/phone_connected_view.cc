@@ -26,13 +26,14 @@
 namespace ash {
 
 namespace {
-constexpr int kPaddingBetweenTitleAndSeparator = 3;
+constexpr gfx::Insets kBorderInsetsDip(0, 16, 0, 16);
 }  // namespace
 
 PhoneConnectedView::PhoneConnectedView(
     TrayBubbleView* bubble_view,
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
   SetID(PhoneHubViewID::kPhoneConnectedView);
+  SetBorder(views::CreateEmptyBorder(kBorderInsetsDip));
 
   auto setup_layered_view = [](views::View* view) {
     view->SetPaintToLayer();
@@ -40,7 +41,7 @@ PhoneConnectedView::PhoneConnectedView(
   };
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(0, 0, 0, 0)));
+      views::BoxLayout::Orientation::kVertical));
   layout->SetDefaultFlex(1);
 
   chromeos::phonehub::NotificationAccessManager* access_manager =
@@ -77,16 +78,6 @@ void PhoneConnectedView::ChildVisibilityChanged(View* child) {
 
 const char* PhoneConnectedView::GetClassName() const {
   return "PhoneConnectedView";
-}
-
-void PhoneConnectedView::AddSeparator() {
-  auto* separator = AddChildView(std::make_unique<views::Separator>());
-  separator->SetPaintToLayer();
-  separator->layer()->SetFillsBoundsOpaquely(false);
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-      kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
 }
 
 }  // namespace ash

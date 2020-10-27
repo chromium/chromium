@@ -41,6 +41,7 @@ constexpr int kStatusSpacing = 4;
 constexpr gfx::Size kStatusIconSize(18, 18);
 constexpr int kSeparatorHeight = 18;
 constexpr int kPhoneNameLabelWidthMax = 160;
+constexpr gfx::Insets kBorderInsets(0, 16);
 
 int GetSignalStrengthAsInt(PhoneStatusModel::SignalStrength signal_strength) {
   switch (signal_strength) {
@@ -70,6 +71,8 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
       battery_icon_(new views::ImageView),
       battery_label_(new views::Label) {
   SetID(PhoneHubViewID::kPhoneStatusView);
+
+  SetBorder(views::CreateEmptyBorder(kBorderInsets));
 
   ConfigureTriViewContainer(TriView::Container::START);
   ConfigureTriViewContainer(TriView::Container::CENTER);

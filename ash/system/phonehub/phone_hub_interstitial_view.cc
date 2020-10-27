@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/strings/string16.h"
@@ -32,27 +33,26 @@ namespace ash {
 namespace {
 
 // Appearance.
-// TODO(meilinw): Update those constants to spec.
-constexpr int kImageWidthDip = 330;
-constexpr int kImageHeightDip = 200;
-constexpr int kDialogContentWidthDip = 330;
-constexpr int kHorizontalPaddingDip = 20;
-constexpr int kVerticalPaddingDip = 20;
-constexpr int kTitleBottomPaddingDip = 10;
-constexpr int kButtonSpacingDip = 10;
-constexpr int kButtonContainerTopPaddingDip = 45;
+constexpr int kImageWidthDip = 368;
+constexpr int kImageHeightDip = 256;
+constexpr int kHorizontalPaddingDip = 16;
+constexpr int kButtonSpacingDip = 8;
+constexpr int kButtonContainerTopPaddingDip = 16;
 constexpr int kProgressBarHeightDip = 2;
 constexpr double kInfiniteLoadingProgressValue = -1.0;
+constexpr int kTitleLabelLineHeightDip = 48;
+constexpr int kDescriptionLabelLineHeightDip = 20;
+constexpr gfx::Insets kTextLabelInsetsDip = {0, 4, 0, 4};
 
 // Adds a ColumnSet on |layout| with a single View column and padding columns
 // on either side of it with |padding| width.
 void AddColumnWithSidePadding(views::GridLayout* layout, int padding, int id) {
   views::ColumnSet* column_set = layout->AddColumnSet(id);
   column_set->AddPaddingColumn(views::GridLayout::kFixedSize, padding);
-  column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kFixed,
-                        kDialogContentWidthDip, 0);
+  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
+                        /*resize_precent=*/1.0,
+                        views::GridLayout::ColumnSize::kUsePreferred,
+                        /*fixed_width=*/0, /*min_width=*/0);
   column_set->AddPaddingColumn(views::GridLayout::kFixedSize, padding);
 }
 
@@ -99,8 +99,9 @@ void PhoneHubInterstitialView::InitLayout(bool show_progress) {
   // Set up the first column set to layout the progressing bar if needed.
   views::ColumnSet* column_set = layout->AddColumnSet(kFirstColumnSetId);
   column_set->AddColumn(views::GridLayout::Alignment::FILL,
-                        views::GridLayout::CENTER, 1,
-                        views::GridLayout::ColumnSize::kFixed, 0, 0);
+                        views::GridLayout::CENTER, /*resize_precent=*/1.0,
+                        views::GridLayout::ColumnSize::kFixed,
+                        /*fixed_width=*/0, /*min_width=*/0);
   // Set up the second column set with horizontal paddings to layout the image,
   // text and buttons.
   const int kSecondColumnSetId = 1;
@@ -126,34 +127,35 @@ void PhoneHubInterstitialView::InitLayout(bool show_progress) {
   title_ =
       layout->AddView(std::make_unique<views::Label>(), 1, 1,
                       views::GridLayout::LEADING, views::GridLayout::CENTER);
+  title_->SetLineHeight(kTitleLabelLineHeightDip);
+  title_->SetBorder(views::CreateEmptyBorder(kTextLabelInsetsDip));
   TrayPopupItemStyle title_style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
   title_style.SetupLabel(title_);
 
   // Set up layout row for the multi-line description view.
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kSecondColumnSetId,
-                              views::GridLayout::kFixedSize,
-                              kTitleBottomPaddingDip);
+  layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId);
   description_ = layout->AddView(std::make_unique<views::Label>());
   TrayPopupItemStyle body_style(
       TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
   body_style.SetupLabel(description_);
+  description_->SetBorder(views::CreateEmptyBorder(kTextLabelInsetsDip));
   description_->SetMultiLine(true);
+  description_->SetLineHeight(kDescriptionLabelLineHeightDip);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  layout->AddPaddingRow(views::GridLayout::kFixedSize,
+                        kButtonContainerTopPaddingDip);
 
   // Set up the layout row for the button container view, which should be
   // right-aligned.
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kSecondColumnSetId,
-                              views::GridLayout::kFixedSize,
-                              kButtonContainerTopPaddingDip);
+  layout->StartRow(views::GridLayout::kFixedSize, kSecondColumnSetId,
+                   kTrayItemSize);
   button_container_ =
       layout->AddView(std::make_unique<views::View>(), 1, 1,
                       views::GridLayout::TRAILING, views::GridLayout::CENTER);
   button_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kButtonSpacingDip));
-
-  // Set up the layout row for the bottom spacing.
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kVerticalPaddingDip);
 }
 
 BEGIN_METADATA(PhoneHubInterstitialView, views::View)

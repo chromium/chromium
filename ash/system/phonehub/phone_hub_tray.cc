@@ -41,7 +41,7 @@ namespace {
 constexpr int kTrayIconMainAxisInset = 8;
 constexpr int kTrayIconCrossAxisInset = 0;
 
-constexpr gfx::Insets kBubblePadding(4, 16);
+constexpr gfx::Insets kBubblePadding(0, 0, 16, 0);
 constexpr int kBubbleWidth = 400;
 
 }  // namespace
