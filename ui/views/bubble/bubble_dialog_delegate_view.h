@@ -408,6 +408,9 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
   // Perform view initialization on the contents for bubble sizing.
   void Init() override;
 
+  // Allows the up and down arrow keys to tab between items.
+  void EnableUpDownKeyboardAccelerators();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, CreateDelegate);
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, NonClientHitTest);

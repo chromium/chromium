@@ -87,7 +87,7 @@ ExtensionsMenuView::ExtensionsMenuView(
   SetShowCloseButton(true);
   SetTitle(IDS_EXTENSIONS_MENU_TITLE);
 
-  GetFocusManager()->set_arrow_key_traversal_enabled(true);
+  EnableUpDownKeyboardAccelerators();
 
   // Let anchor view's MenuButtonController handle the highlight.
   set_highlight_button_when_shown(false);

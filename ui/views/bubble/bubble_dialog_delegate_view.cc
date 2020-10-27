@@ -736,6 +736,12 @@ void BubbleDialogDelegateView::UpdateColorsFromTheme() {
                     : nullptr);
 }
 
+void BubbleDialogDelegateView::EnableUpDownKeyboardAccelerators() {
+  // The arrow keys can be used to tab between items.
+  AddAccelerator(ui::Accelerator(ui::VKEY_DOWN, ui::EF_NONE));
+  AddAccelerator(ui::Accelerator(ui::VKEY_UP, ui::EF_NONE));
+}
+
 void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   UpdateHighlightedButton(visible);
 
