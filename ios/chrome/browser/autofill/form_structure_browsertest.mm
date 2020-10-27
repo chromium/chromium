@@ -136,6 +136,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       {
           // TODO(crbug.com/1098943): Remove once experiment is over.
           autofill::features::kAutofillEnableSupportForMoreStructureInNames,
+          // TODO(crbug.com/1125978): Remove once launched.
+          autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
       },
       // Disabled
       {autofill::features::kAutofillEnforceMinRequiredFieldsForHeuristics,

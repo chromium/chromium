@@ -31,10 +31,16 @@ const char kCompanyRe[] =
     "|شرکت"                      // fa
     "|회사|직장";                // ko-KR
 const char kStreetNameRe[] =
-    "stra(ss|ß)e"    // de
-    "|street"        // en
-    "|rua|avenida";  // br
-const char kHouseNumberRe[] = "(house |^)number|(haus|^)nummer|^número$";
+    "stra(ss|ß)e"               // de
+    "|street"                   // en
+    "|улица|название.?улицы"    // ru
+    "|rua|avenida"              // pt-PT, pt-BR
+    "|((?<!do |de )endereço)";  // pt-BR
+const char kHouseNumberRe[] =
+    "(house.?|street.?|^)number"              // en
+    "|(haus|^)nummer"                         // de
+    "|^\\*?.?número(.?\\*?$| da residência)"  // pt-BR, pt-PT
+    "|дом|номер.?дома";                       // ru
 const char kAddressLine1Re[] =
     "^address$|address[_-]?line(one)?|address1|addr1|street"
     "|(?:shipping|billing)address$"
@@ -44,7 +50,7 @@ const char kAddressLine1Re[] =
     "|adresse"                                         // fr-FR
     "|indirizzo"                                       // it-IT
     "|^住所$|住所1"                                    // ja-JP
-    "|morada|((?<!identificação do )endereço)"         // pt-BR, pt-PT
+    "|morada|((?<!do |de )endereço)"                   // pt-BR, pt-PT
     "|Адрес"                                           // ru
     "|地址"                                            // zh-CN
     "|(\\b|_)adres(?! (başlığı(nız)?|tarifi))(\\b|_)"  // tr
@@ -121,8 +127,8 @@ const char kCityRe[] =
     "|ville|commune"                                    // fr-FR
     "|localita"                                         // it-IT
     "|市区町村"                                         // ja-JP
-    "|cidade"                                           // pt-BR, pt-PT
-    "|Город"                                            // ru
+    "|cidade|município"                                 // pt-BR, pt-PT
+    "|Город|Населённый.?пункт"                          // ru
     "|市"                                               // zh-CN
     "|分區"                                             // zh-TW
     "|شهر"                                              // fa

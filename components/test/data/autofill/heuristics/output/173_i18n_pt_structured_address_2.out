@@ -1,0 +1,14 @@
+NAME_FIRST | fn | Nome: |  | fn_1-default
+NAME_LAST | ln | Sobrenome: |  | fn_1-default
+COMPANY_NAME | cm | Empresa: |  | fn_1-default
+ADDRESS_HOME_HOUSE_NUMBER | hn | Número da residência: |  | fn_1-default
+ADDRESS_HOME_STREET_NAME | sn | Endereço: |  | fn_1-default
+ADDRESS_HOME_CITY | ct | Município: |  | fn_1-default
+ADDRESS_HOME_ZIP | zc | CEP: |  | fn_1-default
+ADDRESS_HOME_STATE | st | Estado: |  | fn_1-default
+EMAIL_ADDRESS | em | Email: |  | fn_1-default
+PHONE_HOME_WHOLE_NUMBER | ph | Telefone: |  | fn_1-default
+CREDIT_CARD_NAME_FULL | c1 | Nome do cartão: |  | credit-card-cc
+CREDIT_CARD_NUMBER | c2 | Número do cartão: |  | credit-card-cc
+CREDIT_CARD_EXP_MONTH | c3 | Data de validade: |  | credit-card-cc
+CREDIT_CARD_EXP_4_DIGIT_YEAR | c4 | Data de validade: |  | credit-card-cc
