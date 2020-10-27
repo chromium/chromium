@@ -176,8 +176,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 }
 
-// Test that the MediaApp can load a RAW file passed on launch params.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFile) {
+// Test that the MediaApp can load RAW files passed on launch params.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
   WaitForTestSystemAppInstall();
   auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
 
@@ -187,6 +187,34 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFile) {
   PrepareAppForTest(web_ui);
 
   EXPECT_EQ("378x272", WaitForImageAlt(web_ui, kRaw378x272));
+
+  // Loading a raw file will put the RAW loading module into the JS context.
+  // Inject a script to manipulate the RAW loader into returning a result that
+  // includes an Exif rotation.
+  constexpr char kAdd270DegreeRotation[] = R"(
+    (function() {
+      const realPiexLoad = PiexLoader.load;
+      PiexLoader.load = async (buffer, onFailure) => {
+        const response = await realPiexLoad(buffer, onPiexModuleFailed);
+        response.orientation = 8;
+        return response;
+      };
+    })();
+  )";
+  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+  EXPECT_EQ(true, ExecuteScript(app, kAdd270DegreeRotation));
+
+  // Launch with a file that has a different name to ensure the rotated version
+  // of the file is detected robustly.
+  auto clearFileParams = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
+  clearFileParams.launch_files = {TestFile(kFileJpeg640x480)};
+  LaunchAppWithoutWaiting(clearFileParams);
+  EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
+
+  LaunchAppWithoutWaiting(params);
+
+  // Width and height should be swapped now.
+  EXPECT_EQ("272x378", WaitForImageAlt(web_ui, kRaw378x272));
 }
 
 // Ensures that chrome://media-app is available as a file task for the ChromeOS
