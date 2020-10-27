@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Segurtasun-giltza blokeatuta dago PINa gehiegitan idatzi delako oker. Hura desblokeatzeko, atera ezazu, eta sar ezazu berriro.</translation>
 <translation id="1137589305610962734">aldi baterako datuak</translation>
 <translation id="1137673463384776352">Ireki esteka <ph name="APP" /> aplikazioan</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Jakinarazpen berria}other{# jakinarazpen berri}}</translation>
 <translation id="1139343347646843679">Errore bat gertatu da Linux konfiguratzean. Jarri administratzailearekin harremanetan.</translation>
 <translation id="1140351953533677694">Atzitu Bluetooth bidezko gailuak eta seriekoak</translation>
 <translation id="114036956334641753">Audioa eta azpitituluak</translation>
@@ -1672,6 +1673,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="291056154577034373">IRAKURRI GABE</translation>
 <translation id="2910718431259223434">Arazoren bat izan da. Saiatu berriro edo jarri harremanetan gailuaren jabearekin edo administratzailearekin. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Baimendu webguneei cookieen datuak gordetzea eta irakurtzea (gomendatua)</translation>
+<translation id="2915016304249900997">Xehetasunak ezkutatu egingo dira pantaila partekatzen duzun bitartean</translation>
 <translation id="2915102088417824677">Ikusi jardueren erregistroa</translation>
 <translation id="2915873080513663243">Bilaketa automatikoa</translation>
 <translation id="2916073183900451334">Web-orrietan tabulazio-tekla sakatzen denean, estekak eta inprimakien eremuak nabarmentzen dira.</translation>
@@ -2442,6 +2444,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3819257035322786455">Egin babeskopiak</translation>
 <translation id="3819261658055281761">Sistemak ezin izan du biltegiratu gailu honi dagokion APIaren epe luzerako sarbide-tokena.</translation>
 <translation id="3819800052061700452">&amp;Pantaila osoa</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Erakutsi}other{Erakutsi guztiak}}</translation>
 <translation id="3820749202859700794">SECG kurba eliptikoko secp521r1 (edo, bestela esanda: NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Luzapen bat onartu da}other{# luzapen onartu dira}}</translation>
 <translation id="3822559385185038546">Administratzaileak ezartzen du proxya</translation>
@@ -2832,6 +2835,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4285498937028063278">Desainguratu</translation>
 <translation id="428565720843367874">Birusen aurkako softwareak ustekabean huts egin du fitxategian bilatzean.</translation>
 <translation id="4287099557599763816">Pantaila-irakurgailua</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Erakutsi}other{Erakutsi guztiak}}</translation>
 <translation id="4289372044984810120">Kudeatu kontuak hemen. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Ikuspegi orokorra</translation>
 <translation id="4295072614469448764">Terminalean duzu erabilgarri aplikazioa. Baliteke haren ikonoa abiarazlean agertzea.</translation>
@@ -6149,6 +6153,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="820568752112382238">Gehien bisitatutako webguneak</translation>
 <translation id="8206745257863499010">Blues-zalea</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Jakinarazpen berria}other{# jakinarazpen berri}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Deskarga abian da}other{Deskargak abian dira}}</translation>
 <translation id="8213449224684199188">Argazki moduan sartu zara</translation>
 <translation id="8213577208796878755">Beste gailu erabilgarri bat dago.</translation>

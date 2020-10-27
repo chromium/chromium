@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Безбедносни кључ је закључан јер сте превише пута унели погрешан PIN. Да бисте га откључали, уклоните га, па га поново уметните.</translation>
 <translation id="1137589305610962734">привремени подаци</translation>
 <translation id="1137673463384776352">Отвори линк у <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново обавештење}one{# ново обавештење}few{# нова обавештења}other{# нових обавештења}}</translation>
 <translation id="1139343347646843679">Дошло је до грешке при конфигурисању Linux-а. Обратите се администратору.</translation>
 <translation id="1140351953533677694">Приступ Bluetooth и серијским уређајима</translation>
 <translation id="114036956334641753">Звук и титл</translation>
@@ -1669,6 +1670,7 @@
 <translation id="291056154577034373">НЕПРОЧИТАНО</translation>
 <translation id="2910718431259223434">Дошло је до грешке. Пробајте поново или се обратите власнику уређаја или администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Дозволи сајтовима да чувају и читају податке колачића (препоручује се)</translation>
+<translation id="2915016304249900997">Детаљи су сакривени док делите екран</translation>
 <translation id="2915102088417824677">Прикажи евиденцију активности</translation>
 <translation id="2915873080513663243">Аутоматско прелажење садржаја</translation>
 <translation id="2916073183900451334">Притиском на Tab на веб страници биће истакнуте везе, као и поља у обрасцу</translation>
@@ -2439,6 +2441,7 @@
 <translation id="3819257035322786455">Резервна копија</translation>
 <translation id="3819261658055281761">Систем није успео да сачува ознаку дугорочног приступа API-ју за овај уређај.</translation>
 <translation id="3819800052061700452">&amp;Пун екран</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Прикажи}one{Прикажи све}few{Прикажи све}other{Прикажи све}}</translation>
 <translation id="3820749202859700794">Елиптична крива SECG secp521r1 (такође позната као NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Додатак је одобрен}one{# додатак је одобрен}few{# додатка су одобрена}other{# додатака је одобрено}}</translation>
 <translation id="3822559385185038546">Администратор је наметнуо овај прокси</translation>
@@ -2829,6 +2832,7 @@
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="428565720843367874">Дошло је до неочекиване грешке са антивирусним софтвером при скенирању ове датотеке.</translation>
 <translation id="4287099557599763816">Читач екрана</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Прикажи}one{Прикажи све}few{Прикажи све}other{Прикажи све}}</translation>
 <translation id="4289372044984810120">Управљајте налозима овде. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4295072614469448764">Апликација је доступна на терминалу. Можда имате и икону у Покретачу.</translation>
@@ -6148,6 +6152,7 @@
 <translation id="820568752112382238">Најпосећенији сајтови</translation>
 <translation id="8206745257863499010">Блузи</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново обавештење}one{# ново обавештење}few{# нова обавештења}other{# нових обавештења}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преузимање је у току}one{Преузимања су у току}few{Преузимања су у току}other{Преузимања су у току}}</translation>
 <translation id="8213449224684199188">Активиран је режим слика</translation>
 <translation id="8213577208796878755">Доступан је још један уређај.</translation>

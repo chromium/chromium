@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Saugos raktas užblokuotas, nes per daug kartų įvestas neteisingas PIN kodas. Norėdami jį atblokuoti, išimkite ir įdėkite iš naujo.</translation>
 <translation id="1137589305610962734">laikini duomenys</translation>
 <translation id="1137673463384776352">Atidaryti nuorodą programoje „<ph name="APP" />“</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Naujas pranešimas}one{# naujas pranešimas}few{# nauji pranešimai}many{# naujo pranešimo}other{# naujų pranešimų}}</translation>
 <translation id="1139343347646843679">Konfigūruojant „Linux“ įvyko klaida. Susisiekite su administratoriumi.</translation>
 <translation id="1140351953533677694">Pasiekti „Bluetooth“ ir nuosekliuosius įtaisus</translation>
 <translation id="114036956334641753">Garsas ir subtitrai</translation>
@@ -1672,6 +1673,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="291056154577034373">NESKAITYTA</translation>
 <translation id="2910718431259223434">Įvyko klaida. Bandykite dar kartą arba susisiekite su įrenginio savininku ar administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Leisti svetainėms išsaugoti ir nuskaityti slapukų duomenis (rekomenduojama)</translation>
+<translation id="2915016304249900997">Išsami informacija slepiama, kol bendrinate ekraną</translation>
 <translation id="2915102088417824677">Žr. veiklos žurnalą</translation>
 <translation id="2915873080513663243">Automatinis nuskaitymas</translation>
 <translation id="2916073183900451334">Paspaudus tinklalapio skirtuką paryškinamos nuorodos ir formos laukai</translation>
@@ -2442,6 +2444,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3819257035322786455">Atsarginė kopija</translation>
 <translation id="3819261658055281761">Sistemai nepavyko išsaugoti šio įrenginio ilgalaikio API prieigos kodo.</translation>
 <translation id="3819800052061700452">&amp;Visas ekranas</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Rodyti}one{Rodyti viską}few{Rodyti viską}many{Rodyti viską}other{Rodyti viską}}</translation>
 <translation id="3820749202859700794">SECG elipsės formos kreivės secp521r1 (taip pat vadinama NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Plėtinys patvirtintas}one{Patvirtintas # plėtinys}few{Patvirtinti # plėtiniai}many{Patvirtinta # plėtinio}other{Patvirtinta # plėtinių}}</translation>
 <translation id="3822559385185038546">Šį tarpinio serverio nustatymą priverstinai pritaikė administratorius</translation>
@@ -2832,6 +2835,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4285498937028063278">Atsegti</translation>
 <translation id="428565720843367874">Tikrinant šį failą netikėtai įvyko antivirusinės programinės įrangos klaida.</translation>
 <translation id="4287099557599763816">Ekrano skaitytuvas</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Rodyti}one{Rodyti viską}few{Rodyti viską}many{Rodyti viską}other{Rodyti viską}}</translation>
 <translation id="4289372044984810120">Čia tvarkykite savo paskyras. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Apžvalga</translation>
 <translation id="4295072614469448764">Programa pasiekiama jūsų terminale. Piktograma taip pat gali būti Paleidimo priemonėje.</translation>
@@ -6151,6 +6155,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="820568752112382238">Dažniausiai lankomos svetainės</translation>
 <translation id="8206745257863499010">Bliuzas</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Naujas pranešimas}one{# naujas pranešimas}few{# nauji pranešimai}many{# naujo pranešimo}other{# naujų pranešimų}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Vykdomas atsisiuntimas}one{Vykdomi atsisiuntimai}few{Vykdomi atsisiuntimai}many{Vykdomi atsisiuntimai}other{Vykdomi atsisiuntimai}}</translation>
 <translation id="8213449224684199188">Įjungtas nuotraukų režimas</translation>
 <translation id="8213577208796878755">Dar vienas pasiekiamas įrenginys.</translation>

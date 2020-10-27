@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Öryggislykillinn er læstur vegna þess að rangt PIN-númer var slegið inn of oft. Til að taka hann úr lás þarftu að fjarlægja hann og setja aftur inn.</translation>
 <translation id="1137589305610962734">tímabundin gögn</translation>
 <translation id="1137673463384776352">Opna tengil í <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ný tilkynning}one{# ný tilkynning}other{# nýjar tilkynningar}}</translation>
 <translation id="1139343347646843679">Villa kom upp við stillingu Linux. Hafðu samband við kerfisstjórann þinn.</translation>
 <translation id="1140351953533677694">Fá aðgang að Bluetooth og raðtengdu tækjunum þínum</translation>
 <translation id="114036956334641753">Hljóð og skjátextar</translation>
@@ -1672,6 +1673,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="291056154577034373">ÓLESIÐ</translation>
 <translation id="2910718431259223434">Eitthvað fór úrskeiðis. Reyndu aftur eða hafðu samband við eiganda tækisins þíns eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Leyfa vefsvæðum að vista og lesa fótsporagögn (ráðlagt)</translation>
+<translation id="2915016304249900997">Upplýsingar eru faldar á meðan þú deilir skjánum</translation>
 <translation id="2915102088417824677">Skoða notkunarskrá</translation>
 <translation id="2915873080513663243">Sjálfvirk skönnun</translation>
 <translation id="2916073183900451334">Ef ýtt er á dálkalykilinn á vefsíðu auðkennast tenglar sem og eyðublaðsreitir.</translation>
@@ -2442,6 +2444,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3819257035322786455">Afrita</translation>
 <translation id="3819261658055281761">Kerfinu tókst ekki að vista langtímaaðgangslykil forritaskila fyrir þetta tæki.</translation>
 <translation id="3819800052061700452">Allur skjárinn</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Sýna}one{Sýna allt}other{Sýna allt}}</translation>
 <translation id="3820749202859700794">SECG sporger ferill secp521r1 (e.þ.s. NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Viðbót var samþykkt}one{# viðbót var samþykkt}other{# viðbætur voru samþykktar}}</translation>
 <translation id="3822559385185038546">Kerfisstjórinn valdi stillingar þessa staðgengilsþjóns</translation>
@@ -2832,6 +2835,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4285498937028063278">Losa</translation>
 <translation id="428565720843367874">Óvænt villa kom upp í vírusvarnarhugbúnaði við að skanna þessa skrá.</translation>
 <translation id="4287099557599763816">Skjálesari</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Sýna}one{Sýna allt}other{Sýna allt}}</translation>
 <translation id="4289372044984810120">Stjórnaðu reikningunum þínum hér. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Yfirlit</translation>
 <translation id="4295072614469448764">Forritið er tiltækt í skipanalínu. Einnig gæti verið tákn í ræsiforritinu.</translation>
@@ -6149,6 +6153,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="820568752112382238">Mest heimsóttu vefsvæðin</translation>
 <translation id="8206745257863499010">Blúsaður</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ný tilkynning}one{# ný tilkynning}other{# nýjar tilkynningar}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Niðurhal er í gangi}one{Niðurhal er í gangi}other{Niðurhal er í gangi}}</translation>
 <translation id="8213449224684199188">Myndastilling valin</translation>
 <translation id="8213577208796878755">Eitt annað tæki í boði.</translation>

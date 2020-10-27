@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Sikkerhedsnøglen er låst, fordi der blev angivet en forkert pinkode for mange gange. Fjern nøglen, og indsæt den igen for at låse den op.</translation>
 <translation id="1137589305610962734">midlertidige data</translation>
 <translation id="1137673463384776352">Åbn linket i <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny notifikation}one{# ny notifikation}other{# nye notifikationer}}</translation>
 <translation id="1139343347646843679">Der opstod en fejl under konfigurationen af Linux. Kontakt din administrator.</translation>
 <translation id="1140351953533677694">Få adgang til dine Bluetooth- og serieenheder</translation>
 <translation id="114036956334641753">Lyd og undertekster</translation>
@@ -1672,6 +1673,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="291056154577034373">ULÆST</translation>
 <translation id="2910718431259223434">Noget gik galt. Prøv igen, eller kontakt enhedens ejer eller administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Tillad, at websites gemmer og læser cookiedata (anbefales)</translation>
+<translation id="2915016304249900997">Oplysningerne skjuler, når du deler din skærm</translation>
 <translation id="2915102088417824677">Se din aktivitetshistorik</translation>
 <translation id="2915873080513663243">Automatisk scanning</translation>
 <translation id="2916073183900451334">Tryk på Tab på en webside fremhæver links og felter i formularer</translation>
@@ -2442,6 +2444,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3819257035322786455">Sikkerhedskopi</translation>
 <translation id="3819261658055281761">Systemet kunne ikke gemme det langfristede API-adgangstoken for denne enhed.</translation>
 <translation id="3819800052061700452">&amp;Fuld skærm</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Vis}one{Vis}other{Vis alle}}</translation>
 <translation id="3820749202859700794">SECG elliptisk kurve secp521r1 (også kaldet NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{En udvidelse er blevet godkendt}one{# udvidelse er blevet godkendt}other{# udvidelser er blevet godkendt}}</translation>
 <translation id="3822559385185038546">Denne proxy håndhæves af din administrator</translation>
@@ -2832,6 +2835,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4285498937028063278">Frigør</translation>
 <translation id="428565720843367874">Antivirussoftwaren mislykkedes uventet under scanning af denne fil.</translation>
 <translation id="4287099557599763816">Skærmlæser</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Vis}one{Vis}other{Vis alle}}</translation>
 <translation id="4289372044984810120">Administrer dine konti her. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Oversigt</translation>
 <translation id="4295072614469448764">Appen er tilgængelig i din terminal. Der vises muligvis også et ikon på din appliste.</translation>
@@ -6150,6 +6154,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="820568752112382238">Mest besøgte websites</translation>
 <translation id="8206745257863499010">BB King</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny notifikation}one{# ny notifikation}other{# nye notifikationer}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Downloaden er i gang}one{Downloaden er i gang}other{Downloadene er i gang}}</translation>
 <translation id="8213449224684199188">Fototilstand er aktiveret</translation>
 <translation id="8213577208796878755">Én anden tilgængelig enhed.</translation>

@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">The security key is locked because the wrong PIN was entered too many times. To unlock it, remove and reinsert it.</translation>
 <translation id="1137589305610962734">temporary data</translation>
 <translation id="1137673463384776352">Open link in <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New notification}other{# New notifications}}</translation>
 <translation id="1139343347646843679">There was an error while configuring Linux. Please contact your administrator.</translation>
 <translation id="1140351953533677694">Access your Bluetooth and Serial devices</translation>
 <translation id="114036956334641753">Audio and captions</translation>
@@ -1672,6 +1673,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="291056154577034373">UNREAD</translation>
 <translation id="2910718431259223434">Something went wrong. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Allow sites to save and read cookie data (recommended)</translation>
+<translation id="2915016304249900997">Details are hidden while you share your screen</translation>
 <translation id="2915102088417824677">View activity log</translation>
 <translation id="2915873080513663243">Auto-scan</translation>
 <translation id="2916073183900451334">Pressing Tab on a web page highlights links, as well as form fields</translation>
@@ -2442,6 +2444,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3819257035322786455">Back Up</translation>
 <translation id="3819261658055281761">The system failed to store the long-term API access token for this device.</translation>
 <translation id="3819800052061700452">&amp;Full screen</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Show}other{Show all}}</translation>
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{An extension has been approved}other{# extensions have been approved}}</translation>
 <translation id="3822559385185038546">This proxy is enforced by your administrator</translation>
@@ -2832,6 +2835,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="428565720843367874">Anti-virus software failed unexpectedly while scanning this file.</translation>
 <translation id="4287099557599763816">Screen reader</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Show}other{Show all}}</translation>
 <translation id="4289372044984810120">Manage your accounts here. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4295072614469448764">App is available in your terminal. There may also be an icon in your Launcher.</translation>
@@ -6150,6 +6154,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="820568752112382238">Most-visited sites</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobile</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New notification}other{# new notifications}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download is in progress}other{Downloads are in progress}}</translation>
 <translation id="8213449224684199188">Photo mode entered</translation>
 <translation id="8213577208796878755">One other available device.</translation>

@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">ముద్రణ విఫలమైంది.</translation>
 <translation id="1125564390852150847">కొత్త ట్యాబ్‌ను సృష్టించండి.</translation>
 <translation id="1145536944570833626">ఇప్పటికే ఉన్న డేటాను తొలగించండి.</translation>
+<translation id="1154690515305205900">హైలైట్ చేయబడిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="1165039591588034296">ఎర్రర్</translation>
 <translation id="1172898394251786223">తర్వాతి ఫీల్డ్</translation>
 <translation id="1176932207622159128">చిత్రాన్ని సేవ్ చేయడం సాధ్యపడలేదు</translation>
@@ -212,6 +213,7 @@
 <translation id="3268451620468152448">ఓపెన్ టాబ్‌లు</translation>
 <translation id="3272527697863656322">రద్దు చేయి</translation>
 <translation id="3277021493514034324">సైట్ చిరునామా కాపీ చేయబడింది</translation>
+<translation id="3285962946108803577">పేజీని షేర్ చేయి...</translation>
 <translation id="3290875554372353449">ఖాతాను ఎంచుకోండి</translation>
 <translation id="3311748811247479259">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="3324193307694657476">చిరునామా 2</translation>
@@ -612,6 +614,7 @@
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="766891008101699113">వెబ్‌ను ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి, కొత్త ట్యాబ్‌ను జోడించండి.</translation>
 <translation id="7671141431838911305">ఇన్‌స్టాల్ చేయి</translation>
+<translation id="7690812411882623730">టెక్స్ట్‌కు లింక్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7765158879357617694">తరలించు</translation>
 <translation id="7771470029643830783">సైన్ అవుట్ చేయడం ద్వారా, మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు, ఇతర Chrome డేటా ఇకపై మీ Google ఖాతాలో సింక్ చేయబడదు.

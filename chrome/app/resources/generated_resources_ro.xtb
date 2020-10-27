@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Cheia de securitate este blocată deoarece codul PIN a fost introdus greșit de prea multe ori. Scoate și introdu din nou cheia pentru a o debloca.</translation>
 <translation id="1137589305610962734">date temporare</translation>
 <translation id="1137673463384776352">Deschide linkul în <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificare nouă}few{# notificări noi}other{# de notificări noi}}</translation>
 <translation id="1139343347646843679">A apărut o eroare la configurarea Linux. Contactează administratorul.</translation>
 <translation id="1140351953533677694">Accesează dispozitivele Bluetooth și seriale</translation>
 <translation id="114036956334641753">Audio și subtitrări</translation>
@@ -1672,6 +1673,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="291056154577034373">NECITITE</translation>
 <translation id="2910718431259223434">A apărut o eroare. Încearcă din nou sau contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Permite site-urilor să salveze și să citească datele asociate cookie-urilor (recomandat)</translation>
+<translation id="2915016304249900997">Detaliile sunt ascunse cât timp permiți accesul la ecran</translation>
 <translation id="2915102088417824677">Vezi Jurnalul de activități</translation>
 <translation id="2915873080513663243">Scanare automată</translation>
 <translation id="2916073183900451334">Dacă apeși Tab când ești pe o pagină, se evidențiază linkurile și câmpurile formularelor</translation>
@@ -2442,6 +2444,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3819257035322786455">Creați copii de rezervă</translation>
 <translation id="3819261658055281761">Sistemul nu a putut stoca indicativul de acces pe termen lung la API pentru acest dispozitiv.</translation>
 <translation id="3819800052061700452">&amp;Ecran complet</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Afișează}few{Afișează-le pe toate}other{Afișează-le pe toate}}</translation>
 <translation id="3820749202859700794">Curbură eliptică SECG secp521r1 (cunoscută și sub numele de NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{O extensie a fost aprobată}few{# extensii au fost aprobate}other{# de extensii au fost aprobate}}</translation>
 <translation id="3822559385185038546">Acest proxy este impus de administrator</translation>
@@ -2832,6 +2835,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
 <translation id="428565720843367874">Software-ul antivirus a generat o eroare neașteptată la scanarea acestui fișier.</translation>
 <translation id="4287099557599763816">Cititor de ecran</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Afișează}few{Afișează-le pe toate}other{Afișează-le pe toate}}</translation>
 <translation id="4289372044984810120">Gestionează-ți conturile aici. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Prezentare generală</translation>
 <translation id="4295072614469448764">Aplicația este disponibilă pe terminal. Este posibil ca Lansatorul să conțină și o pictogramă.</translation>
@@ -6150,6 +6154,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="820568752112382238">Cele mai accesate site-uri</translation>
 <translation id="8206745257863499010">Albăstrel</translation>
 <translation id="8206859287963243715">Celular</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificare nouă}few{# notificări noi}other{# de notificări noi}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descărcarea este în desfășurare}few{Descărcările sunt în desfășurare}other{Descărcările sunt în desfășurare}}</translation>
 <translation id="8213449224684199188">Modul foto a fost activat</translation>
 <translation id="8213577208796878755">Încă un dispozitiv disponibil.</translation>

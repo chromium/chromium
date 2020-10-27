@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Varnostni ključ je zaklenjen, ker ste prevečkrat vnesli napačno kodo PIN. Če ga želite odkleniti, ga odstranite in znova vstavite.</translation>
 <translation id="1137589305610962734">začasni podatki</translation>
 <translation id="1137673463384776352">Odpri povezavo v aplikaciji <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obvestilo}one{# novo obvestilo}two{# novi obvestili}few{# nova obvestila}other{# novih obvestil}}</translation>
 <translation id="1139343347646843679">Med konfiguriranjem Linuxa je prišlo do napake. Obrnite se na skrbnika.</translation>
 <translation id="1140351953533677694">Dostop do naprav Bluetooth in serijskih naprav</translation>
 <translation id="114036956334641753">Zvok in podnapisi</translation>
@@ -1672,6 +1673,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="291056154577034373">NEPREBRANO</translation>
 <translation id="2910718431259223434">Prišlo je do napake. Poskusite znova ali se obrnite na lastnika ali skrbnika naprave. Koda napake: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Dovoli spletnim mestom shranjevanje in branje podatkov piškotkov (priporočljivo)</translation>
+<translation id="2915016304249900997">Med deljenjem zaslona so podrobnosti skrite</translation>
 <translation id="2915102088417824677">Ogled dnevnika dejavnosti</translation>
 <translation id="2915873080513663243">Samodejno iskanje</translation>
 <translation id="2916073183900451334">S pritiskom tabulatorke na spletni strani označite povezavo in tudi polja obrazcev</translation>
@@ -2442,6 +2444,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3819257035322786455">Varnostna kopija</translation>
 <translation id="3819261658055281761">Sistem za to napravo ni shranil žetona za dolgoročni dostop do API-ja.</translation>
 <translation id="3819800052061700452">&amp;Celozaslonsko</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pokaži}one{Pokaži vse}two{Pokaži vse}few{Pokaži vse}other{Pokaži vse}}</translation>
 <translation id="3820749202859700794">Eliptična krivulja SECG secp521r1 (oziroma NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Razširitev je odobrena}one{# razširitev je odobrena}two{# razširitvi sta odobreni}few{# razširitve so odobrene}other{# razširitev je odobrenih}}</translation>
 <translation id="3822559385185038546">Ta strežnik proxy je uveljavil skrbnik</translation>
@@ -2832,6 +2835,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4285498937028063278">Odpni</translation>
 <translation id="428565720843367874">Protivirusna programska oprema je pri pregledu datoteke nepričakovano odpovedala.</translation>
 <translation id="4287099557599763816">Bralnik zaslona</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pokaži}one{Pokaži vse}two{Pokaži vse}few{Pokaži vse}other{Pokaži vse}}</translation>
 <translation id="4289372044984810120">Upravljajte račune tukaj. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4295072614469448764">Aplikacija je na voljo v terminalu. Morda je na voljo tudi ikona v zaganjalniku.</translation>
@@ -6152,6 +6156,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="820568752112382238">Najbolj obiskana spletna mesta</translation>
 <translation id="8206745257863499010">Glasbenik</translation>
 <translation id="8206859287963243715">Prenosni</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obvestilo}one{# novo obvestilo}two{# novi obvestili}few{# nova obvestila}other{# novih obvestil}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Poteka prenos}one{Poteka prenos}two{Potekata prenosa}few{Potekajo prenosi}other{Potekajo prenosi}}</translation>
 <translation id="8213449224684199188">Izbran je način za fotografije</translation>
 <translation id="8213577208796878755">Ena druga razpoložljiva naprava.</translation>

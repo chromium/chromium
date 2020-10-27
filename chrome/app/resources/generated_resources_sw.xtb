@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Tumefunga ufunguo wa usalama kwa sababu umeweka PIN isiyo sahihi mara nyingi mno. Ili kuufungua, uondoe kisha uuweke tena.</translation>
 <translation id="1137589305610962734">data ya muda</translation>
 <translation id="1137673463384776352">Fungua kiungo katika <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Arifa mpya}other{Arifa # Mpya}}</translation>
 <translation id="1139343347646843679">Hitilafu imetokea wakati wa kuweka mipangilio ya Linux. Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="1140351953533677694">Fikia vifaa vyako Tambulishi na Bluetooth</translation>
 <translation id="114036956334641753">Sauti na manukuu</translation>
@@ -1669,6 +1670,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="291056154577034373">AMBAZO HUJASOMA</translation>
 <translation id="2910718431259223434">Hitilafu fulani imetokea. Tafadhali jaribu tena au uwasiliane na mmiliki au msimamizi wa kifaa chako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Ruhusu tovuti zihifadhi na kusoma data ya vidakuzi (imependekezwa)</translation>
+<translation id="2915016304249900997">Maelezo yanafichwa unaposhiriki skrini yako</translation>
 <translation id="2915102088417824677">Angalia Kumbukumbu ya shughuli</translation>
 <translation id="2915873080513663243">Kukagua kiotomatiki</translation>
 <translation id="2916073183900451334">Kichupo cha Kubonyeza kwenye ukurasa wavuti kinaangazia viungo, pamoja na nyuga za fomu</translation>
@@ -2439,6 +2441,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3819257035322786455">Hifadhi nakala</translation>
 <translation id="3819261658055281761">Mfumo umeshindwa kuhifadhi data ya ufikiaji wa API ya muda mrefu ya kifaa hiki.</translation>
 <translation id="3819800052061700452">&amp;Skrini kamili</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Onyesha}other{Onyesha zote}}</translation>
 <translation id="3820749202859700794">SECG kizingo cha mviringo secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Kiendelezi kimeidhinishwa}other{Viendelezi # vimeidhinishwa}}</translation>
 <translation id="3822559385185038546">Seva hii mbadala inadhibitiwa na msimamizi wako</translation>
@@ -2827,6 +2830,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4285498937028063278">Banua</translation>
 <translation id="428565720843367874">Programu ya kingavirusi imeacha kufanya kazi ghafla wakati ilipokuwa inakagua faili hii.</translation>
 <translation id="4287099557599763816">Kisoma skrini</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Onyesha}other{Onyesha Zote}}</translation>
 <translation id="4289372044984810120">Dhibiti akaunti zako hapa. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Muhtasari</translation>
 <translation id="4295072614469448764">Programu inapatikana kwenye kituo chako. Huenda pia kukawa na aikoni kwenye Kifungua programu chako.</translation>
@@ -6147,6 +6151,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="820568752112382238">Tovuti zilizotembelewa zaidi</translation>
 <translation id="8206745257863499010">Kimuziki</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Arifa mpya}other{Arifa # mpya}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Inaendelea kupakua}other{Inaendelea kupakua}}</translation>
 <translation id="8213449224684199188">Umeweka hali ya picha</translation>
 <translation id="8213577208796878755">Kifaa kingine kinachopatikana.</translation>

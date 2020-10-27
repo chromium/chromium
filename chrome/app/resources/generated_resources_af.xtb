@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Die sekuriteitsleutel is gesluit omdat die verkeerde PIN te veel keer ingevoer is. Verwyder dit en sit dit weer in om dit te ontsluit.</translation>
 <translation id="1137589305610962734">tydelike data</translation>
 <translation id="1137673463384776352">Maak skakel in <ph name="APP" /> oop</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuwe kennisgewing}other{# nuwe kennisgewings}}</translation>
 <translation id="1139343347646843679">Kon nie Linux opstel nie. Kontak jou administrateur.</translation>
 <translation id="1140351953533677694">Verkry toegang tot jou Bluetooth- en serietoestelle</translation>
 <translation id="114036956334641753">Oudio en onderskrifte</translation>
@@ -1672,6 +1673,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="291056154577034373">ONGELEES</translation>
 <translation id="2910718431259223434">Iets is fout. Probeer weer of kontak jou toesteleienaar of administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Laat werwe toe om webkoekiedata te stoor en te lees (aanbeveel)</translation>
+<translation id="2915016304249900997">Besonderhede word versteek terwyl jy jou skerm deel</translation>
 <translation id="2915102088417824677">Bekyk aktiwiteitloglêer</translation>
 <translation id="2915873080513663243">Outoskandeer</translation>
 <translation id="2916073183900451334">As jy die tabelsleutel (Tab) op 'n webbladsy druk, bring dit skakels en vormvelde na vore</translation>
@@ -2442,6 +2444,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3819257035322786455">Rugsteun</translation>
 <translation id="3819261658055281761">Die stelsel kon nie die langtermyn-API-toegangteken vir hierdie toestel stoor nie.</translation>
 <translation id="3819800052061700452">Volskerm</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Wys}other{Wys almal}}</translation>
 <translation id="3820749202859700794">SECG-elliptiesekurwe-secp521r1 (ook bekend as NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{'n Uitbreiding is goedgekeur}other{# uitbreidings is goedgekeur}}</translation>
 <translation id="3822559385185038546">Hierdie instaanbediener word deur jou administrateur afgedwing</translation>
@@ -2832,6 +2835,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4285498937028063278">Ontspeld</translation>
 <translation id="428565720843367874">Antivirussagteware het onverwags misluk terwyl dit hierdie lêer skandeer.</translation>
 <translation id="4287099557599763816">Skermleser</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Wys}other{Wys almal}}</translation>
 <translation id="4289372044984810120">Bestuur jou rekeninge hier. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Oorsig</translation>
 <translation id="4295072614469448764">Program is in jou terminaal beskikbaar. Daar is dalk ook 'n ikoon in jou Lanseerder.</translation>
@@ -6150,6 +6154,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="820568752112382238">Mees besoekte werwe</translation>
 <translation id="8206745257863499010">Blues</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuwe kennisgewing}other{# nuwe kennisgewings}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Aflaai is aan die gang}other{Aflaaie is aan die gang}}</translation>
 <translation id="8213449224684199188">Het fotomodus ingevoer</translation>
 <translation id="8213577208796878755">Een ander toestel beskikbaar.</translation>

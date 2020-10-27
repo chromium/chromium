@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">ההדפסה נכשלה.</translation>
 <translation id="1125564390852150847">יצירת כרטיסייה חדשה.</translation>
 <translation id="1145536944570833626">מחק נתונים קיימים.</translation>
+<translation id="1154690515305205900">לא ניתן ליצור קישור לטקסט המודגש.</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1172898394251786223">השדה הבא</translation>
 <translation id="1176932207622159128">לא ניתן לשמור את התמונה</translation>
@@ -212,6 +213,7 @@
 <translation id="3268451620468152448">כרטיסיות פתוחות</translation>
 <translation id="3272527697863656322">ביטול</translation>
 <translation id="3277021493514034324">כתובת האתר הועתקה</translation>
+<translation id="3285962946108803577">שיתוף הדף…</translation>
 <translation id="3290875554372353449">בחירת חשבון</translation>
 <translation id="3311748811247479259">כבוי</translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
@@ -612,6 +614,7 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="766891008101699113">כדי לגלוש באינטרנט בפרטיות צריך להוסיף כרטיסייה חדשה.</translation>
 <translation id="7671141431838911305">התקנה</translation>
+<translation id="7690812411882623730">לא ניתן לקשר לטקסט</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7771470029643830783">‏יציאה תפסיק את הסנכרון של הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chrome עם חשבון Google.

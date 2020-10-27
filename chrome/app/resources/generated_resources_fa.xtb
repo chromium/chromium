@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">چون چندین‌بار پین اشتباه وارد شده، کلید امنیتی قفل شده است. برای باز کردن قفل کلید امنیتی، آن را بردارید و دوباره وارد کنید.</translation>
 <translation id="1137589305610962734">داده‌های موقت</translation>
 <translation id="1137673463384776352">باز کردن پیوند در <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{اعلان جدید}one{# اعلان جدید}other{# اعلان جدید}}</translation>
 <translation id="1139343347646843679">‏هنگام پیکربندی Linux خطایی رخ داد. لطفاً با سرپرست خود تماس بگیرید.</translation>
 <translation id="1140351953533677694">دسترسی به بلوتوث و دستگاه‌های سریال خودتان</translation>
 <translation id="114036956334641753">صدا و زیرنویس</translation>
@@ -1669,6 +1670,7 @@
 <translation id="291056154577034373">خوانده‌نشده</translation>
 <translation id="2910718431259223434">مشکلی پیش آمد. لطفاً دوباره امتحان کنید یا با سرپرست یا مالک دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">سایت‌ها مجاز به ذخیره و خواندن داده‌های کوکی باشند (توصیه می‌شود)</translation>
+<translation id="2915016304249900997">درحین اشتراک‌گذاری صفحه‌نمایش جزئیات پنهان می‌شود</translation>
 <translation id="2915102088417824677">مشاهده گزارش فعالیت</translation>
 <translation id="2915873080513663243">اسکن-خودکار</translation>
 <translation id="2916073183900451334">‏فشار دادن Tab در صفحهٔ وب، پیوندها و قسمت‌های فرم را برجسته می‌کند</translation>
@@ -2439,6 +2441,7 @@
 <translation id="3819257035322786455">تهیهٔ پشتیبان</translation>
 <translation id="3819261658055281761">سیستم نتوانست کد دسترسی درازمدت به میانای برنامه‌سازی کاربردی را برای این دستگاه ذخیره کند.</translation>
 <translation id="3819800052061700452">&amp;تمام صفحه</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{نمایش}one{نمایش همه}other{نمایش همه}}</translation>
 <translation id="3820749202859700794">‏منحنی بیضوی SECG مدل secp521r1 (به‌ نام NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{یک افزونه تأیید شد}one{# افزونه تأیید شد}other{# افزونه تأیید شد}}</translation>
 <translation id="3822559385185038546">سرپرست سیستم شما اجرای این پراکسی را اجباری کرده است</translation>
@@ -2829,6 +2832,7 @@
 <translation id="4285498937028063278">لغو پین</translation>
 <translation id="428565720843367874">نرم‌افزار آنتی‌ویروس به‌طور غیرمنتظره‌ای در هنگام اسکن کردن این فایل متوقف شد.</translation>
 <translation id="4287099557599763816">صفحه‌خوان</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{نمایش}one{نمایش همه}other{نمایش همه}}</translation>
 <translation id="4289372044984810120">حساب‌هایتان را در اینجا مدیریت کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">مرور کلی</translation>
 <translation id="4295072614469448764">برنامه در «ترمینال» دردسترس است. ممکن است در «راه‌انداز» هم نمادی وجود داشته باشد.</translation>
@@ -6147,6 +6151,7 @@
 <translation id="820568752112382238">سایت‌هایی که بیشتر بازدید شده</translation>
 <translation id="8206745257863499010">بلوزی</translation>
 <translation id="8206859287963243715">سلولی</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{اعلان جدید}one{# اعلان جدید}other{# اعلان جدید}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{بارگیری درحال انجام است}one{بارگیری درحال انجام است}other{بارگیری درحال انجام است}}</translation>
 <translation id="8213449224684199188">به حالت عکس‌برداری وارد شد</translation>
 <translation id="8213577208796878755">یک دستگاه دیگر در دسترس است.</translation>

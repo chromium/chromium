@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">ПИН-г хэт олон удаа буруу оруулсан тул энэ аюулгүй байдлын түлхүүрийг түгжлээ. Үүний түгжээг тайлахын тулд салгаад дахин залгана уу.</translation>
 <translation id="1137589305610962734">түр зуурын өгөгдөл</translation>
 <translation id="1137673463384776352">Холбоосыг <ph name="APP" />-д нээх</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Шинэ мэдэгдэл}other{# шинэ мэдэгдэл}}</translation>
 <translation id="1139343347646843679">Linux-г тохируулах явцад алдаа гарлаа. Администратортайгаа холбогдоно уу.</translation>
 <translation id="1140351953533677694">Bluetooth болон Цуваа төхөөрөмжүүд рүүгээ нэвтэр</translation>
 <translation id="114036956334641753">Аудио болон хадмал</translation>
@@ -1667,6 +1668,7 @@
 <translation id="291056154577034373">УНШААГҮЙ</translation>
 <translation id="2910718431259223434">Алдаа гарлаа. Дахин оролдоно уу эсвэл төхөөрөмж өмчлөгч, администратортайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Cookie data-г хадгалах мөн унших боломжийг сайтуудад олгох (зөвлөж байна)</translation>
+<translation id="2915016304249900997">Таныг дэлгэцээ хуваалцах үед дэлгэрэнгүйг нууна</translation>
 <translation id="2915102088417824677">Үйл ажиллагааны логийг харах</translation>
 <translation id="2915873080513663243">Автомат скан</translation>
 <translation id="2916073183900451334">Веб хуудсан дээрх  цонхон дээр дарснаар холбоосууд тодрохоос гадна талбарууд үүсч бий болдог.</translation>
@@ -2437,6 +2439,7 @@
 <translation id="3819257035322786455">Нөөцлөлт</translation>
 <translation id="3819261658055281761">Систем энэ төхөөрөмжид урт хугацааны API хандалтын зүүлтийг хадгалж чадсангүй.</translation>
 <translation id="3819800052061700452">&amp;Бүтэн дэлгэц</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Харуулах}other{Бүгдийг харуулах}}</translation>
 <translation id="3820749202859700794">SECG зууван муруй secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг зөвшөөрсөн}other{# өргөтгөлийг зөвшөөрсөн}}</translation>
 <translation id="3822559385185038546">Энэ проксиг таны админ идэвхжүүлсэн байна</translation>
@@ -2826,6 +2829,7 @@
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
 <translation id="428565720843367874">Энэ файлыг шалгаж байх үед вирусын эсрэг программ гэнэт ажиллахаа больсон байна.</translation>
 <translation id="4287099557599763816">Дэлгэц уншигч</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Харуулах}other{Бүгдийг харуулах}}</translation>
 <translation id="4289372044984810120">Бүртгэлүүдээ энд удирдана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Тойм</translation>
 <translation id="4295072614469448764">Апп таны терминалд боломжтой боллоо. Түүнчлэн, таны Эхлүүлэгчид дүрс тэмдэг харагдаж болзошгүй.</translation>
@@ -6140,6 +6144,7 @@
 <translation id="820568752112382238">Хамгийн их зочилсон сайт</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Шинэ мэдэгдэл}other{# шинэ мэдэгдэл}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Татаж байна}other{Татаж байна}}</translation>
 <translation id="8213449224684199188">Зургийн горимыг оруулсан</translation>
 <translation id="8213577208796878755">Нэг бусад боломжит төхөөрөмж.</translation>

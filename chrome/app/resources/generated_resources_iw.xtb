@@ -2075,6 +2075,7 @@
 <translation id="3428419049384081277">התחברת!</translation>
 <translation id="3428747202529429621">‏מגן עליך ב-Chrome וייתכן שייעשה בו שימוש לשיפור האבטחה באפליקציות אחרות של Google שבהן נכנסת לחשבון</translation>
 <translation id="3428800329481094896">‏מתבצע אחזור של מפתחות ה-SSH לקונטיינר של Linux</translation>
+<translation id="3429271624041785769">השפות של תוכן האינטרנט</translation>
 <translation id="3429275422858276529">כדאי לסמן את הדף עם סימניה כדי לגשת אליו בקלות בהמשך</translation>
 <translation id="3432227430032737297">הסר את כל התוכן המוצג</translation>
 <translation id="3432757130254800023">שליחה של קטעי אודיו וסרטונים למסכים ברשת המקומית</translation>
@@ -2500,6 +2501,7 @@
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3881478300875776315">אני רוצה לראות פחות שורות</translation>
 <translation id="3882165008614329320">סרטון קיים ממצלמה או מקובץ</translation>
+<translation id="3884152383786131369">תוכן אינטרנט שזמין במספר שפות יוצג בשפה הנתמכת הראשונה ברשימה הזו. ההעדפות האלה מסונכרנות עם הגדרות הדפדפן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">הבקשה שלך לגשת לאתר הזה נשלחה אל <ph name="NAME" /></translation>
 <translation id="3888550877729210209">כתיבת הערות בעזרת <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">‏צריך להפעיל סנכרון Chrome כדי להשתמש בסנכרון Wi-Fi</translation>
@@ -4353,6 +4355,7 @@
 <translation id="6112727384379533756">הוספת כרטיס</translation>
 <translation id="6112931163620622315">בדיקת הטלפון</translation>
 <translation id="6112952769866305444">עריכת המשתמש, <ph name="PROFILE_NAME" />, ‏<ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">‏עליך להגדיר את מנוע החיפוש שיוגדר כברירת המחדל לדפדפן Chrome ולמרכז האפליקציות של <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">‏כדי להשתמש ב-Smart Lock יש לעבור אל פרופיל המשתמש הראשי בטלפון</translation>
 <translation id="6116921718742659598">שנה את הגדרות הקלט והשפה</translation>
 <translation id="6120205520491252677">הצמדת דף זה למסך הפתיחה...</translation>
@@ -5219,6 +5222,7 @@
 <translation id="7140928199327930795">אין מכשירים זמינים נוספים.</translation>
 <translation id="7141105143012495934">הכניסה נכשלה מפני שלא ניתן היה לאחזר את פרטי החשבון. יש ליצור קשר עם מנהל המערכת או לנסות שוב.</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
+<translation id="7143358760238281735">אין אפליקציות זמינות</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
 <translation id="7149893636342594995">מהיום האחרון</translation>
@@ -5690,6 +5694,7 @@
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
 <translation id="7709152031285164251">נכשל - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;העברה...</translation>
+<translation id="7712739869553853093">תיבת דו-שיח של התצוגה המקדימה להדפסה</translation>
 <translation id="7712836429117959503">תוסף לא מוכר עם המזהה <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">‏קובצי Cookie מ-<ph name="DOMAIN" /> מותרים</translation>
 <translation id="7714464543167945231">אישור</translation>

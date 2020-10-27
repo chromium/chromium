@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Bezbednosni ključ je zaključan jer ste previše puta uneli pogrešan PIN. Da biste ga otključali, uklonite ga, pa ga ponovo umetnite.</translation>
 <translation id="1137589305610962734">privremeni podaci</translation>
 <translation id="1137673463384776352">Otvori link u <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obaveštenje}one{# novo obaveštenje}few{# nova obaveštenja}other{# novih obaveštenja}}</translation>
 <translation id="1139343347646843679">Došlo je do greške pri konfigurisanju Linux-a. Obratite se administratoru.</translation>
 <translation id="1140351953533677694">Pristup Bluetooth i serijskim uređajima</translation>
 <translation id="114036956334641753">Zvuk i titl</translation>
@@ -1669,6 +1670,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="291056154577034373">NEPROČITANO</translation>
 <translation id="2910718431259223434">Došlo je do greške. Probajte ponovo ili se obratite vlasniku uređaja ili administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Dozvoli sajtovima da čuvaju i čitaju podatke kolačića (preporučuje se)</translation>
+<translation id="2915016304249900997">Detalji su sakriveni dok delite ekran</translation>
 <translation id="2915102088417824677">Prikaži evidenciju aktivnosti</translation>
 <translation id="2915873080513663243">Automatsko prelaženje sadržaja</translation>
 <translation id="2916073183900451334">Pritiskom na Tab na veb stranici biće istaknute veze, kao i polja u obrascu</translation>
@@ -2439,6 +2441,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3819257035322786455">Rezervna kopija</translation>
 <translation id="3819261658055281761">Sistem nije uspeo da sačuva oznaku dugoročnog pristupa API-ju za ovaj uređaj.</translation>
 <translation id="3819800052061700452">&amp;Pun ekran</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Prikaži}one{Prikaži sve}few{Prikaži sve}other{Prikaži sve}}</translation>
 <translation id="3820749202859700794">Eliptična kriva SECG secp521r1 (takođe poznata kao NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Dodatak je odobren}one{# dodatak je odobren}few{# dodatka su odobrena}other{# dodataka je odobreno}}</translation>
 <translation id="3822559385185038546">Administrator je nametnuo ovaj proksi</translation>
@@ -2829,6 +2832,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="428565720843367874">Došlo je do neočekivane greške sa antivirusnim softverom pri skeniranju ove datoteke.</translation>
 <translation id="4287099557599763816">Čitač ekrana</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Prikaži}one{Prikaži sve}few{Prikaži sve}other{Prikaži sve}}</translation>
 <translation id="4289372044984810120">Upravljajte nalozima ovde. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4295072614469448764">Aplikacija je dostupna na terminalu. Možda imate i ikonu u Pokretaču.</translation>
@@ -6148,6 +6152,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="820568752112382238">Najposećeniji sajtovi</translation>
 <translation id="8206745257863499010">Bluzi</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obaveštenje}one{# novo obaveštenje}few{# nova obaveštenja}other{# novih obaveštenja}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Preuzimanje je u toku}one{Preuzimanja su u toku}few{Preuzimanja su u toku}other{Preuzimanja su u toku}}</translation>
 <translation id="8213449224684199188">Aktiviran je režim slika</translation>
 <translation id="8213577208796878755">Dostupan je još jedan uređaj.</translation>

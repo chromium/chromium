@@ -58,6 +58,7 @@
 <translation id="1455242230282523554">הצגת הגדרות השפה</translation>
 <translation id="1460620680449458626">צלילים מושתקים.</translation>
 <translation id="1467432559032391204">שמאלה</translation>
+<translation id="1475439723810528286">כדי לצלם את המסך המלא, יש להקיש במקום כלשהו</translation>
 <translation id="1479909375538722835">תפריט נגישות צף</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">החשבון של בעלים זה צריך להיות החשבון הראשון שאליו נכנסים בעת כניסה לפעילות באתר מחשבונות מרובים.</translation>
@@ -121,6 +122,7 @@
 <translation id="209965399369889474">לא מחובר לרשת</translation>
 <translation id="2126242104232412123">שולחן עבודה חדש</translation>
 <translation id="2127372758936585790">מטען בעל מתח נמוך</translation>
+<translation id="2132302418721800944">הקלטה של מסך מלא</translation>
 <translation id="2135456203358955318">מגדיל במצב מעוגן</translation>
 <translation id="2144487987174258011">‏יש להפעיל מחדש כדי לעדכן את Adobe Flash Player</translation>
 <translation id="2180011262286780504">מנהל המערכת השבית את האפשרות לצלם את המסך.</translation>
@@ -192,6 +194,7 @@
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2878884018241093801">אין פריטים אחרונים</translation>
 <translation id="2903844815300039659">מחובר אל <ph name="NAME" />, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">צילומי מסך</translation>
 <translation id="2942350706960889382">זכוכית מגדלת במצב עגינה</translation>
 <translation id="2942516765047364088">מיקום המדף</translation>
 <translation id="2946119680249604491">הוסף חיבור</translation>
@@ -367,6 +370,7 @@
 <translation id="4513946894732546136">משוב</translation>
 <translation id="4527045527269911712">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> עד למילוי</translation>
+<translation id="4538824937723742295">לצילום מסך מלא</translation>
 <translation id="4544483149666270818">יש לבחור חלון להקלטה</translation>
 <translation id="4560576029703263363">מופעל</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@
 <translation id="4969092041573468113"><ph name="HOURS" /> שעות <ph name="MINUTES" /> דקות <ph name="SECONDS" /> שניות</translation>
 <translation id="4975771730019223894">תיוג אפליקציות</translation>
 <translation id="5030687792513154421">נגמר הזמן</translation>
+<translation id="5033299697334913360">כדי לצלם את המסך המלא, יש ללחוץ במקום כלשהו</translation>
 <translation id="5035236842988137213">מכשיר <ph name="DEVICE_NAME" /> התחבר לטלפון חדש</translation>
 <translation id="5035389544768382859">אישור הגדרת המסך</translation>
 <translation id="5083553833479578423">‏אפשר להפעיל תכונות Assistant נוספות.</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
 <translation id="5168181903108465623">מכשירי העברה זמינים</translation>
 <translation id="5170568018924773124">הצג בתיקייה</translation>
+<translation id="5176318573511391780">הקלטה של מסך חלקי</translation>
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="5208059991603368177">פועל</translation>
 <translation id="5222676887888702881">יציאה</translation>
@@ -488,6 +494,7 @@
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5876666360658629066">יש להזין קוד גישה להורים</translation>
+<translation id="5881540930187678962">‏להגדרת Phone Hub במועד מאוחר יותר</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="589817443623831496">סריקת נקודות</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -542,6 +549,7 @@
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ניקוי כל ההודעות</translation>
 <translation id="643147933154517414">הפעולה הושלמה</translation>
+<translation id="6431865393913628856">הקלטת המסך</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="6452181791372256707">דחייה</translation>
 <translation id="6453179446719226835">שינוי השפה הסתיים</translation>
@@ -627,6 +635,7 @@
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="7348093485538360975">מקלדת על המסך</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
+<translation id="7371404428569700291">חלון ההקלטה</translation>
 <translation id="7377169924702866686">‏Caps Lock מופעל.</translation>
 <translation id="7378203170292176219">יש לגרור כדי לבחור אזור להקלטה</translation>
 <translation id="7378594059915113390">פקדי מדיה</translation>
@@ -817,6 +826,7 @@
 <translation id="9084606467167974638">שינוי מיקום התפריט</translation>
 <translation id="9089416786594320554">שיטות קלט</translation>
 <translation id="9091626656156419976">הוסרה התצוגה של <ph name="DISPLAY_NAME" /></translation>
+<translation id="9092749890156285613">הורדות וצילומי מסך אחרונים</translation>
 <translation id="9151726767154816831">‏הפעל מחדש ובצע פעולת Powerwash כדי לעדכן</translation>
 <translation id="9166331175924255663">החלפת מצב השיתוף בקרבת מקום במידת חשיפה גבוהה.</translation>
 <translation id="9168436347345867845">מאוחר יותר</translation>

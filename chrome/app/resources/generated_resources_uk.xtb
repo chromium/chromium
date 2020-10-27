@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Ключ безпеки заблоковано, оскільки ви ввели неправильний PIN-код забагато разів. Щоб розблокувати його, вийміть і знову вставте ключ.</translation>
 <translation id="1137589305610962734">тимчасові дані</translation>
 <translation id="1137673463384776352">Відкрити посилання в додатку <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Нове сповіщення}one{# нове сповіщення}few{# нові сповіщення}many{# нових сповіщень}other{# нового сповіщення}}</translation>
 <translation id="1139343347646843679">Не вдалося налаштувати Linux. Зв'яжіться з адміністратором.</translation>
 <translation id="1140351953533677694">Отримувати доступ до пристроїв Bluetooth і серійних пристроїв</translation>
 <translation id="114036956334641753">Аудіо та субтитри</translation>
@@ -1672,6 +1673,7 @@
 <translation id="291056154577034373">НЕПРОЧИТАНІ</translation>
 <translation id="2910718431259223434">Сталася помилка. Повторіть спробу або зв'яжіться з адміністратором чи власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Дозволити сайтам зберігати та розпізнавати дані файлів cookie (рекомендується)</translation>
+<translation id="2915016304249900997">Доки ви показуєте свій екран, деталі сповіщення буде сховано</translation>
 <translation id="2915102088417824677">Переглянути журнал активності</translation>
 <translation id="2915873080513663243">Автосканування</translation>
 <translation id="2916073183900451334">За допомогою клавіші Tab можна виділяти посилання та поля форми на веб-сторінці</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3819257035322786455">Резервна копія</translation>
 <translation id="3819261658055281761">Системі не вдалося зберегти маркер довготривалого доступу API для цього пристрою.</translation>
 <translation id="3819800052061700452">&amp;На весь екран</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Показати}one{Показати все}few{Показати все}many{Показати все}other{Показати все}}</translation>
 <translation id="3820749202859700794">Еліптична крива SECG secp521r1 (також відома як NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Розширення схвалено}one{# розширення схвалено}few{# розширення схвалено}many{# розширень схвалено}other{# розширення схвалено}}</translation>
 <translation id="3822559385185038546">Ваш адміністратор застосував цей проксі-сервер</translation>
@@ -2832,6 +2835,7 @@
 <translation id="4285498937028063278">Відкріпити</translation>
 <translation id="428565720843367874">Під час сканування цього файлу сталася неочікувана помилка антивірусного програмного забезпечення.</translation>
 <translation id="4287099557599763816">Програма зчитування з екрана</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Показати}one{Показати все}few{Показати все}many{Показати все}other{Показати все}}</translation>
 <translation id="4289372044984810120">Керуйте своїми обліковими записами тут. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4295072614469448764">Додаток доступний у терміналі. Також може бути значок на панелі запуску.</translation>
@@ -6150,6 +6154,7 @@
 <translation id="820568752112382238">Сайти, які часто відвідуються</translation>
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Мобільний</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Нове сповіщення}one{# нове сповіщення}few{# нові сповіщення}many{# нових сповіщень}other{# нового сповіщення}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Триває завантаження}one{Тривають завантаження}few{Тривають завантаження}many{Тривають завантаження}other{Тривають завантаження}}</translation>
 <translation id="8213449224684199188">Увімкнено режим фото</translation>
 <translation id="8213577208796878755">Ще один доступний пристрій.</translation>

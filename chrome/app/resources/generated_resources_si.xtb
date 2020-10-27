@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">ඉතා වැඩි අවස්ථාවක් වැරදි රහස් අංකය ඇතුළත් කළ බැවින් ආරක්‍ෂක යතුරට අඟුලු දමා ඇත. එය අඟුලු ඇරීමට, එය ඉවත් කර යළි ඇතුළත් කරන්න.</translation>
 <translation id="1137589305610962734">තාවකාලික දත්ත</translation>
 <translation id="1137673463384776352">සබැඳිය <ph name="APP" /> තුළ විවෘත කරන්න</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{නව දැනුම්දීම}one{නව දැනුම්දීම් #}other{නව දැනුම්දීම් #}}</translation>
 <translation id="1139343347646843679">ලිනක්ස් වින්‍යාස කිරීමේදී දෝෂයක් තිබුණා. ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="1140351953533677694">ඔබගේ බ්ලූටූත් සහ අනුක්‍රමික උපාංග වෙත ප්‍රවේශ වන්න</translation>
 <translation id="114036956334641753">ශ්‍රව්‍ය සහ සිරස්තල</translation>
@@ -1669,6 +1670,7 @@
 <translation id="291056154577034373">නොකියවූ</translation>
 <translation id="2910718431259223434">යම් දෙයක් වැරදිණි. කරුණාකර නැවත උත්සාහ කරන්න, නැති නම් ඔබේ උපාංග හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">අඩවි වලට කුකී දත්ත සුරැකීමට සහ කුකී දත්ත කියවන්න (නිර්දේශිතයි)</translation>
+<translation id="2915016304249900997">ඔබ ඔබගේ තිරය බෙදා ගන්නා අතරතුර විස්තර සඟවනු ලැබේ</translation>
 <translation id="2915102088417824677">ක්‍රියාකාරකම් ලොගය බලන්න</translation>
 <translation id="2915873080513663243">ස්වයංක්‍රීය ස්කෑන් කිරීම</translation>
 <translation id="2916073183900451334">වෙබ් පිටු උද්දීපණ ලින්ක් එකක් මත, මෙන්ම ආකෘති ක්ෂේත්‍ර ටැබය එබීම</translation>
@@ -2439,6 +2441,7 @@
 <translation id="3819257035322786455">උපස්ථය</translation>
 <translation id="3819261658055281761">මෙම උපාංගය සඳහා දිගු කාලීන API ප්‍රවේශ ටෝකනය ගබඩා කිරීමට පද්ධතියට නොහැකි විය.</translation>
 <translation id="3819800052061700452">සම්පුර්ණ තිරය (&amp;F)</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{පෙන්වන්න}one{සියල්ල පෙන්වන්න}other{සියල්ල පෙන්වන්න}}</translation>
 <translation id="3820749202859700794">SECG ඉලිප්සාකාර වක්‍ර secp521r1 (එනම් NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{දිගුවක් අනුමත විය}one{දිගු # ක් අනුමත විය}other{දිගු # ක් අනුමත විය}}</translation>
 <translation id="3822559385185038546">මෙම ප්‍රොක්සිය ඔබේ පරිපාලක විසින් බලගන්වා ඇත</translation>
@@ -2830,6 +2833,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4285498937028063278">ගලවන්න</translation>
 <translation id="428565720843367874">මෙම ගොනුව ස්කෑන් කරන අතරතුර ප්‍රති-වෛරස මෘදුකාංගය අනපේක්ෂිතව අසාර්ථක විය.</translation>
 <translation id="4287099557599763816">තිර කියවනය</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{පෙන්වන්න}one{සියල්ල පෙන්වන්න}other{සියල්ල පෙන්වන්න}}</translation>
 <translation id="4289372044984810120">ඔබේ ගිණුම් මෙහි කළමනා කරන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">දළ විශ්ලේෂණය</translation>
 <translation id="4295072614469448764">යෙදුම ඔබගේ පර්යන්තයෙහි ලබා ගත හැක. ඔබගේ දියත්කරණයේ ද නිරූපකයක් තිබෙනු ඇත.</translation>
@@ -6145,6 +6149,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="820568752112382238">වැඩියෙන් පැමිණි වෙබ් අඩවි</translation>
 <translation id="8206745257863499010">බ්ලූසි</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{නව දැනුම්දීම}one{නව දැනුම්දීම් #}other{නව දැනුම්දීම් #}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{බාගැනීම ක්‍රියාවේ පවතියි}one{බාගැනීම් ක්‍රියාවේ පවතියි}other{බාගැනීම් ක්‍රියාවේ පවතියි}}</translation>
 <translation id="8213449224684199188">ඡායාරූප ප්‍රකාරය ඇතුළු කෙරිණි</translation>
 <translation id="8213577208796878755">වෙනත් පවතින උපාංගයක්</translation>

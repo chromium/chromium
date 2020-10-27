@@ -2077,6 +2077,7 @@
 <translation id="3428419049384081277">మీరు సైన్ ఇన్ చేసారు!</translation>
 <translation id="3428747202529429621">Chromeలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది, మీరు సైన్ ఇన్ చేసినప్పుడు ఇతర యాప్‌లలో మీ భద్రతను మెరుగుపరచడానికి ఉపయోగించబడవచ్చు</translation>
 <translation id="3428800329481094896">Linux కంటెయినర్ ssh కీలను పొందుతోంది</translation>
+<translation id="3429271624041785769">వెబ్ కంటెంట్ భాషలు</translation>
 <translation id="3429275422858276529">ఈ పేజీని తర్వాత సులభంగా కనుగొనడానికి దీనిని బుక్‌మార్క్ చేయండి</translation>
 <translation id="3432227430032737297">చూపుతున్నవన్నీ తీసివేయి</translation>
 <translation id="3432757130254800023">స్థానిక నెట్‌వర్క్‌లో డిస్‌ప్లేలకు ఆడియోను, వీడియోను పంపడం</translation>
@@ -2502,6 +2503,7 @@
 <translation id="3879748587602334249">డౌన్‌లోడ్ మేనేజ‌ర్‌</translation>
 <translation id="3881478300875776315">కొన్ని వరుసలను మాత్రమే చూపించు</translation>
 <translation id="3882165008614329320">కెమెరా లేదా ఫైల్‌లో ఇప్పటికే ఉన్న వీడియో</translation>
+<translation id="3884152383786131369">అనేక భాషలలో అందుబాటులో ఉన్న వెబ్ కంటెంట్, ఈ లిస్ట్‌లోని మొదటి సపోర్ట్ చేసే భాషను ఉపయోగిస్తుంది. ఈ ప్రాధాన్యతలు మీ బ్రౌజర్ సెట్టింగ్‌లతో సింక్ చేయబడతాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">మీరు ఈ సైట్‌ను యాక్సెస్ చేయడానికి చేసిన అభ్యర్థన <ph name="NAME" />కు పంపబడింది</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />తో గమనికలు రూపొందిస్తున్నారు</translation>
 <translation id="3890064827463908288">Wi-Fi సింక్‌ను ఉపయోగించడానికి Chrome సింక్‌ను ఆన్ చేయండి</translation>
@@ -4355,6 +4357,7 @@
 <translation id="6112727384379533756">టిక్కెట్‌ను జోడించు</translation>
 <translation id="6112931163620622315">మీ ఫోన్‌ని తనిఖీ చేయండి</translation>
 <translation id="6112952769866305444">వ్యక్తిని సవరించండి, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Chrome బ్రౌజర్, <ph name="DEVICE_TYPE" /> లాంచర్ కోసం మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను సెట్ చేయండి</translation>
 <translation id="6113942107547980621">Smart Lockను ఉపయోగించడానికి, మీ ఫోన్‌లో ప్రాథమిక వినియోగదారు ప్రొఫైల్‌కు మారండి</translation>
 <translation id="6116921718742659598">భాష మరియు ఇన్‌పుట్ సెట్టింగ్‌లను మార్చండి</translation>
 <translation id="6120205520491252677">ప్రారంభ స్క్రీన్‌కు ఈ పేజీని పిన్ చేయి...</translation>
@@ -5221,6 +5224,7 @@
 <translation id="7140928199327930795">అందుబాటులో ఉన్న ఇతర పరికరాలు ఏవీ లేవు.</translation>
 <translation id="7141105143012495934">మీ ఖాతా వివరాలను తిరిగి పొందలేనందున సైన్-ఇన్ విఫలమైంది. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి లేదా మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
+<translation id="7143358760238281735">యాప్‌లు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>
 <translation id="7149893636342594995">గత 72 గంటలు</translation>
@@ -5692,6 +5696,7 @@
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7709152031285164251">విఫలమైంది - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;ప్రసారం...</translation>
+<translation id="7712739869553853093">ప్రివ్యూ డైలాగ్‌ను ప్రింట్ చేయండి</translation>
 <translation id="7712836429117959503">ID <ph name="EXTENSION_ID" />ని కలిగి ఉన్న తెలియని ఎక్స్‌టెన్షన్</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> నుండి కుక్కీలు అనుమతించబడ్డాయి</translation>
 <translation id="7714464543167945231">సర్టిఫికెట్</translation>

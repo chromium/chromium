@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">A biztonsági hardverkulcs zárolva van, mert túl sokszor lett megadva helytelen PIN-kód. A zárolás feloldásához távolítsa el a hardverkulcsot, majd csatlakoztassa újra.</translation>
 <translation id="1137589305610962734">ideiglenes adatok</translation>
 <translation id="1137673463384776352">Link megnyitása a következőben: <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Új értesítés}other{# új értesítés}}</translation>
 <translation id="1139343347646843679">Hiba történt a Linux konfigurálásakor. Forduljon a rendszergazdájához.</translation>
 <translation id="1140351953533677694">Hozzáférés a Bluetooth- és a soros eszközökhöz</translation>
 <translation id="114036956334641753">Hang és feliratok</translation>
@@ -1672,6 +1673,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="291056154577034373">OLVASATLAN</translation>
 <translation id="2910718431259223434">Hiba történt. Próbálja újra, illetve forduljon az eszköz tulajdonosához vagy rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Cookie-adatok mentésének és olvasásának engedélyezése a webhelyeken (ajánlott)</translation>
+<translation id="2915016304249900997">A részleteket elrejtjük a képernyőmegosztás során</translation>
 <translation id="2915102088417824677">Tevékenységnapló megtekintése</translation>
 <translation id="2915873080513663243">Automatikus keresés</translation>
 <translation id="2916073183900451334">A Tab billentyű megnyomása a weboldalakon kiemeli a linkeket és a beviteli mezőket</translation>
@@ -2442,6 +2444,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3819257035322786455">Biztonsági mentés</translation>
 <translation id="3819261658055281761">A rendszer nem tudta tárolni az eszköz hosszú távú API hozzáférési tokenjét.</translation>
 <translation id="3819800052061700452">&amp;Teljes képernyő</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Megjelenítés}other{Összes megjelenítése}}</translation>
 <translation id="3820749202859700794">SECG elliptikus görbe secp521r1 (vagyis NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Egy bővítmény jóváhagyásra került}other{# bővítmény jóváhagyásra került}}</translation>
 <translation id="3822559385185038546">Ezt a proxyt a rendszergazda lépteti életbe</translation>
@@ -2831,6 +2834,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="428565720843367874">A fájl vizsgálata közben a víruskereső program váratlanul leállt.</translation>
 <translation id="4287099557599763816">Képernyőolvasó</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Megjelenítés}other{Összes megjelenítése}}</translation>
 <translation id="4289372044984810120">Itt kezelheti fiókjait. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="4289540628985791613">Áttekintés</translation>
 <translation id="4295072614469448764">Az alkalmazás rendelkezésre áll a terminálból. Lehet, hogy ikon is került az Indítóba.</translation>
@@ -6151,6 +6155,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="820568752112382238">Leggyakrabban felkeresett webhelyek</translation>
 <translation id="8206745257863499010">Énekes</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Új értesítés}other{# új értesítés}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Letöltés folyamatban}other{Letöltések folyamatban}}</translation>
 <translation id="8213449224684199188">Fotó mód bekapcsolva</translation>
 <translation id="8213577208796878755">Egy további elérhető eszköz.</translation>

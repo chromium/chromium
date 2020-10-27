@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Bezpečnostní klíč je uzamčen, protože byl příliš mnohokrát zadán nesprávný PIN. Chcete-li jej odemknout, vyjměte jej a znovu jej vložte.</translation>
 <translation id="1137589305610962734">dočasná data</translation>
 <translation id="1137673463384776352">Otevřít odkaz v aplikaci <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové oznámení}few{# nová oznámení}many{# nového oznámení}other{# nových oznámení}}</translation>
 <translation id="1139343347646843679">Při konfiguraci Linuxu došlo k chybě. Obraťte se na administrátora.</translation>
 <translation id="1140351953533677694">Přistupovat k zařízením připojeným přes Bluetooth a sériový port</translation>
 <translation id="114036956334641753">Zvuk a titulky</translation>
@@ -1671,6 +1672,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="291056154577034373">NEPŘEČTENÉ</translation>
 <translation id="2910718431259223434">Došlo k chybě. Zkuste to znovu nebo kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Povolit webům ukládat a číst data souborů cookie (doporučeno)</translation>
+<translation id="2915016304249900997">Podrobnosti jsou při sdílení obrazovky skryty</translation>
 <translation id="2915102088417824677">Zobrazit protokol aktivity</translation>
 <translation id="2915873080513663243">Automatické prohledávání</translation>
 <translation id="2916073183900451334">Stiskem klávesy Tab zvýrazníte na webové stránce odkazy a pole formulářů</translation>
@@ -2441,6 +2443,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3819257035322786455">Záloha</translation>
 <translation id="3819261658055281761">Systému se pro toto zařízení nepodařilo uložit token dlouhodobého přístupu k rozhraní API.</translation>
 <translation id="3819800052061700452">&amp;Celá obrazovka</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Zobrazit}few{Zobrazit vše}many{Zobrazit vše}other{Zobrazit vše}}</translation>
 <translation id="3820749202859700794">Eliptická křivka SECG secp521r1 (neboli NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Rozšíření bylo schváleno}few{# rozšíření byla schválena}many{# rozšíření bylo schváleno}other{# rozšíření bylo schváleno}}</translation>
 <translation id="3822559385185038546">Tento proxy server je vyžadován administrátorem</translation>
@@ -2830,6 +2833,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4285498937028063278">Odepnout</translation>
 <translation id="428565720843367874">Při kontrole tohoto souboru došlo k neočekávané chybě antivirového softwaru.</translation>
 <translation id="4287099557599763816">Čtečka obrazovky</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Zobrazit}few{Zobrazit vše}many{Zobrazit vše}other{Zobrazit vše}}</translation>
 <translation id="4289372044984810120">Zde můžete spravovat své účty. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Přehled</translation>
 <translation id="4295072614469448764">Aplikace je k dispozici v terminálu. Také může mít ikonu ve Spouštěči.</translation>
@@ -6147,6 +6151,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="820568752112382238">Nejnavštěvovanější weby</translation>
 <translation id="8206745257863499010">Melodie</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové oznámení}few{# nová oznámení}many{# nového oznámení}other{# nových oznámení}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Probíhá stahování}few{Probíhají stahování}many{Probíhají stahování}other{Probíhají stahování}}</translation>
 <translation id="8213449224684199188">Přešli jste do režimu fotek</translation>
 <translation id="8213577208796878755">K dispozici je jedno další zařízení.</translation>

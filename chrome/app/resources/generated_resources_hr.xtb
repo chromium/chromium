@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Sigurnosni je ključ zaključan jer je previše puta unesen pogrešan PIN. Da biste ga otključali, uklonite ga i ponovo ga umetnite.</translation>
 <translation id="1137589305610962734">privremeni podaci</translation>
 <translation id="1137673463384776352">Otvori vezu u aplikaciji <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova obavijest}one{# nova obavijest}few{# nove obavijesti}other{# novih obavijesti}}</translation>
 <translation id="1139343347646843679">Došlo je do pogreške prilikom konfiguriranja Linuxa. Obratite se administratoru.</translation>
 <translation id="1140351953533677694">pristupiti vašim Bluetooth i serijski spojenim uređajima</translation>
 <translation id="114036956334641753">Zvuk i titlovi</translation>
@@ -1672,6 +1673,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="291056154577034373">NEPROČITANO</translation>
 <translation id="2910718431259223434">Nešto nije u redu. Pokušajte ponovo ili se obratite vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Dopusti web-lokacijama da spremaju i čitaju podatke kolačića (preporučeno)</translation>
+<translation id="2915016304249900997">Pojedinosti su skrivene dok dijelite zaslon</translation>
 <translation id="2915102088417824677">Pregledajte zapisnik aktivnosti</translation>
 <translation id="2915873080513663243">Automatsko traženje</translation>
 <translation id="2916073183900451334">Pritiskom na Tab na web-stranici ističu se veze, isto kao i iz polja</translation>
@@ -2442,6 +2444,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3819257035322786455">Sigurnosna kopija</translation>
 <translation id="3819261658055281761">Sustav nije uspio pohraniti token za dugotrajni pristup API-ju za ovaj uređaj.</translation>
 <translation id="3819800052061700452">&amp;Puni ekran</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Prikaži}one{Prikaži sve}few{Prikaži sve}other{Prikaži sve}}</translation>
 <translation id="3820749202859700794">SECG eliptična krivulja secp521r1 (poznata i kao NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Proširenje je odobreno}one{Odobreno je # proširenje}few{Odobrena su # proširenja}other{Odobreno je # proširenja}}</translation>
 <translation id="3822559385185038546">Taj proxy nametnuo je administrator</translation>
@@ -2832,6 +2835,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4285498937028063278">Otkvači</translation>
 <translation id="428565720843367874">Antivirusni softver neočekivano je prekinuo s radom tijekom pretraživanja ove datoteke.</translation>
 <translation id="4287099557599763816">Čitač zaslona</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Prikaži}one{Prikaži sve}few{Prikaži sve}other{Prikaži sve}}</translation>
 <translation id="4289372044984810120">Svojim računima upravljajte ovdje. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4295072614469448764">Aplikacija je dostupna na vašem terminalu. Možda se i u Pokretaču prikazuje ikona.</translation>
@@ -6150,6 +6154,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="820568752112382238">Najposjećenije web-lokacije</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobitel</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova obavijest}one{# nova obavijest}few{# nove obavijesti}other{# novih obavijesti}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Preuzimanje u tijeku}one{Preuzimanja u tijeku}few{Preuzimanja u tijeku}other{Preuzimanja u tijeku}}</translation>
 <translation id="8213449224684199188">Ušli ste u način fotografije</translation>
 <translation id="8213577208796878755">Još jedan dostupni uređaj.</translation>

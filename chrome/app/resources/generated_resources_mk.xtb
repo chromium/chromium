@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Безбедносниот клуч е заклучен бидејќи внесовте погрешен PIN премногу пати. За да го отклучите, отстранете го и вметнете го пак.</translation>
 <translation id="1137589305610962734">привремени податоци</translation>
 <translation id="1137673463384776352">Отвори го линкот во <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известување}one{# ново известување}other{# нови известувања}}</translation>
 <translation id="1139343347646843679">Имаше грешка при конфигурирањето на Linux. Контактирајте со администраторот.</translation>
 <translation id="1140351953533677694">Пристапете до сериските уреди и уредите со Bluetooth</translation>
 <translation id="114036956334641753">Аудио и титлови</translation>
@@ -1672,6 +1673,7 @@
 <translation id="291056154577034373">НЕПРОЧИТАНО</translation>
 <translation id="2910718431259223434">Нешто тргна наопаку. Обидете се повторно или контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Дозволете локациите да зачувуваат и читаат податоци за колачињата (препорачано)</translation>
+<translation id="2915016304249900997">Деталите се сокриени додека го споделувате екранот</translation>
 <translation id="2915102088417824677">Прикажи го дневникот на активности</translation>
 <translation id="2915873080513663243">Автоматско скенирање</translation>
 <translation id="2916073183900451334">Притискањето Картичка на веб-локација истакнува врски, како и полиња на формулари</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3819257035322786455">Бекап</translation>
 <translation id="3819261658055281761">Системот не успеа да го складира пристапниот токен на долгорочниот API за уредов.</translation>
 <translation id="3819800052061700452">&amp;Цел екран</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Прикажи}one{Прикажи ги сите}other{Прикажи ги сите}}</translation>
 <translation id="3820749202859700794">SECG елиптична крива secp521r1 (наречена NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Една екстензија е одобрена}one{# екстензија е одобрена}other{# екстензии се одобрени}}</translation>
 <translation id="3822559385185038546">Ова прокси го наметнува администраторот</translation>
@@ -2832,6 +2835,7 @@
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="428565720843367874">Анти-вирус софтверот не успеа да ја скенира датотеката.</translation>
 <translation id="4287099557599763816">Читач на екран</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Прикажи}one{Прикажи ги сите}other{Прикажи ги сите}}</translation>
 <translation id="4289372044984810120">Управувајте со сметките тука. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4295072614469448764">Апликацијата е достапна во вашиот терминал. Може да има икона и во „Стартерот“.</translation>
@@ -6149,6 +6153,7 @@
 <translation id="820568752112382238">Најпосетувани веб-сајтови</translation>
 <translation id="8206745257863499010">Блузист</translation>
 <translation id="8206859287963243715">Мобилен</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известување}one{# ново известување}other{# нови известувања}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преземањето е во тек}one{Преземањата се во тек}other{Преземањата се во тек}}</translation>
 <translation id="8213449224684199188">Влеговте во режим на фотографија</translation>
 <translation id="8213577208796878755">Уште еден достапен уред.</translation>

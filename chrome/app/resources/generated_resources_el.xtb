@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Το κλειδί ασφαλείας είναι κλειδωμένο επειδή έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές. Για να το ξεκλειδώσετε, αφαιρέστε το και επανατοποθετήστε το.</translation>
 <translation id="1137589305610962734">προσωρινά δεδομένα</translation>
 <translation id="1137673463384776352">Άνοιγμα συνδέσμου στην εφαρμογή <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Νέα ειδοποίηση}other{# νέες ειδοποιήσεις}}</translation>
 <translation id="1139343347646843679">Παρουσιάστηκε ένα σφάλμα κατά τη διαμόρφωση των Linux. Επικοινωνήστε με τον διαχειριστή.</translation>
 <translation id="1140351953533677694">Πρόσβαση στις συσκευές Bluetooth και τις σειριακές συσκευές</translation>
 <translation id="114036956334641753">Ήχος και υπότιτλοι</translation>
@@ -1672,6 +1673,7 @@
 <translation id="291056154577034373">ΜΗ ΑΝΑΓΝΩΣΜΕΝΑ</translation>
 <translation id="2910718431259223434">Κάτι δεν πήγε καλά. Δοκιμάστε ξανά ή επικοινωνήστε με τον κάτοχο ή τον διαχειριστή της συσκευής σας. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Να επιτρέπεται στους ιστότοπους η αποθήκευση και η ανάγνωση δεδομένων cookie (συνιστάται)</translation>
+<translation id="2915016304249900997">Οι λεπτομέρειες αποκρύπτονται όσο μοιράζεστε την οθόνη σας.</translation>
 <translation id="2915102088417824677">Προβολή αρχείου καταγραφής δραστηριοτήτων</translation>
 <translation id="2915873080513663243">Αυτόματη σάρωση</translation>
 <translation id="2916073183900451334">Εάν πατήσετε το πλήκτρο Tab σε μια ιστοσελίδα, επισημαίνονται οι σύνδεσμοι, καθώς και τα πεδία φόρμας</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3819257035322786455">Δημιουργία αντιγράφου ασφαλείας</translation>
 <translation id="3819261658055281761">Το σύστημα δεν κατάφερε να αποθηκεύσει το μακροπρόθεσμο διακριτικό πρόσβασης API για αυτήν τη συσκευή.</translation>
 <translation id="3819800052061700452">&amp;Πλήρης οθόνη</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Εμφάνιση}other{Εμφάνιση όλων}}</translation>
 <translation id="3820749202859700794">Ελλειπτική καμπύλη SECG secp521r1 (επίσης γνωστή ως NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Μια επέκταση εγκρίθηκε}other{# επεκτάσεις εγκρίθηκαν}}</translation>
 <translation id="3822559385185038546">Αυτός ο διακομιστής μεσολάβησης επιβάλλεται από τον διαχειριστή σας</translation>
@@ -2832,6 +2835,7 @@
 <translation id="4285498937028063278">Ξεκαρφίτσωμα</translation>
 <translation id="428565720843367874">Η λειτουργία του λογισμικού προστασίας από ιούς απέτυχε μη αναμενόμενα κατά τη σάρωση αυτού του αρχείου.</translation>
 <translation id="4287099557599763816">Αναγνώστης οθόνης</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Εμφάνιση}other{Εμφάνιση όλων}}</translation>
 <translation id="4289372044984810120">Διαχειρίσου τους λογαριασμούς σου εδώ. <ph name="LINK_BEGIN" />Μάθε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Επισκόπηση</translation>
 <translation id="4295072614469448764">Η εφαρμογή είναι διαθέσιμη στο τερματικό σας. Μπορεί επίσης να υπάρχει ένα εικονίδιο στην Εφαρμογή εκκίνησης.</translation>
@@ -6151,6 +6155,7 @@
 <translation id="820568752112382238">Ιστότοποι με τις περισσότερες επισκέψεις</translation>
 <translation id="8206745257863499010">Μπλουζ</translation>
 <translation id="8206859287963243715">Κινητό</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Νέα ειδοποίηση}other{# νέες ειδοποιήσεις}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Λήψη σε εξέλιξη}other{Λήψεις σε εξέλιξη}}</translation>
 <translation id="8213449224684199188">Έγινε είσοδος στη λειτουργία φωτογραφίας</translation>
 <translation id="8213577208796878755">Μία ακόμα διαθέσιμη συσκευή.</translation>

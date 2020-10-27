@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Šī drošības atslēga ir bloķēta, jo pārāk daudz reižu ievadīts nepareizs PIN. Lai atbloķētu atslēgu, noņemiet to un ievietojiet atkārtoti.</translation>
 <translation id="1137589305610962734">pagaidu dati</translation>
 <translation id="1137673463384776352">Atvērt saiti lietotnē <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Jauns paziņojums}zero{# jaunu paziņojumu}one{# jauns paziņojums}other{# jauni paziņojumi}}</translation>
 <translation id="1139343347646843679">Konfigurējot operētājsistēmu Linux, radās kļūda. Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="1140351953533677694">Piekļūt jūsu Bluetooth un seriālajām ierīcēm</translation>
 <translation id="114036956334641753">Audio un subtitri</translation>
@@ -1672,6 +1673,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="291056154577034373">NELASĪTAS</translation>
 <translation id="2910718431259223434">Radās kļūda. Lūdzu, mēģiniet vēlreiz vai sazinieties ar ierīces īpašnieku vai administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Atļaut vietnēm saglabāt un lasīt sīkfailu datus (ieteicams)</translation>
+<translation id="2915016304249900997">Kad jūs kopīgojat savu ekrānu, detalizētā informācija ir paslēpta.</translation>
 <translation id="2915102088417824677">Skatīt darbību žurnālu</translation>
 <translation id="2915873080513663243">Automātiska meklēšana</translation>
 <translation id="2916073183900451334">Tabulēšanas taustiņa piespiešana tīmekļa lapā izgaismo saites, kā arī veidlapu laukus</translation>
@@ -2442,6 +2444,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3819257035322786455">Dublējiet</translation>
 <translation id="3819261658055281761">Sistēmā neizdevās saglabāt šīs ierīces ilgtermiņa API piekļuves pilnvaru.</translation>
 <translation id="3819800052061700452">&amp;Pilnekrāna režīms</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Rādīt}zero{Rādīt visus}one{Rādīt visus}other{Rādīt visus}}</translation>
 <translation id="3820749202859700794">SECG eliptiskā līkne secp521r1 (jeb NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Paplašinājums tika apstiprināts}zero{# paplašinājumi tika apstiprināti}one{# paplašinājums tika apstiprināts}other{# paplašinājumi tika apstiprināti}}</translation>
 <translation id="3822559385185038546">Šo starpniekserveri ievieš jūsu administrators.</translation>
@@ -2832,6 +2835,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4285498937028063278">Atspraust</translation>
 <translation id="428565720843367874">Šī faila pārbaudes laikā radās neparedzēta pretvīrusu programmatūras kļūda.</translation>
 <translation id="4287099557599763816">Ekrāna lasītājs</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Rādīt}zero{Rādīt visus}one{Rādīt visus}other{Rādīt visus}}</translation>
 <translation id="4289372044984810120">Pārvaldiet savus kontus šeit. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="4289540628985791613">Kopsavilkums</translation>
 <translation id="4295072614469448764">Lietotne ir pieejama jūsu terminālī. Programmā Palaidējs var būt redzama arī ikona.</translation>
@@ -6149,6 +6153,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="820568752112382238">Biežāk apmeklētās vietnes</translation>
 <translation id="8206745257863499010">Blūzs</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Jauns paziņojums}zero{# jaunu paziņojumu}one{# jauns paziņojums}other{# jauni paziņojumi}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Notiek lejupielāde}zero{Notiek lejupielāde}one{Notiek lejupielāde}other{Notiek lejupielāde}}</translation>
 <translation id="8213449224684199188">Ievadīts foto režīms</translation>
 <translation id="8213577208796878755">Vēl viena pieejama ierīce.</translation>

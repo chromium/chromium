@@ -2077,6 +2077,7 @@
 <translation id="3428419049384081277">ログインしました</translation>
 <translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3428800329481094896">Linux コンテナの SSH 認証鍵を取得しています</translation>
+<translation id="3429271624041785769">ウェブ コンテンツの言語</translation>
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
 <translation id="3432227430032737297">表示中のサイトをすべて削除</translation>
 <translation id="3432757130254800023">映像と音声をローカル ネットワーク経由でディスプレイに送信する</translation>
@@ -2502,6 +2503,7 @@
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3881478300875776315">表示する行数を減らす</translation>
 <translation id="3882165008614329320">カメラやファイルに保存されている動画</translation>
+<translation id="3884152383786131369">複数の言語に対応しているウェブ コンテンツでは、次のリストの最初にある対応言語が使用されます。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">このサイトへのアクセス リクエストを <ph name="NAME" /> さんに送信しました</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> でメモをとる</translation>
 <translation id="3890064827463908288">Wi-Fi 同期を使用するには Chrome 同期をオンにしてください</translation>
@@ -4355,6 +4357,7 @@
 <translation id="6112727384379533756">チケットを追加</translation>
 <translation id="6112931163620622315">スマートフォンを確認してください</translation>
 <translation id="6112952769866305444">ユーザー（<ph name="PROFILE_NAME" />、<ph name="USERNAME" />）を編集</translation>
+<translation id="6113434369102685411">Chrome ブラウザと <ph name="DEVICE_TYPE" /> ランチャーに既定の検索エンジンを設定します</translation>
 <translation id="6113942107547980621">Smart Lock を使用するには、お使いのスマートフォンでメインユーザーのプロフィールに切り替えます</translation>
 <translation id="6116921718742659598">言語と入力の設定を変更</translation>
 <translation id="6120205520491252677">このページを起動画面に固定...</translation>
@@ -5221,6 +5224,7 @@
 <translation id="7140928199327930795">利用可能なデバイスは他にありません。</translation>
 <translation id="7141105143012495934">アカウントの詳細を取得できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="7143207342074048698">接続中</translation>
+<translation id="7143358760238281735">利用できるアプリはありません</translation>
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="714876143603641390">LAN 接続</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>
@@ -5692,6 +5696,7 @@
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">キャスト(&amp;C)...</translation>
+<translation id="7712739869553853093">印刷プレビュー ダイアログ</translation>
 <translation id="7712836429117959503">不明な拡張機能（ID「<ph name="EXTENSION_ID" />」）</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> からの Cookie が許可されました</translation>
 <translation id="7714464543167945231">証明書</translation>

@@ -2077,6 +2077,7 @@
 <translation id="3428419049384081277">تم تسجيل دخولك!</translation>
 <translation id="3428747202529429621">‏يوفّر لك هذا الوضع حماية في Chrome، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجلًا دخولك.</translation>
 <translation id="3428800329481094896">‏جارٍ استرجاع مفاتيح SSH لحاوية نظام التشغيل Linux</translation>
+<translation id="3429271624041785769">لغات محتوى الويب</translation>
 <translation id="3429275422858276529">ضَع إشارة على هذه الصفحة لسهولة العثور عليها لاحقًا</translation>
 <translation id="3432227430032737297">إزالة كل العناصر المعروضة</translation>
 <translation id="3432757130254800023">إرسال الإعدادات الصوتية والفيديو لشاشات العرض على الشبكة المحلية</translation>
@@ -2502,6 +2503,7 @@
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
 <translation id="3881478300875776315">عرض أسطر أقل</translation>
 <translation id="3882165008614329320">الفيديو الحالي من الكاميرا أو الملف</translation>
+<translation id="3884152383786131369">سيستخدم محتوى الويب المتوفّر بلغات متعدّدة أول لغة معتمَدة من القائمة. وستتم مزامنة هذه الإعدادات المفضّلة مع إعدادات المتصفّح. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">تمّ إرسال طلبك للدخول إلى هذا الموقع إلى <ph name="NAME" /></translation>
 <translation id="3888550877729210209">تسجيل الملاحظات من خلال <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">‏تفعيل ميزة "مزامنة Chrome" لاستخدام "مزامنة الواي فاي"</translation>
@@ -4353,6 +4355,7 @@
 <translation id="6112727384379533756">إضافة تذكرة</translation>
 <translation id="6112931163620622315">يُرجى التحقّق من هاتفك</translation>
 <translation id="6112952769866305444">تعديل شخص، <ph name="PROFILE_NAME" />، <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">‏اضبط محرك البحث التلقائي لمتصفّح Chrome ومشغِّل التطبيقات في <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113942107547980621">‏لاستخدام Smart Lock، يمكنك التبديل إلى الملف الشخصي للمستخدِم الأساسي على هاتفك.</translation>
 <translation id="6116921718742659598">تغيير إعدادات اللغة والإدخال</translation>
 <translation id="6120205520491252677">جارٍ إضافة هذه الصفحة إلى شاشة البدء...</translation>
@@ -5220,6 +5223,7 @@
 <translation id="7140928199327930795">لا توجد أجهزة أخرى متاحة.</translation>
 <translation id="7141105143012495934">فشل تسجيل الدخول، نظرًا لعدم القدرة على استرداد تفاصيل حسابك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
 <translation id="7143207342074048698">اتصال</translation>
+<translation id="7143358760238281735">ما مِن تطبيقات متاحة</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
@@ -5691,6 +5695,7 @@
 <translation id="7707922173985738739">استخدام بيانات الجوّال</translation>
 <translation id="7709152031285164251">تعذّر - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;إرسال...</translation>
+<translation id="7712739869553853093">مربع حوار معاينة الطباعة</translation>
 <translation id="7712836429117959503">إضافة غير معروفة مُشار إليها برمز <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">تم السماح بملفات تعريف الارتباط الواردة من <ph name="DOMAIN" /></translation>
 <translation id="7714464543167945231">شهادة</translation>

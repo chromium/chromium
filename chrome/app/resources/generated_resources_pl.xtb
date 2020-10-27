@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Klucz bezpieczeństwa jest zablokowany z powodu wprowadzenia nieprawidłowego kodu PIN zbyt wiele razy. Aby odblokować klucz bezpieczeństwa, wyjmij go i włóż ponownie.</translation>
 <translation id="1137589305610962734">dane tymczasowe</translation>
 <translation id="1137673463384776352">Otwórz link w aplikacji <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nowe powiadomienie}few{# nowe powiadomienia}many{# nowych powiadomień}other{# nowego powiadomienia}}</translation>
 <translation id="1139343347646843679">Podczas konfigurowania Linuksa wystąpił błąd. Skontaktuj się z administratorem.</translation>
 <translation id="1140351953533677694">Dostęp do urządzeń Bluetooth i szeregowych</translation>
 <translation id="114036956334641753">Dźwięk i napisy</translation>
@@ -1668,6 +1669,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="291056154577034373">NIEPRZECZYTANE</translation>
 <translation id="2910718431259223434">Coś poszło nie tak. Spróbuj jeszcze raz albo skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Zezwalaj witrynom na zapisywanie danych w plikach cookie i ich odczytywanie (zalecane)</translation>
+<translation id="2915016304249900997">Gdy udostępniasz ekran, szczegóły są ukryte</translation>
 <translation id="2915102088417824677">Wyświetl historię aktywności</translation>
 <translation id="2915873080513663243">Automatyczne skanowanie</translation>
 <translation id="2916073183900451334">Naciśnięcie klawisza Tab na stronie internetowej powoduje podświetlenie linków, a także pól formularza</translation>
@@ -2438,6 +2440,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3819257035322786455">Kopia zapasowa</translation>
 <translation id="3819261658055281761">System nie mógł zapisać długoterminowego tokenu dostępu do interfejsu API dla tego urządzenia.</translation>
 <translation id="3819800052061700452">&amp;Pełny ekran</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pokaż}few{Pokaż wszystko}many{Pokaż wszystko}other{Pokaż wszystko}}</translation>
 <translation id="3820749202859700794">Kryptografia krzywych eliptycznych SECG secp521r1 (inna nazwa: NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Rozszerzenie zostało zatwierdzone}few{Zostały zatwierdzone # rozszerzenia}many{Zostało zatwierdzonych # rozszerzeń}other{Zostało zatwierdzone # rozszerzenia}}</translation>
 <translation id="3822559385185038546">Ten serwer proxy jest wymuszony przez administratora</translation>
@@ -2828,6 +2831,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4285498937028063278">Odepnij</translation>
 <translation id="428565720843367874">Podczas skanowania tego pliku w oprogramowaniu antywirusowym wystąpił nieoczekiwany błąd.</translation>
 <translation id="4287099557599763816">Czytnik ekranu</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pokaż}few{Pokaż wszystko}many{Pokaż wszystko}other{Pokaż wszystko}}</translation>
 <translation id="4289372044984810120">Tutaj możesz zarządzać swoimi kontami. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="4295072614469448764">Aplikacja jest teraz dostępna na terminalu. Może mieć też ikonę w Menu z aplikacjami.</translation>
@@ -6146,6 +6150,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="820568752112382238">Najczęściej odwiedzane strony</translation>
 <translation id="8206745257863499010">Bluesowy</translation>
 <translation id="8206859287963243715">Komórka</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nowe powiadomienie}few{# nowe powiadomienia}many{# nowych powiadomień}other{# nowego powiadomienia}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Trwa pobieranie pliku}few{Trwa pobieranie plików}many{Trwa pobieranie plików}other{Trwa pobieranie plików}}</translation>
 <translation id="8213449224684199188">Włączono tryb fotografowania</translation>
 <translation id="8213577208796878755">Jeszcze jedno dostępne urządzenie.</translation>

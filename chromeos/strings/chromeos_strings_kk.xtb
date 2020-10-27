@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Басып шығарылған</translation>
 <translation id="1979103255016296513">Құпия сөзді өзгертуге берілген мерзім аяқталды</translation>
 <translation id="2049639323467105390">Бұл құрылғыны <ph name="DOMAIN" /> басқарады.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> нүкте/дюйм</translation>
 <translation id="2338501278241028356">Маңайдағы құрылғыларды табу үшін Bluetooth функциясын қосыңыз</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> мүмкіндік қалды</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2872961005593481000">Өшіру</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
 <translation id="4932733599132424254">Күні</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> бұл пайдаланушыны басқарады және параметрлер мен пайдаланушы әрекеттерін қашықтан бақылай алады.</translation>
 <translation id="520299634122159966">Қолжетімді сканерлер жоқ.</translation>
 <translation id="5212543919916444558">Экранда мен көмектесе алатын ештеңе жоқ. Микрофон белгішесін түртіп, маған сұрақ қойыңыз.</translation>
 <translation id="5222676887888702881">Шығу</translation>

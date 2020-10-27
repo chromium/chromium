@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">A chave de segurança está bloqueada porque o PIN incorreto foi inserido muitas vezes. Remova e insira a chave novamente para desbloqueá-la.</translation>
 <translation id="1137589305610962734">dados temporários</translation>
 <translation id="1137673463384776352">Abrir link no <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}one{# nova notificação}other{# novas notificações}}</translation>
 <translation id="1139343347646843679">Algo deu errado na configuração do Linux. Entre em contato com seu administrador.</translation>
 <translation id="1140351953533677694">Acessar seus dispositivos de série e Bluetooth</translation>
 <translation id="114036956334641753">Áudio e legendas</translation>
@@ -1672,6 +1673,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="291056154577034373">NÃO LIDAS</translation>
 <translation id="2910718431259223434">Algo deu errado. Tente novamente ou entre em contato com o proprietário ou administrador do dispositivo. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Permitir que os sites salvem e leiam os dados de arquivos "cookies" - que armazenam temporariamente o que você visitou na rede. (Recomendado)</translation>
+<translation id="2915016304249900997">Os detalhes são ocultados quando você compartilha a tela</translation>
 <translation id="2915102088417824677">Ver registro de atividades</translation>
 <translation id="2915873080513663243">Verificação automática</translation>
 <translation id="2916073183900451334">Ao pressionar Tab em uma página da Web, os links e os campos de formulário são destacados</translation>
@@ -2443,6 +2445,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3819257035322786455">Backup</translation>
 <translation id="3819261658055281761">Falha do sistema ao armazenar um token de acesso de longo prazo à API para este dispositivo.</translation>
 <translation id="3819800052061700452">&amp;Tela cheia</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}one{Mostrar tudo}other{Mostrar tudo}}</translation>
 <translation id="3820749202859700794">Curva elíptica SECG secp521r1 (também conhecida como NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Uma extensão foi aprovada}one{# extensão foi aprovada}other{# extensões foram aprovadas}}</translation>
 <translation id="3822559385185038546">Este proxy é aplicado pelo seu administrador</translation>
@@ -2833,6 +2836,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="428565720843367874">O software antivírus falhou inesperadamente ao verificar este arquivo.</translation>
 <translation id="4287099557599763816">Leitor de tela</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}one{Mostrar tudo}other{Mostrar tudo}}</translation>
 <translation id="4289372044984810120">Gerencie suas contas aqui. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="4295072614469448764">O aplicativo está disponível no seu terminal. Também pode haver um ícone no acesso rápido.</translation>
@@ -6153,6 +6157,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="820568752112382238">Sites mais visitados</translation>
 <translation id="8206745257863499010">Chorinho</translation>
 <translation id="8206859287963243715">Celular</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}one{# nova notificação}other{# novas notificações}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{O download está em andamento}one{O download está em andamento}other{Os downloads estão em andamento}}</translation>
 <translation id="8213449224684199188">Alterado para o modo de foto</translation>
 <translation id="8213577208796878755">Um outro dispositivo disponível.</translation>

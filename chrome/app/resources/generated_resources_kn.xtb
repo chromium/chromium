@@ -2077,6 +2077,7 @@
 <translation id="3428419049384081277">ನೀವೀಗ ಸೈನ್‌ ಇನ್‌ ಆಗಿರುವಿರಿ!</translation>
 <translation id="3428747202529429621">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Chrome ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ ಮತ್ತು ಇತರ Google ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಬಹುದು</translation>
 <translation id="3428800329481094896">Linux ಕಂಟೇನರ್ ssh ಕೀಗಳನ್ನು ಹಿಂಪಡೆಯಲಾಗುತ್ತಿದೆ</translation>
+<translation id="3429271624041785769">ವೆಬ್ ವಿಷಯದ ಭಾಷೆಗಳು</translation>
 <translation id="3429275422858276529">ಈ ಪುಟವನ್ನು ನಂತರ ಸುಲಭವಾಗಿ ಹುಡುಕಲು ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಿ</translation>
 <translation id="3432227430032737297">ತೋರಿಸಿರುವ ಎಲ್ಲವನ್ನೂ ತೆಗೆದುಹಾಕು</translation>
 <translation id="3432757130254800023">ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿ ಪ್ರದರ್ಶನಗಳಿಗೆ ಆಡಿಯೊ ಮತ್ತು ವೀಡಿಯೊ ಕಳುಹಿಸಿ</translation>
@@ -2502,6 +2503,7 @@
 <translation id="3879748587602334249">ಡೌನ್‌ಲೋಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="3881478300875776315">ಕೆಲವೇ ಸಾಲುಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3882165008614329320">ಕ್ಯಾಮರಾ ಅಥವಾ ಫೈಲ್‌ನಲ್ಲಿರುವ ಪ್ರಸ್ತುತ ವೀಡಿಯೊ</translation>
+<translation id="3884152383786131369">ಹಲವು ಭಾಷೆಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವ ವೆಬ್ ವಿಷಯವನ್ನು ಈ ಪಟ್ಟಿಯಿಂದ ಮೊದಲು ಬೆಂಬಲಿಸುವ ಭಾಷೆಯನ್ನು ಬಳಸುತ್ತವೆ. ಈ ಆದ್ಯತೆಗಳನ್ನು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ಈ ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸುವ ನಿಮ್ಮ ವಿನಂತಿಯನ್ನು <ph name="NAME" /> ಅವರಿಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ಮೂಲಕ ಟಿಪ್ಪಣಿಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3890064827463908288">Wi-Fi ಸಿಂಕ್ ಅನ್ನು ಬಳಸಲು Chrome ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -4357,6 +4359,7 @@
 <translation id="6112727384379533756">ಟಿಕೆಟ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6112931163620622315">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6112952769866305444"><ph name="PROFILE_NAME" />, <ph name="USERNAME" /> ವ್ಯಕ್ತಿಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="6113434369102685411">Chrome ಬ್ರೌಸರ್ ಅನ್ನು ಮತ್ತು <ph name="DEVICE_TYPE" /> ಲಾಂಚರ್ ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟದ ಎಂಜಿನ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="6113942107547980621">Smart Lock ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿರುವ ಪ್ರಾಥಮಿಕ ಬಳಕೆದಾರ ಪ್ರೋಫೈಲ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="6116921718742659598">ಭಾಷೆ ಹಾಗೂ ಇನ್‌ಪುಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6120205520491252677">ಆರಂಭಿಕ ಪರದೆಗೆ ಈ ಪುಟವನ್ನು ಪಿನ್ ಮಾಡಿ...</translation>
@@ -5224,6 +5227,7 @@
 <translation id="7140928199327930795">ಇತರ ಯಾವುದೇ ಲಭ್ಯ ಸಾಧನಗಳಿಲ್ಲ.</translation>
 <translation id="7141105143012495934">ನಿಮ್ಮ ಖಾತೆ ವಿವರಗಳನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಾಗದಿರುವುದರಿಂದ ಸೈನ್ ಇನ್ ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ ಅಥವಾ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
+<translation id="7143358760238281735">ಯಾವುದೇ ಆ್ಯಪ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="714876143603641390">LAN ಸಂಪರ್ಕ ಕಲ್ಪಿಸುವಿಕೆ</translation>
 <translation id="7149893636342594995">ಕಳೆದ 24 ಗಂಟೆಗಳು</translation>
@@ -5695,6 +5699,7 @@
 <translation id="7707922173985738739">ಮೊಬೈಲ್‌ ಡೇಟಾ ಬಳಸಿ</translation>
 <translation id="7709152031285164251">ವಿಫಲವಾಗಿದೆ - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;ಬಿತ್ತರಿಸುವಿಕೆ...</translation>
+<translation id="7712739869553853093">ಪೂರ್ವವೀಕ್ಷಣೆ ಡೈಲಾಗ್ ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
 <translation id="7712836429117959503">ಐಡಿ <ph name="EXTENSION_ID" /> ಜೊತೆಗಿನ ಅಪರಿಚಿತವಾದ ವಿಸ್ತರಣೆ</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> ನ ಕುಕೀಸ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="7714464543167945231">ಪ್ರಮಾಣಪತ್ರ</translation>

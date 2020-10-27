@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">უსაფრთხოების ეს გასაღები დაბლოკილია არასწორი PIN-კოდის მეტისმეტად ბევრჯერ შეყვანის გამო. მის განსაბლოკად გამოართეთ და ხელახლა მიაერთეთ ის.</translation>
 <translation id="1137589305610962734">დროებითი მონაცემები</translation>
 <translation id="1137673463384776352">ბმულის <ph name="APP" />-ში გახსნა</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ახალი შეტყობინება}other{# ახალი შეტყობინება}}</translation>
 <translation id="1139343347646843679">Linux-ის კონფიგურაციისას შეცდომა მოხდა. გთხოვთ, დაუკავშირდეთ თქვენს ადმინისტრატორს.</translation>
 <translation id="1140351953533677694">წვდომა თქვენს Bluetooth და სერიულ მოწყობილობებზე</translation>
 <translation id="114036956334641753">აუდიო და ტიტრები</translation>
@@ -1671,6 +1672,7 @@
 <translation id="291056154577034373">წაუკითხავი</translation>
 <translation id="2910718431259223434">წარმოიქმნა შეფერხება. ცადეთ ხელახლა ან დაუკავშირდით მოწყობილობის მფლობელს/ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">საშუალებას აძლევს საიტებს შეინახონ და გაეცნონ ქუქი ფაილებს (რეკომენდირებული)</translation>
+<translation id="2915016304249900997">ეკრანის გაზიარებისას დეტალები დამალულია</translation>
 <translation id="2915102088417824677">აქტივობის ჟურნალის ნახვა</translation>
 <translation id="2915873080513663243">ავტომატური სკანირება</translation>
 <translation id="2916073183900451334">თუ დააჭერთ Tab-ს ვებგვერდზე, მოინიშნება ბმულები და ფორმის ველები</translation>
@@ -2441,6 +2443,7 @@
 <translation id="3819257035322786455">სარეზერვო კოპირება</translation>
 <translation id="3819261658055281761">სისტემამ მოახერხა გრძელვადიანი API წვდომის ჟეტონის შენახვა ამ მოწყობილობისთვის.</translation>
 <translation id="3819800052061700452">&amp;მთელ ეკრანზე</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ჩვენება}other{ყველას ჩვენება}}</translation>
 <translation id="3820749202859700794">SECG ეკლიპტიკური მრუდი secp521r1 (ასევე ცნობილი, როგორც NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{გაფართოება დადასტურდა}other{# გაფართოება დადასტურდა}}</translation>
 <translation id="3822559385185038546">ეს პროქსი-სერვერი იძულებითაა დაყენებული თქვენი ადმინისტრატორის მიერ</translation>
@@ -2831,6 +2834,7 @@
 <translation id="4285498937028063278">ჩამაგრების მოხსნა</translation>
 <translation id="428565720843367874">ამ ფაილის სკანირების დროს ანტივისრუსის პროგრამულმა უზრუნველყოფამ მარცხი განიცადა.</translation>
 <translation id="4287099557599763816">ეკრანის წამკითხველი</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ჩვენება}other{ყველას ჩვენება}}</translation>
 <translation id="4289372044984810120">აქ შეგიძლიათ მართოთ თქვენი ანგარიშები. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4295072614469448764">აპი ხელმისაწვდომია თქვენს ტერმინალში. გარდა ამისა, გამშვებში შეიძლება ხატულაც იყოს.</translation>
@@ -6147,6 +6151,7 @@
 <translation id="820568752112382238">ყველაზე ხშირად მონახულებადი საიტები</translation>
 <translation id="8206745257863499010">ბლუზი</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ახალი შეტყობინება}other{# ახალი შეტყობინება}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{მიმდინარეობს ჩამოტვირთვა}other{მიმდინარეობს ჩამოტვირთვები}}</translation>
 <translation id="8213449224684199188">გაშვებულია ფოტო რეჟიმი</translation>
 <translation id="8213577208796878755">ერთი სხვა ხელმისაწვდომი მოწყობილობა.</translation>

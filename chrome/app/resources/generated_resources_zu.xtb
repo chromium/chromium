@@ -125,6 +125,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1136712381129578788">Ukhiye wokuqinisekisa ubunikazi uvinjelwe ngoba i-PIN engalungile ifakwe izikhathi eziningi. Ukuze uwuvule, ususe uphine uwufake.</translation>
 <translation id="1137589305610962734">idatha yesikhashana</translation>
 <translation id="1137673463384776352">Vula isixhumanisi ku-<ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Isaziso Esisha}one{Izaziso Ezintsha ezingu-#}other{Izaziso Ezintsha ezingu-#}}</translation>
 <translation id="1139343347646843679">Kube nephutha ngenkathi kulungiselelwa i-Linux. Sicela uxhumane nomlawuli wakho.</translation>
 <translation id="1140351953533677694">Finyelela amadivayisi wakho we-Bluetooth nawomkhiqizo</translation>
 <translation id="114036956334641753">Umsindo namagama-ncazo</translation>
@@ -1670,6 +1671,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="291056154577034373">AKUFUNDIWE</translation>
 <translation id="2910718431259223434">Okuthile akuhambanga kahle. Sicela uzame futhi noma uxhumane nomnikazi noma umlawuli wedivayisi yakho. Ikhodi yephutha: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Vumela amasayithi ukulondoloza nokufunda idatha yamakhukhi (kunconyiwe)</translation>
+<translation id="2915016304249900997">Imininingwane ifihliwe ngenkathi wabelane ngesikrini sakho</translation>
 <translation id="2915102088417824677">Buka ilogi yomsebenzi</translation>
 <translation id="2915873080513663243">Skena ngokuzenzakalela</translation>
 <translation id="2916073183900451334">Ukucindezela ithebhu kukhasi lewebhu kugqamisa izixhumanisi, kanye nezinkambu zefomu</translation>
@@ -2440,6 +2442,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="3819257035322786455">Yenza isipele</translation>
 <translation id="3819261658055281761">Isistimu ihlulekile ukugcina ithokheni yokufinyelela ye-API yesikhathi eside yale divayisi.</translation>
 <translation id="3819800052061700452">Isikrini esigcwele</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Bonisa}one{Bonisa Konke}other{Bonisa Konke}}</translation>
 <translation id="3820749202859700794">I-SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Isandiso sivunyelwe}one{# izandiso ezivunyelwe}other{# izandiso ezivunyelwe}}</translation>
 <translation id="3822559385185038546">Lo mmeleli usetshenziswa umlawuli wakho</translation>
@@ -2829,6 +2832,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="4285498937028063278">Susa ukuphina</translation>
 <translation id="428565720843367874">Isofthiwe yokulwa namagciwane yehluleke ngokungalindelekile ngenkathi iskena leli fayela.</translation>
 <translation id="4287099557599763816">Isifundi sesikrini</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Bonisa}one{Bonisa Konke}other{Bonisa Konke}}</translation>
 <translation id="4289372044984810120">Lawula i-akhawunti yakho lapha. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Ukubuka konke</translation>
 <translation id="4295072614469448764">Uhlelo lokuseenza luyatholakala kutheminali yakho. Kungaba nesithonjana kusiqalisi sakho.</translation>
@@ -6149,6 +6153,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="820568752112382238">Amasayithi avakashelwe kaningi</translation>
 <translation id="8206745257863499010">I-Bluesy</translation>
 <translation id="8206859287963243715">Iselula</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Isaziso esisha}one{Izaziso ezintsha ezingu-#}other{Izaziso ezintsha ezingu-#}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Ukulanda kuyaqhubeka}one{Ukulanda kuyaqhubeka}other{Ukulanda kuyaqhubeka}}</translation>
 <translation id="8213449224684199188">Kufakwe imodi yesithombe</translation>
 <translation id="8213577208796878755">Enye idivayisi eyodwa etholakalayo.</translation>

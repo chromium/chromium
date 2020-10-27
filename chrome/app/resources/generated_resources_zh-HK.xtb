@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。如要解鎖，請移除安全密鑰後重新插入。</translation>
 <translation id="1137589305610962734">暫存資料</translation>
 <translation id="1137673463384776352">在「<ph name="APP" />」中開啟連結</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
 <translation id="1139343347646843679">設定 Linux 時發生錯誤。請聯絡您的管理員。</translation>
 <translation id="1140351953533677694">存取您的藍牙和序列裝置</translation>
 <translation id="114036956334641753">音訊和字幕</translation>
@@ -1671,6 +1672,7 @@
 <translation id="291056154577034373">未讀</translation>
 <translation id="2910718431259223434">發生錯誤。請再試一次，或聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2913331724188855103">允許網站儲存及讀取 Cookie 資料 (建議)</translation>
+<translation id="2915016304249900997">分享螢幕畫面時，系統會隱藏詳情</translation>
 <translation id="2915102088417824677">查看活動記錄</translation>
 <translation id="2915873080513663243">自動掃瞄</translation>
 <translation id="2916073183900451334">在網頁上按 Tab 鍵可反白顯示連結和表格欄位</translation>
@@ -2076,6 +2078,7 @@
 <translation id="3428419049384081277">您已登入！</translation>
 <translation id="3428747202529429621">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性</translation>
 <translation id="3428800329481094896">正在擷取 Linux 容器 SSH 密鑰</translation>
+<translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
 <translation id="3432227430032737297">移除所有顯示項目</translation>
 <translation id="3432757130254800023">傳送要在區域網絡顯示的音效檔案和影片</translation>
@@ -2440,6 +2443,7 @@
 <translation id="3819257035322786455">備份</translation>
 <translation id="3819261658055281761">系統無法為此裝置儲存長期 API 存取憑證。</translation>
 <translation id="3819800052061700452">全螢幕(&amp;F)</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{顯示}other{顯示全部}}</translation>
 <translation id="3820749202859700794">SECG 橢圓曲線 secp521r1 (亦稱為 NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{已核准 1 個擴充程式}other{已核准 # 個擴充程式}}</translation>
 <translation id="3822559385185038546">管理員已強制執行此 Proxy</translation>
@@ -2501,6 +2505,7 @@
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3881478300875776315">顯示較少行</translation>
 <translation id="3882165008614329320">相機或檔案中的現有影片</translation>
+<translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">您想存取此網站的要求已傳送至<ph name="NAME" /></translation>
 <translation id="3888550877729210209">正在使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi Sync</translation>
@@ -2829,6 +2834,7 @@
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428565720843367874">掃描這個檔案時，防毒軟件發生意外錯誤。</translation>
 <translation id="4287099557599763816">螢幕閱讀器</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{顯示}other{顯示全部}}</translation>
 <translation id="4289372044984810120">請在這裡管理帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">概覽</translation>
 <translation id="4295072614469448764">應用程式已在終端機上完成安裝，其圖示可能會在啟動器中顯示。</translation>
@@ -4354,6 +4360,7 @@
 <translation id="6112727384379533756">新增票證</translation>
 <translation id="6112931163620622315">請檢查手機</translation>
 <translation id="6112952769866305444">編輯使用者、<ph name="PROFILE_NAME" /> 與 <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">設定 Chrome 瀏覽器和 <ph name="DEVICE_TYPE" /> 啟動器的預設搜尋引擎</translation>
 <translation id="6113942107547980621">如要使用 Smart Lock，請在手機上切換至主要使用者設定檔</translation>
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
 <translation id="6120205520491252677">將這個網頁固定到 [開始] 螢幕…</translation>
@@ -5220,6 +5227,7 @@
 <translation id="7140928199327930795">沒有其他可用裝置。</translation>
 <translation id="7141105143012495934">系統無法擷取您帳戶的詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="7143207342074048698">正在連接</translation>
+<translation id="7143358760238281735">沒有可用的應用程式</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
@@ -5691,6 +5699,7 @@
 <translation id="7707922173985738739">使用流動數據</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">和 Cast…</translation>
+<translation id="7712739869553853093">列印預覽對話框</translation>
 <translation id="7712836429117959503">不明的擴充程式 (ID 為 <ph name="EXTENSION_ID" />)</translation>
 <translation id="7714307061282548371">已允許來自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="7714464543167945231">憑證</translation>
@@ -6143,6 +6152,7 @@
 <translation id="820568752112382238">最常瀏覽的網站</translation>
 <translation id="8206745257863499010">藍調</translation>
 <translation id="8206859287963243715">蜂窩</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在進行一項下載}other{正在進行多項下載}}</translation>
 <translation id="8213449224684199188">進入咗相片模式</translation>
 <translation id="8213577208796878755">有一部可用裝置。</translation>

@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">De beveiligingssleutel is vergrendeld omdat je te vaak een onjuiste pincode hebt ingevoerd. Ontgrendel de sleutel door deze te verwijderen en opnieuw te plaatsen.</translation>
 <translation id="1137589305610962734">tijdelijke gegevens</translation>
 <translation id="1137673463384776352">Link openen in <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nieuwe melding}other{# nieuwe meldingen}}</translation>
 <translation id="1139343347646843679">Er is een fout opgetreden bij het configureren van Linux. Neem contact op met je beheerder.</translation>
 <translation id="1140351953533677694">Toegang tot je seriële en Bluetooth-apparaten</translation>
 <translation id="114036956334641753">Audio en ondertiteling</translation>
@@ -1672,6 +1673,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="291056154577034373">ONGELEZEN</translation>
 <translation id="2910718431259223434">Er is iets misgegaan. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Sites toestaan cookiegegevens op te slaan en te lezen (aanbevolen)</translation>
+<translation id="2915016304249900997">Details zijn verborgen terwijl je je scherm deelt</translation>
 <translation id="2915102088417824677">Activiteitenlogboek bekijken</translation>
 <translation id="2915873080513663243">Automatisch scannen</translation>
 <translation id="2916073183900451334">Als je op een webpagina op Tab drukt, worden links en velden in formulieren gemarkeerd</translation>
@@ -2442,6 +2444,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3819257035322786455">Back-up</translation>
 <translation id="3819261658055281761">Het opslaan van de langdurige API-toegangstoken voor dit apparaat is mislukt.</translation>
 <translation id="3819800052061700452">&amp;Volledig scherm</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Weergeven}other{Alles weergeven}}</translation>
 <translation id="3820749202859700794">Elliptische SECG-kromme secp521r1 (ook wel NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Een extensie is goedgekeurd}other{# extensies zijn goedgekeurd}}</translation>
 <translation id="3822559385185038546">Deze proxy wordt afgedwongen door je beheerder</translation>
@@ -2832,6 +2835,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428565720843367874">Tijdens het scannen van dit bestand met antivirussoftware is er een onverwachte fout opgetreden.</translation>
 <translation id="4287099557599763816">Schermlezer</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Weergeven}other{Alles weergeven}}</translation>
 <translation id="4289372044984810120">Je kunt hier je accounts beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Overzicht</translation>
 <translation id="4295072614469448764">De app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
@@ -6149,6 +6153,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="820568752112382238">Meest bezochte sites</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobiel</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nieuwe melding}other{# nieuwe meldingen}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download wordt uitgevoerd}other{Downloads worden uitgevoerd}}</translation>
 <translation id="8213449224684199188">Fotomodus geopend</translation>
 <translation id="8213577208796878755">Eén ander beschikbaar apparaat.</translation>

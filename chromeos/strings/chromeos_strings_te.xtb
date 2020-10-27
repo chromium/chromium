@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">ప్రింట్ అయింది</translation>
 <translation id="1979103255016296513">పాస్‌వర్డ్‌ మార్చాల్సిన గడువు ముగిసింది</translation>
 <translation id="2049639323467105390">ఈ పరికరం <ph name="DOMAIN" /> ద్వారా నిర్వహించబడుతుంది.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయి</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">సమీప పరికరాలను కనుగొనడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ప్రయత్నాలు మిగిలి ఉన్నాయి</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నం మిగిలి ఉంది}other{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చెయ్యండి</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
 <translation id="4932733599132424254">తేదీ</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" />, ఈ యూజర్‌ను మేనేజ్ చేస్తుంది, ఇంకా అది సెట్టింగ్‌లను రిమోట్‌గా మేనేజ్ చేయవచ్చు, యూజర్ యాక్టివిటీని మానిటర్ చేయవచ్చు.</translation>
 <translation id="520299634122159966">స్కానర్‌లు అందుబాటులో లేవు</translation>
 <translation id="5212543919916444558">నేను సహాయం అందించగలిగేలా మీ స్క్రీన్‌పై నాకు ఏదీ కనిపించలేదు. మైక్‌ను నొక్కి, నన్ను ఏదైనా అడగడానికి ప్రయత్నించండి.</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>

@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">A chave de segurança está bloqueada porque foi introduzido o PIN incorreto demasiadas vezes. Para a desbloquear, remova-a e volte a inseri-la.</translation>
 <translation id="1137589305610962734">dados temporários</translation>
 <translation id="1137673463384776352">Abrir link na aplicação <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}other{# novas notificações}}</translation>
 <translation id="1139343347646843679">Ocorreu um erro ao configurar o Linux. Contacte o seu administrador.</translation>
 <translation id="1140351953533677694">Aceder aos dispositivos Bluetooth e de série</translation>
 <translation id="114036956334641753">Áudio e legendas</translation>
@@ -1671,6 +1672,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="291056154577034373">NÃO LIDAS</translation>
 <translation id="2910718431259223434">Ocorreu um erro. Tente novamente ou contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Permitir que os sites guardem e leiam dados de cookies (recomendado)</translation>
+<translation id="2915016304249900997">Os detalhes estão ocultos durante a partilha do ecrã.</translation>
 <translation id="2915102088417824677">Ver o registo de atividade</translation>
 <translation id="2915873080513663243">Análise automática</translation>
 <translation id="2916073183900451334">Premir Separador numa página Web realça links e campos de formulários</translation>
@@ -2442,6 +2444,7 @@ Pretende pará-lo?</translation>
 <translation id="3819257035322786455">Cópia de segurança</translation>
 <translation id="3819261658055281761">O sistema não conseguiu guardar a chave de acesso da API de longo prazo para este dispositivo.</translation>
 <translation id="3819800052061700452">&amp;Ecrã inteiro</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar tudo}}</translation>
 <translation id="3820749202859700794">SECG de curva elíptica secp521r1 (também denominada NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Uma extensão foi aprovada}other{# extensões foram aprovadas}}</translation>
 <translation id="3822559385185038546">Este proxy é imposto pelo gestor</translation>
@@ -2832,6 +2835,7 @@ Pretende pará-lo?</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="428565720843367874">O software antivírus falhou inesperadamente enquanto analisava este ficheiro.</translation>
 <translation id="4287099557599763816">Leitor de ecrã</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar tudo}}</translation>
 <translation id="4289372044984810120">Faz a gestão das tuas contas aqui. <ph name="LINK_BEGIN" />Sabe mais<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Vista geral</translation>
 <translation id="4295072614469448764">A aplicação está disponível no terminal. Também pode existir um ícone no Launcher.</translation>
@@ -6150,6 +6154,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="820568752112382238">Sites mais visitados</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}other{# novas notificações}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Transferência em curso}other{Transferências em curso}}</translation>
 <translation id="8213449224684199188">Entrou no modo de foto</translation>
 <translation id="8213577208796878755">Mais um dispositivo disponível.</translation>

@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1979103255016296513">已超過密碼變更期限</translation>
 <translation id="2049639323467105390">這個裝置由 <ph name="DOMAIN" /> 管理。</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">開啟藍牙即可偵測附近的裝置</translation>
 <translation id="2375079107209812402">剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /> 次</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2872961005593481000">關閉</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4917889632206600977">已停止 - 紙張用盡</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> 會管理這位使用者，而且可能會從遠端管理設定並監控使用者活動。</translation>
 <translation id="520299634122159966">沒有可用的掃描器</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
 請輕觸麥克風圖示，直接說出你的問題。</translation>

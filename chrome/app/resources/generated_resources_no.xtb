@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Sikkerhetsnøkkelen er låst fordi feil PIN-kode ble skrevet inn for mange ganger. For å låse den opp, ta den ut og sett den inn på nytt.</translation>
 <translation id="1137589305610962734">midlertidige data</translation>
 <translation id="1137673463384776352">Åpne linken i <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nytt varsel}other{# nye varsler}}</translation>
 <translation id="1139343347646843679">Det oppsto en feil under konfigureringen av Linux. Kontakt administratoren din.</translation>
 <translation id="1140351953533677694">bruke Bluetooth og de seriekoblede enhetene dine</translation>
 <translation id="114036956334641753">Lyd og teksting</translation>
@@ -1669,6 +1670,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="291056154577034373">ULEST</translation>
 <translation id="2910718431259223434">Noe gikk galt. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Tillat at nettsteder lagrer og leser data i informasjonskapsler (anbefales)</translation>
+<translation id="2915016304249900997">Detaljene skjules mens du deler skjermen</translation>
 <translation id="2915102088417824677">Se aktivitetsloggen</translation>
 <translation id="2915873080513663243">Automatisk skanning</translation>
 <translation id="2916073183900451334">Trykk på Tab på en nettside for å utheve linker og skjemafelter</translation>
@@ -2439,6 +2441,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3819257035322786455">Sikkerhetskopi</translation>
 <translation id="3819261658055281761">Systemet kunne ikke lagre noe langvarig API-tilgangstoken for denne enheten.</translation>
 <translation id="3819800052061700452">&amp;Full skjerm</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Vis}other{Vis alle}}</translation>
 <translation id="3820749202859700794">SECG elliptisk kurve secp521r1 (også kjent som NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{En utvidelse er godkjent}other{# utvidelser er godkjent}}</translation>
 <translation id="3822559385185038546">Administratoren din kontrollerer denne proxy-tjeneren</translation>
@@ -2827,6 +2830,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="428565720843367874">Anti-virusprogramvare avsluttet uventet under skanning denne filen.</translation>
 <translation id="4287099557599763816">Skjermleser</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Vis}other{Vis alle}}</translation>
 <translation id="4289372044984810120">Administrer kontoene dine her. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Oversikt</translation>
 <translation id="4295072614469448764">Appen er tilgjengelig i terminalen din. Det kan også være et ikon i appoversikten.</translation>
@@ -6145,6 +6149,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="820568752112382238">Mest besøkte nettsteder</translation>
 <translation id="8206745257863499010">Plystre</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nytt varsel}other{# nye varsler}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Nedlasting pågår}other{Nedlastinger pågår}}</translation>
 <translation id="8213449224684199188">Fotomodus er aktivert</translation>
 <translation id="8213577208796878755">Én annen tilgjengelig enhet.</translation>

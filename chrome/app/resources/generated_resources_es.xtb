@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">La llave de seguridad está bloqueada porque se ha introducido el PIN de forma incorrecta demasiadas veces. Para desbloquearla, quítala y vuelve a introducirla.</translation>
 <translation id="1137589305610962734">datos temporales</translation>
 <translation id="1137673463384776352">Abrir enlace en <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="1139343347646843679">No se ha podido configurar Linux. Ponte en contacto con tu administrador.</translation>
 <translation id="1140351953533677694">Acceder a tus dispositivos en serie y Bluetooth</translation>
 <translation id="114036956334641753">Audio y subtítulos</translation>
@@ -371,7 +372,7 @@
 <translation id="1422159345171879700">Cargar secuencias de comandos no seguras</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="142655739075382478">Se ha bloqueado <ph name="APP_NAME" /></translation>
-<translation id="1426870617281699524">Haz clic en Volver a intentarlo y acepta el mensaje que aparece en tu ordenador</translation>
+<translation id="1426870617281699524">Haz clic en Reintentar y acepta el mensaje que aparece en tu ordenador</translation>
 <translation id="1427179946227469514">Tono de síntesis de voz</translation>
 <translation id="1427269577154060167">País</translation>
 <translation id="142758023928848008">Habilitar teclas persistentes (para utilizar combinaciones de teclas sin tocarlas simultáneamente)</translation>
@@ -1672,6 +1673,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="291056154577034373">NO LEÍDO</translation>
 <translation id="2910718431259223434">Se ha producido un error. Vuelve a intentarlo o ponte en contacto con el propietario o el administrador del dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Permitir que los sitios guarden y lean datos de cookies (recomendado)</translation>
+<translation id="2915016304249900997">Los detalles se ocultan mientras compartes tu pantalla</translation>
 <translation id="2915102088417824677">Ver registro de actividad</translation>
 <translation id="2915873080513663243">Búsqueda automática</translation>
 <translation id="2916073183900451334">El tabulador permite destacar los enlaces de una página web, así como los campos de formulario.</translation>
@@ -2442,6 +2444,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3819257035322786455">Copia de seguridad</translation>
 <translation id="3819261658055281761">El sistema no ha podido almacenar el token de acceso a la API a largo plazo de este dispositivo.</translation>
 <translation id="3819800052061700452">&amp;Pantalla completa</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar todo}}</translation>
 <translation id="3820749202859700794">Curva elíptica SECG secp521r1 (también denominada NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Se ha aprobado 1 extensión}other{Se han aprobado # extensiones}}</translation>
 <translation id="3822559385185038546">Tu administrador obliga a usar este proxy</translation>
@@ -2831,6 +2834,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4285498937028063278">No fijar</translation>
 <translation id="428565720843367874">Se ha producido un error inesperado del programa antivirus al analizar este archivo.</translation>
 <translation id="4287099557599763816">Lector de pantalla</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar todo}}</translation>
 <translation id="4289372044984810120">Gestiona tus cuentas aquí. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4295072614469448764">La aplicación está disponible en tu terminal. Es posible que también haya un icono en el menú de aplicaciones.</translation>
@@ -4579,7 +4583,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6370021412472292592">No se ha podido cargar el archivo de manifiesto.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
-<translation id="6374469231428023295">Volver a intentarlo</translation>
+<translation id="6374469231428023295">Reintentar</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Aceptar y continuar</translation>
 <translation id="6384275966486438344">Cambiar configuración de búsqueda por: <ph name="SEARCH_HOST" /></translation>
@@ -5224,7 +5228,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7141105143012495934">Se ha producido un error al iniciar sesión porque no ha sido posible recuperar la información de la cuenta. Ponte en contacto con el administrador o vuelve a intentarlo.</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7143358760238281735">No hay aplicaciones disponibles</translation>
-<translation id="7144878232160441200">Volver a intentar</translation>
+<translation id="7144878232160441200">Reintentar</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="715118844758971915">Impresoras clásicas</translation>
@@ -5949,7 +5953,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
 <translation id="797394244396603170">Selecciona el dispositivo con el que quieras compartir archivos</translation>
 <translation id="7973962044839454485">Se ha producido un error en la autenticación de PPP porque la contraseña o el nombre de usuario son incorrectos</translation>
-<translation id="7974566588408714340">Intentar de nuevo con <ph name="EXTENSIONNAME" /></translation>
+<translation id="7974566588408714340">Reintentar con <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Reajuste</translation>
 <translation id="7977404132325989121">&amp;Asignar nombre a ventana...</translation>
 <translation id="7978412674231730200">Clave privada</translation>
@@ -6149,6 +6153,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="820568752112382238">Sitios web más visitados</translation>
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Móvil</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
 <translation id="8213449224684199188">Se ha cambiado al modo de foto</translation>
 <translation id="8213577208796878755">Otro dispositivo disponible.</translation>
@@ -6578,7 +6583,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8724405322205516354">Cuando veas este icono, utiliza tu huella digital para identificarte o aprobar compras.</translation>
 <translation id="8724409975248965964">Huella digital añadida</translation>
 <translation id="8724859055372736596">&amp;Mostrar en carpeta</translation>
-<translation id="8725066075913043281">Volver a intentarlo</translation>
+<translation id="8725066075913043281">Reintentar</translation>
 <translation id="8725178340343806893">Favoritos/Marcadores</translation>
 <translation id="8726206820263995930">Error al recuperar la configuración de política del servidor (<ph name="CLIENT_ERROR" />)</translation>
 <translation id="8727154974495727220">Cuando hayas configurado tu <ph name="DEVICE_TYPE" />, pulsa el botón del Asistente o di "Ok Google" para recibir ayuda en cualquier momento. Si quieres realizar cambios, accede a los ajustes del Asistente.</translation>
