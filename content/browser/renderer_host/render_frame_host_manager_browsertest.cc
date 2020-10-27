@@ -8864,9 +8864,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // anything without SiteIsolation.
   if (!AreAllSitesIsolatedForTesting())
     return;
-  // TODO(https://crbug.com/1064944): Fix this test and remove this.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
 
   // 1. Navigate to A1(B2, B3(B4), C5).
   StartEmbeddedServer();

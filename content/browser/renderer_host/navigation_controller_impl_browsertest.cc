@@ -6462,10 +6462,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       ExecJs(shell()->web_contents(), "history.forward(); history.forward();"));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
-  // TODO(https://crbug.com/1102358): Remove this when test passes. It is
-  // currently failing on Android Oreo.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
   EXPECT_EQ(url_b, root->current_url());
   NavigationEntry* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(url_b, entry->GetURL());
@@ -10748,9 +10744,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 #endif
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        MAYBE_SameDocumentNavigationToHttpPortZero) {
-  // TODO(https://crbug.com/1100745): Remove this when test passes.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
   GURL page_url(embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
@@ -10838,9 +10831,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // Navigating a subframe to the same URL should not generate a history entry.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NoHistoryOnNavigationToSameUrl) {
-  // TODO(http://crbug.com/1068965): Remove this when test passes.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
   {
     GURL frame_url = embedded_test_server()->GetURL(
         "a.com", "/cross_site_iframe_factory.html?a(a)");
