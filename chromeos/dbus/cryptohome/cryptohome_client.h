@@ -481,29 +481,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
       const std::string& payload,
       DBusMethodCallback<bool> callback) = 0;
 
-  // Deletes certified keys as specified by |key_type| and |key_prefix|.  The
-  // |callback| will be called when the operation completes.  If the operation
-  // succeeds, the callback |result| parameter will be true.  If |key_type| is
-  // KEY_USER, a |id| must be provided.  Otherwise |id| is ignored.
-  // All keys where the key name has a prefix matching |key_prefix| will be
-  // deleted.  All meta-data associated with the key, including certificates,
-  // will also be deleted.
-  virtual void TpmAttestationDeleteKeysByPrefix(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_prefix,
-      DBusMethodCallback<bool> callback) = 0;
-
-  // Deletes certified keys as specified by |key_type| and |key_name|.  The
-  // |callback| will be called when the operation completes.  If the operation
-  // succeeds, the callback |result| parameter will be true.  If |key_type| is
-  // KEY_USER, a |id| must be provided.  Otherwise |id| is ignored.
-  // Note that if the key does not exist, the operation will still succeed.
-  virtual void TpmAttestationDeleteKey(attestation::AttestationKeyType key_type,
-                                       const cryptohome::AccountIdentifier& id,
-                                       const std::string& key_name,
-                                       DBusMethodCallback<bool> callback) = 0;
-
   // Asynchronously gets the underlying TPM version information and passes it to
   // the given callback.
   virtual void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) = 0;
