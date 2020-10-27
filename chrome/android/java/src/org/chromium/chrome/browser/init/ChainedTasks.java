@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.init;
 import android.util.Pair;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
@@ -27,10 +28,14 @@ public class ChainedTasks {
 
     private final Runnable mRunAndPost = new Runnable() {
         @Override
+        @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         public void run() {
             if (mTasks.isEmpty()) return;
             Pair<TaskTraits, Runnable> pair = mTasks.pop();
-            pair.second.run();
+            try (TraceEvent e = TraceEvent.scoped(
+                         "ChainedTask.run: " + pair.second.getClass().getName())) {
+                pair.second.run();
+            }
             if (!mTasks.isEmpty()) PostTask.postTask(mTasks.peek().first, this);
         }
     };

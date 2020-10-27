@@ -51,7 +51,7 @@ public abstract class AsyncTask<Result> {
     private static final StealRunnableHandler STEAL_RUNNABLE_HANDLER = new StealRunnableHandler();
 
     private final Callable<Result> mWorker;
-    private final FutureTask<Result> mFuture;
+    private final NamedFutureTask mFuture;
 
     private volatile @Status int mStatus = Status.PENDING;
 
@@ -395,6 +395,14 @@ public abstract class AsyncTask<Result> {
 
         Class getBlamedClass() {
             return AsyncTask.this.getClass();
+        }
+
+        @Override
+        @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
+        public void run() {
+            try (TraceEvent e = TraceEvent.scoped("AsyncTask.run: " + mFuture.getBlamedClass())) {
+                super.run();
+            }
         }
 
         @Override
