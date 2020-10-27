@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_request_callback_collection.h"
-#include "third_party/blink/renderer/modules/xr/navigator_xr.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
@@ -133,20 +132,10 @@ void VideoFrameCallbackRequesterImpl::OnImmersiveFrame() {
 }
 
 XRFrameProvider* VideoFrameCallbackRequesterImpl::GetXRFrameProvider() {
-  auto& document = GetSupplementable()->GetDocument();
-
-  // Do not force the lazy creation of the NavigatorXR by accessing it through
-  // NavigatorXR::From(). If it doesn't exist already exist, the webpage isn't
-  // using XR.
-  if (!NavigatorXR::AlreadyExists(document))
-    return nullptr;
-
-  auto* system = NavigatorXR::From(document)->xr();
-
-  if (!system)
-    return nullptr;
-
-  return system->frameProvider();
+  // Do not force the lazy creation of the XRSystem.
+  // If it doesn't exist already exist, the webpage isn't using XR.
+  auto* system = XRSystem::FromIfExists(GetSupplementable()->GetDocument());
+  return system ? system->frameProvider() : nullptr;
 }
 
 bool VideoFrameCallbackRequesterImpl::TryScheduleImmersiveXRSessionRaf() {

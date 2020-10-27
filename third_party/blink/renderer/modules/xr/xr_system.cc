@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
@@ -761,17 +762,56 @@ device::mojom::blink::XRSessionOptionsPtr XRSystem::XRSessionOptionsFromQuery(
   return session_options;
 }
 
-XRSystem::XRSystem(LocalFrame& frame)
-    : ExecutionContextLifecycleObserver(frame.DomWindow()),
-      FocusChangedObserver(frame.GetPage()),
-      service_(frame.DomWindow()),
-      environment_provider_(frame.DomWindow()),
-      receiver_(this, frame.DomWindow()),
-      navigation_start_(
-          frame.Loader().GetDocumentLoader()->GetTiming().NavigationStart()),
-      feature_handle_for_scheduler_(frame.GetFrameScheduler()->RegisterFeature(
-          SchedulingPolicy::Feature::kWebXR,
-          {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
+const char XRSystem::kSupplementName[] = "XRSystem";
+
+XRSystem* XRSystem::FromIfExists(Document& document) {
+  if (!document.domWindow())
+    return nullptr;
+  return Supplement<Navigator>::From<XRSystem>(
+      document.domWindow()->navigator());
+}
+
+XRSystem* XRSystem::From(Document& document) {
+  return document.domWindow() ? xr(*document.domWindow()->navigator())
+                              : nullptr;
+}
+
+XRSystem* XRSystem::xr(Navigator& navigator) {
+  LocalDOMWindow* window = navigator.DomWindow();
+  if (!window)
+    return nullptr;
+
+  XRSystem* xr = Supplement<Navigator>::From<XRSystem>(navigator);
+  if (!xr) {
+    xr = MakeGarbageCollected<XRSystem>(navigator);
+    ProvideTo(navigator, xr);
+
+    ukm::builders::XR_WebXR(window->UkmSourceID())
+        .SetDidUseNavigatorXR(1)
+        .Record(window->UkmRecorder());
+  }
+  return xr;
+}
+
+XRSystem::XRSystem(Navigator& navigator)
+    : Supplement<Navigator>(navigator),
+      ExecutionContextLifecycleObserver(navigator.DomWindow()),
+      FocusChangedObserver(navigator.DomWindow()->GetFrame()->GetPage()),
+      service_(navigator.DomWindow()),
+      environment_provider_(navigator.DomWindow()),
+      receiver_(this, navigator.DomWindow()),
+      navigation_start_(navigator.DomWindow()
+                            ->document()
+                            ->Loader()
+                            ->GetTiming()
+                            .NavigationStart()),
+      feature_handle_for_scheduler_(
+          navigator.DomWindow()
+              ->GetFrame()
+              ->GetFrameScheduler()
+              ->RegisterFeature(
+                  SchedulingPolicy::Feature::kWebXR,
+                  {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
 
 void XRSystem::FocusedFrameChanged() {
   // Tell all sessions that focus changed.
@@ -1637,6 +1677,7 @@ void XRSystem::Trace(Visitor* visitor) const {
   visitor->Trace(outstanding_request_queries_);
   visitor->Trace(fullscreen_event_manager_);
   visitor->Trace(fullscreen_exit_observer_);
+  Supplement<Navigator>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
 }

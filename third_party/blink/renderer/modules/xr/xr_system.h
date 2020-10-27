@@ -24,18 +24,20 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class Navigator;
 class ScriptPromiseResolver;
 class XRFrameProvider;
 class XRSessionInit;
 
 // Implementation of the XRSystem interface according to
 // https://immersive-web.github.io/webxr/#xrsystem-interface . This is created
-// lazily via the NavigatorXR class on first access to the navigator.xr attrib,
+// lazily on first access to the navigator.xr attrib,
 // and disposed when the execution context is destroyed or on mojo communication
 // errors with the browser/device process.
 //
@@ -61,14 +63,21 @@ class XRSessionInit;
 // The XRSystem keeps weak references to XRSession objects after they were
 // returned through a successful requestSession promise, but does not own them.
 class XRSystem final : public EventTargetWithInlineData,
+                       public Supplement<Navigator>,
                        public ExecutionContextLifecycleObserver,
                        public device::mojom::blink::VRServiceClient,
                        public FocusChangedObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const char kSupplementName[];
+  static XRSystem* From(Document&);
+  static XRSystem* FromIfExists(Document&);
+
+  static XRSystem* xr(Navigator&);
+
   // TODO(crbug.com/976796): Fix lint errors.
-  explicit XRSystem(LocalFrame& frame);
+  explicit XRSystem(Navigator&);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(devicechange, kDevicechange)
 

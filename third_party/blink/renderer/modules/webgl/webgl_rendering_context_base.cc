@@ -105,7 +105,6 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_oes.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_video_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_video_texture_enum.h"
-#include "third_party/blink/renderer/modules/xr/navigator_xr.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
@@ -818,9 +817,8 @@ bool WebGLRenderingContextBase::MakeXrCompatibleSync(
   device::mojom::blink::XrCompatibleResult xr_compatible_result =
       device::mojom::blink::XrCompatibleResult::kNoDeviceAvailable;
   HTMLCanvasElement* canvas = static_cast<HTMLCanvasElement*>(host);
-  NavigatorXR* navigator_xr = NavigatorXR::From(canvas->GetDocument());
-  if (navigator_xr)
-    navigator_xr->xr()->MakeXrCompatibleSync(&xr_compatible_result);
+  if (XRSystem* xr = XRSystem::From(canvas->GetDocument()))
+    xr->MakeXrCompatibleSync(&xr_compatible_result);
 
   return IsXrCompatibleFromResult(xr_compatible_result);
 }
@@ -832,15 +830,15 @@ void WebGLRenderingContextBase::MakeXrCompatibleAsync() {
     return;
   }
 
-  NavigatorXR* navigator_xr = NavigatorXR::From(canvas()->GetDocument());
-  if (!navigator_xr) {
+  XRSystem* xr = XRSystem::From(canvas()->GetDocument());
+  if (!xr) {
     xr_compatible_ = false;
     CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
     return;
   }
 
   // The promise will be completed on the callback.
-  navigator_xr->xr()->MakeXrCompatibleAsync(
+  xr->MakeXrCompatibleAsync(
       WTF::Bind(&WebGLRenderingContextBase::OnMakeXrCompatibleFinished,
                 WrapWeakPersistent(this)));
 }

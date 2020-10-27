@@ -7,8 +7,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 blink_modules_sources("xr") {
   sources = [
     "element_xr.h",
-    "navigator_xr.cc",
-    "navigator_xr.h",
     "type_converters.cc",
     "type_converters.h",
     "xr_anchor.cc",
