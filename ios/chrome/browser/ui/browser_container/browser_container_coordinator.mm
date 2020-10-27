@@ -9,7 +9,7 @@
 #include "base/check.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/screen_time/features.h"
+#include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
@@ -18,9 +18,10 @@
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "url/gurl.h"
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
+#import "ios/chrome/browser/screen_time/features.h"
 #import "ios/chrome/browser/ui/screen_time/screen_time_coordinator.h"
-#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -98,10 +99,10 @@
 // Sets up the ScreenTime coordinator, which installs and manages the ScreenTime
 // blocking view.
 - (void)setUpScreenTimeIfEnabled {
+#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
   if (!IsScreenTimeIntegrationEnabled())
     return;
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   if (@available(iOS 14, *)) {
     ScreenTimeCoordinator* screenTimeCoordinator =
         [[ScreenTimeCoordinator alloc]
@@ -112,7 +113,7 @@
         screenTimeCoordinator.viewController;
     self.screenTimeCoordinator = screenTimeCoordinator;
   }
-#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+#endif
 }
 
 @end

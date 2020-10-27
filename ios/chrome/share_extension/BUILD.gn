@@ -12,6 +12,10 @@ import("//ios/chrome/extension_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
+assert(
+    ios_enable_share_extension,
+    "ios_enable_share_extension must be true to depend on //ios/chrome/share_extension")
+
 group("resources") {
   deps = [ "//ios/chrome/share_extension/strings" ]
 }

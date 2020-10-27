@@ -14,7 +14,7 @@
 #include "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
 #include "ios/chrome/browser/content_settings/cookie_settings_factory.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/credential_provider/credential_provider_service_factory.h"
+#include "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager_factory.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #include "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -41,7 +41,7 @@
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
-#import "ios/chrome/browser/screen_time/features.h"
+#include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/account_consistency_service_factory.h"
@@ -64,9 +64,14 @@
 #include "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+#include "ios/chrome/browser/credential_provider/credential_provider_service_factory.h"
+#endif
+
+#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
+#import "ios/chrome/browser/screen_time/features.h"
 #import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
-#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -108,7 +113,6 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   BrowserDownloadServiceFactory::GetInstance();
   BrowsingDataRemoverFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
-  CredentialProviderServiceFactory::GetInstance();
   DeviceSharingManagerFactory::GetInstance();
   DiscoverFeedServiceFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();
@@ -142,11 +146,15 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
     PolicyBlocklistServiceFactory::GetInstance();
   }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    if (IsScreenTimeIntegrationEnabled()) {
+#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+  CredentialProviderServiceFactory::GetInstance();
+#endif
+
+#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
+  if (IsScreenTimeIntegrationEnabled()) {
+    if (@available(iOS 14, *)) {
       ScreenTimeHistoryDeleterFactory::GetInstance();
     }
   }
-#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+#endif
 }

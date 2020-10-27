@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/credential_provider/credential_provider_support.h"
 
-#include "ios/chrome/browser/ui/util/credential_provider_buildflags.h"
+#include "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
 
 bool IsCredentialProviderExtensionSupported() {
   return BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED);

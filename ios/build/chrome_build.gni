@@ -67,6 +67,9 @@ declare_args() {
   ios_chrome_cpe_entitlements_additions = []
 }
 
+# ScreenTime is only available in iOS 14.0+ SDK.
+ios_enable_screen_time = xcode_version_int >= 1200
+
 # Configure whether breakpad support is enabled.
 breakpad_enabled = is_official_build && is_chrome_branded
 

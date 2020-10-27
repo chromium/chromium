@@ -15,10 +15,11 @@ ios_app_bundle("showcase") {
     ":features",
     "//ios/showcase/core:main",
   ]
-  bundle_deps = [
-    "//ios/chrome/credential_provider_extension:system_strings",
-    "//ios/showcase/core/resources",
-  ]
+  bundle_deps = [ "//ios/showcase/core/resources" ]
+  if (ios_enable_credential_provider_extension) {
+    bundle_deps +=
+        [ "//ios/chrome/credential_provider_extension:system_strings" ]
+  }
   assert_no_deps = ios_assert_no_deps
 }
 

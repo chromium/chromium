@@ -4,6 +4,8 @@
 
 #import "ios/showcase/core/showcase_model.h"
 
+#import "ios/showcase/core/showcase_model_buildflags.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -31,11 +33,13 @@
       showcase::kClassForInstantiationKey : @"StaleCredentialsViewController",
       showcase::kUseCaseKey : @"Credential Provider Stale Credentials UI",
     },
+#if BUILDFLAG(SHOWCASE_CREDENTIAL_PROVIDER_ENABLED)
     @{
       showcase::kClassForDisplayKey : @"CredentialListViewController",
       showcase::kClassForInstantiationKey : @"SCCredentialListCoordinator",
       showcase::kUseCaseKey : @"Credential Provider Credentials List UI",
     },
+#endif
     @{
       showcase::kClassForDisplayKey : @"ContentSuggestionsViewController",
       showcase::kClassForInstantiationKey : @"SCContentSuggestionsCoordinator",
@@ -66,16 +70,20 @@
       showcase::kClassForInstantiationKey : @"UIKitTableViewCellViewController",
       showcase::kUseCaseKey : @"UIKit Table Cells",
     },
+#if BUILDFLAG(SHOWCASE_SEARCH_WIDGET_ENABLED)
     @{
       showcase::kClassForDisplayKey : @"SearchWidgetViewController",
       showcase::kClassForInstantiationKey : @"SCSearchWidgetCoordinator",
       showcase::kUseCaseKey : @"Search Widget",
     },
+#endif
+#if BUILDFLAG(SHOWCASE_CONTENT_WIDGET_ENABLED)
     @{
       showcase::kClassForDisplayKey : @"ContentWidgetViewController",
       showcase::kClassForInstantiationKey : @"SCContentWidgetCoordinator",
       showcase::kUseCaseKey : @"Content Widget",
     },
+#endif
     @{
       showcase::kClassForDisplayKey : @"TextBadgeView",
       showcase::kClassForInstantiationKey : @"SCTextBadgeViewController",

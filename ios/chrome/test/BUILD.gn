@@ -178,7 +178,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/complex_tasks:unit_tests",
     "//ios/chrome/browser/crash_report:unit_tests",
     "//ios/chrome/browser/crash_report/breadcrumbs:unit_tests",
-    "//ios/chrome/browser/credential_provider:unit_tests",
     "//ios/chrome/browser/device_sharing:unit_tests",
     "//ios/chrome/browser/download:unit_tests",
     "//ios/chrome/browser/drag_and_drop:unit_tests",
@@ -337,12 +336,24 @@ test("ios_chrome_unittests") {
     "//ios/chrome/common/credential_provider:unit_tests",
     "//ios/chrome/common/ui/reauthentication:unit_tests",
     "//ios/chrome/common/ui/util:unit_tests",
-    "//ios/chrome/content_widget_extension:unit_tests",
-    "//ios/chrome/credential_provider_extension:unit_tests",
-    "//ios/chrome/search_widget_extension:unit_tests",
     "//ios/public/provider/chrome/browser/signin:unit_tests",
     "//ios/testing:http_server_bundle_data",
   ]
+
+  if (ios_enable_search_widget_extension) {
+    deps += [ "//ios/chrome/search_widget_extension:unit_tests" ]
+  }
+
+  if (ios_enable_content_widget_extension) {
+    deps += [ "//ios/chrome/content_widget_extension:unit_tests" ]
+  }
+
+  if (ios_enable_credential_provider_extension) {
+    deps += [
+      "//ios/chrome/browser/credential_provider:unit_tests",
+      "//ios/chrome/credential_provider_extension:unit_tests",
+    ]
+  }
 
   assert_no_deps = ios_assert_no_deps
 }

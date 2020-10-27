@@ -12,6 +12,10 @@ import("//ios/chrome/extension_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
+assert(
+    ios_enable_credential_provider_extension,
+    "ios_enable_credential_provider_extension must be true to depend on //ios/chrome/credential_provider_extension")
+
 group("resources") {
   deps = [ "//ios/chrome/credential_provider_extension/strings" ]
 }

@@ -2,12 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/ios_sdk.gni")
+import("//build/buildflag_header.gni")
+import("//ios/build/chrome_build.gni")
 
-source_set("screen_time") {
-  # TODO(crbug.com/1123704): remove when it is recommended to build Chromium
-  # with version 12.0 or later of Xcode.
-  if (xcode_version_int >= 1200) {
+buildflag_header("buildflags") {
+  header = "screen_time_buildflags.h"
+  flags = [ "IOS_SCREEN_TIME_ENABLED=$ios_enable_screen_time" ]
+}
+
+if (ios_enable_screen_time) {
+  source_set("feature_flags") {
+    sources = [
+      "features.h",
+      "features.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [ "//base" ]
+  }
+
+  source_set("screen_time") {
     sources = [
       "screen_time_history_deleter.h",
       "screen_time_history_deleter.mm",
@@ -25,13 +38,4 @@ source_set("screen_time") {
       "//net",
     ]
   }
-}
-
-source_set("feature_flags") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [ "//base" ]
 }
