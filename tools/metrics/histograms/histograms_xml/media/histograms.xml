@@ -347,6 +347,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.{AudioProcessingMode}EffectType"
+    enum="AudioEffectType" expires_after="2021-10-22">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Audio effect types detected on audio input streams using the
+    {AudioProcessingMode} audio processing mode. Emitted when the audio input
+    stream is closed but only on Windows platforms. Only uploaded for the case
+    when analog AGC is enabled, i.e., for WebRTC-based audio input streams.
+  </summary>
+  <token key="AudioProcessingMode">
+    <variant name="Default"/>
+    <variant name="Raw"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.CoreAudioDispatchOverrideInitResult"
     enum="CoreAudioDispatchOverrideInitResult" expires_after="2021-04-01">
   <owner>guidou@chromium.org</owner>

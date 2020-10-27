@@ -175,7 +175,7 @@ class AudioInputStreamWrapper {
   explicit AudioInputStreamWrapper(AudioManager* audio_manager)
       : audio_man_(audio_manager) {
     EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
-        AudioDeviceDescription::kDefaultDeviceId, false, &default_params_)));
+        device_id_, false, &default_params_)));
     EXPECT_EQ(format(), AudioParameters::AUDIO_PCM_LOW_LATENCY);
     frames_per_buffer_ = default_params_.frames_per_buffer();
   }
@@ -183,6 +183,15 @@ class AudioInputStreamWrapper {
   AudioInputStreamWrapper(AudioManager* audio_manager,
                           const AudioParameters& default_params)
       : audio_man_(audio_manager), default_params_(default_params) {
+    EXPECT_EQ(format(), AudioParameters::AUDIO_PCM_LOW_LATENCY);
+    frames_per_buffer_ = default_params_.frames_per_buffer();
+  }
+
+  AudioInputStreamWrapper(AudioManager* audio_manager,
+                          const std::string& device_id)
+      : audio_man_(audio_manager), device_id_(device_id) {
+    EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+        device_id_, false, &default_params_)));
     EXPECT_EQ(format(), AudioParameters::AUDIO_PCM_LOW_LATENCY);
     frames_per_buffer_ = default_params_.frames_per_buffer();
   }
@@ -205,20 +214,21 @@ class AudioInputStreamWrapper {
   }
   int sample_rate() const { return default_params_.sample_rate(); }
   int frames_per_buffer() const { return frames_per_buffer_; }
+  std::string device_id() const { return device_id_; }
 
  private:
   AudioInputStream* CreateInputStream() {
     AudioParameters params = default_params_;
     params.set_frames_per_buffer(frames_per_buffer_);
     AudioInputStream* ais = audio_man_->MakeAudioInputStream(
-        params, AudioDeviceDescription::kDefaultDeviceId,
-        base::BindRepeating(&LogCallbackDummy));
+        params, device_id_, base::BindRepeating(&LogCallbackDummy));
     EXPECT_TRUE(ais);
     return ais;
   }
 
   AudioManager* audio_man_;
   AudioParameters default_params_;
+  std::string device_id_ = AudioDeviceDescription::kDefaultDeviceId;
   int frames_per_buffer_;
 };
 
@@ -341,6 +351,26 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamOpenAndClose) {
   ais.Close();
 }
 
+// Test Open(), Close() calling sequences for all available devices.
+TEST_F(WinAudioInputTest, WASAPIAudioInputStreamOpenAndCloseForAllDevices) {
+  AudioDeviceInfoAccessorForTests device_info_accessor(audio_manager_.get());
+  ABORT_AUDIO_TEST_IF_NOT(device_info_accessor.HasAudioInputDevices() &&
+                          CoreAudioUtil::IsSupported());
+
+  // Retrieve a list of all available input devices.
+  media::AudioDeviceDescriptions device_descriptions;
+  device_info_accessor.GetAudioInputDeviceDescriptions(&device_descriptions);
+
+  // Open and close an audio input stream for all available devices.
+  for (const auto& device : device_descriptions) {
+    AudioInputStreamWrapper aisw(audio_manager_.get(), device.unique_id);
+    {
+      ScopedAudioInputStream ais(aisw.Create());
+      EXPECT_TRUE(ais->Open());
+    }
+  }
+}
+
 // Test Open(), Start(), Close() calling sequence.
 TEST_F(WinAudioInputTest, WASAPIAudioInputStreamOpenStartAndClose) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
@@ -362,6 +392,7 @@ TEST_P(WinAudioInputTest, WASAPIAudioInputStreamOpenStartStopAndClose) {
       : feature_list.InitAndDisableFeature(media::kWasapiRawAudioCapture);
   ScopedAudioInputStream ais(
       CreateDefaultAudioInputStream(audio_manager_.get()));
+  EXPECT_TRUE(ais->SetAutomaticGainControl(true));
   EXPECT_TRUE(ais->Open());
   MockAudioInputCallback sink;
   ais->Start(&sink);

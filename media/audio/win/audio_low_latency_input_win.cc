@@ -6,6 +6,8 @@
 
 #include <objbase.h>
 #include <propkey.h>
+#include <windows.devices.enumeration.h>
+#include <windows.media.devices.h>
 
 #include <algorithm>
 #include <cmath>
@@ -15,11 +17,15 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/core_winrt_util.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/vector.h"
+#include "base/win/windows_version.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_features.h"
 #include "media/audio/win/avrt_wrapper_win.h"
@@ -31,11 +37,21 @@
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 
+using ABI::Windows::Foundation::Collections::IVectorView;
+using ABI::Windows::Media::Devices::IMediaDeviceStatics;
+using ABI::Windows::Media::Effects::IAudioCaptureEffectsManager;
+using ABI::Windows::Media::Effects::IAudioEffectsManagerStatics;
+using base::win::GetActivationFactory;
+using base::win::ScopedCoMem;
 using base::win::ScopedCOMInitializer;
+using base::win::ScopedHString;
+using Microsoft::WRL::ComPtr;
 
 namespace media {
 
 namespace {
+
+constexpr char kUwpDeviceIdPrefix[] = "\\\\?\\SWD#MMDEVAPI#";
 
 constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
 
@@ -135,6 +151,49 @@ const char* StreamOpenResultToString(
   return "UNKNOWN";
 }
 
+const char* EffectTypeToString(
+    ABI::Windows::Media::Effects::AudioEffectType type) {
+  switch (type) {
+    case ABI::Windows::Media::Effects::AudioEffectType_Other:
+      return "Other/None";
+    case ABI::Windows::Media::Effects::AudioEffectType_AcousticEchoCancellation:
+      return "AcousticEchoCancellation";
+    case ABI::Windows::Media::Effects::AudioEffectType_NoiseSuppression:
+      return "NoiseSuppression";
+    case ABI::Windows::Media::Effects::AudioEffectType_AutomaticGainControl:
+      return "AutomaticGainControl";
+    case ABI::Windows::Media::Effects::AudioEffectType_BeamForming:
+      return "BeamForming";
+    case ABI::Windows::Media::Effects::AudioEffectType_ConstantToneRemoval:
+      return "ConstantToneRemoval";
+    case ABI::Windows::Media::Effects::AudioEffectType_Equalizer:
+      return "Equalizer";
+    case ABI::Windows::Media::Effects::AudioEffectType_LoudnessEqualizer:
+      return "LoudnessEqualizer";
+    case ABI::Windows::Media::Effects::AudioEffectType_BassBoost:
+      return "BassBoost";
+    case ABI::Windows::Media::Effects::AudioEffectType_VirtualSurround:
+      return "VirtualSurround";
+    case ABI::Windows::Media::Effects::AudioEffectType_VirtualHeadphones:
+      return "VirtualHeadphones";
+    case ABI::Windows::Media::Effects::AudioEffectType_SpeakerFill:
+      return "SpeakerFill";
+    case ABI::Windows::Media::Effects::AudioEffectType_RoomCorrection:
+      return "RoomCorrection";
+    case ABI::Windows::Media::Effects::AudioEffectType_BassManagement:
+      return "BassManagement";
+    case ABI::Windows::Media::Effects::AudioEffectType_EnvironmentalEffects:
+      return "EnvironmentalEffects";
+    case ABI::Windows::Media::Effects::AudioEffectType_SpeakerProtection:
+      return "SpeakerProtection";
+    case ABI::Windows::Media::Effects::AudioEffectType_SpeakerCompensation:
+      return "SpeakerCompensation";
+    case ABI::Windows::Media::Effects::AudioEffectType_DynamicRangeCompression:
+      return "DynamicRangeCompression";
+  }
+  return "Unknown";
+}
+
 bool VariantBoolToBool(VARIANT_BOOL var_bool) {
   switch (var_bool) {
     case VARIANT_TRUE:
@@ -156,6 +215,28 @@ std::string GetOpenLogString(WASAPIAudioInputStream::StreamOpenResult result,
       StreamOpenResultToString(result), hr,
       CoreAudioUtil::WaveFormatToString(&input_format).c_str(),
       CoreAudioUtil::WaveFormatToString(&output_format).c_str());
+}
+
+bool InitializeUWPSupport() {
+  // Windows.Media.Effects and Windows.Media.Devices requires Windows 10 build
+  // 10.0.10240.0.
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    DLOG(WARNING) << "AudioCaptureEffectsManager requires Windows 10";
+    return false;
+  }
+  DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240);
+
+  // Provide access to Core WinRT/UWP functions and load all required HSTRING
+  // functions available from Win8 and onwards. ScopedHString is a wrapper
+  // around an HSTRING and it requires certain functions that need to be
+  // delayloaded to avoid breaking Chrome on Windows 7.
+  if (!(base::win::ResolveCoreWinRTDelayload() &&
+        base::win::ScopedHString::ResolveCoreWinRTStringDelayload())) {
+    // Failed loading functions from combase.dll.
+    DLOG(WARNING) << "Failed to initialize WinRT/UWP";
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -268,6 +349,24 @@ bool WASAPIAudioInputStream::Open() {
 
   // Check if raw audio processing is supported for the selected capture device.
   raw_processing_supported_ = RawProcessingSupported();
+
+  if (raw_processing_supported_ &&
+      !AudioDeviceDescription::IsLoopbackDevice(device_id_) &&
+      InitializeUWPSupport()) {
+    // Retrieve a unique identifier of the selected audio device but in a
+    // format which can be used by UWP (or Core WinRT) APIs. It can then be
+    // utilized in combination with the Windows.Media.Effects UWP API to
+    // discover the audio processing chain on a device.
+    std::string uwp_device_id = GetUWPDeviceId();
+    if (!uwp_device_id.empty()) {
+      // For the selected device, generate two lists of enabled audio effects
+      // and store them in |default_effect_types_| and |raw_effect_types_|.
+      // Default corresponds to "Normal audio signal processing" and Raw is for
+      // "Minimal audio signal processing". These two lists are used for UMA
+      // stats when the stream is closed.
+      GetAudioCaptureEffects(uwp_device_id);
+    }
+  }
 
   // Obtain an IAudioClient interface which enables us to create and initialize
   // an audio stream between an audio application and the audio engine.
@@ -450,6 +549,19 @@ void WASAPIAudioInputStream::Close() {
     // capture or not. See https://crbug.com/1133643.
     base::UmaHistogramBoolean("Media.Audio.RawProcessingSupportedWin",
                               raw_processing_supported_);
+
+    for (auto const& type : default_effect_types_) {
+      base::UmaHistogramSparse("Media.Audio.Capture.Win.DefaultEffectType",
+                               type);
+      SendLogMessage("%s => (Media.Audio.Capture.Win.DefaultEffectType=%s)",
+                     __func__, EffectTypeToString(type));
+    }
+
+    for (auto const& type : raw_effect_types_) {
+      base::UmaHistogramSparse("Media.Audio.Capture.Win.RawEffectType", type);
+      SendLogMessage("%s => (Media.Audio.Capture.Win.RawEffectType=%s)",
+                     __func__, EffectTypeToString(type));
+    }
   }
 
   if (converter_)
@@ -543,7 +655,9 @@ void WASAPIAudioInputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  log_callback_.Run("WAIS::" + base::StringPrintV(format, args));
+  std::string msg("WAIS::" + base::StringPrintV(format, args));
+  log_callback_.Run(msg);
+  DVLOG(1) << msg;
   va_end(args);
 }
 
@@ -872,6 +986,190 @@ bool WASAPIAudioInputStream::RawProcessingSupported() {
   }
   return raw_processing_supported;
 }
+
+std::string WASAPIAudioInputStream::GetUWPDeviceId() {
+  DCHECK(endpoint_device_.Get());
+
+  // The Windows.Media.Devices.IMediaDeviceStatics interface provides access to
+  // the implementation of Windows.Media.Devices.MediaDevice.
+  ComPtr<IMediaDeviceStatics> media_device_statics;
+  HRESULT hr =
+      GetActivationFactory<IMediaDeviceStatics,
+                           RuntimeClass_Windows_Media_Devices_MediaDevice>(
+          &media_device_statics);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "IMediaDeviceStatics factory failed: " << ErrorToString(hr);
+    return std::string();
+  }
+
+  // The remaining part of this method builds up the unique device ID needed
+  // by the Windows.Media.Effects.AudioEffectsManager UWP API to enumerate
+  // active capture effects like AEC and NS. The ID contains three parts.
+  // Example:
+  //   1) \\?\SWD#MMDEVAPI#
+  //   2) {0.0.1.00000000}.{7c24467c-94fc-4fa1-a2b2-a3f5d9cb8a5b}
+  //   3) #{2eef81be-33fa-4800-9670-1cd474972c3f}
+  // Where (1) is a constant string, (2) comes from the IMMDevice::GetId() API,
+  // and (3) is a substring of of the selector string which can be retrieved by
+  // the IMediaDeviceStatics::GetAudioCaptureSelector UWP API. Knowledge about
+  // the structure of this device ID can be gained by using the
+  // IMediaDeviceStatics::GetDefaultAudioCaptureId UWP API but this method also
+  // adds support for non default devices.
+
+  // (1) Start building the final device ID. Start with the constant prefix.
+  std::string device_id(kUwpDeviceIdPrefix);
+
+  // (2) Next, add the unique ID from IMMDevice::GetId() API.
+  // Example: {0.0.1.00000000}.{7c24467c-94fc-4fa1-a2b2-a3f5d9cb8a5b}.
+  ScopedCoMem<WCHAR> immdevice_id16;
+  hr = endpoint_device_->GetId(&immdevice_id16);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "IMMDevice::GetId failed: " << ErrorToString(hr);
+    return std::string();
+  }
+  std::string immdevice_id8;
+  base::WideToUTF8(immdevice_id16, wcslen(immdevice_id16), &immdevice_id8);
+  device_id.append(immdevice_id8);
+
+  // (3) Finally, add the last part from the selector string.
+  // Example: '#{2eef81be-33fa-4800-9670-1cd474972c3f}'.
+  HSTRING selector;
+  // Returns the identifier string of a device for capturing audio. A substring
+  // will be used when generating the final unique device ID.
+  // Example: part of the selector string can look like
+  // System.Devices.InterfaceClassGuid:="{2eef81be-33fa-4800-9670-1cd474972c3f}"
+  // and we want the {2eef81be-33fa-4800-9670-1cd474972c3f} substring for our
+  // purposes.
+  hr = media_device_statics->GetAudioCaptureSelector(&selector);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "IMediaDeviceStatics::GetAudioCaptureSelector failed: "
+                << ErrorToString(hr);
+    return std::string();
+  }
+  device_id.append("#");
+  std::string selector_string = ScopedHString(selector).GetAsUTF8();
+  std::size_t start = selector_string.find("{");
+  std::size_t stop = selector_string.find("}", start + 1);
+  if (start != std::string::npos && stop != std::string::npos) {
+    // Will extract '{2eef81be-33fa-4800-9670-1cd474972c3f}' in the example
+    // above.
+    device_id.append(selector_string.substr(start, stop - start + 1));
+  } else {
+    DLOG(ERROR) << "Failed to extract System.Devices.InterfaceClassGuid string";
+    return std::string();
+  }
+
+  return device_id;
+}
+
+HRESULT WASAPIAudioInputStream::GetAudioCaptureEffects(
+    const std::string& uwp_device_id) {
+  DCHECK(!AudioDeviceDescription::IsLoopbackDevice(device_id_));
+  DCHECK(raw_processing_supported_);
+  DCHECK(!uwp_device_id.empty());
+  SendLogMessage("%s()", __func__);
+
+  // The Windows.Media.Effects.IAudioEffectsManagerStatics interface provides
+  // access to the implementation of Windows.Media.Effects.AudioEffectsManager.
+  ComPtr<IAudioEffectsManagerStatics> audio_effects_manager;
+  HRESULT hr = GetActivationFactory<
+      IAudioEffectsManagerStatics,
+      RuntimeClass_Windows_Media_Effects_AudioEffectsManager>(
+      &audio_effects_manager);
+  if (FAILED(hr)) {
+    SendLogMessage(
+        "%s => (ERROR: IAudioEffectsManagerStatics factory failed: [%s])",
+        __func__, ErrorToString(hr).c_str());
+    return hr;
+  }
+
+  SendLogMessage("%s => (uwp_device_id=[%s])", __func__, uwp_device_id.c_str());
+  ScopedHString device_id = ScopedHString::Create(uwp_device_id);
+
+  // Check capture effects for two different audio processing modes:
+  // - Default: Normal audio signal processing
+  // - Raw: Minimal audio signal processing
+  // Raw is included since it is not possible to disable all effects on all
+  // devices. In most cases, the number of found capture effects will be zero
+  // for the raw mode.
+  ABI::Windows::Media::AudioProcessing audio_processing_mode[] = {
+      ABI::Windows::Media::AudioProcessing::AudioProcessing_Default,
+      ABI::Windows::Media::AudioProcessing::AudioProcessing_Raw};
+  for (size_t i = 0; i < base::size(audio_processing_mode); ++i) {
+    // Create an AudioCaptureEffectsManager manager which can be used to
+    // discover the audio processing chain on a device for a specific media
+    // category and audio processing mode. The media category is fixed and set
+    // to Communications since that is what we aim at using when audio effects
+    // later are disabled.
+    ComPtr<IAudioCaptureEffectsManager> capture_effects_manager;
+    hr = audio_effects_manager->CreateAudioCaptureEffectsManagerWithMode(
+        device_id.get(),
+        ABI::Windows::Media::Capture::MediaCategory::
+            MediaCategory_Communications,
+        audio_processing_mode[i], &capture_effects_manager);
+    if (FAILED(hr)) {
+      SendLogMessage(
+          "%s => (ERROR: IAudioEffectsManagerStatics::"
+          "CreateAudioCaptureEffectsManager=[%s])",
+          __func__, ErrorToString(hr).c_str());
+      return hr;
+    }
+
+    // Get a list of audio effects on the device. Based on tests on different
+    // devices, only enabled effects will be included. Hence, if a user has
+    // explicitly disabled an effect using the System Sound Settings, that
+    // component will not show up here.
+    ComPtr<IVectorView<ABI::Windows::Media::Effects::AudioEffect*>> effects;
+    hr = capture_effects_manager->GetAudioCaptureEffects(&effects);
+    if (FAILED(hr)) {
+      SendLogMessage(
+          "%s => (ERROR: IAudioCaptureEffectsManager::"
+          "GetAudioCaptureEffects=[%s])",
+          __func__, ErrorToString(hr).c_str());
+      return hr;
+    }
+
+    unsigned int count = 0;
+    if (effects) {
+      // Returns number of supported effects.
+      effects->get_Size(&count);
+    }
+
+    // Store all supported and active effect types in |default_effect_types_|
+    // or |raw_effect_types_| depending on selected audio processing mode.
+    // These will be utilized later for UMA histograms.
+    for (unsigned int j = 0; j < count; ++j) {
+      ComPtr<ABI::Windows::Media::Effects::IAudioEffect> effect;
+      hr = effects->GetAt(j, &effect);
+      if (SUCCEEDED(hr)) {
+        ABI::Windows::Media::Effects::AudioEffectType type;
+        hr = effect->get_AudioEffectType(&type);
+        if (SUCCEEDED(hr)) {
+          audio_processing_mode[i] ==
+                  ABI::Windows::Media::AudioProcessing::AudioProcessing_Default
+              ? default_effect_types_.push_back(type)
+              : raw_effect_types_.push_back(type);
+        }
+      }
+    }
+
+    // For cases when no audio effects were found (common in raw mode), add a
+    // dummy effect type called AudioEffectType_Other so that the vector
+    // contains at least one value. This is done to ensure that an UMA histogram
+    // is uploaded also for the empty case. Hence, AudioEffectType_Other is
+    // used to indicate an unknown audio effect and "no audio effect found".
+    if (count == 0) {
+      const ABI::Windows::Media::Effects::AudioEffectType no_effect_found =
+          ABI::Windows::Media::Effects::AudioEffectType::AudioEffectType_Other;
+      audio_processing_mode[i] ==
+              ABI::Windows::Media::AudioProcessing::AudioProcessing_Default
+          ? default_effect_types_.push_back(no_effect_found)
+          : raw_effect_types_.push_back(no_effect_found);
+    }
+  }
+
+  return hr;
+}  // namespace media
 
 HRESULT WASAPIAudioInputStream::SetCommunicationsCategoryAndRawCaptureMode() {
   DCHECK(audio_client_.Get());

@@ -4028,6 +4028,27 @@ Unknown properties are collapsed to zero. -->
   <int value="54" label="Sub mute"/>
 </enum>
 
+<enum name="AudioEffectType">
+  <int value="0" label="Other/None"/>
+  <int value="1" label="AcousticEchoCancellation"/>
+  <int value="2" label="NoiseSuppression"/>
+  <int value="3" label="AutomaticGainControl"/>
+  <int value="4" label="BeamForming"/>
+  <int value="5" label="ConstantToneRemoval"/>
+  <int value="6" label="Equalizer"/>
+  <int value="7" label="LoudnessEqualizer"/>
+  <int value="8" label="BassBoost"/>
+  <int value="9" label="VirtualSurround"/>
+  <int value="10" label="VirtualHeadphones"/>
+  <int value="11" label="SpeakerFill"/>
+  <int value="12" label="RoomCorrection"/>
+  <int value="13" label="BassManagement"/>
+  <int value="14" label="EnvironmentalEffects"/>
+  <int value="15" label="SpeakerProtection"/>
+  <int value="16" label="SpeakerCompensation"/>
+  <int value="17" label="DynamicRangeCompression"/>
+</enum>
+
 <enum name="AudioFocusAbandonSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="API"/>
