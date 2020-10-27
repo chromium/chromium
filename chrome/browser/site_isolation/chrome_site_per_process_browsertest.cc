@@ -488,7 +488,8 @@ class MailtoExternalProtocolHandlerDelegate
 // This test is not run on ChromeOS because it registers a custom handler (see
 // ProtocolHandlerRegistry::InstallDefaultsForChromeOS), and handles mailto:
 // navigations before getting to external protocol code.
-#if defined(OS_CHROMEOS)
+// Flaky on Windows. See https://crbug.com/980446
+#if defined(OS_CHROMEOS) || defined(OS_WIN)
 #define MAYBE_LaunchExternalProtocolFromSubframe \
   DISABLED_LaunchExternalProtocolFromSubframe
 #else
