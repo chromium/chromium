@@ -315,8 +315,10 @@ class LeftMouseClick {
     mouse_event_.SetPositionInScreen(point.x() + offset.x(),
                                      point.y() + offset.y());
     mouse_event_.click_count = 1;
-    web_contents_->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-        mouse_event_);
+    web_contents_->GetMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->ForwardMouseEvent(mouse_event_);
 
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -336,8 +338,10 @@ class LeftMouseClick {
  private:
   void SendMouseUp() {
     mouse_event_.SetType(blink::WebInputEvent::Type::kMouseUp);
-    web_contents_->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-        mouse_event_);
+    web_contents_->GetMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->ForwardMouseEvent(mouse_event_);
     click_completed_ = true;
     if (message_loop_runner_)
       message_loop_runner_->Quit();
@@ -805,11 +809,15 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
         blink::WebInputEvent::GetStaticTimeStampForTests());
     mouse_event.button = blink::WebMouseEvent::Button::kRight;
     mouse_event.SetPositionInWidget(1, 1);
-    web_contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-        mouse_event);
+    web_contents->GetMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->ForwardMouseEvent(mouse_event);
     mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-    web_contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-        mouse_event);
+    web_contents->GetMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->ForwardMouseEvent(mouse_event);
   }
 
   content::WebContents* GetGuestWebContents() {
@@ -3849,8 +3857,10 @@ IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, DISABLED_TouchAccessibility) {
       blink::WebInputEvent::kIsTouchAccessibility,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   accessibility_touch_event.SetPositionInWidget(95, 55);
-  web_contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      accessibility_touch_event);
+  web_contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(accessibility_touch_event);
 
   // Ensure that we got just a single hover event on the guest WebContents,
   // and that it was fired on a button.
@@ -4002,7 +4012,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
                                 ui::LatencyInfo(ui::SourceEventType::WHEEL));
 
   content::InputEventAckWaiter update_waiter(
-      guest_contents->GetRenderViewHost()->GetWidget(),
+      guest_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
       base::BindRepeating([](blink::mojom::InputEventResultSource,
                              blink::mojom::InputEventResultState state,
                              const blink::WebInputEvent& event) {
