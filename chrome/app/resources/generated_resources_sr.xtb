@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Заустави</translation>
 <translation id="1272293450992660632">PIN-ови се не подударају.</translation>
 <translation id="1272978324304772054">Овај кориснички налог не припада домену на ком је уређај регистрован. Ако желите да се региструјете на другом домену, прво морате да обавите опоравак уређаја.</translation>
-<translation id="1274977772557788323">Подешавања Adobe Flash Player меморијског простора</translation>
 <translation id="1274997165432133392">Колачићи и други подаци о сајтовима</translation>
 <translation id="1275718070701477396">Изабрано</translation>
 <translation id="1276994519141842946">Деинсталирање апликације <ph name="APP_NAME" /> није успело</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Обележивачи, историја и друга подешавања се синхронизују са Google налогом.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Матична мрежа, није у ромингу</translation>
-<translation id="1315056510003830387">Није им дозвољено да користе Flash</translation>
 <translation id="1316136264406804862">Претраживање...</translation>
 <translation id="1316495628809031177">Синхронизација је паузирана</translation>
 <translation id="1317637799698924700">Базна станица ће радити у режиму компатибилном са USB-ом типа C.</translation>
@@ -875,7 +873,6 @@
 <translation id="197989455406964291">KDC не подржава тип шифровања</translation>
 <translation id="1984417487208496350">Без заштите (не препоручује се)</translation>
 <translation id="1987317783729300807">Налози</translation>
-<translation id="1988494864246143197">Сајтови обично користе Flash за пуштање звука, видео снимака или видео игара. Flash Player више неће бити подржан од децембра 2020.</translation>
 <translation id="1989112275319619282">Прегледај</translation>
 <translation id="1990512225220753005">Не приказујте пречице на овој страници</translation>
 <translation id="1992397118740194946">Није подешено</translation>
@@ -1646,7 +1643,6 @@
 <translation id="2880660355386638022">Постављање прозора</translation>
 <translation id="2881076733170862447">Када кликнете на додатак</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ће се одмах поново покренути и ресетовати</translation>
-<translation id="288387288628762616">Дозвољено им је да користе Flash</translation>
 <translation id="2885378588091291677">Менаџер задатака</translation>
 <translation id="2885729872133513017">Дошло је до проблема при декодирању одговора сервера.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2463,7 +2459,6 @@
 <translation id="383669374481694771">Ово су опште информације о овом уређају и начину на који се користи (попут нивоа напуњености батерије, активности система и апликација и грешака). Подаци ће се користити за побољшање Android-а, а неке обједињене информације ће помоћи и Google апликацијама и партнерима, као што су Android програмери, да побољшају своје апликације и производе.</translation>
 <translation id="3838085852053358637">Учитавање додатка није успело</translation>
 <translation id="3838486795898716504">Још страница <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Колачићи и други подаци о сајтовима и додатним компонентама</translation>
 <translation id="383891835335927981">Ниједан сајт није увећан ни умањен</translation>
 <translation id="3839509547554145593">Омогући убрзање померања мишем</translation>
 <translation id="3839516600093027468">Увек блокирај увид у привремену меморију страници <ph name="HOST" /></translation>
@@ -2638,7 +2633,6 @@
 <translation id="4023146161712577481">Утврђивање конфигурације уређаја.</translation>
 <translation id="4025039777635956441">Искључи звук изабраног сајта</translation>
 <translation id="4027804175521224372">(Пропуштате – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Задржаће се подешавања Flash-а док не затворите Chrome.</translation>
 <translation id="4028467762035011525">Додај методе уноса</translation>
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4031527940632463547">Приступ сензорима је блокиран</translation>
@@ -2790,7 +2784,6 @@
 <translation id="4232375817808480934">Конфигуришите Kerberos</translation>
 <translation id="4235200303672858594">Цео екран</translation>
 <translation id="4235965441080806197">Откажи пријављивање</translation>
-<translation id="4237773362828263530">Подешавања са џокерским знаком „*“ више нису подржана. Обратите се администратору да бисте <ph name="BEGIN_LINK" />променили ова подешавања<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Читајте картицу касније}one{Читајте картице касније}few{Читајте картице касније}other{Читајте картице касније}}</translation>
 <translation id="4242145785130247982">Није подржано више сертификата клијента</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
@@ -3054,7 +3047,6 @@
 <translation id="4548483925627140043">Сигнал није пронађен</translation>
 <translation id="4549791035683739768">На безбедносном кључу нема сачуваних отисака прстију</translation>
 <translation id="4551763574344810652">Притисните <ph name="MODIFIER_KEY_DESCRIPTION" /> да бисте опозвали</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">Мрежа <ph name="NETWORK_TYPE" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">Морате да рестартујете Chromebook да бисте променили језик уређаја. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Верзија спољног додатка је иста или старија од постојећег.</translation>
@@ -3409,7 +3401,6 @@
 <translation id="4974733135013075877">Изађи и закључај за децу</translation>
 <translation id="4976009197147810135">Подели вертикално</translation>
 <translation id="4977942889532008999">Потврдите приступ</translation>
-<translation id="4978905460870207779">Сајтови могу да траже да користе Flash</translation>
 <translation id="4980805016576257426">Овај додатак садржи малвер.</translation>
 <translation id="4981449534399733132">Да бисте обрисали податке прегледања са свих синхронизованих уређаја и са Google налога, <ph name="BEGIN_LINK" />пријавите се<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Софтвер уређаја</translation>
@@ -4181,7 +4172,6 @@
 <translation id="5906732635754427568">Подаци повезани са овом апликацијом ће бити уклоњени са овог уређаја.</translation>
 <translation id="5908474332780919512">Покрени апликацију када се пријавим</translation>
 <translation id="5908695239556627796">Брзина померања мишем</translation>
-<translation id="5908769186679515905">Блокирај сајтове да не би покретали Flash</translation>
 <translation id="5910363049092958439">Са&amp;чувај слику као...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> је офлајн</translation>
 <translation id="5911533659001334206">Приказивач пречица</translation>
@@ -5834,7 +5824,6 @@
 <translation id="7831491651892296503">Грешка при конфигурацији мреже</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Време завршетка</translation>
-<translation id="783214144752121388">Не дозвољавај сајтовима да покрећу Flash (препоручено)</translation>
 <translation id="7833720883933317473">Сачуване прилагођене речи ће се појавити овде</translation>
 <translation id="7835178595033117206">Обележивач је уклоњен</translation>
 <translation id="7836850009646241041">Поново додирните безбедносни кључ</translation>
@@ -6062,7 +6051,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ова датотека је шифрована. Затражите од власника да је дешифрује.}one{Неке од ових датотека су шифроване. Затражите од власника да их дешифрује.}few{Неке од ових датотека су шифроване. Затражите од власника да их дешифрује.}other{Неке од ових датотека су шифроване. Затражите од власника да их дешифрује.}}</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
 <translation id="8090234456044969073">Читање листе најчешће посећиваних веб-сајтова</translation>
-<translation id="8092681102116274204">Подешавања са џокерским знаком „*“ више нису подржана. Обратите се програмеру додатка или администратору да бисте <ph name="BEGIN_LINK" />променили ова подешавања<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381">Додатна компонента <ph name="PLUGIN_NAME" /> не реагује</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Правите резервне копије на Google диску. Лако враћајте податке или мењајте уређаје у било ком тренутку. Резервна копија садржи податке апликација.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Резервне копије се отпремају на Google и шифрују помоћу лозинке за Google налог.<ph name="END_PARAGRAPH2" />
@@ -6157,7 +6145,6 @@
 <translation id="8201717382574620700">Изаберите албуме: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Унесите поново лозинку да бисте ажурирали профил за <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203732864715032075">Шаље вам обавештења и подразумевано је подешавање за памћење SMS-ова на овом рачунару. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Блокирај Flash (препоручује се)</translation>
 <translation id="820568752112382238">Најпосећенији сајтови</translation>
 <translation id="8206745257863499010">Блузи</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>

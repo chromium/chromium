@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">ပုံနှိပ်ထုတ်ပြီးပြီ</translation>
 <translation id="1979103255016296513">စကားဝှက်ပြောင်းလဲမှု သက်တမ်းကုန်သွားပါပြီ</translation>
 <translation id="2049639323467105390">ဤစက်ပစ္စည်းကို <ph name="DOMAIN" /> မှစီမံသည်။</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ပရင့်ထုတ်ရန်ဖိုင် မထုတ်တော့ပါ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">အနီးတဝိုက်ရှိ စက်ပစ္စည်းများကို ရှာဖွေရန် ဘလူးတုသ်ကို ဖွင့်ပါ</translation>
 <translation id="2375079107209812402">လုပ်ဆောင်ခွင့် <ph name="ATTEMPTS_LEFT" /> ကြိမ် ကျန်သည်</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ကြိမ် ကြိုးပမ်းနိုင်သည်}other{<ph name="ERROR_MESSAGE" /> {0} ကြိမ် ကြိုးပမ်းနိုင်သည်}}</translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">ချက်ချင်း အသစ်တစ်ခု ‌ရွေးပါ</translation>
 <translation id="4917889632206600977">ရပ်သွားသည် - စာရွက်ကုန်နေသည်</translation>
 <translation id="4932733599132424254">ရက်စွဲ</translation>
+<translation id="5094480857972195099">ဤအသုံးပြုသူကို <ph name="ENROLLMENT_DOMAIN" /> က စီမံသည့်အတွက် ဆက်တင်များကို အဝေးထိန်းစီမံပြီး အသုံးပြုသူ၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်သည်။</translation>
 <translation id="520299634122159966">စကင်ဖတ်စနစ်များ မရနိုင်ပါ</translation>
 <translation id="5212543919916444558">သင့်မျက်နှာပြင်တွင် ကျွန်ုပ်ကူညီနိုင်သည့် အကြောင်းအရာများကို မတွေ့ပါ။ မိုက်ကို တို့ပြီး နှစ်သက်ရာ မေးနိုင်ပါသည်။</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>

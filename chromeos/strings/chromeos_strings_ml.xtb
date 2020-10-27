@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
 <translation id="1979103255016296513">പാസ്‌വേഡ് മാറ്റേണ്ട സമയം കഴിഞ്ഞു</translation>
 <translation id="2049639323467105390">ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">പ്രിന്റ് ജോലി റദ്ദാക്കുക</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">സമീപത്തുള്ള ഉപകരണങ്ങൾ കണ്ടെത്താൻ Bluetooth ഓണാക്കുക</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ശ്രമങ്ങൾ ശേഷിക്കുന്നു</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ശ്രമം ശേഷിക്കുന്നു}other{<ph name="ERROR_MESSAGE" /> {0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4917889632206600977">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പറില്ല</translation>
 <translation id="4932733599132424254">തീയതി</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ആണ് ഈ ഉപയോക്താവിനെ മാനേജ് ചെയ്യുന്നത്, ഇത് വിദൂരമായി ക്രമീകരണം മാനേജ് ചെയ്യുകയും ഉപയോക്തൃ ആക്‌റ്റിവിറ്റി നിരീക്ഷിക്കുകയും ചെയ്തേക്കാം.</translation>
 <translation id="520299634122159966">ലഭ്യമായ സ്‌കാനറുകളൊന്നുമില്ല</translation>
 <translation id="5212543919916444558">എനിക്ക് സഹായിക്കാനാവുന്ന ഒന്നും നിങ്ങളുടെ സ്‌ക്രീനിൽ കണ്ടെത്താനാവുന്നില്ല. എന്നോട് എന്തെങ്കിലും ആവശ്യപ്പെടാൻ മൈക്ക് ടാപ്പ് ചെയ്യുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>

@@ -58,6 +58,7 @@
 <translation id="1455242230282523554">ഭാഷാ ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1460620680449458626">വോളിയം മ്യൂട്ട് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="1467432559032391204">ഇടത്</translation>
+<translation id="1475439723810528286">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യാൻ എവിടെയെങ്കിലും ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1479909375538722835">ഫ്ലോട്ടിംഗ് ഉപയോഗസഹായി മെനു</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട്, ഈ ഉടമ അക്കൗണ്ടായിരിക്കണം.</translation>
@@ -121,6 +122,7 @@
 <translation id="209965399369889474">നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="2126242104232412123">പുതിയ ഡെസ്‌ക്</translation>
 <translation id="2127372758936585790">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ</translation>
+<translation id="2132302418721800944">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="2135456203358955318">ഡോക്ക് ചെയ്‌ത മാഗ്‌നിഫയർ</translation>
 <translation id="2144487987174258011">Adobe Flash Player അപ്‌ഡേറ്റ് ചെയ്യാൻ റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="2180011262286780504">സ്ക്രീൻ ചിത്രമെടുക്കാനുള്ള ശേഷി നിങ്ങളുടെ അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി.</translation>
@@ -192,6 +194,7 @@
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
 <translation id="2878884018241093801">സമീപകാല ഇനങ്ങൾ ഒന്നുമില്ല</translation>
 <translation id="2903844815300039659"><ph name="NAME" />-ലേക്ക് കണക്റ്റ് ചെയ്‌‌തു, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">സ്ക്രീൻ ക്യാപ്‌ചറുകൾ</translation>
 <translation id="2942350706960889382">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
 <translation id="2942516765047364088">ഷെൽഫ് സ്ഥാനം</translation>
 <translation id="2946119680249604491">കണക്ഷൻ ചേർക്കുക</translation>
@@ -367,6 +370,7 @@
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="453661520163887813">പൂർത്തിയാകാൻ ശേഷിക്കുന്ന സമയം <ph name="TIME" /></translation>
+<translation id="4538824937723742295">പൂർണ്ണ സ്ക്രീൻ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="4544483149666270818">റെക്കോർഡ് ചെയ്യാൻ വിൻഡോ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4560576029703263363">ഓണാണ്</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@
 <translation id="4969092041573468113"><ph name="HOURS" />മണിക്കൂർ <ph name="MINUTES" />മിനിറ്റ് <ph name="SECONDS" />സെക്കൻഡ്</translation>
 <translation id="4975771730019223894">ആപ്പ് ബാഡ്‌ജ് ചെയ്യൽ</translation>
 <translation id="5030687792513154421">സമയം കഴിഞ്ഞു</translation>
+<translation id="5033299697334913360">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യാൻ എവിടെയെങ്കിലും ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> പുതിയ ഫോണിലേക്ക് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5035389544768382859">ഡിസ്പ്ലേ കോൺഫിഗറേഷൻ സ്ഥിരീകരിക്കുക</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5168181903108465623">Cast ഉപകരണങ്ങൾ ലഭ്യമാണ്.</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
+<translation id="5176318573511391780">ഭാഗിക സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="5207949376430453814">ടെക്‌സ്‌റ്റ് കാരറ്റ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="5208059991603368177">ഓണാണ്</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -488,6 +494,7 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5876666360658629066">രക്ഷാകർതൃ കോഡ് നൽകുക</translation>
+<translation id="5881540930187678962">ഫോൺ ഹബ് പിന്നീട് സജ്ജീകരിക്കുക</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="589817443623831496">പോയിന്റ് സ്കാൻ ചെയ്യൽ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -542,6 +549,7 @@
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">എല്ലാ അറിയിപ്പുകളും മായ്ക്കുക</translation>
 <translation id="643147933154517414">എല്ലാം ചെയ്‌തു</translation>
+<translation id="6431865393913628856">സ്‌ക്രീൻ റെക്കോർഡ്</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6452181791372256707">നിരസിക്കുക</translation>
 <translation id="6453179446719226835">ഭാഷ മാറ്റിയിരിക്കുന്നു</translation>
@@ -627,6 +635,7 @@
 <translation id="7346909386216857016">മനസ്സിലായി</translation>
 <translation id="7348093485538360975">ഓൺ-സ്‌ക്രീൻ കീബോർഡ്</translation>
 <translation id="735745346212279324">VPN വിച്ഛേദിച്ചു</translation>
+<translation id="7371404428569700291">വിൻഡോ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="7377169924702866686">Caps Lock ഓൺ ആണ്.</translation>
 <translation id="7378203170292176219">റെക്കോർഡ് ചെയ്യുന്നതിന് ഒരു ഏരിയ തിരഞ്ഞെടുക്കാൻ വലിച്ചിടുക</translation>
 <translation id="7378594059915113390">മീഡിയ നിയന്ത്രണങ്ങൾ</translation>
@@ -815,6 +824,7 @@
 <translation id="9084606467167974638">മെനുവിൻ്റെ സ്ഥാനം മാറ്റുക</translation>
 <translation id="9089416786594320554">ഇൻപുട്ട്  രീതികൾ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ഡിസ്‌പ്ലേ നീക്കംചെയ്‌തു</translation>
+<translation id="9092749890156285613">അടുത്തിടെയുള്ള സ്ക്രീൻ ക്യാപ്‌ചറുകളും ഡൗൺലോഡുകളും</translation>
 <translation id="9151726767154816831">അപ്‌ഡേറ്റ് ചെയ്യാൻ, റീസ്റ്റാർട്ട് ചെയ്ത് powerwash ചെയ്യുക</translation>
 <translation id="9166331175924255663">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക.</translation>
 <translation id="9168436347345867845">ഇത് പിന്നീട് ചെയ്യുക</translation>

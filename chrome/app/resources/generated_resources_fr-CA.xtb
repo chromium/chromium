@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1272293450992660632">Les NIP ne correspondent pas.</translation>
 <translation id="1272978324304772054">Ce compte d'utilisateur n'appartient pas au domaine pour lequel cet appareil est enregistré. Si vous souhaitez vous enregistrer à un autre domaine, vous devez d'abord suivre la procédure de récupération de votre appareil.</translation>
-<translation id="1274977772557788323">Paramètres de stockage d'Adobe Flash Player</translation>
 <translation id="1274997165432133392">Témoins et autres données de sites</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Vos favoris, votre historique et certains paramètres seront synchronisés avec votre compte Google.</translation>
 <translation id="1314565355471455267">RPV Android</translation>
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
-<translation id="1315056510003830387">Non autorisés à utiliser Flash</translation>
 <translation id="1316136264406804862">Recherche en cours…</translation>
 <translation id="1316495628809031177">Synchronisation interrompue</translation>
 <translation id="1317637799698924700">Votre station d'accueil fonctionnera en mode de compatibilité USB de type C.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC ne prend pas en charge ce type de chiffrement</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1987317783729300807">Comptes</translation>
-<translation id="1988494864246143197">Les sites utilisent généralement Flash pour lire du contenu audio ou vidéo, ou des jeux vidéo. Après décembre 2020, le lecteur Flash ne sera plus pris en charge.</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="1990512225220753005">Ne pas afficher les raccourcis sur cette page</translation>
 <translation id="1992397118740194946">Non défini</translation>
@@ -1650,7 +1647,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2880660355386638022">Position des fenêtres</translation>
 <translation id="2881076733170862447">Lorsque vous cliquez sur l'extension</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> va redémarrer et être réinitialisé dans un instant</translation>
-<translation id="288387288628762616">Autorisés à utiliser Flash</translation>
 <translation id="2885378588091291677">Moniteur d'activité</translation>
 <translation id="2885729872133513017">Un problème est survenu lors du décodage de la réponse du serveur.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2082,6 +2078,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3428419049384081277">Vous êtes connecté!</translation>
 <translation id="3428747202529429621">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="3428800329481094896">Récupération des clés SSH du conteneur Linux en cours…</translation>
+<translation id="3429271624041785769">Langues pour le contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver plus facilement plus tard</translation>
 <translation id="3432227430032737297">Supprimer tous les éléments affichés</translation>
 <translation id="3432757130254800023">Envoyer des contenus audio et vidéo vers des écrans sur le réseau local</translation>
@@ -2466,7 +2463,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="383669374481694771">Ces données d'ordre général concernent votre appareil et son utilisation (comme le niveau de la pile, les erreurs, ainsi que l'activité du système et des applications). Elles serviront à améliorer la plateforme Android. Certaines données collectées aideront également nos partenaires, tels que les concepteurs Android, à améliorer leurs applications et leurs produits.</translation>
 <translation id="3838085852053358637">Échec du chargement de l'extension</translation>
 <translation id="3838486795898716504">Pages suivantes pour <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Témoins et autres données de sites et de plugiciels</translation>
 <translation id="383891835335927981">Aucun site n'a fait l'objet d'un zoom avant ou arrière</translation>
 <translation id="3839509547554145593">Activer l'accélération du défilement pour la souris</translation>
 <translation id="3839516600093027468">Toujours empêcher <ph name="HOST" /> de voir le presse-papiers</translation>
@@ -2508,6 +2504,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante de la caméra ou du fichier</translation>
+<translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Votre demande d'accès à ce site a été envoyée à <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Prendre des notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Activez la synchronisation Chrome pour utiliser la synchronisation Wi-Fi</translation>
@@ -2640,7 +2637,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4023146161712577481">Détermination de la configuration de l'appareil en cours…</translation>
 <translation id="4025039777635956441">Désactiver le son pour le site sélectionné</translation>
 <translation id="4027804175521224372">(Bénéficiez de toutes les fonctionnalités — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Vos paramètres Flash seront conservés jusqu'à ce que vous quittiez Chrome.</translation>
 <translation id="4028467762035011525">Ajouter des méthodes d'entrée</translation>
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
 <translation id="4031527940632463547">Capteurs bloqués</translation>
@@ -2792,7 +2788,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
 <translation id="4235200303672858594">Plein écran</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
-<translation id="4237773362828263530">Les paramètres contenant le caractère générique « * » ne sont plus pris en charge. Communiquez avec votre administrateur pour <ph name="BEGIN_LINK" />modifier ces paramètres<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Lire l'onglet plus tard}one{Lire l'onglet plus tard}other{Lire les onglets plus tard}}</translation>
 <translation id="4242145785130247982">Plusieurs certificats clients ne sont pas pris en charge</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -3056,7 +3051,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4548483925627140043">Signal introuvable</translation>
 <translation id="4549791035683739768">Votre clé de sécurité ne contient aucune empreinte digitale enregistrée</translation>
 <translation id="4551763574344810652">Appuyez sur <ph name="MODIFIER_KEY_DESCRIPTION" /> pour annuler l'action</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">Réseau <ph name="NETWORK_TYPE" />; intensité du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4553526521109675518">Vous devez redémarrer votre Chromebook pour changer la langue de l'appareil. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">La version d'extension externe est égale ou inférieure à celle existante.</translation>
@@ -3411,7 +3405,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4974733135013075877">Quitter et activer le verrouillage enfant</translation>
 <translation id="4976009197147810135">Séparation verticale</translation>
 <translation id="4977942889532008999">Confirmation d'accès</translation>
-<translation id="4978905460870207779">Les sites peuvent demander à utiliser Flash</translation>
 <translation id="4980805016576257426">Cette extension contient un logiciel malveillant.</translation>
 <translation id="4981449534399733132">Pour effacer les données de navigation de tous vos appareils synchronisés et de votre compte Google, <ph name="BEGIN_LINK" />connectez-vous<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Logiciels sur l'appareil</translation>
@@ -4182,7 +4175,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5906732635754427568">Les données associées à cette application seront supprimées de cet appareil.</translation>
 <translation id="5908474332780919512">Démarrer l'application lorsque vous vous connectez</translation>
 <translation id="5908695239556627796">Vitesse de défilement de la souris</translation>
-<translation id="5908769186679515905">Bloquer l'exécution de Flash par les sites</translation>
 <translation id="5910363049092958439">En&amp;registrer l'image sous...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> est hors ligne</translation>
 <translation id="5911533659001334206">Visualiseur de raccourcis</translation>
@@ -4366,6 +4358,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6112727384379533756">Ajouter un ticket</translation>
 <translation id="6112931163620622315">Vérifier votre téléphone</translation>
 <translation id="6112952769866305444">Modifier la personne, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Définir le moteur de recherche par défaut pour le navigateur Chrome et le lanceur d'applications de l'appareil <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pour utiliser Smart Lock, passez au profil d'utilisateur principal sur votre téléphone</translation>
 <translation id="6116921718742659598">Modifier les paramètres de langue et d'entrée</translation>
 <translation id="6120205520491252677">Épingler cette page à l'écran de démarrage...</translation>
@@ -5232,6 +5225,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7140928199327930795">Aucun autre périphérique accessible.</translation>
 <translation id="7141105143012495934">La connexion a échoué, car les détails de votre compte n'ont pas pu être récupérés. Veuillez communiquer avec votre administrateur ou réessayer.</translation>
 <translation id="7143207342074048698">Connexion…</translation>
+<translation id="7143358760238281735">Aucune application à partager</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7149893636342594995">24 dernières heures</translation>
@@ -5703,6 +5697,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7707922173985738739">Utiliser les données mobiles</translation>
 <translation id="7709152031285164251">Échec — <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Diffuser…</translation>
+<translation id="7712739869553853093">Boîte de dialogue d'aperçu d'impression</translation>
 <translation id="7712836429117959503">Extension inconnue avec l'identifiant <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Les témoins de <ph name="DOMAIN" /> sont autorisés</translation>
 <translation id="7714464543167945231">Certificat</translation>
@@ -5832,7 +5827,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7831491651892296503">Erreur de configuration réseau</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Heure de fin</translation>
-<translation id="783214144752121388">Empêcher les sites d'utiliser Flash (recommandé)</translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
 <translation id="7835178595033117206">Favori supprimé</translation>
 <translation id="7836850009646241041">Essayez de toucher votre clé de sécurité à nouveau</translation>
@@ -6059,7 +6053,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}one{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers sont chiffrés. Demandez à leur propriétaire de les déchiffrer.}}</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous visitez le plus</translation>
-<translation id="8092681102116274204">Les paramètres contenant le caractère générique « * » ne sont plus pris en charge. Communiquez avec le concepteur de l'extension ou avec votre administrateur pour <ph name="BEGIN_LINK" />modifier ces paramètres<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381">Le plugiciel <ph name="PLUGIN_NAME" /> ne répond pas</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Sauvegarder sur Google Disque. Restaurez vos données aisément ou changez d'appareil à tout moment. Votre sauvegarde comprend les données des applications.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vos sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe de votre compte Google.<ph name="END_PARAGRAPH2" />
@@ -6154,7 +6147,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8201717382574620700">Sélectionner des albums de type <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Veuillez entrer de nouveau votre mot de passe pour mettre à jour votre profil <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203732864715032075">Vous envoyer des notifications et mémoriser cet ordinateur par défaut pour les messages. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Bloquer Flash (recommandé)</translation>
 <translation id="820568752112382238">Sites les plus visités</translation>
 <translation id="8206745257863499010">Mélodie</translation>
 <translation id="8206859287963243715">Cellulaire</translation>

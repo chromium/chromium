@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1979103255016296513">ପାସ୍‌ୱାର୍ଡ ପରିବର୍ତ୍ତନର ସମୟ ବିଳମ୍ବ ହୋଇଯାଇଛି</translation>
 <translation id="2049639323467105390">ଏହି ଡିଭାଇସ୍‌ <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ଆଖପାଖରେ ଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଖୋଜିବାକୁ ବ୍ଲୁଟୁଥ୍‌ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}other{<ph name="ERROR_MESSAGE" />{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}}</translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">ତୁରନ୍ତ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="4917889632206600977">ବନ୍ଦ ହୋଇଯାଇଛି - କାଗଜ ସରିଯାଇଛି</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ପରିଚାଳନା କରେ ଏବଂ ରିମୋଟ୍ ଭାବେ ସେଟିଂସ୍ ପରିଚାଳନା ଏବଂ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପ ନିରୀକ୍ଷଣ କରିପାରେ।</translation>
 <translation id="520299634122159966">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="5212543919916444558">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ରେ ମୁଁ କିଛି ଖୋଜିପାଇଲି ନାହିଁ ଯାହାଦ୍ୱାରା ମୁଁ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରିବି।
 ମୋତେ ଯାହା କିଛି ପଚାରିବା ପାଇଁ ମାଇକ୍‌ ଟାପ୍‌ କରି ଦେଖନ୍ତୁ।</translation>

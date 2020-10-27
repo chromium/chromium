@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Çap edilib</translation>
 <translation id="1979103255016296513">Parol dəyişikliyinin gecikməsi</translation>
 <translation id="2049639323467105390">Bu cihaz <ph name="DOMAIN" /> tərəfindən idarə olunur.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> cəhd qalıb</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}other{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}}</translation>
 <translation id="2517472476991765520">Skan edin</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
 <translation id="2872961005593481000">Qapadın</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Dərhal yenisini seçin</translation>
 <translation id="4917889632206600977">Dayanıb - Kağız yoxdur</translation>
 <translation id="4932733599132424254">Tarix</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bu istifadəçini idarə edir və ayarları məsafədən idarə edə və istifadəçinin fəaliyyətini izləyə bilər.</translation>
 <translation id="520299634122159966">Əlçatan skaner yoxdur</translation>
 <translation id="5212543919916444558">Ekranınızda kömək edə biləcəyim heç nə tapmadım. Məndən hər hansı bir şey soruşmaq üçün mikrofona klikləyin.</translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>

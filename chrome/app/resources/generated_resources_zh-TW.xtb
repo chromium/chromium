@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">停止</translation>
 <translation id="1272293450992660632">PIN 碼值不相符。</translation>
 <translation id="1272978324304772054">裝置註冊的網域中沒有這個使用者帳戶。如果你要使用其他網域進行註冊，必須先完成裝置修復作業。</translation>
-<translation id="1274977772557788323">Adobe Flash Player 儲存設定</translation>
 <translation id="1274997165432133392">Cookie 和其他網站資料</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1276994519141842946">無法解除安裝「<ph name="APP_NAME" />」</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">系統會將你的書籤、歷史記錄和其他設定與你的 Google 帳戶同步處理。</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家用網路，非漫遊狀態</translation>
-<translation id="1315056510003830387">不得使用 Flash</translation>
 <translation id="1316136264406804862">搜尋中...</translation>
 <translation id="1316495628809031177">已暫停同步處理</translation>
 <translation id="1317637799698924700">你的座架將以 USB Type-C 相容模式執行。</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="1987317783729300807">帳戶</translation>
-<translation id="1988494864246143197">網站通常會使用 Flash 播放音訊、影片或電玩遊戲。2020 年 12 月之後，系統將停止支援 Flash Player。</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="1990512225220753005">不要在這個頁面顯示捷徑</translation>
 <translation id="1992397118740194946">尚未設定</translation>
@@ -1648,7 +1645,6 @@
 <translation id="2880660355386638022">放置視窗</translation>
 <translation id="2881076733170862447">當你點選擴充功能時</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 即將重新啟動並進行重設</translation>
-<translation id="288387288628762616">可以使用 Flash</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2885729872133513017">解碼伺服器回應時發生問題。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2464,7 +2460,6 @@
 <translation id="383669374481694771">這個頁面會顯示這部裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料將用於改善 Android，且部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。</translation>
 <translation id="3838085852053358637">無法載入擴充功能</translation>
 <translation id="3838486795898716504">更多<ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Cookie、其他網站資料和外掛程式資料</translation>
 <translation id="383891835335927981">未針對任何網站設定縮放等級</translation>
 <translation id="3839509547554145593">啟用滑鼠捲動加速功能</translation>
 <translation id="3839516600093027468">一律禁止 <ph name="HOST" /> 讀取剪貼簿</translation>
@@ -2637,7 +2632,6 @@
 <translation id="4023146161712577481">正在確定裝置設定。</translation>
 <translation id="4025039777635956441">將所選網站設為靜音</translation>
 <translation id="4027804175521224372">(你錯過了下列步驟 - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">你的 Flash 設定將保留到退出 Chrome 為止。</translation>
 <translation id="4028467762035011525">新增輸入法</translation>
 <translation id="4031179711345676612">可使用麥克風</translation>
 <translation id="4031527940632463547">禁止使用感應器</translation>
@@ -2789,7 +2783,6 @@
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235200303672858594">整個畫面</translation>
 <translation id="4235965441080806197">取消登入</translation>
-<translation id="4237773362828263530">系統已停止支援包含「*」萬用字元的設定。請與系統管理員聯絡以<ph name="BEGIN_LINK" />變更這類設定<ph name="END_LINK" />。</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{稍後再閱讀分頁}other{稍後再閱讀分頁}}</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -3053,7 +3046,6 @@
 <translation id="4548483925627140043">偵測不到訊號</translation>
 <translation id="4549791035683739768">你的安全金鑰沒有儲存任何指紋</translation>
 <translation id="4551763574344810652">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可復原</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />網路，訊號強度 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">你需要重新啟動 Chromebook 才能變更裝置語言。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同，或版本較低。</translation>
@@ -3408,7 +3400,6 @@
 <translation id="4974733135013075877">結束並執行 Childlock</translation>
 <translation id="4976009197147810135">垂直分割</translation>
 <translation id="4977942889532008999">確認存取權</translation>
-<translation id="4978905460870207779">網站可以要求使用 Flash</translation>
 <translation id="4980805016576257426">這個擴充功能含有惡意軟體。</translation>
 <translation id="4981449534399733132">如要從所有同步的裝置和 Google 帳戶中清除瀏覽資料，請先<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />。</translation>
 <translation id="4982236238228587209">裝置上的軟體</translation>
@@ -4179,7 +4170,6 @@
 <translation id="5906732635754427568">與這個應用程式相關聯的資料會從這個裝置上移除。</translation>
 <translation id="5908474332780919512">當你登入時啟動應用程式</translation>
 <translation id="5908695239556627796">滑鼠捲動速度</translation>
-<translation id="5908769186679515905">禁止網站執行 Flash</translation>
 <translation id="5910363049092958439">另存圖片(&amp;V)...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 目前離線</translation>
 <translation id="5911533659001334206">快速鍵檢視器</translation>
@@ -5829,7 +5819,6 @@
 <translation id="7831491651892296503">網路設定錯誤</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">結束時間</translation>
-<translation id="783214144752121388">禁止網站執行 Flash (建議)</translation>
 <translation id="7833720883933317473">你所儲存的自訂字詞會顯示在這裡</translation>
 <translation id="7835178595033117206">已移除書籤</translation>
 <translation id="7836850009646241041">請再次輕觸你的安全金鑰</translation>
@@ -6057,7 +6046,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{這個檔案已加密。請要求檔案擁有者解密。}other{部分檔案已加密。請要求檔案擁有者解密。}}</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8090234456044969073">讀取最常造訪的網站清單</translation>
-<translation id="8092681102116274204">系統已停止支援包含「*」萬用字元的設定。請與擴充功能開發人員或系統管理員聯絡，<ph name="BEGIN_LINK" />以變更這類設定<ph name="END_LINK" />。</translation>
 <translation id="8093359998839330381">「<ph name="PLUGIN_NAME" />」無回應</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />備份到 Google 雲端硬碟。你隨時可以輕鬆還原資料或改用其他裝置。備份內容包含應用程式資料。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />備份內容會上傳到 Google 並以你的 Google 帳戶密碼加密。<ph name="END_PARAGRAPH2" />
@@ -6151,7 +6139,6 @@
 <translation id="8201717382574620700">選取「<ph name="TOPIC_SOURCE" />」的相簿</translation>
 <translation id="8202160505685531999">請再次輸入您的密碼，以更新您的 <ph name="DEVICE_TYPE" /> 設定檔。</translation>
 <translation id="8203732864715032075">傳送通知給你，並預設記住這部電腦，以便在收到簡訊時傳送通知。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">封鎖 Flash (建議)</translation>
 <translation id="820568752112382238">最常造訪的網站</translation>
 <translation id="8206745257863499010">藍調</translation>
 <translation id="8206859287963243715">手機</translation>

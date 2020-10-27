@@ -58,6 +58,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1455242230282523554">Rādīt valodas iestatījumus</translation>
 <translation id="1460620680449458626">Skaņa ir izslēgta.</translation>
 <translation id="1467432559032391204">Pa kreisi</translation>
+<translation id="1475439723810528286">Pieskarieties jebkurā vietā, lai tvertu visu ekrānu.</translation>
 <translation id="1479909375538722835">Peldoša pieejamības izvēlne</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Vairākkārtējas pierakstīšanās sesijā šim īpašnieka kontam ir jābūt pirmajam kontam, kurā jāpierakstās.</translation>
@@ -121,6 +122,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="209965399369889474">Nav savienojuma ar tīklu</translation>
 <translation id="2126242104232412123">Jauna darbvieta</translation>
 <translation id="2127372758936585790">Lādētājs ar mazu strāvas padevi</translation>
+<translation id="2132302418721800944">Ierakstīt visu ekrānu</translation>
 <translation id="2135456203358955318">Dokota lupa</translation>
 <translation id="2144487987174258011">Restartējiet, lai atjauninātu Adobe Flash Player</translation>
 <translation id="2180011262286780504">Jūsu administrators ir atspējojis iespēju izveidot ekrānuzņēmumus.</translation>
@@ -192,6 +194,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="2878884018241093801">Nav nesenu vienumu</translation>
 <translation id="2903844815300039659">Izveidots savienojums ar <ph name="NAME" />, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">Ekrānuzņēmumi</translation>
 <translation id="2942350706960889382">Dokota lupa</translation>
 <translation id="2942516765047364088">Plaukta pozīcija</translation>
 <translation id="2946119680249604491">Pievienot savienojumu</translation>
@@ -367,6 +370,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4513946894732546136">Atsauksmes</translation>
 <translation id="4527045527269911712">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī.</translation>
 <translation id="453661520163887813">Līdz pilnai uzlādei: <ph name="TIME" /></translation>
+<translation id="4538824937723742295">Izveidot visa ekrāna uzņēmumu</translation>
 <translation id="4544483149666270818">Atlasiet logu, kura saturs jāieraksta</translation>
 <translation id="4560576029703263363">Ieslēgts</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Lietotnes paziņojumu emblēma</translation>
 <translation id="5030687792513154421">Izmantošanas laiks beidzies</translation>
+<translation id="5033299697334913360">Noklikšķiniet jebkurā vietā, lai tvertu visu ekrānu.</translation>
 <translation id="5035236842988137213">Ierīce <ph name="DEVICE_NAME" /> ir savienota ar jaunu tālruni</translation>
 <translation id="5035389544768382859">Displeja konfigurācijas apstiprināšana</translation>
 <translation id="5083553833479578423">Piekļūstiet citām Asistenta funkcijām</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
 <translation id="5168181903108465623">Pieejamas apraides ierīces</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
+<translation id="5176318573511391780">Ierakstīt daļu ekrāna</translation>
 <translation id="5207949376430453814">Izcelt teksta ievietošanas punktu</translation>
 <translation id="5208059991603368177">Ieslēgts</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
@@ -488,6 +494,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5837036133683224804">Pārtraukt “<ph name="ROUTE_TITLE" />” apraidi ierīcē “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5860033963881614850">Izsl.</translation>
 <translation id="5876666360658629066">Ievadiet vecāku kodu</translation>
+<translation id="5881540930187678962">Tālruņa centrmezgla iestatīšana vēlāk</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="589817443623831496">Punktu pārlūkošana</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -542,6 +549,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Visu paziņojumu notīrīšana</translation>
 <translation id="643147933154517414">Viss gatavs</translation>
+<translation id="6431865393913628856">Ierakstīt ekrānu</translation>
 <translation id="6445835306623867477">“<ph name="ROUTE_TITLE" />” apraide ierīcē “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6452181791372256707">Noraidīt</translation>
 <translation id="6453179446719226835">Valodas maiņa</translation>
@@ -627,6 +635,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7346909386216857016">Labi, sapratu</translation>
 <translation id="7348093485538360975">Ekrāntastatūra</translation>
 <translation id="735745346212279324">VPN ir atvienots</translation>
+<translation id="7371404428569700291">Ierakstīt logu</translation>
 <translation id="7377169924702866686">Funkcija Caps Lock ir ieslēgta.</translation>
 <translation id="7378203170292176219">Velciet, lai atlasītu apgabalu, kura saturs jāieraksta</translation>
 <translation id="7378594059915113390">Multivides vadīklas</translation>
@@ -815,6 +824,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="9084606467167974638">Pārslēgt izvēlnes pozīciju</translation>
 <translation id="9089416786594320554">Ievades metodes</translation>
 <translation id="9091626656156419976">Displejs <ph name="DISPLAY_NAME" /> tika noņemts.</translation>
+<translation id="9092749890156285613">Nesenie ekrānuzņēmumi un lejupielādes</translation>
 <translation id="9151726767154816831">Lai atjauninātu, restartējiet ierīci un izmantojiet funkciju Powerwash.</translation>
 <translation id="9166331175924255663">Ieslēgt/izslēgt augstas redzamības režīmu kopīgošanai tuvumā.</translation>
 <translation id="9168436347345867845">Vēlāk</translation>

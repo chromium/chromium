@@ -810,13 +810,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Notez que cette règle ne doit pas être appliquée aux appareils utilisés par le grand public.
 
       Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les avertissements liés à la confidentialité dans les sessions Invité gérées lancées automatiquement sont épinglés jusqu'à ce que les utilisateurs les ferment.</translation>
-<translation id="228665601367357543">Permet d'établir une liste de formats d'URL indiquant les sites qui sont automatiquement autorisés à accéder à un appareil USB avec les ID produit et ID de fournisseur indiqués. Pour que la règle soit valide, chaque élément de la liste doit contenir un champ "devices" et un champ "urls". Chaque élément du champ "devices" peut contenir à son tour un champ "vendor_id" et un champ "product_id". Si vous ne renseignez pas le champ "vendor_id", la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ "product_id", la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ "product_id", mais pas de champ "vendor_id", n'est pas valide.
-
-      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration (du site du cadre de premier niveau) pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "urls" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule, afin d'indiquer ces URL. Si vous ne spécifiez qu'une seule URL, l'accès aux appareils USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL indiquées dans le champ "urls" ne sont pas valides, la règle est ignorée.
-
-      Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre spécifié par l'utilisateur s'applique.
-
-      Les formats d'URL de cette règle ne doivent pas entrer en conflit avec ceux qui ont été définis dans la règle <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. En cas de conflit, cette règle prévaut sur <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2289265947759479962">Cette règle détermine si les informations de version doivent être enregistrées. Cela concerne, par exemple, la version, la plate-forme et l'architecture du système d'exploitation, la version de <ph name="PRODUCT_NAME" /> et le canal de <ph name="PRODUCT_NAME" />.
 
       Cette règle est ignorée si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
@@ -1542,11 +1535,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
         * 4, le micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" /> est mis à jour après l'inscription, avant que l'utilisateur se connecte.
 
       Si cette règle n'est pas configurée, la mise à jour du micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" /> n'est pas disponible.</translation>
-<translation id="3235677869770186098">Cette règle permet d'établir la liste des formats d'URL pour lesquels les sites sont automatiquement autorisés à se connecter à un périphérique USB à l'aide des identifiants du produit et du fournisseur indiqués sur l'écran de connexion. Pour que la règle soit valide, chaque élément de la liste doit contenir un champ "devices" et un champ "urls". Chaque élément du champ "devices" peut contenir à son tour un champ "vendor_id" et un champ "product_id". Si vous ne renseignez pas le champ "vendor_id", la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ "product_id", la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ "product_id", mais pas de champ "vendor_id", n'est pas valide.
-
-      Le modèle d'autorisation USB utilise l'URL de requête et l'URL d'intégration pour permettre à l'URL de requête d'accéder à l'appareil USB. L'URL de requête peut être différente de l'URL d'intégration si le site à l'origine de la demande est chargé dans un iFrame. Le champ "urls" peut de ce fait contenir jusqu'à deux chaînes d'URL séparées par une virgule afin d'indiquer l'URL de requête et l'URL d'intégration, respectivement. Si une seule URL est spécifiée, l'accès aux périphériques USB concernés est autorisé si l'URL du site à l'origine de la demande correspond à cette URL, quel que soit l'état d'intégration. Si les URL ne sont pas valides, la règle est ignorée.
-
-      Si cette règle n'est pas définie, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
 <translation id="3236046242843493070">Formats d'URL à partir desquelles autoriser les sources d'installation des extensions, des applications et des scripts d'utilisateur</translation>
 <translation id="3240609035816615922">Règle d'accès à la configuration des imprimantes.</translation>
 <translation id="324062325008698789">Configurer une liste d'imprimantes</translation>
@@ -1857,7 +1845,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3631099945620529777">Si cette règle est définie sur "false", le bouton "Arrêter le processus" est désactivé dans le gestionnaire de tâches.
 
       Si cette règle est définie sur "true" ou si elle n'est pas configurée, l'utilisateur peut mettre fin à des processus dans le gestionnaire de tâches.</translation>
-<translation id="3639444551396586995">Autoriser Chrome à signaler à Google les événements à risque</translation>
 <translation id="3643284063603988867">Activer la fonctionnalité "Mémoriser le mot de passe"</translation>
 <translation id="3646859102161347133">Définir le type de loupe</translation>
 <translation id="3647212518036289905">Permet de spécifier la bibliothèque GSSAPI à utiliser pour l'authentification HTTP. Vous pouvez indiquer le nom de la bibliothèque ou son chemin d'accès complet.
@@ -1877,13 +1864,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
         Cette règle est utilisée pour l'activation de la règle relative au cloud au niveau de la machine (pour les ordinateurs de bureau). Elle peut être définie sur le registre ou les GPO sur Windows, le fichier plist sur Mac, et le fichier de règle JSON sur Linux.</translation>
 <translation id="3660562134618097814">Transférer des cookies de fournisseurs d'identité SAML lors de la connexion</translation>
-<translation id="3669373349666208904">Si cette règle est définie sur "True", les pages sont autorisées à afficher des pop-up pendant qu'elles se déchargent.
-
-      Si cette règle est définie sur "False" ou si elle n'est pas configurée, les pages ne peuvent pas afficher de pop-up pendant qu'elles se déchargent.
-
-      Cette règle sera supprimée dans Chrome 88.
-
-      Pour en savoir plus, consultez l'article https://www.chromestatus.com/feature/5989473649164288.</translation>
 <translation id="3691155504326059225">Si cette règle est activée, la page "Nouvel onglet" est définie comme page d'accueil de l'utilisateur. Toute URL de page d'accueil est ignorée. Si cette règle est désactivée, la page d'accueil de l'utilisateur ne sera jamais la page "Nouvel onglet", sauf si l'URL de la page d'accueil est définie sur "chrome://newtab".
 
       Si cette règle est configurée, les utilisateurs ne peuvent pas modifier leur type de page d'accueil dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, l'utilisateur peut choisir lui-même d'utiliser la page "Nouvel onglet" comme page d'accueil.
@@ -2122,15 +2102,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4020682745012723568">Les applications Android n'ont pas accès aux cookies transférés vers le profil de l'utilisateur.</translation>
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
-<translation id="4044054366426171256">Cette règle configure les noms de domaines obligatoires de l'hôte qui sont imposés aux hôtes d'accès à distance et empêche les utilisateurs d'y apporter des modifications.
-
-          Si ce paramètre est activé et défini sur un ou plusieurs domaines, les hôtes ne peuvent être partagés qu'à l'aide des comptes enregistrés sur les noms de domaines spécifiés.
-
-          Si ce paramètre est désactivé, s'il n'est pas configuré ou s'il est défini sur une liste vide, les hôtes peuvent être partagés via n'importe quel compte.
-
-          Ce paramètre ignore la règle RemoteAccessHostDomain, le cas échéant.
-
-          Voir aussi RemoteAccessHostClientDomainList.</translation>
 <translation id="4056910949759281379">Désactiver le protocole SPDY</translation>
 <translation id="4061590579642538878">Transmettre les informations liées aux rapports d'erreur.</translation>
 <translation id="4075675819066819571">Placer l'étagère sur le côté gauche de l'écran</translation>
@@ -2586,10 +2557,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4874982543810021567">Bloquer WebUSB sur ces sites</translation>
 <translation id="4876805738539874299">Version SSL maximale activée</translation>
 <translation id="4887274746092315609">Affiche une page permettant aux utilisateurs SAML de changer de mot de passe en cours de session</translation>
-<translation id="4887863670424903990">Si cette règle est activée, <ph name="PRODUCT_NAME" /> signale à Google, pour analyse, les événements à risque tels que la réutilisation de mots de passe, les téléchargements de logiciels malveillants, les interstitiels et les non-respects des règles de protection des données sensibles.  Certains événements à risque, comme les non-respects des règles de protection des données sensibles, dépendent d'autres règles en vertu desquelles de telles vérifications sont activées.
-
-      Si cette règle est désactivée ou si elle n'est pas définie, <ph name="PRODUCT_NAME" /> ne signale pas les événements à risque.
-      </translation>
 <translation id="4894290482695457375">Tant que la règle <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> n'est pas désactivée, le fait d'activer la règle <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> connecte <ph name="PRODUCT_NAME" /> aux appareils Cast pour toutes les adresses IP, et pas seulement les adresses privées décrites dans la RFC 1918 ou la RFC 4193.
 
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne se connecte aux appareils Cast que sur les adresses privées décrites dans la RFC 1918 ou la RFC 4193.
@@ -3377,9 +3344,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
           Les clients d'accès à distance ne sont pas concernés par la configuration de cette règle. Ils utilisent toujours "chromoting-client.talkgadget.google.com" pour accéder à TalkGadget.</translation>
 <translation id="5890063326284543943">Contrôler l'utilisation de l'API Serial</translation>
-<translation id="5893553533827140852">Si ce paramètre est activé, les demandes d'authentification gnubby seront envoyées par un proxy via une connexion hôte à distance.
-
-          S'il est désactivé ou n'est pas configuré, ces demandes ne seront pas envoyées par un proxy.</translation>
 <translation id="5897913798715600338">Recharge de la batterie à l'aide d'une technologie de recharge rapide.</translation>
 <translation id="5898486742390981550">Lorsque plusieurs personnes sont connectées, l'utilisateur principal est le seul à pouvoir se servir des applications Android.</translation>
 <translation id="5901427587865226597">Impression recto verso seulement</translation>
@@ -3721,7 +3685,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les éléments "/path" ni "@query". Tout format qui inclut l'élément "/path" ou "@query" est ignoré.</translation>
 <translation id="6464074037294098618">Activer la saisie automatique pour les adresses</translation>
 <translation id="6467613372414922590">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur (installés sans l'autorisation d'un administrateur)</translation>
-<translation id="6468980648680553776">Cette règle est obsolète. Veuillez utiliser RemoteAccessHostClientDomainList.</translation>
 <translation id="6473623140202114570">Configurez la liste des domaines sur lesquels la navigation sécurisée ne déclenchera aucun avertissement.</translation>
 <translation id="647698599569353771">Autorisez l'activation du Partage à proximité.</translation>
 <translation id="6485813825811798133">Permet d'établir la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs l'accès en lecture aux fichiers ou répertoires figurant dans le système de fichiers du système d'exploitation hôte via l'API File System.
@@ -4558,17 +4521,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="747014869399137701">Si cette règle est définie sur "1", les sites Web peuvent afficher des notifications sur le bureau. Si cette règle est définie sur "2", les sites ne sont pas autorisés à afficher ces notifications.
 
       Si cette règle n'est pas configurée, la règle <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
-<translation id="7471828226549672843">Par défaut, les conditions d'utilisation sont affichées la première fois que des onglets personnalisés Chrome sont exécutés. Si cette règle est désactivée, la boîte de dialogue des conditions d'utilisation ne s'affiche ni à la première exécution, ni lors des suivantes. Si cette règle est activée ou qu'elle n'est pas configurée, la boîte de dialogue des conditions d'utilisation s'affiche à la première exécution. Notez également les points suivants :
-
-      - Cette règle ne peut être appliquée que sur des appareils Android entièrement gérés qui peuvent être configurés par des fournisseurs UEM (Unified Endpoint Management, gestion unifiée des points de terminaison).
-
-      - Si cette règle est désactivée, la règle BrowserSignin n'a aucune incidence.
-
-      - Si cette règle est désactivée, les statistiques ne sont pas transmises au serveur.
-
-      - Si cette règle est désactivée, les fonctionnalités du navigateur sont limitées.
-
-      - Si cette règle est désactivée, les administrateurs doivent le signaler aux utilisateurs finaux de l'appareil.</translation>
 <translation id="747275827471712187">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur ces sites</translation>
 <translation id="7476621944304431784">Si ce paramètre est activé, les utilisateurs seront autorisés à synchroniser les configurations du réseau Wi-Fi entre leurs appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté. Pour pouvoir synchroniser les configurations du réseau Wi-Fi, les utilisateurs doivent au préalable activer explicitement cette fonctionnalité en suivant une procédure de configuration.
 
@@ -4606,15 +4558,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle n'est pas configurée, <ph name="IE_PRODUCT_NAME" /> détecte automatiquement le chemin d'accès au fichier exécutable de <ph name="PRODUCT_NAME" /> lors du lancement de <ph name="PRODUCT_NAME" /> depuis Internet Explorer.
 
       Remarque : Si le module complémentaire Legacy Browser Support pour <ph name="IE_PRODUCT_NAME" /> n'est pas installé, cette règle n'a aucune incidence.</translation>
-<translation id="7506758875409719208">Cette règle configure les noms de domaines obligatoires du client qui sont imposés aux clients d'accès à distance et empêche les utilisateurs d'y apporter des modifications.
-
-          Si ce paramètre est activé et défini sur un ou plusieurs domaines, seuls les clients de l'un des domaines indiqués peuvent se connecter à l'hôte.
-
-          Si ce paramètre est désactivé, s'il n'est pas configuré ou s'il est défini sur une liste vide, la règle par défaut pour le type de connexion concerné est appliquée. Dans le cadre d'une assistance à distance, cela permet aux clients de n'importe quel domaine de se connecter à l'hôte. Concernant l'accès à distance à tout moment, seul le propriétaire de l'hôte peut se connecter.
-
-          Ce paramètre remplace RemoteAccessHostClientDomain, le cas échéant.
-
-          Voir aussi RemoteAccessHostDomainList.</translation>
 <translation id="7507131973617884092">Si cette règle est activée, chacune des origines définies et répertoriées dans une liste d'éléments séparés par une virgule exécute son propre processus et isole les origines par sous-domaines. Par exemple, si vous indiquez https://example.com/, https://foo.example.com/ est isolé en tant que partie du site https://example.com/.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
@@ -5091,7 +5034,6 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 
           Dans ce cas, <ph name="PRODUCT_OS_NAME" /> peut être configuré séparément pour verrouiller ou non l'écran avant l'arrêt provisoire.</translation>
 <translation id="8214600119442850823">Configure le gestionnaire de mot de passe.</translation>
-<translation id="8217516105848565518">Cette règle est obsolète. Veuillez utiliser RemoteAccessHostDomainList.</translation>
 <translation id="8219777886736887686">Permet de spécifier la commande à utiliser pour ouvrir les URL dans un navigateur secondaire. Cette règle peut être définie sur le navigateur <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> ou <ph name="EDGE_VALUE_PLACEHOLDER" />, ou sur un chemin d'accès à un fichier. Si elle est définie sur un chemin d'accès à un fichier, ce dernier est utilisé comme fichier exécutable. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> et <ph name="EDGE_VALUE_PLACEHOLDER" /> ne sont disponibles que sous <ph name="MS_WIN_NAME" />, tandis que <ph name="SAFARI_VALUE_PLACEHOLDER" /> n'est disponible que sous <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />.
 
       Si cette règle n'est pas configurée, l'URL s'ouvre par défaut dans un navigateur spécifique à la plate-forme : <ph name="IE_PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> sous <ph name="MAC_OS_NAME" />. Sous <ph name="LINUX_OS_NAME" />, le lancement d'un navigateur secondaire entraîne une erreur.</translation>

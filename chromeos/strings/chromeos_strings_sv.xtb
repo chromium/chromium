@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Utskrivet</translation>
 <translation id="1979103255016296513">Tiden för att ändra lösenordet har gått ut</translation>
 <translation id="2049639323467105390">Den här enheten hanteras av <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobb</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Aktivera Bluetooth så att det går att upptäcka enheter i närheten</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> försök kvar</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} försök kvar}other{<ph name="ERROR_MESSAGE" /> {0} försök kvar}}</translation>
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2872961005593481000">Stäng av</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> hanterar denna användare och kan fjärrhantera inställningar och övervaka användaraktivitet.</translation>
 <translation id="520299634122159966">Det finns inga tillgängliga skannrar</translation>
 <translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
 Tryck på mikrofonen och fråga om något.</translation>

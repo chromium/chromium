@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">توقف</translation>
 <translation id="1272293450992660632">مقادیر پین مطابقت ندارند.</translation>
 <translation id="1272978324304772054">این حساب کاربری متعلق به دامنه‌ای که دستگاه در آن ثبت‌ شده است، نیست. اگر می‌خواهید در دامنه دیگری ثبت‌نام کنید ابتدا باید دستگاه را بازیابی کنید.</translation>
-<translation id="1274977772557788323">‏تنظیمات فضای ذخیره‌سازی Adobe Flash Player</translation>
 <translation id="1274997165432133392">کوکی‌ها و دیگر داده‌های سایت</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> حذف نصب نشد</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">‏نشانک‌ها، سابقه و سایر تنظیماتتان با حساب Google شما همگام خواهند شد.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">شبکه اصلی، بدون فراگردی</translation>
-<translation id="1315056510003830387">‏اجازه ندارد از Flash استفاده کند</translation>
 <translation id="1316136264406804862">در حال جستجو...</translation>
 <translation id="1316495628809031177">همگام‌سازی موقتاً متوقف شده است</translation>
 <translation id="1317637799698924700">‏ایستگاه پایه اتصال در حالت سازگار با «USB نوع C» کار می‌کند.</translation>
@@ -875,7 +873,6 @@
 <translation id="197989455406964291">‏KDC از نوع رمزگذاری پشتیبانی نمی‌کند</translation>
 <translation id="1984417487208496350">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="1987317783729300807">اشتراک‌ها</translation>
-<translation id="1988494864246143197">‏سایت‌ها معمولاً از Flash برای پخش صدا، ویدیو، یا بازی‌های ویدیویی استفاده می‌کنند. Flash Player از دسامبر ۲۰۲۰ دیگر پشتیبانی نخواهد شد.</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
 <translation id="1990512225220753005">میان‌برها در این صفحه نشان داده نشود</translation>
 <translation id="1992397118740194946">تنظیم نشده است</translation>
@@ -1646,7 +1643,6 @@
 <translation id="2880660355386638022">جای‌گذاری پنجره</translation>
 <translation id="2881076733170862447">وقتی روی افزونه کلیک می‌کنید</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> راه‌اندازی مجدد و به صورت لحظه‌ای بازنشانی می‌شود</translation>
-<translation id="288387288628762616">‏اجازه دارد از Flash استفاده کند</translation>
 <translation id="2885378588091291677">مدیر فعالیت‌ها</translation>
 <translation id="2885729872133513017">هنگام رمزگشایی پاسخ سرور، مشکلی پیش آمد.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2078,6 +2074,7 @@
 <translation id="3428419049384081277">وارد سیستم شده‌اید!</translation>
 <translation id="3428747202529429621">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="3428800329481094896">‏درحال واکشی کلیدهای ssh محتوی Linux</translation>
+<translation id="3429271624041785769">زبان محتوای وب</translation>
 <translation id="3429275422858276529">این صفحه را نشانک‌گذاری کنید تا بعداً آن را به‌آسانی پیدا کنید</translation>
 <translation id="3432227430032737297">حذف همه موارد نشان‌ داده‌شده</translation>
 <translation id="3432757130254800023">ارسال صوت و تصویر برای نمایش در شبکه محلی</translation>
@@ -2462,7 +2459,6 @@
 <translation id="383669374481694771">‏این اطلاعاتی کلی درباره این دستگاه و نحوه استفاده از آن است (مانند سطح شارژ باتری، فعالیت سیستم و برنامه، و خطاها). از این داده‌ها برای بهبود Android استفاده خواهد شد و بعضی از اطلاعات انبوهشی نیز به برنامه‌های Google و شریکان، مانند برنامه‌نویسان Android کمک خواهد کرد برنامه‌ها و محصولاتشان را بهتر کنند.</translation>
 <translation id="3838085852053358637">افزونه بار نشد</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> بیشتر</translation>
-<translation id="3838543471119263078">کوکی‌ها و داده‌های افزایه و سایت‌های دیگر</translation>
 <translation id="383891835335927981">هیچ سایتی بزرگ‌نمایی یا کوچک‌نمایی نشده است</translation>
 <translation id="3839509547554145593">فعال کردن شتاب پیمایش موشواره</translation>
 <translation id="3839516600093027468">دسترسی <ph name="HOST" /> به بریده‌‌دان همیشه مسدود باشد</translation>
@@ -2504,6 +2500,7 @@
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3881478300875776315">نمایش خطوط کمتر</translation>
 <translation id="3882165008614329320">ویدیوی موجود از دوربین یا فایل</translation>
+<translation id="3884152383786131369">محتوای وبی که به چند زبان دردسترس است از اولین زبان پشتیبانی‌شده در این فهرست استفاده خواهد کرد. این اولویت‌ها با تنظیمات مرورگرتان همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">درخواست شما برای دسترسی به این سایت برای <ph name="NAME" /> ارسال شده است</translation>
 <translation id="3888550877729210209">یادداشت‌برداری با <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">‏روشن کردن «همگام‌سازی Chrome» برای استفاده از «همگام‌سازی Wi-Fi»</translation>
@@ -2636,7 +2633,6 @@
 <translation id="4023146161712577481">تعیین پیکربندی دستگاه</translation>
 <translation id="4025039777635956441">بی‌صدا کردن سایت انتخاب‌شده</translation>
 <translation id="4027804175521224372">(شما موفق نشدید-<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">‏تنظیمات Flash تا وقتی از Chrome خارج شوید حفظ می‌شود.</translation>
 <translation id="4028467762035011525">افزودن روش‌های ورودی</translation>
 <translation id="4031179711345676612">میکروفون مجاز است</translation>
 <translation id="4031527940632463547">حسگرها مسدود شدند</translation>
@@ -2788,7 +2784,6 @@
 <translation id="4232375817808480934">‏پیکربندی Kerberos</translation>
 <translation id="4235200303672858594">کل صفحه</translation>
 <translation id="4235965441080806197">لغو ورود به سیستم</translation>
-<translation id="4237773362828263530">تنظیمات دارای نویسه عام «*» دیگر پشتیبانی نمی‌شود. برای <ph name="BEGIN_LINK" />تغییر دادن این تنظیمات<ph name="END_LINK" />، با سرپرستتان تماس بگیرید.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{خواندن برگه در فرصتی دیگر}one{خواندن برگه‌ها در فرصتی دیگر}other{خواندن برگه‌ها در فرصتی دیگر}}</translation>
 <translation id="4242145785130247982">چند مورد از گواهینامه‌های کارخواه پشتیبانی نمی‌شوند</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
@@ -3052,7 +3047,6 @@
 <translation id="4548483925627140043">سیگنال پیدا نشد</translation>
 <translation id="4549791035683739768">هیچ اثر انگشتی برای کلید امنیتی‌تان ذخیره نشده است</translation>
 <translation id="4551763574344810652">برای واگرد، <ph name="MODIFIER_KEY_DESCRIPTION" /> را فشار دهید</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">شبکه <ph name="NETWORK_TYPE" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4553526521109675518">‏باید Chromebook را بازراه‌اندازی کنید تا زبان دستگاه تغییر کند. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">برنامه افزودنی خارجی در مقایسه با برنامه کنونی، دارای همان نسخه یا نسخه پایین‌تر است.</translation>
@@ -3407,7 +3401,6 @@
 <translation id="4974733135013075877">خروج و قفل کودک</translation>
 <translation id="4976009197147810135">تقسیم عمودی</translation>
 <translation id="4977942889532008999">تأیید دسترسی</translation>
-<translation id="4978905460870207779">‏سایت‌ها می‌توانند استفاده از Flash را درخواست کنند</translation>
 <translation id="4980805016576257426">این افزونه بدافزار دارد.</translation>
 <translation id="4981449534399733132">‏برای اینکه داده‌های محصول مرور را از همه دستگاه‌های همگام‌سازی‌شده و حساب Google خود پاک کنید، <ph name="BEGIN_LINK" />به سیستم وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">نرم‌افزار دستگاه</translation>
@@ -4178,7 +4171,6 @@
 <translation id="5906732635754427568">داده‌های مرتبط با این برنامه از این دستگاه پاک می‌شوند.</translation>
 <translation id="5908474332780919512">راه‌اندازی برنامه هنگام ورود به سیستم</translation>
 <translation id="5908695239556627796">سرعت پیمایش موشواره</translation>
-<translation id="5908769186679515905">‏اجرای Flash در سایت‌ها مسدود شود</translation>
 <translation id="5910363049092958439">ذ&amp;خیره فایل تصویری به‌عنوان...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آفلاین است</translation>
 <translation id="5911533659001334206">نمایشگر میان‌بر</translation>
@@ -4362,6 +4354,7 @@
 <translation id="6112727384379533756">افزودن بلیت</translation>
 <translation id="6112931163620622315">تلفن را بررسی کنید</translation>
 <translation id="6112952769866305444">ویرایش شخص، <ph name="PROFILE_NAME" />، <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">‏تنظیم موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
 <translation id="6113942107547980621">‏برای استفاده از Smart Lock، به نمایه کاربر اصلی در تلفن جابه‌جا شوید</translation>
 <translation id="6116921718742659598">تغییر تنظیمات زبان و ورودی</translation>
 <translation id="6120205520491252677">پین کردن این صفحه به صفحه شروع…</translation>
@@ -5228,6 +5221,7 @@
 <translation id="7140928199327930795">هیچ دستگاه دیگری در دسترس نیست.</translation>
 <translation id="7141105143012495934">به دلیل اینکه جزئيات حساب شما بازیابی نشد، ورود به سیستم ناموفق بود. لطفاً با سرپرستتان تماس بگیرید یا دوباره امتحان کنید.</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
+<translation id="7143358760238281735">هیچ برنامه‌ای دردسترس نیست</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
 <translation id="714876143603641390">‏اتصال LAN</translation>
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
@@ -5699,6 +5693,7 @@
 <translation id="7707922173985738739">استفاده از داده تلفن همراه</translation>
 <translation id="7709152031285164251">انجام نشد - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;ارسال محتوا…</translation>
+<translation id="7712739869553853093">کادر گفتگوی پیش‌نمایش چاپ</translation>
 <translation id="7712836429117959503">افزونه ناشناس با شناسه <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">کوکی‌های <ph name="DOMAIN" /> مجاز است</translation>
 <translation id="7714464543167945231">گواهی</translation>
@@ -5828,7 +5823,6 @@
 <translation id="7831491651892296503">خطا در پیکربندی شبکه</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">زمان پایان</translation>
-<translation id="783214144752121388">‏اجرای Flash در سایت‌ها مسدود شود (توصیه می‌شود)</translation>
 <translation id="7833720883933317473">کلمات سفارشی ذخیره‌شده در اینجا نشان داده خواهند شد</translation>
 <translation id="7835178595033117206">نشانک حذف شد</translation>
 <translation id="7836850009646241041">دوباره کلید امنیتی خود را لمس کنید</translation>
@@ -6056,7 +6050,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{این فایل رمزگذاری شده است. از مالک بخواهید آن را رمزگشایی کند.}one{بعضی از این فایل‌ها رمزگذاری شده‌اند. از مالک بخواهید آن را رمزگشایی کند.}other{بعضی از این فایل‌ها رمزگذاری شده‌اند. از مالک بخواهید آن‌ها را رمزگشایی کند.}}</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8090234456044969073">خواندن فهرستی از وب‌سایت‌های غالباً بازدید شده شما</translation>
-<translation id="8092681102116274204">تنظیمات دارای نویسه عام «*» دیگر پشتیبانی نمی‌شود. برای <ph name="BEGIN_LINK" />تغییر دادن این تنظیمات<ph name="END_LINK" />، با برنامه‌نویس افزونه یا سرپرستتان تماس بگیرید.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> پاسخ نمی‌دهد</translation>
 <translation id="8095105960962832018">‏<ph name="BEGIN_PARAGRAPH1" />پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. نسخه پشتیبان داده‌های برنامه را شامل می‌شود.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />داده‌های پشتیبان در Google بارگذاری می‌شود و با استفاده از گذرواژه حساب Google شما رمزگذاری می‌شود.<ph name="END_PARAGRAPH2" />
@@ -6151,7 +6144,6 @@
 <translation id="8201717382574620700">انتخاب آلبوم‌های <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">لطفاً برای به‌روزرسانی نمایه <ph name="DEVICE_TYPE" /> خود، گذرواژه‌تان را دوباره وارد کنید.</translation>
 <translation id="8203732864715032075">ارسال اعلان برای شما و به‌خاطرسپردن این رایانه به‌عنوان پیش‌فرض برای «پیام‌ها». <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">‏Flash مسدود شود (توصیه می‌شود)</translation>
 <translation id="820568752112382238">سایت‌هایی که بیشتر بازدید شده</translation>
 <translation id="8206745257863499010">بلوزی</translation>
 <translation id="8206859287963243715">سلولی</translation>

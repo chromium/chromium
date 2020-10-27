@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Напечатано</translation>
 <translation id="1979103255016296513">Истек срок изменения пароля</translation>
 <translation id="2049639323467105390">Это устройство находится в домене <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2375079107209812402">Осталось попыток: <ph name="ATTEMPTS_LEFT" />.</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>
 <translation id="2517472476991765520">Искать</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="5094480857972195099">Это управляемый аккаунт. Администратор (<ph name="ENROLLMENT_DOMAIN" />) может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="520299634122159966">Нет доступных сканеров.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
 Попробуйте озвучить запрос, нажав на значок микрофона.</translation>

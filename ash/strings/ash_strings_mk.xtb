@@ -58,6 +58,7 @@
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
 <translation id="1467432559032391204">Лево</translation>
+<translation id="1475439723810528286">Допрете каде било за да го сликате целиот екран</translation>
 <translation id="1479909375538722835">Лебдечко мени за пристапност</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Оваа сметка на сопственик треба да биде првата пријавена сметка во сесија со повеќекратно пријавување.</translation>
@@ -121,6 +122,7 @@
 <translation id="209965399369889474">Не е поврзан на мрежа</translation>
 <translation id="2126242104232412123">Нов работен простор</translation>
 <translation id="2127372758936585790">Полнач со ниско напојување</translation>
+<translation id="2132302418721800944">Снимање цел екран</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
 <translation id="2144487987174258011">Рестартирајте за да се ажурира Adobe Flash Player</translation>
 <translation id="2180011262286780504">Администраторот ја оневозможил можноста за снимање на екранот.</translation>
@@ -192,6 +194,7 @@
 <translation id="2872961005593481000">Исклучи</translation>
 <translation id="2878884018241093801">Нема неодамнешни ставки</translation>
 <translation id="2903844815300039659">Поврзано со <ph name="NAME" />, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">Слики од екранот</translation>
 <translation id="2942350706960889382">Закотвена лупа</translation>
 <translation id="2942516765047364088">Позиција на полица</translation>
 <translation id="2946119680249604491">Додај врска</translation>
@@ -368,6 +371,7 @@
 <translation id="4513946894732546136">Повратни информации</translation>
 <translation id="4527045527269911712">Уредот Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> додека да се наполни</translation>
+<translation id="4538824937723742295">Слика од целиот екран</translation>
 <translation id="4544483149666270818">Изберете прозорец за снимање</translation>
 <translation id="4560576029703263363">Вклучено</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -423,12 +427,14 @@
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> м. <ph name="SECONDS" /> с.</translation>
 <translation id="4975771730019223894">Значки за апликации</translation>
 <translation id="5030687792513154421">Времето истече</translation>
+<translation id="5033299697334913360">Кликнете каде било за да го сликате целиот екран</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> е поврзан со нов телефон</translation>
 <translation id="5035389544768382859">Потврдете ја конфигурацијата на екранот</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
 <translation id="5168181903108465623">Достапни се уреди за емитување</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
+<translation id="5176318573511391780">Делумно снимање екран</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="5208059991603368177">Вклучено</translation>
 <translation id="5222676887888702881">Одјави се</translation>
@@ -489,6 +495,7 @@
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5876666360658629066">Внесете го кодот на родител</translation>
+<translation id="5881540930187678962">Поставете ја Phone Hub подоцна</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="589817443623831496">Скенирање по точки</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -543,6 +550,7 @@
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Избриши ги сите известувања</translation>
 <translation id="643147933154517414">Готово</translation>
+<translation id="6431865393913628856">Снимање екран</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се емитува на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6452181791372256707">Отфрли</translation>
 <translation id="6453179446719226835">Јазикот е променет</translation>
@@ -628,6 +636,7 @@
 <translation id="7346909386216857016">Добро, сфатив</translation>
 <translation id="7348093485538360975">Тастатура на екран</translation>
 <translation id="735745346212279324">VPN е исклучен</translation>
+<translation id="7371404428569700291">Снимање прозорец</translation>
 <translation id="7377169924702866686">Вклучено е Caps Lock.</translation>
 <translation id="7378203170292176219">Повлечете за да изберете област за снимање</translation>
 <translation id="7378594059915113390">Контроли за аудиовизуелни медиуми</translation>
@@ -816,6 +825,7 @@
 <translation id="9084606467167974638">Промени ја позицијата на менито</translation>
 <translation id="9089416786594320554">Влезни методи</translation>
 <translation id="9091626656156419976">Отстранет екран <ph name="DISPLAY_NAME" /></translation>
+<translation id="9092749890156285613">Неодамнешни слики од екранот и преземања</translation>
 <translation id="9151726767154816831">Престартувајте и фабрички ресетирајте за ажурирање</translation>
 <translation id="9166331175924255663">Вклучете/исклучете голема видливост за „Споделување во близина“.</translation>
 <translation id="9168436347345867845">Остави за подоцна</translation>

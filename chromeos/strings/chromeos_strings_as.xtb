@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
 <translation id="1979103255016296513">পাছৱর্ড সলনি কৰাৰ সময় উকলিছে</translation>
 <translation id="2049639323467105390">এই ডিভাইচটো <ph name="DOMAIN" />এ পৰিচালনা কৰে।</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ওচৰ-পাজৰৰ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> টা প্ৰয়াস বাকী আছে</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}one{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}other{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}}</translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" />এ এই ব্যৱহাৰকাৰীগৰাকীক পৰিচালনা কৰে আৰু হয়তো দূৰৰ পৰা ছেটিং পৰিচালনা কৰে আৰু ব্যৱহাৰকাৰীৰ কার্যকলাপ নিৰীক্ষণ কৰে।</translation>
 <translation id="520299634122159966">কোনো স্কেনাৰ নাই</translation>
 <translation id="5212543919916444558">আপোনাক সহায় কৰিব পৰাকৈ মই আপোনাৰ স্ক্ৰীণত একো বিচাৰি পোৱা নাই।
 মোক কিবা সুধিবলৈ মাইকটো টিপক।</translation>

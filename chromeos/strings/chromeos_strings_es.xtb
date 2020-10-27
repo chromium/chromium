@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Ya ha terminado el plazo para cambiar la contraseña</translation>
 <translation id="2049639323467105390">Este dispositivo está gestionado por <ph name="DOMAIN" /></translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> PPP</translation>
 <translation id="2338501278241028356">Activa el Bluetooth para encontrar dispositivos cercanos</translation>
 <translation id="2375079107209812402">Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
 <translation id="4932733599132424254">Fecha</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestiona a este usuario, y es posible que gestione sus ajustes y supervise su actividad de forma remota.</translation>
 <translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>

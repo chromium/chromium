@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Gedruk</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="2049639323467105390">Die toestel word deur <ph name="DOMAIN" /> bestuur.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Skakel Bluetooth aan om toestelle in die omtrek te ontdek</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> pogings oor</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} poging oor}other{<ph name="ERROR_MESSAGE" /> {0} pogings oor}}</translation>
 <translation id="2517472476991765520">Skandeer</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2872961005593481000">Skakel af</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="520299634122159966">Geen skandeerders is beskikbaar nie</translation>
 <translation id="5212543919916444558">Ek kry niks op jou skerm waarmee ek kan help nie.
 Probeer die mikrofoon tik om my enigiets te vra.</translation>

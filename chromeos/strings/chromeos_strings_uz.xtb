@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1018656279737460067">Bekor qilindi</translation>
+<translation id="1075811647922107217">Sahifa hajmi</translation>
 <translation id="1195447618553298278">Noma’lum xatolik.</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Bajarilmadi - Filtr ishlamadi</translation>
@@ -18,10 +19,12 @@
 <translation id="1947737735496445907">Chop etildi</translation>
 <translation id="1979103255016296513">Parolni almashtirish muddati tugadi</translation>
 <translation id="2049639323467105390">Bu qurilma <ph name="DOMAIN" /> tomonidan boshqariladi</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ta urinish qoldi</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}other{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}}</translation>
 <translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
@@ -59,6 +62,7 @@
 <translation id="4890353053343094602">Tezda yangi parol tanlang</translation>
 <translation id="4917889632206600977">Toʻxtatildi – Qogʻoz tugadi</translation>
 <translation id="4932733599132424254">Sana</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
 <translation id="520299634122159966">Skanerlar topilmadi</translation>
 <translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
 Mikrofon ustiga bosing va savolni ayting.</translation>

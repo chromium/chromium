@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Prentað</translation>
 <translation id="1979103255016296513">Breyting á aðgangsorði komin fram yfir tíma</translation>
 <translation id="2049639323467105390">Þessu tæki er stjórnað af <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Hætta við prentverk</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Kveiktu á Bluetooth til að uppgötva nálæg tæki</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tilraunir eftir</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
 <translation id="2517472476991765520">Leita</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="2872961005593481000">Slökkva</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Veldu nýtt án tafar</translation>
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> hefur umsjón með þessum notanda og getur stjórnað stillingum og skoðað notendavirkni með fjartengingu.</translation>
 <translation id="520299634122159966">Engir skannar tiltækir</translation>
 <translation id="5212543919916444558">Ég finn ekkert á skjánum sem ég get aðstoðað þig með.
 Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</translation>

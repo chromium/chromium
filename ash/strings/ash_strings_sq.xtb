@@ -58,6 +58,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1455242230282523554">Shfaq cilësimet e gjuhës</translation>
 <translation id="1460620680449458626">Volumi është i çaktivizuar.</translation>
 <translation id="1467432559032391204">Majtas</translation>
+<translation id="1475439723810528286">Trokit diku për të regjistruar ekranin e plotë</translation>
 <translation id="1479909375538722835">Menyja pluskuese e qasshmërisë</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Kjo llogari zotëruesi duhet të jetë llogaria e parë e identifikimit në një sesion me identifikime të shumëfishta.</translation>
@@ -121,6 +122,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="209965399369889474">Nuk është lidhur në rrjet</translation>
 <translation id="2126242104232412123">Tavolinë e re</translation>
 <translation id="2127372758936585790">Ngarkues me fuqi të ulët</translation>
+<translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
 <translation id="2144487987174258011">Rinise për të përditësuar Adobe Flash Player</translation>
 <translation id="2180011262286780504">Aftësia për të regjistruar ekranin është çaktivizuar nga administratori yt.</translation>
@@ -192,6 +194,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2878884018241093801">Nuk ka asnjë artikull të fundit</translation>
 <translation id="2903844815300039659">Lidhur me <ph name="NAME" />, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">Regjistrimet e ekranit</translation>
 <translation id="2942350706960889382">Zmadhuesi i stacionuar</translation>
 <translation id="2942516765047364088">Pozicioni i raftit</translation>
 <translation id="2946119680249604491">Shto lidhje</translation>
@@ -367,6 +370,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4513946894732546136">Komente</translation>
 <translation id="4527045527269911712">Pajisja me Bluetooth "<ph name="DEVICE_NAME" />" kërkon leje për çiftim.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> derisa të mbushet</translation>
+<translation id="4538824937723742295">Shkrep një pamje ekrani të plotë</translation>
 <translation id="4544483149666270818">Zgjidh një dritare për të regjistruar</translation>
 <translation id="4560576029703263363">Aktiv</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> orë e <ph name="MINUTES" /> min. e <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Distinktivi i aplikacionit</translation>
 <translation id="5030687792513154421">Koha mbaroi</translation>
+<translation id="5033299697334913360">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> u lidh me një telefon të ri</translation>
 <translation id="5035389544768382859">Konfirmo konfigurimin e ekranit</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
+<translation id="5176318573511391780">Regjistro ekranin e pjesshëm</translation>
 <translation id="5207949376430453814">Thekso kursorin e tekstit</translation>
 <translation id="5208059991603368177">Aktive</translation>
 <translation id="5222676887888702881">Dil</translation>
@@ -488,6 +494,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5876666360658629066">Fut kodin e prindit</translation>
+<translation id="5881540930187678962">Konfiguroje Phone Hub më vonë</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="589817443623831496">Skanimi me pika</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -542,6 +549,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Pastro të gjitha njoftimet</translation>
 <translation id="643147933154517414">Të gjitha në rregull</translation>
+<translation id="6431865393913628856">Regjistrimi i ekranit</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="6452181791372256707">Refuzo</translation>
 <translation id="6453179446719226835">Gjuha është ndryshuar</translation>
@@ -627,6 +635,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7346909386216857016">Në rregull, kuptova</translation>
 <translation id="7348093485538360975">Tastiera në ekran</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>
+<translation id="7371404428569700291">Regjistro dritaren</translation>
 <translation id="7377169924702866686">Kyçja e kapitaleve është aktive.</translation>
 <translation id="7378203170292176219">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
 <translation id="7378594059915113390">Kontrollet e klipeve media</translation>
@@ -815,6 +824,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="9084606467167974638">Ndrysho pozicionin e menysë</translation>
 <translation id="9089416786594320554">Metodat e hyrjes</translation>
 <translation id="9091626656156419976">Ekrani <ph name="DISPLAY_NAME" /> u hoq</translation>
+<translation id="9092749890156285613">Regjistrimet e fundit të ekranit dhe shkarkimet</translation>
 <translation id="9151726767154816831">Rifillo dhe bëj Powerwash për të përditësuar</translation>
 <translation id="9166331175924255663">Aktivizo/çaktivizo dukshmërinë e lartë për "Ndarjen në afërsi".</translation>
 <translation id="9168436347345867845">Bëje më vonë</translation>

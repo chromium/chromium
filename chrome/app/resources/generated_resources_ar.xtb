@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">إيقاف</translation>
 <translation id="1272293450992660632">لا تتطابق قيم أرقام التعريف الشخصية.</translation>
 <translation id="1272978324304772054">لا ينتمي حساب المستخدم هذا إلى النطاق المسجَّل به هذا الجهاز. إذا أردت التسجيل بنطاق مختلف، فيلزمك إجراء استرداد الجهاز أولاً.</translation>
-<translation id="1274977772557788323">‏إعدادات مساحة تخزين برنامج Adobe Flash Player</translation>
 <translation id="1274997165432133392">ملفات تعريف الارتباط وبيانات الموقع الأخرى</translation>
 <translation id="1275718070701477396">محدد</translation>
 <translation id="1276994519141842946">تعذّر إلغاء تثبيت <ph name="APP_NAME" />.</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">‏ستتم مزامنة الإشارات المرجعية والسجل وغير ذلك من الإعدادات مع حسابك على Google.</translation>
 <translation id="1314565355471455267">‏الشبكة الظاهرية الخاصة (VPN) في Android</translation>
 <translation id="131461803491198646">الشبكة الرئيسية، بلا تجوال</translation>
-<translation id="1315056510003830387">‏المواقع الإلكترونية التي لا يُسمح لها باستخدام Flash</translation>
 <translation id="1316136264406804862">جارِ البحث...</translation>
 <translation id="1316495628809031177">تم إيقاف المزامنة مؤقتًا</translation>
 <translation id="1317637799698924700">‏سيتم تشغيل محطة الإرساء في وضع USB من نوع C المتوافق.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">‏لا يدعم KDC (مركز توزيع المفاتيح) نوع التشفير</translation>
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1987317783729300807">حسابات</translation>
-<translation id="1988494864246143197">‏تستخدم المواقع الإلكترونية عادةً Flash لتشغيل الصوت أو الفيديو أو ألعاب الفيديو. لن يتوفَّر برنامج Flash Player بعد كانون الأول (ديسمبر) 2020.</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="1990512225220753005">عدم إظهار الاختصارات في هذه الصفحة</translation>
 <translation id="1992397118740194946">لم يتم تعيينه</translation>
@@ -1649,7 +1646,6 @@
 <translation id="2880660355386638022">موضِع النافذة</translation>
 <translation id="2881076733170862447">عند النقر على "الإضافة"</translation>
 <translation id="2882943222317434580">ستتم إعادة تشغيل <ph name="IDS_SHORT_PRODUCT_NAME" /> وإعادة تعيينه بعد وهلة.</translation>
-<translation id="288387288628762616">‏المواقع الإلكترونية التي يُسمح لها باستخدام Flash</translation>
 <translation id="2885378588091291677">إدارة المهام</translation>
 <translation id="2885729872133513017">حدثت مشكلة في فك رمز استجابة الخادم.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2465,7 +2461,6 @@
 <translation id="383669374481694771">‏هذه معلومات عامة حول هذا الجهاز وطريقة استخدامه (مثل مستوى البطارية، ونشاط النظام والتطبيقات، والأخطاء). وسيتم استخدام هذه البيانات في تحسين Android، كما ستساعد بعض المعلومات المجمّعة في تحسين تطبيقات Google والتطبيقات والمنتجات الخاصة بشركائها، مثل مطوّري البرامج المتوافقة مع Android.</translation>
 <translation id="3838085852053358637">فشل تحميل الإضافة</translation>
 <translation id="3838486795898716504">مزيد من <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">ملفات تعريف الارتباط وبيانات المواقع والمكونات الإضافية الأخرى</translation>
 <translation id="383891835335927981">لم يتم تكبير أو تصغير أي مواقع إلكترونية</translation>
 <translation id="3839509547554145593">تفعيل تسريع تمرير الماوس</translation>
 <translation id="3839516600093027468">حظر <ph name="HOST" /> دائمًا من الاطلاع على الحافظة</translation>
@@ -2636,7 +2631,6 @@
 <translation id="4023146161712577481">جارٍ تحديد تكوين الجهاز.</translation>
 <translation id="4025039777635956441">كتم صوت الموقع الإلكتروني المحدد</translation>
 <translation id="4027804175521224372">(لقد فاتك—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">‏سيتم الاحتفاظ بإعدادات Flash حتى خروجك من Chrome.</translation>
 <translation id="4028467762035011525">إضافة أساليب إدخال</translation>
 <translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
 <translation id="4031527940632463547">تم حظر أجهزة الاستشعار</translation>
@@ -2788,7 +2782,6 @@
 <translation id="4232375817808480934">‏ضبط Kerberos</translation>
 <translation id="4235200303672858594">الشاشة بالكامل</translation>
 <translation id="4235965441080806197">إلغاء تسجيل الدخول</translation>
-<translation id="4237773362828263530">‏لم تعُد الإعدادات التي تحتوي على أحرف البدل "*" متوافقة مع Flash. يمكنك التواصل مع مشرفك <ph name="BEGIN_LINK" />لتغيير هذه الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{إضافة علامة تبويب واحدة إلى قائمة "القراءة لاحقًا"}zero{إضافة علامات تبويب إلى قائمة "القراءة لاحقًا"}two{إضافة علامتَي تبويب إلى قائمة "القراءة لاحقًا"}few{إضافة علامات تبويب إلى قائمة "القراءة لاحقًا"}many{إضافة علامات تبويب إلى قائمة "القراءة لاحقًا"}other{إضافة علامات تبويب إلى قائمة "القراءة لاحقًا"}}</translation>
 <translation id="4242145785130247982">شهادات العميل المتعددة غير متاحة</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
@@ -3052,7 +3045,6 @@
 <translation id="4548483925627140043">لم يتم العثور على إشارة.</translation>
 <translation id="4549791035683739768">لا يتضمّن مفتاح الأمان بصمات أصابع مخزّنة.</translation>
 <translation id="4551763574344810652">اضغط على <ph name="MODIFIER_KEY_DESCRIPTION" /> للتراجع</translation>
-<translation id="4552089082226364758">الفلاش</translation>
 <translation id="4552759165874948005">شبكة <ph name="NETWORK_TYPE" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">‏عليك إعادة تشغيل جهاز Chromebook لتغيير لغة الجهاز. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">الإضافة الخارجية في نفس الإصدار أو إصدار أقل مقارنة بالموجودة حاليًا.</translation>
@@ -3407,7 +3399,6 @@
 <translation id="4974733135013075877">الخروج وتشغيل وضع القفل للأطفال</translation>
 <translation id="4976009197147810135">تقسيم رأسي</translation>
 <translation id="4977942889532008999">تأكيد الدخول</translation>
-<translation id="4978905460870207779">‏السماح للمواقع الإلكترونية بطلب استخدام Flash</translation>
 <translation id="4980805016576257426">تحتوي هذه الإضافة على برامج ضارة.</translation>
 <translation id="4981449534399733132">‏لمحو بيانات التصفُّح من جميع أجهزتك التي تمت مزامنتها ومن حسابك على Google، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">برامج الجهاز</translation>
@@ -4179,7 +4170,6 @@
 <translation id="5906732635754427568">ستتم إزالة البيانات المقترنة بهذا التطبيق من هذا الجهاز.</translation>
 <translation id="5908474332780919512">تشغيل التطبيق تلقائيًا عند تسجيل الدخول</translation>
 <translation id="5908695239556627796">سرعة تمرير الماوس</translation>
-<translation id="5908769186679515905">‏حظر المواقع الإلكترونية من تشغيل Flash</translation>
 <translation id="5910363049092958439">حفظ ال&amp;صورة باسم...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> غير متصل</translation>
 <translation id="5911533659001334206">عارض الاختصارات</translation>
@@ -5830,7 +5820,6 @@
 <translation id="7831491651892296503">حدث خطأ أثناء إعداد الشبكة</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">وقت الانتهاء</translation>
-<translation id="783214144752121388">‏حظر المواقع الإلكترونية من تشغيل Flash (مُستحسَن)</translation>
 <translation id="7833720883933317473">ستظهر هنا الكلمات المُخصصة المحفوظة</translation>
 <translation id="7835178595033117206">تمت إزالة إشارة مرجعية</translation>
 <translation id="7836850009646241041">يُرجى محاولة لمس مفتاح الأمان مرة أخرى.</translation>
@@ -6058,7 +6047,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{هذا الملف مشفّر. يُرجى طلب فكّ تشفيره من المالك.}zero{بعض هذه الملفات مشفّرة. يُرجى طلب فكّ تشفيرها من المالك.}two{هذان الملفان مشفّران. يُرجى طلب فكّ تشفيرهما من المالك.}few{بعض هذه الملفات مشفّرة. يُرجى طلب فكّ تشفيرها من المالك.}many{بعض هذه الملفات مشفّرة. يُرجى طلب فكّ تشفيرها من المالك.}other{بعض هذه الملفات مشفّرة. يُرجى طلب فكّ تشفيرها من المالك.}}</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8090234456044969073">قراءة قائمة بمواقع الويب التي تتردد عليها بكثرة</translation>
-<translation id="8092681102116274204">‏لم تعُد الإعدادات التي تحتوي على أحرف البدل "*" متوافقة مع Flash. يمكنك التواصل مع مطوِّر الإضافة أو مشرفك <ph name="BEGIN_LINK" />لتغيير هذه الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> لا يستجيب.</translation>
 <translation id="8095105960962832018">‏<ph name="BEGIN_PARAGRAPH1" />يمكنك الاحتفاظ بنسخة احتياطية في Google Drive. وبإمكانك استعادة بياناتك أو تبديل جهازك بسهولة في أي وقت، علمًا بأن نسختك الاحتياطية تتضمن بيانات التطبيق.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ويتم تحميل النُسخ الاحتياطية إلى Google وتشفيرها باستخدام كلمة مرور حسابك على Google.<ph name="END_PARAGRAPH2" />
@@ -6153,7 +6141,6 @@
 <translation id="8201717382574620700">اختيار ألبومات <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">يُرجى إعادة إدخال كلمة المرور لتحديث ملف <ph name="DEVICE_TYPE" /> الشخصي.</translation>
 <translation id="8203732864715032075">تُرسِل إليك الإشعارات وتتذكر جهاز الكمبيوتر هذا لميزة "الرسائل". <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">‏حظر Flash (مُستحسَن)</translation>
 <translation id="820568752112382238">المواقع الأكثر زيارة</translation>
 <translation id="8206745257863499010">موسيقي</translation>
 <translation id="8206859287963243715">خلوي</translation>

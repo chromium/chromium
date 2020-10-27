@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Natisnjeno</translation>
 <translation id="1979103255016296513">Rok za spremembo gesla je potekel</translation>
 <translation id="2049639323467105390">To napravo upravlja <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
 <translation id="2375079107209812402">Na voljo imate še toliko poskusov: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Še {0} poskusi}other{<ph name="ERROR_MESSAGE" /> Še {0} poskusov}}</translation>
 <translation id="2517472476991765520">Išči</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Zaustavitev</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Takoj izberite novo</translation>
 <translation id="4917889632206600977">Ustavljeno – zmanjkalo je papirja</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> upravlja tega uporabnika in lahko na daljavo upravlja nastavitve ter nadzira dejavnost uporabnika.</translation>
 <translation id="520299634122159966">Ni razpoložljivih optičnih bralnikov</translation>
 <translation id="5212543919916444558">Na zaslonu ni ničesar uporabnega.
 Poskusite vprašati tako, da se dotaknete mikrofona.</translation>

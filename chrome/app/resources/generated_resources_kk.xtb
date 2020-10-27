@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Тоқтату</translation>
 <translation id="1272293450992660632">PIN кодтары сәйкес келмейді.</translation>
 <translation id="1272978324304772054">Бұл пайдаланушы есептік жазбасы құрылғы тіркелген доменге жатпайды. Басқа доменге тіркегіңіз келсе, алдымен құрылғыны қалпына келтіруіңіз керек.</translation>
-<translation id="1274977772557788323">Adobe Flash Player жад параметрлері</translation>
 <translation id="1274997165432133392">Cookie файлдары және басқа сайт деректері</translation>
 <translation id="1275718070701477396">Таңдалған</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> жойылмады.</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Бетбелгілеріңіз, журналыңыз және басқа параметрлеріңіз Google есептік жазбасымен синхрондалады.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Роуминг емес, үй желісі</translation>
-<translation id="1315056510003830387">Flash бағдарламасын пайдалануға рұқсаты жоқтар</translation>
 <translation id="1316136264406804862">Ізделуде…</translation>
 <translation id="1316495628809031177">Синхрондау кідіртілді</translation>
 <translation id="1317637799698924700">Қондыру станциясы USB Type-C портымен үйлесімді режимде жұмыс істейді.</translation>
@@ -875,7 +873,6 @@
 <translation id="197989455406964291">KDC шифрлау түрін қолданбайды.</translation>
 <translation id="1984417487208496350">Қорғау режимін өшіру (ұсынылмайды)</translation>
 <translation id="1987317783729300807">Есептік жазбалар</translation>
-<translation id="1988494864246143197">Сайттар әдетте аудионы, бейнені немесе бейне ойындарды ойнату үшін Flash-ті пайдаланады. 2020 жылдың желтоқсанынан кейін Flash Player-ге қолдау көрсетілмейді.</translation>
 <translation id="1989112275319619282">Шолу</translation>
 <translation id="1990512225220753005">Бұл бетте таңбашаларды көрсетпеу</translation>
 <translation id="1992397118740194946">Орнатылмаған</translation>
@@ -1646,7 +1643,6 @@
 <translation id="2880660355386638022">Терезені орналастыру</translation>
 <translation id="2881076733170862447">Кеңейтім басылғанда</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> қазір қайта іске қосылып, қайта орнатылады</translation>
-<translation id="288387288628762616">Flash бағдарламасын пайдалануға рұқсаты барлар</translation>
 <translation id="2885378588091291677">Тапсырмалар реттегіші</translation>
 <translation id="2885729872133513017">Сервер жауабының шифрын шешу барысында ақау орын алды.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2462,7 +2458,6 @@
 <translation id="383669374481694771">Бұл – осы құрылғы мен оны пайдалану (мысалы, батарея зарядының деңгейі, жүйе мен қолданбаларды пайдалану тарихы, қателер) туралы жалпы ақпарат. Мәлімет Android жүйесін жақсарту үшін пайдаланылады, ал кейбір ақпарат Google қолданбаларына және Android әзірлеушілері сияқты серіктестерге көмектеседі әрі олардың қолданбалары мен өнімдерін жақсарта түседі.</translation>
 <translation id="3838085852053358637">Кеңейтім жүктелмеді</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> атауы қойылған басқа беттер</translation>
-<translation id="3838543471119263078">Cookie файлдары және басқа сайт пен плагин деректері</translation>
 <translation id="383891835335927981">Ешқандай сайт ұлғайтылмады не кішірейтілмеді</translation>
 <translation id="3839509547554145593">Тінтуірді айналдыру жылдамдығын арттыруды қосу</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> хостының буферді көруіне әрқашан тыйым салу</translation>
@@ -2636,7 +2631,6 @@
 <translation id="4023146161712577481">Құрылғы конфигурациясын анықтау.</translation>
 <translation id="4025039777635956441">Таңдалған сайттағы дыбысты өшіру</translation>
 <translation id="4027804175521224372">(Мүмкіндікті жіберіп алмаңыз — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Flash параметрлері Chrome браузерінен шыққанға дейін сақталады.</translation>
 <translation id="4028467762035011525">Енгізу әдісін қосу</translation>
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4031527940632463547">Датчиктер құлыпталды</translation>
@@ -2788,7 +2782,6 @@
 <translation id="4232375817808480934">Kerberos билетін конфигурациялау</translation>
 <translation id="4235200303672858594">Бүкіл экран</translation>
 <translation id="4235965441080806197">Жүйеге кіруден бас тарту</translation>
-<translation id="4237773362828263530">"*" алмастырғыш таңбалары бар параметрлерге бұдан былай қолдау көрсетілмейді. <ph name="BEGIN_LINK" />Бұл параметрлерді өзгерту<ph name="END_LINK" /> үшін әкімшіге хабарласыңыз.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Қойындыны кейін оқу}other{Қойындыларды кейін оқу}}</translation>
 <translation id="4242145785130247982">Бірнеше клиент сертификатына қолдау көрсетілмейді.</translation>
 <translation id="4242533952199664413">Параметрлерді ашу</translation>
@@ -3052,7 +3045,6 @@
 <translation id="4548483925627140043">Сигнал жоқ.</translation>
 <translation id="4549791035683739768">Қауіпсіздік кілтіңізде саусақ іздері сақталмаған.</translation>
 <translation id="4551763574344810652">Қайтару үшін <ph name="MODIFIER_KEY_DESCRIPTION" /> пернелерін басыңыз.</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> желісі, сигнал деңгейі: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">Құрылғының тілін өзгерту үшін Chromebook құрылғысын өшіріп, қосуыңыз керек. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Сыртқы кеңейтім бар нұсқамен бірдей немесе онымен салыстырғанда төменірек нұсқа болып табылады.</translation>
@@ -3407,7 +3399,6 @@
 <translation id="4974733135013075877">Шығу және балалардан құлыптау</translation>
 <translation id="4976009197147810135">Тігінен бөлу</translation>
 <translation id="4977942889532008999">Кіру рұқсатын растау</translation>
-<translation id="4978905460870207779">Сайттар Flash пайдалануға рұқсат сұрай алады.</translation>
 <translation id="4980805016576257426">Бұл кеңейтімде зиянды бағдарлама бар.</translation>
 <translation id="4981449534399733132">Барлық синхрондалған құрылғылардан және Google есептік жазбасынан браузерді пайдалану деректерін өшіру үшін, <ph name="BEGIN_LINK" />жүйеге кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Құрылғының бағдарламалық құралы</translation>
@@ -4178,7 +4169,6 @@
 <translation id="5906732635754427568">Бұл қолданбамен байланыстырылған деректер бұл құрылғыдан өшіріледі.</translation>
 <translation id="5908474332780919512">Есептік жазбаға кірген кезде, қолданбаны іске қосу</translation>
 <translation id="5908695239556627796">Тінтуірді айналдыру жылдамдығы</translation>
-<translation id="5908769186679515905">Сайттарда Flash қолданбасының іске қосылуын бөгеу</translation>
 <translation id="5910363049092958439">Кескінді басқаша са&amp;қтау…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> офлайн режимде.</translation>
 <translation id="5911533659001334206">Жылдам пернелерді көру құралы</translation>
@@ -5828,7 +5818,6 @@
 <translation id="7831491651892296503">Желіні конфигурациялауда қате болды</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Аяқталу уақыты</translation>
-<translation id="783214144752121388">Сайттардың Flash-ті іске қосуына тыйым салу (ұсынылады)</translation>
 <translation id="7833720883933317473">Сақталған арнаулы сөздер осы жерге шығады</translation>
 <translation id="7835178595033117206">Бетбелгі өшірілген</translation>
 <translation id="7836850009646241041">Қауіпсіздік кілтін тағы түртіп көріңіз.</translation>
@@ -6055,7 +6044,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Бұл файл шифрланған. Иесінен шифрдан шығаруын сұраңыз.}other{Бұл файлдардың кейбіреуі шифрланған. Иелерінен оларды шифрдан шығаруын сұраңыз.}}</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8090234456044969073">Ең жиі қаралатын веб-сайттар тізімін оқу</translation>
-<translation id="8092681102116274204">"*" алмастырғыш таңбалары бар параметрлерге бұдан былай қолдау көрсетілмейді. <ph name="BEGIN_LINK" />Бұл параметрлерді өзгерту<ph name="END_LINK" /> үшін кеңейтім әзірлеушісіне немесе әкімшіге хабарласыңыз.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> жауап бермей жатыр</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Drive дискісіне сақтық көшірме жасаңыз. Деректерді кез келген уақытта қалпына келтіріп, құрылғыңызды ауыстыра аласыз. Сақтық көшірмеде қолданба туралы деректер де қамтылады.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Сақтық көшірмелер Google-ға жүктеп салынады және Google есептік жазбаңыздың құпия сөзі арқылы шифрланады.<ph name="END_PARAGRAPH2" />
@@ -6150,7 +6138,6 @@
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" /> альбомдарын таңдау</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> профилін жаңарту үшін, құпия сөзіңізді қайта енгізіңіз.</translation>
 <translation id="8203732864715032075">Телефонға келген хабарлар туралы осы компьютерде хабарландыру алу. <ph name="LINK_BEGIN" />Толығырақ ақпарат<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Flash бағдарламасына бөгеу (ұсынылады)</translation>
 <translation id="820568752112382238">Көп кіретін сайттар</translation>
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Ұялы</translation>

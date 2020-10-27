@@ -787,13 +787,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Questo criterio non dovrebbe essere utilizzato per i dispositivi usati dal pubblico generale.
 
       Se il criterio è impostato su true o non configurato, la notifica di avviso sulla privacy nella sessione Ospite gestita con avvio automatico verrà bloccata finché l'utente non la ignorerà.</translation>
-<translation id="228665601367357543">Consente di impostare un elenco di pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Perché il criterio sia valido, ogni elemento elencato deve avere un campo "devices" e un campo "urls". Ogni elemento nel campo "devices" può avere un campo "vendor_id" e un campo "product_id". Se il campo "vendor_id" non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo "product_id" non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo "product_id" senza un campo "vendor_id" non è valido.
-
-      Il modello di autorizzazione USB utilizza l'URL richiedente e l'URL di incorporamento (del sito frame di primo livello) per consentire all'URL richiedente di accedere al dispositivo USB. L'URL richiedente potrebbe essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Di conseguenza il campo "urls" può contenere fino a 2 stringhe delimitate da una virgola per specificare questi URL. Se specifichi un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL indicato, a prescindere dallo stato di incorporamento. Gli URL indicati nel campo "urls" devono essere validi, altrimenti il criterio viene ignorato.
-
-      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      I pattern URL di questo criterio non devono essere in conflitto con quelli configurati tramite il criterio <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza sui criteri <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2289265947759479962">Questo criterio consente di stabilire se segnalare o meno le informazioni sulla versione, ad esempio la versione del sistema operativo, la piattaforma e l'architettura del sistema operativo, la versione di <ph name="PRODUCT_NAME" /> e il canale di <ph name="PRODUCT_NAME" />.
 
       Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, viene ignorato.
@@ -1529,11 +1522,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
         * 4, il firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> viene aggiornato in seguito alla registrazione, prima dell'accesso dell'utente.
 
       Se il criterio non viene configurato, la visualizzazione dell'aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> non è disponibile.</translation>
-<translation id="3235677869770186098">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati nella schermata di accesso. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi "devices" e "urls". Ogni elemento nel campo "devices" può avere un campo "vendor_id" e un campo "product_id". Se il campo "vendor_id" non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo "product_id" non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo "product_id" senza un campo "vendor_id" non è valido.
-
-      Il modello di autorizzazione USB utilizza l'URL richiedente e l'URL di incorporamento per consentire all'URL richiedente di accedere al dispositivo USB. L'URL richiedente può essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Pertanto, il campo "urls" può contenere fino a 2 stringhe URL delimitate da una virgola per specificare rispettivamente l'URL richiedente e l'URL di incorporamento. Se viene specificato un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL in questione, a prescindere dallo stato di incorporamento. Se gli URL non sono validi, il criterio viene ignorato.
-
-      Se il criterio non viene configurato, viene utilizzato il valore predefinito globale per tutti i siti (nessun accesso automatico).</translation>
 <translation id="3236046242843493070">Pattern URL per consentire installazioni di estensioni, applicazioni e script utente da</translation>
 <translation id="3240609035816615922">Norma di accesso alla configurazione delle stampanti.</translation>
 <translation id="324062325008698789">Consente di configurare un elenco di stampanti</translation>
@@ -1847,7 +1835,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3631099945620529777">Se la norma è impostata su false, il pulsante "Termina processo" in Task Manager viene disattivato.
 
       Se la norma è impostata su true o non è configurata, l'utente può terminare i processi in Task Manager.</translation>
-<translation id="3639444551396586995">Consenti a Chrome di segnalare eventi non sicuri a Google</translation>
 <translation id="3643284063603988867">Attiva la funzionalità "Ricorda password"</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.
@@ -1867,13 +1854,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 
         Questo criterio viene utilizzato su desktop dalla registrazione con criteri cloud in ambito macchina e può essere impostato tramite il file di criteri registry o GPO su Windows, plist su Mac e JSON su Linux.</translation>
 <translation id="3660562134618097814">Trasferisci i cookie dell'IdP SAML durante l'accesso</translation>
-<translation id="3669373349666208904">Se il criterio viene impostato su True, le pagine possono mostrare popup durante il caricamento.
-
-      Se il criterio viene impostato su False o se non viene configurato, le pagine non possono mostrare popup durante il caricamento.
-
-      Questo criterio verrà rimosso nella versione 88 di Chrome.
-
-      Visita la pagina https://www.chromestatus.com/feature/5989473649164288.</translation>
 <translation id="3691155504326059225">Se il criterio viene impostato su Attivato, la pagina Nuova scheda viene impostata come pagina iniziale dell'utente e l'eventuale URL della pagina iniziale specificato viene ignorato. Se viene impostato su Disattivato, la pagina iniziale dell'utente non sarà mai la pagina Nuova scheda, a meno che chrome://newtab venga impostato come URL della pagina iniziale dell'utente.
 
       Se il criterio viene impostato, gli utenti non possono cambiare il tipo di pagina iniziale in <ph name="PRODUCT_NAME" />. Se non viene impostato, l'utente può decidere se impostare o meno la pagina Nuova scheda come pagina iniziale.
@@ -2112,15 +2092,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4020682745012723568">Le app Android non possono accedere ai cookie trasferiti al profilo dell'utente.</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
-<translation id="4044054366426171256">Consente di configurare i nomi di dominio dell'host che verranno imposti sugli host di accesso remoto e impedisce agli utenti di modificarli.
-
-          Se questa impostazione viene attivata e configurata su uno o più domini, gli host possono essere condivisi solo utilizzando gli account registrati su uno dei nomi di dominio specificati.
-
-          Se questa impostazione viene disattivata o non viene configurata o viene configurata su un elenco vuoto, gli host possono essere condivisi utilizzando qualsiasi account.
-
-          Questa impostazione sostituirà RemoteAccessHostDomain, se presente.
-
-          Vedi anche RemoteAccessHostClientDomainList.</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
 <translation id="4061590579642538878">Segnala informazioni relative ai rapporti sugli arresti anomali.</translation>
 <translation id="4075675819066819571">Posiziona la shelf sul lato sinistro dello schermo</translation>
@@ -2578,10 +2549,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4874982543810021567">Blocca WebUSB su questi siti</translation>
 <translation id="4876805738539874299">Versione SSL massima abilitata</translation>
 <translation id="4887274746092315609">Attiva una pagina per la modifica della password all'interno della sessione per gli utenti SAML</translation>
-<translation id="4887863670424903990">Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> segnala a Google eventi non sicuri da analizzare, come il riutilizzo di password, il download di malware, la presenza di interstitial, eventuali violazioni delle regole relative alla protezione dei dati sensibili ecc.  Alcuni eventi non sicuri, come eventuali violazioni delle regole relative alla protezione dei dati sensibili, dipendono da altri criteri che attivano tali controlli.
-
-      Se questo criterio viene disattivato o non viene impostato, <ph name="PRODUCT_NAME" /> non segnalerà alcun evento non sicuro.
-      </translation>
 <translation id="4894290482695457375">A meno che <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> non sia impostato su Disattivato, l'impostazione di <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> su Attivato connetterà <ph name="PRODUCT_NAME" /> ai dispositivi di trasmissione su tutti gli indirizzi IP e non solo su indirizzi privati RFC1918/RFC4193.
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> si connetterà ai dispositivi di trasmissione solo su indirizzi RFC1918/RFC4193.
@@ -3368,9 +3335,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
           I client di accesso remoto non sono interessati da questa impostazione e utilizzeranno sempre "chromoting-client.talkgadget.google.com" per accedere a TalkGadget.</translation>
 <translation id="5890063326284543943">Controlla l'utilizzo dell'API Serial</translation>
-<translation id="5893553533827140852">Se questa impostazione è attivata, le richieste di autenticazione Gnubby verranno trasferite al proxy attraverso una connessione host remota.
-
-          Se questa impostazione è disattivata o non configurata, le richieste di autenticazione Gnubby non verranno trasferite al proxy.</translation>
 <translation id="5897913798715600338">Carica la batteria con la tecnologia di ricarica veloce.</translation>
 <translation id="5898486742390981550">Quando più utenti eseguono l'accesso, solo l'utente principale può utilizzare le app Android.</translation>
 <translation id="5901427587865226597">Solo stampa fronte/retro</translation>
@@ -3713,7 +3677,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       I pattern corrispondenti alle origini di questo criterio non possono però contenere elementi "/path" o "@query". I pattern contenenti un elemento "/path" o "@query" verranno ignorati.</translation>
 <translation id="6464074037294098618">Attiva la Compilazione automatica per gli indirizzi</translation>
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>
-<translation id="6468980648680553776">Questa norma è obsoleta. Al suo posto utilizza RemoteAccessHostClientDomainList.</translation>
 <translation id="6473623140202114570">Configura l'elenco di domini sui quali Navigazione sicura non attiverà avvisi.</translation>
 <translation id="647698599569353771">Consenti l'attivazione di Condivisione nelle vicinanze.</translation>
 <translation id="6485813825811798133">La configurazione del criterio consente di elencare pattern URL che specificano quale sito non può richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
@@ -4035,9 +3998,9 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Tieni presente che gli utenti potranno accedere ai servizi Google in uno stato non autenticato bloccando i loro cookie.</translation>
 <translation id="6843296367238757293">Questa norma è obsoleta. Ne sconsigliamo l'utilizzo. Leggi ulteriori informazioni all'indirizzo https://support.google.com/chrome/a/answer/7643500</translation>
-<translation id="6846126863870444592">Questo criterio specifica le estensioni consentite per ignorare la finestra di dialogo di conferma del processo di stampa utilizzando la funzione <ph name="SUBMIT_JOB_FUNCTION" /> di <ph name="PRINTING_API" /> per l'invio di un processo di stampa.
+<translation id="6846126863870444592">Questo criterio specifica le estensioni autorizzate a ignorare la finestra di dialogo di conferma del processo di stampa quando utilizzano la funzione <ph name="SUBMIT_JOB_FUNCTION" /> di <ph name="PRINTING_API" /> per l'invio di un processo di stampa.
 
-      Se un'estensione non è presente nell'elenco o non è configurato alcun elenco, la finestra di dialogo di conferma del processo di stampa verrà visualizzata dall'utente per ogni chiamata funzione <ph name="SUBMIT_JOB_FUNCTION" />.
+      Se un'estensione non è presente nell'elenco o non è configurato alcun elenco, la finestra di dialogo di conferma del processo di stampa verrà mostrata all'utente per ogni chiamata alla funzione <ph name="SUBMIT_JOB_FUNCTION" />.
 
       Questo criterio è deprecato, al suo posto utilizza <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="684856667300805181">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_GLS_POLICY_NAME" />.</translation>
@@ -4095,7 +4058,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
        Se il criterio non viene attivato e viene impostato su uno o più domini, non verrà visualizzata alcuna pagina di avviso di somiglianza quando l'utente visita le pagine di quel dominio.
 
-       Se il criterio è disattivato, non impostato o impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualunque sito visitato dall'utente.
+       Se il criterio è disattivato, non è impostato o è impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualsiasi sito visitato dall'utente.
 
        Un nome host può essere consentito nel caso di una completa corrispondenza del nome host o della corrispondenza con un qualsiasi dominio. Ad esempio, gli avvisi per un URL come "https://foo.example.com/bar" potrebbero essere eliminati se l'elenco include "foo.example.com" o "example.com".</translation>
 <translation id="6922884955650325312">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
@@ -4555,17 +4518,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 <translation id="747014869399137701">Se il criterio è impostato su 1, i siti web possono mostrare le notifiche desktop. Se il criterio è impostato su 2, le notifiche desktop vengono negate.
 
       Se non viene configurato, si applica il criterio <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
-<translation id="7471828226549672843">Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questo criterio viene impostato su Disattivato, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questo criterio viene impostato su Attivato o se non viene configurato, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
-
-      - Questo criterio funziona solo su dispositivi Android completamente gestiti che possono essere configurati da fornitori dell'Unified Endpoint Management.
-
-      - Se questo criterio viene impostato su Disattivato, il criterio BrowserSignin non ha effetto.
-
-      - Se questo criterio viene impostato su Disattivato, le metriche​ non vengono inviate al server.
-
-      - Se questo criterio viene impostato su Disattivato, il browser ha una funzionalità limitata.
-
-      - Se questo criterio viene impostato su Disattivato, gli amministratori devono comunicarlo agli utenti finali del dispositivo.</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
 <translation id="7476621944304431784">Se questa impostazione viene attivata, gli utenti potranno sincronizzare le configurazioni di reti Wi-Fi tra i loro dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android collegato. Per poter sincronizzare le configurazioni di reti Wi-Fi, gli utenti devono attivare esplicitamente questa funzionalità svolgendo una procedura di configurazione.
 
@@ -4601,15 +4553,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
       Se il criterio non viene impostato, <ph name="IE_PRODUCT_NAME" /> rileva automaticamente il percorso eseguibile di <ph name="PRODUCT_NAME" /> all'avvio di <ph name="PRODUCT_NAME" /> da Internet Explorer.
 
       Nota: se il componente aggiuntivo Supporto dei browser precedenti per <ph name="IE_PRODUCT_NAME" /> non è installato, questo criterio non ha effetto.</translation>
-<translation id="7506758875409719208">Consente di configurare i nomi di dominio client richiesti che verranno imposti ai client di accesso remoto e impedisce agli utenti di modificarli.
-
-          Se questa impostazione viene attivata e configurata su uno o più domini, solo i client di uno dei domini specificati potranno connettersi all'host.
-
-          Se questa impostazione viene disattivata o non viene configurata o viene configurata su un elenco vuoto, viene applicato il criterio predefinito per il tipo di connessione. Per l'assistenza remota, l'impostazione consente ai client di qualsiasi dominio di connettersi all'host; per l'accesso remoto in qualsiasi momento, può connettersi solo il proprietario dell'host.
-
-          Questa impostazione sostituirà RemoteAccessHostClientDomain, se presente.
-
-          Vedi anche RemoteAccessHostDomainList.</translation>
 <translation id="7507131973617884092">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita nel proprio processo e le origini denominate da sottodomini vengono isolate. Ad esempio, se si specifica https://example.com/, l'origine https://foo.example.com/ viene isolata in quanto parte del sito https://example.com/.
 
       La disattivazione o la mancata configurazione del criterio consente agli utenti di modificare questa impostazione.
@@ -5083,7 +5026,6 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 
           Se l'azione è la sospensione, è possibile configurare separatamente <ph name="PRODUCT_OS_NAME" /> in modo che blocchi o meno lo schermo prima della sospensione.</translation>
 <translation id="8214600119442850823">Consente di configurare Gestione password.</translation>
-<translation id="8217516105848565518">Questa norma è obsoleta. Al suo posto utilizza RemoteAccessHostDomainList.</translation>
 <translation id="8219777886736887686">Se il criterio viene configurato, è possibile stabilire il comando da usare per aprire gli URL in un browser alternativo. Per il criterio è possibile impostare i valori <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> oppure un percorso del file. Se per questo criterio viene impostato un percorso del file, tale file viene usato come eseguibile. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> e <ph name="EDGE_VALUE_PLACEHOLDER" /> sono disponibili solo su <ph name="MS_WIN_NAME" />, mentre <ph name="SAFARI_VALUE_PLACEHOLDER" /> è disponibile solo su <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
 
       Se il criterio non viene configurato, viene usato un valore predefinito specifico della piattaforma: <ph name="IE_PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> oppure <ph name="SAFARI_PRODUCT_NAME" /> per <ph name="MAC_OS_NAME" />. Su <ph name="LINUX_OS_NAME" /> non è possibile aprire un browser alternativo.</translation>

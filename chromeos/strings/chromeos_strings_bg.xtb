@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Отпечатано</translation>
 <translation id="1979103255016296513">Срокът за промяна на паролата е изтекъл</translation>
 <translation id="2049639323467105390">Това устройство се управлява от <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2375079107209812402">Остават <ph name="ATTEMPTS_LEFT" /> опита</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2872961005593481000">Изключване</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="520299634122159966">Няма налични скенери</translation>
 <translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
 Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>

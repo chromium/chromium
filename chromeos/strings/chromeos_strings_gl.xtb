@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Produciuse un atraso no cambio de contrasinal</translation>
 <translation id="2049639323467105390">Este dispositivo está xestionado por <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
 <translation id="2375079107209812402">Quédanche <ph name="ATTEMPTS_LEFT" /> intentos</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos}}</translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2872961005593481000">Pechar</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Escolle un novo inmediatamente</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> xestiona este usuario e pode xestionar a súa configuración e controlar a súa actividade de forma remota.</translation>
 <translation id="520299634122159966">Non hai ningún escáner dispoñible</translation>
 <translation id="5212543919916444558">Non atopo nada na pantalla co que che poida axudar.
 Proba a tocar o micrófono para preguntarme algo.</translation>

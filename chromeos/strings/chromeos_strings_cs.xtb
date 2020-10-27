@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="2049639323467105390">Zařízení je spravováno doménou <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Chcete-li objevit okolní zařízení, zapněte Bluetooth</translation>
 <translation id="2375079107209812402">Zbývající pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}many{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusu}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
 <translation id="2517472476991765520">Vyhledat</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="2872961005593481000">Vypnout</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="5094480857972195099">Tohoto uživatele spravuje doména <ph name="ENROLLMENT_DOMAIN" />, která také může vzdáleně spravovat nastavení a sledovat jeho aktivitu.</translation>
 <translation id="520299634122159966">Nejsou k dispozici žádné skenery</translation>
 <translation id="5212543919916444558">Na obrazovce nevidím nic, s čím vám můžu pomoct.
 Zkuste klepnout na mikrofon a zeptat se.</translation>

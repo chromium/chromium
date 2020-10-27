@@ -58,6 +58,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1455242230282523554">Zobrazit jazykové nastavení</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
 <translation id="1467432559032391204">Doleva</translation>
+<translation id="1475439723810528286">Klepnutím kamkoliv pořídíte snímek celé obrazovky</translation>
 <translation id="1479909375538722835">Plovoucí nabídka usnadnění přístupu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Účet tohoto vlastníka musí být v relaci multiprofilu přihlášen jako první.</translation>
@@ -121,6 +122,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
 <translation id="2127372758936585790">Nabíječka má příliš nízký výkon</translation>
+<translation id="2132302418721800944">Zaznamenat celou obrazovku</translation>
 <translation id="2135456203358955318">Zabudovaná lupa</translation>
 <translation id="2144487987174258011">Aktualizace přehrávače Adobe Flash Player vyžaduje restart</translation>
 <translation id="2180011262286780504">Možnost pořizovat snímky obrazovky zakázal váš administrátor.</translation>
@@ -192,6 +194,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2872961005593481000">Vypnout</translation>
 <translation id="2878884018241093801">Žádné nedávné položky</translation>
 <translation id="2903844815300039659">Jste připojeni k síti <ph name="NAME" />, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">Snímky obrazovky</translation>
 <translation id="2942350706960889382">Zabudovaná lupa</translation>
 <translation id="2942516765047364088">Pozice poličky</translation>
 <translation id="2946119680249604491">Přidat připojení</translation>
@@ -367,6 +370,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
 <translation id="4527045527269911712">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabití</translation>
+<translation id="4538824937723742295">Pořídit snímek celé obrazovky</translation>
 <translation id="4544483149666270818">Vyberte okno, které chcete zaznamenat</translation>
 <translation id="4560576029703263363">Zapnuto</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
 <translation id="5030687792513154421">Čas vypršel</translation>
+<translation id="5033299697334913360">Snímek celé obrazovky pořídíte klepnutím kamkoliv</translation>
 <translation id="5035236842988137213">Zařízení <ph name="DEVICE_NAME" /> je připojeno k novému telefonu</translation>
 <translation id="5035389544768382859">Potvrzení konfigurace monitoru</translation>
 <translation id="5083553833479578423">Odemkněte další funkce Asistenta.</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
 <translation id="5168181903108465623">Dostupná zařízení pro streamování obsahu</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
+<translation id="5176318573511391780">Zaznamenat část obrazovky</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="5208059991603368177">Zap</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
@@ -488,6 +494,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5876666360658629066">Zadejte rodičovský kód</translation>
+<translation id="5881540930187678962">Nastavte Telefonní centrum později</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="589817443623831496">Zaměření místa</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -542,6 +549,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vymazat všechna oznámení</translation>
 <translation id="643147933154517414">Vše je hotovo</translation>
+<translation id="6431865393913628856">Záznam obrazovky</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="6452181791372256707">Odmítnout</translation>
 <translation id="6453179446719226835">Jazyk se změnil</translation>
@@ -627,6 +635,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7346909386216857016">Dobře, rozumím</translation>
 <translation id="7348093485538360975">Softwarová klávesnice</translation>
 <translation id="735745346212279324">Síť VPN je odpojena</translation>
+<translation id="7371404428569700291">Zaznamenat okno</translation>
 <translation id="7377169924702866686">Caps Lock je zapnutý.</translation>
 <translation id="7378203170292176219">Přetažením vyberte oblast, kterou chcete zaznamenat</translation>
 <translation id="7378594059915113390">Ovládání médií</translation>
@@ -815,6 +824,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="9084606467167974638">Přepnout pozici nabídky</translation>
 <translation id="9089416786594320554">Metody zadávání</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> byla odebrána</translation>
+<translation id="9092749890156285613">Nedávné záznamy a snímky obrazovky</translation>
 <translation id="9151726767154816831">Chcete-li zařízení aktualizovat, restartujte je a resetujte pomocí funkce Powerwash</translation>
 <translation id="9166331175924255663">Přepnout vysokou viditelnost pro sdílení nablízko.</translation>
 <translation id="9168436347345867845">Později</translation>

@@ -58,6 +58,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1455242230282523554">Sýna tungumálastillingar</translation>
 <translation id="1460620680449458626">Slökkt er á hljóði.</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
+<translation id="1475439723810528286">Ýttu hvar sem er til að mynda allan skjáinn</translation>
 <translation id="1479909375538722835">Fljótandi aðgengisvalmynd</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Þessi eigandareikningur verður að vera fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
@@ -121,6 +122,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="209965399369889474">Engin nettenging</translation>
 <translation id="2126242104232412123">Nýtt svæði</translation>
 <translation id="2127372758936585790">Afllítið hleðslutæki</translation>
+<translation id="2132302418721800944">Taka upp á öllum skjánum</translation>
 <translation id="2135456203358955318">Stækkunargler í föstum glugga</translation>
 <translation id="2144487987174258011">Endurræstu til að uppfæra Adobe Flash Player</translation>
 <translation id="2180011262286780504">Kerfisstjóri hefur lokað á skjámyndatöku.</translation>
@@ -192,6 +194,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2872961005593481000">Slökkva</translation>
 <translation id="2878884018241093801">Engin nýleg atriði</translation>
 <translation id="2903844815300039659">Tengt við <ph name="NAME" />, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">Skjámyndatökur</translation>
 <translation id="2942350706960889382">Stækkunargler í föstum glugga</translation>
 <translation id="2942516765047364088">Hillustaðsetning</translation>
 <translation id="2946119680249604491">Bæta tengingu við</translation>
@@ -367,6 +370,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4513946894732546136">Ábendingar</translation>
 <translation id="4527045527269911712">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ vill fá heimild til að parast.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> fram að fullri hleðslu</translation>
+<translation id="4538824937723742295">Taka skjámynd af öllum skjánum</translation>
 <translation id="4544483149666270818">Veldu glugga til að taka upp</translation>
 <translation id="4560576029703263363">Kveikt</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4969092041573468113"><ph name="HOURS" /> k., <ph name="MINUTES" /> m. og <ph name="SECONDS" /> s.</translation>
 <translation id="4975771730019223894">Merking forrita</translation>
 <translation id="5030687792513154421">Nú er tíminn á þrotum</translation>
+<translation id="5033299697334913360">Smelltu hvar sem er til að mynda allan skjáinn</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> tengdist nýjum síma</translation>
 <translation id="5035389544768382859">Staðfesta skjástillingu</translation>
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
 <translation id="5168181903108465623">Útsendingartæki í boði</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
+<translation id="5176318573511391780">Upptaka á hluta skjás</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="5208059991603368177">Kveikt</translation>
 <translation id="5222676887888702881">Skrá út</translation>
@@ -488,6 +494,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5837036133683224804">Stöðva <ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5876666360658629066">Sláðu inn kóða foreldris</translation>
+<translation id="5881540930187678962">Setja Símstöð upp seinna</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="589817443623831496">Punktaskönnun</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -542,6 +549,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Hreinsa allar tilkynningar</translation>
 <translation id="643147933154517414">Allt búið</translation>
+<translation id="6431865393913628856">Skjáupptaka</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
 <translation id="6452181791372256707">Hafna</translation>
 <translation id="6453179446719226835">Tungumálinu hefur verið breytt</translation>
@@ -627,6 +635,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7346909386216857016">Ég skil</translation>
 <translation id="7348093485538360975">Skjályklaborð</translation>
 <translation id="735745346212279324">VPN ótengt</translation>
+<translation id="7371404428569700291">Upptökugluggi</translation>
 <translation id="7377169924702866686">Kveikt er á hástafalás.</translation>
 <translation id="7378203170292176219">Dragðu til að velja svæðið sem á að taka upp</translation>
 <translation id="7378594059915113390">Spilunarstýringar</translation>
@@ -815,6 +824,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="9084606467167974638">Víxla staðsetningu valmyndar</translation>
 <translation id="9089416786594320554">Innsláttaraðferðir</translation>
 <translation id="9091626656156419976">Skjárinn <ph name="DISPLAY_NAME" /> var fjarlægður</translation>
+<translation id="9092749890156285613">Nýlegar skjámyndatökur og niðurhöl</translation>
 <translation id="9151726767154816831">Endurræstu og djúphreinsaðu tækið til að uppfæra</translation>
 <translation id="9166331175924255663">Veldu/afveldu mikinn sýnileika nærdeilingar.</translation>
 <translation id="9168436347345867845">Gera þetta seinna</translation>

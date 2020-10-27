@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Отпечатено</translation>
 <translation id="1979103255016296513">Измина рокот за промена на лозинката</translation>
 <translation id="2049639323467105390">Овој уред е управуван од <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Откажи го налогот за печатење</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Вклучете Bluetooth за да откриете места во близина</translation>
 <translation id="2375079107209812402">Преостануваат <ph name="ATTEMPTS_LEFT" /> обиди</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Уште {0} обид}one{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}other{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}}</translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2872961005593481000">Исклучи</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
 <translation id="4917889632206600977">Запрено - нема хартија</translation>
 <translation id="4932733599132424254">Датум</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> управува со корисников и може далечински да управува со поставките и да ја набљудува неговата активност.</translation>
 <translation id="520299634122159966">Нема достапни скенери</translation>
 <translation id="5212543919916444558">Не можам да најдам ништо на екранот со што би можел ви помогнам.
 Допрете го микрофонот за да ме прашате нешто.</translation>

@@ -187,6 +187,7 @@
       如果啟用這項設定，系統會一律啟用 Google 搜尋中的「安全搜尋」功能，以及中度的 YouTube 嚴格篩選模式。
 
       如果停用這項設定或不設定，則系統不會強制執行 Google 搜尋的「安全搜尋」功能和 YouTube 嚴格篩選模式。</translation>
+<translation id="134745581157553029">如果設定「DeviceArcDataSnapshotHours」政策，則系統會開啟 ARC 資料數據匯報機制，而且 ARC 資料數據匯報更新將可在自訂的時間間隔自動開始。當間隔開始時，如果需要執行 ARC 資料數據匯報更新，且沒有任何使用者處於登入狀態，系統會直接開始執行 ARC 資料數據匯報更新程序，不會通知使用者。如果使用者工作階段處於執行中狀態，系統會顯示使用者介面通知，使用者必須接受通知內容以重新啟動裝置，並開始執行 ARC 資料數據匯報更新程序。注意：ARC 資料數據匯報更新期間將無法使用裝置。</translation>
 <translation id="1353416417709895349">停用 DNS 攔截檢查功能，以及你是不是要前往「http://intranetsite/」資訊列。</translation>
 <translation id="1353985065430729216">你可以透過這項政策設定網址模式清單，用於指定可存取感應器 (例如：動作感應器和光源感應器) 的網站。
 
@@ -455,6 +456,7 @@
 
       你可以透過這項政策，指定要將哪些擴充功能從封鎖的擴充功能清單中排除。針對 <ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" /> 使用「<ph name="ALL_EXTENSIONS" />」的設定值即可封鎖所有擴充功能，且使用者只能安裝明確允許的擴充功能。根據預設，系統會允許所有擴充功能。不過，如果你透過政策封鎖了擴充功能，請使用允許的擴充功能清單來變更該政策。</translation>
 <translation id="1781356041596378058">這項政策也可以控制 Android 開發人員選項的存取權。如果將這項政策設為 true，使用者將無法存取開發人員選項。如果將這項政策設為 false 或不予設定，使用者只要在 Android 設定應用程式中輕觸版本號碼 7 次，即可存取開發人員選項。</translation>
+<translation id="1787790976045065845">只有當 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> 政策設為 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> 或 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />，且透過智慧型卡片驗證的使用者移除該智慧型卡片時，這項政策才會生效。這項政策會指定當系統通知使用者即將執行的動作時，通知要顯示幾秒。這項通知會遮住螢幕。系統會在這項通知到期後才執行動作。如要避免系統執行該動作，使用者可在通知到期之前重新插入智慧型卡片。如果將這項政策設為 0，則系統不會顯示通知，並會立即執行動作。</translation>
 <translation id="1793346220873697538">預設為停用 PIN 碼列印模式</translation>
 <translation id="179694024208061102">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會嘗試在替代瀏覽器中 (例如 <ph name="IE_PRODUCT_NAME" />) 開啟部分網址。系統會使用「<ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />」群組中的政策設定這項功能。
 
@@ -769,13 +771,6 @@
       供一般大眾使用的裝置不應設定這項政策。
 
       如果將這項政策設為 True 或不予設定，系統會在自動啟動的受管理訪客工作階段中，持續顯示隱私權警告通知，直到使用者關閉為止。</translation>
-<translation id="228665601367357543">這項政策可讓你設定網址模式清單，指定哪些網站會自動取得權限，能夠存取具備指定廠商和產品 ID 的 USB 裝置。每個清單項目都必須包含「devices」和「urls」欄位，這項政策才會生效。「devices」欄位中的每個項目皆可包含「vendor_id」和「product_id」欄位。如果略過「vendor_id」欄位，系統建立的政策將涵蓋所有裝置。如果略過「product_id」欄位，系統建立的政策將涵蓋所有具備指定廠商 ID 的裝置。要是政策包含「product_id」欄位，但缺少「vendor_id」欄位，將無法生效。
-
-      USB 權限模型會使用要求網址以及頂層頁框網站的嵌入網址，允許要求網址存取 USB 裝置。如果要求網站是透過 iframe 載入，要求網址可能會與嵌入網址有所不同。因此，「urls」欄位最多可包含 2 個字串 (以半形逗號分隔)，以指定這些網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。「urls」中的網址必須是有效網址，否則系統會忽略這項政策。
-
-        如果不設定這項政策，在已設定 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 政策的情況下，系統將套用該政策，否則系統會套用使用者的個人設定。
-
-      這項政策中的網址模式不得與透過 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址模式產生衝突。如有衝突情況，這項政策的優先順序高於 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="2289265947759479962">這項政策可控管系統是否要回報版本資訊，例如 OS 版本、OS 平台、OS 架構、<ph name="PRODUCT_NAME" /> 版本和 <ph name="PRODUCT_NAME" /> 發布版本。
 
       如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策。
@@ -977,6 +972,10 @@
       如果未設定這項政策，則系統不會顯示《服務條款》。
 
       這項政策應設定為 <ph name="PRODUCT_OS_NAME" />可下載《服務條款》的網址。《服務條款》必須是純文字，以 MIME 類型 text/plain 提供，而且不可有任何標記。</translation>
+<translation id="2500699707048942472">PIN 碼自動提交功能可變更在 Chrome 作業系統中輸入 PIN 碼的方式。
+          這項功能會顯示特別的 UI，向使用者清楚呈現其 PIN 碼所需的位數，而不會顯示用於輸入密碼的相同文字欄位。因此，系統會在使用者的加密資料之外儲存使用者的 PIN 碼長度。系統只支援 6 到 12 位數的 PIN 碼。
+
+          如果將這項政策設為 False，使用者將無法在「設定」頁面上啟用這項功能。</translation>
 <translation id="2502467045153796624">版本降級行為</translation>
 <translation id="250670737672448119">啟用插入點醒目顯示無障礙功能。
 
@@ -1496,11 +1495,6 @@
         * 如果設為 4，系統將在裝置完成註冊後，於使用者登入前更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。
 
       如果未設定這項政策，則系統無法更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。</translation>
-<translation id="3235677869770186098">你可以透過這項政策設定網址模式清單，指定哪些網站會自動取得權限，能夠存取具備登入畫面中所指定廠商和產品 ID 的 USB 裝置。清單中的每個項目都必須包含「devices」和「urls」欄位，這項政策才會生效。「devices」欄位中的每個項目皆可包含「vendor_id」和「product_id」欄位。如果略過「vendor_id」欄位，系統建立的政策將涵蓋所有裝置。如果略過「product_id」欄位，系統建立的政策將涵蓋所有具備指定廠商 ID 的裝置。要是政策包含「product_id」欄位，但缺少「vendor_id」欄位，將無法生效。
-
-      USB 權限模型會使用要求網址和嵌入網址，授予要求網址存取 USB 裝置的權限。如果要求網站是透過 iframe 載入，要求網址可能會與嵌入網址有所不同。因此，「urls」欄位最多可包含兩個網址字串 (以半形逗號分隔)，以分別指定要求網址和嵌入網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。網址必須是有效網址，否則系統會忽略這項政策。
-
-      如果不設定這項政策，所有網站都將使用全域預設值 (不會自動取得存取權)。</translation>
 <translation id="3236046242843493070">允許安裝擴充功能、應用程式和使用者指令碼的來源網址模式清單</translation>
 <translation id="3240609035816615922">印表機設定存取權政策。</translation>
 <translation id="324062325008698789">設定印表機清單。</translation>
@@ -1807,7 +1801,6 @@
 <translation id="3631099945620529777">如果設為 False，工作管理員中的「結束處理程序」按鈕隨即會停用。
 
       如果設為 True 或不設定，使用者將可以在工作管理員中結束處理程序。</translation>
-<translation id="3639444551396586995">允許 Chrome 向 Google 回報不安全的事件</translation>
 <translation id="3643284063603988867">啟用「記住密碼」功能</translation>
 <translation id="3646859102161347133">設定螢幕放大鏡類型</translation>
 <translation id="3647212518036289905">你可以透過這項政策指定要用於 HTTP 驗證的 GSSAPI 程式庫。請將這項政策設為程式庫名稱或完整路徑。
@@ -1823,13 +1816,6 @@
 <translation id="3660510274595679517">
         如果將這項政策設定為 True，系統會強制你註冊雲端管理服務。如果註冊失敗，系統會封鎖 Chrome 啟動程序。如果不設定這項政策或設為 False，你可以選擇是否要註冊雲端管理服務。即使註冊失敗，系統也不會封鎖 Chrome 啟動程序。在桌面註冊機器範圍雲端政策時會使用這項政策，你可以透過 Windows 的登錄檔或 GPO、Mac 的 plist 以及 Linux 的 JSON 政策檔設定這項政策。</translation>
 <translation id="3660562134618097814">登入時移轉 SAML IdP Cookie</translation>
-<translation id="3669373349666208904">如果將這項政策設為 Ture，頁面卸載時將可顯示彈出式視窗。
-
-      如果將這項政策設為 False 或不設定，頁面卸載時無法顯示彈出式視窗。
-
-      這項政策將在 Chrome 第 88 版中移除。
-
-      詳情請參閱 https://www.chromestatus.com/feature/5989473649164288。</translation>
 <translation id="3691155504326059225">如果將這項政策設為啟用，系統會將使用者的首頁設為「新分頁」，並忽略所有首頁網址位置。如果將這項政策設為停用，使用者的首頁一律不會是「新分頁」，除非使用者的首頁網址設為 chrome://newtab。
 
       如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中變更首頁類型。如果未設定，使用者可決定是否使用「新分頁」做為首頁。
@@ -2068,15 +2054,6 @@
 <translation id="4020682745012723568">Android 應用程式無法存取傳輸到該使用者設定檔的 Cookie。</translation>
 <translation id="402759845255257575">不允許任何網站執行 JavaScript</translation>
 <translation id="4027608872760987929">啟用預設搜尋引擎</translation>
-<translation id="4044054366426171256">這會設定遠端存取主機必須使用的主機網域名稱，同時防止使用者變更這些名稱。
-
-          如果啟用這項設定並設為一個以上的網域，則須透過以任一指定網域名稱註冊的帳戶才能共用主機。
-
-          如果停用這項設定、不設定或設為空白清單，則可透過任何帳戶共用主機。
-
-          這項設定會覆寫 RemoteAccessHostDomain 設定 (如有設定的話)。
-
-          另請參閱 RemoteAccessHostClientDomainList。</translation>
 <translation id="4056910949759281379">停用 SPDY 通訊協定</translation>
 <translation id="4061590579642538878">回報當機報告相關資訊。</translation>
 <translation id="4075675819066819571">將檔案櫃放在畫面的左側</translation>
@@ -2535,10 +2512,6 @@
 <translation id="4874982543810021567">在這些網站上封鎖 WebUSB</translation>
 <translation id="4876805738539874299">已啟用 SSL 最高版本</translation>
 <translation id="4887274746092315609">為 SAML 使用者啟用可在工作階段中變更密碼的頁面</translation>
-<translation id="4887863670424903990">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會向 Google 回報不安全的事件以進行分析，例如重複使用密碼、下載惡意程式、插頁式廣告、違反機密資料保護規則等等。有些不安全事件 (例如違反機密資料保護規則) 和啟用這類檢查的其他政策有關。
-
-      如果不設定這項政策或設為停用，<ph name="PRODUCT_NAME" /> 將不會回報不安全的事件。
-      </translation>
 <translation id="4894290482695457375">除非 <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> 已設為停用，否則將 <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> 設為啟用會將 <ph name="PRODUCT_NAME" /> 連線至所有 IP 位址上的 Cast 裝置，而不是只有 RFC1918/RFC4193 私人位址上的 Cast 裝置。
 
       如果將這項政策設為停用，系統只會將 <ph name="PRODUCT_NAME" /> 連線至 RFC1918/RFC4193 上的 Cast 裝置。
@@ -3319,9 +3292,6 @@
 
           遠端存取用戶端不受這項政策設定所影響，而會一律採用「chromoting-client.talkgadget.google.com」來存取 TalkGadget。</translation>
 <translation id="5890063326284543943">控管 Serial API 的使用</translation>
-<translation id="5893553533827140852">啟用這項設定時，系統將透過遠端主機連線以 Proxy 處理 gnubby 驗證要求。
-
-          如果停用或不設定這項設定，系統將不會以 Proxy 處理 gnubby 驗證要求。</translation>
 <translation id="5897913798715600338">使用快速充電技術為電池充電。</translation>
 <translation id="5898486742390981550">如有多位使用者同時登入，只有主要使用者可以使用 Android 應用程式。</translation>
 <translation id="5901427587865226597">僅限雙面列印</translation>
@@ -3662,7 +3632,6 @@
       不過，這項政策的來源符合格式不能包含「/path」或「@query」元素。系統會忽略所有包含「/path」或「@query」元素的格式。</translation>
 <translation id="6464074037294098618">啟用地址的自動填入功能</translation>
 <translation id="6467613372414922590">允許使用者層級的內建訊息傳遞主機 (在無管理員權限的情況下安裝)。</translation>
-<translation id="6468980648680553776">這項政策已遭到淘汰，請改用 RemoteAccessHostClientDomainList。</translation>
 <translation id="6473623140202114570">設定安全瀏覽功能在哪些網域中不會觸發警告。</translation>
 <translation id="647698599569353771">允許啟用鄰近分享功能。</translation>
 <translation id="6485813825811798133">你可以透過這項政策建立網址模式清單，指定哪些網站無法要求使用者授予讀取權限，以透過 File System API 讀取主機作業系統中檔案系統的檔案及目錄。
@@ -4504,17 +4473,6 @@
 <translation id="747014869399137701">如果將這項政策設為 1，網站即可顯示桌面通知。如果將這項政策設為 2，網站將無法顯示桌面通知。
 
       如果不設定，系統會套用 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />，但使用者可以變更這項設定。</translation>
-<translation id="7471828226549672843">根據預設，系統會在第一次執行 CCT 時顯示《服務條款》。如果將這項政策設為停用，系統不會在第一次或後續執行 CCT 時顯示《服務條款》對話方塊。如果將這項政策設為啟用或不設定，系統會在第一次執行 CCT 時顯示《服務條款》對話方塊。其他注意事項包含：
-
-      - 這項政策只適用於可由統一端點管理供應商設定的全代管 Android 裝置。
-
-      - 如果停用這項政策，BrowserSignin 政策就不會有任何作用。
-
-      - 如果停用這項政策，系統不會將指標傳送至伺服器。
-
-      - 如果停用這項政策，瀏覽器的功能將受到限制。
-
-      - 如果停用這項政策，管理員必須告知裝置使用者。</translation>
 <translation id="747275827471712187">將這些網站上的 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為</translation>
 <translation id="7476621944304431784">如果啟用這項設定，使用者將可在搭載 <ph name="PRODUCT_OS_NAME" />的裝置和已連結的 Android 手機上，將 Wi-Fi 網路設定保持同步。在同步 Wi-Fi 網路設定之前，使用者必須先完成設定流程以明確啟用這項功能。
 
@@ -4550,15 +4508,6 @@
       如果未設定這項政策，從 Internet Explorer 啟動 <ph name="PRODUCT_NAME" /> 時，<ph name="IE_PRODUCT_NAME" /> 會自動偵測 <ph name="PRODUCT_NAME" /> 自己的可執行路徑。
 
       注意：如果未安裝適用於 <ph name="IE_PRODUCT_NAME" /> 的「舊版瀏覽器支援」增益集，這項政策將不會生效。</translation>
-<translation id="7506758875409719208">這會設定遠端存取用戶端必須使用的用戶端網域名稱，同時防止使用者變更這些名稱。
-
-          如果啟用這項設定並設為一個以上的網域，只有任一指定網域中的用戶端才能連線到主機。
-
-          如果停用這項設定、不設定或設為空白清單，則系統會套用連線類型的預設政策。如果啟用這項政策，當使用者執行遠端協助時，系統會允許任何網域中的用戶端連線到主機；使用者執行遠端存取時，則只有主機擁有者可以連線到主機。
-
-          這項設定會覆寫 RemoteAccessHostClientDomain 設定 (如有設定的話)。
-
-          另請參閱 RemoteAccessHostDomainList。</translation>
 <translation id="7507131973617884092">如果設定這項政策，系統會以獨立程序分別執行逗號分隔清單中指定的每個來源，並隔離以子網域命名的來源。例如指定 https://example.com/ 將會導致 https://foo.example.com/ 遭到隔離，因為後者屬於 https://example.com/ 網站的一部分。
 
       如果將這項政策設為關閉或不設定，則使用者可以變更這項設定。
@@ -5020,7 +4969,6 @@
 
          如果將動作設為暫停，你可以另行設定 <ph name="PRODUCT_OS_NAME" />在暫停前是否要鎖定螢幕。</translation>
 <translation id="8214600119442850823">設定密碼管理員</translation>
-<translation id="8217516105848565518">這項政策已遭到淘汰，請改用 RemoteAccessHostDomainList。</translation>
 <translation id="8219777886736887686">你可以透過這項政策控管在替代瀏覽器中開啟網址時，系統所使用的指令。你可以將這項政策設為 <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" />、<ph name="EDGE_VALUE_PLACEHOLDER" /> 或檔案路徑的其中一項。如果將這項政策設為檔案路徑，系統會將該檔案做為執行檔使用。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 和 <ph name="EDGE_VALUE_PLACEHOLDER" /> 只適用於 <ph name="MS_WIN_NAME" />，而 <ph name="SAFARI_VALUE_PLACEHOLDER" /> 只適用於 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
 
       如果不設定這項政策，系統會使用平台專屬的預設值：<ph name="MS_WIN_NAME" /> 使用 <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> 使用 <ph name="SAFARI_PRODUCT_NAME" />。<ph name="LINUX_OS_NAME" /> 將無法啟動替代瀏覽器。</translation>

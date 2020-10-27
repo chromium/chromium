@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">დაბეჭდილი</translation>
 <translation id="1979103255016296513">პაროლის შეცვლა დაგვიანებულია</translation>
 <translation id="2049639323467105390">ეს მოწყობილობა იმართება <ph name="DOMAIN" />-ის მიერ.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2375079107209812402">დარჩენილია <ph name="ATTEMPTS_LEFT" /> მცდელობა</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}other{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}}</translation>
 <translation id="2517472476991765520">სკანირება</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">დაუყოვნებლივ აირჩიეთ ახალი</translation>
 <translation id="4917889632206600977">გაჩერდა — ქაღალდი გათავდა</translation>
 <translation id="4932733599132424254">თარიღი</translation>
+<translation id="5094480857972195099">ამ მომხმარებელს მართავს <ph name="ENROLLMENT_DOMAIN" />, რომელსაც შეუძლია პარამეტრების დისტანციურად მართვა და მომხმარებლის აქტივობის მონიტორინგი.</translation>
 <translation id="520299634122159966">სკანერები მიუწვდომელია</translation>
 <translation id="5212543919916444558">თქვენს ეკრანზე ვერაფერი მოიძებნა, რითაც თქვენს დახმარებას შევძლებდი.
 გთხოვთ, შეეხოთ მიკროფონს და მკითხოთ, რაც გსურთ.</translation>

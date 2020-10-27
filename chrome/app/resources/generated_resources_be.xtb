@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Спыніць</translation>
 <translation id="1272293450992660632">PIN-коды не супадаюць.</translation>
 <translation id="1272978324304772054">Гэты ўліковы запіс карыстальніка не належыць да дамена, у якім зарэгістравана прылада.  Калі вы жадаеце зарэгістравацца ў іншым дамене, вам трэба спярша аднавіць прыладу.</translation>
-<translation id="1274977772557788323">Налады сховішча Adobe Flash Player</translation>
 <translation id="1274997165432133392">Файлы cookie і іншыя даныя сайтаў</translation>
 <translation id="1275718070701477396">Выбрана</translation>
 <translation id="1276994519141842946">Не ўдалося выдаліць праграму <ph name="APP_NAME" /></translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Вашы закладкі, гісторыя і іншыя налады будуць сінхранізавацца з Уліковым запісам Google.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
-<translation id="1315056510003830387">Не дазволена выкарыстоўваць Flash</translation>
 <translation id="1316136264406804862">Ідзе пошук...</translation>
 <translation id="1316495628809031177">Сінхранізацыя прыпынена</translation>
 <translation id="1317637799698924700">Док-станцыя будзе працаваць у рэжыме, сумяшчальным з USB Type-C.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC не падтрымлівае шыфраванне гэтых тыпаў</translation>
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
 <translation id="1987317783729300807">Уліковыя запісы</translation>
-<translation id="1988494864246143197">Сайты звычайна выкарыстоўваюць Flash для прайгравання аўдыя і відэа, а таксама відэагульняў. Са снежня 2020 г. Flash Player падтрымлівацца не будзе.</translation>
 <translation id="1989112275319619282">Агляд</translation>
 <translation id="1990512225220753005">Не паказваць ярлыкі на гэтай старонцы</translation>
 <translation id="1992397118740194946">Не зададзена</translation>
@@ -1649,7 +1646,6 @@
 <translation id="2880660355386638022">Размяшчэнне вокнаў</translation>
 <translation id="2881076733170862447">Калі націснуць на пашырэнне</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> перазапусціцца, і налады будуць скінуты імгненна</translation>
-<translation id="288387288628762616">Дазволена выкарыстоўваць Flash</translation>
 <translation id="2885378588091291677">Менеджар заданняў</translation>
 <translation id="2885729872133513017">Узнікла праблема пры расшыфроўцы адказу сервера.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" />.</translation>
@@ -2081,6 +2077,7 @@
 <translation id="3428419049384081277">Вы ўвайшлі!</translation>
 <translation id="3428747202529429621">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="3428800329481094896">Атрыманне ключоў SSH для кантэйнера Linux</translation>
+<translation id="3429271624041785769">Мовы вэб-змесціва</translation>
 <translation id="3429275422858276529">Дадайце гэту старонку ў закладкі, каб палегчыць яе пошук у далейшым</translation>
 <translation id="3432227430032737297">Выдаліць усе паказаныя</translation>
 <translation id="3432757130254800023">Адпраўка аўдыя і відэа на дысплэі ў лакальнай сетцы</translation>
@@ -2465,7 +2462,6 @@
 <translation id="383669374481694771">Гэта агульная інфармацыя пра гэту прыладу і яе выкарыстанне (напрыклад, пра ўзровень зараду акумулятара, дзеянні ў сістэме і праграмах, памылкі). Даныя будуць выкарыстоўвацца для ўдасканалення сістэмы Android, а пэўная згрупаваная інфармацыя дапаможа ўдасканаліць праграмы Google і будзе карыснай для партнёраў кампаніі, напрыклад для распрацоўшчыкаў Android, у паляпшэнні праграм і прадуктаў.</translation>
 <translation id="3838085852053358637">Не ўдалося загрузіць пашырэнне</translation>
 <translation id="3838486795898716504">Яшчэ адна старонка "<ph name="PAGE_TITLE" />"</translation>
-<translation id="3838543471119263078">Файлы cookies і іншыя даныя сайтаў і ўбудоў</translation>
 <translation id="383891835335927981">Маштаб на сайтах не змяняўся</translation>
 <translation id="3839509547554145593">Уключыць паскарэнне прагорткі мышшу</translation>
 <translation id="3839516600093027468">Заўсёды блакіраваць хосту <ph name="HOST" /> доступ да буфера абмену</translation>
@@ -2507,6 +2503,7 @@
 <translation id="3879748587602334249">Менеджар спамповак</translation>
 <translation id="3881478300875776315">Паказваць менш радкоў</translation>
 <translation id="3882165008614329320">Існуючае відэа з камеры або файла</translation>
+<translation id="3884152383786131369">Вэб-змесціва, даступнае на некалькіх мовах, будзе адлюстроўвацца на першай мове з дадзенага спіса. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Запыт на доступ да гэтага сайта адпраўлены карыстальніку <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Нататкі ў <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Каб выкарыстоўваць функцыю сінхранізацыі параметраў Wi-Fi, уключыце Сінхранізацыю Chrome</translation>
@@ -2639,7 +2636,6 @@
 <translation id="4023146161712577481">Вызначаецца канфігурацыя прылады.</translation>
 <translation id="4025039777635956441">Выключыць гук на выбраным сайце</translation>
 <translation id="4027804175521224372">(Карыстайцеся ўсімі магчымасцямі – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Вашы налады Flash будуць захоўвацца, пакуль вы не выйдзеце з Chrome.</translation>
 <translation id="4028467762035011525">Дадаць метады ўводу</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4031527940632463547">Датчыкі заблакіраваны</translation>
@@ -2791,7 +2787,6 @@
 <translation id="4232375817808480934">Канфігурацыя Kerberos</translation>
 <translation id="4235200303672858594">Увесь экран</translation>
 <translation id="4235965441080806197">Скасаваць уваход</translation>
-<translation id="4237773362828263530">Налады з сімваламі падстаноўкі "*" больш не падтрымліваюцца. <ph name="BEGIN_LINK" />Каб змяніць гэтыя налады<ph name="END_LINK" />, звяжыцеся з адміністратарам.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Дадаць укладку ў спіс "Чытаць пазней"}one{Дадаць укладкі ў спіс "Чытаць пазней"}few{Дадаць укладкі ў спіс "Чытаць пазней"}many{Дадаць укладкі ў спіс "Чытаць пазней"}other{Дадаць укладкі ў спіс "Чытаць пазней"}}</translation>
 <translation id="4242145785130247982">Выкарыстанне некалькі кліенцкіх сертыфікатаў не падтрымліваецца</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
@@ -3055,7 +3050,6 @@
 <translation id="4548483925627140043">Сігнал не знойдзены</translation>
 <translation id="4549791035683739768">На вашым ключы бяспекі няма захаваных адбіткаў пальцаў</translation>
 <translation id="4551763574344810652">Каб адрабіць, націсніце <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
-<translation id="4552089082226364758">Флэш-даныя</translation>
 <translation id="4552759165874948005">Тып сеткі – <ph name="NETWORK_TYPE" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">Каб змяніць мову прылады, трэба перазапусціць Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Знешняе пашырэнне мае тую ж версію, што існуючае пашырэнне, або ніжэйшую.</translation>
@@ -3410,7 +3404,6 @@
 <translation id="4974733135013075877">Выйсці і заблакіраваць</translation>
 <translation id="4976009197147810135">Падзяліць вертыкальна</translation>
 <translation id="4977942889532008999">Пацвярджэнне доступу</translation>
-<translation id="4978905460870207779">Сайты могуць запытваць дазвол на выкарыстанне тэхналогіі Flash</translation>
 <translation id="4980805016576257426">Гэта пашырэнне змяшчае шкоднае змесціва.</translation>
 <translation id="4981449534399733132">Каб ачысціць даныя прагляду з усіх сінхранізаваных прылад і Уліковага запісу Google, <ph name="BEGIN_LINK" />увайдзіце ва ўліковы запіс<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Праграмнае забеспячэнне прылады</translation>
@@ -4181,7 +4174,6 @@
 <translation id="5906732635754427568">Даныя, звязаныя з гэтай праграмай, будуць выдалены з гэтай прылады.</translation>
 <translation id="5908474332780919512">Запускаць праграму пры ўваходзе</translation>
 <translation id="5908695239556627796">Хуткасць прагорткі мышшу</translation>
-<translation id="5908769186679515905">Забараніць сайтам запускаць Flash</translation>
 <translation id="5910363049092958439">За&amp;хаваць відарыс як...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> па-за сеткай</translation>
 <translation id="5911533659001334206">Прагляд спалучэнняў клавіш</translation>
@@ -4365,6 +4357,7 @@
 <translation id="6112727384379533756">Дадаць білет</translation>
 <translation id="6112931163620622315">Праверце свой тэлефон</translation>
 <translation id="6112952769866305444">Змяніць профіль карыстальніка: <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Задайце стандартную пошукавую сістэму для браўзера Chrome і Панэлі запуску на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Каб выкарыстоўваць Smart Lock, пераключыцеся на асноўны карыстальніцкі профіль на тэлефоне</translation>
 <translation id="6116921718742659598">Змяніць налады мовы і ўводу</translation>
 <translation id="6120205520491252677">Замацаваць гэту старонку на пачатковым экране...</translation>
@@ -5231,6 +5224,7 @@
 <translation id="7140928199327930795">Няма іншых даступных прылад.</translation>
 <translation id="7141105143012495934">Уваход не выкананы: не ўдалося атрымаць даныя ўліковага запісу. Звярніцеся да адміністратара або паўтарыце спробу.</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
+<translation id="7143358760238281735">Праграмы недаступныя</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="714876143603641390">Магчымасць падключэння LAN</translation>
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
@@ -5702,6 +5696,7 @@
 <translation id="7707922173985738739">Выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="7709152031285164251">Памылка: <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Трансліраваць...</translation>
+<translation id="7712739869553853093">Дыялогавае акно перадпрагляду друку</translation>
 <translation id="7712836429117959503">Невядомае пашырэнне з ідэнтыфікатарам <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Файлы cookie з дамена <ph name="DOMAIN" /> дазволены</translation>
 <translation id="7714464543167945231">Сертыфікат</translation>
@@ -5831,7 +5826,6 @@
 <translation id="7831491651892296503">Памылка наладжвання сеткі</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Час заканчэння</translation>
-<translation id="783214144752121388">Забараніць сайтам запускаць Flash (рэкамендуецца)</translation>
 <translation id="7833720883933317473">Дададзеныя карыстальнікам словы, якія былі захаваны, з'явяцца тут</translation>
 <translation id="7835178595033117206">Закладка выдалена</translation>
 <translation id="7836850009646241041">Паспрабуйце дакрануцца да ключа бяспекі яшчэ раз</translation>
@@ -6058,7 +6052,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Файл зашыфраваны. Папрасіце ўладальніка файла расшыфраваць яго.}one{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}few{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}many{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}other{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}}</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8090234456044969073">Прагледзець спіс вэб-сайтаў, якія вы наведваеце часцей за ўсё</translation>
-<translation id="8092681102116274204">Налады з сімваламі падстаноўкі "*" больш не падтрымліваюцца. <ph name="BEGIN_LINK" />Каб змяніць гэтыя налады<ph name="END_LINK" />, звяжыцеся з распрацоўшчыкам пашырэння або адміністратарам.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не адказвае</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Рэзервовае капіраванне на Google Дыск. Лёгка аднаўляйце даныя і пераносьце іх на іншыя прылады. Стварайце рэзервовыя копіі даных праграм.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Рэзервовыя копіі запампоўваюцца ў Google і шыфруюцца пад паролем ад вашага Уліковага запісу Google.<ph name="END_PARAGRAPH2" />
@@ -6153,7 +6146,6 @@
 <translation id="8201717382574620700">Выбраць альбомы "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="8202160505685531999">Каб абнавіць профіль прылады <ph name="DEVICE_TYPE" />, увядзіце пароль яшчэ раз.</translation>
 <translation id="8203732864715032075">Адпраўляць вам апавяшчэнні і зрабіць гэты камп'ютар стандартным для праграмы "Паведамленні". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Блакіраваць змесціва Flash (рэкамендуецца)</translation>
 <translation id="820568752112382238">Сайты, якія часцей за ўсё наведваліся</translation>
 <translation id="8206745257863499010">Блюзавы</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>

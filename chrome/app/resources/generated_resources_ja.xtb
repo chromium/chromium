@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">中止</translation>
 <translation id="1272293450992660632">PIN の値が一致しません。</translation>
 <translation id="1272978324304772054">このユーザー アカウントは、デバイスが登録されているドメインに属していません。別のドメインに登録する場合は、まず、デバイス リカバリ操作を行う必要があります。</translation>
-<translation id="1274977772557788323">Adobe Flash Player のストレージ設定</translation>
 <translation id="1274997165432133392">Cookie と他のサイトデータ</translation>
 <translation id="1275718070701477396">選択されています</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> をアンインストールできませんでした</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">ブックマークや履歴などの設定が Google アカウントに同期されます。</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ホーム ネットワーク、ローミングなし</translation>
-<translation id="1315056510003830387">Flash の使用を許可しないサイト</translation>
 <translation id="1316136264406804862">検索しています...</translation>
 <translation id="1316495628809031177">同期は一時停止中です</translation>
 <translation id="1317637799698924700">ドッキング ステーションは USB Type-C 互換モードで動作します。</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
 <translation id="1987317783729300807">アカウント</translation>
-<translation id="1988494864246143197">多くのサイトは、音声や動画、ビデオゲームを再生またはプレイするために Flash を使用します（Flash Player のサポートは 2020 年 12 月で終了します）。</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1990512225220753005">このページではショートカットを表示しません</translation>
 <translation id="1992397118740194946">未設定</translation>
@@ -1649,7 +1646,6 @@
 <translation id="2880660355386638022">ウィンドウの配置</translation>
 <translation id="2881076733170862447">拡張機能をクリックしたとき</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> の再起動とリセットを行います</translation>
-<translation id="288387288628762616">Flash の使用を許可するサイト</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2465,7 +2461,6 @@
 <translation id="383669374481694771">このデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、統計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="3838085852053358637">拡張機能を読み込めませんでした</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> をもっと見る</translation>
-<translation id="3838543471119263078">Cookie などのサイトデータやプラグイン データ</translation>
 <translation id="383891835335927981">拡大縮小値を設定したサイトはありません</translation>
 <translation id="3839509547554145593">マウスのスクロール アクセラレーションを有効にする</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> によるクリップボードへのアクセスを常にブロックする</translation>
@@ -2639,7 +2634,6 @@
 <translation id="4023146161712577481">デバイスの設定を確認しています。</translation>
 <translation id="4025039777635956441">選択したサイトをミュート</translation>
 <translation id="4027804175521224372">（詳細についてはこちら —<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />）</translation>
-<translation id="4027951648498485763">Chrome を終了するまで、Flash の設定は保持されます。</translation>
 <translation id="4028467762035011525">入力方法を追加</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4031527940632463547">センサーがブロックされました</translation>
@@ -2791,7 +2785,6 @@
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4235200303672858594">画面全体</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
-<translation id="4237773362828263530">ワイルドカード「*」を使用した設定のサポートは終了しました。<ph name="BEGIN_LINK" />これらの設定を変更する<ph name="END_LINK" />には、管理者にご確認ください。</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{タブを後で読む}other{タブを後で読む}}</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
 <translation id="4242533952199664413">設定を開く</translation>
@@ -3055,7 +3048,6 @@
 <translation id="4548483925627140043">シグナルは検出されませんでした</translation>
 <translation id="4549791035683739768">セキュリティ キーにフィンガープリントは保存されていません</translation>
 <translation id="4551763574344810652">元に戻すには <ph name="MODIFIER_KEY_DESCRIPTION" /> を押します</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ネットワーク、信号強度 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">デバイスの言語を変更するには Chromebook を再起動する必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">外部の拡張機能のバージョンが既存のバージョン以下です。</translation>
@@ -3410,7 +3402,6 @@
 <translation id="4974733135013075877">終了してチャイルドロックをかける</translation>
 <translation id="4976009197147810135">縦に分割</translation>
 <translation id="4977942889532008999">アクセスの確認</translation>
-<translation id="4978905460870207779">サイトが Flash の使用を要求できるようにする</translation>
 <translation id="4980805016576257426">この拡張機能には不正なソフトウェアが含まれています。</translation>
 <translation id="4981449534399733132">同期しているすべてのデバイスと Google アカウントから閲覧データを削除するには、<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してください。</translation>
 <translation id="4982236238228587209">デバイスのソフトウェア</translation>
@@ -4181,7 +4172,6 @@
 <translation id="5906732635754427568">このアプリに関連付けられているデータはこのデバイスから削除されます。</translation>
 <translation id="5908474332780919512">ログイン時にアプリを開く</translation>
 <translation id="5908695239556627796">マウスのスクロール速度</translation>
-<translation id="5908769186679515905">サイトでの Flash の実行をブロックする</translation>
 <translation id="5910363049092958439">名前を付けて画像を保存(&amp;V)...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> はオフラインです</translation>
 <translation id="5911533659001334206">ショートカット ビューア</translation>
@@ -4532,7 +4522,7 @@
 <translation id="6308937455967653460">名前を付けてリンク先を保存(&amp;K)...</translation>
 <translation id="6309443618838462258">この入力方法は管理者によって許可されていません</translation>
 <translation id="6309510305002439352">マイクがオフになっています</translation>
-<translation id="6310472381159916879">プロフィールを削除</translation>
+<translation id="6310472381159916879">プロファイルを削除</translation>
 <translation id="6311220991371174222">プロフィールを開こうとして問題が発生したため、Chrome を起動できません。Chrome を再起動してみてください。</translation>
 <translation id="6312403991423642364">ネットワークが不明なためエラーが発生しました</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{安全確認を 1 日前に実行しました}other{安全確認を {NUM_DAYS} 日前に実行しました}}</translation>
@@ -5831,7 +5821,6 @@
 <translation id="7831491651892296503">ネットワークの設定中にエラーが発生しました</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">終了時間</translation>
-<translation id="783214144752121388">サイトでの Flash の実行をブロックする（推奨）</translation>
 <translation id="7833720883933317473">保存したカスタムの単語がここに表示されます</translation>
 <translation id="7835178595033117206">ブックマークを削除しました</translation>
 <translation id="7836850009646241041">もう一度セキュリティ キーをタッチしてください</translation>
@@ -6059,7 +6048,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{このファイルは暗号化されています。所有者に復号するよう依頼してください。}other{一部のファイルは暗号化されています。所有者に復号するよう依頼してください。}}</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8090234456044969073">よくアクセスするウェブサイトのリストの読み取り</translation>
-<translation id="8092681102116274204">ワイルドカード「*」を使用した設定のサポートは終了しました。<ph name="BEGIN_LINK" />この設定を変更する<ph name="END_LINK" />には、拡張機能のデベロッパーか管理者にご確認ください。</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> が応答していません</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="END_PARAGRAPH2" />
@@ -6154,7 +6142,6 @@
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" /> アルバムを選択</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> のプロフィールを更新するにはパスワードを再入力してください。</translation>
 <translation id="8203732864715032075">デフォルトでこのパソコンにメッセージの通知を送信する<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Flash をブロックする（推奨）</translation>
 <translation id="820568752112382238">よくアクセスするサイト</translation>
 <translation id="8206745257863499010">ブルース</translation>
 <translation id="8206859287963243715">携帯電話</translation>

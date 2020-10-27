@@ -58,6 +58,7 @@
 <translation id="1455242230282523554">Показване на езиковите настройки</translation>
 <translation id="1460620680449458626">Звукът е спрян.</translation>
 <translation id="1467432559032391204">Наляво</translation>
+<translation id="1475439723810528286">Докоснете произволно място, за да се заснеме целият екран</translation>
 <translation id="1479909375538722835">Плаващо меню за достъпност</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Този профил на собственик трябва да е първият, в който да се влезе, при сесия с централизиран вход.</translation>
@@ -121,6 +122,7 @@
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
+<translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
 <translation id="2144487987174258011">Рестартирайте, за да актуализирате Adobe Flash Player</translation>
 <translation id="2180011262286780504">Възможността за заснемане на екрана е деактивирана от администратора ви.</translation>
@@ -192,6 +194,7 @@
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="2878884018241093801">Няма скорошни елементи</translation>
 <translation id="2903844815300039659">Установена е връзка с мрежата „<ph name="NAME" />“, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">Екранни снимки</translation>
 <translation id="2942350706960889382">Лупа в прикрепен режим</translation>
 <translation id="2942516765047364088">Позиция на лавицата</translation>
 <translation id="2946119680249604491">Добавяне на връзка</translation>
@@ -367,6 +370,7 @@
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4527045527269911712">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до пълно зареждане</translation>
+<translation id="4538824937723742295">Правене на екранна снимка на целия екран</translation>
 <translation id="4544483149666270818">Изберете прозореца, който да бъде записан</translation>
 <translation id="4560576029703263363">Включено</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@
 <translation id="4969092041573468113"><ph name="HOURS" /> ч, <ph name="MINUTES" /> мин и <ph name="SECONDS" /> сек</translation>
 <translation id="4975771730019223894">Значки за приложенията</translation>
 <translation id="5030687792513154421">Времето свърши</translation>
+<translation id="5033299697334913360">Кликнете върху произволно място, за да се заснеме целият екран</translation>
 <translation id="5035236842988137213">Устройството <ph name="DEVICE_NAME" /> е свързано с нов телефон</translation>
 <translation id="5035389544768382859">Потвърждаване на конфигурацията на дисплея</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
+<translation id="5176318573511391780">Записване на част от екрана</translation>
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="5208059991603368177">Вкл.</translation>
 <translation id="5222676887888702881">Изход</translation>
@@ -488,6 +494,7 @@
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5876666360658629066">Въведете код на родител</translation>
+<translation id="5881540930187678962">Настройте Phone Hub по-късно</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="589817443623831496">Точково сканиране</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
@@ -542,6 +549,7 @@
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Изчистване на всички известия</translation>
 <translation id="643147933154517414">Всичко е готово</translation>
+<translation id="6431865393913628856">Записване на екрана</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се предава към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6452181791372256707">Отхвърляне</translation>
 <translation id="6453179446719226835">Езикът е променен</translation>
@@ -627,6 +635,7 @@
 <translation id="7346909386216857016">Добре, разбрах</translation>
 <translation id="7348093485538360975">Екранна клавиатура</translation>
 <translation id="735745346212279324">Връзката с виртуалната частна мрежа (VPN) е прекъсната</translation>
+<translation id="7371404428569700291">Прозорец за записване</translation>
 <translation id="7377169924702866686">„Caps Lock“ е включен.</translation>
 <translation id="7378203170292176219">С плъзгане изберете областта, която да бъде записана</translation>
 <translation id="7378594059915113390">Контроли за мултимедия</translation>
@@ -815,6 +824,7 @@
 <translation id="9084606467167974638">Промяна на позицията на менюто</translation>
 <translation id="9089416786594320554">Метод за въвеждане</translation>
 <translation id="9091626656156419976">Екранът „<ph name="DISPLAY_NAME" />“ бе премахнат</translation>
+<translation id="9092749890156285613">Скорошни екранни снимки и изтегляния</translation>
 <translation id="9151726767154816831">Рестартирайте и извършете Powerwash, за да актуализирате</translation>
 <translation id="9166331175924255663">Превключване на увеличената видимост на „Споделяне наблизо“.</translation>
 <translation id="9168436347345867845">По-късно</translation>

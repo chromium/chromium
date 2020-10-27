@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
 <translation id="1979103255016296513">Esedékes a jelszó frissítése</translation>
 <translation id="2049639323467105390">Ezt az eszközt a(z) <ph name="DOMAIN" /> domain kezeli.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> próbálkozás maradt</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} kísérlet maradt}other{<ph name="ERROR_MESSAGE" /> {0} kísérlet maradt}}</translation>
 <translation id="2517472476991765520">Keresés</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2872961005593481000">Leállítás</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Azonnal válasszon új jelszót</translation>
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
 <translation id="4932733599132424254">Dátum</translation>
+<translation id="5094480857972195099">A(z) <ph name="ENROLLMENT_DOMAIN" /> kezeli ezt a felhasználót, és távolról kezelheti a beállításokat, illetve figyelheti a felhasználói tevékenységeket.</translation>
 <translation id="520299634122159966">Nincsenek rendelkezésre álló szkennerek</translation>
 <translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>

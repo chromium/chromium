@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
 <translation id="1979103255016296513">पासवर्ड बदलने का समय निकल चुका है</translation>
 <translation id="2049639323467105390">यह डिवाइस <ph name="DOMAIN" /> द्वारा प्रबंधित है.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> बार और कोशिश कर सकते हैं</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}one{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}other{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="4917889632206600977">बंद हो गया - काग़ज़ खत्म हो गया</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> इस उपयोगकर्ता को प्रबंधित करता है और यह किसी दूसरी जगह से सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता गतिविधि की निगरानी कर सकता है.</translation>
 <translation id="520299634122159966">कोई भी स्कैनर उपलब्ध नहीं है</translation>
 <translation id="5212543919916444558">मुझे आपकी स्क्रीन पर ऐसा कुछ नहीं मिला जिसमें मैं आपकी सहायता कर पाऊं.
 मुझे कुछ पूछने के लिए माइक टैप करके देखें.</translation>

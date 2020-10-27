@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">พิมพ์แล้ว</translation>
 <translation id="1979103255016296513">เลยเวลาเปลี่ยนรหัสผ่านแล้ว</translation>
 <translation id="2049639323467105390">อุปกรณ์นี้ได้รับการจัดการโดย <ph name="DOMAIN" /></translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
 <translation id="2375079107209812402">ลองได้อีก <ph name="ATTEMPTS_LEFT" /> ครั้ง</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}other{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}}</translation>
 <translation id="2517472476991765520">สแกน</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2872961005593481000">ปิด</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">อย่ารอช้า รีบเลือกรหัสผ่านใหม่</translation>
 <translation id="4917889632206600977">หยุดพิมพ์ - กระดาษหมด</translation>
 <translation id="4932733599132424254">วันที่</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
 <translation id="520299634122159966">ไม่มีเครื่องสแกนที่ใช้ได้</translation>
 <translation id="5212543919916444558">ฉันไม่พบสิ่งที่จะช่วยได้ในหน้าจอ
 ลองแตะไมโครโฟนเพื่อถามเรื่องอะไรก็ได้</translation>

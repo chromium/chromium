@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1272293450992660632">আপনার পিনের মানগুলি মিলছে না।</translation>
 <translation id="1272978324304772054">এই ডিভাইসটি যে ডোমেনে আছে সেটার সাথে এই ব্যবহারকারীর অ্যাকাউন্টটি নথিভুক্ত করা হয় নি। যদি আপনি কোনো অন্য ডোমেনের সাথে জুড়তে চান তাহলে সবার প্রথমে ডিভাইস পুনরুদ্ধার করা প্রয়োজন।</translation>
-<translation id="1274977772557788323">Adobe Flash Player স্টোরেজ সেটিংস...</translation>
 <translation id="1274997165432133392">কুকিজ এবং অন্য সাইট ডেটা</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> আনইনস্টল করা যায়নি</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস আপনার Google অ্যাকাউন্টে সিঙ্ক হবে৷</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">হোম নেটওয়ার্ক, রোমিং নয়</translation>
-<translation id="1315056510003830387">ফ্ল্যাশ ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="1316136264406804862">সার্চ করা হচ্ছে...</translation>
 <translation id="1316495628809031177">সিঙ্ক থামানো হয়েছে</translation>
 <translation id="1317637799698924700">ইউএসবি টাইপ-সির সাথে মানানসই মোডে আপনার ডকিং স্টেশন কাজ করবে।</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">উল্লিখিত এনক্রিপশনের ধরন KDC-তে কাজ করে না</translation>
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="1987317783729300807">অ্যাকাউন্টসমূহ</translation>
-<translation id="1988494864246143197">অডিও, ভিডিও অথবা ভিডিও গেম চালাতে সাইট সাধারণত Flash ব্যবহার করে। Flash Player ডিসেম্বর, ২০২০-এর পরে আর ব্যবহার করা যাবে না।</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="1990512225220753005">এই পৃষ্ঠাতে শর্টকাট দেখাবেন না</translation>
 <translation id="1992397118740194946">সেট করা নেই</translation>
@@ -1648,7 +1645,6 @@
 <translation id="2880660355386638022">উইন্ডো প্লেসমেন্ট</translation>
 <translation id="2881076733170862447">যখন আপনি এক্সটেনশনে ক্লিক করেন</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> আবার চালু হবে এবং সাময়িকভাবে রিসেট হবে</translation>
-<translation id="288387288628762616">ফ্ল্যাশ ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2885729872133513017">সার্ভারের উত্তর ডিকোড করার সময় সমস্যা হয়েছে।</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2464,7 +2460,6 @@
 <translation id="383669374481694771">আপনার ডিভাইস এবং সেটি কীভাবে ব্যবহার করবেন (যেমন, ব্যাটারি লেভেল, সিস্টেম ও অ্যাপ অ্যাক্টিভিটি এবং সমস্যা) সেই বিষয়ে কিছু সাধারণ তথ্য এখানে দেওয়া হয়েছে। এই ডেটা Android পরিষেবাকে আরও ভাল করতে ব্যবহার করা হবে। এছাড়া, কিছু একত্রিত তথ্য Google অ্যাপ এবং Android ডেভেলপারদের মতন পার্টনারদের তাদের তৈরি করা অ্যাপ ও প্রোডাক্টের মান আরও ভাল করতে সাহায্য করবে।</translation>
 <translation id="3838085852053358637">এক্সটেনশন লোড করা যায়নি</translation>
 <translation id="3838486795898716504">আরও <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">কুকিজ এবং অন্যান্য সাইট এবং প্লাগ-ইন ডেটা</translation>
 <translation id="383891835335927981">কোনো সাইটের জুম বাড়ানো বা কমানো হয়নি</translation>
 <translation id="3839509547554145593">মাউসের মাধ্যমে স্ক্রল করার ক্ষেত্রে অ্যাক্সিলারেশন চালু করুন</translation>
 <translation id="3839516600093027468">ক্লিপবোর্ড দেখা থেকে <ph name="HOST" /> কে সবসময় ব্লক করুন</translation>
@@ -2637,7 +2632,6 @@
 <translation id="4023146161712577481">ডিভাইসের কনফিগারেশন নির্ধারণ করা হচ্ছে।</translation>
 <translation id="4025039777635956441">বেছে নেওয়া সাইট মিউট করুন</translation>
 <translation id="4027804175521224372">(আপনি এটিকে ছাড়ছেন—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">আপনি Chrome বন্ধ না করা পর্যন্ত আপনার ফ্ল্যাশ সেটিংস রেখে দেওয়া হবে।</translation>
 <translation id="4028467762035011525">ইনপুট পদ্ধতি যোগ করুন</translation>
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4031527940632463547">সেন্সরগুলি ব্লক করা হয়েছে</translation>
@@ -2789,7 +2783,6 @@
 <translation id="4232375817808480934">Kerberos কনফিগার করুন</translation>
 <translation id="4235200303672858594">সম্পূর্ণ স্ক্রিন</translation>
 <translation id="4235965441080806197">সাইন-ইন বাতিল করুন</translation>
-<translation id="4237773362828263530">"*" ওয়াইল্ডকার্ড সহ সেটিংস আর কাজ করে না। <ph name="BEGIN_LINK" />এই সেটিংস পরিবর্তন করতে<ph name="END_LINK" /> আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{পরে পড়ার জন্য মার্ক করে রাখা ট্যাব}one{পরে পড়ার জন্য মার্ক করে রাখা ট্যাব}other{পরে পড়ার জন্য মার্ক করে রাখা ট্যাব}}</translation>
 <translation id="4242145785130247982">একাধিক ক্লায়েন্ট সার্টিফিকেট কাজ করে না</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
@@ -3053,7 +3046,6 @@
 <translation id="4548483925627140043">সিগন্যাল নেই</translation>
 <translation id="4549791035683739768">আপনার 'নিরাপত্তা কী'-তে কোনও ফিঙ্গারপ্রিন্ট সেভ করা নেই</translation>
 <translation id="4551763574344810652">আগের অবস্থায় ফিরে যেতে <ph name="MODIFIER_KEY_DESCRIPTION" /> টিপুন</translation>
-<translation id="4552089082226364758">ফ্ল্যাশ</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, সিগন্যাল:<ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">ডিভাইসের ভাষা পরিবর্তন করতে, আপনাকে Chromebook রিস্টার্ট করতে হবে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">বিদ্যমানটির তুলনায় বাহ্যিক এক্সটেনশনটি একই বা আরও পুরনো ভার্সনের৷</translation>
@@ -3408,7 +3400,6 @@
 <translation id="4974733135013075877">প্রস্থান এবং চাইল্ডলক করুন</translation>
 <translation id="4976009197147810135">ভার্টিক্যাল স্প্লিট করুন</translation>
 <translation id="4977942889532008999">অ্যাক্সেস নিশ্চিত করুন</translation>
-<translation id="4978905460870207779">সাইট Flash ব্যবহার করতে আপনার অনুমতি চাইতে পারে</translation>
 <translation id="4980805016576257426">এই এক্সটেনশনটিতে ম্যালওয়্যার আছে।</translation>
 <translation id="4981449534399733132">আপনার সিঙ্ক করা সমস্ত ডিভাইস এবং Google অ্যাকাউন্ট থেকে ব্রাউজিং ডেটা খালি করার জন্য <ph name="BEGIN_LINK" />সাইন-ইন করুন<ph name="END_LINK" />।</translation>
 <translation id="4982236238228587209">ডিভাইসের সফ্টওয়্যার</translation>
@@ -4180,7 +4171,6 @@
 <translation id="5906732635754427568">এই অ্যাপ্লিকেশান সংশ্লিষ্ট ডেটা এই ডিভাইস থেকে সরিয়ে ফেলা হবে।</translation>
 <translation id="5908474332780919512">সাইন-ইন করলেই অ্যাপ চালু হয়ে যাবে</translation>
 <translation id="5908695239556627796">মাউসের মাধ্যমে স্ক্রল করার স্পিড</translation>
-<translation id="5908769186679515905">সাইটগুলিকে Flash চালানোর বিষয়ে অবরুদ্ধ করুন</translation>
 <translation id="5910363049092958439">এই ভাবে ছবি সেভ করুন...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> এখন অফলাইন</translation>
 <translation id="5911533659001334206">শর্টকাট ভিউয়ার</translation>
@@ -5830,7 +5820,6 @@
 <translation id="7831491651892296503">নেটওয়ার্ক কনফিগার করার সময় ত্রুটি</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">শেষের সময়</translation>
-<translation id="783214144752121388">Flash-এর ব্যবহার আটকাতে সাইট ব্লক করুন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="7833720883933317473">সংরক্ষিত কাস্টম শব্দ এখানে দেখা যাবে</translation>
 <translation id="7835178595033117206">বুকমার্ক সরানো হয়েছে</translation>
 <translation id="7836850009646241041">আপনার নিরাপত্তা কী আবার স্পর্শ করার চেষ্টা করুন</translation>
@@ -6058,7 +6047,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{এই ফাইল এনক্রিপ্ট করা আছে। ফাইলের মালিককে সেটি ডিক্রিপ্ট করতে বলুন।}one{এগুলির মধ্যে কিছু ফাইল এনক্রিপ্ট করা হয়েছে। ফাইলের মালিককে সেগুলি ডিক্রিপ্ট করতে বলুন।}other{এগুলির মধ্যে কিছু ফাইল এনক্রিপ্ট করা হয়েছে। ফাইলের মালিককে সেগুলি ডিক্রিপ্ট করতে বলুন।}}</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8090234456044969073">আপনার সবচেয়ে ঘন ঘন পরিদর্শিত ওয়েবসাইটের একটি তালিকা পড়ুন</translation>
-<translation id="8092681102116274204">"*" ওয়াইল্ডকার্ড সহ সেটিংস আর কাজ করে না। <ph name="BEGIN_LINK" />এই সেটিংস পরিবর্তন করতে<ph name="END_LINK" /> এক্সটেনশন ডেভেলপার বা আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> এর কোনও প্রতিক্রিয়া নেই</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ড্রাইভে ব্যাক-আপ নিন। যেকোনও সময় সহজেই আপনার ডেটা ফিরিয়ে আনুন বা ডিভাইস পাল্টান। আপনার ব্যাক-আপে অ্যাপ ডেটা থাকে।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />আপনার ব্যাক-আপ ডেটা Google-এ আপলোড করা হবে এবং আপনার Google অ্যাকাউন্টের পাসওয়ার্ড ব্যবহার করে সেগুলিকে এনক্রিপ্ট করা হবে।<ph name="END_PARAGRAPH2" />
@@ -6152,7 +6140,6 @@
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" />-এর অ্যালবামগুলি বেছে নিন</translation>
 <translation id="8202160505685531999">অাপনার <ph name="DEVICE_TYPE" /> প্রোফাইল আপডেট করার জন্য দয়া করে পুনরায় আপনার পাসওয়ার্ড লিখুন।</translation>
 <translation id="8203732864715032075">আপনাকে বিজ্ঞপ্তি পাঠায় এবং মেসেজের জন্য এই কম্পিউটারকে ডিফল্ট হিসেবে মনে রাখে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Flash ব্লক করুন (সাজেস্ট করা হয়েছে)</translation>
 <translation id="820568752112382238">সবচেয়ে বেশিবার দেখা সাইট</translation>
 <translation id="8206745257863499010">ব্লুজস</translation>
 <translation id="8206859287963243715">সেলুলার</translation>

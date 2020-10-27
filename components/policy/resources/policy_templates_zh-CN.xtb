@@ -774,13 +774,6 @@
       请勿将此政策用于公用设备。
 
       如果此政策设为 True 或未设置，系统则会将自动启动的受管理访客会话中的隐私权警告通知固定在屏幕上，直到用户关闭它为止。</translation>
-<translation id="228665601367357543">让您能够设置一系列网址格式，从而指定自动授权哪些网站访问具有给定供应商 ID 和产品 ID 的 USB 设备。每个列表项都必须包含“devices”和“urls”字段，此政策才有效。“devices”字段中的每项内容都可以包含“vendor_id”和“product_id”字段。如果您省略“vendor_id”字段，系统将会创建一项与所有设备都匹配的政策。如果您省略“product_id”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“product_id”字段但不含“vendor_id”字段的政策无效。
-
-      USB 权限模型会使用请求网址（发出请求的网站的网址）和嵌入网址（顶级框架网站的网址）来授权请求网址访问相应 USB 设备。如果发出请求的网站是在 iframe 中加载的，请求网址可能会与嵌入网址不同。因此，“urls”字段最多可包含 2 个以英文逗号分隔的字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，那么无论嵌入状态为何，系统都会在请求网站的网址与这个网址相符时授权该网站访问相应 USB 设备。“urls”字段中的网址必须是有效网址，否则系统会忽略此政策。
-
-      如果您未设置此政策，系统会应用 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />（若已设置）或用户的个人设置（若前者未设置）。
-
-      此政策中的网址格式不应与通过 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 配置的网址格式冲突。如果它们存在冲突，此政策优先于 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="2289265947759479962">此政策旨在控制是否报告版本信息，例如操作系统版本、操作系统平台、操作系统架构、<ph name="PRODUCT_NAME" /> 版本号和 <ph name="PRODUCT_NAME" /> 版本类型。
 
       如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策。
@@ -1506,11 +1499,6 @@
         * 4，系统将在注册后且用户登录前更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件。
 
       如果您未设置此政策，<ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新将不可用。</translation>
-<translation id="3235677869770186098">通过设置此政策，您可以罗列一些网址格式，从而指定自动授权哪些网站在登录屏幕上访问具有给定供应商 ID 和产品 ID 的 USB 设备。列表中的每项内容都必须同时包含“devices”和“urls”字段，此政策才有效。“devices”字段中的每项内容都可以包含“vendor_id”和“product_id”字段。如果您省略“vendor_id”字段，系统将会创建一项与所有设备都匹配的政策。如果您省略“product_id”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“product_id”字段但不含“vendor_id”字段的政策无效。
-
-      USB 权限模型会使用请求网址和嵌入网址来授权请求网址访问相应 USB 设备。如果发出请求的网站是在 iframe 中加载的，请求网址可能会与嵌入网址不同。因此，“urls”字段最多可包含 2 个以英文逗号分隔的网址字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，那么无论嵌入状态为何，系统都会在发出请求的网站的网址与这个网址相符时授权该网站访问相应 USB 设备。这些网址必须有效，否则系统会忽略此政策。
-
-      如果您未设置此政策，系统会对所有网站使用全局默认值（不自动授予访问权限）。</translation>
 <translation id="3236046242843493070">允许的扩展程序、应用和用户脚本安装源的网址格式</translation>
 <translation id="3240609035816615922">打印机配置访问政策。</translation>
 <translation id="324062325008698789">配置打印机列表</translation>
@@ -1818,7 +1806,6 @@
 <translation id="3631099945620529777">如果设为 false，则任务管理器中的“结束进程”按钮会处于停用状态。
 
       如果设为 true 或未配置，则用户可以在任务管理器中结束进程。</translation>
-<translation id="3639444551396586995">允许 Chrome 向 Google 报告不安全事件</translation>
 <translation id="3643284063603988867">启用“记住密码”功能</translation>
 <translation id="3646859102161347133">设置放大镜类型</translation>
 <translation id="3647212518036289905">通过设置此政策，您可以指定要用于 HTTP 身份验证的 GSSAPI 库。您可以将此政策设为库名称或完整路径。
@@ -1838,13 +1825,6 @@
 
         此政策由在桌面设备上进行的机器范围云政策注册使用，并可由 Windows 上的注册表/GPO、Mac 上的 plist 以及 Linux 上的 JSON 政策文件设置。</translation>
 <translation id="3660562134618097814">在用户登录期间转移 SAML IdP Cookie</translation>
-<translation id="3669373349666208904">如果此政策设为 True，网页将能够在取消加载的过程中显示弹出式窗口。
-
-      如果此政策设为 False 或未设置，网页将无法在取消加载的过程中显示弹出式窗口。
-
-      在 Chrome 88 中，此政策将被移除。
-
-      请参阅 https://www.chromestatus.com/feature/5989473649164288。</translation>
 <translation id="3691155504326059225">如果此政策已启用，系统会使用“新标签页”页面作为用户的主页，并忽略所有主页网址位置。如果此政策已停用，系统绝不会使用“新标签页”页面作为用户的主页，除非用户将主页网址设为 chrome://newtab。
 
       如果您设置了此政策，用户将无法更改 <ph name="PRODUCT_NAME" /> 中的主页类型。如果您未设置此政策，用户便可自行决定是否使用“新标签页”页面作为主页。
@@ -2083,15 +2063,6 @@
 <translation id="4020682745012723568">Android 应用无法访问已转移到用户个人资料中的 Cookie。</translation>
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
-<translation id="4044054366426171256">配置指定域名来限制主机接受远程访问，并禁止用户更改此设置。
-
-          如果启用此设置并将其设为一个或多个域名，则只有使用在这些指定域名注册的帐号才能用主机接受远程访问。
-
-          如果不进行设置、停用此设置或将其设为一个空列表，则可使用任意账号来用主机接受远程访问。
-
-          若曾设置RemoteAccessHostDomain，该设置将被本设置覆盖。
-
-          另请参阅 RemoteAccessHostClientDomainList。</translation>
 <translation id="4056910949759281379">停用 SPDY 协议</translation>
 <translation id="4061590579642538878">报告有关崩溃报告的信息。</translation>
 <translation id="4075675819066819571">将文件架放置到屏幕左侧</translation>
@@ -2547,10 +2518,6 @@
 <translation id="4874982543810021567">禁止这些网站使用 WebUSB</translation>
 <translation id="4876805738539874299">启用最高 SSL 版本</translation>
 <translation id="4887274746092315609">启用一个页面，以便 SAML 用户在会话期间更改密码</translation>
-<translation id="4887863670424903990">如果此政策设为“enabled”，<ph name="PRODUCT_NAME" /> 会向 Google 报告密码重用、恶意软件下载、插页式广告、违反敏感数据保护规则的行为等不安全事件，以供分析。至于是否报告某些不安全事件（例如违反敏感数据保护规则的行为），取决于启用此类检查的其他政策。
-
-      如果此政策设为“disabled”或未设置，<ph name="PRODUCT_NAME" /> 将不会报告不安全事件。
-      </translation>
 <translation id="4894290482695457375">除非 <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> 设为“已停用”，否则，如果 <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> 已启用，<ph name="PRODUCT_NAME" /> 将会连接到位于所有 IP 地址的投射设备，而不是只连接到位于 RFC1918/RFC4193 私有地址的投射设备。
 
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将会只连接到位于 RFC1918/RFC4193 的投射设备。
@@ -3331,9 +3298,6 @@
 
           远程访问客户端不受此策略设置影响。它们将始终使用“chromoting-client.talkgadget.google.com”访问 TalkGadget。</translation>
 <translation id="5890063326284543943">控制对 Serial API 的使用</translation>
-<translation id="5893553533827140852">如果启用此设置，系统将通过远程主机连接经由代理处理gnubby身份验证请求。
-
-          如果您已停用或未配置此设置，那么系统将不会经由代理处理gnubby身份验证请求。</translation>
 <translation id="5897913798715600338">使用快速充电技术为电池充电。</translation>
 <translation id="5898486742390981550">如果有多个用户同时登录，则只有主要用户可以使用 Android 应用。</translation>
 <translation id="5901427587865226597">仅限双面打印</translation>
@@ -3673,7 +3637,6 @@
       不过，此政策中与来源匹配的网址格式不能包含“/path”或“@query”元素。系统会忽略所有包含“/path”或“@query”元素的网址格式。</translation>
 <translation id="6464074037294098618">自动填充地址信息</translation>
 <translation id="6467613372414922590">允许使用用户级本地消息传递主机（安装时没有管理员权限）</translation>
-<translation id="6468980648680553776">此政策已被弃用。请改用 RemoteAccessHostClientDomainList。</translation>
 <translation id="6473623140202114570">配置安全浏览功能在哪些网域中不会触发警告。</translation>
 <translation id="647698599569353771">允许启用“附近分享”功能。</translation>
 <translation id="6485813825811798133">通过设置此政策，您可以创建一个网址格式列表，在其中指定哪些网站无法通过 File System API 请求用户向其授予对主机操作系统的文件系统中的文件或目录的读取权限。
@@ -4513,17 +4476,6 @@
 <translation id="747014869399137701">如果此政策设为 1，系统会允许网站显示桌面通知。如果此政策设为 2，系统会禁止网站显示桌面通知。
 
       如果此政策未设置，则意味着 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
-<translation id="7471828226549672843">默认情况下，当 CCT 首次运行时，系统会显示《服务条款》。如果此政策已停用，《服务条款》对话框在首次运行体验或后续运行期间就不会出现。如果此政策已启用或未设置，《服务条款》对话框会在首次运行体验期间出现。其他注意事项：
-
-      - 此政策仅适用于可由统一端点管理 (Unified Endpoint Management) 供应商配置的全代管式 Android 设备。
-
-      - 如果此政策已停用，BrowserSignin 政策将没有任何效力。
-
-      - 如果此政策已停用，系统不会将指标发送给服务器。
-
-      - 如果此政策已停用，浏览器的功能会受到限制。
-
-      - 如果此政策已停用，管理员必须告知设备的最终用户。</translation>
 <translation id="747275827471712187">将这些网站上的 Cookie 恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>
 <translation id="7476621944304431784">如果此设置已启用，用户将能够在其 <ph name="PRODUCT_OS_NAME" />设备和一部已连接的 Android 手机之间同步 Wi-Fi 网络配置。不过，用户必须通过完成一个设置流程来明确选择启用这项功能，才能同步 Wi-Fi 网络配置。
 
@@ -4559,15 +4511,6 @@
       如果您不设置此政策，当从 Internet Explorer 中启动 <ph name="PRODUCT_NAME" /> 时，<ph name="IE_PRODUCT_NAME" /> 将会自动检测 <ph name="PRODUCT_NAME" /> 自有的可执行文件路径。
 
       注意：如果相应设备未安装适用于 <ph name="IE_PRODUCT_NAME" /> 的“旧版浏览器支持”插件，此政策不会产生任何效力。</translation>
-<translation id="7506758875409719208">配置指定域名来限制客户端进行远程访问，并禁止用户更改此设置。
-
-          如果启用此设置并将其设为一个或多个域名，则只有来自这些指定域名的客户端才能连接到主机。
-
-          如果不进行设置、停用此设置或将其设为一个空列表，系统将会应用针对连接类型的默认政策。对于远程协助，来自任何域名的客户端都可连接到主机；对于无时间限制的远程访问，只有主机所有者可以连接到主机。
-
-          若曾设置RemoteAccessHostClientDomain，该设置将被本设置覆盖。
-
-          另请参阅 RemoteAccessHostDomainList。</translation>
 <translation id="7507131973617884092">如果您设置了此政策，逗号分隔列表中指定的每个来源都将在自己的进程中运行，以子网域形式指定的来源也会被隔离。例如，指定 https://example.com/ 会导致 https://foo.example.com/ 被隔离（作为 https://example.com/ 网站的一部分）。
 
       如果此政策已停用或未设置，用户便可更改此设置。
@@ -5036,7 +4979,6 @@
 
           如果需要执行的操作是暂停，您还可另行配置 <ph name="PRODUCT_OS_NAME" />在暂停前是否锁定屏幕。</translation>
 <translation id="8214600119442850823">配置密码管理器。</translation>
-<translation id="8217516105848565518">此政策已被弃用。请改用 RemoteAccessHostDomainList。</translation>
 <translation id="8219777886736887686">通过设置此政策，您可以控制应使用哪个命令在备用浏览器中打开网址。此政策可以设为下列任一值：<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" />、<ph name="EDGE_VALUE_PLACEHOLDER" /> 或文件路径。如果此政策设为文件路径，系统会将相应文件用作可执行文件。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 和 <ph name="EDGE_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" />，<ph name="SAFARI_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
 
       如果您未设置此政策，系统会使用相应的平台专用默认浏览器：在 <ph name="MS_WIN_NAME" /> 上使用 <ph name="IE_PRODUCT_NAME" />，在 <ph name="MAC_OS_NAME" /> 上使用 <ph name="SAFARI_PRODUCT_NAME" />。在 <ph name="LINUX_OS_NAME" /> 上，无法启动备用浏览器。</translation>

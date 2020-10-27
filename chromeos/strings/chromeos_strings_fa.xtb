@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">چاپ‌شده</translation>
 <translation id="1979103255016296513">مهلت تغییر گذرواژه به پایان رسید</translation>
 <translation id="2049639323467105390">این دستگاه توسط <ph name="DOMAIN" /> مدیریت می‌شود.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> نقطه در اینچ</translation>
 <translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> فرصت باقی مانده است</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}one{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}other{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}}</translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
 <translation id="520299634122159966">اسکنری دردسترس نیست</translation>
 <translation id="5212543919916444558">در صفحه‌‌تان چیزی پیدا نمی‌کنم تا درمورد آن کمکتان کنم.
 برای درخواست از من، روی میکروفون ضربه بزنید.</translation>

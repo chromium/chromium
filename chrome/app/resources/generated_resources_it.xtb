@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Interrompi</translation>
 <translation id="1272293450992660632">I valori PIN non corrispondono.</translation>
 <translation id="1272978324304772054">Questo account utente non appartiene al dominio con cui è registrato il dispositivo. Se vuoi registrarti a un altro dominio devi prima effettuare il recupero del dispositivo.</translation>
-<translation id="1274977772557788323">Impostazioni di archiviazione Adobe Flash Player</translation>
 <translation id="1274997165432133392">Cookie e altri dati dei siti</translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1276994519141842946">Impossibile installare <ph name="APP_NAME" /></translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">I Preferiti, la cronologia e le altre impostazioni verranno sincronizzati con il tuo Account Google.</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rete domestica, roaming non attivo</translation>
-<translation id="1315056510003830387">Non possono utilizzare Flash</translation>
 <translation id="1316136264406804862">Ricerca in corso...</translation>
 <translation id="1316495628809031177">Sincronizzazione in pausa</translation>
 <translation id="1317637799698924700">La dock station funzionerà alla modalità compatibile con USB Type-C.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC non supporta il tipo di crittografia</translation>
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
 <translation id="1987317783729300807">Account</translation>
-<translation id="1988494864246143197">In genere, i siti usano Flash per riprodurre contenuti audio, video o videogiochi. Flash Player non sarà più supportato dopo dicembre 2020.</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="1990512225220753005">Non mostrare scorciatoie in questa pagina</translation>
 <translation id="1992397118740194946">Non impostata</translation>
@@ -1648,7 +1645,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2880660355386638022">Posizionamento delle finestre</translation>
 <translation id="2881076733170862447">Quando fai clic sull'estensione</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> verrà riavviato e ripristinato tra poco</translation>
-<translation id="288387288628762616">Possono utilizzare Flash</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">Si è verificato un problema durante la decodifica della risposta del server.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2465,7 +2461,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="383669374481694771">Si tratta di informazioni generali su questo dispositivo e sulla relativa modalità di utilizzo, ad esempio il livello della batteria, l'attività nelle app e nel sistema e gli errori. I dati saranno utilizzati per migliorare Android e alcune informazioni aggregate saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android, che potranno migliorare i propri prodotti e le proprie app.</translation>
 <translation id="3838085852053358637">Caricamento estensione non riuscito</translation>
 <translation id="3838486795898716504">Altre <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Cookie e altri dati di siti e plug-in</translation>
 <translation id="383891835335927981">Non è stato aumentato o diminuito lo zoom di alcun sito</translation>
 <translation id="3839509547554145593">Attiva l'accelerazione di scorrimento del mouse</translation>
 <translation id="3839516600093027468">Impedisci sempre a <ph name="HOST" /> di leggere gli appunti</translation>
@@ -2640,7 +2635,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4023146161712577481">Configurazione del dispositivo in fase di determinazione.</translation>
 <translation id="4025039777635956441">Disattiva l'audio del sito selezionato</translation>
 <translation id="4027804175521224372">(Resta sincronizzato, <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Le impostazioni Flash rimarranno memorizzate fino all'uscita da Chrome.</translation>
 <translation id="4028467762035011525">Aggiungi metodi di immissione</translation>
 <translation id="4031179711345676612">Microfono consentito</translation>
 <translation id="4031527940632463547">Sensori bloccati</translation>
@@ -2792,7 +2786,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4232375817808480934">Configura Kerberos</translation>
 <translation id="4235200303672858594">Schermo intero</translation>
 <translation id="4235965441080806197">Annulla accesso</translation>
-<translation id="4237773362828263530">Le impostazioni con caratteri jolly "*" non sono più supportate. Contatta l'amministratore per <ph name="BEGIN_LINK" />modificare queste impostazioni<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Leggi scheda più tardi}other{Leggi schede più tardi}}</translation>
 <translation id="4242145785130247982">Non sono supportati più certificati client</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
@@ -3056,7 +3049,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4548483925627140043">segnale non trovato</translation>
 <translation id="4549791035683739768">Nel token di sicurezza non sono archiviate impronte</translation>
 <translation id="4551763574344810652">Premi <ph name="MODIFIER_KEY_DESCRIPTION" /> per annullare</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">Rete <ph name="NETWORK_TYPE" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">Per cambiare la lingua del dispositivo, devi riavviare il Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">La versione dell'estensione esterna è pari o precedente a quella dell'estensione esistente.</translation>
@@ -3411,7 +3403,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4974733135013075877">Esci e blocca</translation>
 <translation id="4976009197147810135">Divisione in verticale</translation>
 <translation id="4977942889532008999">Conferma accesso</translation>
-<translation id="4978905460870207779">I siti possono chiedere di usare Flash</translation>
 <translation id="4980805016576257426">Questa estensione contiene malware.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Accedi<ph name="END_LINK" /> per cancellare i dati di navigazione da tutti i dispositivi sincronizzati e dal tuo Account Google.</translation>
 <translation id="4982236238228587209">Software dispositivo</translation>
@@ -4182,7 +4173,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5906732635754427568">I dati associati a questa app verranno rimossi dal dispositivo.</translation>
 <translation id="5908474332780919512">Avvia app all'accesso</translation>
 <translation id="5908695239556627796">Velocità di scorrimento del mouse</translation>
-<translation id="5908769186679515905">Impedisci ai siti di eseguire Flash</translation>
 <translation id="5910363049092958439">Sal&amp;va immagine con nome...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> è offline</translation>
 <translation id="5911533659001334206">Visualizzatore scorciatoie</translation>
@@ -5835,7 +5825,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7831491651892296503">Errore durante la configurazione della rete</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Ora di fine</translation>
-<translation id="783214144752121388">Impedisci ai siti di eseguire Flash (opzione consigliata)</translation>
 <translation id="7833720883933317473">Le parole personalizzate salvate verranno visualizzate qui</translation>
 <translation id="7835178595033117206">Segnalibro rimosso</translation>
 <translation id="7836850009646241041">Prova a toccare di nuovo il token di sicurezza</translation>
@@ -6063,7 +6052,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Questo file è criptato. Chiedi al proprietario di decriptarlo.}other{Alcuni di questi file sono criptati. Chiedi al proprietario di decriptarli.}}</translation>
 <translation id="808894953321890993">Cambia password</translation>
 <translation id="8090234456044969073">Lettura di un elenco di siti web più visitati</translation>
-<translation id="8092681102116274204">Le impostazioni con caratteri jolly "*" non sono più supportate. Contatta lo sviluppatore dell'estensione o il tuo amministratore per <ph name="BEGIN_LINK" />cambiare queste impostazioni<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> non risponde</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Effettua il backup su Google Drive. Ripristina i dati o cambia facilmente dispositivo in qualsiasi momento. Il backup include i dati delle app.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google.<ph name="END_PARAGRAPH2" />
@@ -6157,7 +6145,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8201717382574620700">Seleziona album <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Inserisci di nuovo la password per aggiornare il profilo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203732864715032075">Ricevere notifiche e impostare come predefinita la memorizzazione di questo computer per Messaggi. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Blocca Flash (opzione consigliata)</translation>
 <translation id="820568752112382238">Siti più visitati</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Cellulare</translation>

@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Printuar</translation>
 <translation id="1979103255016296513">Afati i ndryshimit të fjalëkalimit ka kaluar</translation>
 <translation id="2049639323467105390">Kjo pajisje menaxhohet nga <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivizo "Bluetooth-in" për të zbuluar pajisjet në afërsi</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> përpjekje të mbetura</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} përpjekje e mbetur}other{<ph name="ERROR_MESSAGE" /> {0} përpjekje të mbetura}}</translation>
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Zgjidh një të re menjëherë</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="520299634122159966">Nuk ka skanerë</translation>
 <translation id="5212543919916444558">Nuk mund të gjej diçka në ekranin tënd me të cilën mund të të ndihmoj. Provo të trokasësh te mikrofoni për të më kërkuar diçka.</translation>
 <translation id="5222676887888702881">Dil</translation>

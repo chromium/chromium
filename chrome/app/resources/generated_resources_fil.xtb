@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1272293450992660632">Hindi nagtutugma ang mga value ng PIN.</translation>
 <translation id="1272978324304772054">Ang user account na ito ay hindi pagmamay-ari ng domain kung saan nakatala ang device.  Kung nais mong magpatala sa ibang domain, kailangan mo munang sumailalim sa pagbawi ng device.</translation>
-<translation id="1274977772557788323">Mga setting ng Storage ng Adobe Flash Player</translation>
 <translation id="1274997165432133392">Cookies at iba pang data ng site</translation>
 <translation id="1275718070701477396">Pinili</translation>
 <translation id="1276994519141842946">Hindi ma-uninstall ang <ph name="APP_NAME" /></translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Isi-sync ang iyong mga bookmark, kasaysayan, at iba pang mga setting sa iyong Google Account.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Home network, hindi roaming</translation>
-<translation id="1315056510003830387">Hindi pinapayagang gumamit ng Flash</translation>
 <translation id="1316136264406804862">Naghahanap...</translation>
 <translation id="1316495628809031177">Naka-pause ang pag-sync</translation>
 <translation id="1317637799698924700">Gagana ang iyong istasyon ng pag-dock sa USB Type-C compatible mode.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">Hindi sinusuportahan ng KDC ang uri ng pag-encrypt</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="1987317783729300807">Mga Account</translation>
-<translation id="1988494864246143197">Karaniwang ginagamit ng mga site ang Flash para mag-play ng audio, video, o mga video game. Hindi na susuportahan ang Flash Player pagkatapos ng Disyembre 2020.</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
 <translation id="1990512225220753005">Huwag magpakita ng mga shortcut sa page na ito</translation>
 <translation id="1992397118740194946">Hindi nakatakda</translation>
@@ -1649,7 +1646,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2880660355386638022">Placement ng window</translation>
 <translation id="2881076733170862447">Kapag Iki-click Mo ang Extension</translation>
 <translation id="2882943222317434580">Magre-restart at magre-reset ang <ph name="IDS_SHORT_PRODUCT_NAME" /> sa ilang sandali</translation>
-<translation id="288387288628762616">Pinapayagang gumamit ng Flash</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2885729872133513017">Nagkaproblema habang dine-decode ang tugon ng server.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2466,7 +2462,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="383669374481694771">Ito ay pangkalahatang impormasyon tungkol sa device na ito at kung paano ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para pahusayin ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na pahusayin ang kanilang mga app at produkto.</translation>
 <translation id="3838085852053358637">Hindi na-load ang extension</translation>
 <translation id="3838486795898716504">Higit pang <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Cookies at iba pang data ng site at plugin</translation>
 <translation id="383891835335927981">Walang site na na-zoom in o na-zoom out</translation>
 <translation id="3839509547554145593">I-enable ang pag-accelerate sa pag-scroll ng mouse</translation>
 <translation id="3839516600093027468">Palaging i-block ang <ph name="HOST" /> sa pagtingin sa clipboard</translation>
@@ -2641,7 +2636,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4023146161712577481">Tinutukoy ang configuration ng device.</translation>
 <translation id="4025039777635956441">I-mute ang Napiling Site</translation>
 <translation id="4027804175521224372">(Hindi ka nakakakuha—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Papanatilihin ang mga setting ng iyong Flash hanggang sa umalis ka sa Chrome.</translation>
 <translation id="4028467762035011525">Magdagdag ng mga pamamaraan ng pag-input</translation>
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4031527940632463547">Na-block ang mga sensor</translation>
@@ -2793,7 +2787,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4232375817808480934">I-configure ang Kerberos</translation>
 <translation id="4235200303672858594">Buong screen</translation>
 <translation id="4235965441080806197">Kanselahin ang pag-sign in</translation>
-<translation id="4237773362828263530">Hindi na sinusuportahan ang mga setting na may "*" na wildcard. Makipag-ugnayan sa iyong administrator para <ph name="BEGIN_LINK" />baguhin ang mga setting na ito<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Basahin ang Tab sa Ibang Pagkakataon}one{Basahin ang Mga Tab sa Ibang Pagkakataon}other{Basahin ang Mga Tab sa Ibang Pagkakataon}}</translation>
 <translation id="4242145785130247982">Hindi sinusuportahan ang maraming certificate ng client</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
@@ -3057,7 +3050,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4548483925627140043">Walang nakitang signal</translation>
 <translation id="4549791035683739768">Walang naka-store na fingerprint sa iyong security key</translation>
 <translation id="4551763574344810652">Pindutin ang <ph name="MODIFIER_KEY_DESCRIPTION" /> para i-undo</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> network, lakas ng signal na <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">Kailangan mong i-restart ang iyong Chromebook para mapalitan ang wika ng device. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Pareho o mas mababa ang bersyon ng external na extension kumpara sa umiiral nang extension.</translation>
@@ -3412,7 +3404,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4974733135013075877">Lumabas at i-childlock</translation>
 <translation id="4976009197147810135">I-split nang patayo</translation>
 <translation id="4977942889532008999">Kumpirmahin ang Pag-access</translation>
-<translation id="4978905460870207779">Puwedeng hilingin ng mga site na gumamit ng Flash</translation>
 <translation id="4980805016576257426">May malware ang extension na ito.</translation>
 <translation id="4981449534399733132">Para i-clear ang data sa pag-browse sa lahat ng iyong naka-sync na device at sa Google Account mo, <ph name="BEGIN_LINK" />mag-sign in<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Software ng device</translation>
@@ -4183,7 +4174,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="5906732635754427568">Aalisin sa device na ito ang data na nauugnay sa app na ito.</translation>
 <translation id="5908474332780919512">Buksan ang App Kapag Nag-sign In Ka</translation>
 <translation id="5908695239556627796">Bilis ng pag-scroll ng mouse</translation>
-<translation id="5908769186679515905">I-block ang mga site sa pagpapatakbo ng Flash</translation>
 <translation id="5910363049092958439">I-sa&amp;ve ang Imahe Bilang...</translation>
 <translation id="5910726859585389579">Offline ang <ph name="DEVICE_TYPE" /></translation>
 <translation id="5911533659001334206">Shortcut viewer</translation>
@@ -5836,7 +5826,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="7831491651892296503">Nagkaroon ng error sa pag-configure sa network</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Oras ng pagtatapos</translation>
-<translation id="783214144752121388">I-block ang mga site sa pagpapatakbo ng Flash (inirerekomenda)</translation>
 <translation id="7833720883933317473">Lalabas dito ang mga na-save na custom na salita</translation>
 <translation id="7835178595033117206">Inalis ang bookmark</translation>
 <translation id="7836850009646241041">Subukang pindutin ulit ang iyong security key</translation>
@@ -6064,7 +6053,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Naka-encrypt ang file na ito. Hilingin sa may-ari nitong i-decrypt ito.}one{Naka-encrypt ang ilan sa mga file na ito. Hilingin sa may-ari ng mga ito na i-decrypt ang mga ito.}other{Naka-encrypt ang ilan sa mga file na ito. Hilingin sa may-ari ng mga ito na i-decrypt ang mga ito.}}</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8090234456044969073">Basahin ang isang listahan ng iyong mga pinakamadalas bisitahing website</translation>
-<translation id="8092681102116274204">Hindi na sinusuportahan ang mga setting na may "*" na wildcard. Makipag-ugnayan sa developer ng extension o sa iyong administrator para <ph name="BEGIN_LINK" />baguhin ang mga setting na ito<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381">Hindi tumutugon ang <ph name="PLUGIN_NAME" /></translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Mag-back up sa Google Drive. Madaling i-restore ang iyong data o magpalit ng device anumang oras. Kabilang sa iyong backup ang data ng app.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ina-upload sa Google ang iyong mga backup at ine-encrypt gamit ang password ng Google Account mo.<ph name="END_PARAGRAPH2" />
@@ -6159,7 +6147,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8201717382574620700">Pumili ng mga album sa <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Mangyaring ilagay muli ang iyong password upang i-update ang iyong profile sa <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203732864715032075">Papadalhan ka ng mga notification at aalalahanin ang computer na ito para sa Messages bilang default. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">I-block ang Flash (inirerekomenda)</translation>
 <translation id="820568752112382238">Mga pinakamadalas bisitahing site</translation>
 <translation id="8206745257863499010">Musika</translation>
 <translation id="8206859287963243715">Cellular</translation>

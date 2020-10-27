@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Zastaviť</translation>
 <translation id="1272293450992660632">Kódy PIN sa nezhodujú.</translation>
 <translation id="1272978324304772054">Tento používateľský účet nepatrí do domény, do ktorej je zaregistrované toto zariadenie. Ak sa chcete zaregistrovať do inej domény, musíte najprv zariadenie obnoviť.</translation>
-<translation id="1274977772557788323">Nastavenia úložiska aplikácie Adobe Flash Player</translation>
 <translation id="1274997165432133392">Súbory cookie a ďalšie dáta webov</translation>
 <translation id="1275718070701477396">Vybraté</translation>
 <translation id="1276994519141842946">Aplikáciu <ph name="APP_NAME" /> sa nepodarilo odinštalovať</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Vaše záložky, história a ďalšie nastavenia budú synchronizované s účtom Google.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Domáca sieť, bez roamingu</translation>
-<translation id="1315056510003830387">Nemôže používať obsah Flash</translation>
 <translation id="1316136264406804862">Prebieha vyhľadávanie...</translation>
 <translation id="1316495628809031177">Synchronizácia je pozastavená</translation>
 <translation id="1317637799698924700">Dok bude fungovať v režime kompatibilnom s rozhraním USB typu C.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC nepodporuje typ šifrovania</translation>
 <translation id="1984417487208496350">Bez ochrany (neodporúča sa)</translation>
 <translation id="1987317783729300807">Účty</translation>
-<translation id="1988494864246143197">Weby zvyčajne pomocou obsahu Flash prehrávajú zvuk, video alebo videohry. V decembri 2020 bude ukončená podpora prehrávača Flash Player.</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
 <translation id="1990512225220753005">Nezobrazovať skratky na tejto stránke</translation>
 <translation id="1992397118740194946">Nie je nastavené</translation>
@@ -1648,7 +1645,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2880660355386638022">Umiestnenie okna</translation>
 <translation id="2881076733170862447">Keď kliknete na rozšírenie</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> sa o chvíľu reštartuje a obnoví</translation>
-<translation id="288387288628762616">Môže používať obsah Flash</translation>
 <translation id="2885378588091291677">Správca úloh</translation>
 <translation id="2885729872133513017">Pri dešifrovaní odpovede servera sa vyskytol problém.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2465,7 +2461,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="383669374481694771">Toto sú všeobecné informácie o tomto zariadení a jeho používaní (napríklad stav batérie, aktivita v systéme a aplikáciách a chyby). Údaje sa použijú na zlepšenie Androidu a niektoré súhrnné informácie pomôžu tiež aplikáciám Google a partnerom (napríklad vývojárom pre Android) zlepšiť svoje aplikácie a produkty.</translation>
 <translation id="3838085852053358637">Načítanie rozšírenia zlyhalo</translation>
 <translation id="3838486795898716504">Ďalšie <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Súbory cookie a ďalšie dáta webov a doplnkov</translation>
 <translation id="383891835335927981">Žiadne weby neboli priblížené ani oddialené</translation>
 <translation id="3839509547554145593">Povoliť zrýchlenie pri posúvaní myšou</translation>
 <translation id="3839516600093027468">Webu <ph name="HOST" /> vždy blokovať zobrazenie schránky</translation>
@@ -2640,7 +2635,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4023146161712577481">Určovanie konfigurácie zariadenia</translation>
 <translation id="4025039777635956441">Ignorovať vybraný web</translation>
 <translation id="4027804175521224372">(Chýbate nám — <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Vaše nastavenia doplnku Flash sa ponechajú, dokým neukončíte Chrome.</translation>
 <translation id="4028467762035011525">Pridať metódy vstupu</translation>
 <translation id="4031179711345676612">Mikrofón je povolený</translation>
 <translation id="4031527940632463547">Senzory sú blokované</translation>
@@ -2792,7 +2786,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4232375817808480934">Konfigurácia protokolu Kerberos</translation>
 <translation id="4235200303672858594">Celá obrazovka</translation>
 <translation id="4235965441080806197">Zrušiť prihlasovanie</translation>
-<translation id="4237773362828263530">Nastavenia so zástupnými znakmi „*“ už nie sú podporované. Ak ich <ph name="BEGIN_LINK" />chcete zmeniť<ph name="END_LINK" />, kontaktujte správcu.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Prečítať kartu neskôr}few{Prečítať karty neskôr}many{Prečítať karty neskôr}other{Prečítať karty neskôr}}</translation>
 <translation id="4242145785130247982">Nie je podporovaných viacero certifikátov klienta</translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
@@ -3056,7 +3049,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4548483925627140043">Signál sa nenašiel</translation>
 <translation id="4549791035683739768">V bezpečnostnom kľúči nie sú uložené žiadne odtlačky prstov</translation>
 <translation id="4551763574344810652">Stlačením skratky <ph name="MODIFIER_KEY_DESCRIPTION" /> vrátite akciu späť</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">Sieť: <ph name="NETWORK_TYPE" />. Sila signálu: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4553526521109675518">Ak chcete zmeniť jazyk zariadenia, musíte svoj Chromebook reštartovať. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Verzia externého rozšírenia je rovnaká alebo nižšia ako existujúca verzia</translation>
@@ -3411,7 +3403,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4974733135013075877">Ukončiť a aktivovať detskú zámku</translation>
 <translation id="4976009197147810135">Rozdeliť zvislo</translation>
 <translation id="4977942889532008999">Potvrdenie prístupu</translation>
-<translation id="4978905460870207779">Weby môžu žiadať o použitie obsahu Flash</translation>
 <translation id="4980805016576257426">Toto rozšírenie obsahuje malvér.</translation>
 <translation id="4981449534399733132">Ak chcete vymazať dáta prehliadania zo všetkých synchronizovaných zariadení a účtu Google, <ph name="BEGIN_LINK" />prihláste sa<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Softvér zariadenia</translation>
@@ -4182,7 +4173,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5906732635754427568">Dáta priradené k danej aplikácii budú odstránené z tohto zariadenia.</translation>
 <translation id="5908474332780919512">Spustiť aplikáciu pri prihlásení</translation>
 <translation id="5908695239556627796">Rýchlosť posúvania myšou</translation>
-<translation id="5908769186679515905">Zakázať webom spúšťať Flash</translation>
 <translation id="5910363049092958439">Uložiť &amp;obrázok ako...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> je offline</translation>
 <translation id="5911533659001334206">Zobrazovač skratiek</translation>
@@ -5835,7 +5825,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7831491651892296503">Chyba pri konfigurácii siete</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Čas ukončenia</translation>
-<translation id="783214144752121388">Zakázať webom spúšťať Flash (odporúčané)</translation>
 <translation id="7833720883933317473">Tu sa zobrazia uložené vlastné slová</translation>
 <translation id="7835178595033117206">Záložka bola odstránená</translation>
 <translation id="7836850009646241041">Skúste znova klepnúť na svoj bezpečnostný kľúč</translation>
@@ -6063,7 +6052,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Tento súbor je šifrovaný. Požiadajte vlastníka, aby ho dešifroval.}few{Niektoré tieto súbory sú šifrované. Požiadajte vlastníka, aby ich dešifroval.}many{Niektoré tieto súbory sú šifrované. Požiadajte vlastníka, aby ich dešifroval.}other{Niektoré tieto súbory sú šifrované. Požiadajte vlastníka, aby ich dešifroval.}}</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>
 <translation id="8090234456044969073">Čítať zoznam najčastejšie navštevovaných webov</translation>
-<translation id="8092681102116274204">Nastavenia so zástupnými znakmi „*“ už nie sú podporované. Kontaktujte vývojára rozšírenia alebo správcu a <ph name="BEGIN_LINK" />tieto nastavenia zmeňte<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> nereaguje</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Zálohujte na Disk Google. Jednoducho kedykoľvek obnovte svoje dáta alebo prejdite na iné zariadenie. Záloha obsahuje dáta aplikácií.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Zálohy sa nahrajú do Googlu a zašifrujú pomocou vášho hesla účtu Google.<ph name="END_PARAGRAPH2" />
@@ -6157,7 +6145,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8201717382574620700">Vybrať albumy zo zdroja <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Zadajte znova svoje heslo a aktualizujte tak profil zariadenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203732864715032075">Odosiela upozornenia a predvolene si zapamätá tento počítač pre Správy. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Blokovať obsah Flash (odporúčané)</translation>
 <translation id="820568752112382238">Najviac navštevované stránky</translation>
 <translation id="8206745257863499010">Bluesový</translation>
 <translation id="8206859287963243715">Mobilné</translation>

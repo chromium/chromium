@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Đã in</translation>
 <translation id="1979103255016296513">Đã quá hạn thay đổi mật khẩu</translation>
 <translation id="2049639323467105390">Thiết bị này được <ph name="DOMAIN" /> quản lý.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Hủy lệnh in</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Bật Bluetooth để khám phá các thiết bị lân cận</translation>
 <translation id="2375079107209812402">Còn <ph name="ATTEMPTS_LEFT" /> lần thử</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
 <translation id="2517472476991765520">Quét</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2872961005593481000">Tắt</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
+<translation id="5094480857972195099">Miền <ph name="ENROLLMENT_DOMAIN" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
 <translation id="520299634122159966">Chưa có máy quét nào</translation>
 <translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
 Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translation>

@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1979103255016296513">የይለፍ ቃል ለውጥ ማድረጊያ ጊዜው አልፏል</translation>
 <translation id="2049639323467105390">ይህ መሣሪያ በ<ph name="DOMAIN" /> ነው የሚቀናበረው።</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ሙከራዎች ቀርተዋል</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ሙከራ ቀርቷል}one{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}other{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
 <translation id="4917889632206600977">ቆሟል - ወረቀት አልቋል</translation>
 <translation id="4932733599132424254">ቀን</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> እኚህን ተጠቃሚ ያስተዳድራል ኣና በርቀት ቅንብሮችን ሊያቀናብር እና የተጠቃሚ እንቅስቃሴን ሊቆጣጠር ይችላል።</translation>
 <translation id="520299634122159966">ምንም ቃኚዎች አይገኙም</translation>
 <translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
 ማንኛውም ነገር እኔን ለመጠየቅ ማይክሮፎኑን መታ አድርገው ይሞክሩ።</translation>

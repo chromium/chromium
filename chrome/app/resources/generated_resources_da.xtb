@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1272293450992660632">Pinkodeværdierne stemmer ikke overens.</translation>
 <translation id="1272978324304772054">Denne brugerkonto tilhører ikke det domæne, som enheden er tilmeldt. Hvis du vil foretage en tilmelding til et andet domæne, skal enheden først genoprettes.</translation>
-<translation id="1274977772557788323">Lagerindstillinger for Adobe Flash Player</translation>
 <translation id="1274997165432133392">Cookies og andre websitedata</translation>
 <translation id="1275718070701477396">Valgt</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> kunne ikke installeres</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Dine bogmærker, din historik og dine andre indstillinger bliver synkroniseret med din Google-konto.</translation>
 <translation id="1314565355471455267">VPN for Android</translation>
 <translation id="131461803491198646">Hjemmenetværk, uden roaming</translation>
-<translation id="1315056510003830387">Har ikke tilladelse til at bruge Flash</translation>
 <translation id="1316136264406804862">Søger...</translation>
 <translation id="1316495628809031177">Synkroniseringen er sat på pause</translation>
 <translation id="1317637799698924700">Din dockingstation køres i USB-C-kompatibel tilstand.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC understøtter ikke krypteringstypen</translation>
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="1987317783729300807">Konti</translation>
-<translation id="1988494864246143197">Websites bruger normalt Flash til at afspille lyd, video eller videospil. Flash Player understøttes ikke længere fra december 2020.</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="1990512225220753005">Vis ikke genveje på denne side</translation>
 <translation id="1992397118740194946">Ikke angivet</translation>
@@ -1649,7 +1646,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2880660355386638022">Placering af vinduer</translation>
 <translation id="2881076733170862447">Når du klikker på udvidelsen</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> Genstart og nulstilling påbegyndes om et øjeblik</translation>
-<translation id="288387288628762616">Har tilladelse til at bruge Flash</translation>
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2885729872133513017">Der opstod et problem under afkodningen af serversvaret.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2466,7 +2462,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="383669374481694771">Dette er generelle oplysninger om denne enhed og brugen af den (f.eks. batteriniveau, system- og appaktivitet samt fejl). Dataene bruges til at forbedre Android, og visse samlede oplysninger kan også hjælpe partnere som f.eks. Android-udviklere med at forbedre deres apps og produkter.</translation>
 <translation id="3838085852053358637">Udvidelsen kunne ikke indlæses</translation>
 <translation id="3838486795898716504">Flere <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Cookies og andre website- og plugindata</translation>
 <translation id="383891835335927981">Der er ikke zoomet ind eller ud på nogen websites</translation>
 <translation id="3839509547554145593">Aktivér acceleration af rulning på mus</translation>
 <translation id="3839516600093027468">Bloker altid <ph name="HOST" /> fra at se udklipsholderen</translation>
@@ -2641,7 +2636,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4023146161712577481">Enhedskonfigurationen fastslås.</translation>
 <translation id="4025039777635956441">Slå lyden fra på det valgte website</translation>
 <translation id="4027804175521224372">(Du går glip af noget – <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Dine Flash-indstillinger gemmes, indtil du lukker Chrome.</translation>
 <translation id="4028467762035011525">Tilføj indtastningsmetoder</translation>
 <translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4031527940632463547">Der er blokeret for sensorer</translation>
@@ -2793,7 +2787,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
 <translation id="4235200303672858594">Hele skærmen</translation>
 <translation id="4235965441080806197">Annuller login</translation>
-<translation id="4237773362828263530">Indstillinger med jokertegn (*) understøttes ikke længere. Kontakt din administrator for at <ph name="BEGIN_LINK" />ændre disse indstillinger<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Læs fanen senere}one{Læs fanerne senere}other{Læs fanerne senere}}</translation>
 <translation id="4242145785130247982">Flere klientcertifikater understøttes ikke</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
@@ -3057,7 +3050,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4548483925627140043">Der blev ikke fundet noget signal</translation>
 <translation id="4549791035683739768">Der er ikke gemt nogen fingeraftryk i din sikkerhedsnøgle</translation>
 <translation id="4551763574344810652">Tryk på <ph name="MODIFIER_KEY_DESCRIPTION" /> for at fortryde</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-netværk, signalstyrke <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4553526521109675518">Du skal genstarte din Chromebook for at ændre enhedens sprog. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Ekstern udvidelse er den samme version eller en ældre version end den eksisterende.</translation>
@@ -3412,7 +3404,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4974733135013075877">Afslut, og aktivér børnesikring</translation>
 <translation id="4976009197147810135">Opdel lodret</translation>
 <translation id="4977942889532008999">Bekræft adgang</translation>
-<translation id="4978905460870207779">Websites kan anmode om at tilladelse til at bruge Flash</translation>
 <translation id="4980805016576257426">Denne udvidelse indeholder malware.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Log ind<ph name="END_LINK" /> for at rydde browserdata fra alle dine synkroniserede enheder og din Google-konto.</translation>
 <translation id="4982236238228587209">Enhedens software</translation>
@@ -4183,7 +4174,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5906732635754427568">Data, der er knyttet til denne app, bliver fjernet fra enheden.</translation>
 <translation id="5908474332780919512">Start app, når du logger ind</translation>
 <translation id="5908695239556627796">Hastighed for rulning på mus</translation>
-<translation id="5908769186679515905">Bloker websites fra at køre Flash</translation>
 <translation id="5910363049092958439">Ge&amp;m billede som...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> er offline</translation>
 <translation id="5911533659001334206">Genvejsviser</translation>
@@ -5836,7 +5826,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7831491651892296503">Der opstod en fejl under konfigurationen af netværket</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Sluttidspunkt</translation>
-<translation id="783214144752121388">Bloker websites fra at køre Flash (anbefales)</translation>
 <translation id="7833720883933317473">Dine gemte tilføjelser til ordbogen vises her</translation>
 <translation id="7835178595033117206">Bogmærket blev fjernet</translation>
 <translation id="7836850009646241041">Prøv at trykke på din sikkerhedsnøgle igen</translation>
@@ -6064,7 +6053,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Denne fil er krypteret. Bed ejeren af filen om at dekryptere den.}one{En af disse filer er krypteret. Bed ejeren af den om at dekryptere den.}other{Nogle af disse filer er krypteret. Bed ejeren af dem om at dekryptere dem.}}</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8090234456044969073">Se en liste over dine mest besøgte websites</translation>
-<translation id="8092681102116274204">Indstillinger med jokertegn (*) understøttes ikke længere. Kontakt udvikleren af udvidelsen eller din administrator for at <ph name="BEGIN_LINK" />ændre disse indstillinger<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> svarer ikke</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Sikkerhedskopiér til Google Drev. Du kan til enhver tid gendanne dine data eller skifte til en anden enhed. Backups omfatter appdata.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Backups uploades til Google og krypteres ved hjælp af adgangskoden til din Google-konto.<ph name="END_PARAGRAPH2" />
@@ -6159,7 +6147,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8201717382574620700">Vælg <ph name="TOPIC_SOURCE" />-album</translation>
 <translation id="8202160505685531999">Angiv adgangskoden igen for at opdatere din <ph name="DEVICE_TYPE" />-profil.</translation>
 <translation id="8203732864715032075">Sende dig notifikationer og huske denne computer som standard til Beskeder. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Bloker Flash (anbefales)</translation>
 <translation id="820568752112382238">Mest besøgte websites</translation>
 <translation id="8206745257863499010">BB King</translation>
 <translation id="8206859287963243715">Mobil</translation>

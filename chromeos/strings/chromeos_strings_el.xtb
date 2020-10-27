@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
 <translation id="1979103255016296513">Εκπρόθεσμη αλλαγή κωδικού πρόσβασης</translation>
 <translation id="2049639323467105390">Η διαχείριση της συσκευής γίνεται από τον τομέα <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Ακύρωση εργασίας εκτύπωσης</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ενεργοποιήστε το Bluetooth, για να εντοπίσετε κοντινές συσκευές</translation>
 <translation id="2375079107209812402">Απομένουν <ph name="ATTEMPTS_LEFT" /> προσπάθειες</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} προσπάθεια απομένει}other{<ph name="ERROR_MESSAGE" /> {0} προσπάθειες απομένουν}}</translation>
 <translation id="2517472476991765520">Σάρωση</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
 <translation id="4917889632206600977">Διακοπή - Τελείωσε το χαρτί</translation>
 <translation id="4932733599132424254">Ημερομηνία</translation>
+<translation id="5094480857972195099">Ο τομέας <ph name="ENROLLMENT_DOMAIN" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
 <translation id="520299634122159966">Δεν υπάρχουν διαθέσιμοι σαρωτές.</translation>
 <translation id="5212543919916444558">Δεν βρέθηκε κάτι με το οποίο να μπορώ να σας βοηθήσω στην οθόνη σας.
 Πατήστε στο μικρόφωνο για να ρωτήσετε οτιδήποτε θέλετε.</translation>

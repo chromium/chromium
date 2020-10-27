@@ -143,6 +143,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">अमेरिकी किबोर्ड</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाइए</translation>
+<translation id="2541377937973966830">यो फोल्डरका सामग्री रिड गर्न मात्र मिल्छ। केही क्रियाकलापहरू गर्न मिल्दैन।</translation>
 <translation id="2542049655219295786">Google तालिका</translation>
 <translation id="2547921442987553570"><ph name="EXTENSION_NAME" /> मा थप्नुहोस्</translation>
 <translation id="255937426064304553">यु.एस. अन्तर्राष्ट्रिय</translation>
@@ -312,6 +313,7 @@
 <translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4527800702232535228">यो फोल्डर Parallels Desktop सँग सेयर गरिएको छ</translation>
 <translation id="4552678318981539154">थप भण्डारण खरीद गर्नुहोस्</translation>
+<translation id="4559318885353833501"><ph name="FILE_NAME" /> मेटाइयो</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> फाइल</translation>
 <translation id="457386861538956877">थप...</translation>
@@ -511,6 +513,7 @@
 <translation id="6356685157277930264">फाइलहरूसम्बन्धी प्रतिक्रिया दिने विन्डो</translation>
 <translation id="6358884629796491903">ड्रागन</translation>
 <translation id="637062427944097960">यो फाइल अर्को डेस्कटपमा खोलियो। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) सार्नुहोस्।</translation>
+<translation id="6394388407447716302">रिड गर्न मात्र मिल्छ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> वस्तुहरू</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="642282551015776456">नामलाई फाइल वा फोल्डर नामको रूपमा प्रयोग गर्न सकिँदैन</translation>

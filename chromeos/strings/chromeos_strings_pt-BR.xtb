@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Impresso</translation>
 <translation id="1979103255016296513">O prazo para a alteração de senha foi ultrapassado</translation>
 <translation id="2049639323467105390">Este dispositivo é gerenciado por <ph name="DOMAIN" />.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancelar trabalho de impressão</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para descobrir dispositivos nas proximidades</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> tentativas restantes</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}one{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes}}</translation>
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Desligar</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Escolha uma nova imediatamente</translation>
 <translation id="4917889632206600977">Parado (sem papel)</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="5094480857972195099">O <ph name="ENROLLMENT_DOMAIN" /> gerencia o usuário e pode gerenciar configurações e monitorar a atividade do usuário remotamente.</translation>
 <translation id="520299634122159966">Não há scanners disponíveis</translation>
 <translation id="5212543919916444558">Não foi possível encontrar na sua tela nada com o que eu possa ajudar.
 Tente tocar no microfone para me pedir algo.</translation>

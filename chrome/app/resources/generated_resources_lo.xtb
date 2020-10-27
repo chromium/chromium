@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">ຢຸດ</translation>
 <translation id="1272293450992660632">ຄ່າ PIN ບໍ່ກົງກັນ.</translation>
 <translation id="1272978324304772054">ບັນຊີຜູ້ໃຊ້ບໍ່ເປັນຂອງໂດເມນທີ່ອຸປະກອນໄດ້ລົງທະບຽນໃສ່. ຖ້າທ່ານຕ້ອງການລົງທະບຽນເປັນໂດເມນອື່ນ ທ່ານຕ້ອງໄປຜ່ານການກູ້ຄືນອຸປະກອນກ່ອນ.</translation>
-<translation id="1274977772557788323">ການຕັ້ງຄ່າບ່ອນເກັບຂໍ້ມູນ Adobe Flash Player</translation>
 <translation id="1274997165432133392">ສະແດງຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌ອື່ນ...</translation>
 <translation id="1275718070701477396">​ເລືອກແລ້ວ</translation>
 <translation id="1276994519141842946">ບໍ່ສາມາດຖອນຕິດຕັ້ງ <ph name="APP_NAME" /> ໄດ້</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">ບຸກມາກສ໌, ປະຫວັດ, ແລະການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຈະຖືກຊິງຄ໌ໄປຫາບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ເຄືອຂ່າຍພາຍໃນ, ບໍ່ໂຣມມິງ</translation>
-<translation id="1315056510003830387">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ Flash</translation>
 <translation id="1316136264406804862">ກຳລັງຊອກຫາ...</translation>
 <translation id="1316495628809031177">ຢຸດການຊິ້ງຂໍ້ມູນໄວ້ຊົ່ວຄາວ</translation>
 <translation id="1317637799698924700">ແທ່ນວາງສາກຂອງທ່ານຈະເຮັດວຽກໃນໂໝດທີ່ເຂົ້າກັນໄດ້ກັບ USB Type-C.</translation>
@@ -876,7 +874,6 @@
 <translation id="197989455406964291">KDC ບໍ່ຮອງຮັບປະເພດການເຂົ້າລະຫັດ</translation>
 <translation id="1984417487208496350">ບໍ່ມີການປົກປ້ອງ (ບໍ່ແນະນຳ)</translation>
 <translation id="1987317783729300807">ບັນ​ຊີ</translation>
-<translation id="1988494864246143197">ໂດຍປົກກະຕິເວັບໄຊຈະໃຊ້ Flash ເພື່ອຫຼິ້ນສຽງ, ວິດີໂອ ຫຼື ເກມວິດີໂອ. ລະບົບຈະບໍ່ຮອງຮັບ Flash Player ຫຼັງຈາກເດືອນທັນວາ 2020.</translation>
 <translation id="1989112275319619282">ເປີດ​ເບິ່ງ</translation>
 <translation id="1990512225220753005">ຢ່າສະແດງທາງລັດໃນໜ້ານີ້</translation>
 <translation id="1992397118740194946">ບໍ່​ໄດ້ຕັ້ງ​</translation>
@@ -1647,7 +1644,6 @@
 <translation id="2880660355386638022">ຕຳແໜ່ງໜ້າຈໍ</translation>
 <translation id="2881076733170862447">ເມື່ອທ່ານຄລິກສ່ວນຂະຫຍາຍ</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> ຈະ​ປິດ​ເປີດ​ໃໝ່ ແລະ​ຕັ້ງ​ຄ່າ​ຄືນ​ໃໝ່​ໄວໆ​ນີ້</translation>
-<translation id="288387288628762616">ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ Flash</translation>
 <translation id="2885378588091291677">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="2885729872133513017">ເກີດບັນຫາຂຶ້ນໃນເວລາຖອດລະຫັດຄຳຕອບຂອງເຊີບເວີ.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2464,7 +2460,6 @@
 <translation id="383669374481694771">ນີ້ແມ່ນຂໍ້ມູນທົ່ວໄປກ່ຽວກັບອຸປະກອນນີ້ ແລະ ມັນຖືກໃຊ້ແນວໃດ (ເຊັ່ນ: ລະດັບແບັດເຕີຣີ, ການເຄື່ອນໄຫວລະບົບ ແລະ ແອັບ, ຂໍ້ຜິດພາດຕ່າງໆ). ຂໍ້ມູນດັ່ງກ່າວຈະຖືກໃຊ້ເພື່ອປັບປຸງ Android ແລະ ບາງຂໍ້ມູນແບບຮວມກັນຈະຊ່ວຍໃຫ້ແອັບ ແລະ ຮຸ້ນສ່ວນຂອງ Google ເຊັ່ນ: ນັກພັດທະນາແອັບ Android ປັບປຸງແອັບ ແລະ ຜະລິດຕະພັນຂອງເຂົາເຈົ້າໃຫ້ດີຂຶ້ນໄດ້ນຳ.</translation>
 <translation id="3838085852053358637">ໂຫຼດສ່ວນຂະຫຍາຍບໍ່ສຳເລັດ</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> ເພີ່ມເຕີມ</translation>
-<translation id="3838543471119263078">ຄຸກກີ້ ແລະເວັບໄຊທ໌ອື່ນ ແລະຂໍ້ມູນປລັກອິນ</translation>
 <translation id="383891835335927981">ບໍ່ມີການຕັ້ງຄ່າຊູມເຂົ້າ ຫຼື ຊູມອອກສຳລັບເວັບໄຊໃດ</translation>
 <translation id="3839509547554145593">ເປີດການນຳໃຊ້ການເລັ່ງຄວາມໄວການເລື່ອນເມົ້າ</translation>
 <translation id="3839516600093027468">ບລັອກບໍ່ໃຫ້ <ph name="HOST" /> ເຫັນຄລິບບອດທຸກເທື່ອ</translation>
@@ -2639,7 +2634,6 @@
 <translation id="4023146161712577481">ກໍາລັງກໍານົດ​ຕັ້ງ​ອຸ​ປະ​ກອນ​.</translation>
 <translation id="4025039777635956441">ປິດສຽງເວັບໄຊທີ່ເລືອກ</translation>
 <translation id="4027804175521224372">(ທ່ານກໍາລັງພາດ—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">ການຕັ້ງຄ່າ Flash ຂອງທ່ານຈະຖືກຮັກສາໄວ້ຈົນກວ່າວ່າທ່ານອອກຈາກ Chrome.</translation>
 <translation id="4028467762035011525">ເພີ່ມວິທີການປ້ອນຂໍ້ມູນ</translation>
 <translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="4031527940632463547">ບລັອກເຊັນເຊີແລ້ວ</translation>
@@ -2791,7 +2785,6 @@
 <translation id="4232375817808480934">ກຳນົດຄ່າ Kerberos</translation>
 <translation id="4235200303672858594">ທັງ​ຫມົດຫນ້າ​ຈໍ​</translation>
 <translation id="4235965441080806197">ຍົກເລີກການເຂົ້າສູ່ລະບົບ</translation>
-<translation id="4237773362828263530">ບໍ່ຮັບຮອງການຕັ້ງຄ່າດ້ວຍໂຕແທນ "*" ອີກຕໍ່ໄປ. ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເພື່ອ <ph name="BEGIN_LINK" />ປ່ຽນການຕັ້ງຄ່າເຫຼົ່ານີ້<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{ອ່ານແຖບໃນພາຍຫຼັງ}other{ອ່ານແຖບໃນພາຍຫຼັງ}}</translation>
 <translation id="4242145785130247982">ບໍ່ຮອງຮັບຫຼາຍໃບຮັບຮອງລູກຂ່າຍ</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
@@ -3055,7 +3048,6 @@
 <translation id="4548483925627140043">ບໍ່ພົບສັນຍານ</translation>
 <translation id="4549791035683739768">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ມີລາຍນິ້ວມືທີ່ເກັບຮັກສາໄວ້</translation>
 <translation id="4551763574344810652">ກົດ <ph name="MODIFIER_KEY_DESCRIPTION" /> ເພື່ອຍົກເລີກ</translation>
-<translation id="4552089082226364758">ແຟລດ</translation>
 <translation id="4552759165874948005">ເຄືອຂ່າຍ <ph name="NETWORK_TYPE" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">ທ່ານຕ້ອງຣີສະຕາດ Chromebook ຂອງທ່ານເພື່ອປ່ຽນພາສາຂອງອຸປະກອນ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">ສ່ວນຂະຫຍາຍທາງນອກເປັນລຸ້ນຄືກັນກັບ ຫຼືຕໍ່າກ່ວາ ເມື່ອປຽບທຽບກັບອັນທີ່ມີຢູ່ແລ້ວ.</translation>
@@ -3410,7 +3402,6 @@
 <translation id="4974733135013075877">ອອກ ແລະ ລັອກ​ເດັກ​ນ້ອຍ</translation>
 <translation id="4976009197147810135">ແຍກຕາມລວງຕັ້ງ</translation>
 <translation id="4977942889532008999">ຢືນ​ຢັນ​ການ​ເຂົ້າ​ຫາ</translation>
-<translation id="4978905460870207779">ເວັບໄຊສາມາດຂໍໃຊ້ Flash ໄດ້</translation>
 <translation id="4980805016576257426">ສ່ວນຂະຫຍາຍນີ້ປະກອບມີມາລແວ.</translation>
 <translation id="4981449534399733132">ເພື່ອລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບອອກຈາກອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນຂອງທ່ານທັງໝົດ ແລະ ບັນຊີ Google ຂອງທ່ານ, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">ຊອບແວອຸປະກອນ</translation>
@@ -4181,7 +4172,6 @@
 <translation id="5906732635754427568">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
 <translation id="5908474332780919512">ເລີ່ມແອັບເມື່ອທ່ານເຂົ້າສູ່ລະບົບ</translation>
 <translation id="5908695239556627796">ຄວາມໄວການເລື່ອນເມົ້າ</translation>
-<translation id="5908769186679515905">ບລັອກບໍ່ໃຫ້ເວັບໄຊເປີດໃຊ້ Flash</translation>
 <translation id="5910363049092958439">ບັນທຶກຮູບເປັນ...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ອອບລາຍຢູ່</translation>
 <translation id="5911533659001334206">ຕົວສະແດງທາງລັດ</translation>
@@ -5833,7 +5823,6 @@
 <translation id="7831491651892296503">ມີຄວາມຜິດພາດໃນການກຳນົດຄ່າເຄືອຂ່າຍ</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">ເວລາສິ້ນສຸດ</translation>
-<translation id="783214144752121388">ບລັອກບໍ່ໃຫ້ເວັບໄຊເປີດ Flash (ແນະນຳ)</translation>
 <translation id="7833720883933317473">ຄຳສັບກຳນົດເອງທີ່ບັນທຶກໄວ້ຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="7835178595033117206">ລຶບບຸກມາກອອກແລ້ວ</translation>
 <translation id="7836850009646241041">ລອງແຕະກະແຈຄວາມປອດໄພຂອງທ່ານອີກຄັ້ງ</translation>
@@ -6060,7 +6049,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ໄຟລ໌ນີ້ມີການເຂົ້າລະຫັດໄວ້. ຂໍໃຫ້ເຈົ້າຂອງມັນຖອດລະຫັດ.}other{ບາງໄຟລ໌ເຫຼົ່ານີ້ມີການເຂົ້າລະຫັດໄວ້. ຂໍໃຫ້ເຈົ້າຂອງພວກມັນຖອດລະຫັດ.}}</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8090234456044969073">ອ່ານລາຍຊື່ເວັບໄຊທ໌ທີ່ທ່ານເຂົ້າເບິ່ງເລື້ອຍທີ່ສຸດ</translation>
-<translation id="8092681102116274204">ບໍ່ຮັບຮອງການຕັ້ງຄ່າດ້ວຍໂຕແທນ "*" ອີກຕໍ່ໄປ. ຕິດຕໍ່ຫາຜູ້ພັດທະນາສ່ວນຂະຫຍາຍ ຫຼື ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເພື່ອ <ph name="BEGIN_LINK" />ປ່ຽນການຕັ້ງຄ່າເຫຼົ່ານີ້<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ບໍ່ຕອບສະໜອງ</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />ສຳຮອງຂໍ້ມູນໄວ້ໃນ Google Drive. ກູ້ຄືນຂໍ້ມູນຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ ຫຼື ປ່ຽນອຸປະກອນໄດ້ທຸກເວລາ. ຂໍ້ມູນທີ່ສຳຮອງໄວ້ຂອງທ່ານຮວມເອົາຂໍ້ມູນແອັບ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ຂໍ້ມູນທີ່ສຳຮອງໄວ້ຂອງທ່ານຖືກອັບໂຫຼດໄວ້ໃນ Google ແລະ ເຂົ້າລະຫັດໄວ້ໂດຍໃຊ້ລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ.<ph name="END_PARAGRAPH2" />
@@ -6155,7 +6143,6 @@
 <translation id="8201717382574620700">ເລືອກອະລະບໍ້າ <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">ະ​ລຸ​ນາ​ໃສ່​ລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານຄືນໃໝ່ ເພື່ອ​ອັບ​ເດດ​ໂປ​ຣ​ໄຟ​ລ໌ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="8203732864715032075">ສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ ແລະ ເຮັດໃຫ້ການຈື່ຄອມພິວເຕີນີ້ສຳລັບຂໍ້ຄວາມເປັນຄ່າເລີ່ມຕົ້ນ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">ບລັອກ Flash (ແນະນຳ)</translation>
 <translation id="820568752112382238">ເວັບໄຊທີ່ເຂົ້າເບິ່ງຫຼາຍທີ່ສຸດ</translation>
 <translation id="8206745257863499010">ບລູຊີ</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>

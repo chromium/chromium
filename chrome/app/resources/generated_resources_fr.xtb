@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1272293450992660632">Les valeurs de code PIN sont différentes.</translation>
 <translation id="1272978324304772054">Ce compte utilisateur n'appartient pas au domaine auprès duquel l'appareil est enregistré. Si vous souhaitez vous enregistrer auprès d'un autre domaine, vous devez d'abord suivre la procédure de récupération de votre appareil.</translation>
-<translation id="1274977772557788323">Paramètres de stockage d'Adobe Flash Player</translation>
 <translation id="1274997165432133392">Cookies et autres données de site</translation>
 <translation id="1275718070701477396">Sélectionnée</translation>
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Vos favoris, votre historique et d'autres paramètres seront synchronisés avec votre compte Google.</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
-<translation id="1315056510003830387">Non autorisé à utiliser Flash</translation>
 <translation id="1316136264406804862">Recherche en cours…</translation>
 <translation id="1316495628809031177">Synchronisation en pause</translation>
 <translation id="1317637799698924700">Votre station d'accueil fonctionnera dans le mode compatible USB Type-C.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC n'est pas compatible avec ce type de chiffrement</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1987317783729300807">Comptes</translation>
-<translation id="1988494864246143197">Les sites utilisent généralement Flash pour lire du contenu audio ou vidéo, ou des jeux vidéo. Flash Player ne sera plus accepté après décembre 2020.</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="1990512225220753005">Ne pas afficher de raccourcis sur cette page</translation>
 <translation id="1992397118740194946">Non défini</translation>
@@ -1649,7 +1646,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2880660355386638022">Positionnement des fenêtres</translation>
 <translation id="2881076733170862447">Lorsque vous cliquez sur l'extension</translation>
 <translation id="2882943222317434580">Dans un instant, <ph name="IDS_SHORT_PRODUCT_NAME" /> va redémarrer et être réinitialisé.</translation>
-<translation id="288387288628762616">Autorisé à utiliser Flash</translation>
 <translation id="2885378588091291677">Gestionnaire de tâches</translation>
 <translation id="2885729872133513017">Un problème est survenu lors du décodage de la réponse du serveur.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2465,7 +2461,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="383669374481694771">Ces informations d'ordre général concernent votre appareil et son utilisation (comme le niveau de la batterie, les erreurs, ainsi que l'activité du système et des applications). Elles serviront à améliorer Android, et certaines données globales aideront également nos développeurs d'applications et nos partenaires tels que les développeurs Android, à perfectionner leurs applications et leurs produits.</translation>
 <translation id="3838085852053358637">Échec du chargement de l'extension</translation>
 <translation id="3838486795898716504">Plus de pages <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Cookies et autres données de site et de plug-in</translation>
 <translation id="383891835335927981">Vous n'avez fait de zoom avant ou arrière sur aucun site</translation>
 <translation id="3839509547554145593">Activer l'accélération du défilement avec la souris</translation>
 <translation id="3839516600093027468">Toujours empêcher <ph name="HOST" /> de voir le contenu du presse-papiers</translation>
@@ -2639,7 +2634,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4023146161712577481">Détermination de la configuration de l'appareil en cours…</translation>
 <translation id="4025039777635956441">Bloquer le site sélectionné</translation>
 <translation id="4027804175521224372">(Bénéficiez de toutes ses fonctionnalités - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Vos paramètres Flash seront conservés jusqu'à ce que vous quittiez Chrome.</translation>
 <translation id="4028467762035011525">Ajouter des modes de saisie</translation>
 <translation id="4031179711345676612">Micro autorisé</translation>
 <translation id="4031527940632463547">Capteurs bloqués</translation>
@@ -2791,7 +2785,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
 <translation id="4235200303672858594">Plein écran</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
-<translation id="4237773362828263530">Les paramètres avec des caractères génériques "*" ne sont plus acceptés. Contactez votre administrateur pour <ph name="BEGIN_LINK" />modifier ces paramètres<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Lire l'onglet plus tard}one{Lire l'onglet plus tard}other{Lire les onglets plus tard}}</translation>
 <translation id="4242145785130247982">Plusieurs certificats client ne sont pas compatibles</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -3055,7 +3048,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4548483925627140043">Signal introuvable</translation>
 <translation id="4549791035683739768">Aucune empreinte digitale n'est stockée dans votre clé de sécurité</translation>
 <translation id="4551763574344810652">Appuyez sur <ph name="MODIFIER_KEY_DESCRIPTION" /> pour annuler</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">Réseau <ph name="NETWORK_TYPE" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4553526521109675518">Vous devez redémarrer votre Chromebook pour changer la langue de l'appareil. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">La version d'extension externe est identique ou antérieure à la version existante.</translation>
@@ -3410,7 +3402,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4974733135013075877">Fermer et activer le verrouillage enfant</translation>
 <translation id="4976009197147810135">Séparation verticale</translation>
 <translation id="4977942889532008999">Confirmer l'accès</translation>
-<translation id="4978905460870207779">Les sites peuvent demander à utiliser Flash</translation>
 <translation id="4980805016576257426">Cette extension contient des logiciels malveillants.</translation>
 <translation id="4981449534399733132">Pour effacer les données de navigation sur tous vos appareils synchronisés et dans votre compte Google, <ph name="BEGIN_LINK" />connectez-vous<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Logiciels de l'appareil</translation>
@@ -4182,7 +4173,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5906732635754427568">Les données associées à cette application seront supprimées de cet appareil.</translation>
 <translation id="5908474332780919512">Lancer l'application lors de la connexion</translation>
 <translation id="5908695239556627796">Vitesse de défilement avec la souris</translation>
-<translation id="5908769186679515905">Interdire aux sites d'exécuter Flash</translation>
 <translation id="5910363049092958439">En&amp;registrer l'image sous...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> est hors connexion</translation>
 <translation id="5911533659001334206">Visionneuse de raccourcis</translation>
@@ -5832,7 +5822,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7831491651892296503">Erreur lors de la configuration du réseau</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Heure de fin</translation>
-<translation id="783214144752121388">Empêcher les sites d'exécuter Flash (recommandé)</translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
 <translation id="7835178595033117206">Favori supprimé</translation>
 <translation id="7836850009646241041">Appuyez de nouveau sur votre clé de sécurité</translation>
@@ -6060,7 +6049,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier étant chiffré, demandez à son propriétaire de le déchiffrer.}one{Ce fichier étant chiffré, demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers étant chiffrés, demandez à leur propriétaire de les déchiffrer.}}</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous consultez le plus souvent</translation>
-<translation id="8092681102116274204">Les paramètres avec des caractères génériques "*" ne sont plus acceptés. Contactez le développeur de l'extension ou votre administrateur pour <ph name="BEGIN_LINK" />modifier ces paramètres<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ne répond pas</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. La sauvegarde inclut les données d'applications.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.<ph name="END_PARAGRAPH2" />
@@ -6155,7 +6143,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8201717382574620700">Sélectionner des albums dans <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Saisissez à nouveau votre mot de passe pour modifier votre profil <ph name="DEVICE_TYPE" /></translation>
 <translation id="8203732864715032075">Vous envoyer des notifications et mémoriser cet ordinateur pour l'utilisation de l'appli Messages. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Bloquer Flash (recommandé)</translation>
 <translation id="820568752112382238">Sites les plus consultés</translation>
 <translation id="8206745257863499010">Musique</translation>
 <translation id="8206859287963243715">Mobile</translation>

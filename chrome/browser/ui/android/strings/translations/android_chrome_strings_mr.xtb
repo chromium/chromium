@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">निवडलेला गुप्त टॅब</translation>
 <translation id="2987620471460279764">मजकूर इतर डिव्हाइसवरून शेअर केला आहे</translation>
 <translation id="2989523299700148168">अलीकडे भेट दिलेले</translation>
+<translation id="2992473221983447149">इमेजची वर्णने</translation>
 <translation id="2996291259634659425">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="2996809686854298943">URL आवश्यक आहे</translation>
 <translation id="3006881078666935414">वापराचा कोणताही डेटा नाही</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome वरील तुमच्या स्वारस्यांविषयी लेख</translation>
 <translation id="3089395242580810162">गुप्त टॅबमध्ये उघडा</translation>
+<translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणा</translation>
 <translation id="3137521801621304719">गुप्त मोड सोडा</translation>
@@ -775,6 +777,7 @@
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
 <translation id="6560414384669816528">Sogou सह शोध करा</translation>
 <translation id="656065428026159829">आणखी पाहा</translation>
+<translation id="6565959834589222080">उपलब्ध असेल तेव्हा वाय-फाय वापरला जातो</translation>
 <translation id="6566259936974865419">Chrome ने तुमच्यासाठी <ph name="GIGABYTES" /> GB सेव्ह केले आहे</translation>
 <translation id="6573096386450695060">नेहमी अनुमती द्या</translation>
 <translation id="6573431926118603307">आपल्या अन्य डिव्हाइसेसवर तुम्ही Chrome मध्ये उघडलेले टॅब येथे दिसतील.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="8788968922598763114">अखेरीस बंद केलेला टॅब पुन्हा उघडा</translation>
 <translation id="8798449543960971550">वाचलेले</translation>
 <translation id="8812260976093120287">काही वेबसाइटवर, तुम्ही आपल्या डिव्हाइसवर वरील समर्थित पेमेंट ॲप्ससह पेमेंट देऊ शकता.</translation>
+<translation id="881688628773363275">पूर्वावलोकन टॅब आशय पाहण्यायोग्य नाही.</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883806473910249246">आशय डाउनलोड करताना एरर आली.</translation>
 <translation id="8840953339110955557">हे पेज ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>

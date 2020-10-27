@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">Imprès</translation>
 <translation id="1979103255016296513">Canvi de contrasenya vençut</translation>
 <translation id="2049639323467105390">Aquest dispositiu està gestionat per <ph name="DOMAIN" /></translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2375079107209812402">Intents restants: <ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
 <translation id="2517472476991765520">Cerca</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2872961005593481000">Apaga</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="520299634122159966">No hi ha cap escàner disponible</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
 Toca el micròfon per demanar-me qualsevol cosa.</translation>

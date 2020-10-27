@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">הפסק</translation>
 <translation id="1272293450992660632">ערכי קוד האימות לא תואמים.</translation>
 <translation id="1272978324304772054">חשבון משתמש זה אינו שייך לדומיין שאליו רשום המכשיר. אם ברצונך להירשם לדומיין אחר, ראשית עליך לבצע שחזור מכשיר.</translation>
-<translation id="1274977772557788323">‏הגדרות אחסון של Adobe Flash Player</translation>
 <translation id="1274997165432133392">‏קובצי Cookie ונתוני אתר נוספים</translation>
 <translation id="1275718070701477396">נבחר</translation>
 <translation id="1276994519141842946">לא ניתן היה להסיר את <ph name="APP_NAME" /></translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">‏הסימניות, ההיסטוריה והגדרות נוספות יסונכרנו עם חשבון Google שלך.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">רשת ביתית, לא בנדידה</translation>
-<translation id="1315056510003830387">‏לא מורשים להשתמש ב-Flash</translation>
 <translation id="1316136264406804862">מתבצע חיפוש...</translation>
 <translation id="1316495628809031177">הסינכרון הושהה</translation>
 <translation id="1317637799698924700">‏תחנת העגינה תעבוד במצב התואם ל-USB-C.</translation>
@@ -875,7 +873,6 @@
 <translation id="197989455406964291">‏KDC לא תומך בסוג ההצפנה</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1987317783729300807">חשבונות</translation>
-<translation id="1988494864246143197">‏אתרים משתמשים בדרך כלל ב-Flash כדי להפעיל אודיו, וידאו או משחקי וידאו. התמיכה ב-Flash Player תופסק אחרי דצמבר 2020.</translation>
 <translation id="1989112275319619282">דפדף</translation>
 <translation id="1990512225220753005">לא להציג קיצורי דרך בדף הזה</translation>
 <translation id="1992397118740194946">לא מוגדר</translation>
@@ -1647,7 +1644,6 @@
 <translation id="2880660355386638022">מיקום חלונות</translation>
 <translation id="2881076733170862447">בלחיצה על התוסף</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> יבצע אתחול ואיפוס בעוד מספר רגעים</translation>
-<translation id="288387288628762616">‏מורשים להשתמש ב-Flash</translation>
 <translation id="2885378588091291677">מנהל המשימות</translation>
 <translation id="2885729872133513017">התרחשה בעיה במהלך פענוח תגובת השרת.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2463,7 +2459,6 @@
 <translation id="383669374481694771">‏זהו מידע כללי על המכשיר הזה ואופן השימוש בו (למשל רמת הסוללה, פעילות המערכת, הפעילות באפליקציות ושגיאות). הנתונים האלה ישמשו כדי לשפר את Android. חלק מהמידע הנצבר יעזור גם לשפר את האפליקציות של Google, וכן יעזור לשותפים של Google (למשל למפתחים של Android) לשפר את האפליקציות והמוצרים שלהם.</translation>
 <translation id="3838085852053358637">טעינת התוסף נכשלה</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> נוספים</translation>
-<translation id="3838543471119263078">‏קובצי cookie ונתוני אתר ופלאגין נוספים</translation>
 <translation id="383891835335927981">באף אתר לא השתנה המרחק מהתצוגה</translation>
 <translation id="3839509547554145593">הפעלה של האצת גלילה בעכבר</translation>
 <translation id="3839516600093027468">יש למנוע תמיד מ-<ph name="HOST" /> לגשת אל הלוח</translation>
@@ -2637,7 +2632,6 @@
 <translation id="4023146161712577481">קביעת התצורה של המכשיר.</translation>
 <translation id="4025039777635956441">השתקת האתרים שנבחרו</translation>
 <translation id="4027804175521224372">(אתה מפסיד- <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">‏ההגדרות שלך ל-Flash יישמרו עד ליציאה מ-Chrome.</translation>
 <translation id="4028467762035011525">הוספה של שיטות קלט</translation>
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="4031527940632463547">החיישנים חסומים</translation>
@@ -2789,7 +2783,6 @@
 <translation id="4232375817808480934">‏הגדרת Kerberos</translation>
 <translation id="4235200303672858594">כל המסך</translation>
 <translation id="4235965441080806197">בטל כניסה</translation>
-<translation id="4237773362828263530">הגדרות עם תווים כלליים מסוג "*" כבר אינן נתמכות. יש לפנות אל מנהל המערכת כדי <ph name="BEGIN_LINK" />לשנות את ההגדרות האלה<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{קריאת הכרטיסייה במועד מאוחר יותר}two{קריאת הכרטיסיות במועד מאוחר יותר}many{קריאת הכרטיסיות במועד מאוחר יותר}other{קריאת הכרטיסיות במועד מאוחר יותר}}</translation>
 <translation id="4242145785130247982">אין תמיכה באישורי לקוח מרובים.</translation>
 <translation id="4242533952199664413">פתח את 'הגדרות'</translation>
@@ -3053,7 +3046,6 @@
 <translation id="4548483925627140043">לא אותר אות</translation>
 <translation id="4549791035683739768">לא נשמרו טביעות אצבעות במפתח האבטחה</translation>
 <translation id="4551763574344810652">אפשר לבטל את הפעולה בהקשה על <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">‏רשת <ph name="NETWORK_TYPE" />, עוצמת אות ‎<ph name="SIGNAL_STRENGTH" />%‎</translation>
 <translation id="4553526521109675518">‏כדי לשנות את שפת המכשיר, עליך להפעיל את Chromebook מחדש. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">התוסף החיצוני הוא מגרסה זהה או קודמת לזו של התוסף הקיים.</translation>
@@ -3408,7 +3400,6 @@
 <translation id="4974733135013075877">יציאה והפעלת נעילה בטיחותית לילדים</translation>
 <translation id="4976009197147810135">פיצול אנכי</translation>
 <translation id="4977942889532008999">אשר גישה</translation>
-<translation id="4978905460870207779">‏אתרים יכולים לבקש הרשאה להשתמש ב-Flash</translation>
 <translation id="4980805016576257426">התוסף הזה מכיל תוכנה זדונית.</translation>
 <translation id="4981449534399733132">‏כדי לנקות את נתוני הגלישה מכל המכשירים המסונכרנים ומחשבון Google שלך, <ph name="BEGIN_LINK" />יש לבצע כניסה<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">התוכנות במכשיר</translation>
@@ -4179,7 +4170,6 @@
 <translation id="5906732635754427568">המערכת תסיר מהמכשיר הזה נתונים המשויכים לאפליקציה הזו.</translation>
 <translation id="5908474332780919512">הפעלת האפליקציה בזמן הכניסה</translation>
 <translation id="5908695239556627796">מהירות גלילת העכבר</translation>
-<translation id="5908769186679515905">‏חסימת הפעלה של Flash על-ידי אתרים</translation>
 <translation id="5910363049092958439">שמ&amp;ירת תמונה בשם...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> אופליין</translation>
 <translation id="5911533659001334206">מציג קיצורי הדרך</translation>
@@ -5828,7 +5818,6 @@
 <translation id="7831491651892296503">אירעה שגיאה בהגדרת הרשת</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">שעת סיום</translation>
-<translation id="783214144752121388">‏חסימת האפשרות של אתרים להפעיל Flash (מומלץ)</translation>
 <translation id="7833720883933317473">כאן יופיעו המילים המותאמות ששמרת</translation>
 <translation id="7835178595033117206">הסימנייה הוסרה</translation>
 <translation id="7836850009646241041">עליך לנסות לגעת שוב במפתח האבטחה</translation>
@@ -6056,7 +6045,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{הקובץ הזה מוצפן. צריך לבקש מהבעלים שלו לפענח אותו.}two{חלק מהקבצים האלה מוצפנים. צריך לבקש מהבעלים שלהם לפענח אותם.}many{חלק מהקבצים האלה מוצפנים. צריך לבקש מהבעלים שלהם לפענח אותם.}other{חלק מהקבצים האלה מוצפנים. צריך לבקש מהבעלים שלהם לפענח אותם.}}</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
 <translation id="8090234456044969073">עיין ברשימת אתרי האינטרנט שבהם אתה מבקר הכי הרבה</translation>
-<translation id="8092681102116274204">הגדרות עם תווים כלליים מסוג "*" כבר אינן נתמכות. יש לפנות אל מפתח התוסף או למנהל המערכת כדי <ph name="BEGIN_LINK" />לשנות את ההגדרות האלה<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> לא מגיב</translation>
 <translation id="8095105960962832018">‏<ph name="BEGIN_PARAGRAPH1" />גיבוי ב-Google Drive. אפשר לשחזר נתונים או להחליף מכשיר בקלות מתי שרוצים. הגיבוי כולל נתוני אפליקציות.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />הגיבויים נשמרים ב-Google ומוצפנים באמצעות הסיסמה לחשבון Google שלך.
@@ -6153,7 +6141,6 @@
 <translation id="8201717382574620700">בחר אלבומי <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">יש להזין שוב את הסיסמה כדי לעדכן את פרופיל <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8203732864715032075">המערכת שולחת לך התראות ומגדירה את המחשב הזה כברירת מחדל לשליחת ההודעות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">‏חסימת Flash (מומלץ)</translation>
 <translation id="820568752112382238">האתרים שאליהם נכנסת בתדירות הגבוהה ביותר</translation>
 <translation id="8206745257863499010">בלוז</translation>
 <translation id="8206859287963243715">סלולארי</translation>

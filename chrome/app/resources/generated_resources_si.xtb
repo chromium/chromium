@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">නවතන්න</translation>
 <translation id="1272293450992660632">රහස් අංක අගයවල් නොගැළපෙති.</translation>
 <translation id="1272978324304772054">මෙම පරිශීලක ගිනුම උපාංගය බඳවාගෙන ඇති වසමට අයත් නොවේ. ඔබට වෙනත් වසමක් හා බැඳීමට අවශ්‍ය නම් ඔබට ප්‍රථමයෙන් උපාංග ප්‍රත්‍යාරම්භට යෑමට සිදුවේ.</translation>
-<translation id="1274977772557788323">Adobe Flash Player ආචයන සැකසීම්</translation>
 <translation id="1274997165432133392">කුකී සහ වෙනත් අඩවි දත්ත</translation>
 <translation id="1275718070701477396">තෝරාගත්</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> අස්ථාපන කළ නොහැකි විය</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">ඔබේ පිටු සලකුණු, ඉතිහාසය, සහ අනෙකුත් පසුතල ඔබේ Google Account වෙත සමමු කෙරෙනු ඇත.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">නිවෙස් ජාලය, සංක්‍රමණයේ නොවේ</translation>
-<translation id="1315056510003830387">සැණෙළිය භාවිත කිරීමට ඉඩ නොදේ</translation>
 <translation id="1316136264406804862">සොයමින්...</translation>
 <translation id="1316495628809031177">සමමුහුර්ත කිරීම විරාමය කරන ලදී</translation>
 <translation id="1317637799698924700">ඔබේ ඩොක් කිරීමේ ස්ථානය USB Type-C හට ගැළපෙන ප්‍රකාරයේ ක්‍රියා කරයි.</translation>
@@ -875,7 +873,6 @@
 <translation id="197989455406964291">KDC සංකේතන වර්ගයට සහය නොදක්වයි</translation>
 <translation id="1984417487208496350">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
 <translation id="1987317783729300807">ගිණුම්</translation>
-<translation id="1988494864246143197">අඩවි සාමාන්‍යයෙන් ඕඩියෝ, වීඩියෝ හෝ වීඩියෝ ක්‍රීඩා ධාවනය කිරීමට Flash භාවිත කරයි. 2020 දෙසැම්බර්වලට පසුව තවදුරටත් Flash Player සඳහා සහය දක්වනු නොලැබේ.</translation>
 <translation id="1989112275319619282">බ්‍රවුස් කරන්න</translation>
 <translation id="1990512225220753005">මෙම පිටුව මත කෙටිමං නොපෙන්වන්න</translation>
 <translation id="1992397118740194946">සකසා නොමැත</translation>
@@ -1646,7 +1643,6 @@
 <translation id="2880660355386638022">කවුළු තැබීම</translation>
 <translation id="2881076733170862447">ඔබ දිගුව ක්ලික් කළ විට</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> මොහොතකින් යළි සැකසී යළි ආරම්භ වනු ඇත</translation>
-<translation id="288387288628762616">සැණෙළිය භාවිත කිරීමට ඉඩ දේ</translation>
 <translation id="2885378588091291677">කාර්ය කළමණාකරු</translation>
 <translation id="2885729872133513017">සේවාදායක ප්‍රතිචාරය විකේතන කරන විට ගැටලුවක් සිදු විය.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2463,7 +2459,6 @@
 <translation id="383669374481694771">මේ (බැටරි මට්ටම, පද්ධති සහ යෙදුම් ක්‍රියාකාරකම්, සහ දෝෂ වැනි) මෙම උපාංගය සහ එය භාවිත කෙරෙන ආකාරය පිළිබඳ සාමාන්‍ය තොරතුරු වෙයි. Android වැඩි දියුණු කිරීමට දත්ත භාවිත කරන අතර සමහර රැස් කළ තොරතුරු Google යෙදුම් සහ Android සංවර්ධකයන් වැනි, හවුල්කරුවන්ට ඔවුන්ගේ යෙදුම් සහ නිෂ්පාදන වඩා යහපත් කිරීමට ද උදවු කරයි.</translation>
 <translation id="3838085852053358637">දිගුව පූරණය කිරීම අසාර්ථක විය</translation>
 <translation id="3838486795898716504">තව <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">කුකී සහ වෙනත් අඩවි සහ ප්ලගින දත්ත</translation>
 <translation id="383891835335927981">කිසිදු අඩවියක් විශාලනය හෝ කුඩා කර නැත</translation>
 <translation id="3839509547554145593">මූසික අනුචලන ත්වරණය සබල කරන්න</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> පසුරු පුවරුව දැකීමෙන් සැමවිටම අවහිර කරන්න</translation>
@@ -2639,7 +2634,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4023146161712577481">උපාංගය වින්‍යාසකරණය තීරණය කරමින්.</translation>
 <translation id="4025039777635956441">තේරූ වෙබ් අඩවිය නිහඬ කරන්න</translation>
 <translation id="4027804175521224372">(ඔබට නොලැබේ—<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">ඔබ Chrome වෙතින් ඉවත් වන තෙක් ඔබේ සැණෙළි සැකසුම් තබා ගනු ඇත.</translation>
 <translation id="4028467762035011525">ආදාන ක්‍රම එක් කරන්න</translation>
 <translation id="4031179711345676612">මයික්‍රෆෝනයට ඉඩ දෙන ලදී</translation>
 <translation id="4031527940632463547">සංවේදක අවහිරයි</translation>
@@ -2791,7 +2785,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4232375817808480934">Kerberos වින්‍යාස කරන්න</translation>
 <translation id="4235200303672858594">සමස්ථ තිරය</translation>
 <translation id="4235965441080806197">පිරීම අවලංගු කරන්න</translation>
-<translation id="4237773362828263530">"*" ආදේශක සහිත සැකසීම් තවදුරටත් සහාය නොදක්වයි. <ph name="BEGIN_LINK" /> මෙම සැකසීම් වෙනස් කිරීමට<ph name="END_LINK" /> ඔබගේ පරිපාලක අමතන්න.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{පසුව කියවීමට ටැබය}one{පසුව කියවීමට ටැබ}other{පසුව කියවීමට ටැබ}}</translation>
 <translation id="4242145785130247982">බහුවිධ සේවාලාභී සහතිකවලට සහය නොදැක්වේ</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
@@ -3055,7 +3048,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4548483925627140043">සංඥාව හමු නොවීය</translation>
 <translation id="4549791035683739768">ඔබේ ආරක්‍ෂක යතුරට ගබඩ කළ ඇඟිලි සලකුණු නැත</translation>
 <translation id="4551763574344810652">අස් කිරීමට <ph name="MODIFIER_KEY_DESCRIPTION" /> ඔබන්න</translation>
-<translation id="4552089082226364758">ෆ්ලෑෂ්</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ජාලය, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">උපාංග භාෂාව වෙනස් කිරීමට ඔබ ඔබේ Chromebook යළි ඇරඹීමට අවශ්‍යයි. <ph name="BEGIN_LINK_LEARN_MORE" />තවත් දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">පවතින දිගුවට සාපේක්ශව බාහිර දිගුව සමාන හෝ පහත අනුවාදනයකි.</translation>
@@ -3410,7 +3402,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4974733135013075877">ඉවත් වී ළමා අගුල යොදන්න</translation>
 <translation id="4976009197147810135">සිරස්ව වෙන් කරන්න</translation>
 <translation id="4977942889532008999">පිවිසුම තහවුරු කරන්න</translation>
-<translation id="4978905460870207779">අඩවි Flash භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="4980805016576257426">මෙම දිගුවේ අනිෂ්ට මෘදුකාංග අඩංගු වේ.</translation>
 <translation id="4981449534399733132">ඔබේ සියලුම සමමුහුර්ත කළ උපාංගවලින් සහ ඔබේ Google ගිණුමෙන් බ්‍රවුස් කිරීමේ දත්ත හිස් කිරීමට, <ph name="BEGIN_LINK" />පුරන්න<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">උපාංග මෘදුකාංගය</translation>
@@ -4182,7 +4173,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5906732635754427568">මෙම යෙදුම සමඟ සම්බන්ධ දත්ත මෙම උපාංගයෙන් ඉවත් කරනු ඇත.</translation>
 <translation id="5908474332780919512">ඔබ පිරූ විට යෙදුම ආරම්භ කරන්න</translation>
 <translation id="5908695239556627796">මූසික අනුචලන වේගය</translation>
-<translation id="5908769186679515905">ෆ්ලෑෂ් ධාවනය වීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="5910363049092958439">රූපය ලෙස සුරකින්න... (&amp;v)</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> නොබැඳියි</translation>
 <translation id="5911533659001334206">කෙටිමං බලන්නා</translation>
@@ -5832,7 +5822,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7831491651892296503">ජාලය වින්‍යාස කිරීමේ දෝෂයකි</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">අවසන් වන වේලාව</translation>
-<translation id="783214144752121388">වෙබ් අඩවිය Flash ධාවන කිරීම අවහිර කරන්න (නිර්දේශිතයි)</translation>
 <translation id="7833720883933317473">සුරැකි අභිරුචි වචන මෙහි දිස් වනු ඇත</translation>
 <translation id="7835178595033117206">පිටුසන ඉවත් කළා</translation>
 <translation id="7836850009646241041">ඔබේ ආරක්‍ෂක යතුර නැවත ස්පර්ශ කිරීමට උත්සාහ කරන්න</translation>
@@ -6059,7 +6048,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="80866457114322936">{NUM_FILES,plural, =1{මෙම ගොනුව සංකේතිතයි. එහි හිමිකරුට විකේතන කිරිමට කියන්න.}one{මෙම ගොනුවලින් සමහරක් සංකේතිතයි. ඒවායේ හිමිකරුට විකේතන කිරිමට කියන්න.}other{මෙම ගොනුවලින් සමහරක් සංකේතිතයි. ඒවායේ හිමිකරුට විකේතන කිරිමට කියන්න.}}</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
 <translation id="8090234456044969073">ඔබේ වඩා මෑත පිවිසි වෙබ් අඩවි ලැයිස්තුවක් කියවන්න</translation>
-<translation id="8092681102116274204">"*" ආදේශක සහිත සැකසීම් තවදුරටත් සහාය නොදක්වයි. <ph name="BEGIN_LINK" /> මෙම සැකසීම් වෙනස් කිරීමට<ph name="END_LINK" /> දිගු සංවර්ධක හෝ ඔබගේ පරිපාලක අමතන්න.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ප්‍රතිචාර නොදක්වයි</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Drive වෙත උපස්ථ කරන්න. ඔබේ දත්ත පහසුවෙන් ප්‍රතිසාධනය කරන්න හෝ ඕනෑම වේලාවක දී උපාංගය මාරු කරන්න. ඔබේ උපස්ථයේ යෙදුම් දත්ත ඇතුළත් වේ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ඔබේ උපස්ථයන් Google වෙත උඩුගත කරන අතර ඔබේ Google ගිණුමේ මුරපදය භාවිතයෙන් ගුප්ත කේතනය කර ඇත.<ph name="END_PARAGRAPH2" />
@@ -6154,7 +6142,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" /> ඇල්බම තෝරන්න</translation>
 <translation id="8202160505685531999">ඔබේ <ph name="DEVICE_TYPE" /> පැතිකඩ යාවත්කාලීන කිරීමට කරුණාකර ඔබේ මුරපදය යළි-ඇතුළු කරන්න.</translation>
 <translation id="8203732864715032075">පණිවුඩ සඳහා මෙම පරිගණකය මතක තබා ගැනීමට ඔබට දැනුම්දීම් සහ පෙරනිමි යවන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Flash අවහිර කරන්න (නිර්දේශිතයි)</translation>
 <translation id="820568752112382238">වැඩියෙන් පැමිණි වෙබ් අඩවි</translation>
 <translation id="8206745257863499010">බ්ලූසි</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>

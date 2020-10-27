@@ -412,6 +412,11 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Die URL-Muster haben das gleiche Format wie die Richtlinie "<ph name="URL_BLOCKLIST_POLICY_NAME" />", die unter https://www.chromium.org/administrators/url-blacklist-filter-format beschrieben ist.
       </translation>
 <translation id="1645793986494086629">Schema:</translation>
+<translation id="1647558381546345298">Wenn Sie diese Richtlinie festlegen, wird die Cache-Größe konfiguriert, die <ph name="PRODUCT_NAME" /> zum Speichern von Mediendateien im Cache auf dem Datenträger verwendet unabhängig davon, ob der Nutzer den Parameter "--media-cache-size" angegeben hat oder nicht. Der in dieser Richtlinie angegebene Wert ist keine feste Grenze, sondern ein Richtwert für das Caching-System. Werte, die kleiner als einige Megabyte sind, werden aufgerundet.
+
+      Wird der Wert dieser Richtlinie auf 0 gesetzt, wird die Standard-Cache-Größe verwendet und Nutzer können sie nicht ändern.
+
+      Wird diese Richtlinie nicht festgelegt, wird die Standardgröße verwendet und der Nutzer kann diese mit dem Parameter "--disk-cache-size" ändern.</translation>
 <translation id="1648816843164517573">Liste der Namen, die vom HSTS-Richtliniencheck ausgenommen sind</translation>
 <translation id="1654087023995670109">Gastmodus im Browser erzwingen</translation>
 <translation id="1655229863189977773">Cache-Größe für Datenträger in Byte festlegen</translation>
@@ -775,13 +780,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Diese Richtlinie sollte nicht für Geräte verwendet werden, die öffentlich zugänglich sind.
 
       Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, bleibt die Datenschutzwarnung in der automatisch gestarteten verwalteten Gastsitzung angepinnt, bis der Nutzer sie schließt.</translation>
-<translation id="228665601367357543">Sie können eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch die Berechtigung für den Zugriff auf ein USB-Gerät mit den angegebenen Anbieter- und Produkt-IDs gewährt wird. Damit die Richtlinie gültig ist, müssen für jeden Eintrag auf der Liste die Felder „devices“ und „urls“ angegeben sein. Jeder Eintrag im Feld „devices“ kann ein Feld „vendor_id“ und „product_id“ haben. Bei Weglassen des Felds „vendor_id“ wird eine Richtlinie erstellt, die für jedes Gerät gilt. Bei Weglassen des Felds „product_id“ wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Eine Richtlinie, die ein Feld „product_id“ ohne das Feld „vendor_id“ hat, ist ungültig.
-
-      Im USB-Berechtigungsmodell werden die anfragende und die einbettende URL (d. h. die URL der Frame-Website der obersten Ebene) verwendet, um der anfragenden URL die Berechtigung für den Zugriff auf das USB-Gerät zu erteilen. Wird die anfragende Website in einen iFrame geladen, kann die anfragende URL von der einbettenden URL abweichen. Deshalb darf das Feld „urls“ bis zu zwei durch ein Komma voneinander getrennte Strings enthalten, die diese URLs angeben. Wenn Sie nur eine URL angeben, wird der Zugriff auf die entsprechenden USB-Geräte gewährt, wenn die URL der anfragenden Website dieser URL entspricht, wobei der Einbettungsstatus keine Rolle spielt. Die URLs im Feld „urls“ müssen gültig sein, da die Richtlinie andernfalls ignoriert wird.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, sofern diese Einstellung konfiguriert ist. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      URL-Muster in dieser Richtlinie dürfen nicht im Widerspruch zu den über <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> konfigurierten URLs stehen. Andernfalls hat diese Richtlinie Vorrang vor <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2289265947759479962">Mit dieser Richtlinie wird festgelegt, ob Versionsinformationen wie die Betriebssystemversion, das Betriebssystem, die Architektur des Betriebssystems, die <ph name="PRODUCT_NAME" />-Version und der <ph name="PRODUCT_NAME" />-Release-Channel gesendet werden.
 
       Wenn die Richtlinie <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> deaktiviert oder nicht konfiguriert ist, wird diese Richtlinie ignoriert.
@@ -1313,6 +1311,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Wenn die Richtlinie nicht konfiguriert oder keine gültige URL angegeben ist, wird sie von <ph name="PRODUCT_NAME" /> nicht als Regelquelle für den Browserwechsel verwendet.
 
       Hinweis: Diese Richtlinie verweist auf eine XML-Datei im selben Format wie die Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von <ph name="IE_PRODUCT_NAME" />. Sie lädt Regeln aus einer XML-Datei, ohne diese Regeln mit <ph name="IE_PRODUCT_NAME" /> zu teilen. Weitere Informationen zur Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2949765875529121431">Wenn die Richtlinie konfiguriert ist, wird eine Liste mit Hostnamen angegeben, die vom HSTS-Richtliniencheck ausgenommen sind. Dieser Richtliniencheck kann Anfragen von http auf https upgraden. Für diese Richtlinie sind nur Single-Label-Hostnamen zulässig. Hostnamen müssen kanonisiert werden: Alle IDNs müssen in ihr A-Label-Format konvertiert und alle ASCII-Buchstaben kleingeschrieben werden. Diese Richtlinie gilt nur für die angegebenen Hostnamen, aber nicht für Subdomains der angegebenen Namen.</translation>
 <translation id="2952347049958405264">Einschränkungen:</translation>
 <translation id="2957047180944828740">Gibt an, ob unsichere Websites Anfragen an eher private Netzwerk-Endpunkte senden dürfen</translation>
 <translation id="2957506574938329824">Keine Website darf Zugriff auf Bluetooth-Geräte über die Web Bluetooth API anfordern</translation>
@@ -1421,6 +1420,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Unabhängig davon, ob und wie die Richtlinie festgelegt ist, kann die WPAD-Optimierung nicht von Nutzern verändert werden.</translation>
 <translation id="3072045631333522102">Bildschirmschoner für die Anmeldeseite im Händlermodus</translation>
+<translation id="3072788420987305247">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die Mediensteuerung auf dem Sperrbildschirm angezeigt, wenn Nutzer das Gerät sperren, während Medien wiedergegeben werden.
+
+      Ist die Richtlinie deaktiviert, wird die Mediensteuerung auf dem Sperrbildschirm ausgeschaltet.</translation>
 <translation id="3072847235228302527">Nutzungsbedingungen für ein lokales Gerätekonto festlegen</translation>
 <translation id="3086995894968271156">Konfigurieren von Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3091832372132789233">Lädt den Akku von Geräten auf, die vorwiegend an eine externe Stromquelle angeschlossen werden.</translation>
@@ -1818,7 +1820,6 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 <translation id="3631099945620529777">Wenn diese Richtlinie auf "false" gesetzt ist, ist die Schaltfläche "Prozess beenden" im Task-Manager deaktiviert.
 
       Ist sie auf "true" gesetzt oder nicht konfiguriert, kann der Nutzer Prozesse im Task-Manager beenden.</translation>
-<translation id="3639444551396586995">Unsichere Ereignisse in Chrome an Google melden</translation>
 <translation id="3643284063603988867">Funktion zum Speichern des Passworts aktivieren</translation>
 <translation id="3646859102161347133">Lupentyp festlegen</translation>
 <translation id="3647212518036289905">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche GSSAPI-Bibliothek für die HTTP-Authentifizierung verwendet werden soll. Geben Sie entweder nur den Namen einer Bibliothek oder einen vollständigen Pfad an.
@@ -1838,13 +1839,6 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 
         Diese Richtlinie wird im Rahmen der Registrierung von Cloud-Richtlinien auf Computern verwendet und kann unter Windows über die Registrierung oder per GPO, auf einem Mac per plist und unter Linux über eine JSON-Richtliniendatei festgelegt werden.</translation>
 <translation id="3660562134618097814">SAML-IdP-Cookies bei der Anmeldung übertragen</translation>
-<translation id="3669373349666208904">Wenn die Richtlinie auf "True" gesetzt ist, dürfen Seiten Pop-ups zeigen, während die Seiten entfernt werden.
-
-      Wenn die Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, können Seiten keine Pop-ups zeigen, während die Seiten entfernt werden.
-
-      Diese Richtlinie wird in Chrome 88 entfernt.
-
-      Weitere Informationen unter https://www.chromestatus.com/feature/5989473649164288.</translation>
 <translation id="3691155504326059225">Wenn die Richtlinie aktiviert ist, wird die "Neuer Tab"-Seite als Startseite des Nutzers verwendet; die Startseiten-URL wird ignoriert. Ist diese Richtlinie deaktiviert, wird die "Neuer Tab"-Seite nie als Startseite verwendet, es sei denn, die Startseiten-URL des Nutzers ist chrome://newtab.
 
       Wenn Sie diese Richtlinie konfigurieren, können Nutzer den Typ ihrer Startseite in <ph name="PRODUCT_NAME" /> nicht ändern. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer auswählen, ob die "Neuer Tab"-Seite als Startseite verwendet werden soll.
@@ -2081,15 +2075,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4020682745012723568">In das Nutzerprofil übertragene Cookies sind für Android-Apps nicht zugänglich.</translation>
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
-<translation id="4044054366426171256">Mit dieser Richtlinie werden die erforderlichen Domainnamen der Hosts für den Remotezugriff konfiguriert. Außerdem wird verhindert, dass Nutzer diese ändern.
-
-          Wenn diese Einstellung aktiviert und für eine oder mehrere Domains konfiguriert ist, können Hosts nur über Konten gemeinsam genutzt werden, die unter einem der angegebenen Domainnamen registriert sind.
-
-          Ist sie deaktiviert oder nicht konfiguriert oder ist eine leere Liste festgelegt, können Hosts über alle Konten gemeinsam genutzt werden.
-
-          Sofern vorhanden, wird "RemoteAccessHostDomain" mit dieser Einstellung überschrieben.
-
-          Siehe auch "RemoteAccessHostClientDomainList".</translation>
 <translation id="4056910949759281379">SPDY-Protokoll deaktivieren</translation>
 <translation id="4061590579642538878">Informationen über Absturzberichte melden.</translation>
 <translation id="4075675819066819571">Ablage auf der linken Seite des Bildschirms anzeigen</translation>
@@ -2160,6 +2145,11 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4157003184375321727">Betriebssystem- und Firmware-Version melden</translation>
 <translation id="4157594634940419685">Zugriff auf native CUPS-Drucker erlauben</translation>
 <translation id="4160962198980004898">Quelle für die Geräte-MAC-Adresse bei angedocktem Gerät</translation>
+<translation id="4166174702671320480">Ist diese Richtlinie aktiviert, werden Richtlinien aus atomischen Gruppen, die eine andere Quelle als die Quelle mit der höchsten Priorität der entsprechenden Gruppe haben, ignoriert.
+
+      Wenn die Richtlinie deaktiviert ist, wird keine Richtlinie aufgrund ihrer Quelle ignoriert. Richtlinien werden dann nur ignoriert, wenn ein Konflikt besteht und sie nicht die höchste Priorität haben.
+
+      Wird diese Richtlinie von einer cloudbasierten Quelle konfiguriert, kann sie nicht auf bestimmte einzelne Nutzer ausgerichtet werden.</translation>
 <translation id="4169692397912242417">Hiermit wird die Bedienungshilfe "gesprochenes Feedback" auf dem Anmeldebildschirm aktiviert.
 
           Wird diese Richtlinie auf "true" gesetzt, ist das gesprochene Feedback auf dem Anmeldebildschirm immer aktiviert.
@@ -2540,10 +2530,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4874982543810021567">WebUSB auf diesen Websites blockieren</translation>
 <translation id="4876805738539874299">SSL-Höchstversion aktiviert</translation>
 <translation id="4887274746092315609">Erlaubt SAML-Nutzern das Ändern des Passworts während einer Sitzung</translation>
-<translation id="4887863670424903990">Wenn diese Richtlinie aktiviert ist, werden unsichere Ereignisse in <ph name="PRODUCT_NAME" /> zur Analyse an Google gesendet, darunter die Wiederverwendung von Passwörtern, der Download von Malware, Interstitials, Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten usw.  Einige dieser Ereignisse, etwa Verstöße gegen die Richtlinie zum Schutz von sensiblen Daten, sind abhängig von anderen Richtlinien, mit denen entsprechende Überprüfungen aktiviert werden.
-
-      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden unsichere Ereignisse in <ph name="PRODUCT_NAME" /> nicht gemeldet.
-      </translation>
 <translation id="4894290482695457375">Wenn "<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />" aktiviert und "<ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />" konfiguriert ist, wird <ph name="PRODUCT_NAME" /> unter allen IP-Adressen und nicht nur unter privaten RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.
 
       Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> nur unter RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.
@@ -3332,9 +3318,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
           Clients für den Remotezugriff sind von dieser Richtlinieneinstellung nicht betroffen. Diese verwenden immer "chromoting-client.talkgadget.google.com" für den Zugriff auf das TalkGadget.</translation>
 <translation id="5890063326284543943">Verwendung der Serial API steuern</translation>
-<translation id="5893553533827140852">Wenn diese Einstellung aktiviert ist, wird für Anfragen zur Gnubby-Authentifizierung ein Proxy über eine Remote-Host-Verbindung verwendet.
-
-Wenn diese Einstellung deaktiviert oder nicht konfiguriert ist, wird kein Proxy für Anfragen zur Gnubby-Authentifizierung verwendet.</translation>
 <translation id="5897913798715600338">Lädt den Akku mit Schnellladetechnologie auf.</translation>
 <translation id="5898486742390981550">Wenn mehrere Nutzer angemeldet sind, kann nur der Hauptnutzer Android-Apps verwenden.</translation>
 <translation id="5901427587865226597">Nur Duplexdruck</translation>
@@ -3365,6 +3348,9 @@ Wenn diese Einstellung deaktiviert oder nicht konfiguriert ist, wird kein Proxy 
 <translation id="5951418260805607969">Benachrichtigung anzeigen, wenn nur wenig Speicherplatz verfügbar ist</translation>
 <translation id="5961137303188584693">MAC-Adresse der im Gerät verbauten NIC</translation>
 <translation id="5966615072639944554">Erweiterungen, die die Remote Attestation API zur Bestätigung der Nutzeridentität verwenden dürfen</translation>
+<translation id="5975765799383881158">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer über das Menü &gt; „Hilfe“ &gt; „Problem melden“ oder die entsprechende Tastenkombination Feedback an Google senden.
+
+      Ist die Richtlinie deaktiviert, können Nutzer kein Feedback an Google senden.</translation>
 <translation id="5997543603646547632">Standardmäßig 24-Stunden-Uhr verwenden</translation>
 <translation id="5997846976342452720">Angeben, ob Plug-in-Suchfunktion deaktiviert werden soll (eingestellt)</translation>
 <translation id="5998198091336830580">Diese Richtlinie ist Teil der folgenden Atomic-Gruppe (nur Richtlinien aus der Quelle mit der höchsten Priorität in der Gruppe werden angewendet):</translation>
@@ -3675,7 +3661,6 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
       Die Muster für diese Richtlinie dürfen allerdings keine "/path"- oder "@query"-Elemente enthalten. Muster, die "/path"- oder "@query"-Elemente enthalten, werden ignoriert.</translation>
 <translation id="6464074037294098618">"Automatisches Ausfüllen" für Adressen aktivieren</translation>
 <translation id="6467613372414922590">Hosts für natives Messaging, die ohne Berechtigung des Administrators installiert wurden, auf Nutzerebene zulassen</translation>
-<translation id="6468980648680553776">Diese Richtlinie wurde eingestellt. Verwenden Sie stattdessen "RemoteAccessHostClientDomainList".</translation>
 <translation id="6473623140202114570">Hiermit wird die Liste der Domains konfiguriert, auf denen durch Safe Browsing keine Warnungen ausgelöst werden.</translation>
 <translation id="647698599569353771">Aktivieren von Nearby Share zulassen.</translation>
 <translation id="6485813825811798133">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Lesezugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten dürfen.
@@ -3966,6 +3951,11 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
 
       Wenn die Richtlinie deaktiviert ist, wird stattdessen eine Fehlermeldung angezeigt,</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />- und "In Google Drive speichern"-Ziele</translation>
+<translation id="682408981080798691">Ist die Richtlinie aktiviert oder nicht konfiguriert, wird die Renderer-Codeintegrität aktiviert.
+
+      Wird die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit und Stabilität von <ph name="PRODUCT_NAME" />, da dann unbekannter und potenziell schädlicher Code in den Rendererprozessen von <ph name="PRODUCT_NAME" /> geladen werden kann. Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb der Rendererprozesse von <ph name="PRODUCT_NAME" /> ausgeführt werden muss.
+
+      Hinweis: Weitere Informationen zu Prozessschutzrichtlinien finden Sie unter ( https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="6833023569065717572">Wenn die Richtlinie auf "True" gesetzt ist, wird auf dem Gerät das 24-Stunden-Uhrzeitformat verwendet.
 
       Wird die Richtlinie auf "False" gesetzt, dann wird auf dem Gerät das 12-Stunden-Uhrzeitformat verwendet.
@@ -4511,17 +4501,6 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 <translation id="747014869399137701">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Desktop-Benachrichtigungen anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Desktop-Benachrichtigungen blockiert.
 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
-<translation id="7471828226549672843">Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie deaktiviert ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten Ausführung noch bei weiteren angezeigt. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
-
-     – Diese Richtlinie funktioniert nur bei vollständig verwalteten Android-Geräten, die von Unified Endpoint Management-Anbietern konfiguriert werden können.
-
-      – Wenn die Richtlinie deaktiviert ist, hat die BrowserSignin-Richtlinie keine Auswirkungen.
-
-      – Wenn die Richtlinie deaktiviert ist, werden keine Messwerte an den Server gesendet.
-
-      – Wenn die Richtlinie deaktiviert ist, sind die Browserfunktionen eingeschränkt.
-
-      – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7476621944304431784">Wenn diese Einstellung aktiviert ist, können Nutzer WLAN-Konfigurationen zwischen <ph name="PRODUCT_OS_NAME" />-Gerät(en) und einem verbundenen Android-Smartphone synchronisieren. Damit die WLAN-Konfigurationen synchronisiert werden können, muss diese Funktion durch die Nutzer eingerichtet und explizit freigeschaltet werden.
 
@@ -4557,15 +4536,6 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
       Ist die Richtlinie nicht konfiguriert, erkennt <ph name="IE_PRODUCT_NAME" /> den Pfad zur ausführbaren Datei von <ph name="PRODUCT_NAME" /> automatisch, wenn <ph name="PRODUCT_NAME" /> über Internet Explorer geöffnet wird.
 
       Hinweis: Wenn das Add-in "Unterstützung älterer Browser" für <ph name="IE_PRODUCT_NAME" /> nicht installiert ist, hat die Richtlinie keine Auswirkung.</translation>
-<translation id="7506758875409719208">Mit dieser Richtlinie werden die erforderlichen Domainnamen der Clients für den Remotezugriff konfiguriert. Außerdem wird verhindert, dass Nutzer diese ändern.
-
-          Wenn diese Einstellung aktiviert und für eine oder mehrere Domains konfiguriert ist, können nur Clients aus einer der angegebenen Domains eine Verbindung zum Host herstellen.
-
-          Ist sie deaktiviert oder nicht konfiguriert oder ist eine leere Liste festgelegt, wird die Standardrichtlinie für den Verbindungstyp angewendet. Zu Zwecken der Remote-Unterstützung können Clients aus jeder beliebigen Domain eine Verbindung zum Host herstellen, bei einem stetigen Remotezugriff kann nur der Hosteigentümer eine Verbindung herstellen.
-
-          Sofern vorhanden, wird "RemoteAccessHostClientDomain" mit dieser Einstellung überschrieben.
-
-          Siehe auch "RemoteAccessHostDomainList".</translation>
 <translation id="7507131973617884092">Wenn die Richtlinie konfiguriert ist, wird für jeden der benannten Ursprünge in einer durch Kommas getrennten Liste ein eigener Prozess ausgeführt. Dabei werden auch durch Subdomains benannte Ursprünge isoliert. Wenn Sie z. B. https://example.com/ angeben, wird auch https://foo.example.com/ als Teil der Website https://example.com/ isoliert.
 
       Ist sie deaktiviert oder nicht konfiguriert, können Nutzer diese Einstellung ändern.
@@ -5034,7 +5004,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird das Standardverhalten angewen
 
           Wenn der Ruhemodus aktiviert wird, kann separat konfiguriert werden, ob <ph name="PRODUCT_OS_NAME" /> den Bildschirm vorher sperren soll oder nicht.</translation>
 <translation id="8214600119442850823">Konfiguriert den Passwortmanager.</translation>
-<translation id="8217516105848565518">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen "RemoteAccessHostDomainList".</translation>
 <translation id="8219777886736887686">Mit dieser Richtlinie wird festgelegt, welcher Befehl zum Öffnen von URLs in einem alternativen Browser verwendet werden soll. Die Richtlinie kann mit <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> oder einem Dateipfad konfiguriert werden. Wenn für die Richtlinie ein Dateipfad festgelegt ist, wird diese Datei als ausführbare Datei verwendet. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> und <ph name="EDGE_VALUE_PLACEHOLDER" /> sind nur unter <ph name="MS_WIN_NAME" /> verfügbar, <ph name="SAFARI_VALUE_PLACEHOLDER" /> nur unter <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" />.
 
       Ist die Richtlinie nicht konfiguriert, wird eine plattformspezifische Standardeinstellung verwendet: <ph name="IE_PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> oder <ph name="SAFARI_PRODUCT_NAME" /> für <ph name="MAC_OS_NAME" />. Unter <ph name="LINUX_OS_NAME" /> wird kein alternativer Browser geöffnet.</translation>

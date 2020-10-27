@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">In không thành công.</translation>
 <translation id="1125564390852150847">Tạo thẻ mới.</translation>
 <translation id="1145536944570833626">Xóa dữ liệu hiện có.</translation>
+<translation id="1154690515305205900">Không thể tạo đường liên kết đến văn bản được đánh dấu.</translation>
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1172898394251786223">Trường tiếp theo</translation>
 <translation id="1176932207622159128">Không thể lưu ảnh</translation>
@@ -212,6 +213,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3268451620468152448">Thẻ đang mở</translation>
 <translation id="3272527697863656322">Hủy</translation>
 <translation id="3277021493514034324">Đã sao chép địa chỉ trang web</translation>
+<translation id="3285962946108803577">Chia sẻ trang...</translation>
 <translation id="3290875554372353449">Chọn một tài khoản</translation>
 <translation id="3311748811247479259">Đang tắt</translation>
 <translation id="3324193307694657476">Địa chỉ 2</translation>
@@ -612,6 +614,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="766891008101699113">Để duyệt web ở chế độ riêng tư, hãy thêm thẻ mới.</translation>
 <translation id="7671141431838911305">CÀI ĐẶT</translation>
+<translation id="7690812411882623730">Không thể liên kết đến văn bản</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7771470029643830783">Khi bạn đăng xuất, dấu trang, lịch sử hoạt động, mật khẩu và các dữ liệu khác của bạn trên Chrome sẽ không được đồng bộ hóa với Tài khoản Google nữa.

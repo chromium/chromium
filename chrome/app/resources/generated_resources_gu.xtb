@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">રોકો</translation>
 <translation id="1272293450992660632">પિન મૂલ્યો મેળ ખાતા નથી.</translation>
 <translation id="1272978324304772054">આ વપરાશકર્તા એકાઉન્ટ ડિવાઇસની નોંધણી થયેલા ડોમેનમાંનું નથી. જો તમે કોઈ અલગ ડોમેન પર નોંધણી કરવા માગતા હો, તો તમારે પ્રથમ ડિવાઇસની રિકવરી તપાસવી પડશે.</translation>
-<translation id="1274977772557788323">Adobe Flash Player સ્ટોરેજ સેટિંગ્સ</translation>
 <translation id="1274997165432133392">કુકીઝ અને અન્ય સાઇટ ડેટા</translation>
 <translation id="1275718070701477396">પસંદ કરેલું</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરી શક્યાં નહીં</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">તમારા બુકમાર્ક, ઇતિહાસ અને બીજા સેટિંગ તમારા Google એકાઉન્ટ સાથે સિંક કરવામાં આવશે.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">હોમ નેટવર્ક, રોમિંગ નહીં</translation>
-<translation id="1315056510003830387">ફ્લૅશનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="1316136264406804862">શોધી રહ્યું છે ...</translation>
 <translation id="1316495628809031177">સિંક થોભાવ્યું છે</translation>
 <translation id="1317637799698924700">તમારું ડૉકિંગ સ્ટેશન USB Type-C સુસંગત મોડમાં ઑપરેટ થશે.</translation>
@@ -874,7 +872,6 @@
 <translation id="197989455406964291">KDCમાં એન્ક્રિપ્શન પ્રકારની સુવિધા નથી</translation>
 <translation id="1984417487208496350">કોઈ સંરક્ષણ નથી (સુઝાવ આપતા નથી)</translation>
 <translation id="1987317783729300807">એકાઉન્ટ્સ</translation>
-<translation id="1988494864246143197">ઑડિયો, વીડિયો અથવા વીડિયો ગેમ ચલાવવા માટે, સાઇટ સામાન્ય રીતે ફ્લૅશનો ઉપયોગ કરે છે. 2020 ડિસેમ્બર પછી Flash Player ચાલશે નહીં.</translation>
 <translation id="1989112275319619282">બ્રાઉઝ કરો</translation>
 <translation id="1990512225220753005">આ પેજ પર શૉર્ટકટ બતાવશો નહીં</translation>
 <translation id="1992397118740194946">સેટ નથી</translation>
@@ -1645,7 +1642,6 @@
 <translation id="2880660355386638022">વિંડોનું સ્થાન નિયોજન</translation>
 <translation id="2881076733170862447">તમે એક્સ્ટેંશનને ક્લિક કરો ત્યારે</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> પુનઃપ્રારંભ થશે અને પળવારમાં ફરીથી સેટ થશે</translation>
-<translation id="288387288628762616">ફ્લૅશનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2885729872133513017">સર્વરના પ્રતિસાદને ડીકોડ કરતી વખતે સમસ્યા આવી.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2461,7 +2457,6 @@
 <translation id="383669374481694771">આ ડિવાઇસ અને તે કેવી રીતે ઉપયોગમાં લેવાય છે તે (જેમ કે બૅટરીનું લેવલ, સિસ્ટમ અને ઍપ પ્રવૃત્તિ તેમજ ભૂલો) વિશેની આ સામાન્ય માહિતી છે. આ ડેટાનો ઉપયોગ Androidને બહેતર બનાવવા માટે કરવામાં આવશે અને અમુક એકીકૃત માહિતી, Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ તેઓની ઍપ અને પ્રોડક્ટને બહેતર બનાવવામાં સહાયરૂપ થશે.</translation>
 <translation id="3838085852053358637">એક્સ્ટેન્શન લોડ કરવામાં નિષ્ફળ થયાં</translation>
 <translation id="3838486795898716504">વધુ <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">કુકીઝ અને અન્ય સાઇટ તથા પ્લગિન ડેટા</translation>
 <translation id="383891835335927981">કોઈ સાઇટનું ઝૂમ વધારેલ અથવા તો ઘટાડેલ નથી</translation>
 <translation id="3839509547554145593">માઉસ સ્ક્રોલ ઍક્સલરેશન સુવિધા ચાલુ કરો</translation>
 <translation id="3839516600093027468"><ph name="HOST" />ને હંમેશા ક્લિપબોર્ડ જોવાથી બ્લૉક કરો</translation>
@@ -2635,7 +2630,6 @@
 <translation id="4023146161712577481">ઉપકરણ ગોઠવણી નક્કી કરી રહ્યાં છે.</translation>
 <translation id="4025039777635956441">પસંદ કરેલી સાઇટને મ્યૂટ કરો</translation>
 <translation id="4027804175521224372">(તમે ભૂલી રહ્યા છો - <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">જ્યાં સુધી તમે Chrome છોડશો નહીં, ત્યાં સુધી તમારી ફ્લૅશ સેટિંગને સાચવી રખાશે.</translation>
 <translation id="4028467762035011525">ઇનપુટ પદ્ધતિઓ ઉમેરો</translation>
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4031527940632463547">સેન્સર બ્લૉક કરેલ છે</translation>
@@ -2787,7 +2781,6 @@
 <translation id="4232375817808480934">Kerberosની ગોઠવણી કરો</translation>
 <translation id="4235200303672858594">સમગ્ર સ્ક્રીન</translation>
 <translation id="4235965441080806197">સાઇન ઇન રદ કરો</translation>
-<translation id="4237773362828263530">હવે "*" વાઇલ્ડ કાર્ડ ધરાવતા સેટિંગને સપોર્ટ અપાતો નથી. <ph name="BEGIN_LINK" />આ સેટિંગ બદલવા<ph name="END_LINK" /> માટે તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{ટૅબ પછીથી વાંચો}one{ટૅબ પછીથી વાંચો}other{ટૅબ પછીથી વાંચો}}</translation>
 <translation id="4242145785130247982">એકથી વધુ ક્લાયન્ટ પ્રમાણપત્રોને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4242533952199664413">સેટિંગ્સ ખોલો</translation>
@@ -3051,7 +3044,6 @@
 <translation id="4548483925627140043">નેટવર્કનું કોઈ સિગ્નલ મળી રહ્યું નથી</translation>
 <translation id="4549791035683739768">તમારી સિક્યુરિટી કીમાં કોઈ ફિંગરપ્રિન્ટ સંગ્રહિત નથી</translation>
 <translation id="4551763574344810652">છેલ્લો ફેરફાર રદ કરવા માટે <ph name="MODIFIER_KEY_DESCRIPTION" /> દબાવો</translation>
-<translation id="4552089082226364758">ફ્લેશ</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> નેટવર્ક, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">ડિવાઇસની ભાષા બદલવા માટે તમારે તમારું Chromebook ફરી ચાલુ કરવું જરૂરી છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">બાહ્ય એક્સ્ટેંશન હાલના એક્સ્ટેંશનની સરખામણીએ સમાન અથવા નીચલા વર્ઝન પર છે.</translation>
@@ -3406,7 +3398,6 @@
 <translation id="4974733135013075877">બહાર નિકળો અને ચાઇલ્ડ લૉક</translation>
 <translation id="4976009197147810135">સ્ક્રીનને ઊભી વિભાજિત કરો</translation>
 <translation id="4977942889532008999">ઍક્સેસની પુષ્ટિ કરો</translation>
-<translation id="4978905460870207779">સાઇટ ફ્લૅશનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="4980805016576257426">આ એક્સટેન્શનમાં માલવેર છે.</translation>
 <translation id="4981449534399733132">તમારા બધા સિંક કરેલા ડિવાઇસ અને તમારા Google એકાઉન્ટમાંથી બ્રાઉઝિંગ ડેટા સાફ કરવા માટે, <ph name="BEGIN_LINK" />સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">ડિવાઇસનું સૉફ્ટવેર</translation>
@@ -4178,7 +4169,6 @@
 <translation id="5906732635754427568">આ ઍપ્લિકેશન સાથે સંકળાયેલ ડેટાને આ ઉપકરણમાંથી દૂર કરવામાં આવશે.</translation>
 <translation id="5908474332780919512">તમે સાઇન ઇન કરો ત્યારે ઍપ શરૂ કરો</translation>
 <translation id="5908695239556627796">માઉસ સ્ક્રોલની ઝડપ</translation>
-<translation id="5908769186679515905">સાઇટ્સને ફ્લેશ ચલાવવાથી અવરોધિત કરો</translation>
 <translation id="5910363049092958439">છબીને આ રૂપે સા&amp;ચવો...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ઑફલાઇન છે</translation>
 <translation id="5911533659001334206">શૉર્ટકટ દર્શક</translation>
@@ -5828,7 +5818,6 @@ USB ડિવાઇસ</translation>
 <translation id="7831491651892296503">નેટવર્કની ગોઠવણી કરતી વખતે ભૂલ આવી</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">સમાપ્તિ સમય</translation>
-<translation id="783214144752121388">સાઇટને ફ્લૅશ (સુઝાવ આપેલ) ચલાવવાથી બ્લૉક કરો</translation>
 <translation id="7833720883933317473">સાચવેલ કસ્ટમ શબ્દો અહીં દેખાશે</translation>
 <translation id="7835178595033117206">બુકમાર્ક કાઢી નાખ્યું</translation>
 <translation id="7836850009646241041">તમારી સિક્યુરિટી કીને ફરી સ્પર્શ કરી જુઓ</translation>
@@ -6051,7 +6040,6 @@ USB ડિવાઇસ</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{આ ફાઇલ એન્ક્રિપ્ટ કરેલી છે. તેના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.}one{આમાંની કેટલીક ફાઇલો એન્ક્રિપ્ટ કરેલી છે. તેમના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.}other{આમાંની કેટલીક ફાઇલો એન્ક્રિપ્ટ કરેલી છે. તેમના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.}}</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8090234456044969073">તમારી મોટાભાગની અવારનાવર મુલાકાત લીધેલ વેબસાઇટ્સની સૂચિ વાંચો</translation>
-<translation id="8092681102116274204">હવે "*" વાઇલ્ડ કાર્ડ ધરાવતા સેટિંગને સપોર્ટ અપાતો નથી. <ph name="BEGIN_LINK" />આ સેટિંગ બદલવા<ph name="END_LINK" /> માટે એક્સ્ટેન્શન ડેવલપરનો અથવા તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> પ્રતિસાદ આપી રહ્યું નથી</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ડ્રાઇવમાં બૅકઅપ લો. કોઈપણ સમયે તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસ સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ હોય છે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમારા બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે.<ph name="END_PARAGRAPH2" />
@@ -6146,7 +6134,6 @@ USB ડિવાઇસ</translation>
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" />ના આલ્બમ પસંદ કરો</translation>
 <translation id="8202160505685531999">તમારી <ph name="DEVICE_TYPE" /> પ્રોફાઇલને અપડેટ કરવા માટે કૃપા કરીને તમારો પાસવર્ડ ફરીથી દાખલ કરો.</translation>
 <translation id="8203732864715032075">તમને નોટિફિકેશન મોકલે અને સંદેશ માટે ડિફૉલ્ટ રૂપે આ કમ્પ્યુટરને યાદ રાખે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">ફ્લૅશને બ્લૉક કરો (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="820568752112382238">સૌથી વધુ મુલાકાત લેવાયેલી સાઇટ</translation>
 <translation id="8206745257863499010">બ્લુસી</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>

@@ -273,6 +273,7 @@
 <translation id="2979025552038692506">चयन गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2987620471460279764">अर्को यन्त्रबाट आदान प्रदान गरिएको पाठ सन्देश</translation>
 <translation id="2989523299700148168">भर्खरै हेरिएका</translation>
+<translation id="2992473221983447149">फोटोका वर्णन</translation>
 <translation id="2996291259634659425">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="2996809686854298943">URL आवश्यक छ</translation>
 <translation id="3006881078666935414">उपयोगसम्बन्धी कुनै डेटा छैन</translation>
@@ -285,6 +286,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> पुस्तक चिन्ह}other{<ph name="BOOKMARKS_COUNT_MANY" /> पुस्तक चिन्हहरू}}</translation>
 <translation id="3062802207422175757">Chrome मा तपाईंको रुचिका विषयसँग सम्बन्धित लेखहरू पढ्नुहोस्</translation>
 <translation id="3089395242580810162">इन्कोग्निटो ट्याबमा खोल्नुहोस्</translation>
+<translation id="3098745985164956033">तपाईंलाई उपलब्ध गराइने वर्णनको गुणस्तर सुधार गर्न केही फोटोहरू Google मा पठाइन्छन्</translation>
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
 <translation id="3137521801621304719">इनकगनिटो मोडलाई छोड्नुहोस्</translation>
@@ -774,6 +776,7 @@
 <translation id="6545017243486555795">सबै डेटा खाली गर्नुहोस्</translation>
 <translation id="6560414384669816528">Sogou मार्फत खोजी गर्नुहोस्</translation>
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
+<translation id="6565959834589222080">Wi-Fi उपलब्ध हुँदा मोबाइल डेटा प्रयोग गरिँदैन</translation>
 <translation id="6566259936974865419">Chrome ले तपाईंको <ph name="GIGABYTES" /> जि.बि. बचाएको छ</translation>
 <translation id="6573096386450695060">सधैँ अनुमति दिनुहोस्</translation>
 <translation id="6573431926118603307">तपाईँले आफ्ना अन्य यन्त्रहरूमा Chrome मा खोल्नुभएका ट्याबहरू यहाँ देखिनेछन्।</translation>
@@ -1085,6 +1088,7 @@
 <translation id="8788968922598763114">पछिल्लो पटक बन्द गरिएको ट्याब पुनः खोल्नुहोस्</translation>
 <translation id="8798449543960971550">पढिसकिएको</translation>
 <translation id="8812260976093120287">केही वेबसाइटहरूमा तपाईंले माथि समर्थन गरिएका भुक्तानी सम्बन्धी अनुप्रयोगहरूमार्फत आफ्नो यन्त्रमा भुक्तानी गर्न सक्नुहुन्छ।</translation>
+<translation id="881688628773363275">ट्याबका सामग्री प्रिभ्यू गर्ने सुविधा उपलब्ध छैन।</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="883806473910249246">उक्त सामग्री डाउलोड गर्ने क्रममा एउटा त्रुटि भयो।</translation>
 <translation id="8840953339110955557">यो पृष्ठ अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>

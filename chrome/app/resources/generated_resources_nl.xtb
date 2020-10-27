@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1272293450992660632">Pincodewaarden komen niet overeen.</translation>
 <translation id="1272978324304772054">Dit gebruikersaccount hoort niet bij het domein waarbij het apparaat is geregistreerd. Als je het apparaat wilt registreren bij een ander domein, moet je eerst apparaatherstel uitvoeren.</translation>
-<translation id="1274977772557788323">Opslaginstellingen voor Adobe Flash Player</translation>
 <translation id="1274997165432133392">Cookies en andere sitegegevens</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
 <translation id="1276994519141842946">Kan <ph name="APP_NAME" /> niet verwijderen</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Je bookmarks, geschiedenis en andere instellingen worden gesynchroniseerd met je Google-account</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Thuisnetwerk zonder roaming</translation>
-<translation id="1315056510003830387">Geen toestemming om Flash te gebruiken</translation>
 <translation id="1316136264406804862">Zoeken...</translation>
 <translation id="1316495628809031177">Synchronisatie is onderbroken</translation>
 <translation id="1317637799698924700">Je dockingstation werkt in de voor USB Type-C-geschikte modus.</translation>
@@ -878,7 +876,6 @@
 <translation id="197989455406964291">KDC ondersteunt versleutelingstype niet</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="1987317783729300807">Accounts</translation>
-<translation id="1988494864246143197">Sites gebruiken normaal gesproken Flash om audio, video of videogames af te spelen. Flash Player wordt na december 2020 niet meer ondersteund.</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="1990512225220753005">Geen snelkoppelingen op deze pagina weergeven</translation>
 <translation id="1992397118740194946">Niet ingesteld</translation>
@@ -1649,7 +1646,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2880660355386638022">Vensterplaatsing</translation>
 <translation id="2881076733170862447">Wanneer je op de extensie klikt</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> wordt zo meteen opnieuw gestart en opnieuw ingesteld.</translation>
-<translation id="288387288628762616">Toestemming om Flash te gebruiken</translation>
 <translation id="2885378588091291677">Taakbeheer</translation>
 <translation id="2885729872133513017">Er is een probleem opgetreden bij het decoderen van de serverreactie.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2466,7 +2462,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="383669374481694771">Dit is algemene informatie over dit apparaat en hoe je het gebruikt (zoals batterijniveau, systeem- en app-activiteit en fouten). De gegevens worden gebruikt om Android te verbeteren voor iedereen. Daarnaast helpen bepaalde verzamelde gegevens Google-apps en -partners, zoals Android-ontwikkelaars, bij de verbetering van hun apps en producten.</translation>
 <translation id="3838085852053358637">Kan extensie niet laden</translation>
 <translation id="3838486795898716504">Meer <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Cookies en andere site- en plug-ingegevens</translation>
 <translation id="383891835335927981">Er zijn geen sites in- of uitgezoomd</translation>
 <translation id="3839509547554145593">Scrollversnelling voor muis inschakelen</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> altijd blokkeren voor het klembord</translation>
@@ -2641,7 +2636,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4023146161712577481">Apparaatconfiguratie bepalen.</translation>
 <translation id="4025039777635956441">Geluid van geselecteerde site dempen</translation>
 <translation id="4027804175521224372">(Dit kan handiger: <ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />)</translation>
-<translation id="4027951648498485763">Je Flash-instellingen blijven behouden totdat je Chrome afsluit.</translation>
 <translation id="4028467762035011525">Invoermethoden toevoegen</translation>
 <translation id="4031179711345676612">Microfoon toegestaan</translation>
 <translation id="4031527940632463547">Sensoren geblokkeerd</translation>
@@ -2793,7 +2787,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4232375817808480934">Kerberos configureren</translation>
 <translation id="4235200303672858594">Volledig scherm</translation>
 <translation id="4235965441080806197">Inloggen annuleren</translation>
-<translation id="4237773362828263530">Instellingen met het jokerteken '*' worden niet meer ondersteund. Neem contact op met je beheerder om <ph name="BEGIN_LINK" />deze instellingen te wijzigen<ph name="END_LINK" />.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Tabblad later lezen}other{Tabbladen later lezen}}</translation>
 <translation id="4242145785130247982">Meerdere clientcertificaten worden niet ondersteund</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
@@ -3057,7 +3050,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4548483925627140043">Signaal niet gevonden</translation>
 <translation id="4549791035683739768">Je beveiligingssleutel heeft geen opgeslagen vingerafdrukken</translation>
 <translation id="4551763574344810652">Druk op <ph name="MODIFIER_KEY_DESCRIPTION" /> om dit ongedaan te maken</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4552759165874948005">Netwerk: <ph name="NETWORK_TYPE" />, signaalsterkte: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">Je moet je Chromebook opnieuw opstarten om de taal van het apparaat te wijzigen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Externe uitbreiding heeft dezelfde of een lagere versie dan de bestaande.</translation>
@@ -3412,7 +3404,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4974733135013075877">Afsluiten en kinderslot</translation>
 <translation id="4976009197147810135">Verticaal splitsen</translation>
 <translation id="4977942889532008999">Toegang bevestigen</translation>
-<translation id="4978905460870207779">Sites kunnen vragen of ze Flash mogen gebruiken</translation>
 <translation id="4980805016576257426">Deze extensie bevat malware.</translation>
 <translation id="4981449534399733132">Als je browsergegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />log je in<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Apparaatsoftware</translation>
@@ -4183,7 +4174,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5906732635754427568">Gegevens die zijn gekoppeld aan deze app, worden verwijderd van dit apparaat.</translation>
 <translation id="5908474332780919512">App starten als je inlogt</translation>
 <translation id="5908695239556627796">Scrollsnelheid voor muis</translation>
-<translation id="5908769186679515905">Niet toestaan dat sites Flash uitvoeren</translation>
 <translation id="5910363049092958439">Af&amp;beelding opslaan als...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
 <translation id="5911533659001334206">Sneltoetsenviewer</translation>
@@ -5835,7 +5825,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7831491651892296503">Fout bij configureren van netwerk</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Eindtijd</translation>
-<translation id="783214144752121388">Sites geen toestemming geven Flash uit te voeren (aanbevolen)</translation>
 <translation id="7833720883933317473">Opgeslagen aangepaste woorden worden hier weergegeven</translation>
 <translation id="7835178595033117206">Bookmark verwijderd</translation>
 <translation id="7836850009646241041">Raak je beveiligingssleutel opnieuw aan</translation>
@@ -6063,7 +6052,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Dit bestand is versleuteld. Vraag de eigenaar om het te ontsleutelen.}other{Sommige van deze bestanden zijn versleuteld. Vraag de eigenaar om deze te ontsleutelen.}}</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8090234456044969073">Een lijst weergeven van je meest bezochte websites</translation>
-<translation id="8092681102116274204">Instellingen met het jokerteken '*' worden niet meer ondersteund. Neem contact op met de ontwikkelaar van de extensie of je beheerder om <ph name="BEGIN_LINK" />deze instellingen te wijzigen<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> reageert niet</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Een back-up maken in Google Drive. Gemakkelijk je gegevens herstellen of op elk gewenst moment van apparaat wisselen. Je back-up omvat app-gegevens.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.<ph name="END_PARAGRAPH2" />
@@ -6158,7 +6146,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" />-albums selecteren</translation>
 <translation id="8202160505685531999">Geef je wachtwoord opnieuw op om je <ph name="DEVICE_TYPE" />-profiel te updaten.</translation>
 <translation id="8203732864715032075">je meldingen te sturen en deze computer standaard te gebruiken voor Berichten. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Flash blokkeren (aanbevolen)</translation>
 <translation id="820568752112382238">Meest bezochte sites</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Mobiel</translation>

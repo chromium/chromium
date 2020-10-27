@@ -244,7 +244,6 @@
 <translation id="1272079795634619415">Зогс</translation>
 <translation id="1272293450992660632">ПИН кодын утга таарахгүй байна.</translation>
 <translation id="1272978324304772054">Энэ хэрэглэгчийн бүртгэл нь төхөөрөмжийн нэгдэн орсон домэйнд харьяалагдахгүй байна. Хэрэв та өөр домэйнд нэгдэн орох хүсэлтэй байгаа бол эхлээд төхөөрөмжөө сэргээх хэрэгтэй.</translation>
-<translation id="1274977772557788323">Adobe Flash Player сангийн тохиргоо</translation>
 <translation id="1274997165432133392">Cookies болон бусад цахим хуудсын мэдээлэл</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" />-г суулгаж чадсангүй</translation>
@@ -278,7 +277,6 @@
 <translation id="1313705515580255288">Таны хайлтын жагсаалт, түүх болон бусад тохиргоонуудыг таны Google Account руу шууд sync хийнэ.</translation>
 <translation id="1314565355471455267">Андройд VPN</translation>
 <translation id="131461803491198646">Үндсэн сүлжээ, роуминг биш</translation>
-<translation id="1315056510003830387">Flash ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="1316136264406804862">Хайж байна...</translation>
 <translation id="1316495628809031177">Синк хийхийг түр зогсоосон</translation>
 <translation id="1317637799698924700">Таны холбогч станц USB C-Төрлийн тохирох горимд ажиллана.</translation>
@@ -874,7 +872,6 @@
 <translation id="197989455406964291">KDC нь шифрлэлтийн төрлийг дэмждэггүй</translation>
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="1987317783729300807">Хаяг</translation>
-<translation id="1988494864246143197">Сайтууд ихэвчлэн аудио, видео эсвэл видео тоглоомыг тоглуулахын тулд Flash-г ашигладаг. Flash Player-г 2020 оны 12 дугаар сараас хойш ашиглах боломжгүй болно.</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
 <translation id="1990512225220753005">Энэ хуудсан дээр товчлолыг бүү үзүүл</translation>
 <translation id="1992397118740194946">Суугдаагүй</translation>
@@ -1644,7 +1641,6 @@
 <translation id="2880660355386638022">Цонх байршуулалт</translation>
 <translation id="2881076733170862447">Та өргөтгөл гэснийг товших үед</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> дахин эхлэх бөгөөд хоромхон зуур л тохируулагдана.</translation>
-<translation id="288387288628762616">Flash ашиглахыг зөвшөөрсөн</translation>
 <translation id="2885378588091291677">Асуудлын менежер</translation>
 <translation id="2885729872133513017">Серверийн хариу үйлдлийн кодыг тайлахад асуудал гарлаа.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
@@ -2461,7 +2457,6 @@
 <translation id="383669374481694771">Энэ нь уг төхөөрөмжийн болон түүнийг хэрхэн ашигладаг тухай (батарейн түвшин, систем болон аппын үйл ажиллагаа, алдаа зэрэг) ерөнхий мэдээлэл юм. Өгөгдлийг Android-г сайжруулах зорилгоор ашиглах бөгөөд хуримтлуулсан зарим мэдээлэл нь Google-н аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд апп болон бүтээгдэхүүнээ сайжруулахад нь мөн тусална.</translation>
 <translation id="3838085852053358637">Өргөтгөлийг ачаалж чадсангүй</translation>
 <translation id="3838486795898716504">Илүү их <ph name="PAGE_TITLE" /></translation>
-<translation id="3838543471119263078">Cookies ба бусад сайтын болон нэмэлт өргөтгөлийн мэдээлэл</translation>
 <translation id="383891835335927981">Томруулж, жижигрүүлсэн сайт алга</translation>
 <translation id="3839509547554145593">Хулганын гүйлгэлтийн хурдасгуурыг идэвхжүүлэх</translation>
 <translation id="3839516600093027468"><ph name="HOST" />-г түр санах ой харахыг тогтмол хориглох</translation>
@@ -2635,7 +2630,6 @@
 <translation id="4023146161712577481">Төхөөрөмжийн тохиргоог тодорхойлж байна.</translation>
 <translation id="4025039777635956441">Сонгосон сайтын дууг хаах</translation>
 <translation id="4027804175521224372">(<ph name="IDS_SYNC_PROMO_NOT_SIGNED_IN_STATUS_LINK" />-Та үүнийг орхисон байна)</translation>
-<translation id="4027951648498485763">Chrome-с гарах хүртэл таны анивчих тохиргоог хэвээр үлдээх болно.</translation>
 <translation id="4028467762035011525">Оруулах арга нэмэх</translation>
 <translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
 <translation id="4031527940632463547">Мэдрэгчийг хориглосон</translation>
@@ -2787,7 +2781,6 @@
 <translation id="4232375817808480934">Kerberos-г тохируулах</translation>
 <translation id="4235200303672858594">Дэлгэцийг томоор харах</translation>
 <translation id="4235965441080806197">Нэвтрэхийг цуцлах</translation>
-<translation id="4237773362828263530">"*" төлөөлөх тэмдэгтэй тохиргоог дэмжихээ больсон. <ph name="BEGIN_LINK" />Эдгээр тохиргоог өөрчлөх<ph name="END_LINK" />-ийн тулд администратортайгаа холбогдоно уу.</translation>
 <translation id="4241393667672058421">{NUM_TABS,plural, =1{Табыг дараа унших}other{Табуудыг дараа Унших}}</translation>
 <translation id="4242145785130247982">Олон клиентийн гэрчилгээг дэмждэггүй</translation>
 <translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
@@ -3051,7 +3044,6 @@
 <translation id="4548483925627140043">Дохио илэрсэнгүй</translation>
 <translation id="4549791035683739768">Таны аюулгүй байдлын түлхүүр дээр хадгалсан хурууны хээ байхгүй байна</translation>
 <translation id="4551763574344810652">Болихын тулд <ph name="MODIFIER_KEY_DESCRIPTION" />-г дарна уу</translation>
-<translation id="4552089082226364758">Гэрэл</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> сүлжээ, дохионы хүч <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4553526521109675518">Та төхөөрөмжийн хэлийг өөрчлөхийн тулд Chromebook-ээ дахин эхлүүлэх шаардлагатай. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">Энэ программын гадаад өргөтгөл одоогийн хувилбартай адилхан эсвэл хуучин байна.</translation>
@@ -3406,7 +3398,6 @@
 <translation id="4974733135013075877">Гараад хүүхэд хүрэхээс сэргийлж цоожлох</translation>
 <translation id="4976009197147810135">Босоо чиглэлд хуваах</translation>
 <translation id="4977942889532008999">Нэвтрэлтийг баталгаажуулах</translation>
-<translation id="4978905460870207779">Сайтууд Flash ашиглахыг хүсэх боломжтой</translation>
 <translation id="4980805016576257426">Энэ өргөтгөл нь хортой код агуулсан байна.</translation>
 <translation id="4981449534399733132">Хөтчийн өгөгдлийг синк хийсэн бүх төхөөрөмж болон Google Бүртгэлээсээ устгахын тулд <ph name="BEGIN_LINK" />нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Төхөөрөмжийн программ хангамж</translation>
@@ -4178,7 +4169,6 @@
 <translation id="5906732635754427568">Энэ апп-тай холбоотой өгөгдлийг төхөөрөмжөөс устгах болно.</translation>
 <translation id="5908474332780919512">Нэвтрэх үедээ аппыг эхлүүлэх</translation>
 <translation id="5908695239556627796">Хулганын гүйлгэлтийн хурд</translation>
-<translation id="5908769186679515905">Сайтыг Flash ажиллуулах тохиргоог блоклох</translation>
 <translation id="5910363049092958439">Зургийг өөр өргөтгөлтэйгээр хадгалах...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> офлайн байна</translation>
 <translation id="5911533659001334206">Товчлол харагч</translation>
@@ -5829,7 +5819,6 @@
 <translation id="7831491651892296503">Сүлжээг тохируулахад алдаа гарлаа</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7832084384634357321">Дуусах цаг</translation>
-<translation id="783214144752121388">Сайтын Flash ажиллуулахыг блоклох (санал болгосон)</translation>
 <translation id="7833720883933317473">Тохируулсан үгс энд харагдана</translation>
 <translation id="7835178595033117206">Хавчуургыг устгасан</translation>
 <translation id="7836850009646241041">Аюулгүй байдлын түлхүүртээ дахин хүрээд үзнэ үү</translation>
@@ -6055,7 +6044,6 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Энэ файлыг шифрлэсэн байна. Өмчлөгчөөс нь үүний кодыг тайлахыг хүснэ үү.}other{Эдгээр файлын заримыг нь шифрлэсэн байна. Өмчлөгчөөс нь эдгээрийн кодыг тайлахыг хүснэ үү.}}</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
 <translation id="8090234456044969073">Хамгийн их зочилсон веб сайтуудынхаа жагсаалтыг харах</translation>
-<translation id="8092681102116274204">"*" төлөөлөх тэмдэгтэй тохиргоог дэмжихээ больсон. <ph name="BEGIN_LINK" />Эдгээр тохиргоог өөрчлөх<ph name="END_LINK" />-ийн тулд өргөтгөлийн хөгжүүлэгчтэй эсвэл администратортайгаа холбогдоно уу.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> хариу өгөхгүй байна</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Драйвт нөөцлөх. Өгөгдлөө хялбархнаар сэргээж эсвэл төхөөрөмжийг хүссэн үедээ сэлгээрэй. Таны нөөцлөлтөд аппын өгөгдөл багтдаг.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Таны нөөцлөлтийг Google-д байршуулдаг бөгөөд таны Google Бүртгэлийн нууц үгийг ашиглан шифрлэдэг.<ph name="END_PARAGRAPH2" />
@@ -6149,7 +6137,6 @@
 <translation id="8201717382574620700"><ph name="TOPIC_SOURCE" /> цомгуудыг сонгоно уу</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" />-ын профайлаа шинэчлэхийн тулд нууц үгээ дахин оруулна уу.</translation>
 <translation id="8203732864715032075">Энэ компьютерийг Мессежэд санахын тулд танд мэдэгдэл болон өгөгдмөлийг илгээнэ. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="8205561625497621211">Flash-г блоклоно (санал болгосон)</translation>
 <translation id="820568752112382238">Хамгийн их зочилсон сайт</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>

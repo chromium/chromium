@@ -23,7 +23,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da otkrijete uređaje u blizini</translation>
 <translation id="2375079107209812402">Broj preostalih pokušaja: <ph name="ATTEMPTS_LEFT" /></translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostalo pokušaja: {0}}one{<ph name="ERROR_MESSAGE" /> Preostalo pokušaja: {0}}few{<ph name="ERROR_MESSAGE" /> Preostalo pokušaja: {0}}other{<ph name="ERROR_MESSAGE" /> Preostalo pokušaja: {0}}}</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostao je još {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostao je još {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostala su još {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostalo je još {0} pokušaja}}</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
@@ -61,7 +61,7 @@
 <translation id="4890353053343094602">Odmah odaberite novu lozinku</translation>
 <translation id="4917889632206600977">Zaustavljeno – nestalo je papira</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="5094480857972195099">Domena <ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom i može daljinski upravljati postavkama i nadzirati aktivnost korisnika.</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> upravlja ovim korisnikom i može udaljeno upravljati postavkama i pratiti aktivnost korisnika.</translation>
 <translation id="520299634122159966">Nije dostupan nijedan skener</translation>
 <translation id="5212543919916444558">Ne mogu pronaći ništa na ekranu u vezi s čim mogu pomoći.
 Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
