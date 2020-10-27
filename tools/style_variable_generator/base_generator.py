@@ -112,7 +112,10 @@ class BaseGenerator:
     def AddColor(self, name, value_obj, context=None):
         self._SetVariableContext(name, context)
         try:
-            if isinstance(value_obj, unicode):
+            # Python3's unicode class is just 'str'.
+            strtype = str if sys.version_info >= (3, ) else basestring
+
+            if isinstance(value_obj, strtype):
                 self.model[VariableType.COLOR].Add(self._default_mode, name,
                                                    Color(value_obj))
             elif isinstance(value_obj, dict):
