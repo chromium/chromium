@@ -851,6 +851,7 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
         requester_frame->routing_id(), save_item_ptr->save_source(),
         save_item_ptr->full_path(), web_contents()->GetBrowserContext(),
         web_contents()
+            ->GetMainFrame()
             ->GetRenderViewHost()
             ->GetProcess()
             ->GetStoragePartition(),

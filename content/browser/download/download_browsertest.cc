@@ -3819,11 +3819,19 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(15, 15);
   mouse_event.click_count = 1;
-  shell()->web_contents()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  shell()
+      ->web_contents()
+      ->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  shell()->web_contents()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  shell()
+      ->web_contents()
+      ->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
 
   observer->WaitForFinished();
   EXPECT_EQ(
