@@ -86,6 +86,7 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
 
   void OpenFileDescriptor(const std::string& guid,
                           uint32_t drop_privileges_mask,
+                          mojo::PlatformHandle lifeline_fd,
                           OpenFileDescriptorCallback callback) override;
 #endif  // defined(OS_CHROMEOS)
 

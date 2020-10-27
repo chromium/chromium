@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
@@ -124,6 +125,7 @@ void DeviceManagerImpl::CheckAccess(const std::string& guid,
 void DeviceManagerImpl::OpenFileDescriptor(
     const std::string& guid,
     uint32_t drop_privileges_mask,
+    mojo::PlatformHandle lifeline_fd,
     OpenFileDescriptorCallback callback) {
   scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
   if (!device) {
@@ -134,8 +136,11 @@ void DeviceManagerImpl::OpenFileDescriptor(
         base::AdaptCallbackForRepeating(std::move(callback));
     auto devpath =
         static_cast<device::UsbDeviceLinux*>(device.get())->device_path();
-    chromeos::PermissionBrokerClient::Get()->OpenPathWithDroppedPrivileges(
-        devpath, drop_privileges_mask,
+
+    // The |lifeline_fd| passed through D-Bus gets is duped, so we need to close
+    // our original.
+    chromeos::PermissionBrokerClient::Get()->ClaimDevicePath(
+        devpath, drop_privileges_mask, lifeline_fd.GetFD().get(),
         base::BindOnce(&DeviceManagerImpl::OnOpenFileDescriptor,
                        weak_factory_.GetWeakPtr(), copyable_callback),
         base::BindOnce(&DeviceManagerImpl::OnOpenFileDescriptorError,

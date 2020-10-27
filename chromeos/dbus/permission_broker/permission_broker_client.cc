@@ -18,6 +18,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using permission_broker::kCheckPathAccess;
+using permission_broker::kClaimDevicePath;
 using permission_broker::kOpenPath;
 using permission_broker::kOpenPathWithDroppedPrivileges;
 using permission_broker::kPermissionBrokerInterface;
@@ -82,6 +83,25 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(path);
     writer.AppendUint32(allowed_interfaces_mask);
+    proxy_->CallMethodWithErrorCallback(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PermissionBrokerClientImpl::OnOpenPathResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        base::BindOnce(&PermissionBrokerClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
+  }
+
+  void ClaimDevicePath(const std::string& path,
+                       uint32_t allowed_interfaces_mask,
+                       int lifeline_fd,
+                       OpenPathCallback callback,
+                       ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(kPermissionBrokerInterface, kClaimDevicePath);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+    writer.AppendUint32(allowed_interfaces_mask);
+    writer.AppendFileDescriptor(lifeline_fd);
     proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&PermissionBrokerClientImpl::OnOpenPathResponse,

@@ -4,11 +4,14 @@
 
 #include "chrome/browser/chromeos/usb/cros_usb_detector.h"
 
+#include <fcntl.h>
+
 #include <string>
 #include <utility>
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind_helpers.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
@@ -539,10 +542,27 @@ void CrosUsbDetector::ConnectSharedDevicesOnVmStartup(
   }
 }
 
+bool CrosUsbDetector::IsDeviceAlreadySharedWithVm(const std::string& vm_name,
+                                                  const std::string& guid) {
+  for (const auto& device : usb_devices_) {
+    if (device.guid == guid && device.shared_vm_name == vm_name &&
+        device.guest_port) {
+      VLOG(1) << "Device " << device.label << " is already shared with vm "
+              << vm_name;
+      return true;
+    }
+  }
+  return false;
+}
+
 void CrosUsbDetector::AttachUsbDeviceToVm(
     const std::string& vm_name,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback) {
+  if (IsDeviceAlreadySharedWithVm(vm_name, guid)) {
+    std::move(callback).Run(true);
+    return;
+  }
   uint32_t allowed_interfaces_mask = 0;
   for (auto& device : usb_devices_) {
     if (device.guid == guid) {
@@ -575,11 +595,37 @@ void CrosUsbDetector::AttachUsbDeviceToVm(
 
   const auto& device_info = it->second;
 
+  auto claim_it = devices_claimed_.find(guid);
+  if (claim_it != devices_claimed_.end()) {
+    if (claim_it->second.device_file.IsValid()) {
+      // We take a dup here which will be closed if DoVmAttach fails.
+      base::ScopedFD device_fd(
+          claim_it->second.device_file.Duplicate().TakePlatformFile());
+      DoVmAttach(vm_name, device_info.Clone(), std::move(device_fd),
+                 std::move(callback));
+    } else {
+      LOG(WARNING) << "Device " << guid << " already claimed and awaiting fd.";
+      std::move(callback).Run(false);
+    }
+    return;
+  }
+
   VLOG(1) << "Opening " << guid << " with mask " << std::hex
           << allowed_interfaces_mask;
+
+  base::ScopedFD read_end, write_end;
+  if (!base::CreatePipe(&read_end, &write_end, /*non_blocking=*/true)) {
+    LOG(ERROR) << "Couldn't create pipe for " << guid;
+    std::move(callback).Run(false);
+    return;
+  }
+
+  VLOG(1) << "Saving lifeline_fd " << write_end.get();
+  devices_claimed_[guid].lifeline_file = base::File(std::move(write_end));
+
   // Open a file descriptor to pass to CrostiniManager & Concierge.
   device_manager_->OpenFileDescriptor(
-      guid, allowed_interfaces_mask,
+      guid, allowed_interfaces_mask, mojo::PlatformHandle(std::move(read_end)),
       base::BindOnce(&CrosUsbDetector::OnAttachUsbDeviceOpened,
                      weak_ptr_factory_.GetWeakPtr(), vm_name,
                      device_info.Clone(), std::move(callback)));
@@ -663,23 +709,21 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  base::ScopedFD fd(file.TakePlatformFile());
+  devices_claimed_[device_info->guid].device_file = file.Duplicate();
   if (!manager()) {
     LOG(ERROR) << "Attaching device without Crostini manager instance";
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  for (const auto& device : usb_devices_) {
-    if (device.guid == device_info->guid) {
-      if (device.shared_vm_name == vm_name && device.guest_port) {
-        LOG(ERROR) << "Device " << device.label << " is already shared";
-        // The device is already attached.
-        std::move(callback).Run(/*success=*/true);
-        return;
-      }
-    }
-  }
+  DoVmAttach(vm_name, device_info.Clone(),
+             base::ScopedFD(file.TakePlatformFile()), std::move(callback));
+}
 
+void CrosUsbDetector::DoVmAttach(
+    const std::string& vm_name,
+    device::mojom::UsbDeviceInfoPtr device_info,
+    base::ScopedFD fd,
+    base::OnceCallback<void(bool success)> callback) {
   vm_tools::concierge::AttachUsbDeviceRequest request;
   request.set_vm_name(vm_name);
   request.set_owner_id(crostini::CryptohomeIdForProfile(profile()));
@@ -743,6 +787,7 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
       break;
     }
   }
+  RelinquishDeviceClaim(guid);
   SignalUsbDeviceObservers();
   std::move(callback).Run(success);
 }
@@ -759,4 +804,16 @@ void CrosUsbDetector::AttachAfterDetach(
   }
   AttachUsbDeviceToVm(vm_name, guid, std::move(callback));
 }
+
+void CrosUsbDetector::RelinquishDeviceClaim(const std::string& guid) {
+  auto it = devices_claimed_.find(guid);
+  if (it != devices_claimed_.end()) {
+    VLOG(1) << "Closing lifeline_fd "
+            << it->second.lifeline_file.GetPlatformFile();
+    devices_claimed_.erase(it);
+  } else {
+    LOG(ERROR) << "Relinquishing device with no prior claim: " << guid;
+  }
+}
+
 }  // namespace chromeos

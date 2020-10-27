@@ -38,9 +38,12 @@ interface UsbDeviceManager {
 
   // Attempt to open a USB device using permission_broker and return
   // a file descriptor. Allow access only to interfaces specified in
-  // |allowed_interfaces_mask|.
+  // |allowed_interfaces_mask|. The |lifeline_fd| should be the remote end of
+  // a pipe created locally, and when this pipe is closed permission_broker
+  // reattaches any kernel drivers that may have been detached when opening.
   [EnableIf=is_chromeos]
-  OpenFileDescriptor(string guid, uint32 allowed_interfaces_mask)
+  OpenFileDescriptor(string guid, uint32 allowed_interfaces_mask,
+                     handle<platform> lifeline_fd)
       => (mojo_base.mojom.File? fd);
 
   // Sets the client for this DeviceManager service. The service will notify its
