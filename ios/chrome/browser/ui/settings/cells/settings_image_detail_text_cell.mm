@@ -110,6 +110,10 @@
         constraintGreaterThanOrEqualToAnchor:textStackView.bottomAnchor
                                     constant:
                                         kTableViewTwoLabelsCellVerticalSpacing],
+
+    // Leading constraint for |customSepartor|.
+    [self.customSeparator.leadingAnchor
+        constraintEqualToAnchor:self.textLabel.leadingAnchor],
   ]];
 }
 

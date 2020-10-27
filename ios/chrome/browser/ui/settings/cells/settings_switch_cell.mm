@@ -150,6 +150,10 @@ const CGFloat kIconImageSize = 28;
           constraintEqualToAnchor:_detailTextLabel.bottomAnchor],
       [_textLabel.bottomAnchor
           constraintEqualToAnchor:_detailTextLabel.topAnchor],
+
+      // Leading constraint for |customSepartor|.
+      [self.customSeparator.leadingAnchor
+          constraintEqualToAnchor:_textLabel.leadingAnchor],
     ]];
 
     if (UIContentSizeCategoryIsAccessibilityCategory(

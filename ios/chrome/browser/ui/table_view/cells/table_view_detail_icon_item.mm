@@ -185,6 +185,10 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
       [_iconImageView.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
       _iconHiddenConstraint,
+
+      // Leading constraint for |customSepartor|.
+      [self.customSeparator.leadingAnchor
+          constraintEqualToAnchor:_textLabel.leadingAnchor],
     ]];
 
     AddOptionalVerticalPadding(contentView, _textLabel,
