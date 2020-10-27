@@ -68,4 +68,5 @@ generate_grd("build_grdp") {
     ]
   }
   input_files_base_dir = rebase_path("./components-chromium/", "//")
+  resource_path_prefix = "polymer/v3_0"
 }

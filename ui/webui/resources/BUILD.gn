@@ -18,12 +18,14 @@ if (include_polymer) {
     grd_prefix = "webui_generated"
     out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
     deps = [
+      "cr_elements:build_grdp",
       "//third_party/polymer/v1_0:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files = [
       "$root_gen_dir/third_party/polymer/v1_0/polymer_1_0_resources.grdp",
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
     ]
 
     if (is_chromeos) {
@@ -37,6 +39,7 @@ group("preprocess") {
   deps = [
     ":preprocess_generated",
     ":preprocess_src",
+    "cr_elements:preprocess",
   ]
 }
 
@@ -52,7 +55,6 @@ preprocess_grit("preprocess_src") {
 
   if (include_polymer) {
     in_files += [
-      "cr_elements/cr_splitter/cr_splitter.js",
       "cr_components/certificate_manager/certificates_browser_proxy.js",
       "cr_components/certificate_manager/certificate_manager_types.js",
       "cr_components/certificate_manager/certificate_provisioning_browser_proxy.js",
@@ -103,57 +105,6 @@ preprocess_grit("preprocess_generated") {
       "cr_components/customize_themes/theme_icon.js",
       "cr_components/managed_footnote/managed_footnote.m.js",
       "cr_components/omnibox/cr_autocomplete_match_list.js",
-      "cr_elements/shared_vars_css.m.js",
-      "cr_elements/shared_style_css.m.js",
-      "cr_elements/search_highlight_style_css.m.js",
-      "cr_elements/md_select_css.m.js",
-      "cr_elements/icons.m.js",
-      "cr_elements/hidden_style_css.m.js",
-      "cr_elements/cr_scrollable_behavior.m.js",
-      "cr_elements/cr_page_host_style_css.m.js",
-      "cr_elements/cr_icons_css.m.js",
-      "cr_elements/cr_container_shadow_behavior.m.js",
-      "cr_elements/action_link_css.m.js",
-      "cr_elements/cr_grid/cr_grid.js",
-      "cr_elements/cr_menu_selector/cr_menu_selector.js",
-      "cr_elements/cr_view_manager/cr_view_manager.m.js",
-      "cr_elements/cr_toolbar/cr_toolbar_selection_overlay.m.js",
-      "cr_elements/cr_toolbar/cr_toolbar_search_field.m.js",
-      "cr_elements/cr_toolbar/cr_toolbar.m.js",
-      "cr_elements/cr_toggle/cr_toggle.m.js",
-      "cr_elements/cr_toast/cr_toast.m.js",
-      "cr_elements/cr_toast/cr_toast_manager.m.js",
-      "cr_elements/cr_tabs/cr_tabs.m.js",
-      "cr_elements/cr_slider/cr_slider.m.js",
-      "cr_elements/cr_search_field/cr_search_field.m.js",
-      "cr_elements/cr_search_field/cr_search_field_behavior.m.js",
-      "cr_elements/cr_radio_group/cr_radio_group.m.js",
-      "cr_elements/cr_radio_button/cr_radio_button_style_css.m.js",
-      "cr_elements/cr_radio_button/cr_radio_button.m.js",
-      "cr_elements/cr_radio_button/cr_radio_button_behavior.m.js",
-      "cr_elements/cr_radio_button/cr_card_radio_button.m.js",
-      "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js",
-      "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.m.js",
-      "cr_elements/cr_lottie/cr_lottie.m.js",
-      "cr_elements/cr_link_row/cr_link_row.m.js",
-      "cr_elements/cr_lazy_render/cr_lazy_render.m.js",
-      "cr_elements/cr_input/cr_input_style_css.m.js",
-      "cr_elements/cr_input/cr_input.m.js",
-      "cr_elements/cr_icon_button/cr_icon_button.m.js",
-      "cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js",
-      "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
-      "cr_elements/cr_expand_button/cr_expand_button.m.js",
-      "cr_elements/cr_drawer/cr_drawer.m.js",
-      "cr_elements/cr_dialog/cr_dialog.m.js",
-      "cr_elements/cr_checkbox/cr_checkbox.m.js",
-      "cr_elements/cr_button/cr_button.m.js",
-      "cr_elements/cr_action_menu/cr_action_menu.m.js",
-      "cr_elements/find_shortcut_behavior.m.js",
-      "cr_elements/policy/cr_policy_indicator_behavior.m.js",
-      "cr_elements/policy/cr_policy_indicator.m.js",
-      "cr_elements/policy/cr_policy_pref_behavior.m.js",
-      "cr_elements/policy/cr_policy_pref_indicator.m.js",
-      "cr_elements/policy/cr_tooltip_icon.m.js",
       "js/i18n_behavior.m.js",
       "js/list_property_update_behavior.m.js",
       "js/search_highlight_utils.m.js",
@@ -215,14 +166,6 @@ preprocess_grit("preprocess_generated") {
       "cr_components/chromeos/quick_unlock/setup_pin_keyboard.m.js",
       "cr_components/chromeos/smb_shares/add_smb_share_dialog.m.js",
       "cr_components/chromeos/smb_shares/smb_browser_proxy.m.js",
-      "cr_elements/chromeos/cros_color_overrides.m.js",
-      "cr_elements/chromeos/cr_picture/cr_camera.m.js",
-      "cr_elements/chromeos/cr_picture/cr_picture_list.m.js",
-      "cr_elements/chromeos/cr_picture/cr_picture_pane.m.js",
-      "cr_elements/chromeos/cr_picture/cr_picture_types.m.js",
-      "cr_elements/chromeos/cr_picture/icons.m.js",
-      "cr_elements/chromeos/cr_picture/png.m.js",
-      "cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js",
     ]
   }
 }

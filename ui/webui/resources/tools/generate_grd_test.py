@@ -53,7 +53,7 @@ class GenerateGrdTest(unittest.TestCase):
                  out_grd='test_resources.grd',
                  manifest_files=None, input_files=None,
                  input_files_base_dir=None, grdp_files=None,
-                 resource_path_rewrites=None):
+                 resource_path_rewrites=None, resource_path_prefix=None):
     args = [
       '--out-grd', os.path.join(self._out_folder, out_grd),
       '--grd-prefix', 'test',
@@ -79,6 +79,9 @@ class GenerateGrdTest(unittest.TestCase):
 
     if (resource_path_rewrites):
       args += [ '--resource-path-rewrites' ] + resource_path_rewrites
+
+    if (resource_path_prefix):
+      args += [ '--resource-path-prefix', resource_path_prefix ]
 
     generate_grd.main(args)
 
@@ -122,6 +125,14 @@ class GenerateGrdTest(unittest.TestCase):
       out_grd = 'test_resources.grdp',
       input_files = [ 'images/test_svg.svg', 'test_html_in_src.html' ],
       input_files_base_dir = 'test_src_dir')
+
+  def testSuccessGrdpWithResourcePathPrefix(self):
+    self._run_test_(
+      'expected_grdp_with_resource_path_prefix.grdp',
+      out_grd = 'test_resources.grdp',
+      input_files = [ 'foo.js', 'bar.svg' ],
+      input_files_base_dir = 'test_src_dir',
+      resource_path_prefix = 'baz')
 
   def testSuccessWithRewrites(self):
     self._run_test_(

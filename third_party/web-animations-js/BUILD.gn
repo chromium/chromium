@@ -9,5 +9,6 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
   input_files = [ "web-animations-next-lite.min.js" ]
   input_files_base_dir = rebase_path("./sources", "//")
-  resource_path_rewrites = [ "web-animations-next-lite.min.js|polymer/v1_0/web-animations-js/web-animations-next-lite.min.js" ]
+  resource_path_rewrites = [ "web-animations-next-lite.min.js|web-animations-js/web-animations-next-lite.min.js" ]
+  resource_path_prefix = "polymer/v1_0"
 }

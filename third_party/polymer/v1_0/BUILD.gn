@@ -115,4 +115,5 @@ generate_grd("build_grdp") {
     "polymer2/polymer-extracted.js|polymer/polymer-extracted.js",
     "polymer2/polymer.html|polymer/polymer.html",
   ]
+  resource_path_prefix = "polymer/v1_0"
 }

@@ -45,5 +45,11 @@ template("generate_grd") {
     if (defined(invoker.resource_path_rewrites)) {
       args += [ "--resource-path-rewrites" ] + invoker.resource_path_rewrites
     }
+    if (defined(invoker.resource_path_prefix)) {
+      args += [
+        "--resource-path-prefix",
+        invoker.resource_path_prefix,
+      ]
+    }
   }
 }

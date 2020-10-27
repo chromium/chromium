@@ -77,7 +77,7 @@ GRDP_END_TEMPLATE = '</grit-part>\n'
 
 # Generates an <include .... /> row for the given file.
 def _generate_include_row(grd_prefix, filename, pathname, \
-                          resource_path_rewrites):
+                          resource_path_rewrites, resource_path_prefix):
   name_suffix = filename.upper().replace('/', '_').replace('.', '_'). \
           replace('-', '_')
   name = 'IDR_%s_%s' % (grd_prefix.upper(), name_suffix)
@@ -88,11 +88,8 @@ def _generate_include_row(grd_prefix, filename, pathname, \
   resource_path = resource_path_rewrites[filename] \
       if filename in resource_path_rewrites else filename
 
-   # Rewrite resource_path for third_party/polymer/.
-  if 'third_party/polymer/v1_0/components-chromium/' in pathname:
-    resource_path = 'polymer/v1_0/' + resource_path
-  if 'third_party/polymer/v3_0/components-chromium/' in pathname:
-    resource_path = 'polymer/v3_0/' + resource_path
+  if resource_path_prefix != None:
+    resource_path = resource_path_prefix + '/' + resource_path
 
   return GRD_INCLUDE_TEMPLATE.format(
       file=pathname,
@@ -115,6 +112,7 @@ def main(argv):
   parser.add_argument('--input-files-base-dir')
   parser.add_argument('--grdp-files', nargs="*")
   parser.add_argument('--resource-path-rewrites', nargs="*")
+  parser.add_argument('--resource-path-prefix')
   args = parser.parse_args(argv)
 
   grd_file = open(os.path.normpath(os.path.join(_CWD, args.out_grd)), 'w')
@@ -140,7 +138,7 @@ def main(argv):
           args.input_files_base_dir, filename).replace('\\', '/')
       grd_file.write(_generate_include_row(
           args.grd_prefix, filename, '${root_src_dir}/' + filepath,
-          resource_path_rewrites))
+          resource_path_rewrites, args.resource_path_prefix))
 
   if args.manifest_files != None:
     for manifest_file in args.manifest_files:
@@ -153,7 +151,7 @@ def main(argv):
           rebased_path = os.path.relpath(filepath, args.root_gen_dir)
           grd_file.write(_generate_include_row(
               args.grd_prefix, filename, '${root_gen_dir}/' + rebased_path,
-              resource_path_rewrites))
+              resource_path_rewrites, args.resource_path_prefix))
 
   end_template = GRDP_END_TEMPLATE if args.out_grd.endswith('.grdp') else \
       GRD_END_TEMPLATE
