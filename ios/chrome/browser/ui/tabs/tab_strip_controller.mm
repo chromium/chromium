@@ -58,6 +58,8 @@
 #include "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -120,7 +122,14 @@ UIColor* BackgroundColor() {
   if (base::FeatureList::IsEnabled(kExpandedTabStrip)) {
     // The background needs to be clear to allow the thumb strip to be seen
     // from behind the tab strip during the enter/exit thumb strip animation.
-    return UIColor.clearColor;
+    // However, when using the fullscreen provider, the WKWebView extends behind
+    // the tab strip. In this case, a clear background would lead to seeing the
+    // WKWebView instead of the thumb strip.
+    return ios::GetChromeBrowserProvider()
+                   ->GetFullscreenProvider()
+                   ->IsInitialized()
+               ? UIColor.blackColor
+               : UIColor.clearColor;
   }
   return UIColor.blackColor;
 }
@@ -171,6 +180,7 @@ UIColor* BackgroundColor() {
                                   CRWWebStateObserver,
                                   TabStripViewLayoutDelegate,
                                   TabViewDelegate,
+                                  ViewRevealingAnimatee,
                                   WebStateListObserving,
                                   WebStateFaviconDriverObserver,
                                   UIGestureRecognizerDelegate,
@@ -567,6 +577,8 @@ UIColor* BackgroundColor() {
 - (void)setPanGestureHandler:
     (ViewRevealingVerticalPanHandler*)panGestureHandler {
   _panGestureHandler = panGestureHandler;
+  [self.panGestureHandler addAnimatee:self];
+
   [self.view removeGestureRecognizer:self.panGestureRecognizer];
 
   UIPanGestureRecognizer* panGestureRecognizer = [[UIPanGestureRecognizer alloc]
@@ -1800,6 +1812,28 @@ UIColor* BackgroundColor() {
 
 - (void)voiceOverStatusDidChange {
   self.useTabStacking = [self shouldUseTabStacking];
+}
+
+#pragma mark - ViewRevealingAnimatee
+- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+  // Specifically when using the FullscreenProvider, the background of the view
+  // is non-clear to cover the WKWebView. In this case, make the tab strip
+  // background clear as soon as view revealing begins so any animations that
+  // should be visible behind the tab strip are visible. See the comment on
+  // |BackgroundColor()| for more details.
+  self.view.backgroundColor = UIColor.clearColor;
+}
+
+- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  // No-op.
+}
+
+- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  if (viewRevealState == ViewRevealState::Hidden) {
+    // Reset the background color to cover up the WKWebView if it is behind
+    // the tab strip.
+    self.view.backgroundColor = BackgroundColor();
+  }
 }
 
 @end

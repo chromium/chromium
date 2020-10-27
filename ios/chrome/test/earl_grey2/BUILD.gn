@@ -170,6 +170,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/side_swipe:eg2_tests",
     "//ios/chrome/browser/ui/tab_grid:eg2_tests",
     "//ios/chrome/browser/ui/tabs:eg2_tests",
+    "//ios/chrome/browser/ui/thumb_strip:eg2_tests",
     "//ios/chrome/browser/ui/toolbar:eg2_tests",
     "//ios/chrome/browser/ui/webui:eg2_tests",
     "//ios/chrome/browser/ui/webui/interstitials:eg2_tests",
