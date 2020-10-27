@@ -81,7 +81,7 @@ if (use_system_xcode && ios_use_goma_rbe) {
   sdk_info_args += [
     "--get_sdk_info",
     "--create_symlink_at",
-    rebase_path("$root_build_dir/sdk/xcode_links", "//"),
+    "sdk/xcode_links",
   ]
 }
 sdk_info_args += [ mac_sdk_name ]
