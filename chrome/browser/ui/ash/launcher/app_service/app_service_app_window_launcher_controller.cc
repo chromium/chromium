@@ -269,32 +269,30 @@ void AppServiceAppWindowLauncherController::OnWindowDestroying(
     // InstanceRegistry, we should still destroy it from InstanceRegistry and
     // remove the app window from the shelf
     app_id = app_service_instance_helper_->GetAppId(window);
-    if (app_id.empty())
-      return;
   }
 
-  if (app_service_instance_helper_->IsOpenedInBrowser(GetAppId(app_id),
-                                                      window) ||
-      app_id == extension_misc::kChromeAppId) {
-    return;
+  if (!app_id.empty() &&
+      !app_service_instance_helper_->IsOpenedInBrowser(GetAppId(app_id),
+                                                       window) &&
+      app_id != extension_misc::kChromeAppId) {
+    // Delete the instance from InstanceRegistry.
+    app_service_instance_helper_->OnInstances(GetAppId(app_id), window,
+                                              std::string(),
+                                              apps::InstanceState::kDestroyed);
   }
-
-  // Delete the instance from InstanceRegistry.
-  app_service_instance_helper_->OnInstances(
-      GetAppId(app_id), window, std::string(), apps::InstanceState::kDestroyed);
-
-  auto app_window_it = aura_window_to_app_window_.find(window);
-  if (app_window_it == aura_window_to_app_window_.end())
-    return;
 
   // Note, for ARC apps, window may be recreated in some cases, so do not close
   // controller on window destroying. Controller will be closed onTaskDestroyed
   // event which is generated when actual task is destroyed.
   if (arc_tracker_ && arc::GetWindowTaskId(window) != arc::kNoTaskId) {
     arc_tracker_->OnWindowDestroying(window);
-    aura_window_to_app_window_.erase(app_window_it);
+    aura_window_to_app_window_.erase(window);
     return;
   }
+
+  auto app_window_it = aura_window_to_app_window_.find(window);
+  if (app_window_it == aura_window_to_app_window_.end())
+    return;
 
   RemoveAppWindowFromShelf(app_window_it->second.get());
 
