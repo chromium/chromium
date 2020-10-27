@@ -10,8 +10,11 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/provision_fetcher.h"
 
@@ -63,6 +66,13 @@ class FuchsiaCdmManager {
   KeySystemClient* CreateKeySystemClient(const std::string& key_system_name);
   base::FilePath GetStoragePath(const std::string& key_system_name,
                                 const url::Origin& origin);
+  void CreateCdm(
+      const std::string& key_system_name,
+      CreateFetcherCB create_fetcher_cb,
+      fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
+          request,
+      base::FilePath storage_path,
+      base::Optional<base::File::Error> storage_creation_error);
   void OnKeySystemClientError(const std::string& key_system_name);
 
   // A map of callbacks to create KeySystem channels indexed by their EME name.
@@ -79,6 +89,7 @@ class FuchsiaCdmManager {
       on_key_system_disconnect_for_test_callback_;
 
   THREAD_CHECKER(thread_checker_);
+  base::WeakPtrFactory<FuchsiaCdmManager> weak_factory_{this};
 };
 
 }  // namespace media

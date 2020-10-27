@@ -17,7 +17,10 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "media/fuchsia/cdm/service/provisioning_fetcher_impl.h"
 #include "url/origin.h"
 
@@ -28,6 +31,16 @@ namespace {
 std::string HexEncodeHash(const std::string& name) {
   uint32_t hash = base::PersistentHash(name);
   return base::HexEncode(&hash, sizeof(uint32_t));
+}
+
+// Returns a nullopt if storage was created successfully.
+base::Optional<base::File::Error> CreateStorageDirectory(base::FilePath path) {
+  base::File::Error error;
+  bool success = base::CreateDirectoryAndGetError(path, &error);
+  if (!success) {
+    return error;
+  }
+  return {};
 }
 
 }  // namespace
@@ -174,24 +187,14 @@ void FuchsiaCdmManager::CreateAndProvision(
         request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  KeySystemClient* key_system_client = GetOrCreateKeySystemClient(key_system);
-  if (!key_system_client) {
-    // GetOrCreateKeySystemClient will log the reason for failure.
-    return;
-  }
-
   base::FilePath storage_path = GetStoragePath(key_system, origin);
-  base::File::Error error;
-  bool success = base::CreateDirectoryAndGetError(storage_path, &error);
-  if (!success) {
-    DLOG(ERROR) << "Failed to create directory: " << storage_path
-                << ", error: " << error;
-    return;
-  }
 
-  key_system_client->CreateCdm(std::move(storage_path),
-                               std::move(create_fetcher_cb),
-                               std::move(request));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CreateStorageDirectory, storage_path),
+      base::BindOnce(&FuchsiaCdmManager::CreateCdm, weak_factory_.GetWeakPtr(),
+                     key_system, std::move(create_fetcher_cb),
+                     std::move(request), storage_path));
 }
 
 void FuchsiaCdmManager::set_on_key_system_disconnect_for_test_callback(
@@ -239,6 +242,35 @@ base::FilePath FuchsiaCdmManager::GetStoragePath(const std::string& key_system,
                                                  const url::Origin& origin) {
   return cdm_data_path_.Append(HexEncodeHash(origin.Serialize()))
       .Append(HexEncodeHash(key_system));
+}
+
+void FuchsiaCdmManager::CreateCdm(
+    const std::string& key_system_name,
+    CreateFetcherCB create_fetcher_cb,
+    fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
+        request,
+    base::FilePath storage_path,
+    base::Optional<base::File::Error> storage_creation_error) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (storage_creation_error) {
+    DLOG(ERROR) << "Failed to create directory: " << storage_path
+                << ", error: " << *storage_creation_error;
+    request.Close(ZX_ERR_NO_RESOURCES);
+    return;
+  }
+
+  KeySystemClient* key_system_client =
+      GetOrCreateKeySystemClient(key_system_name);
+  if (!key_system_client) {
+    // GetOrCreateKeySystemClient will log the reason for failure.
+    request.Close(ZX_ERR_NOT_FOUND);
+    return;
+  }
+
+  key_system_client->CreateCdm(std::move(storage_path),
+                               std::move(create_fetcher_cb),
+                               std::move(request));
 }
 
 void FuchsiaCdmManager::OnKeySystemClientError(
