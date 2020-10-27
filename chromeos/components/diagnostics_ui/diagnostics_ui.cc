@@ -8,6 +8,9 @@
 
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/components/diagnostics_ui/backend/diagnostics_manager.h"
+#include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
+#include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/components/diagnostics_ui/url_constants.h"
 #include "chromeos/grit/chromeos_diagnostics_app_resources.h"
 #include "chromeos/grit/chromeos_diagnostics_app_resources_map.h"
@@ -78,7 +81,9 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 }  // namespace
 
 DiagnosticsUI::DiagnosticsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui),
+      diagnostics_manager_(
+          std::make_unique<diagnostics::DiagnosticsManager>()) {
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIDiagnosticsAppHost));
   html_source->OverrideContentSecurityPolicy(
@@ -96,5 +101,16 @@ DiagnosticsUI::DiagnosticsUI(content::WebUI* web_ui)
 }
 
 DiagnosticsUI::~DiagnosticsUI() = default;
+
+void DiagnosticsUI::BindInterface(
+    mojo::PendingReceiver<diagnostics::mojom::SystemDataProvider> receiver) {
+  diagnostics::SystemDataProvider* system_data_provider =
+      diagnostics_manager_->GetSystemDataProvider();
+  if (system_data_provider) {
+    system_data_provider->BindInterface(std::move(receiver));
+  }
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(DiagnosticsUI)
 
 }  // namespace chromeos
