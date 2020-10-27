@@ -80,6 +80,15 @@ class Value;
 //     dict.SetKey("mykey", base::Value(foo));
 //     return dict;
 //   }
+//
+// The new design tries to avoid losing type information. Thus when migrating
+// off deprecated types, existing usages of base::ListValue should be replaced
+// by std::vector<base::Value>.
+//
+// Furthermore, existing usages of base::DictionaryValue should eventually be
+// replaced with base::flat_map<std::string, base::Value>. However, this
+// requires breaking changing the mapped type of Value::DictStorage first, and
+// thus usages of base::DictionaryValue should be kept for the time being.
 class BASE_EXPORT Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
@@ -769,6 +778,7 @@ class BASE_EXPORT DictionaryValue : public Value {
 };
 
 // This type of Value represents a list of other Value values.
+// DEPRECATED: Use std::vector<base::Value> instead.
 class BASE_EXPORT ListValue : public Value {
  public:
   using const_iterator = ListView::const_iterator;
