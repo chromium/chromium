@@ -32,6 +32,8 @@ TEST(SessionSyncServiceFactoryTest, ShouldSyncURL) {
   EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
       GURL("chrome-distiller://anything")));
 
+  EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
+      GURL("chrome-untrusted://anything")));
   EXPECT_TRUE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
       GURL(chrome::kChromeUIHistoryURL)));
 }

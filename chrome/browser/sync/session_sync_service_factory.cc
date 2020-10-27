@@ -23,6 +23,7 @@
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/sync_sessions_client.h"
+#include "content/public/common/url_utils.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/sync/glue/synced_window_delegates_getter_android.h"
@@ -32,11 +33,11 @@ namespace {
 
 bool ShouldSyncURLImpl(const GURL& url) {
   if (url == chrome::kChromeUIHistoryURL) {
-    // Whitelist the chrome history page, home for "Tabs from other devices", so
+    // Allow the chrome history page, home for "Tabs from other devices", so
     // it can trigger starting up the sync engine.
     return true;
   }
-  return url.is_valid() && !url.SchemeIs(content::kChromeUIScheme) &&
+  return url.is_valid() && !content::HasWebUIScheme(url) &&
          !url.SchemeIs(chrome::kChromeNativeScheme) && !url.SchemeIsFile() &&
          !url.SchemeIs(dom_distiller::kDomDistillerScheme);
 }
