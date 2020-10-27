@@ -35,23 +35,24 @@
 
 namespace blink {
 
-UserTiming::UserTiming(Performance& performance) : performance_(&performance) {}
+namespace {
 
-static void InsertPerformanceEntry(PerformanceEntryMap& performance_entry_map,
-                                   PerformanceEntry& entry) {
+void InsertPerformanceEntry(PerformanceEntryMap& performance_entry_map,
+                            PerformanceEntry& entry) {
   PerformanceEntryMap::iterator it = performance_entry_map.find(entry.name());
   if (it != performance_entry_map.end()) {
-    it->value->push_back(&entry);
+    DCHECK(it->value);
+    it->value->push_back(entry);
   } else {
     PerformanceEntryVector* vector =
-        MakeGarbageCollected<PerformanceEntryVector>(1);
-    (*vector)[0] = Member<PerformanceEntry>(entry);
+        MakeGarbageCollected<PerformanceEntryVector>();
+    vector->push_back(entry);
     performance_entry_map.Set(entry.name(), vector);
   }
 }
 
-static void ClearPeformanceEntries(PerformanceEntryMap& performance_entry_map,
-                                   const AtomicString& name) {
+void ClearPeformanceEntries(PerformanceEntryMap& performance_entry_map,
+                            const AtomicString& name) {
   if (name.IsNull()) {
     performance_entry_map.clear();
     return;
@@ -60,6 +61,10 @@ static void ClearPeformanceEntries(PerformanceEntryMap& performance_entry_map,
   if (performance_entry_map.Contains(name))
     performance_entry_map.erase(name);
 }
+
+}  // namespace
+
+UserTiming::UserTiming(Performance& performance) : performance_(&performance) {}
 
 void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
   if (performance_->timing()) {
