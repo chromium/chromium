@@ -20,6 +20,8 @@ static void JNI_FirstRunUtils_SetEulaAccepted(JNIEnv* env) {
 }
 
 static jboolean JNI_FirstRunUtils_GetCctTosDialogEnabled(JNIEnv* env) {
-  return g_browser_process->local_state()->GetBoolean(
-      first_run::kCCTToSDialogEnabled);
+  int behavior = g_browser_process->local_state()->GetInteger(
+      first_run::kTosDialogBehavior);
+  return static_cast<first_run::TosDialogBehavior>(behavior) !=
+         first_run::TosDialogBehavior::SKIP;
 }
