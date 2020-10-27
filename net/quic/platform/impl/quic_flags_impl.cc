@@ -21,7 +21,7 @@
 #include "build/build_config.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 
-#define QUIC_FLAG(type, flag, value) type flag = value;
+#define QUIC_FLAG(flag, value) bool flag = value;
 #include "net/quic/quic_flags_list.h"
 #undef QUIC_FLAG
 
@@ -304,10 +304,10 @@ void SetQuicFlagByName_int64_t(int64_t* flag, const std::string& value) {
 }  // namespace
 
 void SetQuicFlagByName(const std::string& flag_name, const std::string& value) {
-#define QUIC_FLAG(type, flag, default_value) \
-  if (flag_name == #flag) {                  \
-    SetQuicFlagByName_##type(&flag, value);  \
-    return;                                  \
+#define QUIC_FLAG(flag, default_value)    \
+  if (flag_name == #flag) {               \
+    SetQuicFlagByName_bool(&flag, value); \
+    return;                               \
   }
 #include "net/quic/quic_flags_list.h"
 #undef QUIC_FLAG

@@ -8,13 +8,13 @@
 #include "base/path_service.h"
 
 QuicFlagSaverImpl::QuicFlagSaverImpl() {
-#define QUIC_FLAG(type, flag, value) saved_##flag##_ = flag;
+#define QUIC_FLAG(flag, value) saved_##flag##_ = flag;
 #include "net/quic/quic_flags_list.h"
 #undef QUIC_FLAG
 }
 
 QuicFlagSaverImpl::~QuicFlagSaverImpl() {
-#define QUIC_FLAG(type, flag, value) flag = saved_##flag##_;
+#define QUIC_FLAG(flag, value) flag = saved_##flag##_;
 #include "net/quic/quic_flags_list.h"
 #undef QUIC_FLAG
 }
