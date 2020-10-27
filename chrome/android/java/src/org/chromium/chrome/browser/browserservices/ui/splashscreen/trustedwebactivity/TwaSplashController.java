@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProv
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
 import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.util.ColorUtils;
@@ -58,30 +56,25 @@ import javax.inject.Inject;
  * occurs.
  *
  * Lifecycle: this class is resolved only once when CustomTabActivity is launched, and is
- * gc-ed when it finishes its job (to that end, it removes all observers it has set).
+ * gc-ed when it finishes its job.
  * If these lifecycle assumptions change, consider whether @ActivityScope needs to be added.
  */
-public class TwaSplashController implements InflationObserver, SplashDelegate {
+public class TwaSplashController implements SplashDelegate {
     // TODO(pshmakov): move this to AndroidX.
     private static final String KEY_SHOWN_IN_CLIENT =
             "androidx.browser.trusted.KEY_SPLASH_SCREEN_SHOWN_IN_CLIENT";
 
     private final SplashController mSplashController;
     private final Activity mActivity;
-    private final ActivityWindowAndroid mActivityWindowAndroid;
-    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final SplashImageHolder mSplashImageCache;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @Inject
     public TwaSplashController(SplashController splashController, Activity activity,
-            ActivityWindowAndroid activityWindowAndroid,
-            ActivityLifecycleDispatcher lifecycleDispatcher, SplashImageHolder splashImageCache,
+            ActivityWindowAndroid activityWindowAndroid, SplashImageHolder splashImageCache,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mSplashController = splashController;
         mActivity = activity;
-        mActivityWindowAndroid = activityWindowAndroid;
-        mLifecycleDispatcher = lifecycleDispatcher;
         mSplashImageCache = splashImageCache;
         mIntentDataProvider = intentDataProvider;
 
@@ -89,15 +82,12 @@ public class TwaSplashController implements InflationObserver, SplashDelegate {
                 IntentUtils.safeGetInt(getSplashScreenParamsFromIntent(),
                         SplashScreenParamKey.KEY_FADE_OUT_DURATION_MS, 0);
         mSplashController.setConfig(this, splashHideAnimationDurationMs);
-
-        lifecycleDispatcher.register(this);
     }
 
     @Override
     public View buildSplashView() {
         Bitmap bitmap = mSplashImageCache.takeImage(mIntentDataProvider.getSession());
         if (bitmap == null) {
-            mLifecycleDispatcher.unregister(this);
             return null;
         }
         ImageView splashView = new ImageView(mActivity);
@@ -108,21 +98,11 @@ public class TwaSplashController implements InflationObserver, SplashDelegate {
     }
 
     @Override
-    public void onSplashHidden(Tab tab, long startTimestamp, long endTimestamp) {
-        mLifecycleDispatcher.unregister(this); // Unregister to get gc-ed
-    }
+    public void onSplashHidden(Tab tab, long startTimestamp, long endTimestamp) {}
 
     @Override
     public boolean shouldWaitForSubsequentPageLoadToHideSplash() {
         return false;
-    }
-
-    @Override
-    public void onPreInflationStartup() {}
-
-    @Override
-    public void onPostInflationStartup() {
-        mSplashController.bringSplashBackToFront();
     }
 
     private void applyCustomizationsToSplashScreenView(ImageView imageView) {

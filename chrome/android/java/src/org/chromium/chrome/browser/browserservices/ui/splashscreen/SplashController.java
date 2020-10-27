@@ -189,6 +189,7 @@ public class SplashController
             // In rare cases I see toolbar flickering. TODO(pshmakov): investigate why.
             mActivity.findViewById(R.id.coordinator).setVisibility(View.INVISIBLE);
         }
+        bringSplashBackToFront();
     }
 
     @Override

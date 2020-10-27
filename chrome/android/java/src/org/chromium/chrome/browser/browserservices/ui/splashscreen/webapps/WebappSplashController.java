@@ -61,14 +61,6 @@ public class WebappSplashController implements SplashDelegate {
         }
     }
 
-    /**
-     * Called once the Activity's main layout is inflated and added to the content view.
-     */
-    public void onInitialLayoutInflationComplete() {
-        // TODO: TWAs do this in onPostInflationStart(). Determine if there is a visual difference.
-        mSplashController.bringSplashBackToFront();
-    }
-
     @Override
     public View buildSplashView() {
         Context appContext = ContextUtils.getApplicationContext();

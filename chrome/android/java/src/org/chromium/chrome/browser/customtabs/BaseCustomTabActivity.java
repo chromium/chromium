@@ -11,10 +11,8 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNa
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.util.Pair;
 import android.view.KeyEvent;
-import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -24,11 +22,9 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.KeyboardShortcuts;
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
@@ -61,7 +57,6 @@ import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 import org.chromium.chrome.browser.webapps.WebappExtras;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Contains functionality which is shared between {@link WebappActivity} and
@@ -271,66 +266,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private static int getCoreCount() {
         if (sOverrideCoreCountForTesting != null) return sOverrideCoreCountForTesting;
         return Runtime.getRuntime().availableProcessors();
-    }
-
-    @Override
-    protected void doLayoutInflation() {
-        // Conditionally do layout inflation synchronously if device has low core count.
-        // When layout inflation is done asynchronously, it blocks UI thread startup. While
-        // blocked, the UI thread will draw unnecessary frames - causing the lower priority
-        // layout inflation thread to be de-scheduled significantly more often, especially on
-        // devices with low core count. Thus for low core count devices, there is a startup
-        // performance improvement incurred by doing layout inflation synchronously.
-        // TODO: Determine whether this webapp speed optimization is still helpful given
-        // the current CCT speed optimizations.
-        if (!mIntentDataProvider.isWebappOrWebApkActivity() || getCoreCount() <= 2) {
-            super.doLayoutInflation();
-            return;
-        }
-
-        // Because we delay the layout inflation, the CompositorSurfaceManager and its
-        // SurfaceView(s) are created and attached late (ie after the first draw). At the time of
-        // the first attach of a SurfaceView to the view hierarchy (regardless of the SurfaceView's
-        // actual opacity), the window transparency hint changes (because the window creates a
-        // transparent hole and attaches the SurfaceView to that hole). This may cause older android
-        // versions to destroy the window and redraw it causing a flicker. This line sets the window
-        // transparency hint early so that when the SurfaceView gets attached later, the
-        // transparency hint need not change and no flickering occurs.
-        getWindow().setFormat(PixelFormat.TRANSLUCENT);
-        // No need to inflate layout synchronously since splash screen is displayed.
-        Runnable inflateTask = () -> {
-            ViewGroup mainView = WarmupManager.inflateViewHierarchy(BaseCustomTabActivity.this,
-                    getControlContainerLayoutId(), getToolbarLayoutId());
-            if (isActivityFinishingOrDestroyed()) return;
-            if (mainView != null) {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-                    if (isActivityFinishingOrDestroyed()) return;
-                    onLayoutInflated(mainView);
-                });
-            } else {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-                    if (isActivityFinishingOrDestroyed()) return;
-                    BaseCustomTabActivity.super.doLayoutInflation();
-                });
-            }
-        };
-
-        // Run inflation task on UI thread due to threading issues in M85. See crbug.com/1112352
-        inflateTask.run();
-    }
-
-    private void onLayoutInflated(ViewGroup mainView) {
-        ViewGroup contentView = (ViewGroup) findViewById(android.R.id.content);
-        WarmupManager.transferViewHeirarchy(mainView, contentView);
-        onInitialLayoutInflationComplete();
-    }
-
-    @Override
-    protected void onInitialLayoutInflationComplete() {
-        if (mWebappActivityCoordinator != null) {
-            mWebappActivityCoordinator.onInitialLayoutInflationComplete();
-        }
-        super.onInitialLayoutInflationComplete();
     }
 
     @Override
