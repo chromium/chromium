@@ -31,6 +31,7 @@ const int32_t kRectX = 1;
 const int32_t kRectY = 2;
 const int32_t kRectWidth = 7;
 const int32_t kRectHeight = 8;
+const uint32_t kInvalidIdRemappedForFuchsia = 1u + INT32_MAX;
 const std::array<float, 16> k4DIdentityMatrix = {1, 0, 0, 0, 0, 1, 0, 0,
                                                  0, 0, 1, 0, 0, 0, 0, 1};
 
@@ -243,11 +244,24 @@ TEST_F(AXTreeConverterTest, ConvertToFuchsiaNodeId) {
   EXPECT_EQ(0u, ConvertToFuchsiaNodeId(2, 2));
 
   // Regular AxNode is 0, Fuchsia can't be 0.
-  EXPECT_EQ(static_cast<uint32_t>(std::numeric_limits<int32_t>::max()) + 1,
-            ConvertToFuchsiaNodeId(0, 2));
+  EXPECT_EQ(kInvalidIdRemappedForFuchsia, ConvertToFuchsiaNodeId(0, 2));
 
   // Regular AxNode is not 0, Fuchsia is same value.
   EXPECT_EQ(10u, ConvertToFuchsiaNodeId(10, 0));
+}
+
+TEST_F(AXTreeConverterTest, ConvertToAxNodeId) {
+  // Root Fuchsia id is 0, AxNode is also 0.
+  EXPECT_EQ(0, ConvertToAxNodeId(0u, 0));
+
+  // Root Fuchsia id is 0, AxNode is not 0.
+  EXPECT_EQ(2, ConvertToAxNodeId(0u, 2));
+
+  // Fuchsia node is the max value, AxNode should be 0.
+  EXPECT_EQ(0, ConvertToAxNodeId(kInvalidIdRemappedForFuchsia, 2));
+
+  // Regular Fuchsia node is not root, AxNode is same value.
+  EXPECT_EQ(10, ConvertToAxNodeId(10u, 0));
 }
 
 TEST_F(AXTreeConverterTest, ConvertRoles) {

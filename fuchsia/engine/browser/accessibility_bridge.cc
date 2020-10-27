@@ -131,15 +131,16 @@ void AccessibilityBridge::OnAccessibilityActionRequested(
     OnAccessibilityActionRequestedCallback callback) {
   ui::AXActionData action_data = ui::AXActionData();
 
+  // The requested action is not supported.
   if (!ConvertAction(action, &action_data.action)) {
     callback(false);
     return;
   }
 
-  action_data.target_node_id = node_id;
+  action_data.target_node_id = ConvertToAxNodeId(node_id, root_id_);
 
   if (action == fuchsia::accessibility::semantics::Action::SHOW_ON_SCREEN) {
-    ui::AXNode* node = ax_tree_.GetFromId(node_id);
+    ui::AXNode* node = ax_tree_.GetFromId(action_data.target_node_id);
     if (!node) {
       callback(false);
       return;

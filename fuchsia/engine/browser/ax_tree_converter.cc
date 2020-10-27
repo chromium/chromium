@@ -24,10 +24,10 @@ namespace {
 // Fuchsia's default root node ID.
 constexpr uint32_t kFuchsiaRootNodeId = 0;
 
-// Remmaped value for an AxNode ID that is 0 and is not a root.
-// Value is chosen specifically to be outside the range of a 32-bit signed int,
-// so as to not conflict with other values used by Chromium.
-constexpr uint32_t kZeroIdRemappedForFuchsia = 1u + INT32_MAX;
+// Remapped value for AXNode::kInvalidAXID.
+// Value is chosen to be outside the range of a 32-bit signed int, so as to not
+// conflict with other AXIDs.
+constexpr uint32_t kInvalidIdRemappedForFuchsia = 1u + INT32_MAX;
 
 fuchsia::accessibility::semantics::Attributes ConvertAttributes(
     const ui::AXNodeData& node) {
@@ -255,11 +255,20 @@ uint32_t ConvertToFuchsiaNodeId(int32_t ax_node_id, int32_t ax_root_node_id) {
   if (ax_node_id == ax_root_node_id)
     return kFuchsiaRootNodeId;
 
-  if (ax_node_id == kFuchsiaRootNodeId) {
-    // This AxNode is not the root, but its ID is the same as Fuchsia's root ID.
-    // We remap it to something different to not create a confflict.
-    return kZeroIdRemappedForFuchsia;
-  }
+  // kInvalidAXID has the same value as the Fuchsia root ID. It is remapped to
+  // avoid a conflict.
+  if (ax_node_id == ui::AXNode::kInvalidAXID)
+    return kInvalidIdRemappedForFuchsia;
 
   return base::checked_cast<uint32_t>(ax_node_id);
+}
+
+int32_t ConvertToAxNodeId(uint32_t fuchsia_node_id, int32_t ax_root_node_id) {
+  if (fuchsia_node_id == kFuchsiaRootNodeId)
+    return ax_root_node_id;
+
+  if (fuchsia_node_id == kInvalidIdRemappedForFuchsia)
+    return ui::AXNode::kInvalidAXID;
+
+  return base::checked_cast<int32_t>(fuchsia_node_id);
 }
