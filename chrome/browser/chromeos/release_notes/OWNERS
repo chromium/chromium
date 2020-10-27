@@ -1,0 +1,5 @@
+file://chromeos/components/help_app_ui/OWNERS
+
+# TEAM: cros-essential-apps-dev@chromium.org
+# COMPONENT: Platform>Apps>Default
+# Internal Component: b/components/690873

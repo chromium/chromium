@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -23,7 +22,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -116,25 +114,6 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   Profile* GetProfile() { return browser()->profile(); }
 };
 
-// Test fixture for Release notes search. This subclass exists because changing
-// a feature flag has to be done in the constructor. Otherwise, it could use
-// AppListSearchBrowserTest directly.
-class ReleaseNotesSearchBrowserTest : public AppListSearchBrowserTest {
- public:
-  ReleaseNotesSearchBrowserTest() : AppListSearchBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kHelpAppReleaseNotes}, {});
-  }
-  ~ReleaseNotesSearchBrowserTest() override = default;
-
-  ReleaseNotesSearchBrowserTest(const ReleaseNotesSearchBrowserTest&) = delete;
-  ReleaseNotesSearchBrowserTest& operator=(
-      const ReleaseNotesSearchBrowserTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Simply tests that neither zero-state nor query-based search cause a crash.
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchDoesntCrash) {
   // This won't catch everything, because not all providers run on all queries,
@@ -150,8 +129,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchDoesntCrash) {
 // Test that Help App shows up as Release notes if pref shows we have some times
 // left to show it.
 // TODO(b/169711884): Re-enable when suggestion chips are re-enabled.
-IN_PROC_BROWSER_TEST_F(ReleaseNotesSearchBrowserTest,
-                       DISABLED_AppListSearchHasSuggestionChip) {
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
+                       DISABLED_AppListSearchHasReleaseNotesSuggestionChip) {
   web_app::WebAppProvider::Get(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
@@ -180,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ReleaseNotesSearchBrowserTest,
 
 // Test that Help App shows up normally if pref shows we should no longer show
 // as suggestion chip.
-IN_PROC_BROWSER_TEST_F(ReleaseNotesSearchBrowserTest, AppListSearchHasApp) {
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, AppListSearchHasHelpApp) {
   web_app::WebAppProvider::Get(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();

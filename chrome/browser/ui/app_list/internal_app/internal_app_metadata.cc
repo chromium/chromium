@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -78,16 +77,6 @@ const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
                             internal_app_list_static->begin(),
                             internal_app_list_static->end());
 
-  if (!base::FeatureList::IsEnabled(chromeos::features::kHelpAppReleaseNotes)) {
-    internal_app_list->push_back(
-        {ash::kReleaseNotesAppId, IDS_RELEASE_NOTES_NOTIFICATION_TITLE,
-         IDR_RELEASE_NOTES_APP_192,
-         /*recommendable=*/true,
-         /*searchable=*/false,
-         /*show_in_launcher=*/false, apps::BuiltInAppName::kReleaseNotes,
-         /*searchable_string_resource_id=*/0});
-  }
-
   if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
     internal_app_list->push_back(
         {ash::kInternalAppIdSettings, IDS_INTERNAL_APP_SETTINGS,
@@ -111,17 +100,12 @@ bool IsSuggestionChip(const std::string& app_id, Profile* profile) {
   if (base::LowerCaseEqualsASCII(app_id, ash::kInternalAppIdContinueReading))
     return true;
 
-  if (!base::FeatureList::IsEnabled(chromeos::features::kHelpAppReleaseNotes)) {
-    if (base::LowerCaseEqualsASCII(app_id, ash::kReleaseNotesAppId))
-      return true;
-  } else {
-    // We show the Help App as a release notes suggestion chip a certain
-    // number of times.
-    if (chromeos::ReleaseNotesStorage(profile).ShouldShowSuggestionChip() &&
-        base::LowerCaseEqualsASCII(app_id,
-                                   chromeos::default_web_apps::kHelpAppId)) {
-      return true;
-    }
+  // We show the Help App as a release notes suggestion chip a certain
+  // number of times.
+  if (chromeos::ReleaseNotesStorage(profile).ShouldShowSuggestionChip() &&
+      base::LowerCaseEqualsASCII(app_id,
+                                 chromeos::default_web_apps::kHelpAppId)) {
+    return true;
   }
   return false;
 }

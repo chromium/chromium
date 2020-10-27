@@ -16,14 +16,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
@@ -45,21 +43,16 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/system/statistics_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -71,9 +64,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/version_info/version_info.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
 #endif
@@ -115,75 +106,14 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 
 #if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-const std::string BuildQueryString(Profile* profile) {
-  const std::string board_name = base::SysInfo::GetLsbReleaseBoard();
-  std::string region;
-  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-      "region", &region);
-  const std::string language = g_browser_process->GetApplicationLocale();
-  const std::string version = version_info::GetVersionNumber();
-  const std::string milestone = version_info::GetMajorVersionNumber();
-  std::string channel_name =
-      chrome::GetChannelName();  // beta, dev, canary, unknown, or empty string
-                                 // for stable
-  if (channel_name.empty())
-    channel_name = "stable";
-  const std::string username = profile->GetProfileUserName();
-  std::string user_type;
-  if (gaia::IsGoogleInternalAccountEmail(username)) {
-    user_type = "googler";
-  } else if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    user_type = "managed";
-  } else {
-    user_type = "general";
-  }
-
-  const std::string query_string = base::StrCat(
-      {kChromeReleaseNotesURL, "?version=", milestone, "&tags=", board_name,
-       ",", region, ",", language, ",", channel_name, ",", user_type});
-  VLOG(0) << "Release Notes Query String: " << query_string;
-  return query_string;
-}
-
-void LaunchReleaseNotesInTab(Profile* profile) {
-  GURL url(BuildQueryString(profile));
-  auto displayer = std::make_unique<ScopedTabbedBrowserDisplayer>(profile);
-  ShowSingletonTab(displayer->browser(), url);
-}
-
 void LaunchReleaseNotesImpl(Profile* profile,
                             apps::mojom::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
-  // If the flag is enabled, launch the Help app and show the release notes.
-  if (base::FeatureList::IsEnabled(chromeos::features::kHelpAppReleaseNotes)) {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
-    proxy->LaunchAppWithUrl(
-        chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
-        GURL("chrome://help-app/updates"), source, display::kDefaultDisplayId);
-    return;
-  }
-
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile);
-  if (provider && provider->registrar().IsInstalled(
-                      chromeos::default_web_apps::kReleaseNotesAppId)) {
-    web_app::DisplayMode display_mode =
-        provider->registrar().GetAppEffectiveDisplayMode(
-            chromeos::default_web_apps::kReleaseNotesAppId);
-    apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-        chromeos::default_web_apps::kReleaseNotesAppId,
-        /*event_flags=*/0, apps::mojom::AppLaunchSource::kSourceUntracked,
-        /*display_id=*/-1,
-        web_app::ConvertDisplayModeToAppLaunchContainer(display_mode));
-
-    params.override_url = GURL(BuildQueryString(profile));
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParams(params);
-    return;
-  }
-  DVLOG(1) << "ReleaseNotes App Not Found";
-  LaunchReleaseNotesInTab(profile);
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
+  proxy->LaunchAppWithUrl(
+      chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
+      GURL("chrome://help-app/updates"), source, display::kDefaultDisplayId);
 }
 
 #endif

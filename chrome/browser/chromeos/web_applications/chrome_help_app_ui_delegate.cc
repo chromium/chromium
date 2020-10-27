@@ -72,9 +72,7 @@ void ChromeHelpAppUIDelegate::PopulateLoadTimeData(
   source->AddString("hwid", hwid);
 
   // Add any features that have been enabled.
-  source->AddBoolean(
-      "HelpAppReleaseNotes",
-      base::FeatureList::IsEnabled(chromeos::features::kHelpAppReleaseNotes));
+  source->AddBoolean("HelpAppReleaseNotes", true);
   source->AddBoolean("HelpAppSearchServiceIntegration",
                      base::FeatureList::IsEnabled(
                          chromeos::features::kHelpAppSearchServiceIntegration));

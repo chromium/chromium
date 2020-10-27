@@ -47,8 +47,7 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   HelpAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kHelpAppReleaseNotes,
-         chromeos::features::kHelpAppSearchServiceIntegration,
+        {chromeos::features::kHelpAppSearchServiceIntegration,
          chromeos::features::kReleaseNotesNotificationAllChannels},
         {});
   }

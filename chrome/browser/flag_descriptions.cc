@@ -4209,10 +4209,6 @@ const char kFsNosymfollowDescription[] =
     " option, so the chromuimos LSM denies symlink traversal on the"
     " filesystem.";
 
-const char kHelpAppReleaseNotesName[] = "Help App Release Notes";
-const char kHelpAppReleaseNotesDescription[] =
-    "Enables release notes in the help app";
-
 const char kHelpAppSearchServiceIntegrationName[] =
     "Help App search service integration";
 const char kHelpAppSearchServiceIntegrationDescription[] =

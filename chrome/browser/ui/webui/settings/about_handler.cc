@@ -62,7 +62,6 @@
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/update_engine_client.h"
@@ -434,28 +433,11 @@ void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
 
 void AboutHandler::HandleLaunchReleaseNotes(const base::ListValue* args) {
   DCHECK(args->empty());
-  // If the flag is enabled, we can always show the release notes since the Help
-  // app caches it, or can show an appropriate error state (e.g. No internet
-  // connection).
-  if (base::FeatureList::IsEnabled(chromeos::features::kHelpAppReleaseNotes)) {
-    base::RecordAction(
-        base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
-    chrome::LaunchReleaseNotes(profile_,
-                               apps::mojom::LaunchSource::kFromOtherApp);
-    return;
-  }
-
-  // If the flag is disabled, we need connectivity to load the PWA.
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
-  if (network && network->IsOnline()) {
-    base::RecordAction(
-        base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
-    chrome::LaunchReleaseNotes(profile_,
-                               apps::mojom::LaunchSource::kFromOtherApp);
-  }
+  // We can always show the release notes since the Help app caches it, or can
+  // show an appropriate error state (e.g. No internet connection).
+  base::RecordAction(base::UserMetricsAction("ReleaseNotes.LaunchedAboutPage"));
+  chrome::LaunchReleaseNotes(profile_,
+                             apps::mojom::LaunchSource::kFromOtherApp);
 }
 
 void AboutHandler::HandleOpenOsHelpPage(const base::ListValue* args) {
