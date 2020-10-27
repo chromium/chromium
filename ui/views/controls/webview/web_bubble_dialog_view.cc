@@ -9,6 +9,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -35,6 +36,8 @@ class BubbleWebView : public WebView {
                 WebBubbleDialogView* parent)
       : WebView(browser_context), parent_(parent) {
     EnableSizingFromWebContents(kMinSize, kMaxSize);
+    // Allow the embedder to handle accelerators not handled by the WebContents.
+    set_allow_accelerators(true);
   }
 
   ~BubbleWebView() override = default;
@@ -62,9 +65,19 @@ class BubbleWebView : public WebView {
     }
     return content::KeyboardEventProcessingResult::NOT_HANDLED;
   }
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override {
+    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+        event, GetFocusManager());
+  }
 
  private:
   WebBubbleDialogView* parent_;
+
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 }  // namespace
