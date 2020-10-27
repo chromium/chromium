@@ -706,6 +706,11 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Inform the widget that it was shown.
   virtual void WasShown() {}
+
+  // Called after a navigation which set the shared memory region for
+  // tracking smoothness via UKM.
+  virtual void SetUpSharedMemoryForSmoothness(
+      base::ReadOnlySharedMemoryRegion shared_memory) {}
 };
 
 }  // namespace blink

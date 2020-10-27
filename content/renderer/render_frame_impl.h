@@ -731,9 +731,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidCommitAndDrawCompositorFrame() override;
   void WasHidden() override;
   void WasShown() override;
-
   void SetUpSharedMemoryForSmoothness(
-      base::ReadOnlySharedMemoryRegion shared_memory);
+      base::ReadOnlySharedMemoryRegion shared_memory) override;
 
   // Binds to the fullscreen service in the browser.
   void BindFullscreen(

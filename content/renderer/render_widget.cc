@@ -309,14 +309,6 @@ void RenderWidget::DidNavigate(ukm::SourceId source_id, const GURL& url) {
   // compositor. Note that the metrics for all frames are keyed to the main
   // frame's URL.
   layer_tree_host_->SetSourceURL(source_id, url);
-
-  DCHECK(for_frame());
-  RenderFrameImpl* render_frame =
-      RenderFrameImpl::FromWebFrame(GetFrameWidget()->LocalRoot());
-  auto shmem = layer_tree_host_->CreateSharedMemoryForSmoothnessUkm();
-  if (shmem.IsValid()) {
-    render_frame->SetUpSharedMemoryForSmoothness(std::move(shmem));
-  }
 }
 
 }  // namespace content

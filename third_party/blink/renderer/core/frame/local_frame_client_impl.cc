@@ -538,6 +538,19 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
       ResetWheelAndTouchEventHandlerProperties(*web_frame_->GetFrame());
 
       web_frame_->FrameWidgetImpl()->DidNavigate();
+
+      // UKM metrics are only collected for the main frame. Ensure after
+      // a navigation on the main frame we setup the appropriate structures.
+      if (web_frame_->GetFrame()->IsMainFrame() &&
+          web_frame_->ViewImpl()->does_composite()) {
+        cc::LayerTreeHost* layer_tree_host =
+            web_frame_->FrameWidgetImpl()->LayerTreeHost();
+        auto shmem = layer_tree_host->CreateSharedMemoryForSmoothnessUkm();
+        if (shmem.IsValid()) {
+          web_frame_->Client()->SetUpSharedMemoryForSmoothness(
+              std::move(shmem));
+        }
+      }
     }
   }
   if (WebDevToolsAgentImpl* dev_tools = DevToolsAgent())
