@@ -941,8 +941,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(VerifyUi());
 
   // Simulate a render process crash while the permission prompt is pending.
-  content::RenderViewHost* render_view_host =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetRenderViewHost();
+  content::RenderViewHost* render_view_host = browser()
+                                                  ->tab_strip_model()
+                                                  ->GetActiveWebContents()
+                                                  ->GetMainFrame()
+                                                  ->GetRenderViewHost();
   content::RenderProcessHost* render_process_host =
       render_view_host->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
