@@ -4,6 +4,7 @@
 
 import("//build/apple/tweak_info_plist.gni")
 import("//build/buildflag_header.gni")
+import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/mac/base_rules.gni")
 import("//ios/build/chrome_build.gni")
@@ -86,6 +87,11 @@ tweak_info_plist("info_plist") {
     "resources/Info.plist",
     "resources/ChromeAddition+Info.plist",
   ]
+  if (target_environment == "catalyst") {
+    info_plists += [ "resources/Environment+Catalyst.plist" ]
+  } else {
+    info_plists += [ "resources/Environment+Default.plist" ]
+  }
   if (ios_chrome_info_plist_additions != []) {
     info_plists += ios_chrome_info_plist_additions
   }
@@ -118,6 +124,9 @@ compile_entitlements("entitlements") {
   entitlements_templates = [ "resources/Chrome.entitlements" ]
   if (ios_chrome_entitlements_additions != []) {
     entitlements_templates += ios_chrome_entitlements_additions
+  }
+  if (target_environment == "catalyst") {
+    entitlements_templates += [ "resources/Environment+Catalyst.entitlements" ]
   }
   substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
   output_name = "$target_gen_dir/$chromium_short_name.entitlements"
