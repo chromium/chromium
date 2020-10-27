@@ -43,9 +43,10 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    HungRendererDialogView::Show(web_contents,
-                                 web_contents->GetRenderViewHost()->GetWidget(),
-                                 base::DoNothing::Repeatedly());
+    HungRendererDialogView::Show(
+        web_contents,
+        web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
+        base::DoNothing::Repeatedly());
 
     if (name == "MultiplePages") {
       auto* web_contents2 = chrome::DuplicateTabAt(browser(), 0);
