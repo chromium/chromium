@@ -54,7 +54,7 @@ class FormDataAndroid {
 
   void ApplyHeuristicFieldType(const FormStructure& form);
 
-  const FormData& form_for_testing() { return form_; }
+  const FormData& form() { return form_; }
 
  private:
   // Same as the form passed in from constructor, but FormFieldData's bounds is
