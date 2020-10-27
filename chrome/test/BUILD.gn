@@ -979,6 +979,7 @@ if (!is_android) {
       "../browser/chrome_navigation_browsertest.cc",
       "../browser/chrome_origin_trials_browsertest.cc",
       "../browser/chrome_plugin_browsertest.cc",
+      "../browser/chrome_private_network_request_browsertest.cc",
       "../browser/chrome_security_exploit_browsertest.cc",
       "../browser/chrome_service_worker_browsertest.cc",
       "../browser/chrome_worker_browsertest.cc",
