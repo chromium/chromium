@@ -21,6 +21,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_trusted_html.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
@@ -166,6 +169,8 @@ std::unique_ptr<v8_inspector::StringBuffer> ThreadDebugger::valueSubtype(
   static const char kArray[] = "array";
   static const char kError[] = "error";
   static const char kBlob[] = "blob";
+  static const char kTrustedType[] = "trustedtype";
+
   if (V8Node::HasInstance(value, isolate_))
     return ToV8InspectorStringBuffer(kNode);
   if (V8NodeList::HasInstance(value, isolate_) ||
@@ -178,6 +183,11 @@ std::unique_ptr<v8_inspector::StringBuffer> ThreadDebugger::valueSubtype(
     return ToV8InspectorStringBuffer(kError);
   if (V8Blob::HasInstance(value, isolate_))
     return ToV8InspectorStringBuffer(kBlob);
+  if (V8TrustedHTML::HasInstance(value, isolate_) ||
+      V8TrustedScript::HasInstance(value, isolate_) ||
+      V8TrustedScriptURL::HasInstance(value, isolate_)) {
+    return ToV8InspectorStringBuffer(kTrustedType);
+  }
   return nullptr;
 }
 
