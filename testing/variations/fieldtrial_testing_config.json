@@ -4336,22 +4336,6 @@
             ]
         }
     ],
-    "MirrorMultilogin": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseMultiloginEndpoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "MixedFormWarnings": [
         {
             "platforms": [
