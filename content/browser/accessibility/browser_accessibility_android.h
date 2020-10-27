@@ -73,6 +73,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   bool CanOpenPopup() const;
 
+  bool HasAriaCurrent() const;
+
   bool HasFocusableNonOptionChild() const;
   bool HasNonEmptyValue() const;
 
@@ -96,6 +98,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   base::string16 GetCheckboxStateDescription() const;
   base::string16 GetListBoxStateDescription() const;
   base::string16 GetListBoxItemStateDescription() const;
+  base::string16 GetAriaCurrentStateDescription() const;
 
   base::string16 GetRoleDescription() const;
 

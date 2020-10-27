@@ -22,3 +22,19 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++ROLE_SYSTEM_STATICTEXT name='Span 2'
 ++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++ROLE_SYSTEM_STATICTEXT name='Span 3'
+++IA2_ROLE_PARAGRAPH current:true
+++++ROLE_SYSTEM_STATICTEXT name='aria-current is true'
+++IA2_ROLE_PARAGRAPH current:false
+++++ROLE_SYSTEM_STATICTEXT name='aria-current is false'
+++IA2_ROLE_PARAGRAPH current:time
+++++ROLE_SYSTEM_STATICTEXT name='aria-current is time'
+++IA2_ROLE_PARAGRAPH current:date
+++++ROLE_SYSTEM_STATICTEXT name='aria-current is date'
+++IA2_ROLE_PARAGRAPH current:location
+++++ROLE_SYSTEM_STATICTEXT name='aria-current is location'
+++IA2_ROLE_PARAGRAPH current:step
+++++ROLE_SYSTEM_STATICTEXT name='aria-current is step'
+++IA2_ROLE_PARAGRAPH current:page
+++++ROLE_SYSTEM_STATICTEXT name='aria-current is page'
+++IA2_ROLE_PARAGRAPH
+++++ROLE_SYSTEM_STATICTEXT name='aria-current is empty string'

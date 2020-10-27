@@ -22,3 +22,19 @@
 ++++++[static] name='Span 2'
 ++++[static] name=' '
 ++++[static] name='Span 3'
+++[paragraph] current:true
+++++[static] name='aria-current is true'
+++[paragraph] current:false
+++++[static] name='aria-current is false'
+++[paragraph] current:time
+++++[static] name='aria-current is time'
+++[paragraph] current:date
+++++[static] name='aria-current is date'
+++[paragraph] current:location
+++++[static] name='aria-current is location'
+++[paragraph] current:step
+++++[static] name='aria-current is step'
+++[paragraph] current:page
+++++[static] name='aria-current is page'
+++[paragraph]
+++++[static] name='aria-current is empty string'

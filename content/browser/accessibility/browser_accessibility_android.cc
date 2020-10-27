@@ -578,6 +578,10 @@ base::string16 BrowserAccessibilityAndroid::GetStateDescription() const {
   if (GetRole() == ax::mojom::Role::kListBoxOption)
     state_descs.push_back(GetListBoxItemStateDescription());
 
+  // For nodes with non-trivial aria-current values, communicate state.
+  if (HasAriaCurrent())
+    state_descs.push_back(GetAriaCurrentStateDescription());
+
   // Concatenate all state descriptions and return.
   return base::JoinString(state_descs, base::ASCIIToUTF16(" "));
 }
@@ -668,6 +672,47 @@ base::string16 BrowserAccessibilityAndroid::GetListBoxItemStateDescription()
       std::vector<base::string16>({base::NumberToString16(item_index),
                                    base::NumberToString16(item_count)}),
       nullptr);
+}
+
+base::string16 BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
+    const {
+  content::ContentClient* content_client = content::GetContentClient();
+
+  base::string16 aria_current_state;
+
+  switch (static_cast<ax::mojom::AriaCurrentState>(
+      GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))) {
+    case ax::mojom::AriaCurrentState::kPage:
+      aria_current_state =
+          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_PAGE);
+      break;
+    case ax::mojom::AriaCurrentState::kStep:
+      aria_current_state =
+          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_STEP);
+      break;
+    case ax::mojom::AriaCurrentState::kLocation:
+      aria_current_state =
+          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_LOCATION);
+      break;
+    case ax::mojom::AriaCurrentState::kDate:
+      aria_current_state =
+          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_DATE);
+      break;
+    case ax::mojom::AriaCurrentState::kTime:
+      aria_current_state =
+          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_TIME);
+      break;
+    case ax::mojom::AriaCurrentState::kTrue:
+    default:
+      aria_current_state =
+          content_client->GetLocalizedString(IDS_AX_ARIA_CURRENT_TRUE);
+      break;
+  }
+
+  return base::ReplaceStringPlaceholders(
+      content_client->GetLocalizedString(
+          IDS_AX_ARIA_CURRENT_STATE_DESCRIPTION_BASE),
+      aria_current_state, nullptr);
 }
 
 std::string BrowserAccessibilityAndroid::GetRoleString() const {
@@ -1906,6 +1951,17 @@ void BrowserAccessibilityAndroid::GetSuggestions(
       }
     }
   }
+}
+
+bool BrowserAccessibilityAndroid::HasAriaCurrent() const {
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))
+    return false;
+
+  auto current = static_cast<ax::mojom::AriaCurrentState>(
+      GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState));
+
+  return current != ax::mojom::AriaCurrentState::kNone &&
+         current != ax::mojom::AriaCurrentState::kFalse;
 }
 
 bool BrowserAccessibilityAndroid::HasNonEmptyValue() const {

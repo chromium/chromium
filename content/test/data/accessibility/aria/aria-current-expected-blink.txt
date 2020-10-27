@@ -39,3 +39,27 @@ rootWebArea
 ++++++++++inlineTextBox name=' '
 ++++++++staticText name='Span 3'
 ++++++++++inlineTextBox name='Span 3'
+++++++paragraph ariaCurrentState=true
+++++++++staticText name='aria-current is true'
+++++++++++inlineTextBox name='aria-current is true'
+++++++paragraph ariaCurrentState=false
+++++++++staticText name='aria-current is false'
+++++++++++inlineTextBox name='aria-current is false'
+++++++paragraph ariaCurrentState=time
+++++++++staticText name='aria-current is time'
+++++++++++inlineTextBox name='aria-current is time'
+++++++paragraph ariaCurrentState=date
+++++++++staticText name='aria-current is date'
+++++++++++inlineTextBox name='aria-current is date'
+++++++paragraph ariaCurrentState=location
+++++++++staticText name='aria-current is location'
+++++++++++inlineTextBox name='aria-current is location'
+++++++paragraph ariaCurrentState=step
+++++++++staticText name='aria-current is step'
+++++++++++inlineTextBox name='aria-current is step'
+++++++paragraph ariaCurrentState=page
+++++++++staticText name='aria-current is page'
+++++++++++inlineTextBox name='aria-current is page'
+++++++paragraph
+++++++++staticText name='aria-current is empty string'
+++++++++++inlineTextBox name='aria-current is empty string'
