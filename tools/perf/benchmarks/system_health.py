@@ -272,4 +272,4 @@ class WebLayerStartupSystemHealthBenchmark(WebviewStartupSystemHealthBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_system_health.weblayer_startup'
+    return 'system_health.weblayer_startup'

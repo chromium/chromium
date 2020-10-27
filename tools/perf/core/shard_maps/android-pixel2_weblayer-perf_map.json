@@ -28,6 +28,9 @@
                 "begin": 3,
                 "end": 9,
                 "abridged": true
+            },
+            "system_health.weblayer_startup": {
+                "abridged": false
             }
         }
     },

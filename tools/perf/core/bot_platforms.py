@@ -390,9 +390,11 @@ _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
         'jetstream2',
+        'system_health.weblayer_startup',
         'v8.browsing_mobile-future',
     ])
-_ANDROID_PIXEL2_BENCHMARK_CONFIGS = _OFFICIAL_EXCEPT_DISPLAY_LOCKING
+_ANDROID_PIXEL2_BENCHMARK_CONFIGS = _OFFICIAL_EXCEPT_DISPLAY_LOCKING.Remove(
+    ['system_health.weblayer_startup'])
 _ANDROID_PIXEL2_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(),
     _media_perftests(),
@@ -401,12 +403,15 @@ _ANDROID_PIXEL2_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
         'jetstream2',
+        'system_health.weblayer_startup',
         'v8.browsing_mobile-future',
     ])
 _ANDROID_PIXEL2_WEBLAYER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_mobile', True),
     _GetBenchmarkConfig('system_health.memory_mobile', True),
-    _GetBenchmarkConfig('startup.mobile')])
+    _GetBenchmarkConfig('startup.mobile'),
+    _GetBenchmarkConfig('system_health.weblayer_startup')
+])
 _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.mobile')])
 _ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS = PerfSuite([
