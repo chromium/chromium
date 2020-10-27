@@ -6,13 +6,14 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/focus_cycler.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
-#include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
 #include "ash/system/phonehub/task_continuation_view.h"
 #include "ash/system/tray/system_menu_button.h"
@@ -169,7 +170,7 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   // We will always have this phone status view on top of the bubble view
   // to display any available phone status and the settings icon.
   std::unique_ptr<views::View> phone_status =
-      ui_controller_->CreateStatusHeaderView();
+      ui_controller_->CreateStatusHeaderView(this);
   if (phone_status) {
     phone_status->SetPaintToLayer();
     phone_status->layer()->SetFillsBoundsOpaquely(false);
@@ -204,6 +205,15 @@ TrayBubbleView* PhoneHubTray::GetBubbleView() {
 
 const char* PhoneHubTray::GetClassName() const {
   return "PhoneHubTray";
+}
+
+bool PhoneHubTray::CanOpenConnectedDeviceSettings() {
+  return TrayPopupUtils::CanOpenWebUISettings();
+}
+
+void PhoneHubTray::OpenConnectedDevicesSettings() {
+  DCHECK(CanOpenConnectedDeviceSettings());
+  Shell::Get()->system_tray_model()->client()->ShowConnectedDevicesSettings();
 }
 
 void PhoneHubTray::CloseBubble() {

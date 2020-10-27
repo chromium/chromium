@@ -26,7 +26,14 @@ class ASH_EXPORT PhoneStatusView
       public views::ButtonListener,
       public chromeos::phonehub::PhoneModel::Observer {
  public:
-  explicit PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model);
+  class Delegate {
+   public:
+    virtual bool CanOpenConnectedDeviceSettings() = 0;
+    virtual void OpenConnectedDevicesSettings() = 0;
+  };
+
+  PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
+                  Delegate* delegate);
   ~PhoneStatusView() override;
   PhoneStatusView(PhoneStatusView&) = delete;
   PhoneStatusView operator=(PhoneStatusView&) = delete;
@@ -40,6 +47,7 @@ class ASH_EXPORT PhoneStatusView
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneStatusViewTest, MobileProviderVisibility);
   FRIEND_TEST_ALL_PREFIXES(PhoneStatusViewTest, PhoneStatusLabelsContent);
+  FRIEND_TEST_ALL_PREFIXES(PhoneStatusViewTest, ClickOnSettings);
 
   // Update the labels and icons in the view to display current phone status.
   void Update();
@@ -54,6 +62,7 @@ class ASH_EXPORT PhoneStatusView
   void ConfigureTriViewContainer(TriView::Container container);
 
   chromeos::phonehub::PhoneModel* phone_model_ = nullptr;
+  Delegate* delegate_ = nullptr;
 
   // Owned by views hierarchy.
   views::Label* phone_name_label_ = nullptr;

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "ash/system/phonehub/phone_status_view.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"
@@ -67,7 +68,8 @@ class ASH_EXPORT PhoneHubUiController
       TrayBubbleView* bubble_view);
 
   // Creates the header view displaying the phone status.
-  std::unique_ptr<views::View> CreateStatusHeaderView();
+  std::unique_ptr<views::View> CreateStatusHeaderView(
+      PhoneStatusView::Delegate* delegate);
 
   // Observer functions.
   void AddObserver(Observer* observer);

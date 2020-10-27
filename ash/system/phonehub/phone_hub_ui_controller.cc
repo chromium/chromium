@@ -12,7 +12,6 @@
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
-#include "ash/system/phonehub/phone_status_view.h"
 #include "base/logging.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 
@@ -42,10 +41,12 @@ void PhoneHubUiController::SetPhoneHubManager(
   UpdateUiState(GetUiStateFromPhoneHubManager());
 }
 
-std::unique_ptr<views::View> PhoneHubUiController::CreateStatusHeaderView() {
+std::unique_ptr<views::View> PhoneHubUiController::CreateStatusHeaderView(
+    PhoneStatusView::Delegate* delegate) {
   if (!phone_hub_manager_)
     return nullptr;
-  return std::make_unique<PhoneStatusView>(phone_hub_manager_->GetPhoneModel());
+  return std::make_unique<PhoneStatusView>(phone_hub_manager_->GetPhoneModel(),
+                                           delegate);
 }
 
 std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(

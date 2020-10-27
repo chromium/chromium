@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
+#include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/scoped_observer.h"
 
@@ -29,6 +30,7 @@ class TrayBubbleWrapper;
 // This class represents the Phone Hub tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
 class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
+                                public PhoneStatusView::Delegate,
                                 public PhoneHubUiController::Observer {
  public:
   explicit PhoneHubTray(Shelf* shelf);
@@ -52,6 +54,10 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void ShowBubble(bool show_by_click) override;
   TrayBubbleView* GetBubbleView() override;
   const char* GetClassName() const override;
+
+  // PhoneStatusView::Delegate:
+  bool CanOpenConnectedDeviceSettings() override;
+  void OpenConnectedDevicesSettings() override;
 
   views::View* content_view_for_testing() { return content_view_; }
 

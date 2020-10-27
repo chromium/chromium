@@ -17,7 +17,14 @@ namespace ash {
 
 using PhoneStatusModel = chromeos::phonehub::PhoneStatusModel;
 
-class PhoneStatusViewTest : public AshTestBase {
+class DummyEvent : public ui::Event {
+ public:
+  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
+  ~DummyEvent() override = default;
+};
+
+class PhoneStatusViewTest : public AshTestBase,
+                            public PhoneStatusView::Delegate {
  public:
   PhoneStatusViewTest() = default;
   ~PhoneStatusViewTest() override = default;
@@ -27,22 +34,29 @@ class PhoneStatusViewTest : public AshTestBase {
     feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
     AshTestBase::SetUp();
 
-    phone_status_view_ = std::make_unique<PhoneStatusView>(&phone_model_);
+    status_view_ = std::make_unique<PhoneStatusView>(&phone_model_, this);
   }
 
   void TearDown() override {
-    phone_status_view_.reset();
+    status_view_.reset();
     AshTestBase::TearDown();
   }
 
- protected:
-  PhoneStatusView* status_view() { return phone_status_view_.get(); }
-  chromeos::phonehub::MutablePhoneModel* phone_model() { return &phone_model_; }
+  // PhoneStatusView::Delegate:
+  bool CanOpenConnectedDeviceSettings() override {
+    return can_open_connected_device_settings_;
+  }
 
- private:
-  std::unique_ptr<PhoneStatusView> phone_status_view_;
+  void OpenConnectedDevicesSettings() override {
+    connected_device_settings_opened_ = true;
+  }
+
+ protected:
+  std::unique_ptr<PhoneStatusView> status_view_;
   chromeos::phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
+  bool can_open_connected_device_settings_ = false;
+  bool connected_device_settings_opened_ = false;
 };
 
 TEST_F(PhoneStatusViewTest, MobileProviderVisibility) {
@@ -54,25 +68,25 @@ TEST_F(PhoneStatusViewTest, MobileProviderVisibility) {
       PhoneStatusModel(PhoneStatusModel::MobileStatus::kNoSim, metadata,
                        PhoneStatusModel::ChargingState::kNotCharging,
                        PhoneStatusModel::BatterySaverState::kOff, 0);
-  phone_model()->SetPhoneStatusModel(phone_status);
+  phone_model_.SetPhoneStatusModel(phone_status);
   // Mobile provider should not be shown when there is no sim.
-  EXPECT_FALSE(status_view()->mobile_provider_label_->GetVisible());
+  EXPECT_FALSE(status_view_->mobile_provider_label_->GetVisible());
 
   phone_status =
       PhoneStatusModel(PhoneStatusModel::MobileStatus::kSimButNoReception,
                        metadata, PhoneStatusModel::ChargingState::kNotCharging,
                        PhoneStatusModel::BatterySaverState::kOff, 0);
-  phone_model()->SetPhoneStatusModel(phone_status);
+  phone_model_.SetPhoneStatusModel(phone_status);
   // Mobile provider should not be shown when there is no connection.
-  EXPECT_FALSE(status_view()->mobile_provider_label_->GetVisible());
+  EXPECT_FALSE(status_view_->mobile_provider_label_->GetVisible());
 
   phone_status =
       PhoneStatusModel(PhoneStatusModel::MobileStatus::kSimWithReception,
                        metadata, PhoneStatusModel::ChargingState::kNotCharging,
                        PhoneStatusModel::BatterySaverState::kOff, 0);
-  phone_model()->SetPhoneStatusModel(phone_status);
+  phone_model_.SetPhoneStatusModel(phone_status);
   // Mobile provider should be shown when there is a connection.
-  EXPECT_TRUE(status_view()->mobile_provider_label_->GetVisible());
+  EXPECT_TRUE(status_view_->mobile_provider_label_->GetVisible());
 }
 
 TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
@@ -80,7 +94,7 @@ TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
   base::string16 expected_provider_text = base::UTF8ToUTF16("Test Provider");
   base::string16 expected_battery_text = base::UTF8ToUTF16("10%");
 
-  phone_model()->SetPhoneName(expected_name_text);
+  phone_model_.SetPhoneName(expected_name_text);
 
   PhoneStatusModel::MobileConnectionMetadata metadata = {
       .signal_strength = PhoneStatusModel::SignalStrength::kZeroBars,
@@ -90,40 +104,54 @@ TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
       PhoneStatusModel(PhoneStatusModel::MobileStatus::kSimWithReception,
                        metadata, PhoneStatusModel::ChargingState::kNotCharging,
                        PhoneStatusModel::BatterySaverState::kOff, 10);
-  phone_model()->SetPhoneStatusModel(phone_status);
+  phone_model_.SetPhoneStatusModel(phone_status);
 
   // All labels should display phone's status and information.
-  EXPECT_EQ(expected_name_text, status_view()->phone_name_label_->GetText());
+  EXPECT_EQ(expected_name_text, status_view_->phone_name_label_->GetText());
   EXPECT_EQ(expected_provider_text,
-            status_view()->mobile_provider_label_->GetText());
-  EXPECT_EQ(expected_battery_text, status_view()->battery_label_->GetText());
+            status_view_->mobile_provider_label_->GetText());
+  EXPECT_EQ(expected_battery_text, status_view_->battery_label_->GetText());
 
   expected_name_text = base::UTF8ToUTF16("New Phone Name");
   expected_provider_text = base::UTF8ToUTF16("New Provider");
   expected_battery_text = base::UTF8ToUTF16("20%");
 
-  phone_model()->SetPhoneName(expected_name_text);
+  phone_model_.SetPhoneName(expected_name_text);
   metadata.mobile_provider = expected_provider_text;
   phone_status =
       PhoneStatusModel(PhoneStatusModel::MobileStatus::kSimWithReception,
                        metadata, PhoneStatusModel::ChargingState::kNotCharging,
                        PhoneStatusModel::BatterySaverState::kOff, 20);
-  phone_model()->SetPhoneStatusModel(phone_status);
+  phone_model_.SetPhoneStatusModel(phone_status);
 
   // Changes in the model should be reflected in the labels.
-  EXPECT_EQ(expected_name_text, status_view()->phone_name_label_->GetText());
+  EXPECT_EQ(expected_name_text, status_view_->phone_name_label_->GetText());
   EXPECT_EQ(expected_provider_text,
-            status_view()->mobile_provider_label_->GetText());
-  EXPECT_EQ(expected_battery_text, status_view()->battery_label_->GetText());
+            status_view_->mobile_provider_label_->GetText());
+  EXPECT_EQ(expected_battery_text, status_view_->battery_label_->GetText());
 
   // Simulate phone disconnected with a null |PhoneStatusModel| returned.
-  phone_model()->SetPhoneStatusModel(base::nullopt);
+  phone_model_.SetPhoneStatusModel(base::nullopt);
 
   // Existing phone status will be cleared to reflect the model change.
-  EXPECT_TRUE(status_view()->mobile_provider_label_->GetText().empty());
-  EXPECT_TRUE(status_view()->battery_label_->GetText().empty());
-  EXPECT_TRUE(status_view()->battery_icon_->GetImage().isNull());
-  EXPECT_TRUE(status_view()->signal_icon_->GetImage().isNull());
+  EXPECT_TRUE(status_view_->mobile_provider_label_->GetText().empty());
+  EXPECT_TRUE(status_view_->battery_label_->GetText().empty());
+  EXPECT_TRUE(status_view_->battery_icon_->GetImage().isNull());
+  EXPECT_TRUE(status_view_->signal_icon_->GetImage().isNull());
+}
+
+TEST_F(PhoneStatusViewTest, ClickOnSettings) {
+  // The settings button is not visible if we can't open the settings.
+  EXPECT_FALSE(status_view_->settings_button_->GetVisible());
+
+  // The settings button is visible if we can open settings.
+  can_open_connected_device_settings_ = true;
+  status_view_ = std::make_unique<PhoneStatusView>(&phone_model_, this);
+  EXPECT_TRUE(status_view_->settings_button_->GetVisible());
+
+  // Click on the settings button.
+  status_view_->ButtonPressed(status_view_->settings_button_, DummyEvent());
+  EXPECT_TRUE(connected_device_settings_opened_);
 }
 
 }  // namespace ash
