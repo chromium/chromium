@@ -4003,18 +4003,17 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
         aggregated_pass_list[AllowMerge() ? 2 : 1]->quad_list.front();
     const auto* rp_quad =
         AggregatedRenderPassDrawQuad::MaterialCast(quad_to_test);
-    // 1) Without merging, the |quad_to_test| (or more precisely, the
-    // |output_rect| of the render pass referenced by the quad that's used for
-    // damage intersection test) (0,0 60x60) has damage below from surface root
-    // render pass (0,0 60x60), so its |can_use_backdrop_filter_cache| resets
-    // to false.
+    // 1) Without merging, for the first aggregation, the child surface has
+    // damage from its root render pass (0,0 60x60). |quad_to_test| is on the
+    // root render pass of the child surface, so no damage is under it and its
+    // |can_use_backdrop_filter_cache| remains unchanged (true).
     // 2) With merging, the |quad_to_test| would be merged to the root pass of
     // the root surface. The damage from below (0,0 100x100), which is the total
     // of the damage from second surface quad (0,0 80x80) and from root render
     // pass (0,0 100x100), is transformed into the local space of the child
     // surface as (-20,-30 100x100) and it intersects |quad_to_test|(0,0 60x60),
     // so its |can_use_backdrop_filter_cache| resets to false.
-    EXPECT_FALSE(rp_quad->can_use_backdrop_filter_cache);
+    EXPECT_EQ(!AllowMerge(), rp_quad->can_use_backdrop_filter_cache);
   }
 
   // Resubmit child frame and since there'll be no damage under the RPDQ with

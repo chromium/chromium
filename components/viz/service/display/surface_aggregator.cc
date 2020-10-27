@@ -1401,8 +1401,13 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           rect_in_target_space.Intersects(damage_rect);
       bool intersects_damage_from_parent =
           rect_in_target_space.Intersects(damage_from_parent);
+      // The |can_use_backdrop_filter_cache| flag hints if the current quad
+      // intersects any damage from any quads below in the same surface. If the
+      // flag is false, it means the intersecting damage is from quads above it
+      // or from itself.
       bool intersects_damage_from_surface =
-          rect_in_target_space.Intersects(surface_root_rp_damage);
+          rect_in_target_space.Intersects(surface_root_rp_damage) &&
+          !render_pass_quad->can_use_backdrop_filter_cache;
       if (intersects_current_damage || intersects_damage_from_parent ||
           intersects_damage_from_surface) {
         render_pass_quad->can_use_backdrop_filter_cache = false;
