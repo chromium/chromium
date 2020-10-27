@@ -2259,7 +2259,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Let's ensure that when we start with a blank window, navigating away to a
   // view-source URL, we create a new SiteInstance.
-  RenderViewHost* blank_rvh = shell()->web_contents()->GetRenderViewHost();
+  RenderViewHost* blank_rvh =
+      shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
   SiteInstance* blank_site_instance = blank_rvh->GetSiteInstance();
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), GURL::EmptyGURL());
   EXPECT_EQ(blank_site_instance->GetSiteURL(), GURL::EmptyGURL());
@@ -2268,26 +2269,36 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // Now navigate to the view-source URL and ensure we got a different
   // SiteInstance and RenderViewHost.
   EXPECT_TRUE(NavigateToURL(shell(), view_source_url));
-  EXPECT_NE(blank_rvh, shell()->web_contents()->GetRenderViewHost());
-  EXPECT_NE(blank_site_instance,
-            shell()->web_contents()->GetRenderViewHost()->GetSiteInstance());
+  EXPECT_NE(blank_rvh,
+            shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
+  EXPECT_NE(blank_site_instance, shell()
+                                     ->web_contents()
+                                     ->GetMainFrame()
+                                     ->GetRenderViewHost()
+                                     ->GetSiteInstance());
   rvh_observers.EnsureRVHGetsDestructed(
-      shell()->web_contents()->GetRenderViewHost());
+      shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
 
   // Load a random page and then navigate to view-source: of it.
   // This used to cause two RVH instances for the same SiteInstance, which
   // was a problem.  This is no longer the case.
   EXPECT_TRUE(NavigateToURL(shell(), navigated_url));
-  SiteInstance* site_instance1 =
-      shell()->web_contents()->GetRenderViewHost()->GetSiteInstance();
+  SiteInstance* site_instance1 = shell()
+                                     ->web_contents()
+                                     ->GetMainFrame()
+                                     ->GetRenderViewHost()
+                                     ->GetSiteInstance();
   rvh_observers.EnsureRVHGetsDestructed(
-      shell()->web_contents()->GetRenderViewHost());
+      shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
 
   EXPECT_TRUE(NavigateToURL(shell(), view_source_url));
   rvh_observers.EnsureRVHGetsDestructed(
-      shell()->web_contents()->GetRenderViewHost());
-  SiteInstance* site_instance2 =
-      shell()->web_contents()->GetRenderViewHost()->GetSiteInstance();
+      shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
+  SiteInstance* site_instance2 = shell()
+                                     ->web_contents()
+                                     ->GetMainFrame()
+                                     ->GetRenderViewHost()
+                                     ->GetSiteInstance();
 
   // Ensure that view-source navigations force a new SiteInstance.
   EXPECT_NE(site_instance1, site_instance2);
@@ -2296,7 +2307,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("foo.com", "/title2.html")));
   rvh_observers.EnsureRVHGetsDestructed(
-      shell()->web_contents()->GetRenderViewHost());
+      shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
 
   // This used to leak a render view host.
   shell()->Close();

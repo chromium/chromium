@@ -127,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
       shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
 
   // Ensure the view and frame are live.
-  RenderViewHost* rvh = shell()->web_contents()->GetRenderViewHost();
+  RenderViewHost* rvh =
+      shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
   RenderFrameHostImpl* rfh1 =
       static_cast<RenderFrameHostImpl*>(rvh->GetMainFrame());
   EXPECT_TRUE(rvh->IsRenderViewLive());
@@ -847,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   RenderViewHost* rvh = child->current_frame_host()->render_view_host();
   RenderProcessHost* rph = child->current_frame_host()->GetProcess();
 
-  EXPECT_NE(shell()->web_contents()->GetRenderViewHost(), rvh);
+  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetRenderViewHost(), rvh);
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(), child_instance);
   EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
 

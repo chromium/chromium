@@ -129,7 +129,8 @@ IN_PROC_BROWSER_TEST_F(RenderViewHostTest, MAYBE_ReleaseSessionOnCloseACK) {
   EXPECT_TRUE(ExecuteScript(shell(), "window.open();"));
   Shell* new_shell = new_shell_observer.GetShell();
   new_shell->LoadURL(test_url);
-  RenderViewHost* rvh = new_shell->web_contents()->GetRenderViewHost();
+  RenderViewHost* rvh =
+      new_shell->web_contents()->GetMainFrame()->GetRenderViewHost();
   SiteInstance* site_instance = rvh->GetSiteInstance();
   scoped_refptr<SessionStorageNamespace> session_namespace =
       rvh->GetDelegate()->GetSessionStorageNamespace(site_instance);

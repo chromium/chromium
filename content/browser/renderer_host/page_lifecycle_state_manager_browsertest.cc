@@ -83,7 +83,7 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
 
   RenderViewHostImpl* render_view_host() {
     return static_cast<RenderViewHostImpl*>(
-        shell()->web_contents()->GetRenderViewHost());
+        shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
   }
 
   RenderFrameHostImpl* current_frame_host() {
