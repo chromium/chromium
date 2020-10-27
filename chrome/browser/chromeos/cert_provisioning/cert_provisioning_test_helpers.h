@@ -11,7 +11,6 @@
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace user_manager {
@@ -91,39 +90,6 @@ class ProfileHelperForTesting {
   FakeChromeUserManager fake_user_manager_;
   TestingProfile* testing_profile_ = nullptr;
   user_manager::User* user_ = nullptr;
-};
-
-//================ SpyingFakeCryptohomeClient ==================================
-
-class SpyingFakeCryptohomeClient : public FakeCryptohomeClient {
- public:
-  SpyingFakeCryptohomeClient();
-  SpyingFakeCryptohomeClient(const SpyingFakeCryptohomeClient&) = delete;
-  SpyingFakeCryptohomeClient& operator=(const SpyingFakeCryptohomeClient&) =
-      delete;
-  ~SpyingFakeCryptohomeClient() override;
-
-  void TpmAttestationDeleteKey(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_prefix,
-      DBusMethodCallback<bool> callback) override;
-
-  void TpmAttestationDeleteKeysByPrefix(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_prefix,
-      DBusMethodCallback<bool> callback) override;
-
-  MOCK_METHOD(void,
-              OnTpmAttestationDeleteKey,
-              (attestation::AttestationKeyType key_type,
-               const std::string& key_prefix));
-
-  MOCK_METHOD(void,
-              OnTpmAttestationDeleteKeysByPrefix,
-              (attestation::AttestationKeyType key_type,
-               const std::string& key_prefix));
 };
 
 }  // namespace cert_provisioning

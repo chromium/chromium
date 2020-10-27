@@ -158,30 +158,5 @@ user_manager::User* ProfileHelperForTesting::GetUser() const {
   return user_;
 }
 
-//================ SpyingFakeCryptohomeClient ==================================
-
-SpyingFakeCryptohomeClient::SpyingFakeCryptohomeClient() = default;
-SpyingFakeCryptohomeClient::~SpyingFakeCryptohomeClient() = default;
-
-void SpyingFakeCryptohomeClient::TpmAttestationDeleteKey(
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_prefix,
-    DBusMethodCallback<bool> callback) {
-  OnTpmAttestationDeleteKey(key_type, key_prefix);
-  FakeCryptohomeClient::TpmAttestationDeleteKey(
-      key_type, cryptohome_id, key_prefix, std::move(callback));
-}
-
-void SpyingFakeCryptohomeClient::TpmAttestationDeleteKeysByPrefix(
-    attestation::AttestationKeyType key_type,
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    const std::string& key_prefix,
-    DBusMethodCallback<bool> callback) {
-  OnTpmAttestationDeleteKeysByPrefix(key_type, key_prefix);
-  FakeCryptohomeClient::TpmAttestationDeleteKeysByPrefix(
-      key_type, cryptohome_id, key_prefix, std::move(callback));
-}
-
 }  // namespace cert_provisioning
 }  // namespace chromeos
