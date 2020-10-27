@@ -178,7 +178,7 @@ WebContents* RenderViewHostTestHarness::web_contents() {
 }
 
 RenderViewHost* RenderViewHostTestHarness::rvh() {
-  RenderViewHost* result = web_contents()->GetRenderViewHost();
+  RenderViewHost* result = web_contents()->GetMainFrame()->GetRenderViewHost();
   CHECK_EQ(result, web_contents()->GetMainFrame()->GetRenderViewHost());
   return result;
 }

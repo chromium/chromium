@@ -801,7 +801,7 @@ void WaitForResizeComplete(WebContents* web_contents) {
   aura::WindowEventDispatcher* dispatcher = window_host->dispatcher();
   aura::test::WindowEventDispatcherTestApi dispatcher_test(dispatcher);
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   if (!IsResizeComplete(&dispatcher_test, widget_host)) {
     WindowedNotificationObserver resize_observer(
         NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
@@ -937,7 +937,7 @@ void SimulateMouseWheelEvent(WebContents* web_contents,
   wheel_event.delta_y = delta.y();
   wheel_event.phase = phase;
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardWheelEvent(wheel_event);
 }
 
@@ -957,7 +957,7 @@ void SimulateMouseWheelCtrlZoomEvent(WebContents* web_contents,
   wheel_event.wheel_ticks_y = (zoom_in ? 1.0 : -1.0);
   wheel_event.phase = phase;
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardWheelEvent(wheel_event);
 }
 
@@ -990,7 +990,7 @@ void SimulateGesturePinchSequence(WebContents* web_contents,
                                   float scale,
                                   blink::WebGestureDevice source_device) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
 
   blink::WebGestureEvent pinch_begin(
       blink::WebInputEvent::Type::kGesturePinchBegin,
@@ -1019,7 +1019,7 @@ void SimulateGestureScrollSequence(WebContents* web_contents,
                                    const gfx::Point& point,
                                    const gfx::Vector2dF& delta) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
 
   blink::WebGestureEvent scroll_begin(
       blink::WebGestureEvent::Type::kGestureScrollBegin,
@@ -1053,7 +1053,7 @@ void SimulateGestureFlingSequence(WebContents* web_contents,
                                   const gfx::Point& point,
                                   const gfx::Vector2dF& velocity) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
 
   blink::WebGestureEvent scroll_begin(
       blink::WebGestureEvent::Type::kGestureScrollBegin,
@@ -1095,7 +1095,7 @@ void SimulateTouchGestureAt(WebContents* web_contents,
                                  blink::WebGestureDevice::kTouchscreen);
   gesture.SetPositionInWidget(gfx::PointF(point));
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardGestureEvent(gesture);
 }
 
@@ -1117,7 +1117,7 @@ void SimulateTapWithModifiersAt(WebContents* web_contents,
                              blink::WebGestureDevice::kTouchpad);
   tap.SetPositionInWidget(gfx::PointF(point));
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardGestureEvent(tap);
 }
 
@@ -2208,12 +2208,12 @@ RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromFrameTreeNode(
 RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromWebContents(
     WebContents* web_contents) {
   DCHECK(web_contents);
-  DCHECK(web_contents->GetRenderViewHost());
-  DCHECK(
-      RenderWidgetHostImpl::From(web_contents->GetRenderViewHost()->GetWidget())
-          ->render_frame_metadata_provider());
+  DCHECK(web_contents->GetMainFrame()->GetRenderViewHost());
+  DCHECK(RenderWidgetHostImpl::From(
+             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
+             ->render_frame_metadata_provider());
   return RenderWidgetHostImpl::From(
-             web_contents->GetRenderViewHost()->GetWidget())
+             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
       ->render_frame_metadata_provider();
 }
 
@@ -2544,7 +2544,7 @@ bool WebContentsAddedObserver::RenderViewCreatedCalled() {
 bool RequestFrame(WebContents* web_contents) {
   DCHECK(web_contents);
   return RenderWidgetHostImpl::From(
-             web_contents->GetRenderViewHost()->GetWidget())
+             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
       ->RequestRepaintForTesting();
 }
 
@@ -3622,7 +3622,7 @@ bool CompareWebContentsOutputToReference(
   }
 
   auto* rwh = RenderWidgetHostImpl::From(
-      web_contents->GetRenderViewHost()->GetWidget());
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
 
   if (!rwh->GetView() || !rwh->GetView()->IsSurfaceAvailableForCopy()) {
     ADD_FAILURE() << "RWHV surface not available for copy.";
