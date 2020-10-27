@@ -137,7 +137,7 @@ bool CheckSecurityRequirementsBeforeRequest(
 
   // The API is not exposed to Workers or Worklets, so if the current realm
   // execution context is valid, it must have a responsible browsing context.
-  SECURITY_CHECK(resolver->GetFrame());
+  SECURITY_CHECK(resolver->DomWindow());
 
   // The API is not exposed in non-secure context.
   SECURITY_CHECK(resolver->GetExecutionContext()->IsSecureContext());
@@ -148,7 +148,7 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
 
     case RequiredOriginType::kSecureAndSameWithAncestors:
-      if (!IsSameOriginWithAncestors(resolver->GetFrame())) {
+      if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The following credential operations can only occur in a document "
@@ -163,7 +163,7 @@ bool CheckSecurityRequirementsBeforeRequest(
       // The 'publickey-credentials-get' feature's "default allowlist" is
       // "self", which means the webauthn feature is allowed by default in
       // same-origin child browsing contexts.
-      if (!resolver->GetFrame()->GetSecurityContext()->IsFeatureEnabled(
+      if (!resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::FeaturePolicyFeature::kPublicKeyCredentialsGet)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
@@ -192,7 +192,7 @@ void AssertSecurityRequirementsBeforeResponse(
     return;
   }
 
-  SECURITY_CHECK(resolver->GetFrame());
+  SECURITY_CHECK(resolver->DomWindow());
   SECURITY_CHECK(resolver->GetExecutionContext()->IsSecureContext());
   switch (require_origin) {
     case RequiredOriginType::kSecure:
@@ -200,13 +200,13 @@ void AssertSecurityRequirementsBeforeResponse(
       break;
 
     case RequiredOriginType::kSecureAndSameWithAncestors:
-      SECURITY_CHECK(IsSameOriginWithAncestors(resolver->GetFrame()));
+      SECURITY_CHECK(
+          IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame()));
       break;
 
     case RequiredOriginType::kSecureAndPermittedByFeaturePolicy:
-      SECURITY_CHECK(
-          resolver->GetFrame()->GetSecurityContext()->IsFeatureEnabled(
-              mojom::blink::FeaturePolicyFeature::kPublicKeyCredentialsGet));
+      SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::FeaturePolicyFeature::kPublicKeyCredentialsGet));
       break;
   }
 }
@@ -773,10 +773,8 @@ void CreatePublicKeyCredentialForPaymentCredential(
     return;
   }
   if (!mojo_options->relying_party->id) {
-    mojo_options->relying_party->id = resolver->GetFrame()
-                                          ->GetSecurityContext()
-                                          ->GetSecurityOrigin()
-                                          ->Domain();
+    mojo_options->relying_party->id =
+        resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
   }
 
   if (mojo_options->relying_party->icon &&
@@ -828,7 +826,7 @@ ScriptPromise CredentialsContainer::get(
   if (options->hasPublicKey()) {
     auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));
     if (!cryptotoken_origin->IsSameOriginWith(
-            resolver->GetFrame()->GetSecurityContext()->GetSecurityOrigin())) {
+            resolver->GetExecutionContext()->GetSecurityOrigin())) {
       // Cryptotoken requests are recorded as kU2FCryptotokenSign from within
       // the extension.
       UseCounter::Count(resolver->GetExecutionContext(),
@@ -884,16 +882,18 @@ ScriptPromise CredentialsContainer::get(
     }
 
     if (!options->publicKey()->hasUserVerification()) {
-      resolver->GetFrame()->Console().AddMessage(MakeGarbageCollected<
-                                                 ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "publicKey.userVerification was not set to any value in Web "
-          "Authentication navigator.credentials.get() call. This defaults to "
-          "'preferred', which is probably not what you want. If in doubt, set "
-          "to 'discouraged'. See "
-          "https://chromium.googlesource.com/chromium/src/+/master/content/"
-          "browser/webauth/uv_preferred.md for details."));
+      resolver->DomWindow()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "publicKey.userVerification was not set to any value in Web "
+              "Authentication navigator.credentials.get() call. This defaults "
+              "to "
+              "'preferred', which is probably not what you want. If in doubt, "
+              "set "
+              "to 'discouraged'. See "
+              "https://chromium.googlesource.com/chromium/src/+/master/content/"
+              "browser/webauth/uv_preferred.md for details."));
     }
 
     if (options->hasSignal()) {
@@ -910,10 +910,8 @@ ScriptPromise CredentialsContainer::get(
         MojoPublicKeyCredentialRequestOptions::From(*options->publicKey());
     if (mojo_options) {
       if (!mojo_options->relying_party_id) {
-        mojo_options->relying_party_id = resolver->GetFrame()
-                                             ->GetSecurityContext()
-                                             ->GetSecurityOrigin()
-                                             ->Domain();
+        mojo_options->relying_party_id =
+            resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
       }
       auto* authenticator =
           CredentialManagerProxy::From(script_state)->Authenticator();
@@ -1087,7 +1085,7 @@ ScriptPromise CredentialsContainer::create(
     DCHECK(options->hasPublicKey());
     auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));
     if (!cryptotoken_origin->IsSameOriginWith(
-            resolver->GetFrame()->GetSecurityContext()->GetSecurityOrigin())) {
+            resolver->GetExecutionContext()->GetSecurityOrigin())) {
       // Cryptotoken requests are recorded as kU2FCryptotokenRegister from
       // within the extension.
       UseCounter::Count(
@@ -1157,22 +1155,24 @@ ScriptPromise CredentialsContainer::create(
         !options->publicKey()
              ->authenticatorSelection()
              ->hasUserVerification()) {
-      resolver->GetFrame()->Console().AddMessage(MakeGarbageCollected<
-                                                 ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "publicKey.authenticatorSelection.userVerification was not set to "
-          "any value in Web Authentication navigator.credentials.create() "
-          "call. This defaults to 'preferred', which is probably not what you "
-          "want. If in doubt, set to 'discouraged'. See "
-          "https://chromium.googlesource.com/chromium/src/+/master/content/"
-          "browser/webauth/uv_preferred.md for details"));
+      resolver->DomWindow()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "publicKey.authenticatorSelection.userVerification was not set "
+              "to "
+              "any value in Web Authentication navigator.credentials.create() "
+              "call. This defaults to 'preferred', which is probably not what "
+              "you "
+              "want. If in doubt, set to 'discouraged'. See "
+              "https://chromium.googlesource.com/chromium/src/+/master/content/"
+              "browser/webauth/uv_preferred.md for details"));
     }
     if (options->publicKey()->hasAuthenticatorSelection() &&
         options->publicKey()->authenticatorSelection()->hasResidentKey() &&
         !mojo::ConvertTo<base::Optional<mojom::blink::ResidentKeyRequirement>>(
             options->publicKey()->authenticatorSelection()->residentKey())) {
-      resolver->GetFrame()->Console().AddMessage(
+      resolver->DomWindow()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1192,10 +1192,8 @@ ScriptPromise CredentialsContainer::create(
           isolate, "User handle exceeds 64 bytes."));
     } else {
       if (!mojo_options->relying_party->id) {
-        mojo_options->relying_party->id = resolver->GetFrame()
-                                              ->GetSecurityContext()
-                                              ->GetSecurityOrigin()
-                                              ->Domain();
+        mojo_options->relying_party->id =
+            resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
       }
 
       if (mojo_options->relying_party->icon) {
