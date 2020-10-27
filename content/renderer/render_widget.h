@@ -63,10 +63,6 @@ class WebFrameWidget;
 class WebPagePopup;
 }  // namespace blink
 
-namespace gfx {
-struct PresentationFeedback;
-}  // namespace gfx
-
 namespace content {
 class AgentSchedulingGroup;
 class CompositorDependencies;
@@ -204,12 +200,6 @@ class CONTENT_EXPORT RenderWidget
   void UpdateSelectionBounds();
 
   void DidNavigate(ukm::SourceId source_id, const GURL& url);
-
-  // Forces a redraw and invokes the callback once the frame's been displayed
-  // to the user in the display compositor.
-  using PresentationTimeCallback =
-      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
-  virtual void RequestPresentation(PresentationTimeCallback callback);
 
  protected:
   // Destroy the RenderWidget. The |widget| is the owning pointer of |this|.

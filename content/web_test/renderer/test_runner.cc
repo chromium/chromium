@@ -1829,22 +1829,17 @@ void TestRunnerBindings::RemoveWebPageOverlay() {
 void TestRunnerBindings::UpdateAllLifecyclePhasesAndComposite() {
   if (invalid_)
     return;
-  frame_->GetLocalRootRenderWidget()->RequestPresentation(base::DoNothing());
-}
-
-static void UpdateAllLifecyclePhasesAndCompositeThenReply(
-    base::OnceClosure callback,
-    const gfx::PresentationFeedback& feedback) {
-  std::move(callback).Run();
+  static_cast<WebWidgetTestProxy*>(frame_->GetLocalRootRenderWidget())
+      ->UpdateAllLifecyclePhasesAndComposite(base::DoNothing());
 }
 
 void TestRunnerBindings::UpdateAllLifecyclePhasesAndCompositeThen(
     v8::Local<v8::Function> v8_callback) {
   if (invalid_)
     return;
-  frame_->GetLocalRootRenderWidget()->RequestPresentation(
-      base::BindOnce(&UpdateAllLifecyclePhasesAndCompositeThenReply,
-                     WrapV8Closure(std::move(v8_callback))));
+  static_cast<WebWidgetTestProxy*>(frame_->GetLocalRootRenderWidget())
+      ->UpdateAllLifecyclePhasesAndComposite(
+          WrapV8Closure(std::move(v8_callback)));
 }
 
 void TestRunnerBindings::SetAnimationRequiresRaster(bool do_raster) {

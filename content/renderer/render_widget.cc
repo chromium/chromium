@@ -184,11 +184,6 @@ void RenderWidget::SetPendingWindowRect(const gfx::Rect& rect) {
   GetWebWidget()->SetPendingWindowRect(rect);
 }
 
-void RenderWidget::RequestPresentation(PresentationTimeCallback callback) {
-  layer_tree_host_->RequestPresentationTimeForNextFrame(std::move(callback));
-  layer_tree_host_->SetNeedsCommitWithForcedRedraw();
-}
-
 void RenderWidget::ScheduleAnimation() {
   // This call is not needed in single thread mode for tests without a
   // scheduler, but they override this method in order to schedule a synchronous

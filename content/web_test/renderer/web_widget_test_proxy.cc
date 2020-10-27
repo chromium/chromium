@@ -47,9 +47,14 @@ void WebWidgetTestProxy::ScheduleAnimationForWebTests() {
     ScheduleAnimationInternal(/*do_raster=*/true);
 }
 
-void WebWidgetTestProxy::RequestPresentation(
-    PresentationTimeCallback callback) {
-  RenderWidget::RequestPresentation(std::move(callback));
+void WebWidgetTestProxy::UpdateAllLifecyclePhasesAndComposite(
+    base::OnceClosure callback) {
+  layer_tree_host()->RequestPresentationTimeForNextFrame(base::BindOnce(
+      [](base::OnceClosure callback, const gfx::PresentationFeedback&) {
+        std::move(callback).Run();
+      },
+      std::move(callback)));
+  layer_tree_host()->SetNeedsCommitWithForcedRedraw();
   ScheduleAnimationForWebTests();
 }
 
