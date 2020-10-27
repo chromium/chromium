@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link ChainedTasks}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ChainedTasksTest {
     private static final long TIMEOUT_MS = 1000;
 
