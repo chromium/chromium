@@ -142,6 +142,8 @@ bool ElementAnimations::UpdateBoxSizeAndCheckTransformAxisAlignment(
   for (auto& entry : animations_) {
     Animation& animation = *entry.key;
     if (auto* effect = DynamicTo<KeyframeEffect>(animation.effect())) {
+      if (!effect->IsCurrent() && !effect->IsInEffect())
+        continue;
       if (!effect->UpdateBoxSizeAndCheckTransformAxisAlignment(box_size))
         preserves_axis_alignment = false;
     }
