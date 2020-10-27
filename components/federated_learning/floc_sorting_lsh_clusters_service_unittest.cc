@@ -71,7 +71,7 @@ class FlocSortingLshClustersServiceTest : public ::testing::Test {
   }
 
   base::FilePath CreateTestSortingLshClustersFile(
-      const std::vector<uint32_t>& sorting_lsh_clusters) {
+      const std::vector<std::pair<uint32_t, bool>>& sorting_lsh_clusters) {
     base::FilePath file_path = GetUniqueTemporaryPath();
     base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_READ |
                                    base::File::FLAG_WRITE);
@@ -84,8 +84,14 @@ class FlocSortingLshClustersServiceTest : public ::testing::Test {
     google::protobuf::io::CodedOutputStream output_stream(
         &zero_copy_stream_adaptor);
 
-    for (uint32_t next : sorting_lsh_clusters)
+    for (const auto& p : sorting_lsh_clusters) {
+      uint32_t next = p.first;
+      bool is_blocked = p.second;
+      if (is_blocked) {
+        next |= kSortingLshBlockedMask;
+      }
       output_stream.WriteVarint32(next);
+    }
 
     CHECK(!output_stream.HadError());
 
@@ -93,7 +99,7 @@ class FlocSortingLshClustersServiceTest : public ::testing::Test {
   }
 
   base::FilePath InitializeSortingLshClustersFile(
-      const std::vector<uint32_t>& sorting_lsh_clusters) {
+      const std::vector<std::pair<uint32_t, bool>>& sorting_lsh_clusters) {
     base::FilePath file_path =
         CreateTestSortingLshClustersFile(sorting_lsh_clusters);
     service()->OnSortingLshClustersFileReady(file_path, kDummyVersion);
@@ -116,8 +122,8 @@ class FlocSortingLshClustersServiceTest : public ::testing::Test {
     FlocId result;
 
     base::RunLoop run_loop;
-    auto cb = base::BindLambdaForTesting(
-        [&](FlocId floc_id, base::Optional<base::Version> version) {
+    auto cb =
+        base::BindLambdaForTesting([&](FlocId floc_id, base::Version version) {
           result = floc_id;
           run_loop.Quit();
         });
@@ -151,15 +157,31 @@ TEST_F(FlocSortingLshClustersServiceTest, EmptyList) {
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_0) {
-  InitializeSortingLshClustersFile({0});
+  InitializeSortingLshClustersFile({{0, false}});
 
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(0)));
   EXPECT_EQ(FlocId(), ApplySortingLsh(FlocId(1)));
   EXPECT_EQ(FlocId(), ApplySortingLsh(MaxFlocId()));
 }
 
+TEST_F(FlocSortingLshClustersServiceTest, List_0_Blocked) {
+  InitializeSortingLshClustersFile({{0, true}});
+
+  EXPECT_EQ(FlocId(), ApplySortingLsh(FlocId(0)));
+  EXPECT_EQ(FlocId(), ApplySortingLsh(FlocId(1)));
+  EXPECT_EQ(FlocId(), ApplySortingLsh(MaxFlocId()));
+}
+
+TEST_F(FlocSortingLshClustersServiceTest, List_UnexpectedNumber) {
+  InitializeSortingLshClustersFile({{1 << 8, false}});
+
+  EXPECT_EQ(FlocId(), ApplySortingLsh(FlocId(0)));
+  EXPECT_EQ(FlocId(), ApplySortingLsh(FlocId(1)));
+  EXPECT_EQ(FlocId(), ApplySortingLsh(MaxFlocId()));
+}
+
 TEST_F(FlocSortingLshClustersServiceTest, List_1) {
-  InitializeSortingLshClustersFile({1});
+  InitializeSortingLshClustersFile({{1, false}});
 
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(0)));
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(1)));
@@ -168,7 +190,7 @@ TEST_F(FlocSortingLshClustersServiceTest, List_1) {
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_0_0) {
-  InitializeSortingLshClustersFile({0, 0});
+  InitializeSortingLshClustersFile({{0, false}, {0, false}});
 
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(0)));
   EXPECT_EQ(FlocId(1), ApplySortingLsh(FlocId(1)));
@@ -177,7 +199,7 @@ TEST_F(FlocSortingLshClustersServiceTest, List_0_0) {
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_0_1) {
-  InitializeSortingLshClustersFile({0, 1});
+  InitializeSortingLshClustersFile({{0, false}, {1, false}});
 
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(0)));
   EXPECT_EQ(FlocId(1), ApplySortingLsh(FlocId(1)));
@@ -187,7 +209,7 @@ TEST_F(FlocSortingLshClustersServiceTest, List_0_1) {
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_1_0) {
-  InitializeSortingLshClustersFile({1, 0});
+  InitializeSortingLshClustersFile({{1, false}, {0, false}});
 
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(0)));
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(1)));
@@ -197,7 +219,7 @@ TEST_F(FlocSortingLshClustersServiceTest, List_1_0) {
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_SingleCluster) {
-  InitializeSortingLshClustersFile({kMaxNumberOfBitsInFloc});
+  InitializeSortingLshClustersFile({{kMaxNumberOfBitsInFloc, false}});
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(0)));
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(1)));
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(12345)));
@@ -205,8 +227,8 @@ TEST_F(FlocSortingLshClustersServiceTest, List_SingleCluster) {
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_TwoClustersEqualSize) {
-  InitializeSortingLshClustersFile(
-      {kMaxNumberOfBitsInFloc - 1, kMaxNumberOfBitsInFloc - 1});
+  InitializeSortingLshClustersFile({{kMaxNumberOfBitsInFloc - 1, false},
+                                    {kMaxNumberOfBitsInFloc - 1, false}});
 
   uint64_t middle_value = (1ULL << (kMaxNumberOfBitsInFloc - 1));
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(0)));
@@ -219,11 +241,11 @@ TEST_F(FlocSortingLshClustersServiceTest, List_TwoClustersEqualSize) {
 
 TEST_F(FlocSortingLshClustersServiceTest,
        FileDeletedAfterSortingLshTaskScheduled) {
-  base::FilePath file_path = InitializeSortingLshClustersFile({0});
+  base::FilePath file_path = InitializeSortingLshClustersFile({{0, false}});
 
   base::RunLoop run_loop;
-  auto cb = base::BindLambdaForTesting(
-      [&](FlocId floc_id, base::Optional<base::Version> version) {
+  auto cb =
+      base::BindLambdaForTesting([&](FlocId floc_id, base::Version version) {
         // Since the file has been deleted, expect an invalid floc id.
         EXPECT_EQ(FlocId(), floc_id);
         run_loop.Quit();
@@ -238,7 +260,7 @@ TEST_F(FlocSortingLshClustersServiceTest,
 
 TEST_F(FlocSortingLshClustersServiceTest, MultipleUpdate_LatestOneUsed) {
   InitializeSortingLshClustersFile({});
-  InitializeSortingLshClustersFile({0});
+  InitializeSortingLshClustersFile({{0, false}});
   EXPECT_EQ(FlocId(0), ApplySortingLsh(FlocId(0)));
 }
 

@@ -15,15 +15,18 @@ extern const char kManifestFlocComponentFormatKey[];
 
 extern const int kCurrentFlocComponentFormatVersion;
 
+extern const uint8_t kSortingLshMaxBits;
+
+extern const uint32_t kSortingLshBlockedMask;
+
+extern const uint32_t kSortingLshSizeMask;
+
 // The name of the top-level directory under the user data directory that
 // contains all files and subdirectories related to the floc.
 extern const base::FilePath::CharType kTopLevelDirectoryName[];
 
 // Paths under |kTopLevelDirectoryName|
 // ------------------------------------
-
-// The name of the file that stores the blocklist.
-extern const base::FilePath::CharType kBlocklistFileName[];
 
 // The name of the file that stores the sorting-lsh clusters.
 extern const base::FilePath::CharType kSortingLshClustersFileName[];

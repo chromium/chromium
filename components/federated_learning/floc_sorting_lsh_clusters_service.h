@@ -30,7 +30,7 @@ namespace federated_learning {
 class FlocSortingLshClustersService {
  public:
   using ApplySortingLshCallback =
-      base::OnceCallback<void(FlocId, base::Optional<base::Version>)>;
+      base::OnceCallback<void(FlocId, base::Version)>;
 
   class Observer {
    public:

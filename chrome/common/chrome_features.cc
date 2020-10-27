@@ -385,10 +385,6 @@ const base::Feature kFlashDeprecationWarning{"FlashDeprecationWarning",
 const base::Feature kFlocIdComputedEventLogging{
     "FlocIdComputedEventLogging", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, a computed floc will be invalidated if it appears in a blocklist.
-const base::Feature kFlocIdBlocklistFiltering{
-    "FlocIdBlocklistFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, the sim-hash floc computed from history will be further encoded
 // based on the sorting-lsh.
 const base::Feature kFlocIdSortingLshBasedComputation{

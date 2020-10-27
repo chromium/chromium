@@ -4,8 +4,6 @@
 
 static_library("federated_learning") {
   sources = [
-    "floc_blocklist_service.cc",
-    "floc_blocklist_service.h",
     "floc_constants.cc",
     "floc_constants.h",
     "floc_id.cc",
@@ -24,7 +22,6 @@ static_library("federated_learning") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "floc_blocklist_service_unittest.cc",
     "floc_sorting_lsh_clusters_service_unittest.cc",
     "sim_hash_unittest.cc",
   ]

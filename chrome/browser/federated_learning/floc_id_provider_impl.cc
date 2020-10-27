@@ -16,7 +16,6 @@
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/federated_learning/floc_blocklist_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
@@ -49,7 +48,6 @@ FlocIdProviderImpl::FlocIdProviderImpl(
   history_service->AddObserver(this);
   sync_service_->AddObserver(this);
   g_browser_process->floc_sorting_lsh_clusters_service()->AddObserver(this);
-  g_browser_process->floc_blocklist_service()->AddObserver(this);
 
   OnStateChanged(sync_service);
 
@@ -57,9 +55,6 @@ FlocIdProviderImpl::FlocIdProviderImpl(
           ->IsSortingLshClustersFileReady()) {
     OnSortingLshClustersFileReady();
   }
-
-  if (g_browser_process->floc_blocklist_service()->IsBlocklistFileReady())
-    OnBlocklistFileReady();
 }
 
 FlocIdProviderImpl::~FlocIdProviderImpl() = default;
@@ -164,8 +159,6 @@ void FlocIdProviderImpl::Shutdown() {
   if (history_service_)
     history_service_->RemoveObserver(this);
   history_service_ = nullptr;
-
-  g_browser_process->floc_blocklist_service()->RemoveObserver(this);
 }
 
 void FlocIdProviderImpl::OnURLsDeleted(
@@ -194,15 +187,6 @@ void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
   MaybeTriggerFirstFlocComputation();
 }
 
-void FlocIdProviderImpl::OnBlocklistFileReady() {
-  if (first_blocklist_file_ready_seen_)
-    return;
-
-  first_blocklist_file_ready_seen_ = true;
-
-  MaybeTriggerFirstFlocComputation();
-}
-
 void FlocIdProviderImpl::OnStateChanged(syncer::SyncService* sync_service) {
   if (first_sync_history_enabled_seen_)
     return;
@@ -224,14 +208,8 @@ void FlocIdProviderImpl::MaybeTriggerFirstFlocComputation() {
           features::kFlocIdSortingLshBasedComputation) ||
       first_sorting_lsh_file_ready_seen_;
 
-  bool blocklist_ready_or_not_required =
-      !base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering) ||
-      first_blocklist_file_ready_seen_;
-
-  if (!first_sync_history_enabled_seen_ || !sorting_lsh_ready_or_not_required ||
-      !blocklist_ready_or_not_required) {
+  if (!first_sync_history_enabled_seen_ || !sorting_lsh_ready_or_not_required)
     return;
-  }
 
   ComputeFloc(ComputeFlocTrigger::kBrowserStart);
 }
@@ -394,43 +372,21 @@ void FlocIdProviderImpl::ApplyAdditionalFiltering(
 
   if (!base::FeatureList::IsEnabled(
           features::kFlocIdSortingLshBasedComputation)) {
-    SkippedOrAppliedSortingLsh(std::move(callback), sim_hash,
-                               /*sim_hash_or_sorting_lsh=*/sim_hash,
-                               /*version_to_validate=*/base::nullopt);
+    std::move(callback).Run(ComputeFlocResult(sim_hash, sim_hash));
     return;
   }
 
   g_browser_process->floc_sorting_lsh_clusters_service()->ApplySortingLsh(
-      sim_hash, base::BindOnce(&FlocIdProviderImpl::SkippedOrAppliedSortingLsh,
+      sim_hash, base::BindOnce(&FlocIdProviderImpl::DidApplyAdditionalFiltering,
                                weak_ptr_factory_.GetWeakPtr(),
                                std::move(callback), sim_hash));
-}
-
-void FlocIdProviderImpl::SkippedOrAppliedSortingLsh(
-    ComputeFlocCompletedCallback callback,
-    const FlocId& sim_hash,
-    FlocId sim_hash_or_sorting_lsh,
-    base::Optional<base::Version> version_to_validate) {
-  // |!sim_hash_or_sorting_lsh.IsValid()| indicates a missing or corrupted
-  // sorting-lsh file.
-  if (!base::FeatureList::IsEnabled(features::kFlocIdBlocklistFiltering) ||
-      !sim_hash_or_sorting_lsh.IsValid()) {
-    std::move(callback).Run(
-        ComputeFlocResult(sim_hash, sim_hash_or_sorting_lsh));
-    return;
-  }
-
-  g_browser_process->floc_blocklist_service()->FilterByBlocklist(
-      sim_hash_or_sorting_lsh, version_to_validate,
-      base::BindOnce(&FlocIdProviderImpl::DidApplyAdditionalFiltering,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     sim_hash));
 }
 
 void FlocIdProviderImpl::DidApplyAdditionalFiltering(
     ComputeFlocCompletedCallback callback,
     FlocId sim_hash,
-    FlocId final_hash) {
+    FlocId final_hash,
+    base::Version version) {
   std::move(callback).Run(
       ComputeFlocResult(std::move(sim_hash), std::move(final_hash)));
 }

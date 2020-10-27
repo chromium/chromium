@@ -55,7 +55,6 @@ class RulesetService;
 }
 
 namespace federated_learning {
-class FlocBlocklistService;
 class FlocSortingLshClustersService;
 }
 
@@ -219,10 +218,6 @@ class BrowserProcess {
   // Browsing subresource filter.
   virtual subresource_filter::RulesetService*
   subresource_filter_ruleset_service() = 0;
-
-  // Returns the service providing versioned storage for a blocklist of flocs.
-  virtual federated_learning::FlocBlocklistService*
-  floc_blocklist_service() = 0;
 
   // Returns the service providing versioned storage for a list of limit values
   // for calculating the floc based on SortingLSH.

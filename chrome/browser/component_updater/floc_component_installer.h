@@ -18,7 +18,6 @@ class DictionaryValue;
 }  // namespace base
 
 namespace federated_learning {
-class FlocBlocklistService;
 class FlocSortingLshClustersService;
 }  // namespace federated_learning
 
@@ -26,11 +25,10 @@ namespace component_updater {
 
 class ComponentUpdateService;
 
-// Component for receiving FLoC files, e.g. blocklist, sorting-lsh, etc.
+// Component for receiving FLoC files, e.g. sorting-lsh, etc.
 class FlocComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   explicit FlocComponentInstallerPolicy(
-      federated_learning::FlocBlocklistService* floc_blocklist_service,
       federated_learning::FlocSortingLshClustersService*
           floc_sorting_lsh_clusters_service);
   ~FlocComponentInstallerPolicy() override;
@@ -60,14 +58,12 @@ class FlocComponentInstallerPolicy : public ComponentInstallerPolicy {
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   std::vector<std::string> GetMimeTypes() const override;
 
-  federated_learning::FlocBlocklistService* floc_blocklist_service_;
   federated_learning::FlocSortingLshClustersService*
       floc_sorting_lsh_clusters_service_;
 };
 
 void RegisterFlocComponent(
     ComponentUpdateService* cus,
-    federated_learning::FlocBlocklistService* floc_blocklist_service,
     federated_learning::FlocSortingLshClustersService*
         floc_sorting_lsh_clusters_service);
 

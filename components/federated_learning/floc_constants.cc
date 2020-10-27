@@ -16,13 +16,16 @@ static_assert(kMaxNumberOfBitsInFloc > 0 &&
 
 const char kManifestFlocComponentFormatKey[] = "floc_component_format";
 
-const int kCurrentFlocComponentFormatVersion = 2;
+const int kCurrentFlocComponentFormatVersion = 3;
+
+const uint8_t kSortingLshMaxBits = 7;
+
+const uint32_t kSortingLshBlockedMask = 0b1000000;
+
+const uint32_t kSortingLshSizeMask = 0b0111111;
 
 const base::FilePath::CharType kTopLevelDirectoryName[] =
     FILE_PATH_LITERAL("Floc");
-
-const base::FilePath::CharType kBlocklistFileName[] =
-    FILE_PATH_LITERAL("Blocklist");
 
 const base::FilePath::CharType kSortingLshClustersFileName[] =
     FILE_PATH_LITERAL("SortingLshClusters");

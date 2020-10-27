@@ -17,10 +17,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind_test_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/version.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "components/federated_learning/floc_blocklist_service.h"
 #include "components/federated_learning/floc_constants.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,31 +35,6 @@ ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
   return true;
 }
-
-// This class monitors the OnBlocklistFileReady method calls.
-class MockFlocBlocklistService
-    : public federated_learning::FlocBlocklistService {
- public:
-  MockFlocBlocklistService() = default;
-
-  MockFlocBlocklistService(const MockFlocBlocklistService&) = delete;
-  MockFlocBlocklistService& operator=(const MockFlocBlocklistService&) = delete;
-
-  ~MockFlocBlocklistService() override = default;
-
-  void OnBlocklistFileReady(const base::FilePath& file_path,
-                            const base::Version& version) override {
-    file_paths_.push_back(file_path);
-    versions_.push_back(version);
-  }
-
-  const std::vector<base::FilePath>& file_paths() const { return file_paths_; }
-  const std::vector<base::Version>& versions() const { return versions_; }
-
- private:
-  std::vector<base::FilePath> file_paths_;
-  std::vector<base::Version> versions_;
-};
 
 // This class monitors the OnSortingLshClustersFileReady method calls.
 class MockFlocSortingLshClustersService
@@ -107,16 +80,6 @@ class FlocComponentInstallerTest : public PlatformTest {
 
     ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
 
-    auto test_floc_blocklist_service =
-        std::make_unique<MockFlocBlocklistService>();
-    test_floc_blocklist_service->SetBackgroundTaskRunnerForTesting(
-        base::SequencedTaskRunnerHandle::Get());
-
-    test_floc_blocklist_service_ = test_floc_blocklist_service.get();
-
-    TestingBrowserProcess::GetGlobal()->SetFlocBlocklistService(
-        std::move(test_floc_blocklist_service));
-
     auto test_floc_sorting_lsh_clusters_service =
         std::make_unique<MockFlocSortingLshClustersService>();
     test_floc_sorting_lsh_clusters_service->SetBackgroundTaskRunnerForTesting(
@@ -129,19 +92,15 @@ class FlocComponentInstallerTest : public PlatformTest {
         std::move(test_floc_sorting_lsh_clusters_service));
 
     policy_ = std::make_unique<FlocComponentInstallerPolicy>(
-        test_floc_blocklist_service_, test_floc_sorting_lsh_clusters_service_);
+        test_floc_sorting_lsh_clusters_service_);
   }
 
   void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetFlocBlocklistService(nullptr);
     TestingBrowserProcess::GetGlobal()->SetFlocSortingLshClustersService(
         nullptr);
     PlatformTest::TearDown();
   }
 
-  MockFlocBlocklistService* blocklist_service() {
-    return test_floc_blocklist_service_;
-  }
   MockFlocSortingLshClustersService* sorting_lsh_clusters_service() {
     return test_floc_sorting_lsh_clusters_service_;
   }
@@ -155,13 +114,7 @@ class FlocComponentInstallerTest : public PlatformTest {
     return component_install_dir_.GetPath();
   }
 
-  void CreateTestFlocComponentFiles(const std::string& blocklist_content,
-                                    const std::string& sorting_lsh_content) {
-    base::FilePath blocklist_file_path =
-        component_install_dir().Append(federated_learning::kBlocklistFileName);
-    ASSERT_NO_FATAL_FAILURE(
-        WriteStringToFile(blocklist_content, blocklist_file_path));
-
+  void CreateTestFlocComponentFiles(const std::string& sorting_lsh_content) {
     base::FilePath sorting_lsh_file_path = component_install_dir().Append(
         federated_learning::kSortingLshClustersFileName);
     ASSERT_NO_FATAL_FAILURE(
@@ -185,7 +138,6 @@ class FlocComponentInstallerTest : public PlatformTest {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir component_install_dir_;
   std::unique_ptr<FlocComponentInstallerPolicy> policy_;
-  MockFlocBlocklistService* test_floc_blocklist_service_ = nullptr;
   MockFlocSortingLshClustersService* test_floc_sorting_lsh_clusters_service_ =
       nullptr;
 };
@@ -199,22 +151,19 @@ TEST_F(FlocComponentInstallerTest, TestComponentRegistration) {
       .Times(1)
       .WillOnce(QuitMessageLoop(&run_loop));
 
-  RegisterFlocComponent(component_updater.get(), blocklist_service(),
+  RegisterFlocComponent(component_updater.get(),
                         sorting_lsh_clusters_service());
   run_loop.Run();
 }
 
 TEST_F(FlocComponentInstallerTest, LoadFlocComponent) {
-  ASSERT_TRUE(blocklist_service());
   ASSERT_TRUE(sorting_lsh_clusters_service());
 
   std::string contents = "abcd";
-  ASSERT_NO_FATAL_FAILURE(CreateTestFlocComponentFiles(contents, contents));
+  ASSERT_NO_FATAL_FAILURE(CreateTestFlocComponentFiles(contents));
   ASSERT_NO_FATAL_FAILURE(LoadFlocComponent(
       "1.0.1", federated_learning::kCurrentFlocComponentFormatVersion));
 
-  ASSERT_EQ(blocklist_service()->file_paths().size(), 1u);
-  ASSERT_EQ(blocklist_service()->versions().size(), 1u);
   ASSERT_EQ(sorting_lsh_clusters_service()->file_paths().size(), 1u);
   ASSERT_EQ(sorting_lsh_clusters_service()->versions().size(), 1u);
 
@@ -222,35 +171,25 @@ TEST_F(FlocComponentInstallerTest, LoadFlocComponent) {
   // and the corresponding file name, which implies that the |version| argument
   // has no impact. In reality, though, the |component_install_dir_| and the
   // |version| should always match.
-  ASSERT_EQ(blocklist_service()->file_paths()[0].AsUTF8Unsafe(),
-            component_install_dir()
-                .Append(federated_learning::kBlocklistFileName)
-                .AsUTF8Unsafe());
-
   ASSERT_EQ(sorting_lsh_clusters_service()->file_paths()[0].AsUTF8Unsafe(),
             component_install_dir()
                 .Append(federated_learning::kSortingLshClustersFileName)
                 .AsUTF8Unsafe());
 
-  EXPECT_EQ(blocklist_service()->versions()[0].GetString(), "1.0.1");
   EXPECT_EQ(sorting_lsh_clusters_service()->versions()[0].GetString(), "1.0.1");
 
   std::string actual_contents;
-  ASSERT_TRUE(base::ReadFileToString(blocklist_service()->file_paths()[0],
-                                     &actual_contents));
   ASSERT_TRUE(base::ReadFileToString(
       sorting_lsh_clusters_service()->file_paths()[0], &actual_contents));
   EXPECT_EQ(actual_contents, contents);
 }
 
 TEST_F(FlocComponentInstallerTest, UnsupportedFormatVersionIgnored) {
-  ASSERT_TRUE(blocklist_service());
   ASSERT_TRUE(sorting_lsh_clusters_service());
   const std::string contents = "future stuff";
-  ASSERT_NO_FATAL_FAILURE(CreateTestFlocComponentFiles(contents, contents));
+  ASSERT_NO_FATAL_FAILURE(CreateTestFlocComponentFiles(contents));
   ASSERT_NO_FATAL_FAILURE(LoadFlocComponent(
       "1.0.0", federated_learning::kCurrentFlocComponentFormatVersion + 1));
-  EXPECT_EQ(blocklist_service()->file_paths().size(), 0u);
   EXPECT_EQ(sorting_lsh_clusters_service()->file_paths().size(), 0u);
 }
 

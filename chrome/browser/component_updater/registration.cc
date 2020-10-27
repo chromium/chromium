@@ -120,7 +120,7 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #endif
 
   RegisterSubresourceFilterComponent(cus);
-  RegisterFlocComponent(cus, g_browser_process->floc_blocklist_service(),
+  RegisterFlocComponent(cus,
                         g_browser_process->floc_sorting_lsh_clusters_service());
   RegisterOnDeviceHeadSuggestComponent(
       cus, g_browser_process->GetApplicationLocale());

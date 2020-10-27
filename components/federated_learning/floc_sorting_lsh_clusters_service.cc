@@ -51,24 +51,29 @@ FlocId ApplySortingLshOnBackgroundThread(const FlocId& raw_floc_id,
   google::protobuf::io::CodedInputStream input_stream(
       &zero_copy_stream_adaptor);
 
-  // The file should contain a list of integers within the range [0,
-  // MaxNumberOfBitsInFloc]. Suppose the list is l, then 2^(l[i]) represents the
-  // the number of hashes that can be associated with this floc id. The
-  // cumulative sum of 2^(l[i]) represents the boundary floc values in
-  // |raw_floc_id|'s space. We will use the higher index to encode
-  // |raw_floc_id|, i.e. if raw_floc_id is within range
-  // [CumSum(2^(l[i-1])), CumSum(2^(l[i]))), |i| will be output floc.
+  // The file should contain a list of integers. The 7th-order bit represents
+  // whether the cohort should be blocked. The number represented by the 1st-6th
+  // bits should be within the range [0, MaxNumberOfBitsInFloc]. Suppose the
+  // list is l, then S(i) = 2^(l[i] & 0b111111) represents the the number of
+  // hashes that can be associated with this floc id. The cumulative sum of S(i)
+  // represents the boundary floc values in |raw_floc_id|'s space. We will use
+  // the higher index to encode |raw_floc_id|, i.e. if raw_floc_id is within
+  // range [CumSum(S(i-1)), CumSum(S(i))), |i| will be output floc.
   //
   // 0 is always an implicit CumSum boundary, i.e. if
   // 0 <= |raw_floc_id| < 2^(l[0]), then the index 0 will be the output floc.
   //
+  // However, if the is_blocked bit (i.e. l[i] & 0b1000000) indicates that the
+  // cohort should be blocked, we will output an invalid floc id.
+
   // Input sanitization: As we compute on the fly, we will check to make sure
-  // each encountered entry is within [0, MaxNumberOfBitsInFloc]. Besides, the
-  // cumulative sum should be no greater than 2^MaxNumberOfBitsInFloc at any
-  // given time. If we cannot find an index i, it means the the final cumulative
-  // sum is less than 2^MaxNumberOfBitsInFloc, while we expect it to be exactly
+  // each encountered entry, after dropping the is_blocked bit, is within
+  // [0, MaxNumberOfBitsInFloc]. Besides, the cumulative sum should be no
+  // greater than 2^MaxNumberOfBitsInFloc at any given time. If we cannot find
+  // an index i, it means the the final cumulative sum is less than
+  // 2^MaxNumberOfBitsInFloc, while we expect it to be exactly
   // 2^MaxNumberOfBitsInFloc, and we should also fail in this case. When some
-  // check fails, we will output an invalid floc id.
+  // check fails, we will also output an invalid floc id.
   //
   // A stricter sanitization would be to always stream all numbers and check
   // properties. We skip doing this to save some computation cost.
@@ -77,24 +82,39 @@ FlocId ApplySortingLshOnBackgroundThread(const FlocId& raw_floc_id,
   DCHECK(raw_floc_id_as_int < kExpectedFinalCumulativeSum);
 
   uint64_t cumulative_sum = 0;
-  uint32_t next;
+  uint32_t next_combined;
 
-  // TODO: Add metrics for when we return an invalid floc, which indicates a
-  // wrong/corrupted file.
+  // TODO(yaoxia): Add metrics for when the file has unexpected format.
 
-  for (uint64_t index = 0; input_stream.ReadVarint32(&next); ++index) {
+  for (uint64_t index = 0; input_stream.ReadVarint32(&next_combined); ++index) {
+    // Sanitizing error: the entry used more than |kSortingLshMaxBits| bits.
+    if ((next_combined >> kSortingLshMaxBits) > 0)
+      return FlocId();
+
+    bool is_blocked = next_combined & kSortingLshBlockedMask;
+    uint32_t next = next_combined & kSortingLshSizeMask;
+
+    // Sanitizing error
     if (next > kMaxNumberOfBitsInFloc)
       return FlocId();
 
     cumulative_sum += (1ULL << next);
 
+    // Sanitizing error
     if (cumulative_sum > kExpectedFinalCumulativeSum)
       return FlocId();
 
-    if (cumulative_sum > raw_floc_id_as_int)
+    // Found the sim-hash upper bound. Use the index as the new floc.
+    if (cumulative_sum > raw_floc_id_as_int) {
+      if (is_blocked)
+        return FlocId();
+
       return FlocId(index);
+    }
   }
 
+  // Sanitizing error: we didn't find a sim-hash upper bound, but we expect to
+  // always find it after finish iterating through the list.
   return FlocId();
 }
 

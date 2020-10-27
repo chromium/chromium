@@ -36,29 +36,6 @@ using ComputeFlocCompletedCallback =
     FlocIdProviderImpl::ComputeFlocCompletedCallback;
 using CanComputeFlocCallback = FlocIdProviderImpl::CanComputeFlocCallback;
 
-class MockFlocBlocklistService : public FlocBlocklistService {
- public:
-  using FlocBlocklistService::FlocBlocklistService;
-
-  void ConfigureBlocklist(const FlocId& floc_to_block) {
-    floc_to_block_ = floc_to_block;
-  }
-
-  void FilterByBlocklist(
-      const FlocId& unfiltered_floc,
-      const base::Optional<base::Version>& version_to_validate,
-      FilterByBlocklistCallback callback) override {
-    if (floc_to_block_ == unfiltered_floc) {
-      std::move(callback).Run(FlocId());
-      return;
-    }
-    std::move(callback).Run(unfiltered_floc);
-  }
-
- private:
-  FlocId floc_to_block_;
-};
-
 class MockFlocSortingLshService : public FlocSortingLshClustersService {
  public:
   using FlocSortingLshClustersService::FlocSortingLshClustersService;
@@ -240,11 +217,6 @@ class FlocIdProviderUnitTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetFlocSortingLshClustersService(
         std::move(sorting_lsh_service));
 
-    auto blocklist_service = std::make_unique<MockFlocBlocklistService>();
-    blocklist_service_ = blocklist_service.get();
-    TestingBrowserProcess::GetGlobal()->SetFlocBlocklistService(
-        std::move(blocklist_service));
-
     history_service_ = std::make_unique<history::HistoryService>();
     history_service_->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
@@ -365,7 +337,6 @@ class FlocIdProviderUnitTest : public testing::Test {
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
 
   MockFlocSortingLshService* sorting_lsh_service_;
-  MockFlocBlocklistService* blocklist_service_;
 
   base::ScopedTempDir temp_dir_;
 
@@ -859,39 +830,45 @@ TEST_F(FlocIdProviderUnitTest, MultipleHistoryEntries) {
   EXPECT_EQ(FlocId::CreateFromHistory({"a.test", "b.test"}), floc_id());
 }
 
-TEST_F(FlocIdProviderUnitTest,
-       BlocklistFilteringEnabled_SyncHistoryEnabledFollowedByBlocklistLoaded) {
+TEST_F(
+    FlocIdProviderUnitTest,
+    SortingLshPostProcessingEnabled_SyncHistoryEnabledFollowedBySortingLshLoaded) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFlocIdBlocklistFiltering);
+  feature_list.InitAndEnableFeature(
+      features::kFlocIdSortingLshBasedComputation);
 
   // Turn on sync & sync-history. The 1st floc computation should not be
-  // triggered as the blocklist hasn't been loaded yet.
+  // triggered as the sorting-lsh file hasn't been loaded yet.
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_->FireStateChanged();
 
   EXPECT_FALSE(first_floc_computation_triggered());
 
-  // Trigger the blocklist ready event. The 1st floc computation should be
-  // triggered now as sync & sync-history are enabled the blocklist is ready.
-  blocklist_service_->OnBlocklistFileReady(base::FilePath(), base::Version());
+  // Trigger the sorting-lsh ready event. The 1st floc computation should be
+  // triggered now as sync & sync-history are enabled the sorting-lsh is ready.
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
 
   EXPECT_TRUE(first_floc_computation_triggered());
 }
 
-TEST_F(FlocIdProviderUnitTest,
-       BlocklistFilteringEnabled_BlocklistLoadedFollowedBySyncHistoryEnabled) {
+TEST_F(
+    FlocIdProviderUnitTest,
+    SortingLshPostProcessingEnabled_SortingLshLoadedFollowedBySyncHistoryEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFlocIdBlocklistFiltering);
+  feature_list.InitAndEnableFeature(
+      features::kFlocIdSortingLshBasedComputation);
 
-  // Trigger the blocklist ready event. The 1st floc computation should not be
+  // Trigger the sorting-lsh ready event. The 1st floc computation should not be
   // triggered as sync & sync-history are not enabled yet.
-  blocklist_service_->OnBlocklistFileReady(base::FilePath(), base::Version());
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
 
   EXPECT_FALSE(first_floc_computation_triggered());
 
   // Turn on sync & sync-history. The 1st floc computation should be triggered
-  // now as sync & sync-history are enabled the blocklist is loaded.
+  // now as sync & sync-history are enabled the sorting-lsh is loaded.
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_->FireStateChanged();
@@ -899,10 +876,10 @@ TEST_F(FlocIdProviderUnitTest,
   EXPECT_TRUE(first_floc_computation_triggered());
 }
 
-TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
+TEST_F(FlocIdProviderUnitTest, SortingLshPostProcessing) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kFlocIdComputedEventLogging,
-                                 features::kFlocIdBlocklistFiltering},
+                                 features::kFlocIdSortingLshBasedComputation},
                                 {});
 
   std::string domain = "foo.com";
@@ -915,9 +892,16 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
 
   task_environment_.RunUntilIdle();
 
-  // Trigger the blocklist ready event, and turn on sync & sync-history to
+  FlocId floc_from_history = FlocId::CreateFromHistory({domain});
+
+  // Configure the |sorting_lsh_service_| to map |floc_from_history| to 12345.
+  sorting_lsh_service_->ConfigureSortingLsh(
+      {{floc_from_history.ToUint64(), FlocId(12345)}}, base::Version("3.4.5"));
+
+  // Trigger the sorting-lsh ready event, and turn on sync & sync-history to
   // trigger the 1st floc computation.
-  blocklist_service_->OnBlocklistFileReady(base::FilePath(), base::Version());
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
 
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
@@ -927,16 +911,14 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
 
   task_environment_.RunUntilIdle();
 
-  FlocId floc_from_history = FlocId::CreateFromHistory({domain});
-
-  // Expect a computation. The floc should be equal to the sim-hash of the
-  // history.
+  // Expect a computation. The floc should be equal to 12345.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(floc_from_history, floc_id());
+  EXPECT_EQ(FlocId(12345), floc_id());
 
-  // Set the blocklist to block |floc_from_history|.
-  blocklist_service_->ConfigureBlocklist(floc_from_history);
+  // Configure the |sorting_lsh_service_| to block |floc_from_history|.
+  sorting_lsh_service_->ConfigureSortingLsh(
+      {{floc_from_history.ToUint64(), FlocId()}}, base::Version("3.4.5"));
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
@@ -967,16 +949,16 @@ TEST_F(FlocIdProviderUnitTest, BlocklistFilteringEnabled_BlockedFloc) {
             event.event_trigger());
   EXPECT_EQ(floc_from_history.ToUint64(), event.floc_id());
 
-  // Reset the blocklist to block nothing.
-  blocklist_service_->ConfigureBlocklist(FlocId());
+  // Configure the |sorting_lsh_service_| to map |floc_from_history| to 6789.
+  sorting_lsh_service_->ConfigureSortingLsh(
+      {{floc_from_history.ToUint64(), FlocId(6789)}}, base::Version("3.4.5"));
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
-  // Expect one more computation. The floc should be equal to the sim-hash of
-  // the history.
+  // Expect one more computation. The floc should be equal to 6789.
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(3u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::CreateFromHistory({domain}), floc_id());
+  EXPECT_EQ(FlocId(6789), floc_id());
 }
 
 TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {

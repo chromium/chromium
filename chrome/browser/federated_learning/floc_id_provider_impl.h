@@ -9,7 +9,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
-#include "components/federated_learning/floc_blocklist_service.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -38,7 +37,8 @@ class FlocRemotePermissionService;
 //
 // When all the prerequisites are met, the floc will be computed by sim-hashing
 // navigation URL domains in the last 7 days; otherwise, an invalid floc will be
-// given. However, the floc can be invalidated if it's in a blocklist.
+// given. The floc can be further translated or blocked with the SortingLSH
+// post-processing.
 //
 // The floc will be first computed after sync & sync-history are enabled. After
 // each computation, another computation will be scheduled 24 hours later. In
@@ -46,7 +46,6 @@ class FlocRemotePermissionService;
 // reset the timer of any currently scheduled computation to be 24 hours later.
 class FlocIdProviderImpl : public FlocIdProvider,
                            public FlocSortingLshClustersService::Observer,
-                           public FlocBlocklistService::Observer,
                            public history::HistoryServiceObserver,
                            public syncer::SyncServiceObserver {
  public:
@@ -64,7 +63,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
     // Sim-hash of the browsing history. This is the baseline value where the
     // |final_hash| field should be derived from. We'll log this field for the
-    // server to calculate the sorting-lsh cutting points and/or the blocklist.
+    // server to calculate the sorting-lsh cutting points.
     FlocId sim_hash;
 
     // The floc to be exposed to JS API. It can be set to a value different from
@@ -117,9 +116,6 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // FlocSortingLshClustersService::Observer
   void OnSortingLshClustersFileReady() override;
 
-  // FlocBlocklistService::Observer
-  void OnBlocklistFileReady() override;
-
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
 
@@ -145,17 +141,13 @@ class FlocIdProviderImpl : public FlocIdProvider,
                                          history::QueryResults results);
 
   // Apply any additional filtering or transformation on a floc computed from
-  // history. For example, invalidate it if it's in the blocklist.
+  // history. For example, apply the SortingLSH post-processing.
   void ApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
                                 const FlocId& sim_hash);
-  void SkippedOrAppliedSortingLsh(
-      ComputeFlocCompletedCallback callback,
-      const FlocId& sim_hash,
-      FlocId sim_hash_or_sorting_lsh,
-      base::Optional<base::Version> version_to_validate);
   void DidApplyAdditionalFiltering(ComputeFlocCompletedCallback callback,
                                    FlocId sim_hash,
-                                   FlocId final_hash);
+                                   FlocId final_hash,
+                                   base::Version version);
 
   // The id to be exposed to the JS API.
   FlocId floc_id_;
@@ -169,7 +161,6 @@ class FlocIdProviderImpl : public FlocIdProvider,
   base::Optional<ComputeFlocTrigger> pending_recompute_event_;
 
   bool first_sorting_lsh_file_ready_seen_ = false;
-  bool first_blocklist_file_ready_seen_ = false;
   bool first_sync_history_enabled_seen_ = false;
 
   // For the swaa/nac/account_type permission, we will use a cached status to

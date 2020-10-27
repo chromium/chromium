@@ -258,9 +258,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kFlocIdComputedEventLogging;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kFlocIdBlocklistFiltering;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kFlocIdSortingLshBasedComputation;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

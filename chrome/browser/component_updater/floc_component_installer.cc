@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/federated_learning/floc_blocklist_service.h"
 #include "components/federated_learning/floc_constants.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 
@@ -26,11 +25,9 @@ constexpr char kFlocComponentFetcherManifestName[] =
     "Federated Learning of Cohorts";
 
 FlocComponentInstallerPolicy::FlocComponentInstallerPolicy(
-    federated_learning::FlocBlocklistService* floc_blocklist_service,
     federated_learning::FlocSortingLshClustersService*
         floc_sorting_lsh_clusters_service)
-    : floc_blocklist_service_(floc_blocklist_service),
-      floc_sorting_lsh_clusters_service_(floc_sorting_lsh_clusters_service) {}
+    : floc_sorting_lsh_clusters_service_(floc_sorting_lsh_clusters_service) {}
 
 FlocComponentInstallerPolicy::~FlocComponentInstallerPolicy() = default;
 
@@ -58,9 +55,6 @@ void FlocComponentInstallerPolicy::ComponentReady(
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> manifest) {
   DCHECK(!install_dir.empty());
-
-  floc_blocklist_service_->OnBlocklistFileReady(
-      install_dir.Append(federated_learning::kBlocklistFileName), version);
 
   floc_sorting_lsh_clusters_service_->OnSortingLshClustersFileReady(
       install_dir.Append(federated_learning::kSortingLshClustersFileName),
@@ -109,12 +103,11 @@ std::vector<std::string> FlocComponentInstallerPolicy::GetMimeTypes() const {
 
 void RegisterFlocComponent(
     ComponentUpdateService* cus,
-    federated_learning::FlocBlocklistService* floc_blocklist_service,
     federated_learning::FlocSortingLshClustersService*
         floc_sorting_lsh_clusters_service) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<FlocComponentInstallerPolicy>(
-          floc_blocklist_service, floc_sorting_lsh_clusters_service));
+          floc_sorting_lsh_clusters_service));
   installer->Register(cus, base::OnceClosure());
 }
 
