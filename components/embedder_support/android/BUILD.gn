@@ -41,6 +41,7 @@ android_library("util_java") {
     "java/src/org/chromium/components/embedder_support/util/Origin.java",
     "java/src/org/chromium/components/embedder_support/util/UrlConstants.java",
     "java/src/org/chromium/components/embedder_support/util/UrlUtilities.java",
+    "java/src/org/chromium/components/embedder_support/util/WebResourceResponseInfo.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
@@ -61,6 +62,8 @@ static_library("util") {
     "util/input_stream_reader.cc",
     "util/input_stream_reader.h",
     "util/url_utilities.cc",
+    "util/web_resource_response.cc",
+    "util/web_resource_response.h",
   ]
 
   deps = [
@@ -80,6 +83,7 @@ generate_jni("util_jni_headers") {
   sources = [
     "java/src/org/chromium/components/embedder_support/util/InputStreamUtil.java",
     "java/src/org/chromium/components/embedder_support/util/UrlUtilities.java",
+    "java/src/org/chromium/components/embedder_support/util/WebResourceResponseInfo.java",
   ]
 }
 

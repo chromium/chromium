@@ -17,10 +17,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.DefaultVideoPosterRequestHandler;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,7 +90,7 @@ public class AwContentsClientGetDefaultVideoPosterTest {
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
         DefaultVideoPosterRequestHandler handler =
                 new DefaultVideoPosterRequestHandler(contentsClient);
-        AwWebResourceResponse requestData =
+        WebResourceResponseInfo requestData =
                 handler.shouldInterceptRequest(handler.getDefaultVideoPosterURL());
         Assert.assertTrue(requestData.getMimeType().equals("image/png"));
         Bitmap bitmap = BitmapFactory.decodeStream(requestData.getData());
@@ -108,7 +108,7 @@ public class AwContentsClientGetDefaultVideoPosterTest {
         NullContentsClient contentsClient = new NullContentsClient();
         DefaultVideoPosterRequestHandler handler =
                 new DefaultVideoPosterRequestHandler(contentsClient);
-        AwWebResourceResponse requestData =
+        WebResourceResponseInfo requestData =
                 handler.shouldInterceptRequest(handler.getDefaultVideoPosterURL());
         Assert.assertTrue(requestData.getMimeType().equals("image/png"));
         InputStream in = requestData.getData();

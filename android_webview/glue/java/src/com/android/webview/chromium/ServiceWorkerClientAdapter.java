@@ -11,7 +11,7 @@ import android.webkit.WebResourceResponse;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwServiceWorkerClient;
-import org.chromium.android_webview.AwWebResourceResponse;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,25 +30,21 @@ public class ServiceWorkerClientAdapter extends AwServiceWorkerClient {
     }
 
     @Override
-    public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
+    public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
         WebResourceResponse response =
                 mServiceWorkerClient.shouldInterceptRequest(new WebResourceRequestAdapter(request));
         return fromWebResourceResponse(response);
     }
 
-    public static AwWebResourceResponse fromWebResourceResponse(WebResourceResponse response) {
+    public static WebResourceResponseInfo fromWebResourceResponse(WebResourceResponse response) {
         if (response == null) return null;
 
-        // AwWebResourceResponse should support null headers. b/16332774.
+        // WebResourceResponseInfo should support null headers. b/16332774.
         Map<String, String> responseHeaders = response.getResponseHeaders();
         if (responseHeaders == null) responseHeaders = new HashMap<String, String>();
 
-        return new AwWebResourceResponse(
-                response.getMimeType(),
-                response.getEncoding(),
-                response.getData(),
-                response.getStatusCode(),
-                response.getReasonPhrase(),
+        return new WebResourceResponseInfo(response.getMimeType(), response.getEncoding(),
+                response.getData(), response.getStatusCode(), response.getReasonPhrase(),
                 responseHeaders);
     }
 }

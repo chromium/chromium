@@ -14,7 +14,6 @@
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
-#include "android_webview/browser/network_service/aw_web_resource_response.h"
 #include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/renderer_host/auto_login_parser.h"
 #include "android_webview/common/aw_features.h"
@@ -26,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/embedder_support/android/util/input_stream.h"
+#include "components/embedder_support/android/util/web_resource_response.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -94,7 +94,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   void ContinueAfterIntercept();
   void ContinueAfterInterceptWithOverride(
-      std::unique_ptr<AwWebResourceResponse> response);
+      std::unique_ptr<embedder_support::WebResourceResponse> response);
 
   void InterceptResponseReceived(
       std::unique_ptr<AwWebResourceInterceptResponse> intercept_response);
@@ -169,7 +169,7 @@ class InterceptResponseDelegate
     : public embedder_support::AndroidStreamReaderURLLoader::ResponseDelegate {
  public:
   explicit InterceptResponseDelegate(
-      std::unique_ptr<AwWebResourceResponse> response,
+      std::unique_ptr<embedder_support::WebResourceResponse> response,
       base::WeakPtr<InterceptedRequest> request)
       : response_(std::move(response)), request_(request) {}
 
@@ -214,7 +214,7 @@ class InterceptResponseDelegate
   }
 
  private:
-  std::unique_ptr<AwWebResourceResponse> response_;
+  std::unique_ptr<embedder_support::WebResourceResponse> response_;
   base::WeakPtr<InterceptedRequest> request_;
 };
 
@@ -442,7 +442,7 @@ void InterceptedRequest::ContinueAfterIntercept() {
 }
 
 void InterceptedRequest::ContinueAfterInterceptWithOverride(
-    std::unique_ptr<AwWebResourceResponse> response) {
+    std::unique_ptr<embedder_support::WebResourceResponse> response) {
   embedder_support::AndroidStreamReaderURLLoader* loader =
       new embedder_support::AndroidStreamReaderURLLoader(
           request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),

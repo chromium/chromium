@@ -10,11 +10,11 @@ import android.net.http.SslError;
 
 import org.chromium.android_webview.AwConsoleMessage;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
@@ -552,32 +552,32 @@ public class TestAwContentsClient extends NullContentsClient {
      */
     public static class ShouldInterceptRequestHelper extends CallbackHelper {
         private List<String> mShouldInterceptRequestUrls = new ArrayList<String>();
-        private Map<String, AwWebResourceResponse> mReturnValuesByUrls =
-                Collections.synchronizedMap(new HashMap<String, AwWebResourceResponse>());
+        private Map<String, WebResourceResponseInfo> mReturnValuesByUrls =
+                Collections.synchronizedMap(new HashMap<String, WebResourceResponseInfo>());
         private Map<String, AwWebResourceRequest> mRequestsByUrls =
                 Collections.synchronizedMap(new HashMap<String, AwWebResourceRequest>());
         private Runnable mRunnableForFirstTimeCallback;
         private boolean mRaiseExceptionWhenCalled;
         // This is read on another thread, so needs to be marked volatile.
-        private volatile AwWebResourceResponse mShouldInterceptRequestReturnValue;
+        private volatile WebResourceResponseInfo mShouldInterceptRequestReturnValue;
         void setRaiseExceptionWhenCalled(boolean value) {
             mRaiseExceptionWhenCalled = value;
         }
         boolean getRaiseExceptionWhenCalled() {
             return mRaiseExceptionWhenCalled;
         }
-        void setReturnValue(AwWebResourceResponse value) {
+        void setReturnValue(WebResourceResponseInfo value) {
             mShouldInterceptRequestReturnValue = value;
         }
-        void setReturnValueForUrl(String url, AwWebResourceResponse value) {
+        void setReturnValueForUrl(String url, WebResourceResponseInfo value) {
             mReturnValuesByUrls.put(url, value);
         }
         public List<String> getUrls() {
             assert getCallCount() > 0;
             return mShouldInterceptRequestUrls;
         }
-        public AwWebResourceResponse getReturnValue(String url) {
-            AwWebResourceResponse value = mReturnValuesByUrls.get(url);
+        public WebResourceResponseInfo getReturnValue(String url) {
+            WebResourceResponseInfo value = mReturnValuesByUrls.get(url);
             if (value != null) return value;
             return mShouldInterceptRequestReturnValue;
         }
@@ -601,7 +601,7 @@ public class TestAwContentsClient extends NullContentsClient {
     }
 
     @Override
-    public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
+    public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
         super.shouldInterceptRequest(request);
         if (TRACE) Log.i(TAG, "shouldInterceptRequest " + request.url);
         mShouldInterceptRequestHelper.notifyCalled(request);
@@ -708,9 +708,9 @@ public class TestAwContentsClient extends NullContentsClient {
      */
     public static class OnReceivedHttpErrorHelper extends CallbackHelper {
         private AwWebResourceRequest mRequest;
-        private AwWebResourceResponse mResponse;
+        private WebResourceResponseInfo mResponse;
 
-        public void notifyCalled(AwWebResourceRequest request, AwWebResourceResponse response) {
+        public void notifyCalled(AwWebResourceRequest request, WebResourceResponseInfo response) {
             mRequest = request;
             mResponse = response;
             notifyCalled();
@@ -719,14 +719,15 @@ public class TestAwContentsClient extends NullContentsClient {
             assert getCallCount() > 0;
             return mRequest;
         }
-        public AwWebResourceResponse getResponse() {
+        public WebResourceResponseInfo getResponse() {
             assert getCallCount() > 0;
             return mResponse;
         }
     }
 
     @Override
-    public void onReceivedHttpError(AwWebResourceRequest request, AwWebResourceResponse response) {
+    public void onReceivedHttpError(
+            AwWebResourceRequest request, WebResourceResponseInfo response) {
         if (TRACE) Log.i(TAG, "onReceivedHttpError " + request.url);
         super.onReceivedHttpError(request, response);
         mOnReceivedHttpErrorHelper.notifyCalled(request, response);

@@ -10,7 +10,6 @@
 
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
 #include "android_webview/browser/network_service/aw_web_resource_request.h"
-#include "android_webview/browser/network_service/aw_web_resource_response.h"
 #include "android_webview/browser_jni_headers/AwContentsBackgroundThreadClient_jni.h"
 #include "android_webview/browser_jni_headers/AwContentsIoThreadClient_jni.h"
 #include "android_webview/common/devtools_instrumentation.h"
@@ -25,6 +24,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/embedder_support/android/util/input_stream.h"
+#include "components/embedder_support/android/util/web_resource_response.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -381,7 +381,7 @@ void RecordInterceptedScheme(bool response_is_null, const std::string& url) {
 // reason phrases are actually valid.
 void RecordResponseStatusCode(
     JNIEnv* env,
-    const std::unique_ptr<AwWebResourceResponse>& response) {
+    const std::unique_ptr<embedder_support::WebResourceResponse>& response) {
   DCHECK(response);
   DCHECK(!response->HasInputStream(env));
 

@@ -40,7 +40,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.Log;
@@ -56,6 +55,7 @@ import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillProviderUMA;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -531,7 +531,7 @@ public class AwAutofillTest {
 
     private static class AwAutofillTestClient extends TestAwContentsClient {
         public interface ShouldInterceptRequestImpl {
-            AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request);
+            WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request);
         }
 
         private ShouldInterceptRequestImpl mShouldInterceptRequestImpl;
@@ -541,8 +541,8 @@ public class AwAutofillTest {
         }
 
         @Override
-        public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
-            AwWebResourceResponse response = null;
+        public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
+            WebResourceResponseInfo response = null;
             if (mShouldInterceptRequestImpl != null) {
                 response = mShouldInterceptRequestImpl.shouldInterceptRequest(request);
             }
@@ -1201,14 +1201,14 @@ public class AwAutofillTest {
                     private int mCallCount;
 
                     @Override
-                    public AwWebResourceResponse shouldInterceptRequest(
+                    public WebResourceResponseInfo shouldInterceptRequest(
                             AwWebResourceRequest request) {
                         try {
                             if (url.equals(request.url)) {
                                 // Only intercept the iframe's request.
                                 if (mCallCount == 1) {
                                     final String encoding = "UTF-8";
-                                    return new AwWebResourceResponse("text/html", encoding,
+                                    return new WebResourceResponseInfo("text/html", encoding,
                                             new ByteArrayInputStream(
                                                     iframeData.getBytes(encoding)));
                                 }

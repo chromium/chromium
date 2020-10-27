@@ -75,6 +75,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.components.autofill.AutofillActionModeCallback;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.content_capture.ContentCaptureConsumer;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.ChildProcessImportance;
@@ -647,21 +648,21 @@ public class AwContents implements SmartClipProvider {
         // All methods are called on the background thread.
 
         @Override
-        public AwWebResourceResponse shouldInterceptRequest(
+        public WebResourceResponseInfo shouldInterceptRequest(
                 AwContentsClient.AwWebResourceRequest request) {
             String url = request.url;
-            AwWebResourceResponse awWebResourceResponse;
+            WebResourceResponseInfo webResourceResponseInfo;
             // Return the response directly if the url is default video poster url.
-            awWebResourceResponse = mDefaultVideoPosterRequestHandler.shouldInterceptRequest(url);
-            if (awWebResourceResponse != null) return awWebResourceResponse;
+            webResourceResponseInfo = mDefaultVideoPosterRequestHandler.shouldInterceptRequest(url);
+            if (webResourceResponseInfo != null) return webResourceResponseInfo;
 
-            awWebResourceResponse = mContentsClient.shouldInterceptRequest(request);
+            webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
 
-            if (awWebResourceResponse == null) {
+            if (webResourceResponseInfo == null) {
                 mContentsClient.getCallbackHelper().postOnLoadResource(url);
             }
 
-            if (awWebResourceResponse != null && awWebResourceResponse.getData() == null) {
+            if (webResourceResponseInfo != null && webResourceResponseInfo.getData() == null) {
                 // In this case the intercepted URLRequest job will simulate an empty response
                 // which doesn't trigger the onReceivedError callback. For WebViewClassic
                 // compatibility we synthesize that callback.  http://crbug.com/180950
@@ -670,7 +671,7 @@ public class AwContents implements SmartClipProvider {
                         /* error description filled in by the glue layer */
                         new AwContentsClient.AwWebResourceError());
             }
-            return awWebResourceResponse;
+            return webResourceResponseInfo;
         }
     }
 

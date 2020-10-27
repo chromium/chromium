@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_WEB_RESOURCE_RESPONSE_H_
-#define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_WEB_RESOURCE_RESPONSE_H_
+#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_WEB_RESOURCE_RESPONSE_H_
+#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_WEB_RESOURCE_RESPONSE_H_
 
 #include <memory>
 #include <string>
@@ -17,18 +17,16 @@ class HttpResponseHeaders;
 
 namespace embedder_support {
 class InputStream;
-}
-
-namespace android_webview {
 
 // This class represents the Java-side data that is to be used to complete a
 // particular URLRequest.
-class AwWebResourceResponse {
+class WebResourceResponse {
  public:
   // It is expected that |obj| is an instance of the Java-side
-  // org.chromium.android_webview.AwWebResourceResponse class.
-  explicit AwWebResourceResponse(const base::android::JavaRef<jobject>& obj);
-  ~AwWebResourceResponse();
+  // org.chromium.components.embedder_support.util.WebResourceResponseInfo
+  // class.
+  explicit WebResourceResponse(const base::android::JavaRef<jobject>& obj);
+  ~WebResourceResponse();
 
   bool HasInputStream(JNIEnv* env) const;
   std::unique_ptr<embedder_support::InputStream> GetInputStream(JNIEnv* env);
@@ -46,9 +44,9 @@ class AwWebResourceResponse {
 
   bool input_stream_transferred_;
 
-  DISALLOW_COPY_AND_ASSIGN(AwWebResourceResponse);
+  DISALLOW_COPY_AND_ASSIGN(WebResourceResponse);
 };
 
-}  // namespace android_webview
+}  // namespace embedder_support
 
-#endif  // ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_WEB_RESOURCE_RESPONSE_H_
+#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_WEB_RESOURCE_RESPONSE_H_

@@ -126,8 +126,6 @@ source_set("browser") {
     "network_service/aw_web_resource_intercept_response.h",
     "network_service/aw_web_resource_request.cc",
     "network_service/aw_web_resource_request.h",
-    "network_service/aw_web_resource_response.cc",
-    "network_service/aw_web_resource_response.h",
     "network_service/net_helpers.cc",
     "network_service/net_helpers.h",
     "page_load_metrics/aw_page_load_metrics_provider.cc",

@@ -18,6 +18,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.NetError;
 
@@ -390,7 +391,7 @@ public class AwContentsClientBridge {
                 responseHeaders.put(responseHeaderNames[i], currentValue + responseHeaderValues[i]);
             }
         }
-        AwWebResourceResponse response = new AwWebResourceResponse(
+        WebResourceResponseInfo response = new WebResourceResponseInfo(
                 mimeType, encoding, null, statusCode, reasonPhrase, responseHeaders);
         mClient.getCallbackHelper().postOnReceivedHttpError(request, response);
 

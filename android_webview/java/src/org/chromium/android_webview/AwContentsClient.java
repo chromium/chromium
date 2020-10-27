@@ -30,6 +30,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.security.Principal;
@@ -166,8 +167,7 @@ public abstract class AwContentsClient {
 
     public abstract void onProgressChanged(int progress);
 
-    public abstract AwWebResourceResponse shouldInterceptRequest(
-            AwWebResourceRequest request);
+    public abstract WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request);
 
     public abstract boolean shouldOverrideKeyEvent(KeyEvent event);
 
@@ -427,8 +427,8 @@ public abstract class AwContentsClient {
     protected abstract void onSafeBrowsingHit(AwWebResourceRequest request, int threatType,
             Callback<AwSafeBrowsingResponse> callback);
 
-    public abstract void onReceivedHttpError(AwWebResourceRequest request,
-            AwWebResourceResponse response);
+    public abstract void onReceivedHttpError(
+            AwWebResourceRequest request, WebResourceResponseInfo response);
 
     public abstract void onShowCustomView(View view, CustomViewCallback callback);
 

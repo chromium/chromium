@@ -2,40 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/network_service/aw_web_resource_response.h"
+#include "components/embedder_support/android/util/web_resource_response.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "android_webview/browser_jni_headers/AwWebResourceResponse_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/embedder_support/android/util/input_stream.h"
+#include "components/embedder_support/android/util_jni_headers/WebResourceResponseInfo_jni.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_job.h"
 
-using base::android::ScopedJavaLocalRef;
 using base::android::AppendJavaStringArrayToStringVector;
+using base::android::ScopedJavaLocalRef;
 
-namespace android_webview {
+namespace embedder_support {
 
-AwWebResourceResponse::AwWebResourceResponse(
+WebResourceResponse::WebResourceResponse(
     const base::android::JavaRef<jobject>& obj)
     : java_object_(obj), input_stream_transferred_(false) {}
 
-AwWebResourceResponse::~AwWebResourceResponse() {}
+WebResourceResponse::~WebResourceResponse() {}
 
-bool AwWebResourceResponse::HasInputStream(JNIEnv* env) const {
+bool WebResourceResponse::HasInputStream(JNIEnv* env) const {
   ScopedJavaLocalRef<jobject> jstream =
-      Java_AwWebResourceResponse_getData(env, java_object_);
+      Java_WebResourceResponseInfo_getData(env, java_object_);
   return !!jstream;
 }
 
-std::unique_ptr<embedder_support::InputStream>
-AwWebResourceResponse::GetInputStream(JNIEnv* env) {
+std::unique_ptr<InputStream> WebResourceResponse::GetInputStream(JNIEnv* env) {
   // Only allow to call GetInputStream once per object, because this method
   // transfers ownership of the stream and once the unique_ptr<InputStream>
   // is deleted it also closes the original java input stream. This
@@ -48,38 +47,37 @@ AwWebResourceResponse::GetInputStream(JNIEnv* env) {
 
   input_stream_transferred_ = true;
   ScopedJavaLocalRef<jobject> jstream =
-      Java_AwWebResourceResponse_getData(env, java_object_);
+      Java_WebResourceResponseInfo_getData(env, java_object_);
   if (!jstream)
     return nullptr;
-  return std::make_unique<embedder_support::InputStream>(jstream);
+  return std::make_unique<InputStream>(jstream);
 }
 
-bool AwWebResourceResponse::GetMimeType(JNIEnv* env,
-                                        std::string* mime_type) const {
+bool WebResourceResponse::GetMimeType(JNIEnv* env,
+                                      std::string* mime_type) const {
   ScopedJavaLocalRef<jstring> jstring_mime_type =
-      Java_AwWebResourceResponse_getMimeType(env, java_object_);
+      Java_WebResourceResponseInfo_getMimeType(env, java_object_);
   if (!jstring_mime_type)
     return false;
   *mime_type = ConvertJavaStringToUTF8(jstring_mime_type);
   return true;
 }
 
-bool AwWebResourceResponse::GetCharset(JNIEnv* env,
-                                       std::string* charset) const {
+bool WebResourceResponse::GetCharset(JNIEnv* env, std::string* charset) const {
   ScopedJavaLocalRef<jstring> jstring_charset =
-      Java_AwWebResourceResponse_getCharset(env, java_object_);
+      Java_WebResourceResponseInfo_getCharset(env, java_object_);
   if (!jstring_charset)
     return false;
   *charset = ConvertJavaStringToUTF8(jstring_charset);
   return true;
 }
 
-bool AwWebResourceResponse::GetStatusInfo(JNIEnv* env,
-                                          int* status_code,
-                                          std::string* reason_phrase) const {
-  int status = Java_AwWebResourceResponse_getStatusCode(env, java_object_);
+bool WebResourceResponse::GetStatusInfo(JNIEnv* env,
+                                        int* status_code,
+                                        std::string* reason_phrase) const {
+  int status = Java_WebResourceResponseInfo_getStatusCode(env, java_object_);
   ScopedJavaLocalRef<jstring> jstring_reason_phrase =
-      Java_AwWebResourceResponse_getReasonPhrase(env, java_object_);
+      Java_WebResourceResponseInfo_getReasonPhrase(env, java_object_);
   if (status < 100 || status >= 600 || !jstring_reason_phrase)
     return false;
   *status_code = status;
@@ -87,13 +85,13 @@ bool AwWebResourceResponse::GetStatusInfo(JNIEnv* env,
   return true;
 }
 
-bool AwWebResourceResponse::GetResponseHeaders(
+bool WebResourceResponse::GetResponseHeaders(
     JNIEnv* env,
     net::HttpResponseHeaders* headers) const {
   ScopedJavaLocalRef<jobjectArray> jstringArray_headerNames =
-      Java_AwWebResourceResponse_getResponseHeaderNames(env, java_object_);
+      Java_WebResourceResponseInfo_getResponseHeaderNames(env, java_object_);
   ScopedJavaLocalRef<jobjectArray> jstringArray_headerValues =
-      Java_AwWebResourceResponse_getResponseHeaderValues(env, java_object_);
+      Java_WebResourceResponseInfo_getResponseHeaderValues(env, java_object_);
   if (!jstringArray_headerNames || !jstringArray_headerValues)
     return false;
   std::vector<std::string> header_names;
@@ -109,4 +107,4 @@ bool AwWebResourceResponse::GetResponseHeaders(
   return true;
 }
 
-}  // namespace android_webview
+}  // namespace embedder_support
