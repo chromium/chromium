@@ -1645,7 +1645,12 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
       [&form](const std::unique_ptr<autofill::PasswordForm>& value) {
         return *value == form;
       });
-  DCHECK(iterator != forms.end());
+  // If |form| not found, pop password details view controller.
+  if (iterator == forms.end()) {
+    [self.navigationController popViewControllerAnimated:YES];
+    return;
+  }
+
   forms.erase(iterator);
 
   password_manager::DuplicatesMap& duplicates = form.blocked_by_user
