@@ -59,9 +59,9 @@ void {{v8_class}}::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_value, {
   DCHECK(executionContext);
   {% endif %}{# has_origin_trial_members #}
   {% endif %}{# members #}
-  {% for origin_trial_test, origin_trial_member_list in members | groupby('origin_trial_feature_name') %}
+  {% for origin_trial_test, origin_trial_member_list in members | stringifykeygroupby('origin_trial_feature_name') %}
   {% filter origin_trial_enabled(origin_trial_test, "executionContext") %}
-  {% for feature_name, member_list in origin_trial_member_list | groupby('runtime_enabled_feature_name') %}
+  {% for feature_name, member_list in origin_trial_member_list | stringifykeygroupby('runtime_enabled_feature_name') %}
   {% filter runtime_enabled(feature_name) %}
   {% for member in member_list %}
   v8::Local<v8::Value> {{member.v8_value}};
@@ -147,9 +147,9 @@ bool toV8{{cpp_class}}(const {{cpp_class}}* impl, v8::Local<v8::Object> dictiona
   DCHECK(executionContext);
   {% endif %}{# has_origin_trial_members #}
   {% endif %}{# members #}
-  {% for origin_trial_test, origin_trial_member_list in members | groupby('origin_trial_feature_name') %}
+  {% for origin_trial_test, origin_trial_member_list in members | stringifykeygroupby('origin_trial_feature_name') %}
   {% filter origin_trial_enabled(origin_trial_test, "executionContext") %}
-  {% for feature_name, member_list in origin_trial_member_list | groupby('runtime_enabled_feature_name') %}
+  {% for feature_name, member_list in origin_trial_member_list | stringifykeygroupby('runtime_enabled_feature_name') %}
   {% filter runtime_enabled(feature_name) %}
   {% for member in member_list %}
   v8::Local<v8::Value> {{member.v8_value}};
