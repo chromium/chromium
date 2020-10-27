@@ -13,6 +13,7 @@
     flex-direction: column;
     flex-grow: 1;
     overflow: hidden;
+    position: relative;
   }
 
   #deviceList {
@@ -62,6 +63,14 @@
     margin-block-start: 48px;
     overflow: hidden;
   }
+
+  cr-lottie {
+    bottom: -100px;
+    height: 200px;
+    opacity: 80%;
+    position: absolute;
+    zoom: 150%;
+  }
 </style>
 
 <nearby-page-template title="$i18n{nearbyShareDiscoveryPageTitle}"
@@ -99,5 +108,8 @@
           inner-h-t-m-l="[[getAriaLabelledHelpText_('https://google.com')]]">
       </div>
     </div>
+    <cr-lottie animation-url="nearby_share_pulse_animation.json"
+        autoplay="true">
+    </cr-lottie>
   </div>
 </nearby-page-template>

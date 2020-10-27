@@ -16,6 +16,7 @@
 #include "chrome/grit/nearby_shared_resources_map.h"
 #include "chrome/grit/nearby_shared_resources_v3.h"
 #include "chrome/grit/nearby_shared_resources_v3_map.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
 const char kNearbyShareGeneratedPath[] =
@@ -62,6 +63,17 @@ void RegisterNearbySharedResources(content::WebUIDataSource* data_source) {
       base::make_span(kNearbySharedResourcesV3, kNearbySharedResourcesV3Size),
       /*prefix=*/"shared/");
   RegisterNearbySharedMojoResources(data_source);
+
+  data_source->AddResourcePath("nearby_share_pulse_animation.json",
+                               IDR_NEARBY_SHARE_PULSE_ANIMATION_JSON);
+
+  // To use lottie, the worker-src CSP needs to be updated for the web ui that
+  // is using it. Since as of now there are only a couple of webuis using
+  // lottie animations, this update has to be performed manually. As the usage
+  // increases, set this as the default so manual override is no longer
+  // required.
+  data_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 
 void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
