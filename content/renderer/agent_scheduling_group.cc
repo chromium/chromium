@@ -154,11 +154,9 @@ void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
   renderer.SetScrollAnimatorEnabled(
       params->web_preferences.enable_scroll_animator, PassKey());
 
-  RenderViewImpl::Create(
-      *this, &renderer, std::move(params),
-      /*was_created_by_renderer=*/false,
-      // TODO(crbug.com/1111231): Use proper per-ASG task-runner.
-      renderer.GetWebMainThreadScheduler()->DefaultTaskRunner());
+  RenderViewImpl::Create(*this, &renderer, std::move(params),
+                         /*was_created_by_renderer=*/false,
+                         agent_group_scheduler_->DefaultTaskRunner());
 }
 
 void AgentSchedulingGroup::DestroyView(int32_t view_id,
@@ -171,7 +169,7 @@ void AgentSchedulingGroup::DestroyView(int32_t view_id,
   // non-nestable task. This method is called exactly once by the browser
   // process, and is used to release ownership of the corresponding
   // RenderViewImpl instance. https://crbug.com/1000035.
-  base::ThreadTaskRunnerHandle::Get()->PostNonNestableTask(
+  agent_group_scheduler_->DefaultTaskRunner()->PostNonNestableTask(
       FROM_HERE,
       base::BindOnce(&RenderViewImpl::Destroy, base::Unretained(view))
           .Then(std::move(callback)));
