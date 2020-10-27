@@ -509,16 +509,17 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
   }
 
   // Invalidate the whole layer when subpixel accumulation changes, since
-  // the previous subpixel accumulation is baked into the display list.
+  // the previous subpixel accumulation is baked into the dispay list.
   // However, don't do so for directly composited layers, to avoid impacting
   // performance.
   if (subpixel_accumulation != owning_layer_.SubpixelAccumulation()) {
     // Always invalidate if under-invalidation checking is on, to avoid
     // false positives.
-    if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() ||
-        !(owning_layer_.GetCompositingReasons() &
-          CompositingReason::kComboAllDirectReasons))
-      GetLayoutObject().SetShouldCheckForPaintInvalidation();
+    if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
+      SetContentsNeedDisplay();
+    else if (!(owning_layer_.GetCompositingReasons() &
+               CompositingReason::kComboAllDirectReasons))
+      SetContentsNeedDisplay();
   }
 
   // Otherwise discard the sub-pixel remainder because paint offset can't be
@@ -758,7 +759,10 @@ void CompositedLayerMapping::UpdateMaskLayerGeometry() {
   if (!mask_layer_)
     return;
 
-  mask_layer_->SetSize(graphics_layer_->Size());
+  if (mask_layer_->Size() != graphics_layer_->Size()) {
+    mask_layer_->SetSize(graphics_layer_->Size());
+    mask_layer_->SetNeedsDisplay();
+  }
   mask_layer_->SetOffsetFromLayoutObject(
       graphics_layer_->OffsetFromLayoutObject());
 }
@@ -860,17 +864,26 @@ void CompositedLayerMapping::UpdateForegroundLayerGeometry() {
                 IntSize(scrolling_contents_layer_->Size()));
   }
 
-  foreground_layer_->SetOffsetFromLayoutObject(
-      ToIntSize(compositing_bounds.Location()));
-  foreground_layer_->SetSize(gfx::Size(compositing_bounds.Size()));
+  IntRect old_compositing_bounds(
+      IntPoint(foreground_layer_->OffsetFromLayoutObject()),
+      IntSize(foreground_layer_->Size()));
+  if (compositing_bounds != old_compositing_bounds) {
+    foreground_layer_->SetOffsetFromLayoutObject(
+        ToIntSize(compositing_bounds.Location()));
+    foreground_layer_->SetSize(gfx::Size(compositing_bounds.Size()));
+    foreground_layer_->SetNeedsDisplay();
+  }
 }
 
 void CompositedLayerMapping::UpdateDecorationOutlineLayerGeometry(
     const IntSize& relative_compositing_bounds_size) {
   if (!decoration_outline_layer_)
     return;
-  decoration_outline_layer_->SetSize(
-      gfx::Size(relative_compositing_bounds_size));
+  const auto& decoration_size = relative_compositing_bounds_size;
+  if (gfx::Size(decoration_size) != decoration_outline_layer_->Size()) {
+    decoration_outline_layer_->SetSize(gfx::Size(decoration_size));
+    decoration_outline_layer_->SetNeedsDisplay();
+  }
   decoration_outline_layer_->SetOffsetFromLayoutObject(
       graphics_layer_->OffsetFromLayoutObject());
 }
@@ -1118,9 +1131,15 @@ void CompositedLayerMapping::PositionOverflowControlsLayers() {
   }
 }
 
+enum ApplyToGraphicsLayersMode {
+  kApplyToContentLayers,
+  kApplyToAllGraphicsLayers,
+};
+
 template <typename Function>
 static void ApplyToGraphicsLayers(const CompositedLayerMapping* mapping,
-                                  const Function& function) {
+                                  const Function& function,
+                                  ApplyToGraphicsLayersMode mode) {
   auto null_checking_function = [&function](GraphicsLayer* layer) {
     if (layer)
       function(layer);
@@ -1131,10 +1150,13 @@ static void ApplyToGraphicsLayers(const CompositedLayerMapping* mapping,
   null_checking_function(mapping->ForegroundLayer());
   null_checking_function(mapping->MaskLayer());
   null_checking_function(mapping->DecorationOutlineLayer());
-  null_checking_function(mapping->NonScrollingSquashingLayer());
-  null_checking_function(mapping->LayerForHorizontalScrollbar());
-  null_checking_function(mapping->LayerForVerticalScrollbar());
-  null_checking_function(mapping->LayerForScrollCorner());
+
+  if (mode == kApplyToAllGraphicsLayers) {
+    null_checking_function(mapping->NonScrollingSquashingLayer());
+    null_checking_function(mapping->LayerForHorizontalScrollbar());
+    null_checking_function(mapping->LayerForVerticalScrollbar());
+    null_checking_function(mapping->LayerForScrollCorner());
+  }
 }
 
 // You receive an element id if you have an animation, or you're a scroller (and
@@ -1381,7 +1403,7 @@ bool CompositedLayerMapping::ContainsPaintedContent() const {
 
 void CompositedLayerMapping::ContentChanged(ContentChangeType change_type) {
   if (change_type == kCanvasChanged && IsTextureLayerCanvas(GetLayoutObject()))
-    graphics_layer_->InvalidateContents();
+    graphics_layer_->SetContentsNeedsDisplay();
 }
 
 // Return the offset from the top-left of this compositing layer at which the
@@ -1477,11 +1499,31 @@ GraphicsLayer* CompositedLayerMapping::SquashingLayer(
   return NonScrollingSquashingLayer();
 }
 
+struct SetContentsNeedsDisplayFunctor {
+  void operator()(GraphicsLayer* layer) const {
+    if (layer->PaintsContentOrHitTest())
+      layer->SetNeedsDisplay();
+  }
+};
+
+void CompositedLayerMapping::SetAllLayersNeedDisplay() {
+  ApplyToGraphicsLayers(this, SetContentsNeedsDisplayFunctor(),
+                        kApplyToAllGraphicsLayers);
+}
+
+void CompositedLayerMapping::SetContentsNeedDisplay() {
+  ApplyToGraphicsLayers(this, SetContentsNeedsDisplayFunctor(),
+                        kApplyToContentLayers);
+}
+
 void CompositedLayerMapping::SetNeedsCheckRasterInvalidation() {
-  ApplyToGraphicsLayers(this, [](GraphicsLayer* graphics_layer) {
-    if (graphics_layer->DrawsContent())
-      graphics_layer->SetNeedsCheckRasterInvalidation();
-  });
+  ApplyToGraphicsLayers(
+      this,
+      [](GraphicsLayer* graphics_layer) {
+        if (graphics_layer->DrawsContent())
+          graphics_layer->SetNeedsCheckRasterInvalidation();
+      },
+      kApplyToAllGraphicsLayers);
 }
 
 const GraphicsLayerPaintInfo* CompositedLayerMapping::ContainingSquashedLayer(

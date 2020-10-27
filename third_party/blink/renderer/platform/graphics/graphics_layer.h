@@ -153,7 +153,8 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   GraphicsLayerPaintingPhase PaintingPhase() const { return painting_phase_; }
   void SetPaintingPhase(GraphicsLayerPaintingPhase);
 
-  void InvalidateContents();
+  void SetNeedsDisplay();
+  void SetContentsNeedsDisplay();
 
   // Set that the position/size of the contents (image or video).
   void SetContentsRect(const IntRect&);
@@ -269,7 +270,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
                      bool prevent_contents_opaque_changes);
 
   RasterInvalidator& EnsureRasterInvalidator();
-  void InvalidateRaster(const IntRect&);
+  void SetNeedsDisplayInRect(const IntRect&);
 
   GraphicsLayerClient& client_;
 

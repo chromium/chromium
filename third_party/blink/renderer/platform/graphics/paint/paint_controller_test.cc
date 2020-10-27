@@ -1494,6 +1494,35 @@ TEST_P(PaintControllerTest, BeginAndEndFrame) {
   EXPECT_FALSE(result.image_painted);
 }
 
+TEST_P(PaintControllerTest, InvalidateAll) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  EXPECT_TRUE(GetPaintController().CacheIsAllInvalid());
+  CommitAndFinishCycle();
+  EXPECT_TRUE(GetPaintController().GetPaintArtifact().IsEmpty());
+  EXPECT_FALSE(GetPaintController().CacheIsAllInvalid());
+
+  InvalidateAll();
+  EXPECT_TRUE(GetPaintController().CacheIsAllInvalid());
+  CommitAndFinishCycle();
+  EXPECT_TRUE(GetPaintController().GetPaintArtifact().IsEmpty());
+  EXPECT_FALSE(GetPaintController().CacheIsAllInvalid());
+
+  FakeDisplayItemClient client("client");
+  GraphicsContext context(GetPaintController());
+
+  InitRootChunk();
+  DrawRect(context, client, kBackgroundType, IntRect(1, 2, 3, 4));
+  CommitAndFinishCycle();
+  EXPECT_FALSE(GetPaintController().GetPaintArtifact().IsEmpty());
+  EXPECT_FALSE(GetPaintController().CacheIsAllInvalid());
+
+  InvalidateAll();
+  EXPECT_TRUE(GetPaintController().GetPaintArtifact().IsEmpty());
+  EXPECT_TRUE(GetPaintController().CacheIsAllInvalid());
+}
+
 TEST_P(PaintControllerTest, InsertValidItemInFront) {
   FakeDisplayItemClient first("first");
   FakeDisplayItemClient second("second");

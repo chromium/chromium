@@ -10,7 +10,7 @@
       "name": "LayoutBlockFlow DIV id='target'",
       "bounds": [100, 100],
       "invalidations": [
-        [0, 30, 50, 50]
+        [0, 0, 100, 100]
       ],
       "transform": 1
     },

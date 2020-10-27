@@ -85,6 +85,7 @@ void FrameOverlay::UpdatePrePaint() {
     parent_layer->AddChild(layer_.get());
   layer_->SetLayerState(DefaultPropertyTreeState(), IntPoint());
   layer_->SetSize(gfx::Size(Size()));
+  layer_->SetNeedsDisplay();
 }
 
 IntSize FrameOverlay::Size() const {

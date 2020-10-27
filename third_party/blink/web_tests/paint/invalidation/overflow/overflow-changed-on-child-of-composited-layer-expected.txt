@@ -8,10 +8,10 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='parent'",
-      "position": [-10, -10],
-      "bounds": [754, 210],
+      "position": [-1, -1],
+      "bounds": [745, 102],
       "invalidations": [
-        [0, 0, 310, 210]
+        [0, 0, 745, 102]
       ],
       "transform": 1
     }

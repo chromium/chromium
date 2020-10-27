@@ -133,6 +133,8 @@ class PLATFORM_EXPORT RasterInvalidator {
         r, Rect(0, 0, layer_bounds_.width(), layer_bounds_.height()));
   }
 
+  void TrackImplicitFullLayerInvalidation(const DisplayItemClient&);
+
   gfx::Rect layer_bounds_;
   Vector<PaintChunkInfo> old_paint_chunks_info_;
   scoped_refptr<const PaintArtifact> old_paint_artifact_;

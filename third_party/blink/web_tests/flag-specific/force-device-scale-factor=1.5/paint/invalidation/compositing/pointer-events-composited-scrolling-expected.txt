@@ -10,7 +10,7 @@
       "name": "LayoutNGBlockFlow DIV id='target'",
       "bounds": [150, 150],
       "invalidations": [
-        [0, 45, 75, 75]
+        [0, 0, 150, 150]
       ],
       "transform": 1
     },

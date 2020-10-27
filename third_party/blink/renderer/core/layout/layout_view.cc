@@ -489,19 +489,15 @@ void LayoutView::PaintBoxDecorationBackground(const PaintInfo& paint_info,
   ViewPainter(*this).PaintBoxDecorationBackground(paint_info);
 }
 
-static void InvalidatePaintForViewAndDescendantsRecursively(PaintLayer& layer) {
-  layer.GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
-  for (PaintLayer* child = layer.FirstChild(); child;
-       child = child->NextSibling())
-    InvalidatePaintForViewAndDescendantsRecursively(*child);
-}
-
 void LayoutView::InvalidatePaintForViewAndDescendants() {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    SetSubtreeShouldDoFullPaintInvalidation();
-  else
-    InvalidatePaintForViewAndDescendantsRecursively(*Layer());
+  SetSubtreeShouldDoFullPaintInvalidation();
+
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    DisableCompositingQueryAsserts disabler;
+    if (Compositor()->InCompositingMode())
+      Compositor()->FullyInvalidatePaint();
+  }
 }
 
 bool LayoutView::MapToVisualRectInAncestorSpace(

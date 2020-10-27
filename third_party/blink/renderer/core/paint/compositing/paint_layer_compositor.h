@@ -107,6 +107,8 @@ class CORE_EXPORT PaintLayerCompositor {
   // starts or stops being composited.
   static void PaintInvalidationOnCompositingChange(PaintLayer*);
 
+  void FullyInvalidatePaint();
+
   PaintLayer* RootLayer() const;
 
   // The LayoutView's main GraphicsLayer.

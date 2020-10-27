@@ -459,6 +459,24 @@ PaintLayerCompositor* PaintLayerCompositor::FrameContentsCompositor(
   return nullptr;
 }
 
+static void FullyInvalidatePaintRecursive(PaintLayer* layer) {
+  if (layer->GetCompositingState() == kPaintsIntoOwnBacking)
+    layer->GetCompositedLayerMapping()->SetAllLayersNeedDisplay();
+
+  for (PaintLayer* child = layer->FirstChild(); child;
+       child = child->NextSibling())
+    FullyInvalidatePaintRecursive(child);
+}
+
+void PaintLayerCompositor::FullyInvalidatePaint() {
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+
+  // We're walking all compositing layers and invalidating them, so there's
+  // no need to have up-to-date compositing state.
+  DisableCompositingQueryAsserts disabler;
+  FullyInvalidatePaintRecursive(RootLayer());
+}
+
 PaintLayer* PaintLayerCompositor::RootLayer() const {
   return layout_view_->Layer();
 }
