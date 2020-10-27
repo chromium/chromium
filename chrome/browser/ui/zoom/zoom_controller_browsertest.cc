@@ -87,7 +87,8 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
     host->Shutdown(0);
     crash_observer.Wait();
   }
-  EXPECT_FALSE(web_contents->GetRenderViewHost()->IsRenderViewLive());
+  EXPECT_FALSE(
+      web_contents->GetMainFrame()->GetRenderViewHost()->IsRenderViewLive());
 
   // The following attempt to change the zoom level for a crashed tab should
   // fail.
