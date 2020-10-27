@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DISABLED_DragAndDropToInput) {
   // Flush any pending events to make sure we start with a clean slate.
   content::RunAllPendingInMessageLoop();
   content::RenderViewHost* const render_view_host =
-      embedder_web_contents->GetRenderViewHost();
+      embedder_web_contents->GetMainFrame()->GetRenderViewHost();
 
   gfx::NativeView view = embedder_web_contents->GetNativeView();
   view->SetBounds(gfx::Rect(0, 0, 400, 400));

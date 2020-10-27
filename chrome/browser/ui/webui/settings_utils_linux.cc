@@ -145,9 +145,13 @@ namespace settings_utils {
 void ShowNetworkProxySettings(content::WebContents* web_contents) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&DetectAndStartProxyConfigUtil,
-                     web_contents->GetRenderViewHost()->GetProcess()->GetID(),
-                     web_contents->GetRenderViewHost()->GetRoutingID()));
+      base::BindOnce(
+          &DetectAndStartProxyConfigUtil,
+          web_contents->GetMainFrame()
+              ->GetRenderViewHost()
+              ->GetProcess()
+              ->GetID(),
+          web_contents->GetMainFrame()->GetRenderViewHost()->GetRoutingID()));
 }
 
 }  // namespace settings_utils
