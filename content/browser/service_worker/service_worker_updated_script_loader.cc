@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
-#include "content/browser/appcache/appcache_disk_cache_ops.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
