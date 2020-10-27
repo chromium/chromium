@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 
 namespace policy {
@@ -19,9 +20,6 @@ class CloudPolicyClient;
 }
 
 namespace chromeos {
-
-class CryptohomeClient;
-
 namespace attestation {
 
 // A class which observes policy changes and triggers uploading identification
@@ -36,8 +34,7 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
 
   // A constructor which accepts custom instances useful for testing.
   EnrollmentPolicyObserver(policy::CloudPolicyClient* policy_client,
-                           DeviceSettingsService* device_settings_service,
-                           CryptohomeClient* cryptohome_client);
+                           DeviceSettingsService* device_settings_service);
 
   ~EnrollmentPolicyObserver() override;
 
@@ -56,8 +53,8 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
   // Gets an enrollment identifier directly.
   void GetEnrollmentId();
 
-  // Handles an enrollment identifer obtained directly.
-  void HandleEnrollmentId(const std::string& enrollment_id);
+  // Handles an enrollment identifier obtained directly.
+  void OnGetEnrollmentId(const ::attestation::GetEnrollmentIdReply& reply);
 
   // Reschedule an attempt to get an enrollment identifier directly.
   void RescheduleGetEnrollmentId();
@@ -69,7 +66,6 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
 
   DeviceSettingsService* device_settings_service_;
   policy::CloudPolicyClient* policy_client_;
-  CryptohomeClient* cryptohome_client_;
   int num_retries_;
   int retry_limit_;
   int retry_delay_;

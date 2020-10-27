@@ -18,7 +18,8 @@
 #include "chrome/browser/chromeos/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
@@ -36,26 +37,6 @@ namespace {
 const int kRetryDelay = 5;  // Seconds.
 const int kRetryLimit = 100;
 
-// A dbus callback which handles a string result.
-//
-// Parameters
-//   on_success - Called when result is successful and has a value.
-//   on_failure - Called otherwise.
-void DBusStringCallback(
-    base::OnceCallback<void(const std::string&)> on_success,
-    base::OnceClosure on_failure,
-    const base::Location& from_here,
-    base::Optional<chromeos::CryptohomeClient::TpmAttestationDataResult>
-        result) {
-  if (!result.has_value() || !result->success) {
-    LOG(ERROR) << "Cryptohome DBus method failed: " << from_here.ToString();
-    if (!on_failure.is_null())
-      std::move(on_failure).Run();
-    return;
-  }
-  std::move(on_success).Run(result->data);
-}
-
 }  // namespace
 
 namespace chromeos {
@@ -65,7 +46,6 @@ EnrollmentPolicyObserver::EnrollmentPolicyObserver(
     policy::CloudPolicyClient* policy_client)
     : device_settings_service_(DeviceSettingsService::Get()),
       policy_client_(policy_client),
-      cryptohome_client_(nullptr),
       num_retries_(0),
       retry_limit_(kRetryLimit),
       retry_delay_(kRetryDelay) {
@@ -76,11 +56,9 @@ EnrollmentPolicyObserver::EnrollmentPolicyObserver(
 
 EnrollmentPolicyObserver::EnrollmentPolicyObserver(
     policy::CloudPolicyClient* policy_client,
-    DeviceSettingsService* device_settings_service,
-    CryptohomeClient* cryptohome_client)
+    DeviceSettingsService* device_settings_service)
     : device_settings_service_(device_settings_service),
       policy_client_(policy_client),
-      cryptohome_client_(cryptohome_client),
       num_retries_(0),
       retry_delay_(kRetryDelay) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -126,33 +104,32 @@ void EnrollmentPolicyObserver::Start() {
     return;
   request_in_flight_ = true;
 
-  if (!cryptohome_client_)
-    cryptohome_client_ = CryptohomeClient::Get();
-
   GetEnrollmentId();
 }
 
 void EnrollmentPolicyObserver::GetEnrollmentId() {
-  cryptohome_client_->TpmAttestationGetEnrollmentId(
-      true /* ignore_cache */,
-      base::BindOnce(
-          DBusStringCallback,
-          base::BindOnce(&EnrollmentPolicyObserver::HandleEnrollmentId,
-                         weak_factory_.GetWeakPtr()),
-          base::BindOnce(&EnrollmentPolicyObserver::RescheduleGetEnrollmentId,
-                         weak_factory_.GetWeakPtr()),
-          FROM_HERE));
+  ::attestation::GetEnrollmentIdRequest request;
+  request.set_ignore_cache(true);
+  AttestationClient::Get()->GetEnrollmentId(
+      request, base::BindOnce(&EnrollmentPolicyObserver::OnGetEnrollmentId,
+                              weak_factory_.GetWeakPtr()));
 }
 
-void EnrollmentPolicyObserver::HandleEnrollmentId(
-    const std::string& enrollment_id) {
-  if (enrollment_id.empty()) {
+void EnrollmentPolicyObserver::OnGetEnrollmentId(
+    const ::attestation::GetEnrollmentIdReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    LOG(WARNING) << "Failed to get enrollment id: " << reply.status();
+    RescheduleGetEnrollmentId();
+    return;
+  }
+  if (reply.enrollment_id().empty()) {
     LOG(WARNING) << "EnrollmentPolicyObserver: The enrollment identifier"
                     " obtained is empty.";
   }
   policy_client_->UploadEnterpriseEnrollmentId(
-      enrollment_id, base::BindOnce(&EnrollmentPolicyObserver::OnUploadComplete,
-                                    weak_factory_.GetWeakPtr(), enrollment_id));
+      reply.enrollment_id(),
+      base::BindOnce(&EnrollmentPolicyObserver::OnUploadComplete,
+                     weak_factory_.GetWeakPtr(), reply.enrollment_id()));
 }
 
 void EnrollmentPolicyObserver::RescheduleGetEnrollmentId() {

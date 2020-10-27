@@ -18,7 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/attestation/enrollment_policy_observer.h"
 #include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,46 +34,12 @@ namespace attestation {
 
 namespace {
 
+constexpr int kRetryLimit = 3;
+
 void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
-
-// A FakeCryptohomeClient that can hold call until told to flush them all.
-class CallsHoldingFakeCryptohomeClient : public FakeCryptohomeClient {
- public:
-  void set_hold_calls(bool hold_calls) { hold_calls_ = hold_calls; }
-
-  void TpmAttestationGetEnrollmentId(
-      bool ignore_cache,
-      DBusMethodCallback<TpmAttestationDataResult> callback) override {
-    if (hold_calls_) {
-      held_calls_.push(base::BindOnce(
-          &CallsHoldingFakeCryptohomeClient::DoTpmAttestationGetEnrollmentId,
-          base::Unretained(this), ignore_cache, std::move(callback)));
-    } else {
-      DoTpmAttestationGetEnrollmentId(ignore_cache, std::move(callback));
-    }
-  }
-
-  void FlushCalls() {
-    while (!held_calls_.empty()) {
-      std::move(held_calls_.front()).Run();
-      held_calls_.pop();
-    }
-  }
-
- private:
-  void DoTpmAttestationGetEnrollmentId(
-      bool ignore_cache,
-      DBusMethodCallback<TpmAttestationDataResult> callback) {
-    FakeCryptohomeClient::TpmAttestationGetEnrollmentId(ignore_cache,
-                                                        std::move(callback));
-  }
-
-  bool hold_calls_ = false;
-  std::queue<base::OnceClosure> held_calls_;
-};
 
 }  // namespace
 
@@ -83,23 +49,24 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
   ~EnrollmentPolicyObserverTest() override = default;
 
   void SetUp() override {
+    AttestationClient::InitializeFake();
     DeviceSettingsTestBase::SetUp();
 
     policy_client_.SetDMToken("fake_dm_token");
 
     EXPECT_TRUE(base::HexStringToString(kEnrollmentId, &enrollment_id_));
 
-    // Destroy the DeviceSettingsTestBase fake client and replace it.
-    CryptohomeClient::Shutdown();
-    // This will be destroyed in DeviceSettingsTestBase::TearDown().
-    cryptohome_client_ = new CallsHoldingFakeCryptohomeClient();
-    cryptohome_client_->set_tpm_attestation_enrollment_id(
-        true /* ignore_cache */, enrollment_id_);
+    AttestationClient::Get()
+        ->GetTestInterface()
+        ->set_enrollment_id_ignore_cache(enrollment_id_);
+    AttestationClient::Get()->GetTestInterface()->set_cached_enrollment_id(
+        "unexpeted query to cached enrollment id");
   }
 
   void TearDown() override {
     observer_.reset();
     DeviceSettingsTestBase::TearDown();
+    AttestationClient::Shutdown();
   }
 
  protected:
@@ -108,12 +75,16 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
 
   void SetUpObserver() {
     observer_ = std::make_unique<EnrollmentPolicyObserver>(
-        &policy_client_, device_settings_service_.get(), cryptohome_client_);
-    observer_->set_retry_limit(3);
+        &policy_client_, device_settings_service_.get());
+    observer_->set_retry_limit(kRetryLimit);
     observer_->set_retry_delay(0);
   }
 
   void ExpectUploadEnterpriseEnrollmentId(int times) {
+    // Setting a mock behavior with 0 times causes warnings.
+    if (times == 0) {
+      return;
+    }
     EXPECT_CALL(policy_client_, UploadEnterpriseEnrollmentId(enrollment_id_, _))
         .Times(times)
         .WillRepeatedly(WithArgs<1>(Invoke(StatusCallbackSuccess)));
@@ -132,9 +103,6 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
   void Run() {
     base::RunLoop().RunUntilIdle();
   }
-
-  // Owned by the global instance, shut down in DeviceSettingsTestBase.
-  CallsHoldingFakeCryptohomeClient* cryptohome_client_ = nullptr;
 
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
   std::unique_ptr<EnrollmentPolicyObserver> observer_;
@@ -166,20 +134,6 @@ TEST_F(EnrollmentPolicyObserverTest,
   Run();
 }
 
-TEST_F(EnrollmentPolicyObserverTest,
-       UploadEnterpriseEnrollmentIdWithDelayedCallbacks) {
-  // We hold calls to cryptohome so that one is still pending by the time the
-  // observer gets notified. We expect only one upload despite the concurrent
-  // calls.
-  cryptohome_client_->set_hold_calls(true);
-  SetUpDevicePolicy(true);
-  ExpectUploadEnterpriseEnrollmentId(1);
-  PropagateDevicePolicy();
-  SetUpObserver();
-  cryptohome_client_->FlushCalls();
-  Run();
-}
-
 TEST_F(EnrollmentPolicyObserverTest, FeatureDisabled) {
   SetUpDevicePolicy(false);
   SetUpObserver();
@@ -196,8 +150,9 @@ TEST_F(EnrollmentPolicyObserverTest, UnregisteredPolicyClient) {
 }
 
 TEST_F(EnrollmentPolicyObserverTest, DBusFailureRetry) {
-  // Simulate a DBus failure.
-  cryptohome_client_->SetServiceIsAvailable(false);
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->set_enrollment_id_dbus_error_count(kRetryLimit - 1);
 
   ExpectUploadEnterpriseEnrollmentId(1);
 
@@ -205,16 +160,19 @@ TEST_F(EnrollmentPolicyObserverTest, DBusFailureRetry) {
   PropagateDevicePolicy();
   SetUpObserver();
 
-  // Emulate delayed service initialization.
-  // The observer we create synchronously calls TpmAttestationGetEnrollmentId()
-  // and fails. During this call, we make the service available in the next
-  // run, so on retry, it will successfully return the result.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](FakeCryptohomeClient* cryptohome_client) {
-                       cryptohome_client->SetServiceIsAvailable(true);
-                     },
-                     base::Unretained(cryptohome_client_)));
+  Run();
+}
+
+TEST_F(EnrollmentPolicyObserverTest, DBusFailureRetryUntilLimit) {
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->set_enrollment_id_dbus_error_count(kRetryLimit);
+
+  ExpectUploadEnterpriseEnrollmentId(0);
+
+  SetUpDevicePolicy(true);
+  PropagateDevicePolicy();
+  SetUpObserver();
 
   Run();
 }

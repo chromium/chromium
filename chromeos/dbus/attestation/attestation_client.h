@@ -118,6 +118,14 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
 
     // Clears the request history of `DeleteKeys()`.
     virtual void ClearDeleteKeysHistory() = 0;
+
+    // Sets returned enrollment ids, when ignoring/not ignoring cache,
+    // respectively.
+    virtual void set_enrollment_id_ignore_cache(const std::string& id) = 0;
+    virtual void set_cached_enrollment_id(const std::string& id) = 0;
+    // Sets the returned status of `GetEnrollmentId()` to be D-Bus error for
+    // `count` times to emulate D-Bus late availability.
+    virtual void set_enrollment_id_dbus_error_count(int count) = 0;
   };
 
   // Not copyable or movable.
