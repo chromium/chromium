@@ -18,8 +18,6 @@ namespace blink {
 
 class LargestContentfulPaintCalculatorTest : public RenderingTest {
  public:
-  using LargestContentType =
-      LargestContentfulPaintCalculator::LargestContentType;
   void SetUp() override {
     // Advance the clock so we do not assign null TimeTicks.
     simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
@@ -34,6 +32,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetImagePaintTimingDetector()->ResetCallbackManager(
         mock_image_callback_manager_);
+    trace_event::EnableTracing(TRACE_DISABLED_BY_DEFAULT("loading"));
   }
 
   ImagePaintTimingDetector* GetImagePaintTimingDetector() {
@@ -66,16 +65,12 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
     return original_image_content;
   }
 
-  LargestContentType LastReportedType() {
-    return GetLargestContentfulPaintCalculator()->last_type_;
+  uint64_t LargestReportedSize() {
+    return GetLargestContentfulPaintCalculator()->largest_reported_size_;
   }
 
-  uint64_t LargestImageSize() {
-    return GetLargestContentfulPaintCalculator()->LargestImageSize();
-  }
-
-  uint64_t LargestTextSize() {
-    return GetLargestContentfulPaintCalculator()->LargestTextSize();
+  uint64_t CountCandidates() {
+    return GetLargestContentfulPaintCalculator()->count_candidates_;
   }
 
   void UpdateLargestContentfulPaintCandidate() {
@@ -137,9 +132,8 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleImage) {
   UpdateAllLifecyclePhasesForTest();
   SimulateImageSwapPromise();
 
-  EXPECT_EQ(LastReportedType(), LargestContentType::kImage);
-  EXPECT_EQ(LargestImageSize(), 15000u);
-  EXPECT_EQ(LargestTextSize(), 0u);
+  EXPECT_EQ(LargestReportedSize(), 15000u);
+  EXPECT_EQ(CountCandidates(), 1u);
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, SingleText) {
@@ -149,7 +143,9 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleText) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
   SimulateTextSwapPromise();
-  EXPECT_EQ(LastReportedType(), LargestContentType::kText);
+
+  EXPECT_GT(LargestReportedSize(), 0u);
+  EXPECT_EQ(CountCandidates(), 1u);
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
@@ -161,12 +157,12 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
   SetImage("target", 3, 3);
   UpdateAllLifecyclePhasesForTest();
   SimulateImageSwapPromise();
-  EXPECT_EQ(LastReportedType(), LargestContentType::kImage);
+  EXPECT_EQ(LargestReportedSize(), 9u);
+  EXPECT_EQ(CountCandidates(), 1u);
   SimulateTextSwapPromise();
 
-  EXPECT_EQ(LastReportedType(), LargestContentType::kText);
-  EXPECT_EQ(LargestImageSize(), 9u);
-  EXPECT_GT(LargestTextSize(), 9u);
+  EXPECT_GT(LargestReportedSize(), 9u);
+  EXPECT_EQ(CountCandidates(), 2u);
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, ImageSmallerText) {
@@ -178,13 +174,13 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageSmallerText) {
   SetImage("target", 100, 200);
   UpdateAllLifecyclePhasesForTest();
   SimulateImageSwapPromise();
-  EXPECT_EQ(LastReportedType(), LargestContentType::kImage);
+  EXPECT_EQ(LargestReportedSize(), 20000u);
+  EXPECT_EQ(CountCandidates(), 1u);
   SimulateTextSwapPromise();
 
   // Text should not be reported, since it is smaller than the image.
-  EXPECT_EQ(LastReportedType(), LargestContentType::kImage);
-  EXPECT_EQ(LargestImageSize(), 20000u);
-  EXPECT_GT(LargestTextSize(), 0u);
+  EXPECT_EQ(LargestReportedSize(), 20000u);
+  EXPECT_EQ(CountCandidates(), 1u);
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, TextLargerImage) {
@@ -197,9 +193,8 @@ TEST_F(LargestContentfulPaintCalculatorTest, TextLargerImage) {
   UpdateAllLifecyclePhasesForTest();
   SimulateContentSwapPromise();
 
-  EXPECT_EQ(LastReportedType(), LargestContentType::kImage);
-  EXPECT_EQ(LargestImageSize(), 20000u);
-  EXPECT_GT(LargestTextSize(), 0u);
+  EXPECT_EQ(LargestReportedSize(), 20000u);
+  EXPECT_EQ(CountCandidates(), 1u);
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, TextSmallerImage) {
@@ -213,9 +208,8 @@ TEST_F(LargestContentfulPaintCalculatorTest, TextSmallerImage) {
   SimulateContentSwapPromise();
 
   // Image should not be reported, since it is smaller than the text.
-  EXPECT_EQ(LastReportedType(), LargestContentType::kText);
-  EXPECT_EQ(LargestImageSize(), 9u);
-  EXPECT_GT(LargestTextSize(), 9u);
+  EXPECT_GT(LargestReportedSize(), 9u);
+  EXPECT_EQ(CountCandidates(), 1u);
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
@@ -231,17 +225,14 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
   SimulateImageSwapPromise();
   SimulateTextSwapPromise();
   // Image is larger than the text.
-  EXPECT_EQ(LastReportedType(), LargestContentType::kImage);
-  EXPECT_EQ(LargestImageSize(), 20000u);
-  EXPECT_GT(LargestTextSize(), 9u);
+  EXPECT_EQ(LargestReportedSize(), 20000u);
+  EXPECT_EQ(CountCandidates(), 1u);
 
   GetDocument().getElementById("large")->remove();
   UpdateAllLifecyclePhasesForTest();
-  // The LCP should now be the text because it is larger than the remaining
-  // image.
-  EXPECT_EQ(LastReportedType(), LargestContentType::kText);
-  EXPECT_EQ(LargestImageSize(), 9u);
-  EXPECT_GT(LargestTextSize(), 9u);
+  // The LCP does not move after the text is removed.
+  EXPECT_EQ(LargestReportedSize(), 20000u);
+  EXPECT_EQ(CountCandidates(), 1u);
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
@@ -260,17 +251,15 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
   SimulateImageSwapPromise();
   SimulateTextSwapPromise();
   // Test is larger than the image.
-  EXPECT_EQ(LastReportedType(), LargestContentType::kText);
-  EXPECT_EQ(LargestImageSize(), 50u);
-  EXPECT_GT(LargestTextSize(), 50u);
+  EXPECT_GT(LargestReportedSize(), 50u);
+  // Image swap occurred first, so we have would have two candidates.
+  EXPECT_EQ(CountCandidates(), 2u);
 
   GetDocument().getElementById("large")->remove();
   UpdateAllLifecyclePhasesForTest();
-  // The LCP should now be the image because it is larger than the remaining
-  // text.
-  EXPECT_EQ(LastReportedType(), LargestContentType::kImage);
-  EXPECT_EQ(LargestImageSize(), 50u);
-  EXPECT_LT(LargestTextSize(), 50u);
+  // The LCP should not move after removal.
+  EXPECT_GT(LargestReportedSize(), 50u);
+  EXPECT_EQ(CountCandidates(), 2u);
 }
 
 }  // namespace blink

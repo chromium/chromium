@@ -411,8 +411,9 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
     UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
     GetDocument().getElementById("target")->remove();
     UpdateAllLifecyclePhases();
-    // Experimental size still 25, not affected by removal.
-    EXPECT_EQ(ExperimentalLargestPaintSize(), 25ul);
+    // LCP size still 25, not affected by removal.
+    EXPECT_EQ(LargestPaintSize(), 25ul);
+    EXPECT_EQ(ExperimentalLargestPaintSize(), 0ul);
   }
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;
@@ -497,11 +498,11 @@ TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTimingToZero) {
   EXPECT_GT(GetPerformanceTiming().ExperimentalLargestImagePaint(), 0u);
   GetDocument().body()->RemoveChild(GetDocument().getElementById("target"));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSize(), 0u);
-  EXPECT_EQ(GetPerformanceTiming().LargestImagePaint(), 0u);
-  // Experimental values are not reset.
-  EXPECT_EQ(GetPerformanceTiming().ExperimentalLargestImagePaintSize(), 25u);
-  EXPECT_GT(GetPerformanceTiming().ExperimentalLargestImagePaint(), 0u);
+  EXPECT_EQ(GetPerformanceTiming().LargestImagePaintSize(), 25u);
+  EXPECT_GT(GetPerformanceTiming().LargestImagePaint(), 0u);
+  // Experimental values are reset.
+  EXPECT_EQ(GetPerformanceTiming().ExperimentalLargestImagePaintSize(), 0u);
+  EXPECT_EQ(GetPerformanceTiming().ExperimentalLargestImagePaint(), 0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OpacityZero) {
@@ -641,11 +642,11 @@ TEST_P(ImagePaintTimingDetectorTest,
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   record = FindLargestPaintCandidate();
   EXPECT_FALSE(record);
-  EXPECT_EQ(LargestPaintTime(), base::TimeTicks());
-  EXPECT_EQ(LargestPaintSize(), 0u);
-  // Experimental values not reset after removal.
-  EXPECT_NE(ExperimentalLargestPaintTime(), base::TimeTicks());
-  EXPECT_EQ(ExperimentalLargestPaintSize(), 25ul);
+  // Only experimental values reset after removal.
+  EXPECT_NE(LargestPaintTime(), base::TimeTicks());
+  EXPECT_EQ(LargestPaintSize(), 25u);
+  EXPECT_EQ(ExperimentalLargestPaintTime(), base::TimeTicks());
+  EXPECT_EQ(ExperimentalLargestPaintSize(), 0ul);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_UpdateOnRemoving) {
@@ -677,10 +678,10 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_UpdateOnRemoving) {
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   ImageRecord* record1_2 = FindLargestPaintCandidate();
   EXPECT_EQ(record1, record1_2);
-  EXPECT_EQ(first_largest_image_paint, LargestPaintTime());
-  EXPECT_EQ(LargestPaintSize(), 25u);
-  EXPECT_EQ(second_largest_image_paint, ExperimentalLargestPaintTime());
-  EXPECT_EQ(ExperimentalLargestPaintSize(), 100u);
+  EXPECT_EQ(second_largest_image_paint, LargestPaintTime());
+  EXPECT_EQ(LargestPaintSize(), 100u);
+  EXPECT_EQ(first_largest_image_paint, ExperimentalLargestPaintTime());
+  EXPECT_EQ(ExperimentalLargestPaintSize(), 25u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest,

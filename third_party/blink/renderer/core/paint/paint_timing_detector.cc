@@ -244,27 +244,26 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     uint64_t image_paint_size,
     base::TimeTicks removed_image_paint_time,
     uint64_t removed_image_paint_size) {
-  // The experimental version (where we look at largest seen so far, regardless
-  // of node removal) cannot change when the regular version does not change.
+  // The version that considers removed nodes cannot change when the version
+  // that doesn't consider removed nodes does not change.
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
 
-  largest_image_paint_time_ = image_paint_time;
-  largest_image_paint_size_ = image_paint_size;
-  // Compute experimental LCP by using the largest size (smallest paint time in
-  // case of tie).
+  experimental_largest_image_paint_time_ = image_paint_time;
+  experimental_largest_image_paint_size_ = image_paint_size;
+  // Compute LCP by using the largest size (smallest paint time in case of tie).
   if (removed_image_paint_size < image_paint_size) {
-    experimental_largest_image_paint_time_ = image_paint_time;
-    experimental_largest_image_paint_size_ = image_paint_size;
+    largest_image_paint_time_ = image_paint_time;
+    largest_image_paint_size_ = image_paint_size;
   } else if (removed_image_paint_size > image_paint_size) {
-    experimental_largest_image_paint_time_ = removed_image_paint_time;
-    experimental_largest_image_paint_size_ = removed_image_paint_size;
+    largest_image_paint_time_ = removed_image_paint_time;
+    largest_image_paint_size_ = removed_image_paint_size;
   } else {
-    experimental_largest_image_paint_size_ = image_paint_size;
+    largest_image_paint_size_ = image_paint_size;
     if (image_paint_time.is_null()) {
-      experimental_largest_image_paint_time_ = removed_image_paint_time;
+      largest_image_paint_time_ = removed_image_paint_time;
     } else {
-      experimental_largest_image_paint_time_ =
+      largest_image_paint_time_ =
           std::min(image_paint_time, removed_image_paint_time);
     }
   }
@@ -275,16 +274,16 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
 bool PaintTimingDetector::NotifyIfChangedLargestTextPaint(
     base::TimeTicks text_paint_time,
     uint64_t text_paint_size) {
-  // The experimental version (where we look at largest seen so far, regardless
-  // of node removal) cannot change when the regular version does not change.
+  // The version that considers removed nodes cannot change when the version
+  // that doesn't consider removed nodes does not change.
   if (!HasLargestTextPaintChanged(text_paint_time, text_paint_size))
     return false;
-  largest_text_paint_time_ = text_paint_time;
-  largest_text_paint_size_ = text_paint_size;
-  if (experimental_largest_text_paint_size_ < text_paint_size) {
+  experimental_largest_text_paint_time_ = text_paint_time;
+  experimental_largest_text_paint_size_ = text_paint_size;
+  if (largest_text_paint_size_ < text_paint_size) {
     DCHECK(!text_paint_time.is_null());
-    experimental_largest_text_paint_time_ = text_paint_time;
-    experimental_largest_text_paint_size_ = text_paint_size;
+    largest_text_paint_time_ = text_paint_time;
+    largest_text_paint_size_ = text_paint_size;
   }
   DidChangePerformanceTiming();
   return true;
@@ -293,15 +292,15 @@ bool PaintTimingDetector::NotifyIfChangedLargestTextPaint(
 bool PaintTimingDetector::HasLargestImagePaintChanged(
     base::TimeTicks largest_image_paint_time,
     uint64_t largest_image_paint_size) const {
-  return largest_image_paint_time != largest_image_paint_time_ ||
-         largest_image_paint_size != largest_image_paint_size_;
+  return largest_image_paint_time != experimental_largest_image_paint_time_ ||
+         largest_image_paint_size != experimental_largest_image_paint_size_;
 }
 
 bool PaintTimingDetector::HasLargestTextPaintChanged(
     base::TimeTicks largest_text_paint_time,
     uint64_t largest_text_paint_size) const {
-  return largest_text_paint_time != largest_text_paint_time_ ||
-         largest_text_paint_size != largest_text_paint_size_;
+  return largest_text_paint_time != experimental_largest_text_paint_time_ ||
+         largest_text_paint_size != experimental_largest_text_paint_size_;
 }
 
 void PaintTimingDetector::DidChangePerformanceTiming() {
@@ -354,22 +353,19 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
   if (!lcp_calculator)
     return;
 
-  // Optional, WeakPtr, Record have different roles:
-  // * !Optional means |UpdateCandidate() is not reachable, e.g., user input
-  // has been given to stop LCP. In this case, we still use the last recorded
-  // result.
-  // * !Weak means there is no candidate, e.g., no content show up on the page.
+  // * nullptr means there is no new candidate update, which could be caused by
+  // user input or no content show up on the page.
   // * Record.paint_time == 0 means there is an image but the image is still
   // loading. The perf API should wait until the paint-time is available.
-  base::Optional<base::WeakPtr<TextRecord>> largest_text_record;
-  base::Optional<const ImageRecord*> largest_image_record;
+  base::WeakPtr<TextRecord> largest_text_record = nullptr;
+  const ImageRecord* largest_image_record = nullptr;
   if (auto* text_timing_detector = GetTextPaintTimingDetector()) {
     if (text_timing_detector->IsRecordingLargestTextPaint()) {
-      largest_text_record.emplace(text_timing_detector->UpdateCandidate());
+      largest_text_record = text_timing_detector->UpdateCandidate();
     }
   }
   if (auto* image_timing_detector = GetImagePaintTimingDetector()) {
-    largest_image_record.emplace(image_timing_detector->UpdateCandidate());
+    largest_image_record = image_timing_detector->UpdateCandidate();
   }
 
   lcp_calculator->UpdateLargestContentPaintIfNeeded(largest_text_record,

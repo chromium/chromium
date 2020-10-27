@@ -127,7 +127,8 @@ class PageLoadMetricsObserverDelegate {
   virtual const LargestContentfulPaintHandler&
   GetLargestContentfulPaintHandler() const = 0;
   // Returns a LargestContentfulPaintHandler for the experimental version of
-  // LCP.
+  // LCP. Note that currently this 'experimental version' is the version that is
+  // being deprecated.
   virtual const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const = 0;
 

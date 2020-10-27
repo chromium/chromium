@@ -31,9 +31,9 @@ extern const char kHistogramLargestContentfulPaint[];
 extern const char kHistogramLargestContentfulPaintContentType[];
 extern const char kHistogramLargestContentfulPaintMainFrame[];
 extern const char kHistogramLargestContentfulPaintMainFrameContentType[];
-extern const char kHistogramExperimentalLargestContentfulPaint[];
+extern const char kDeprecatedHistogramLargestContentfulPaint[];
 extern const char kHistogramExperimentalLargestContentfulPaintContentType[];
-extern const char kHistogramExperimentalLargestContentfulPaintMainFrame[];
+extern const char kDeprecatedHistogramLargestContentfulPaintMainFrame[];
 extern const char
     kHistogramExperimentalLargestContentfulPaintMainFrameContentType[];
 extern const char kHistogramParseDuration[];

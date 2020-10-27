@@ -21,14 +21,14 @@ struct DocumentTiming {
 };
 
 struct LargestContentfulPaintTiming {
-  // Time when the page's largest image is painted. Removed images are excluded.
+  // Time when the page's largest image is painted.
   mojo_base.mojom.TimeDelta? largest_image_paint;
 
   // Size of the largest image of the largest image paint, by
   // Size = Height * Width. Removed images are excluded.
   uint64 largest_image_paint_size;
 
-  // Time when the page's largest text is painted. Removed text is excluded.
+  // Time when the page's largest text is painted.
   mojo_base.mojom.TimeDelta? largest_text_paint;
 
   // Size of the largest text of the largest text paint, by
@@ -50,10 +50,10 @@ struct PaintTiming {
   // (Experimental) Time when the page's primary content is painted.
   mojo_base.mojom.TimeDelta? first_meaningful_paint;
 
-  // Largest contentful paint, which excludes removed content.
+  // Largest contentful paint, which includes removed content.
   LargestContentfulPaintTiming largest_contentful_paint;
 
-  // (Experimental) largest contentful paint including removed content.
+  // (Experimental) largest contentful paint excluding removed content.
   LargestContentfulPaintTiming experimental_largest_contentful_paint;
 
   // (Experimental) Time when the frame is first eligible to be painted, i.e.

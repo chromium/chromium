@@ -1899,6 +1899,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint"
     units="ms" expires_after="2021-04-18">
+  <obsolete>
+    Replaced by PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 on Oct
+    2020.
+  </obsolete>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -1913,6 +1917,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint.MainFrame"
     units="ms" expires_after="2021-04-25">
+  <obsolete>
+    Replaced by
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame on Oct
+    2020.
+  </obsolete>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -1993,7 +2002,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     end of each page load unless there is an abort or user input before text or
     image paint. See http://bit.ly/fcp_plus_plus for details. Stable since M79;
     previous versions are experimental and subject to fluctuation between
-    releases.
+    releases. Note: This histogram is being replaced by
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 and will become
+    obsolete soon.
 
     Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
   </summary>
@@ -2009,7 +2020,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     largest content (text or image) is first painted, for main frame documents.
     Excludes any content painted after user input. The value is recorded at the
     end of each page load unless there is an abort or user input before text or
-    image paint. See http://bit.ly/fcp_plus_plus for details.
+    image paint. See http://bit.ly/fcp_plus_plus for details. Note: This
+    histogram is being replaced by
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame and will
+    become obsolete soon.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"
+    units="ms" expires_after="2021-10-21">
+  <owner>npm@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, across all frames. See
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint for more
+    information. Version 2 includes content that has been removed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame"
+    units="ms" expires_after="2021-10-21">
+  <owner>npm@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, for main frame documents.
+    See PageLoad.PaintTiming.NavigationToLargestContentfulPaint for more
+    information. Version 2 excludes content that has been removed.
   </summary>
 </histogram>
 

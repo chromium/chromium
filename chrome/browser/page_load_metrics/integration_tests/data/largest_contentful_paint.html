@@ -62,8 +62,7 @@ setup({'output': false});
 <div id="content_div_1">
   <img src="images/green-16x16.png"></img>
 </div>
-<div id="content_div_2">
-</div>
+<div id="content_div_2"></div>
 
 <script>
   const block_for_next_lcp = async () => {
@@ -84,12 +83,32 @@ setup({'output': false});
     new_img.id = "blue_image";
   };
 
+  // Adds the largest image. We expect this
+  // operation to trigger a new LCP entry.
+  const add_largest_image = () => {
+    let new_img = document.createElement("img");
+    content_div_2.appendChild(new_img);
+    new_img.src = "images/green-256x256.png";
+  };
+
   // Removes the image added by 'add_larger_image'. We expect this operation to
-  // trigger a new LCP entry.
+  // not trigger a new LCP entry.
   const remove_larger_image = () => {
     const blue_image = document.getElementById("blue_image");
     assert_not_equals(blue_image, null);
     content_div_2.removeChild(blue_image);
+  };
+
+  const waitForAnimationFrames = frameCount => {
+    return new Promise(resolve => {
+      const handleFrame = () => {
+        if (--frameCount <= 0)
+          resolve();
+        else
+          requestAnimationFrame(handleFrame);
+      };
+      requestAnimationFrame(handleFrame);
+    });
   };
 
   const run_test = async () => {
@@ -99,11 +118,15 @@ setup({'output': false});
     //  - add a larger image to the page
     //  - assert that LCP fires for the new image
     //  - remove the larger image
-    //  - assert that LCP fires (again) for the first image
+    //  - wait for some rAFs
+    //  - add the largest image to the page
+    //  - asset that the new LCP is for the largest
     const lcp_0 = await block_for_next_lcp();
     add_larger_image();
     const lcp_1 = await block_for_next_lcp();
     remove_larger_image();
+    await waitForAnimationFrames(3);
+    add_largest_image();
     const lcp_2 = await block_for_next_lcp();
 
     // Now that we've run through the scenario and collected our measurements,

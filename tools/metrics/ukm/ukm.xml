@@ -466,6 +466,10 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="SubFrame.PaintTiming.NavigationToExperimentalLargestContentfulPaint">
+    <obsolete>
+      Replaced by SubFrame.PaintTiming.NavigationToLargestContentfulPaint2 on
+      Oct 2020.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the experimental largest
@@ -493,7 +497,19 @@ be describing additional metrics about the same event.
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
       image) within viewport, in the AMP subframe. See
-      http://bit.ly/largest_contentful_paint_explainer for more details.
+      http://bit.ly/largest_contentful_paint_explainer for more details. Note:
+      Will be replaced by
+      SubFrame.PaintTiming.NavigationToLargestContentfulPaint2.
+    </summary>
+  </metric>
+  <metric name="SubFrame.PaintTiming.NavigationToLargestContentfulPaint2">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time when the page first paints the experimental largest
+      content (text or image) within viewport, in the AMP subframe. See
+      http://bit.ly/largest_contentful_paint_explainer for more details. Differs
+      from SubFrame.PaintTiming.NavigationToLargestContentfulPaint in that
+      removed content is still considered a valid candidate.
     </summary>
   </metric>
   <metric name="SubFrame.PaintTiming.NavigationToLargestContentPaint">
@@ -9355,6 +9371,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PaintTiming.NavigationToExperimentalLargestContentfulPaint">
+    <obsolete>
+      Replaced by PaintTiming.NavigationToLargestContentfulPaint2 on Oct 2020.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
@@ -9377,6 +9396,10 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="PaintTiming.NavigationToExperimentalLargestContentfulPaint.MainFrame">
+    <obsolete>
+      Replaced by PaintTiming.NavigationToLargestContentfulPaint2.MainFrame on
+      Oct 2020.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
@@ -9428,7 +9451,8 @@ be describing additional metrics about the same event.
       image) within viewport, across all frames. See http://bit.ly/fcp_plus_plus
       for more details. Stable since M79; previous versions are experimental and
       subject to fluctuation between releases. Log of major changes:
-      http://bit.ly/chrome-speed-metrics-changelog
+      http://bit.ly/chrome-speed-metrics-changelog Note: Will be replaced by
+      PaintTiming.NavigationToLargestContentfulPaint2.
     </summary>
     <aggregation>
       <history>
@@ -9448,7 +9472,39 @@ be describing additional metrics about the same event.
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
       image) within viewport, in the main frame. See http://bit.ly/fcp_plus_plus
-      for more details.
+      for more details. Note: Will be replaced by
+      PaintTiming.NavigationToLargestContentfulPaint2.MainFrame.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.NavigationToLargestContentfulPaint2">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time when the page first paints the largest content (text or
+      image) within viewport, across all frames. See http://bit.ly/fcp_plus_plus
+      for more details. Log of major changes:
+      http://bit.ly/chrome-speed-metrics-changelog. Version 2 differs from the
+      first version in that it includes content that has been removed from the
+      page.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.country,profile.system_ram"/>
+        <index fields="profile.is_dominant_version"/>
+        <index fields="profile.is_latest_version"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PaintTiming.NavigationToLargestContentfulPaint2.MainFrame">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time when the page first paints the largest content (text or
+      image) within viewport, in the main frame. Includes content that has been
+      removed from the page. See http://bit.ly/fcp_plus_plus for more details.
     </summary>
   </metric>
   <metric name="ParseTiming.NavigationToParseStart">
@@ -9525,11 +9581,10 @@ be describing additional metrics about the same event.
     <summary>
       Records whether the page's experimental version of largest contentful
       paint, whose timestamp is measured by
-      PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint, comes
-      from text or image. This value is sampled and not on the PageLoad event,
-      so it is not always recorded whenever
-      PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint is
-      recorded.
+      PageLoad.PaintTiming.NavigationToLargestContentfulPaint, comes from text
+      or image. This value is sampled and not on the PageLoad event, so it is
+      not always recorded whenever
+      PageLoad.PaintTiming.NavigationToLargestContentfulPaint is recorded.
     </summary>
   </metric>
   <metric
@@ -9538,22 +9593,22 @@ be describing additional metrics about the same event.
     <summary>
       Records the state of the experimental largest contentful paint algorithm
       at the time in which the browser attempts to record
-      PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint. This
-      state depends on whether there was an experimental largest contentful
-      paint candidate or not and the foreground state of the page. This value is
+      PageLoad.PaintTiming.NavigationToLargestContentfulPaint. This state
+      depends on whether there was an experimental largest contentful paint
+      candidate or not and the foreground state of the page. This value is
       sampled and not on the PageLoad event, so it is not always recorded
       whenever the browser attempts to record
-      PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint.
+      PageLoad.PaintTiming.NavigationToLargestContentfulPaint.
     </summary>
   </metric>
   <metric name="PaintTiming.LargestContentfulPaint.ContentType"
       enum="LargestContentType">
     <summary>
       Records whether the page's largest contentful paint, whose timestamp is
-      measured by PageLoad.PaintTiming.NavigationToLargestContentfulPaint, comes
-      from text or image. This value is sampled and not on the PageLoad event,
-      so it is not always recorded whenever
-      PageLoad.PaintTiming.NavigationToLargestContentfulPaint is recorded.
+      measured by PageLoad.PaintTiming.NavigationToLargestContentfulPaint2,
+      comes from text or image. This value is sampled and not on the PageLoad
+      event, so it is not always recorded whenever
+      PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 is recorded.
     </summary>
   </metric>
   <metric name="PaintTiming.LargestContentfulPaint.TerminationState"
@@ -9561,11 +9616,11 @@ be describing additional metrics about the same event.
     <summary>
       Records the state of the largest contentful paint algorithm at the time in
       which the browser attempts to record
-      PageLoad.PaintTiming.NavigationToLargestContentfulPaint. This state
+      PageLoad.PaintTiming.NavigationToLargestContentfulPaint2. This state
       depends on whether there was a largest contentful paint candidate or not
       and the foreground state of the page. This value is sampled and not on the
       PageLoad event, so it is not always recorded whenever the browser attempts
-      to record PageLoad.PaintTiming.NavigationToLargestContentfulPaint.
+      to record PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
     </summary>
   </metric>
 </event>

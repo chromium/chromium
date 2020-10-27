@@ -520,7 +520,7 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   if (main_frame_largest_contentful_paint.ContainsValidTime() &&
       WasStartedInForegroundOptionalEventInForeground(
           main_frame_largest_contentful_paint.Time(), GetDelegate())) {
-    builder.SetPaintTiming_NavigationToLargestContentfulPaint_MainFrame(
+    builder.SetPaintTiming_NavigationToLargestContentfulPaint2_MainFrame(
         main_frame_largest_contentful_paint.Time().value().InMilliseconds());
   }
   const page_load_metrics::ContentfulPaintTimingInfo&
@@ -531,9 +531,10 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   if (all_frames_largest_contentful_paint.ContainsValidTime() &&
       WasStartedInForegroundOptionalEventInForeground(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
-    builder.SetPaintTiming_NavigationToLargestContentfulPaint(
+    builder.SetPaintTiming_NavigationToLargestContentfulPaint2(
         all_frames_largest_contentful_paint.Time().value().InMilliseconds());
   }
+  // TODO(crbug.com/1045640): Stop reporting the experimental obsolete versions.
   const page_load_metrics::ContentfulPaintTimingInfo&
       main_frame_experimental_largest_contentful_paint =
           GetDelegate()
@@ -543,11 +544,10 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
       WasStartedInForegroundOptionalEventInForeground(
           main_frame_experimental_largest_contentful_paint.Time(),
           GetDelegate())) {
-    builder
-        .SetPaintTiming_NavigationToExperimentalLargestContentfulPaint_MainFrame(
-            main_frame_experimental_largest_contentful_paint.Time()
-                .value()
-                .InMilliseconds());
+    builder.SetPaintTiming_NavigationToLargestContentfulPaint_MainFrame(
+        main_frame_experimental_largest_contentful_paint.Time()
+            .value()
+            .InMilliseconds());
   }
   const page_load_metrics::ContentfulPaintTimingInfo&
       all_frames_experimental_largest_contentful_paint =
@@ -558,7 +558,7 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
       WasStartedInForegroundOptionalEventInForeground(
           all_frames_experimental_largest_contentful_paint.Time(),
           GetDelegate())) {
-    builder.SetPaintTiming_NavigationToExperimentalLargestContentfulPaint(
+    builder.SetPaintTiming_NavigationToLargestContentfulPaint(
         all_frames_experimental_largest_contentful_paint.Time()
             .value()
             .InMilliseconds());

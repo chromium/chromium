@@ -368,11 +368,11 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(), "SubFrame.PaintTiming.NavigationToFirstContentfulPaint", 5);
   tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint",
+      entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint2",
       10);
   tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.PaintTiming.NavigationToExperimentalLargestContentfulPaint", 8);
+      entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint",
+      8);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
@@ -484,11 +484,11 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(), "SubFrame.PaintTiming.NavigationToFirstContentfulPaint", 5);
   tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint",
+      entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint2",
       10);
   tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.PaintTiming.NavigationToExperimentalLargestContentfulPaint", 5);
+      entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint",
+      5);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFullNavigation) {

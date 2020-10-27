@@ -183,8 +183,8 @@ class CORE_EXPORT PaintTimingDetector
   base::TimeTicks LargestTextPaint() const { return largest_text_paint_time_; }
   uint64_t LargestTextPaintSize() const { return largest_text_paint_size_; }
   // Experimental counterparts of the above methods. Currently these values are
-  // computed by looking at the largest content seen so far, without caring
-  // about whether the content remains alive on the page or not.
+  // computed by looking at the largest content seen so far, but excluding
+  // content that is removed.
   base::TimeTicks ExperimentalLargestImagePaint() const {
     return experimental_largest_image_paint_time_;
   }

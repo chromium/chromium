@@ -120,23 +120,21 @@ class UkmPageLoadMetricsObserverTest
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kTestUrl1));
     tester()->test_ukm_recorder().ExpectEntryMetric(
-        entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName,
+        entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
         value);
     tester()->test_ukm_recorder().ExpectEntryMetric(
-        entry,
-        PageLoad::
-            kPaintTiming_NavigationToExperimentalLargestContentfulPaintName,
+        entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName,
         value);
     if (test_main_frame) {
       tester()->test_ukm_recorder().ExpectEntryMetric(
           entry,
           PageLoad::
-              kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName,
+              kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName,
           value);
       tester()->test_ukm_recorder().ExpectEntryMetric(
           entry,
           PageLoad::
-              kPaintTiming_NavigationToExperimentalLargestContentfulPaint_MainFrameName,
+              kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName,
           value);
     }
     EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
@@ -178,19 +176,17 @@ class UkmPageLoadMetricsObserverTest
     EXPECT_EQ(1ul, merged_entries.size());
     const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
     EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
+        entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name));
+    EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
         entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName));
     EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
         entry,
         PageLoad::
-            kPaintTiming_NavigationToExperimentalLargestContentfulPaintName));
+            kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName));
     EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
         entry,
         PageLoad::
             kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName));
-    EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-        entry,
-        PageLoad::
-            kPaintTiming_NavigationToExperimentalLargestContentfulPaint_MainFrameName));
 
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> internal_merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -478,7 +474,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   EXPECT_EQ(1ul, merged_entries.size());
   const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
   EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-      entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName));
+      entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name));
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kNavigation_PageEndReason2Name,
       page_load_metrics::END_CLOSE);
@@ -553,7 +549,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, FCPPlusPlus_DiscardBackgroundResult) {
   EXPECT_EQ(1ul, merged_entries.size());
   const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
   EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-      entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName));
+      entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name));
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kNavigation_PageEndReason2Name,
       page_load_metrics::END_CLOSE);
@@ -809,11 +805,11 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
   EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
       entry,
-      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName));
+      PageLoad::
+          kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName));
   EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
       entry,
-      PageLoad::
-          kPaintTiming_NavigationToExperimentalLargestContentfulPaint_MainFrameName));
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,

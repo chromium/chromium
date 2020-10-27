@@ -23,45 +23,25 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   LargestContentfulPaintCalculator& operator=(
       const LargestContentfulPaintCalculator&) = delete;
 
-  void UpdateLargestContentPaintIfNeeded(
-      base::Optional<base::WeakPtr<TextRecord>> largest_text,
-      base::Optional<const ImageRecord*> largest_image);
+  void UpdateLargestContentPaintIfNeeded(base::WeakPtr<TextRecord> largest_text,
+                                         const ImageRecord* largest_image);
 
   void Trace(Visitor* visitor) const;
 
  private:
   friend class LargestContentfulPaintCalculatorTest;
 
-  enum class LargestContentType {
-    kUnknown,
-    kImage,
-    kText,
-  };
-  void OnLargestImageUpdated(const ImageRecord* largest_image);
-  void OnLargestTextUpdated(base::WeakPtr<TextRecord> largest_text);
-  void UpdateLargestContentfulPaint(LargestContentType type);
+  void UpdateLargestContentfulImage(const ImageRecord* largest_image);
+  void UpdateLargestContentfulText(base::WeakPtr<TextRecord> largest_text);
 
-  uint64_t LargestTextSize() {
-    return largest_text_ ? largest_text_->first_size : 0u;
-  }
-
-  uint64_t LargestImageSize() {
-    return largest_image_ ? largest_image_->first_size : 0u;
-  }
-
-  std::unique_ptr<TracedValue> TextCandidateTraceData();
-  std::unique_ptr<TracedValue> ImageCandidateTraceData();
-  std::unique_ptr<TracedValue> InvalidationTraceData();
+  std::unique_ptr<TracedValue> TextCandidateTraceData(
+      base::WeakPtr<TextRecord> largest_text);
+  std::unique_ptr<TracedValue> ImageCandidateTraceData(
+      const ImageRecord* largest_image);
 
   Member<WindowPerformance> window_performance_;
 
-  // Largest image information. Stores its own copy of the information so that
-  // the lifetime is not dependent on that of ImagePaintTimingDetector.
-  std::unique_ptr<ImageRecord> largest_image_;
-  // Largest text information. Stores its own copy of the information so that
-  // the lifetime is not dependent on that of TextPaintTimingDetector.
-  std::unique_ptr<TextRecord> largest_text_;
-  LargestContentType last_type_ = LargestContentType::kUnknown;
+  uint64_t largest_reported_size_ = 0u;
 
   unsigned count_candidates_ = 0;
 };
