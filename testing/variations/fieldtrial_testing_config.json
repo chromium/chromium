@@ -6310,6 +6310,21 @@
             ]
         }
     ],
+    "SafetyCheckIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafetyCheckIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "SaveEditedPDFForm": [
         {
             "platforms": [
