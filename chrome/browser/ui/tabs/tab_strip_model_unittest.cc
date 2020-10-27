@@ -380,7 +380,8 @@ class TabStripModelTest : public testing::Test {
   std::unique_ptr<WebContents> CreateWebContentsWithSharedRPH(
       WebContents* web_contents) {
     WebContents::CreateParams create_params(
-        profile(), web_contents->GetRenderViewHost()->GetSiteInstance());
+        profile(),
+        web_contents->GetMainFrame()->GetRenderViewHost()->GetSiteInstance());
     std::unique_ptr<WebContents> retval = WebContents::Create(create_params);
     EXPECT_EQ(retval->GetMainFrame()->GetProcess(),
               web_contents->GetMainFrame()->GetProcess());
