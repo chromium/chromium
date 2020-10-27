@@ -84,10 +84,6 @@ enum {
                              // playback.
   FILE_PEPPER_FLASH_PLUGIN,  // Full path to the bundled Pepper Flash plugin
                              // file.
-  FILE_PEPPER_FLASH_SYSTEM_PLUGIN,  // Full path to the system version of the
-                                    // Pepper Flash plugin, downloadable from
-                                    // Adobe website. Querying this path might
-                                    // succeed no matter the file exists or not.
   DIR_PNACL_BASE,                   // Full path to the base dir for PNaCl.
   DIR_PNACL_COMPONENT,              // Full path to the latest PNaCl version
                                     // (subdir of DIR_PNACL_BASE).
@@ -140,9 +136,6 @@ enum {
                               // the component updated flash plugin.
 #endif                        // defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if defined(OS_CHROMEOS)
-  FILE_CHROME_OS_COMPONENT_FLASH,  // The location of component updated Flash on
-                                   // Chrome OS.
-
   // File containing the location of the updated TPM firmware binary in the file
   // system.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION,

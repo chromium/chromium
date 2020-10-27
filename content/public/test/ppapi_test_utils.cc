@@ -78,8 +78,8 @@ bool RegisterFlashTestPluginLibrary(base::CommandLine* command_line,
   std::vector<PluginInfo> plugins;
   // Register a fake Flash with 100.0 version (to avoid outdated checks).
   base::FilePath::StringType fake_flash_parameter =
-      base::FilePath::FromUTF8Unsafe(
-          std::string("#") + content::kFlashPluginName + "#Description#100.0")
+      base::FilePath::FromUTF8Unsafe(std::string("#") + "Shockwave Flash" +
+                                     "#Description#100.0")
           .value();
   plugins.push_back(
       PluginInfo(library_name, fake_flash_parameter,

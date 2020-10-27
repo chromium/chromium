@@ -2352,7 +2352,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       switches::kAppsGalleryURL,
       switches::kCloudPrintURL,
       switches::kCloudPrintXmppEndpoint,
-      switches::kDisableBundledPpapiFlash,
       switches::kDisableJavaScriptHarmonyShipping,
       variations::switches::kEnableBenchmarking,
       switches::kEnableDistillabilityService,
@@ -2375,8 +2374,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       embedder_support::kOriginTrialDisabledFeatures,
       embedder_support::kOriginTrialDisabledTokens,
       embedder_support::kOriginTrialPublicKey,
-      switches::kPpapiFlashPath,
-      switches::kPpapiFlashVersion,
       switches::kReaderModeHeuristics,
       translate::switches::kTranslateSecurityOrigin,
     };
@@ -2397,21 +2394,18 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
     MaybeAppendSecureOriginsAllowlistSwitch(command_line);
   } else if (process_type == switches::kZygoteProcess) {
-    static const char* const kSwitchNames[] = {
       // Load (in-process) Pepper plugins in-process in the zygote pre-sandbox.
-      switches::kDisableBundledPpapiFlash,
 #if BUILDFLAG(ENABLE_NACL)
-      switches::kEnableNaClDebug,
-      switches::kEnableNaClNonSfiMode,
-      switches::kForcePNaClSubzero,
-      switches::kNaClDangerousNoSandboxNonSfi,
-#endif
-      switches::kPpapiFlashPath,
-      switches::kPpapiFlashVersion,
-    };
+      static const char* const kSwitchNames[] = {
+          switches::kEnableNaClDebug,
+          switches::kEnableNaClNonSfiMode,
+          switches::kForcePNaClSubzero,
+          switches::kNaClDangerousNoSandboxNonSfi,
+      };
 
-    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                                   base::size(kSwitchNames));
+      command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
+                                     base::size(kSwitchNames));
+#endif
   } else if (process_type == switches::kGpuProcess) {
     // If --ignore-gpu-blocklist is passed in, don't send in crash reports
     // because GPU is expected to be unreliable.

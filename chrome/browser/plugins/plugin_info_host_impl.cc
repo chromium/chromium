@@ -362,16 +362,6 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
     // Otherwise, we only found disabled plugins, so we take the first one.
     i = 0;
     *status = chrome::mojom::PluginStatus::kDisabled;
-
-    // Special case for Flash: this is our Prefer HTML over Plugins logic.
-    if (matching_plugins[0].name ==
-        base::ASCIIToUTF16(content::kFlashPluginName)) {
-      *status = chrome::mojom::PluginStatus::kFlashHiddenPreferHtml;
-
-      // In the Prefer HTML case, the plugin is actually enabled, but hidden.
-      // It will still be blocked in the body of DecidePluginStatus.
-      enabled = true;
-    }
   }
 
   *plugin = matching_plugins[i];
@@ -418,40 +408,7 @@ void PluginInfoHostImpl::GetPluginInfoFinish(
 
   context_.MaybeGrantAccess(output->status, output->plugin.path);
 
-  if (output->status != chrome::mojom::PluginStatus::kNotFound) {
-    ReportMetrics(params.render_frame_id, output->actual_mime_type,
-                  params.main_frame_origin);
-  }
   std::move(callback).Run(std::move(output));
-}
-
-void PluginInfoHostImpl::ReportMetrics(int render_frame_id,
-                                       const base::StringPiece& mime_type,
-                                       const url::Origin& main_frame_origin) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
-      context_.render_process_id(), render_frame_id);
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(frame);
-  // This can occur the web contents has already been closed or navigated away.
-  if (!web_contents)
-    return;
-
-  if (web_contents->GetBrowserContext()->IsOffTheRecord())
-    return;
-
-  if (main_frame_origin.opaque())
-    return;
-
-  if (mime_type != content::kFlashPluginSwfMimeType &&
-      mime_type != content::kFlashPluginSplMimeType) {
-    return;
-  }
-
-  ukm::builders::Plugins_FlashInstance(
-      ukm::GetSourceIdForWebContentsDocument(web_contents))
-      .Record(ukm::UkmRecorder::Get());
 }
 
 void PluginInfoHostImpl::Context::MaybeGrantAccess(

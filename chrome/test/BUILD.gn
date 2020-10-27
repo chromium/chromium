@@ -3906,10 +3906,8 @@ test("unit_tests") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "../browser/policy/browser_dm_token_storage_linux_unittest.cc",
-      "../common/component_flash_hint_file_linux_unittest.cc",
-    ]
+    sources +=
+        [ "../browser/policy/browser_dm_token_storage_linux_unittest.cc" ]
   }
 
   # Required by Chromium's zlib unit tests.

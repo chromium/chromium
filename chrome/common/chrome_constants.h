@@ -83,9 +83,6 @@ extern const base::FilePath::CharType kReportingAndNelStoreFilename[];
 extern const base::FilePath::CharType kJumpListIconDirname[];
 #endif
 
-// File name of the Pepper Flash plugin on different platforms.
-extern const base::FilePath::CharType kPepperFlashPluginFilename[];
-
 // directory names
 #if defined(OS_WIN)
 extern const wchar_t kUserDataDirname[];

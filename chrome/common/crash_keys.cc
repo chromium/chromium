@@ -43,7 +43,6 @@ static bool IsBoringSwitch(const std::string& flag) {
     // crash_reporter separately informs the crash server if it is doing
     // crash-loop handling.
     crash_reporter::switches::kCrashLoopBefore,
-    switches::kPpapiFlashPath,
     switches::kRegisterPepperPlugins,
     switches::kUseGL,
     switches::kUserDataDir,

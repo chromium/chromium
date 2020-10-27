@@ -19,12 +19,6 @@ const base::FilePath::CharType kPepperDataDirname[] =
 const char kBrowserPluginMimeType[] = "application/browser-plugin";
 
 const char kFlashPluginName[] = "Shockwave Flash";
-const char kFlashPluginSwfMimeType[] = "application/x-shockwave-flash";
-const char kFlashPluginSwfExtension[] = "swf";
-const char kFlashPluginSwfDescription[] = "Shockwave Flash";
-const char kFlashPluginSplMimeType[] = "application/futuresplash";
-const char kFlashPluginSplExtension[] = "spl";
-const char kFlashPluginSplDescription[] = "FutureSplash Player";
 
 const size_t kMaxURLDisplayChars = 32 * 1024;
 

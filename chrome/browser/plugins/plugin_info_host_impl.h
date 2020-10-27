@@ -129,11 +129,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
                            GetPluginInfoCallback callback,
                            std::unique_ptr<PluginMetadata> plugin_metadata);
 
-  // Reports usage metrics to UKM.
-  void ReportMetrics(int render_frame_id,
-                     const base::StringPiece& mime_type,
-                     const url::Origin& main_frame_origin);
-
   Context context_;
   std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
       shutdown_notifier_;

@@ -114,7 +114,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
         base::ASCIIToUTF16(content::kFlashPluginName), fake_flash_path_,
         base::ASCIIToUTF16("100.0"),
         base::ASCIIToUTF16("Fake Flash Description."));
-    mime_type.mime_type = content::kFlashPluginSwfMimeType;
+    mime_type.mime_type = "application/x-shockwave-flash";
     fake_flash.mime_types.push_back(mime_type);
     fake_flash.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
     PluginService::GetInstance()->RegisterInternalPlugin(fake_flash, false);
@@ -156,7 +156,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
 
     // Pass in a fake Flash plugin info.
     content::WebPluginInfo plugin_info(
-        base::ASCIIToUTF16(content::kFlashPluginName), base::FilePath(),
+        base::ASCIIToUTF16("Shockwave Flash"), base::FilePath(),
         base::ASCIIToUTF16("1"), base::ASCIIToUTF16("Fake Flash"));
 
     PluginUtils::GetPluginContentSetting(
@@ -229,82 +229,6 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     EXPECT_EQ(chrome::mojom::PluginStatus::kNotFound, status);
     EXPECT_EQ(FILE_PATH_LITERAL(""), plugin.path.value());
   }
-}
-
-TEST_F(PluginInfoHostImplTest, PreferHtmlOverPlugins) {
-  // The HTML5 By Default feature hides Flash using the plugin filter.
-  filter_.set_plugin_enabled(fake_flash_path_, false);
-
-  // Make a real HTTP origin, as all Flash content from non-HTTP and non-FILE
-  // origins are blocked.
-  url::Origin main_frame_origin =
-      url::Origin::Create(GURL("http://example.com"));
-
-  chrome::mojom::PluginStatus status;
-  content::WebPluginInfo plugin;
-  std::string actual_mime_type;
-  EXPECT_TRUE(context()->FindEnabledPlugin(
-      0, GURL(), main_frame_origin, content::kFlashPluginSwfMimeType, &status,
-      &plugin, &actual_mime_type, NULL));
-  EXPECT_EQ(chrome::mojom::PluginStatus::kFlashHiddenPreferHtml, status);
-
-  PluginMetadata::SecurityStatus security_status =
-      PluginMetadata::SECURITY_STATUS_UP_TO_DATE;
-
-  context()->DecidePluginStatus(GURL(), main_frame_origin, plugin,
-                                security_status, content::kFlashPluginName,
-                                &status);
-  EXPECT_EQ(chrome::mojom::PluginStatus::kBlockedNoLoading, status);
-
-  // Now enable plugins.
-  host_content_settings_map()->SetDefaultContentSetting(
-      ContentSettingsType::PLUGINS, CONTENT_SETTING_DETECT_IMPORTANT_CONTENT);
-
-  context()->DecidePluginStatus(GURL(), main_frame_origin, plugin,
-                                security_status, content::kFlashPluginName,
-                                &status);
-  EXPECT_EQ(chrome::mojom::PluginStatus::kPlayImportantContent, status);
-}
-
-TEST_F(PluginInfoHostImplTest, RunAllFlashInAllowMode) {
-  filter_.set_plugin_enabled(fake_flash_path_, true);
-
-  // Make a real HTTP origin, as all Flash content from non-HTTP and non-FILE
-  // origins are blocked.
-  url::Origin main_frame_origin =
-      url::Origin::Create(GURL("http://example.com"));
-
-  chrome::mojom::PluginStatus status;
-  content::WebPluginInfo plugin;
-  std::string actual_mime_type;
-  ASSERT_TRUE(context()->FindEnabledPlugin(
-      0, GURL(), main_frame_origin, content::kFlashPluginSwfMimeType, &status,
-      &plugin, &actual_mime_type, nullptr));
-  ASSERT_THAT(status, Eq(chrome::mojom::PluginStatus::kAllowed));
-
-  host_content_settings_map()->SetContentSettingDefaultScope(
-      main_frame_origin.GetURL(), GURL(), ContentSettingsType::PLUGINS,
-      std::string(), CONTENT_SETTING_ALLOW);
-
-  ASSERT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kRunAllFlashInAllowMode));
-
-  PluginMetadata::SecurityStatus security_status =
-      PluginMetadata::SECURITY_STATUS_UP_TO_DATE;
-  context()->DecidePluginStatus(GURL(), main_frame_origin, plugin,
-                                security_status, content::kFlashPluginName,
-                                &status);
-  EXPECT_THAT(status, Eq(chrome::mojom::PluginStatus::kPlayImportantContent));
-
-  // Reset the status to allowed.
-  status = chrome::mojom::PluginStatus::kAllowed;
-
-  profile()->GetPrefs()->SetBoolean(prefs::kRunAllFlashInAllowMode, true);
-
-  context()->DecidePluginStatus(GURL(), main_frame_origin, plugin,
-                                security_status, content::kFlashPluginName,
-                                &status);
-  EXPECT_THAT(status, Eq(chrome::mojom::PluginStatus::kAllowed));
 }
 
 TEST_F(PluginInfoHostImplTest, PluginsOnlyAllowedInAllowlistedSchemes) {

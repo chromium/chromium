@@ -45,7 +45,6 @@ namespace util {
 namespace {
 
 const base::FilePath::CharType kPdfExtension[] = FILE_PATH_LITERAL(".pdf");
-const base::FilePath::CharType kSwfExtension[] = FILE_PATH_LITERAL(".swf");
 
 // List of file extensions viewable in the browser.
 constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
@@ -90,17 +89,6 @@ bool IsPdfPluginEnabled(Profile* profile) {
   static const base::NoDestructor<base::FilePath> plugin_path(
       ChromeContentClient::kPDFPluginPath);
   return IsPepperPluginEnabled(profile, *plugin_path);
-}
-
-bool IsFlashPluginEnabled(Profile* profile) {
-  DCHECK(profile);
-
-  base::FilePath plugin_path(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
-          switches::kPpapiFlashPath));
-  if (plugin_path.empty())
-    base::PathService::Get(chrome::FILE_PEPPER_FLASH_PLUGIN, &plugin_path);
-  return IsPepperPluginEnabled(profile, plugin_path);
 }
 
 void OpenNewTab(Profile* profile, const GURL& url) {
@@ -222,8 +210,6 @@ bool ShouldBeOpenedWithPlugin(Profile* profile,
       base::FilePath::FromUTF8Unsafe("dummy").AddExtension(file_extension);
   if (file_path.MatchesExtension(kPdfExtension) || action_id == "view-pdf")
     return IsPdfPluginEnabled(profile);
-  if (file_path.MatchesExtension(kSwfExtension))
-    return IsFlashPluginEnabled(profile);
   return false;
 }
 

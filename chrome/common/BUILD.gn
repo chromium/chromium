@@ -448,8 +448,6 @@ static_library("common") {
 
   if (enable_plugins) {
     sources += [
-      "pepper_flash.cc",
-      "pepper_flash.h",
       "plugin_utils.cc",
       "plugin_utils.h",
       "ppapi_utils.cc",
@@ -490,8 +488,6 @@ static_library("common") {
     sources += [
       "auto_start_linux.cc",
       "auto_start_linux.h",
-      "component_flash_hint_file_linux.cc",
-      "component_flash_hint_file_linux.h",
       "multi_process_lock_linux.cc",
     ]
     deps += [ "//sandbox/linux:sandbox_services" ]

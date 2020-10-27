@@ -186,9 +186,6 @@ const char kDisableAutoReload[] = "disable-auto-reload";
 // measurements.
 const char kDisableBackgroundNetworking[]   = "disable-background-networking";
 
-// Disables the bundled PPAPI version of Flash.
-const char kDisableBundledPpapiFlash[]      = "disable-bundled-ppapi-flash";
-
 // Disables the client-side phishing detection feature. Note that even if
 // client-side phishing detection is enabled, it will only be active if the
 // user has opted in to UMA stats and SafeBrowsing is enabled in the
@@ -438,14 +435,6 @@ const char kPermissionRequestApiScope[]     = "permission-request-api-scope";
 // the API is finalized.
 // TODO(bauerb): Remove when this flag is not needed anymore.
 const char kPermissionRequestApiUrl[]       = "permission-request-api-url";
-
-// Use the PPAPI (Pepper) Flash found at the given path.
-const char kPpapiFlashPath[]                = "ppapi-flash-path";
-
-// Report the given version for the PPAPI (Pepper) Flash. The version should be
-// numbers separated by '.'s (e.g., "12.3.456.78"). If not specified, it
-// defaults to "10.2.999.999".
-const char kPpapiFlashVersion[]             = "ppapi-flash-version";
 
 // Use IPv6 only for privet HTTP.
 const char kPrivetIPv6Only[]                   = "privet-ipv6-only";

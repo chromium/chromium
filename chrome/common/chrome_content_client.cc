@@ -34,7 +34,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
-#include "chrome/common/pepper_flash.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/common_resources.h"
 #include "components/crash/core/common/crash_key.h"
@@ -66,7 +65,6 @@
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <fcntl.h>
-#include "chrome/common/component_flash_hint_file_linux.h"
 #include "sandbox/linux/services/credentials.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
@@ -182,162 +180,6 @@ void ComputeBuiltInPlugins(std::vector<content::PepperPluginInfo>* plugins) {
   nacl.permissions = ppapi::PERMISSION_PRIVATE | ppapi::PERMISSION_DEV;
   plugins->push_back(nacl);
 #endif  // BUILDFLAG(ENABLE_NACL)
-}
-
-// Creates a PepperPluginInfo for the specified plugin.
-// |path| is the full path to the plugin.
-// |version| is a string representation of the plugin version.
-// |is_external| is whether the plugin is supplied external to Chrome e.g. a
-//     system installation of Adobe Flash.
-content::PepperPluginInfo CreatePepperFlashInfo(const base::FilePath& path,
-                                                const std::string& version,
-                                                bool is_external) {
-  content::PepperPluginInfo plugin;
-
-  plugin.is_out_of_process = true;
-  plugin.name = content::kFlashPluginName;
-  plugin.path = path;
-  plugin.permissions = kPepperFlashPermissions;
-  plugin.is_external = is_external;
-
-  std::vector<std::string> flash_version_numbers = base::SplitString(
-      version, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (flash_version_numbers.size() < 1)
-    flash_version_numbers.push_back("11");
-  if (flash_version_numbers.size() < 2)
-    flash_version_numbers.push_back("2");
-  if (flash_version_numbers.size() < 3)
-    flash_version_numbers.push_back("999");
-  if (flash_version_numbers.size() < 4)
-    flash_version_numbers.push_back("999");
-  // E.g., "Shockwave Flash 10.2 r154":
-  plugin.description = plugin.name + " " + flash_version_numbers[0] + "." +
-      flash_version_numbers[1] + " r" + flash_version_numbers[2];
-  plugin.version = base::JoinString(flash_version_numbers, ".");
-  content::WebPluginMimeType swf_mime_type(content::kFlashPluginSwfMimeType,
-                                           content::kFlashPluginSwfExtension,
-                                           content::kFlashPluginSwfDescription);
-  plugin.mime_types.push_back(swf_mime_type);
-  content::WebPluginMimeType spl_mime_type(content::kFlashPluginSplMimeType,
-                                           content::kFlashPluginSplExtension,
-                                           content::kFlashPluginSplDescription);
-  plugin.mime_types.push_back(spl_mime_type);
-
-  return plugin;
-}
-
-bool GetCommandLinePepperFlash(content::PepperPluginInfo* plugin) {
-  const base::CommandLine::StringType flash_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
-          switches::kPpapiFlashPath);
-  if (flash_path.empty())
-    return false;
-
-  // Also get the version from the command-line. Should be something like 11.2
-  // or 11.2.123.45.
-  std::string flash_version =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kPpapiFlashVersion);
-
-  *plugin = CreatePepperFlashInfo(base::FilePath(flash_path), flash_version,
-                                  true);
-  return true;
-}
-
-// Check if flash player exists on disk, and if so, populate a PepperPluginInfo
-// structure. Returns false if the flash player found is not compatible with the
-// system (architecture, OS, versions, etc.).
-bool TryCreatePepperFlashInfo(const base::FilePath& flash_filename,
-                              content::PepperPluginInfo* plugin) {
-  if (!base::PathExists(flash_filename))
-    return false;
-
-  base::FilePath manifest_path(
-      flash_filename.DirName().Append(FILE_PATH_LITERAL("manifest.json")));
-
-  std::string manifest_data;
-  if (!base::ReadFileToString(manifest_path, &manifest_data))
-    return false;
-
-  std::unique_ptr<base::DictionaryValue> manifest =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(
-          manifest_data, base::JSON_ALLOW_TRAILING_COMMAS));
-  if (!manifest)
-    return false;
-
-  base::Version version;
-  if (!CheckPepperFlashManifest(*manifest, &version)) {
-    LOG(ERROR) << "Browser not compatible with given flash manifest.";
-    return false;
-  }
-
-  *plugin = CreatePepperFlashInfo(flash_filename, version.GetString(), true);
-  return true;
-}
-
-#if defined(OS_CHROMEOS)
-bool GetComponentUpdatedPepperFlash(content::PepperPluginInfo* plugin) {
-  base::FilePath flash_filename;
-  if (!base::PathService::Get(chrome::FILE_CHROME_OS_COMPONENT_FLASH,
-                              &flash_filename)) {
-    return false;
-  }
-
-  // Chrome OS mounts a disk image containing component updated flash player, at
-  // boot time, if and only if a component update is present.
-  if (!base::PathExists(flash_filename))
-    return false;
-
-  return TryCreatePepperFlashInfo(flash_filename, plugin);
-}
-#elif defined(OS_LINUX)
-// This method is used on Linux only because of architectural differences in how
-// it loads the component updated flash plugin, and not because the other
-// platforms do not support component updated flash. On other platforms, the
-// component updater sends an IPC message to all threads, at undefined points in
-// time, with the URL of the component updated flash. Because the linux zygote
-// thread has no access to the file system after it warms up, it must preload
-// the component updated flash.
-bool GetComponentUpdatedPepperFlash(content::PepperPluginInfo* plugin) {
-#if defined(FLAPPER_AVAILABLE)
-  if (component_flash_hint_file::DoesHintFileExist()) {
-    base::FilePath flash_path;
-    std::string version;
-    if (component_flash_hint_file::VerifyAndReturnFlashLocation(&flash_path,
-                                                                &version)) {
-      // Test if the file can be mapped as executable. If the user's home
-      // directory is mounted noexec, the component flash plugin will not load.
-      // By testing for this, Chrome can fallback to the bundled flash plugin.
-      if (!component_flash_hint_file::TestExecutableMapping(flash_path)) {
-        LOG(WARNING) << "The component updated flash plugin could not be "
-                        "mapped as executable. Attempting to fallback to the "
-                        "bundled or system plugin.";
-        return false;
-      }
-      *plugin = CreatePepperFlashInfo(flash_path, version, false);
-      return true;
-    }
-    LOG(ERROR)
-        << "Failed to locate and load the component updated flash plugin.";
-  }
-#endif  // defined(FLAPPER_AVAILABLE)
-  return false;
-}
-#endif  // defined(OS_CHROMEOS)
-
-bool GetSystemPepperFlash(content::PepperPluginInfo* plugin) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  // Do not try and find System Pepper Flash if there is a specific path on
-  // the commmand-line.
-  if (command_line->HasSwitch(switches::kPpapiFlashPath))
-    return false;
-
-  base::FilePath flash_filename;
-  if (!base::PathService::Get(chrome::FILE_PEPPER_FLASH_SYSTEM_PLUGIN,
-                              &flash_filename))
-    return false;
-
-  return TryCreatePepperFlashInfo(flash_filename, plugin);
 }
 #endif  //  BUILDFLAG(ENABLE_PLUGINS)
 
@@ -549,53 +391,6 @@ void ChromeContentClient::AddPepperPlugins(
     std::vector<content::PepperPluginInfo>* plugins) {
 #if BUILDFLAG(ENABLE_PLUGINS)
   ComputeBuiltInPlugins(plugins);
-
-  // If flash is disabled, do not try to add any flash plugin.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool disable_bundled_flash =
-      command_line->HasSwitch(switches::kDisableBundledPpapiFlash);
-
-  std::vector<std::unique_ptr<content::PepperPluginInfo>> flash_versions;
-
-// Get component updated flash for desktop Linux and Chrome OS.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // Depending on the sandbox configuration, the file system
-  // is not always available. If it is not available, do not try and load any
-  // flash plugin. The flash player, if any, preloaded before the sandbox
-  // initialization will continue to be used.
-  if (!sandbox::Credentials::HasFileSystemAccess())
-    return;
-
-  auto component_flash = std::make_unique<content::PepperPluginInfo>();
-  if (!disable_bundled_flash &&
-      GetComponentUpdatedPepperFlash(component_flash.get()))
-    flash_versions.push_back(std::move(component_flash));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-
-  auto command_line_flash = std::make_unique<content::PepperPluginInfo>();
-  if (GetCommandLinePepperFlash(command_line_flash.get()))
-    flash_versions.push_back(std::move(command_line_flash));
-
-  auto system_flash = std::make_unique<content::PepperPluginInfo>();
-  if (GetSystemPepperFlash(system_flash.get()))
-    flash_versions.push_back(std::move(system_flash));
-
-  // This function will return only the most recent version of the flash plugin.
-  content::PepperPluginInfo* max_flash = FindMostRecentPlugin(flash_versions);
-  if (max_flash) {
-    plugins->push_back(*max_flash);
-  } else if (!disable_bundled_flash) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(FLAPPER_AVAILABLE)
-    // Add a fake Flash plugin even though it doesn't actually exist - if a
-    // web page requests it, it will be component-updated on-demand. There is
-    // nothing that guarantees the component update will give us the
-    // FLAPPER_VERSION_STRING version of Flash, but using this version seems
-    // better than any other hardcoded alternative.
-    plugins->push_back(
-        CreatePepperFlashInfo(base::FilePath(ChromeContentClient::kNotPresent),
-                              FLAPPER_VERSION_STRING, false));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(FLAPPER_AVAILABLE)
-  }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 

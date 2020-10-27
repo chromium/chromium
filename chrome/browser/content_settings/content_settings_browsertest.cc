@@ -1295,7 +1295,7 @@ IN_PROC_BROWSER_TEST_F(PepperContentSettingsSpecialCasesTest, Flash) {
                                       ContentSettingsType::PLUGINS,
                                       std::string(), CONTENT_SETTING_ALLOW);
 
-  RunLoadPepperPluginTest(content::kFlashPluginSwfMimeType, true);
+  RunLoadPepperPluginTest("application/x-shockwave-flash", true);
 }
 
 // The following tests verify that Pepper plugins that use JavaScript settings

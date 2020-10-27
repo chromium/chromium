@@ -195,16 +195,6 @@ const base::FilePath::CharType kReportingAndNelStoreFilename[] =
 const base::FilePath::CharType kJumpListIconDirname[] = FPL("JumpListIcons");
 #endif
 
-// File name of the Pepper Flash plugin on different platforms.
-const base::FilePath::CharType kPepperFlashPluginFilename[] =
-#if defined(OS_MAC)
-    FPL("PepperFlashPlayer.plugin");
-#elif defined(OS_WIN)
-    FPL("pepflashplayer.dll");
-#else  // OS_LINUX, etc.
-    FPL("libpepflashplayer.so");
-#endif
-
 // directory names
 #if defined(OS_WIN)
 const wchar_t kUserDataDirname[] = L"User Data";
