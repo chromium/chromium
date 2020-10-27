@@ -249,19 +249,21 @@ WebRect WebFrameWidgetBase::ComputeBlockBound(
   return WebRect();
 }
 
-DragOperation WebFrameWidgetBase::DragTargetDragEnter(
+void WebFrameWidgetBase::DragTargetDragEnter(
     const WebDragData& web_drag_data,
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point,
     DragOperationsMask operations_allowed,
-    uint32_t key_modifiers) {
+    uint32_t key_modifiers,
+    DragTargetDragEnterCallback callback) {
   DCHECK(!current_drag_data_);
 
   current_drag_data_ = DataObject::Create(web_drag_data);
   operations_allowed_ = operations_allowed;
 
-  return DragTargetDragEnterOrOver(point_in_viewport, screen_point, kDragEnter,
-                                   key_modifiers);
+  blink::DragOperation operation = DragTargetDragEnterOrOver(
+      point_in_viewport, screen_point, kDragEnter, key_modifiers);
+  std::move(callback).Run(operation);
 }
 
 void WebFrameWidgetBase::DragTargetDragOver(

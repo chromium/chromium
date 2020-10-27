@@ -14,7 +14,6 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/file_system_access/native_file_system_manager_impl.h"
-#include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -125,6 +124,51 @@ blink::mojom::DragDataPtr DropDataToDragData(
           : base::Optional<std::string>(
                 base::UTF16ToUTF8(drop_data.filesystem_id)),
       drop_data.referrer_policy);
+}
+
+blink::mojom::DragDataPtr DropMetaDataToDragData(
+    const std::vector<DropData::Metadata>& drop_meta_data) {
+  std::vector<blink::mojom::DragItemPtr> items;
+
+  for (const auto& meta_data_item : drop_meta_data) {
+    if (meta_data_item.kind == DropData::Kind::STRING) {
+      blink::mojom::DragItemStringPtr item =
+          blink::mojom::DragItemString::New();
+      item->string_type = base::UTF16ToUTF8(meta_data_item.mime_type);
+      // Have to pass a dummy URL here instead of an empty URL because the
+      // DropData received by browser_plugins goes through a round trip:
+      // DropData::MetaData --> WebDragData-->DropData. In the end, DropData
+      // will contain an empty URL (which means no URL is dragged) if the URL in
+      // WebDragData is empty.
+      if (base::EqualsASCII(meta_data_item.mime_type, ui::kMimeTypeURIList)) {
+        item->string_data = base::UTF8ToUTF16("about:dragdrop-placeholder");
+      }
+      items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
+      continue;
+    }
+
+    // TODO(hush): crbug.com/584789. Blink needs to support creating a file with
+    // just the mimetype. This is needed to drag files to WebView on Android
+    // platform.
+    if ((meta_data_item.kind == DropData::Kind::FILENAME) &&
+        !meta_data_item.filename.empty()) {
+      blink::mojom::DragItemFilePtr item = blink::mojom::DragItemFile::New();
+      item->path = meta_data_item.filename;
+      items.push_back(blink::mojom::DragItem::NewFile(std::move(item)));
+      continue;
+    }
+
+    if (meta_data_item.kind == DropData::Kind::FILESYSTEMFILE) {
+      blink::mojom::DragItemFileSystemFilePtr item =
+          blink::mojom::DragItemFileSystemFile::New();
+      item->url = meta_data_item.file_system_url;
+      items.push_back(
+          blink::mojom::DragItem::NewFileSystemFile(std::move(item)));
+      continue;
+    }
+  }
+  return blink::mojom::DragData::New(std::move(items), base::nullopt,
+                                     network::mojom::ReferrerPolicy::kDefault);
 }
 
 DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {

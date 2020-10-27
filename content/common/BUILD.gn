@@ -71,7 +71,6 @@ source_set("common") {
     "cursors/webcursor_aura.cc",
     "cursors/webcursor_aurawin.cc",
     "cursors/webcursor_ozone.cc",
-    "drag_messages.h",
     "fetch/fetch_api_request_proto.cc",
     "fetch/fetch_api_request_proto.h",
     "fetch/fetch_request_type_converters.cc",

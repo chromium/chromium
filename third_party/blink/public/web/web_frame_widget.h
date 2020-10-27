@@ -99,12 +99,13 @@ class WebFrameWidget : public WebWidget {
 
   // Callback methods when a drag-and-drop operation is trying to drop something
   // on the WebFrameWidget.
-  virtual DragOperation DragTargetDragEnter(
+  virtual void DragTargetDragEnter(
       const WebDragData&,
       const gfx::PointF& point_in_viewport,
       const gfx::PointF& screen_point,
       DragOperationsMask operations_allowed,
-      uint32_t key_modifiers) = 0;
+      uint32_t key_modifiers,
+      base::OnceCallback<void(blink::DragOperation)> callback) = 0;
   virtual void DragTargetDragOver(
       const gfx::PointF& point_in_viewport,
       const gfx::PointF& screen_point,

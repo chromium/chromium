@@ -32,7 +32,6 @@
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
-#include "content/public/common/drop_data.h"
 #include "content/renderer/render_widget_delegate.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
@@ -239,13 +238,6 @@ class CONTENT_EXPORT RenderWidget
 
   // RenderWidget IPC message handlers.
   void OnRequestSetBoundsAck();
-
-  void OnDragTargetDragEnter(
-      const std::vector<DropData::Metadata>& drop_meta_data,
-      const gfx::PointF& client_pt,
-      const gfx::PointF& screen_pt,
-      blink::DragOperationsMask operations_allowed,
-      int key_modifiers);
 
   // Set the pending window rect.
   // Because the real render_widget is hosted in another process, there is

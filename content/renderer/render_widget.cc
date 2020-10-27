@@ -16,9 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/ukm_manager.h"
-#include "content/common/drag_messages.h"
 #include "content/common/widget_messages.h"
-#include "content/public/common/drop_data.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/render_frame_impl.h"
@@ -26,7 +24,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
-#include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -36,9 +33,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
-using blink::DragOperation;
-using blink::DragOperationsMask;
-using blink::WebDragData;
 using blink::WebNavigationPolicy;
 using blink::WebString;
 
@@ -48,52 +42,6 @@ namespace {
 
 RenderWidget::CreateRenderWidgetFunction g_create_render_widget_for_frame =
     nullptr;
-
-WebDragData DropMetaDataToWebDragData(
-    const std::vector<DropData::Metadata>& drop_meta_data) {
-  std::vector<WebDragData::Item> item_list;
-  for (const auto& meta_data_item : drop_meta_data) {
-    if (meta_data_item.kind == DropData::Kind::STRING) {
-      WebDragData::Item item;
-      item.storage_type = WebDragData::Item::kStorageTypeString;
-      item.string_type = WebString::FromUTF16(meta_data_item.mime_type);
-      // Have to pass a dummy URL here instead of an empty URL because the
-      // DropData received by browser_plugins goes through a round trip:
-      // DropData::MetaData --> WebDragData-->DropData. In the end, DropData
-      // will contain an empty URL (which means no URL is dragged) if the URL in
-      // WebDragData is empty.
-      if (base::EqualsASCII(meta_data_item.mime_type, ui::kMimeTypeURIList)) {
-        item.string_data = WebString::FromUTF8("about:dragdrop-placeholder");
-      }
-      item_list.push_back(item);
-      continue;
-    }
-
-    // TODO(hush): crbug.com/584789. Blink needs to support creating a file with
-    // just the mimetype. This is needed to drag files to WebView on Android
-    // platform.
-    if ((meta_data_item.kind == DropData::Kind::FILENAME) &&
-        !meta_data_item.filename.empty()) {
-      WebDragData::Item item;
-      item.storage_type = WebDragData::Item::kStorageTypeFilename;
-      item.filename_data = blink::FilePathToWebString(meta_data_item.filename);
-      item_list.push_back(item);
-      continue;
-    }
-
-    if (meta_data_item.kind == DropData::Kind::FILESYSTEMFILE) {
-      WebDragData::Item item;
-      item.storage_type = WebDragData::Item::kStorageTypeFileSystemFile;
-      item.file_system_url = meta_data_item.file_system_url;
-      item_list.push_back(item);
-      continue;
-    }
-  }
-
-  WebDragData result;
-  result.SetItems(item_list);
-  return result;
-}
 
 }  // namespace
 
@@ -204,7 +152,6 @@ bool RenderWidget::OnMessageReceived(const IPC::Message& message) {
   bool handled = false;
   IPC_BEGIN_MESSAGE_MAP(RenderWidget, message)
     IPC_MESSAGE_HANDLER(WidgetMsg_SetBounds_ACK, OnRequestSetBoundsAck)
-    IPC_MESSAGE_HANDLER(DragMsg_TargetDragEnter, OnDragTargetDragEnter)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -333,23 +280,6 @@ bool RenderWidget::IsForProvisionalFrame() const {
 void RenderWidget::SetWindowRect(const gfx::Rect& window_rect) {
   Send(new WidgetHostMsg_RequestSetBounds(routing_id_, window_rect));
   SetPendingWindowRect(window_rect);
-}
-
-void RenderWidget::OnDragTargetDragEnter(
-    const std::vector<DropData::Metadata>& drop_meta_data,
-    const gfx::PointF& client_point,
-    const gfx::PointF& screen_point,
-    DragOperationsMask ops,
-    int key_modifiers) {
-  blink::WebFrameWidget* frame_widget = GetFrameWidget();
-  if (!frame_widget)
-    return;
-
-  DragOperation operation = frame_widget->DragTargetDragEnter(
-      DropMetaDataToWebDragData(drop_meta_data), client_point, screen_point,
-      ops, key_modifiers);
-
-  Send(new DragHostMsg_UpdateDragCursor(routing_id(), operation));
 }
 
 void RenderWidget::ConvertViewportToWindow(blink::WebRect* rect) {

@@ -36,8 +36,27 @@ interface FrameWidget {
   // |point_in_viewport| is the position of the drag event in the viewport
   // coordinates.
   // |screen_point| is the absolute position of the mouse pointer.
+  // |key_modifiers| the event/keyboard modifiers that are active during the
+  // operation. See WebInputEvent::Modifiers.
 
-  // Notifies the Widget of a drag over operation.
+  // Notifies the Widget of a drag enter operation. |drag_data| only
+  // contains a subset of the actual drag data the browser has and it
+  // used to only start the drag action. Once the item is dropped |drag_data|
+  // will be provided with the complete data. Once the renderer has
+  // completed processing the event the callback is called with the type of
+  // the current drag operation that is active and the browser will update
+  // the mouse cursor displayed to the user.
+  DragTargetDragEnter(DragData drag_data,
+                      gfx.mojom.PointF point_in_viewport,
+                      gfx.mojom.PointF screen_point,
+                      AllowedDragOperations operations_allowed,
+                      uint32 key_modifiers)
+      => (DragOperation operation);
+
+  // Notifies the Widget of a drag over operation. Once the renderer has
+  // completed processing the event the callback is called with the type of
+  // the current drag operation that is active and the browser will update
+  // the mouse cursor displayed to the user.
   DragTargetDragOver(gfx.mojom.PointF point_in_viewport,
                      gfx.mojom.PointF screen_point,
                      AllowedDragOperations operations_allowed,

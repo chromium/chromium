@@ -1332,12 +1332,18 @@ void EventSender::DoDragDrop(const WebDragData& drag_data,
 
   current_drag_data_ = drag_data;
   current_drag_effects_allowed_ = mask;
-  current_drag_effect_ = MainFrameWidget()->DragTargetDragEnter(
+  MainFrameWidget()->DragTargetDragEnter(
       drag_data, event.PositionInWidget(), event.PositionInScreen(),
       current_drag_effects_allowed_,
       ModifiersWithButtons(
           current_pointer_state_[kRawMousePointerId].modifiers_,
-          current_pointer_state_[kRawMousePointerId].current_buttons_));
+          current_pointer_state_[kRawMousePointerId].current_buttons_),
+      base::BindOnce(
+          [](base::WeakPtr<EventSender> sender, blink::DragOperation op) {
+            if (sender)
+              sender->current_drag_effect_ = op;
+          },
+          weak_factory_.GetWeakPtr()));
 
   // Finish processing events.
   ReplaySavedEvents();
@@ -1919,9 +1925,9 @@ void EventSender::BeginDragWithItems(
       current_pointer_state_[kRawMousePointerId].last_pos_;
 
   // Provide a drag source.
-  MainFrameWidget()->DragTargetDragEnter(*current_drag_data_, last_pos,
-                                         last_pos,
-                                         current_drag_effects_allowed_, 0);
+  MainFrameWidget()->DragTargetDragEnter(
+      *current_drag_data_, last_pos, last_pos, current_drag_effects_allowed_, 0,
+      base::DoNothing());
   // |is_drag_mode_| saves events and then replays them later. We don't
   // need/want that.
   is_drag_mode_ = false;

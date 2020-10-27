@@ -258,11 +258,6 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // WebFrameWidget implementation.
   WebLocalFrame* LocalRoot() const override;
-  DragOperation DragTargetDragEnter(const WebDragData&,
-                                    const gfx::PointF& point_in_viewport,
-                                    const gfx::PointF& screen_point,
-                                    DragOperationsMask operations_allowed,
-                                    uint32_t key_modifiers) override;
   void SendOverscrollEventFromImplSide(
       const gfx::Vector2dF& overscroll_delta,
       cc::ElementId scroll_latched_element_id) override;
@@ -375,6 +370,12 @@ class CORE_EXPORT WebFrameWidgetBase
   KURL GetURLForDebugTrace() override;
 
   // mojom::blink::FrameWidget methods.
+  void DragTargetDragEnter(const WebDragData&,
+                           const gfx::PointF& point_in_viewport,
+                           const gfx::PointF& screen_point,
+                           DragOperationsMask operations_allowed,
+                           uint32_t key_modifiers,
+                           DragTargetDragEnterCallback callback) override;
   void DragTargetDragOver(const gfx::PointF& point_in_viewport,
                           const gfx::PointF& screen_point,
                           DragOperationsMask operations_allowed,

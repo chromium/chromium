@@ -36,6 +36,13 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   base::Optional<bool> GetActive() const;
 
  private:
+  void DragTargetDragEnter(
+      blink::mojom::DragDataPtr drag_data,
+      const gfx::PointF& point_in_viewport,
+      const gfx::PointF& screen_point,
+      blink::DragOperationsMask operations_allowed,
+      uint32_t key_modifiers,
+      base::OnceCallback<void(blink::DragOperation)> callback) override {}
   void DragTargetDragOver(const gfx::PointF& point_in_viewport,
                           const gfx::PointF& screen_point,
                           blink::DragOperationsMask operations_allowed,
