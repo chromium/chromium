@@ -8,10 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -19,9 +15,6 @@ import android.os.Build;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -42,9 +35,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BackgroundTaskSchedulerPrefsTest {
-    @Spy
-    private BackgroundTaskSchedulerUma mUmaSpy;
-
     private TaskInfo mTask1;
     private TaskInfo mTask2;
 
@@ -57,10 +47,6 @@ public class BackgroundTaskSchedulerPrefsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        BackgroundTaskSchedulerUma.setInstanceForTesting(mUmaSpy);
-        doNothing().when(mUmaSpy).assertNativeIsLoaded();
-
         TaskInfo.TimingInfo timingInfo1 =
                 TaskInfo.OneOffInfo.create().setWindowEndTimeMs(TimeUnit.DAYS.toMillis(1)).build();
         mTask1 = TaskInfo.createTask(TaskIds.TEST, timingInfo1).build();
@@ -213,13 +199,6 @@ public class BackgroundTaskSchedulerPrefsTest {
         editor.apply();
 
         BackgroundTaskSchedulerPrefs.migrateStoredTasksToProto();
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.MigrationToProto"),
-                        ArgumentMatchers.eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.MigrationToProto"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_OFFLINE_PAGES));
 
         Set<Integer> taskIds = BackgroundTaskSchedulerPrefs.getScheduledTaskIds();
         assertTrue(taskIds.contains(mTask1.getTaskId()));
@@ -230,12 +209,5 @@ public class BackgroundTaskSchedulerPrefsTest {
                         .getClass());
 
         BackgroundTaskSchedulerPrefs.migrateStoredTasksToProto();
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.MigrationToProto"),
-                        ArgumentMatchers.eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.MigrationToProto"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_OFFLINE_PAGES));
     }
 }

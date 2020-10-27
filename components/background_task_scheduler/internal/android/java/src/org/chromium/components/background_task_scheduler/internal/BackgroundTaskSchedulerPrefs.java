@@ -95,7 +95,6 @@ public class BackgroundTaskSchedulerPrefs {
                 }
                 editor.putString(
                         String.valueOf(parsed.getTaskId()), getEmptySerializedScheduledTaskProto());
-                BackgroundTaskSchedulerUma.getInstance().reportMigrationToProto(parsed.getTaskId());
             }
             editor.apply();
         }

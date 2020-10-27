@@ -115,7 +115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.ExactTaskCreated"
-    enum="BackgroundTaskId" expires_after="2020-12-01">
+    enum="BackgroundTaskId" expires_after="M91">
   <owner>ioanastefan@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
@@ -127,6 +127,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.BackgroundTaskScheduler.MigrationToProto"
     enum="BackgroundTaskId" expires_after="2020-12-01">
+  <obsolete>
+    Removed in October 2020.
+  </obsolete>
   <owner>ioanastefan@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
