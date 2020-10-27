@@ -550,8 +550,9 @@ std::unique_ptr<WebContents> PrerenderContents::ReleasePrerenderContents() {
 }
 
 RenderViewHost* PrerenderContents::GetRenderViewHost() {
-  return prerender_contents_ ? prerender_contents_->GetRenderViewHost()
-                             : nullptr;
+  return prerender_contents_
+             ? prerender_contents_->GetMainFrame()->GetRenderViewHost()
+             : nullptr;
 }
 
 std::unique_ptr<base::DictionaryValue> PrerenderContents::GetAsValue() const {
