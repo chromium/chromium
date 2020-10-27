@@ -35,6 +35,10 @@ class CORE_EXPORT TimeZoneController final
     TimeZoneOverride() = default;
 
    public:
+    void change(const String& timezone_id) {
+      ChangeTimeZoneOverride(timezone_id);
+    }
+
     ~TimeZoneOverride() { ClearTimeZoneOverride(); }
   };
 
@@ -49,6 +53,7 @@ class CORE_EXPORT TimeZoneController final
   TimeZoneController();
   static TimeZoneController& instance();
   static void ClearTimeZoneOverride();
+  static void ChangeTimeZoneOverride(const String&);
 
   // device::mojom::blink::TimeZoneMonitorClient:
   void OnTimeZoneChange(const String& timezone_id) override;
@@ -58,7 +63,7 @@ class CORE_EXPORT TimeZoneController final
   mojo::Receiver<device::mojom::blink::TimeZoneMonitorClient> receiver_{this};
 
   String host_timezone_id_;
-  bool has_timezone_id_override_ = false;
+  String override_timezone_id_;
 };
 
 }  // namespace blink

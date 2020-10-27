@@ -604,9 +604,14 @@ Response InspectorEmulationAgent::setLocaleOverride(
 
 Response InspectorEmulationAgent::setTimezoneOverride(
     const String& timezone_id) {
-  timezone_override_.reset();
-  if (!timezone_id.IsEmpty()) {
-    timezone_override_ = TimeZoneController::SetTimeZoneOverride(timezone_id);
+  if (timezone_id.IsEmpty()) {
+    timezone_override_.reset();
+  } else {
+    if (timezone_override_) {
+      timezone_override_->change(timezone_id);
+    } else {
+      timezone_override_ = TimeZoneController::SetTimeZoneOverride(timezone_id);
+    }
     if (!timezone_override_) {
       return TimeZoneController::HasTimeZoneOverride()
                  ? Response::ServerError(

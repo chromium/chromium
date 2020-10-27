@@ -123,39 +123,82 @@ TimeZoneController& TimeZoneController::instance() {
   return instance;
 }
 
+bool CanonicalEquals(const String& time_zone_a, const String& time_zone_b) {
+  if (time_zone_a == time_zone_b) {
+    return true;
+  }
+  icu::UnicodeString canonical_a, canonical_b;
+  UErrorCode status = U_ZERO_ERROR;
+  UBool dummy;
+  icu::TimeZone::getCanonicalID(
+      icu::UnicodeString(time_zone_a.Ascii().data(), -1, US_INV), canonical_a,
+      dummy, status);
+  icu::TimeZone::getCanonicalID(
+      icu::UnicodeString(time_zone_b.Ascii().data(), -1, US_INV), canonical_b,
+      dummy, status);
+  if (U_FAILURE(status)) {
+    return false;
+  }
+  return canonical_a == canonical_b;
+}
+
 // static
 std::unique_ptr<TimeZoneController::TimeZoneOverride>
 TimeZoneController::SetTimeZoneOverride(const String& timezone_id) {
   DCHECK(!timezone_id.IsEmpty());
-  if (instance().has_timezone_id_override_) {
+  if (HasTimeZoneOverride()) {
     VLOG(1) << "Cannot override existing timezone override.";
     return nullptr;
   }
 
-  if (!SetIcuTimeZoneAndNotifyV8(timezone_id)) {
-    VLOG(1) << "Invalid override timezone id: " << timezone_id;
-    return nullptr;
+  // Only notify if the override and the host are different.
+  if (!CanonicalEquals(timezone_id, instance().host_timezone_id_)) {
+    if (!SetIcuTimeZoneAndNotifyV8(timezone_id)) {
+      VLOG(1) << "Invalid override timezone id: " << timezone_id;
+      return nullptr;
+    }
   }
-  instance().has_timezone_id_override_ = true;
+  instance().override_timezone_id_ = timezone_id;
 
   return std::unique_ptr<TimeZoneOverride>(new TimeZoneOverride());
 }
 
 // static
 bool TimeZoneController::HasTimeZoneOverride() {
-  return instance().has_timezone_id_override_;
+  return !instance().override_timezone_id_.IsEmpty();
 }
 
 // static
 void TimeZoneController::ClearTimeZoneOverride() {
-  DCHECK(instance().has_timezone_id_override_);
+  DCHECK(HasTimeZoneOverride());
 
-  instance().has_timezone_id_override_ = false;
-
-  // Restore remembered timezone request.
-  SetIcuTimeZoneAndNotifyV8(instance().host_timezone_id_);
+  if (!CanonicalEquals(instance().host_timezone_id_,
+                       instance().override_timezone_id_)) {
+    // Restore remembered timezone request.
+    // Only do so if the host timezone is now different.
+    SetIcuTimeZoneAndNotifyV8(instance().host_timezone_id_);
+  }
+  instance().override_timezone_id_ = String();
 }
 
+// static
+void TimeZoneController::ChangeTimeZoneOverride(const String& timezone_id) {
+  DCHECK(!timezone_id.IsEmpty());
+  if (!HasTimeZoneOverride()) {
+    VLOG(1) << "Cannot change if there are no existing timezone override.";
+    return;
+  }
+
+  if (CanonicalEquals(instance().override_timezone_id_, timezone_id)) {
+    return;
+  }
+
+  if (!SetIcuTimeZoneAndNotifyV8(timezone_id)) {
+    VLOG(1) << "Invalid override timezone id: " << timezone_id;
+    return;
+  }
+  instance().override_timezone_id_ = timezone_id;
+}
 void TimeZoneController::OnTimeZoneChange(const String& timezone_id) {
   DCHECK(IsMainThread());
 
@@ -163,7 +206,7 @@ void TimeZoneController::OnTimeZoneChange(const String& timezone_id) {
   // override is removed.
   instance().host_timezone_id_ = timezone_id;
 
-  if (!instance().has_timezone_id_override_)
+  if (!HasTimeZoneOverride())
     SetIcuTimeZoneAndNotifyV8(timezone_id);
 }
 
@@ -171,5 +214,4 @@ void TimeZoneController::OnTimeZoneChange(const String& timezone_id) {
 void TimeZoneController::ChangeTimeZoneForTesting(const String& timezone) {
   instance().OnTimeZoneChange(timezone);
 }
-
 }  // namespace blink
