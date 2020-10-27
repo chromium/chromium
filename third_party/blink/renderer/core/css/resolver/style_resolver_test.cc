@@ -593,6 +593,64 @@ TEST_F(StyleResolverTest, NoFetchForAtPage) {
   EXPECT_TRUE(To<CSSImageValue>(bg_img_list->Item(0)).IsCachePending());
 }
 
+TEST_F(StyleResolverTest, NoFetchForHighlightPseudoElements) {
+  ScopedCSSTargetTextPseudoElementForTest scoped_feature(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body::target-text, body::selection {
+        color: green;
+        background-image: url(bg-img.png);
+        cursor: url(cursor.ico), auto;
+      }
+    </style>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* body = GetDocument().body();
+  ASSERT_TRUE(body);
+  const auto* element_style = body->GetComputedStyle();
+  ASSERT_TRUE(element_style);
+
+  scoped_refptr<ComputedStyle> target_text_style =
+      GetDocument().GetStyleResolver().PseudoStyleForElement(
+          GetDocument().body(), PseudoElementStyleRequest(kPseudoIdTargetText),
+          element_style, element_style);
+  ASSERT_TRUE(target_text_style);
+
+  scoped_refptr<ComputedStyle> selection_style =
+      GetDocument().GetStyleResolver().PseudoStyleForElement(
+          GetDocument().body(), PseudoElementStyleRequest(kPseudoIdSelection),
+          element_style, element_style);
+  ASSERT_TRUE(selection_style);
+
+  // Check that we don't fetch the cursor url() for ::target-text.
+  CursorList* cursor_list = target_text_style->Cursors();
+  ASSERT_TRUE(cursor_list->size());
+  CursorData& current_cursor = cursor_list->at(0);
+  StyleImage* image = current_cursor.GetImage();
+  ASSERT_TRUE(image);
+  EXPECT_TRUE(image->IsPendingImage());
+
+  for (const auto* pseudo_style :
+       {target_text_style.get(), selection_style.get()}) {
+    // Check that the color applies.
+    EXPECT_EQ(Color(0, 128, 0),
+              pseudo_style->VisitedDependentColor(GetCSSPropertyColor()));
+
+    // Check that the background-image does not apply.
+    const CSSValue* computed_value = ComputedStyleUtils::ComputedPropertyValue(
+        GetCSSPropertyBackgroundImage(), *pseudo_style);
+    const CSSValueList* list = DynamicTo<CSSValueList>(computed_value);
+    ASSERT_TRUE(list);
+    ASSERT_EQ(1u, list->length());
+    const auto* keyword = DynamicTo<CSSIdentifierValue>(list->Item(0));
+    ASSERT_TRUE(keyword);
+    EXPECT_EQ(CSSValueID::kNone, keyword->GetValueID());
+  }
+}
+
 TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

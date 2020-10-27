@@ -1434,6 +1434,8 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     filter = filter.Add(CSSProperty::kIsAffectedByForcedColors, true);
   if (state.Style()->StyleType() == kPseudoIdMarker)
     filter = filter.Add(CSSProperty::kValidForMarker, false);
+  if (IsHighlightPseudoElement(state.Style()->StyleType()))
+    filter = filter.Add(CSSProperty::kValidForHighlight, false);
   filter = filter.Add(CSSProperty::kAnimation, true);
 
   cascade.Apply(filter);

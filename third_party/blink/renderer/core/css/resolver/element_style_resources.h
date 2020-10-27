@@ -74,17 +74,17 @@ class ElementStyleResources {
       const cssvalue::CSSURIValue&,
       AllowExternal = kDontAllowExternalResource) const;
 
-  void LoadPendingResources(ComputedStyle*);
+  void LoadPendingResources(ComputedStyle&);
 
  private:
   StyleImage* GeneratedOrPendingFromValue(CSSPropertyID,
                                           const CSSImageGeneratorValue&);
 
-  void LoadPendingSVGResources(ComputedStyle*);
-  void LoadPendingImages(ComputedStyle*);
+  void LoadPendingSVGResources(ComputedStyle&);
+  void LoadPendingImages(ComputedStyle&);
 
   StyleImage* LoadPendingImage(
-      ComputedStyle*,
+      ComputedStyle&,
       StylePendingImage*,
       FetchParameters::ImageRequestBehavior,
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet);

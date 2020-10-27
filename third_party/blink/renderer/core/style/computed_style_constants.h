@@ -80,6 +80,10 @@ enum PseudoId : uint8_t {
   kFirstInternalPseudoId = kPseudoIdFirstLineInherited,
 };
 
+inline bool IsHighlightPseudoElement(PseudoId pseudo_id) {
+  return pseudo_id == kPseudoIdSelection || pseudo_id == kPseudoIdTargetText;
+}
+
 enum class OutlineIsAuto : bool { kOff = false, kOn = true };
 
 // Random visual rendering model attributes. Not inherited.

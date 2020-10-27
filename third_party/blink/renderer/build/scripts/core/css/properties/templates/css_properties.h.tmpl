@@ -51,6 +51,7 @@ namespace {{namespace}} {
   (property.is_border and 'kBorder' or ''),
   (property.computed_value_comparable and 'kComputedValueComparable' or ''),
   (property.tree_scoped_value and 'kTreeScopedValue' or ''),
+  (property.valid_for_highlight and 'kValidForHighlight' or ''),
 ] | reject('==', '') | join(' | ') %}
 {% set ctor_args = (not is_alias and [property_id, flags, separator] or []) %}
 // {{property.name}}

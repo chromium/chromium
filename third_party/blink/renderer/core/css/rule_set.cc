@@ -51,14 +51,23 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
     const CSSSelector& selector) {
   for (const CSSSelector* component = &selector; component;
        component = component->TagHistory()) {
-    if (component->GetPseudoType() == CSSSelector::kPseudoCue ||
-        (component->Match() == CSSSelector::kPseudoElement &&
-         component->Value() == TextTrackCue::CueShadowPseudoId()))
+    if (component->Match() == CSSSelector::kPseudoElement &&
+        component->Value() == TextTrackCue::CueShadowPseudoId()) {
       return ValidPropertyFilter::kCue;
-    if (component->GetPseudoType() == CSSSelector::kPseudoFirstLetter)
-      return ValidPropertyFilter::kFirstLetter;
-    if (component->GetPseudoType() == CSSSelector::kPseudoMarker)
-      return ValidPropertyFilter::kMarker;
+    }
+    switch (component->GetPseudoType()) {
+      case CSSSelector::kPseudoCue:
+        return ValidPropertyFilter::kCue;
+      case CSSSelector::kPseudoFirstLetter:
+        return ValidPropertyFilter::kFirstLetter;
+      case CSSSelector::kPseudoMarker:
+        return ValidPropertyFilter::kMarker;
+      case CSSSelector::kPseudoSelection:
+      case CSSSelector::kPseudoTargetText:
+        return ValidPropertyFilter::kHighlight;
+      default:
+        break;
+    }
   }
   return ValidPropertyFilter::kNoFilter;
 }

@@ -479,6 +479,14 @@
       valid_type: "bool",
     },
 
+    // - valid_for_highlight: true
+    //
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
+    valid_for_highlight: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - is_border
     // The property, when used by the author, will disable any native
     // appearance on UI elements.
@@ -714,6 +722,7 @@
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight: true,
     },
     {
       name: "direction",
@@ -969,6 +978,7 @@
       keywords: ["auto", "none"],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      valid_for_highlight: true,
     },
     {
       name: "-webkit-locale",
@@ -1201,6 +1211,7 @@
       affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_highlight: true,
       is_background: true,
     },
     {
@@ -1742,6 +1753,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       keywords: ["auto", "currentcolor"],
       typedom_types: ["Keyword"],
+      valid_for_highlight: true,
     },
     {
       name: "clear",
@@ -1823,6 +1835,7 @@
       type_name: "Vector<AtomicString>",
       default_value: "Vector<AtomicString, 0>()",
       field_template: "external",
+      valid_for_highlight: true,
     },
     {
       name: "column-fill",
@@ -1919,7 +1932,8 @@
       ],
       default_value: "auto",
       style_builder_custom_functions: ["initial", "inherit", "value"],
-      typedom_types: ["Keyword"]
+      typedom_types: ["Keyword"],
+      valid_for_highlight: true,
     },
     {
       name: "cx",
@@ -1988,6 +2002,7 @@
       getter: "FillPaint",
       converter: "ConvertSVGPaint",
       affected_by_forced_colors: true,
+      valid_for_highlight: true,
     },
     {
       name: "fill-opacity",
@@ -3474,6 +3489,7 @@
       getter: "StrokePaint",
       converter: "ConvertSVGPaint",
       affected_by_forced_colors: true,
+      valid_for_highlight: true,
     },
     {
       name: "stroke-dasharray",
@@ -3542,7 +3558,8 @@
       inherited: true,
       svg: true,
       converter: "ConvertUnzoomedLength",
-      typedom_types: ["Length", "Percentage"]
+      typedom_types: ["Length", "Percentage"],
+      valid_for_highlight: true,
     },
     {
       name: "table-layout",
@@ -3632,6 +3649,7 @@
       affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_highlight: true,
       computed_value_comparable: true,
     },
     {
@@ -3647,6 +3665,7 @@
       converter: "ConvertFlags<TextDecoration>",
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_highlight: true,
       computed_value_comparable: true,
     },
     {
@@ -3661,6 +3680,7 @@
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight: true,
       computed_value_comparable: true,
     },
     {
@@ -3673,6 +3693,7 @@
       default_value: "solid",
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_highlight: true,
       computed_value_comparable: true,
     },
     {
@@ -3689,6 +3710,7 @@
       keywords: ["auto", "from-font"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_highlight: true,
       computed_value_comparable: true,
     },
     {
@@ -3744,6 +3766,7 @@
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight: true,
     },
     {
       name: "text-size-adjust",
@@ -4461,6 +4484,7 @@
       style_builder_template: "color",
       affected_by_forced_colors: true,
       valid_for_marker: true,
+      valid_for_highlight: true,
     },
     {
       name: "-webkit-text-emphasis-position",
@@ -4493,6 +4517,7 @@
       computed_style_custom_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
+      valid_for_highlight: true,
     },
     {
       name: "-webkit-text-security",
@@ -4516,6 +4541,7 @@
       computed_style_custom_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
+      valid_for_highlight: true,
     },
     {
       name: "-webkit-text-stroke-width",
@@ -4526,6 +4552,7 @@
       default_value: "0",
       type_name: "float",
       converter: "ConvertTextStrokeWidth",
+      valid_for_highlight: true,
     },
     {
       name: "-webkit-transform-origin-x",
@@ -5744,6 +5771,7 @@
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight: true,
     },
     {
       name: "-internal-visited-caret-color",
@@ -5761,6 +5789,7 @@
       style_builder_template_args: {
         initial_color: "StyleAutoColor::AutoColor",
       },
+      valid_for_highlight: true,
     },
     {
       name: "-internal-visited-column-rule-color",
@@ -5794,6 +5823,7 @@
       affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_highlight: true,
     },
     {
       name: "-internal-visited-border-left-color",
@@ -5906,6 +5936,7 @@
       getter: "FillPaint",
       converter: "ConvertSVGPaint",
       affected_by_forced_colors: true,
+      valid_for_highlight: true,
     },
     {
       name: "-internal-visited-outline-color",
@@ -5933,6 +5964,7 @@
       getter: "StrokePaint",
       converter: "ConvertSVGPaint",
       affected_by_forced_colors: true,
+      valid_for_highlight: true,
     },
     {
       name: "-internal-visited-text-decoration-color",
@@ -5949,6 +5981,7 @@
       affected_by_forced_colors: true,
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_highlight: true,
     },
     {
       name: "-internal-visited-text-emphasis-color",
@@ -5964,6 +5997,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       affected_by_forced_colors: true,
+      valid_for_highlight: true,
     },
     {
       name: "-internal-visited-text-fill-color",
@@ -5978,6 +6012,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      valid_for_highlight: true,
     },
     {
       name: "-internal-visited-text-stroke-color",
@@ -5992,6 +6027,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      valid_for_highlight: true,
     },
 
     // Name: -internal-empty-line-height:

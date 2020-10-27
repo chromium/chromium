@@ -50,7 +50,7 @@ struct CORE_EXPORT MatchedProperties {
 
   struct Data {
     unsigned link_match_type : 2;
-    unsigned valid_property_filter : 2;
+    unsigned valid_property_filter : 3;
     CascadeOrigin origin;
     // This is approximately equivalent to the 'shadow-including tree order'.
     // It can be used to evaluate the 'Shadow Tree' criteria. Note that the

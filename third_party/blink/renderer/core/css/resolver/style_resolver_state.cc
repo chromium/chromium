@@ -155,7 +155,13 @@ void StyleResolverState::LoadPendingResources() {
       StyleRef().IsEnsuredOutsideFlatTree())
     return;
 
-  element_style_resources_.LoadPendingResources(Style());
+  if (StyleRef().StyleType() == kPseudoIdTargetText) {
+    // Do not load any resources for ::target-text since that could leak text
+    // content to external stylesheets.
+    return;
+  }
+
+  element_style_resources_.LoadPendingResources(StyleRef());
 }
 
 const FontDescription& StyleResolverState::ParentFontDescription() const {

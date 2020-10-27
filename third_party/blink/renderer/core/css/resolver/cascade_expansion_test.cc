@@ -453,6 +453,25 @@ TEST_F(CascadeExpansionTest, FilterMarker) {
   EXPECT_TRUE(e.AtEnd());
 }
 
+TEST_F(CascadeExpansionTest, FilterHighlight) {
+  MatchResult result;
+  result.FinishAddingUARules();
+  result.FinishAddingUserRules();
+  result.AddMatchedProperties(
+      ParseDeclarationBlock("display:block;background-color:lime;"),
+      CSSSelector::kMatchAll, ValidPropertyFilter::kHighlight);
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
+
+  auto e = ExpansionAt(result, 0);
+  ASSERT_FALSE(e.AtEnd());
+  EXPECT_EQ(CSSPropertyID::kBackgroundColor, e.Id());
+  e.Next();
+  ASSERT_FALSE(e.AtEnd());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor, e.Id());
+  e.Next();
+  EXPECT_TRUE(e.AtEnd());
+}
+
 TEST_F(CascadeExpansionTest, FilterAllNonInherited) {
   MatchResult result;
   result.FinishAddingUARules();

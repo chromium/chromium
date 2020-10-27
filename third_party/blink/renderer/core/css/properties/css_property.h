@@ -56,6 +56,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsValidForFirstLetter() const { return flags_ & kValidForFirstLetter; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
+  bool IsValidForHighlight() const { return flags_ & kValidForHighlight; }
   bool IsSurrogate() const { return flags_ & kSurrogate; }
   bool AffectsFont() const { return flags_ & kAffectsFont; }
   bool IsBackground() const { return flags_ & kBackground; }
@@ -152,6 +153,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kComputedValueComparable = 1 << 18,
     // Set if the property values are tree-scoped references.
     kTreeScopedValue = 1 << 19,
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
+    kValidForHighlight = 1 << 20,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

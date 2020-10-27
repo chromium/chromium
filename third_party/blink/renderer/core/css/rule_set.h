@@ -58,6 +58,10 @@ enum class ValidPropertyFilter : unsigned {
   // Defined in a ::marker pseudo-element scope. Only properties listed in
   // https://drafts.csswg.org/css-pseudo-4/#marker-pseudo are valid.
   kMarker,
+  // Defined in a highlight pseudo-element scope like ::selection and
+  // ::target-text. Only properties listed in
+  // https://drafts.csswg.org/css-pseudo-4/#highlight-styling are valid.
+  kHighlight,
 };
 
 class CSSSelector;
@@ -151,8 +155,8 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   unsigned specificity_ : 24;
   unsigned link_match_type_ : 2;
   unsigned has_document_security_origin_ : 1;
-  unsigned valid_property_filter_ : 2;
-  // 29 bits above
+  unsigned valid_property_filter_ : 3;
+  // 30 bits above
   // Use plain array instead of a Vector to minimize memory overhead.
   unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
 };

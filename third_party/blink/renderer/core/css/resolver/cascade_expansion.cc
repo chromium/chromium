@@ -24,6 +24,8 @@ CascadeFilter AddValidPropertiesFilter(
       return filter.Add(CSSProperty::kValidForFirstLetter, false);
     case ValidPropertyFilter::kMarker:
       return filter.Add(CSSProperty::kValidForMarker, false);
+    case ValidPropertyFilter::kHighlight:
+      return filter.Add(CSSProperty::kValidForHighlight, false);
   }
 }
 
