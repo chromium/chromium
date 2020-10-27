@@ -656,9 +656,6 @@ void MakeCredentialRequestHandler::HandleResponse(
   if (options_.resident_key == ResidentKeyRequirement::kPreferred &&
       request->resident_key_required &&
       status == CtapDeviceResponseCode::kCtap2ErrKeyStoreFull) {
-    // TODO(crbug/1117630): This probably requires a second touch and we should
-    // add UI for that. PR #962 aims to change CTAP2.1 to return this error
-    // before UP, so we might need to gate this on the supported CTAP version.
     FIDO_LOG(DEBUG) << "Downgrading rk=preferred to non-resident credential "
                        "because key storage is full";
     request->resident_key_required = false;
@@ -816,14 +813,16 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       request->user_verification = UserVerificationRequirement::kRequired;
       break;
     case ResidentKeyRequirement::kPreferred: {
-      // Create a resident key if the authenticator supports it and the UI is
-      // capable of prompting for PIN/UV.
+      // Create a resident key if the authenticator supports it, has sufficient
+      // storage space for another credential, and we can obtain UV via client
+      // PIN or an internal modality.
       request->resident_key_required =
 #if defined(OS_WIN)
           // Windows does not yet support rk=preferred.
           !authenticator->IsWinNativeApiAuthenticator() &&
 #endif
           auth_options && auth_options->supports_resident_key &&
+          !authenticator->DiscoverableCredentialStorageFull() &&
           (observer()->SupportsPIN() ||
            auth_options->user_verification_availability ==
                AuthenticatorSupportedOptions::UserVerificationAvailability::

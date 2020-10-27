@@ -232,6 +232,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // they work.
   virtual base::Optional<base::span<const int32_t>> GetAlgorithms();
 
+  // DiscoverableCredentialStorageFull returns true if creation of a
+  // discoverable credential is likely to fail because authenticator storage is
+  // exhausted. Even if this method returns false, credential creation may still
+  // fail with `CTAP2_ERR_KEY_STORE_FULL` on some authenticators.
+  virtual bool DiscoverableCredentialStorageFull() const;
+
   // Reset triggers a reset operation on the authenticator. This erases all
   // stored resident keys and any configured PIN.
   virtual void Reset(ResetCallback callback);

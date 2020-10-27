@@ -50,15 +50,6 @@ base::Optional<Ctap2Version> ConvertStringToCtap2Version(
   return base::nullopt;
 }
 
-// Converts a CBOR unsigned integer value to a uint32_t. The conversion is
-// clamped at uint32_max.
-uint32_t CBORUnsignedToUint32Safe(const cbor::Value& value) {
-  DCHECK(value.is_unsigned());
-  constexpr uint32_t uint32_max = std::numeric_limits<uint32_t>::max();
-  const int64_t n = value.GetUnsigned();
-  return n > uint32_max ? uint32_max : n;
-}
-
 }  // namespace
 
 using CBOR = cbor::Value;
@@ -82,12 +73,12 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
     return base::nullopt;
 
   const auto& decoded_map = cbor->GetMap();
-  auto it = decoded_map.find(CBOR(1));
+  auto it = decoded_map.find(CBOR(0x01));
   if (it == decoded_map.end() || !it->second.is_string())
     return base::nullopt;
   auto format = it->second.GetString();
 
-  it = decoded_map.find(CBOR(2));
+  it = decoded_map.find(CBOR(0x02));
   if (it == decoded_map.end() || !it->second.is_bytestring())
     return base::nullopt;
 
@@ -96,7 +87,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
   if (!authenticator_data)
     return base::nullopt;
 
-  it = decoded_map.find(CBOR(3));
+  it = decoded_map.find(CBOR(0x03));
   if (it == decoded_map.end() || !it->second.is_map())
     return base::nullopt;
 
@@ -106,7 +97,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
                         std::make_unique<OpaqueAttestationStatement>(
                             format, it->second.Clone())));
 
-  it = decoded_map.find(CBOR(4));
+  it = decoded_map.find(CBOR(0x04));
   if (it != decoded_map.end()) {
     if (!it->second.is_bool()) {
       return base::nullopt;
@@ -121,7 +112,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
     }
   }
 
-  it = decoded_map.find(CBOR(5));
+  it = decoded_map.find(CBOR(0x05));
   if (it != decoded_map.end()) {
     if (!it->second.is_bytestring() ||
         it->second.GetBytestring().size() != kLargeBlobKeyLength) {
@@ -141,7 +132,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
 
   auto& response_map = cbor->GetMap();
 
-  auto it = response_map.find(CBOR(2));
+  auto it = response_map.find(CBOR(0x02));
   if (it == response_map.end() || !it->second.is_bytestring())
     return base::nullopt;
 
@@ -150,7 +141,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
   if (!auth_data)
     return base::nullopt;
 
-  it = response_map.find(CBOR(3));
+  it = response_map.find(CBOR(0x03));
   if (it == response_map.end() || !it->second.is_bytestring())
     return base::nullopt;
 
@@ -158,7 +149,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
   AuthenticatorGetAssertionResponse response(std::move(*auth_data),
                                              std::move(signature));
 
-  it = response_map.find(CBOR(1));
+  it = response_map.find(CBOR(0x01));
   if (it != response_map.end()) {
     auto credential =
         PublicKeyCredentialDescriptor::CreateFromCBORValue(it->second);
@@ -167,7 +158,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     response.SetCredential(std::move(*credential));
   }
 
-  it = response_map.find(CBOR(4));
+  it = response_map.find(CBOR(0x04));
   if (it != response_map.end()) {
     auto user = PublicKeyCredentialUserEntity::CreateFromCBORValue(it->second);
     if (!user)
@@ -175,7 +166,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     response.SetUserEntity(std::move(*user));
   }
 
-  it = response_map.find(CBOR(5));
+  it = response_map.find(CBOR(0x05));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned())
       return base::nullopt;
@@ -190,7 +181,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     }
   }
 
-  it = response_map.find(CBOR(7));
+  it = response_map.find(CBOR(0x07));
   if (it != response_map.end()) {
     if (!it->second.is_bytestring() ||
         it->second.GetBytestring().size() != kLargeBlobKeyLength) {
@@ -227,7 +218,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   FIDO_LOG(DEBUG) << "-> " << cbor::DiagnosticWriter::Write(*decoded_response);
   const auto& response_map = decoded_response->GetMap();
 
-  auto it = response_map.find(CBOR(1));
+  auto it = response_map.find(CBOR(0x01));
   if (it == response_map.end() || !it->second.is_array()) {
     return base::nullopt;
   }
@@ -268,7 +259,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     return base::nullopt;
   }
 
-  it = response_map.find(CBOR(3));
+  it = response_map.find(CBOR(0x03));
   if (it == response_map.end() || !it->second.is_bytestring() ||
       it->second.GetBytestring().size() != kAaguidLength) {
     return base::nullopt;
@@ -279,7 +270,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       base::make_span<kAaguidLength>(it->second.GetBytestring()));
 
   AuthenticatorSupportedOptions options;
-  it = response_map.find(CBOR(2));
+  it = response_map.find(CBOR(0x02));
   if (it != response_map.end()) {
     if (!it->second.is_array())
       return base::nullopt;
@@ -300,7 +291,7 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     response.extensions = std::move(extensions);
   }
 
-  it = response_map.find(CBOR(4));
+  it = response_map.find(CBOR(0x04));
   if (it != response_map.end()) {
     if (!it->second.is_map())
       return base::nullopt;
@@ -443,15 +434,16 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     response.options = std::move(options);
   }
 
-  it = response_map.find(CBOR(5));
+  it = response_map.find(CBOR(0x05));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned())
       return base::nullopt;
 
-    response.max_msg_size = CBORUnsignedToUint32Safe(it->second);
+    response.max_msg_size =
+        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
   }
 
-  it = response_map.find(CBOR(6));
+  it = response_map.find(CBOR(0x06));
   if (it != response_map.end()) {
     if (!it->second.is_array())
       return base::nullopt;
@@ -486,24 +478,25 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     }
   }
 
-  it = response_map.find(CBOR(7));
+  it = response_map.find(CBOR(0x07));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned())
       return base::nullopt;
 
     response.max_credential_count_in_list =
-        CBORUnsignedToUint32Safe(it->second);
+        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
   }
 
-  it = response_map.find(CBOR(8));
+  it = response_map.find(CBOR(0x08));
   if (it != response_map.end()) {
     if (!it->second.is_unsigned())
       return base::nullopt;
 
-    response.max_credential_id_length = CBORUnsignedToUint32Safe(it->second);
+    response.max_credential_id_length =
+        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
   }
 
-  it = response_map.find(CBOR(10));
+  it = response_map.find(CBOR(0x0a));
   if (it != response_map.end()) {
     if (!it->second.is_array()) {
       return base::nullopt;
@@ -542,6 +535,15 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
       response.algorithms.push_back(alg);
     }
+  }
+
+  it = response_map.find(CBOR(0x14));
+  if (it != response_map.end()) {
+    if (!it->second.is_unsigned()) {
+      return base::nullopt;
+    }
+    response.remaining_discoverable_credentials =
+        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
   }
 
   return base::Optional<AuthenticatorGetInfoResponse>(std::move(response));

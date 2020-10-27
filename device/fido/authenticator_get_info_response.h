@@ -46,6 +46,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   std::vector<int32_t> algorithms = {
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
   };
+  base::Optional<uint32_t> remaining_discoverable_credentials;
   AuthenticatorSupportedOptions options;
 
  private:

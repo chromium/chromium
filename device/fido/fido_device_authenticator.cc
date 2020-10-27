@@ -907,6 +907,10 @@ FidoDeviceAuthenticator::GetAlgorithms() {
   return base::nullopt;
 }
 
+bool FidoDeviceAuthenticator::DiscoverableCredentialStorageFull() const {
+  return device_->device_info()->remaining_discoverable_credentials == 0u;
+}
+
 void FidoDeviceAuthenticator::Reset(ResetCallback callback) {
   DCHECK(device_->SupportedProtocolIsInitialized())
       << "InitializeAuthenticator() must be called first.";

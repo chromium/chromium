@@ -616,6 +616,12 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     device_info_->pin_protocols =
         base::flat_set<PINUVAuthProtocol>{config.pin_protocol};
   }
+
+  if (config.resident_key_support &&
+      base::Contains(config.ctap2_versions, Ctap2Version::kCtap2_1)) {
+    device_info_->remaining_discoverable_credentials =
+        remaining_resident_credentials();
+  }
 }
 
 VirtualCtap2Device::~VirtualCtap2Device() = default;
@@ -1129,14 +1135,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       }
     }
 
-    size_t num_resident_keys = 0;
-    for (const auto& registration : mutable_state()->registrations) {
-      if (registration.second.is_resident) {
-        num_resident_keys++;
-      }
-    }
-
-    if (num_resident_keys >= config_.resident_credential_storage) {
+    if (remaining_resident_credentials() == 0) {
       return CtapDeviceResponseCode::kCtap2ErrKeyStoreFull;
     }
 
@@ -2486,4 +2485,17 @@ AttestedCredentialData VirtualCtap2Device::ConstructAttestedCredentialData(
                                 fido_parsing_utils::Materialize(key_handle),
                                 std::move(public_key));
 }
+
+size_t VirtualCtap2Device::remaining_resident_credentials() {
+  size_t num_resident_keys = 0;
+  for (const auto& registration : mutable_state()->registrations) {
+    if (registration.second.is_resident) {
+      num_resident_keys++;
+    }
+  }
+
+  DCHECK_LE(num_resident_keys, config_.resident_credential_storage);
+  return config_.resident_credential_storage - num_resident_keys;
+}
+
 }  // namespace device

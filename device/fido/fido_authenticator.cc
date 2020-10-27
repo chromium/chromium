@@ -148,6 +148,10 @@ base::Optional<base::span<const int32_t>> FidoAuthenticator::GetAlgorithms() {
   return base::nullopt;
 }
 
+bool FidoAuthenticator::DiscoverableCredentialStorageFull() const {
+  return false;
+}
+
 void FidoAuthenticator::Reset(ResetCallback callback) {
   std::move(callback).Run(CtapDeviceResponseCode::kCtap1ErrInvalidCommand,
                           base::nullopt);

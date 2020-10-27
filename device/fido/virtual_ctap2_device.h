@@ -246,6 +246,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
       base::span<const uint8_t> key_handle,
       std::unique_ptr<PublicKey> public_key);
 
+  size_t remaining_resident_credentials();
+
   std::unique_ptr<VirtualU2fDevice> u2f_device_;
 
   const Config config_;
