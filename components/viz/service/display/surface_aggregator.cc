@@ -442,8 +442,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
         target_transform,
         surface_quad->shared_quad_state->quad_to_target_transform);
     transform.ConcatTransform(dest_pass->transform_to_root_target);
-    AddSurfaceDamageToDamageList(surface_quad->rect, target_transform,
-                                 clip_rect);
+    AddSurfaceDamageToDamageList(surface_quad->rect, transform, clip_rect);
   }
 
   // If there's no fallback surface ID available, then simply emit a
