@@ -548,13 +548,13 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
   ]);
 
   // Rounded down to the nearest 100MiB due to privacy requirement.
-  const availableSpace =
-      Math.floor(1125899906842624 / (100 * 1024 * 1024)) * (100 * 1024 * 1024);
+  const availableSpace = BigInt(
+      Math.floor(1125899906842624 / (100 * 1024 * 1024)) * (100 * 1024 * 1024));
 
   assertDeepEquals(response, {
     batteryResult: {
       batteryInfo: {
-        cycleCount: 100000000000000,
+        cycleCount: BigInt(100000000000000),
         voltageNow: 1234567890.123456,
         vendor: 'Google',
         serialNumber: 'abcdef',
@@ -567,23 +567,23 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         technology: 'Li-ion',
         status: 'Charging',
         manufactureDate: '2020-07-30',
-        temperature: 7777777777777777,
+        temperature: BigInt(7777777777777777),
       }
     },
     blockDeviceResult: {
       blockDeviceInfo: [{
         path: '/dev/device1',
-        size: 5555555555555555,
+        size: BigInt(5555555555555555),
         type: 'NVMe',
         manufacturerId: 200,
         name: 'goog',
         serial: '4287654321',
-        bytesReadSinceLastBoot: 9000000000000000,
-        bytesWrittenSinceLastBoot: 8000000000000000,
-        readTimeSecondsSinceLastBoot: 7000000000000000,
-        writeTimeSecondsSinceLastBoot: 6666666666666666,
-        ioTimeSecondsSinceLastBoot: 1111111111111,
-        discardTimeSecondsSinceLastBoot: 77777777777777
+        bytesReadSinceLastBoot: BigInt(9000000000000000),
+        bytesWrittenSinceLastBoot: BigInt(8000000000000000),
+        readTimeSecondsSinceLastBoot: BigInt(7000000000000000),
+        writeTimeSecondsSinceLastBoot: BigInt(6666666666666666),
+        ioTimeSecondsSinceLastBoot: BigInt(1111111111111),
+        discardTimeSecondsSinceLastBoot: BigInt(77777777777777)
       }]
     },
     vpdResult: {vpdInfo: {skuNumber: 'sku-18'}},
@@ -599,17 +599,23 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
                 maxClockSpeedKhz: 2147494759,
                 scalingMaxFrequencyKhz: 1073764046,
                 scalingCurrentFrequencyKhz: 536904245,
-                idleTimeMs: 0,
+                idleTimeMs: BigInt(0),
                 cStates: [
-                  {name: 'C1', timeInStateSinceLastBootUs: 1125899906875957},
-                  {name: 'C2', timeInStateSinceLastBootUs: 1125899906877777}
+                  {
+                    name: 'C1',
+                    timeInStateSinceLastBootUs: BigInt(1125899906875957)
+                  },
+                  {
+                    name: 'C2',
+                    timeInStateSinceLastBootUs: BigInt(1125899906877777)
+                  }
                 ]
               },
               {
                 maxClockSpeedKhz: 1147494759,
                 scalingMaxFrequencyKhz: 1063764046,
                 scalingCurrentFrequencyKhz: 936904246,
-                idleTimeMs: 0,
+                idleTimeMs: BigInt(0),
                 cStates: []
               }
             ]
@@ -629,7 +635,7 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         totalMemoryKib: 2147483648,
         freeMemoryKib: 2147573648,
         availableMemoryKib: 2147571148,
-        pageFaultsSinceLastBoot: 2199971148
+        pageFaultsSinceLastBoot: BigInt(2199971148),
       }
     },
     backlightResult: {
@@ -647,7 +653,7 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
     statefulPartitionResult: {
       partitionInfo: {
         availableSpace: availableSpace,
-        totalSpace: 1125900006842624,
+        totalSpace: BigInt(1125900006842624),
       }
     },
     bluetoothResult: {

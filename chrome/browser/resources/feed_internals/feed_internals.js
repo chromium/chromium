@@ -111,9 +111,9 @@ function setLinkNode(node, url) {
  * @return {string}
  */
 function toDateString(timeSinceEpoch) {
-  return timeSinceEpoch.microseconds === 0 ?
-      '' :
-      new Date(timeSinceEpoch.microseconds / 1000).toLocaleString();
+  const microseconds = Number(timeSinceEpoch.microseconds);
+  return microseconds === 0 ? '' :
+                              new Date(microseconds / 1000).toLocaleString();
 }
 
 /**

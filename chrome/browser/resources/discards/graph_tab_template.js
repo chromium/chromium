@@ -18,7 +18,7 @@ class DiscardsGraphChangeStreamImpl {
 
   /**
    * @param {string} type
-   * @param {Object|number} data
+   * @param {Object|number|bigint} data
    */
   postMessage_(type, data) {
     this.contentWindow_.postMessage([type, data], '*');
@@ -118,12 +118,12 @@ Polymer({
    */
   onMessage_(event) {
     const type = /** @type {string} */ (event.data[0]);
-    const data = /** @type {Object|number} */ (event.data[1]);
+    const data = /** @type {Object|number|bigint} */ (event.data[1]);
     switch (type) {
       case 'requestNodeDescriptions':
         // Forward the request through the mojoms and bounce the reply back.
         this.graphDump_
-            .requestNodeDescriptions(/** @type {!Array<number>} */ (data))
+            .requestNodeDescriptions(/** @type {!Array<bigint>} */ (data))
             .then(
                 (descriptions) => this.contentWindow_.postMessage(
                     ['nodeDescriptions', descriptions.nodeDescriptionsJson],

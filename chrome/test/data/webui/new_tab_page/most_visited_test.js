@@ -61,7 +61,7 @@ suite('NewTabPageMostVisitedTest', () => {
         source: i,
         titleSource: i,
         isQueryTile: false,
-        dataGenerationTime: {internalValue: 0},
+        dataGenerationTime: {internalValue: BigInt(0)},
       };
     });
     const tilesRendered = eventToPromise('dom-change', mostVisited.$.tiles);
@@ -897,7 +897,7 @@ suite('NewTabPageMostVisitedTest', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: 0},
+      dataGenerationTime: {internalValue: BigInt(0)},
     });
     assertDeepEquals(tiles[1], {
       title: 'b',
@@ -906,7 +906,7 @@ suite('NewTabPageMostVisitedTest', () => {
       source: 1,
       titleSource: 1,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: 0},
+      dataGenerationTime: {internalValue: BigInt(0)},
     });
   });
 
@@ -931,7 +931,7 @@ suite('NewTabPageMostVisitedTest', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
-      dataGenerationTime: {internalValue: 0},
+      dataGenerationTime: {internalValue: BigInt(0)},
     });
   });
 

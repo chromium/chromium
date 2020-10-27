@@ -89,7 +89,7 @@ suite('ConfirmatonPageTest', function() {
   test('renders share target name', function() {
     const name = 'Device Name';
     confirmationPageElement.shareTarget = {
-      id: {high: 0, low: 0},
+      id: {high: BigInt(0), low: BigInt(0)},
       name,
       type: nearbyShare.mojom.ShareTargetType.kPhone,
     };

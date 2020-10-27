@@ -225,8 +225,8 @@ Polymer({
             ((reason === LifecycleUnitDiscardReason.URGENT) ? ' at ' +
                      // Must convert since Date constructor takes
                      // milliseconds.
-                     (new Date(stateChangeTime.microseconds / 1000))
-                         .toLocaleString() :
+                     (new Date(Number(stateChangeTime.microseconds) / 1000)
+                          .toLocaleString()) :
                                                               '');
     }
     assertNotReached('Unknown lifecycle state: ' + state);

@@ -10,7 +10,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './tab_search_item.js';
-import './tab_search_search_field.js'
+import './tab_search_search_field.js';
 import './strings.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -111,9 +111,9 @@ export class TabSearchAppElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    this.addEventListener(
-        'keydown',
-        (e) => {this.onKeyDown_(/** @type {!KeyboardEvent} **/ (e))});
+    this.addEventListener('keydown', (e) => {
+      this.onKeyDown_(/** @type {!KeyboardEvent} */ (e));
+    });
 
     // Update option values for fuzzy search from feature params.
     this.fuzzySearchOptions_ = Object.assign({}, this.fuzzySearchOptions_, {
@@ -438,8 +438,9 @@ export class TabSearchAppElement extends PolymerElement {
     });
     result.sort(
         (a, b) => (b.tab.lastActiveTimeTicks && a.tab.lastActiveTimeTicks) ?
-            b.tab.lastActiveTimeTicks.internalValue -
-                a.tab.lastActiveTimeTicks.internalValue :
+            Number(
+                b.tab.lastActiveTimeTicks.internalValue -
+                a.tab.lastActiveTimeTicks.internalValue) :
             0);
     this.filteredOpenTabs_ =
         fuzzySearch(this.searchText_, result, this.fuzzySearchOptions_);

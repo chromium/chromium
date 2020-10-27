@@ -399,11 +399,12 @@ Polymer({
     if (feature.useTimestamp) {
       const nowSecondsFromEpoch = Math.round(Date.now() / 1000);
       return 'Used ' +
-          durationToString(nowSecondsFromEpoch - feature.useTimestamp);
+          durationToString(
+                 Number(BigInt(nowSecondsFromEpoch) - feature.useTimestamp));
     }
 
     if (feature.observationDuration) {
-      return secondsToString(feature.observationDuration);
+      return secondsToString(Number(feature.observationDuration));
     }
 
     return 'N/A';

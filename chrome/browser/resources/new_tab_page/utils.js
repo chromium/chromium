@@ -65,7 +65,7 @@ export function mojoString16(str) {
  * @returns {!mojoBase.mojom.TimeDelta}
  */
 export function mojoTimeDelta(timeDelta) {
-  return {microseconds: Math.floor(timeDelta * 1000)};
+  return {microseconds: BigInt(Math.floor(timeDelta * 1000))};
 }
 
 /**

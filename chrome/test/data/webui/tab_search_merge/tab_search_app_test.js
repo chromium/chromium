@@ -218,7 +218,7 @@ suite('TabSearchAppTest', () => {
       tabId: 1,
       title: 'Example',
       url: 'https://example.com',
-      lastActiveTimeTicks: { internalValue: 1 },
+      lastActiveTimeTicks: {internalValue: BigInt(1)},
     });
     testProxy.getCallbackRouterRemote().tabUpdated(updatedTab);
     await flushTasks();
@@ -351,27 +351,28 @@ suite('TabSearchAppTest', () => {
 
   test('Sort by most recent active tabs', async () => {
     const tabs = [
-    {
-      index: 0,
-      tabId: 1,
-      title: 'Google',
-      url: 'https://www.google.com',
-      lastActiveTimeTicks: { internalValue: 2 },
-    },
-    {
-      index: 1,
-      tabId: 2,
-      title: 'Bing',
-      url: 'https://www.bing.com',
-      lastActiveTimeTicks: { internalValue: 4 },
-    },
-    {
-      index: 2,
-      tabId: 3,
-      title: 'Yahoo',
-      url: 'https://www.yahoo.com',
-      lastActiveTimeTicks: { internalValue: 3 },
-    }];
+      {
+        index: 0,
+        tabId: 1,
+        title: 'Google',
+        url: 'https://www.google.com',
+        lastActiveTimeTicks: {internalValue: BigInt(2)},
+      },
+      {
+        index: 1,
+        tabId: 2,
+        title: 'Bing',
+        url: 'https://www.bing.com',
+        lastActiveTimeTicks: {internalValue: BigInt(4)},
+      },
+      {
+        index: 2,
+        tabId: 3,
+        title: 'Yahoo',
+        url: 'https://www.yahoo.com',
+        lastActiveTimeTicks: {internalValue: BigInt(3)},
+      }
+    ];
 
     await setupTest({windows: [{active: true, tabs}]});
     verifyTabIds(queryRows(), [2, 3, 1]);

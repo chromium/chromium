@@ -26,7 +26,7 @@ suite('TabSearchItemTest', () => {
         active: true,
         index: 0,
         isDefaultFavicon: true,
-        lastActiveTimeTicks: {internalValue: 0},
+        lastActiveTimeTicks: {internalValue: BigInt(0)},
         pinned: false,
         showIcon: true,
         tabId: 0,
