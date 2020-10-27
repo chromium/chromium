@@ -54,6 +54,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows settings related to MultiDevice features.
   virtual void ShowConnectedDevicesSettings() = 0;
 
+  // Shows settings related to tether network.
+  virtual void ShowTetherNetworkSettings() = 0;
+
   // Shows the about chrome OS page and checks for updates after the page is
   // loaded.
   virtual void ShowAboutChromeOS() = 0;

@@ -38,6 +38,8 @@ void TestSystemTrayClient::ShowConnectedDevicesSettings() {
   show_connected_devices_settings_count_++;
 }
 
+void TestSystemTrayClient::ShowTetherNetworkSettings() {}
+
 void TestSystemTrayClient::ShowAboutChromeOS() {}
 
 void TestSystemTrayClient::ShowHelp() {}

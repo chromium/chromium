@@ -48,10 +48,9 @@ void EnableHotspotQuickActionController::OnTetherStatusChanged() {
       item_->SetVisible(false);
       return;
     case Status::kConnectionUnavailable:
-      SetState(ActionState::kNotAvailable);
-      break;
+      FALLTHROUGH;
     case Status::kConnectionAvailable:
-      SetState(ActionState::kNotConnected);
+      SetState(ActionState::kOff);
       break;
     case Status::kConnecting:
       SetState(ActionState::kConnecting);
@@ -70,17 +69,10 @@ void EnableHotspotQuickActionController::SetState(ActionState state) {
   int state_text_id;
   int sub_label_text;
   switch (state) {
-    case ActionState::kNotAvailable:
+    case ActionState::kOff:
       icon_enabled = false;
-      state_text_id =
-          IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE_TOOLTIP;
-      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE;
-      break;
-    case ActionState::kNotConnected:
-      icon_enabled = false;
-      state_text_id =
-          IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_CONNECTED_STATE_TOOLTIP;
-      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_CONNECTED_STATE;
+      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
+      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE;
       break;
     case ActionState::kConnecting:
       icon_enabled = true;

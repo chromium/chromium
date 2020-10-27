@@ -4,7 +4,9 @@
 
 #include "ash/system/phonehub/phone_hub_notification_controller.h"
 
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
@@ -16,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/phonehub/notification.h"
+#include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/message_center.h"
@@ -32,6 +35,8 @@ namespace {
 const char kNotifierId[] = "chrome://phonehub";
 const char kNotifierIdSeparator[] = "-";
 const char kNotificationCustomViewType[] = "phonehub";
+const char kPhoneHubInstantTetherNotificationId[] =
+    "chrome://phonehub-instant-tether";
 const int kReplyButtonIndex = 0;
 
 // The amount of time the reply button is disabled after sending an inline
@@ -189,18 +194,33 @@ PhoneHubNotificationController::PhoneHubNotificationController() {
 PhoneHubNotificationController::~PhoneHubNotificationController() {
   if (manager_)
     manager_->RemoveObserver(this);
+  if (tether_controller_)
+    tether_controller_->RemoveObserver(this);
 }
 
 void PhoneHubNotificationController::SetManager(
-    chromeos::phonehub::NotificationManager* manager) {
-  if (manager_ == manager)
+    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+  chromeos::phonehub::NotificationManager* notification_manager =
+      phone_hub_manager->GetNotificationManager();
+  chromeos::phonehub::TetherController* tether_controller =
+      phone_hub_manager->GetTetherController();
+
+  if (manager_ == notification_manager &&
+      tether_controller_ == tether_controller) {
     return;
+  }
 
   if (manager_)
     manager_->RemoveObserver(this);
 
-  manager_ = manager;
+  manager_ = notification_manager;
   manager_->AddObserver(this);
+
+  if (tether_controller_)
+    tether_controller_->RemoveObserver(this);
+
+  tether_controller_ = tether_controller;
+  tether_controller_->AddObserver(this);
 }
 
 void PhoneHubNotificationController::OnNotificationsAdded(
@@ -226,6 +246,42 @@ void PhoneHubNotificationController::OnNotificationsRemoved(
     it->second->Remove();
     notification_map_.erase(it);
   }
+}
+
+void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
+  // Add a notification if tether failed.
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([](base::Optional<int> button_index) {
+            // When clicked, open Tether Settings page if we can open WebUI
+            // settings, otherwise do nothing.
+            if (TrayPopupUtils::CanOpenWebUISettings()) {
+              Shell::Get()
+                  ->system_tray_model()
+                  ->client()
+                  ->ShowTetherNetworkSettings();
+            } else {
+              LOG(WARNING) << "Cannot open Tether Settings since it's not "
+                              "possible to opening WebUI settings";
+            }
+          }));
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kPhoneHubInstantTetherNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_MESSAGE),
+          base::string16() /*display_source */, GURL() /* origin_url */,
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kPhoneHubInstantTetherNotificationId),
+          message_center::RichNotificationData(), std::move(delegate),
+          kPhoneHubEnableHotspotOnIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void PhoneHubNotificationController::OpenSettings() {

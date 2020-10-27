@@ -9,10 +9,12 @@
 
 #include "ash/ash_export.h"
 #include "chromeos/components/phonehub/notification_manager.h"
+#include "chromeos/components/phonehub/tether_controller.h"
 
 namespace chromeos {
 namespace phonehub {
 class Notification;
+class PhoneHubManager;
 }  // namespace phonehub
 }  // namespace chromeos
 
@@ -26,7 +28,8 @@ namespace ash {
 // This controller creates and manages a message_center::Notification for each
 // PhoneHub corresponding notification.
 class ASH_EXPORT PhoneHubNotificationController
-    : public chromeos::phonehub::NotificationManager::Observer {
+    : public chromeos::phonehub::NotificationManager::Observer,
+      public chromeos::phonehub::TetherController::Observer {
  public:
   PhoneHubNotificationController();
   ~PhoneHubNotificationController() override;
@@ -37,7 +40,7 @@ class ASH_EXPORT PhoneHubNotificationController
 
   // Sets the NotifictionManager that provides the underlying PhoneHub
   // notifications.
-  void SetManager(chromeos::phonehub::NotificationManager* manager);
+  void SetManager(chromeos::phonehub::PhoneHubManager* phone_hub_manager);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
@@ -52,6 +55,10 @@ class ASH_EXPORT PhoneHubNotificationController
       const base::flat_set<int64_t>& notification_ids) override;
   void OnNotificationsRemoved(
       const base::flat_set<int64_t>& notification_ids) override;
+
+  // chromeos::phonehub::TetherController::Observer:
+  void OnAttemptConnectionScanFailed() override;
+  void OnTetherStatusChanged() override {}
 
   // Callbacks for user interactions.
   void OpenSettings();
@@ -75,6 +82,7 @@ class ASH_EXPORT PhoneHubNotificationController
       const message_center::Notification& notification);
 
   chromeos::phonehub::NotificationManager* manager_ = nullptr;
+  chromeos::phonehub::TetherController* tether_controller_ = nullptr;
   std::unordered_map<int64_t, std::unique_ptr<NotificationDelegate>>
       notification_map_;
 };

@@ -1121,6 +1121,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DISMISS_BUTTON" desc="Label for the dismiss button to opt out showing notifications from the phone.">
         Dismiss
       </message>
+      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_TITLE" desc="Title inside a PhoneHub notification when enable hotspot failed to find a connection.">
+        Hotspot connection failed
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_MESSAGE" desc="Message inside a PhoneHub notification when enable hotspot failed to find a connection.">
+        Tap to configure
+      </message>
 
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
         Capture region

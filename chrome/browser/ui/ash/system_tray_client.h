@@ -16,7 +16,7 @@ struct LocaleInfo;
 class SystemTray;
 enum class LoginStatus;
 enum class NotificationStyle;
-}
+}  // namespace ash
 
 // Handles method calls delegated back to chrome from ash. Also notifies ash of
 // relevant state changes in chrome.
@@ -62,6 +62,7 @@ class SystemTrayClient : public ash::SystemTrayClient,
   void ShowChromeSlow() override;
   void ShowIMESettings() override;
   void ShowConnectedDevicesSettings() override;
+  void ShowTetherNetworkSettings() override;
   void ShowAboutChromeOS() override;
   void ShowHelp() override;
   void ShowAccessibilityHelp() override;

@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/phonehub/fake_notification_manager.h"
+#include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -69,7 +70,8 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
     controller_ = Shell::Get()
                       ->message_center_controller()
                       ->phone_hub_notification_controller();
-    controller_->SetManager(&notification_manager_);
+    controller_->SetManager(&phone_hub_manager_);
+    notification_manager_ = phone_hub_manager_.fake_notification_manager();
 
     fake_notifications_.insert(CreateNotification(kPhoneHubNotificationId0));
     fake_notifications_.insert(CreateNotification(kPhoneHubNotificationId1));
@@ -79,14 +81,15 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   message_center::MessageCenter* message_center_;
-  chromeos::phonehub::FakeNotificationManager notification_manager_;
+  chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
+  chromeos::phonehub::FakeNotificationManager* notification_manager_;
   PhoneHubNotificationController* controller_;
   base::flat_set<chromeos::phonehub::Notification> fake_notifications_;
 };
 
 TEST_F(PhoneHubNotificationControllerTest, AddNotifications) {
   EXPECT_FALSE(message_center_->NotificationCount());
-  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
   ASSERT_TRUE(
@@ -104,7 +107,7 @@ TEST_F(PhoneHubNotificationControllerTest, AddNotifications) {
 
 TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
   EXPECT_FALSE(message_center_->NotificationCount());
-  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
   auto* notification =
@@ -123,7 +126,7 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
       /*inline_reply_id=*/0, base::UTF8ToUTF16(kNewTitle),
       base::UTF8ToUTF16(kNewTextContent));
 
-  notification_manager_.SetNotification(updated_notification);
+  notification_manager_->SetNotification(updated_notification);
 
   notification =
       message_center_->FindVisibleNotificationById(kCrOSNotificationId1);
@@ -133,26 +136,26 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
 
 TEST_F(PhoneHubNotificationControllerTest, RemoveNotifications) {
   EXPECT_FALSE(message_center_->NotificationCount());
-  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
-  notification_manager_.RemoveNotification(kPhoneHubNotificationId0);
+  notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
   EXPECT_EQ(2u, message_center_->NotificationCount());
   EXPECT_FALSE(
       message_center_->FindVisibleNotificationById(kCrOSNotificationId0));
 
-  notification_manager_.RemoveNotificationsInternal(base::flat_set<int64_t>(
+  notification_manager_->RemoveNotificationsInternal(base::flat_set<int64_t>(
       {kPhoneHubNotificationId1, kPhoneHubNotificationId2}));
   EXPECT_FALSE(message_center_->NotificationCount());
 
   // Attempt removing the same notifications again and expect nothing to happen.
-  notification_manager_.RemoveNotificationsInternal(base::flat_set<int64_t>(
+  notification_manager_->RemoveNotificationsInternal(base::flat_set<int64_t>(
       {kPhoneHubNotificationId1, kPhoneHubNotificationId2}));
   EXPECT_FALSE(message_center_->NotificationCount());
 }
 
 TEST_F(PhoneHubNotificationControllerTest, CloseByUser) {
-  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
   EXPECT_EQ(3u, message_center_->NotificationCount());
 
   message_center_->RemoveNotification(kCrOSNotificationId0, /*by_user=*/true);
@@ -162,11 +165,11 @@ TEST_F(PhoneHubNotificationControllerTest, CloseByUser) {
   EXPECT_EQ(
       std::vector<int64_t>({kPhoneHubNotificationId0, kPhoneHubNotificationId1,
                             kPhoneHubNotificationId2}),
-      notification_manager_.dismissed_notification_ids());
+      notification_manager_->dismissed_notification_ids());
 }
 
 TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
-  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
 
   const base::string16 kInlineReply0 = base::UTF8ToUTF16("inline reply 0");
   const base::string16 kInlineReply1 = base::UTF8ToUTF16("inline reply 1");
@@ -175,7 +178,7 @@ TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
   message_center_->ClickOnNotificationButtonWithReply(kCrOSNotificationId1, 0,
                                                       kInlineReply1);
 
-  auto inline_replies = notification_manager_.inline_replies();
+  auto inline_replies = notification_manager_->inline_replies();
   EXPECT_EQ(kPhoneHubNotificationId0, inline_replies[0].notification_id);
   EXPECT_EQ(kInlineReply0, inline_replies[0].inline_reply_text);
   EXPECT_EQ(kPhoneHubNotificationId1, inline_replies[1].notification_id);
@@ -183,7 +186,7 @@ TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
 }
 
 TEST_F(PhoneHubNotificationControllerTest, ClickSettings) {
-  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
   EXPECT_TRUE(
       message_center_->FindVisibleNotificationById(kCrOSNotificationId0));
   EXPECT_EQ(0, GetSystemTrayClient()->show_connected_devices_settings_count());
@@ -217,7 +220,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
       /*inline_reply_id=*/0, base::UTF8ToUTF16(kTitle),
       base::UTF8ToUTF16(kTextContent), shared_image, contact_image);
 
-  notification_manager_.SetNotification(fake_notification);
+  notification_manager_->SetNotification(fake_notification);
 
   auto* cros_notification =
       message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
@@ -235,7 +238,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
 }
 
 TEST_F(PhoneHubNotificationControllerTest, NotificationHasCustomViewType) {
-  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
   auto* notification =
       message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
 
@@ -244,7 +247,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationHasCustomViewType) {
 }
 
 TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
-  notification_manager_.SetNotificationsInternal(fake_notifications_);
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
   auto* notification =
       message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
 

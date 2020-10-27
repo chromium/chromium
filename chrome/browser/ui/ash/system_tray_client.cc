@@ -266,6 +266,11 @@ void SystemTrayClient::ShowConnectedDevicesSettings() {
       chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);
 }
 
+void SystemTrayClient::ShowTetherNetworkSettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kMobileDataNetworksSubpagePath);
+}
+
 void SystemTrayClient::ShowAboutChromeOS() {
   // We always want to check for updates when showing the about page from the
   // Ash UI.
