@@ -59,7 +59,7 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
       {"bbb.hevc", 64},
   };
 
-  for (auto& data : test_data) {
+  for (const auto& data : test_data) {
     LoadParserFile(data.file_name);
     // Parse until the end of stream/unsupported stream/error in stream is
     // found.
@@ -143,6 +143,17 @@ TEST_F(H265ParserTest, SpsParsing) {
   EXPECT_EQ(sps->num_long_term_ref_pics_sps, 0);
   EXPECT_TRUE(sps->sps_temporal_mvp_enabled_flag);
   EXPECT_TRUE(sps->strong_intra_smoothing_enabled_flag);
+  EXPECT_EQ(sps->vui_parameters.sar_width, 0);
+  EXPECT_EQ(sps->vui_parameters.sar_height, 0);
+  EXPECT_EQ(sps->vui_parameters.video_full_range_flag, 0);
+  EXPECT_EQ(sps->vui_parameters.colour_description_present_flag, 0);
+  EXPECT_EQ(sps->vui_parameters.colour_primaries, 0);
+  EXPECT_EQ(sps->vui_parameters.transfer_characteristics, 0);
+  EXPECT_EQ(sps->vui_parameters.matrix_coeffs, 0);
+  EXPECT_EQ(sps->vui_parameters.def_disp_win_left_offset, 0);
+  EXPECT_EQ(sps->vui_parameters.def_disp_win_right_offset, 0);
+  EXPECT_EQ(sps->vui_parameters.def_disp_win_top_offset, 0);
+  EXPECT_EQ(sps->vui_parameters.def_disp_win_bottom_offset, 0);
 }
 
 }  // namespace media

@@ -176,6 +176,23 @@ struct MEDIA_EXPORT H265StRefPicSet {
   int num_delta_pocs;
 };
 
+struct MEDIA_EXPORT H265VUIParameters {
+  H265VUIParameters();
+
+  // Syntax elements.
+  int sar_width;
+  int sar_height;
+  bool video_full_range_flag;
+  bool colour_description_present_flag;
+  int colour_primaries;
+  int transfer_characteristics;
+  int matrix_coeffs;
+  int def_disp_win_left_offset;
+  int def_disp_win_right_offset;
+  int def_disp_win_top_offset;
+  int def_disp_win_bottom_offset;
+};
+
 struct MEDIA_EXPORT H265SPS {
   H265SPS();
 
@@ -222,6 +239,7 @@ struct MEDIA_EXPORT H265SPS {
   bool used_by_curr_pic_lt_sps_flag[kMaxLongTermRefPicSets];
   bool sps_temporal_mvp_enabled_flag;
   bool strong_intra_smoothing_enabled_flag;
+  H265VUIParameters vui_parameters;
 
   // Calculated fields.
   int chroma_array_type;
@@ -239,6 +257,12 @@ struct MEDIA_EXPORT H265SPS {
   int max_tb_log2_size_y;
   int wp_offset_half_range_y;
   int wp_offset_half_range_c;
+
+  // Helpers to compute frequently-used values. They do not verify that the
+  // results are in-spec for the given profile or level.
+  gfx::Size GetCodedSize() const;
+  gfx::Rect GetVisibleRect() const;
+  VideoColorSpace GetColorSpace() const;
 };
 
 // Class to parse an Annex-B H.265 stream.
@@ -286,6 +310,8 @@ class MEDIA_EXPORT H265Parser {
   // Return a pointer to SPS with given |sps_id| or null if not present.
   const H265SPS* GetSPS(int sps_id) const;
 
+  static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
+
  private:
   // Move the stream pointer to the beginning of the next NALU,
   // i.e. pointing at the next start code.
@@ -310,6 +336,12 @@ class MEDIA_EXPORT H265Parser {
   Result ParseStRefPicSet(int st_rps_idx,
                           const H265SPS& sps,
                           H265StRefPicSet* st_ref_pic_set);
+  Result ParseVuiParameters(const H265SPS& sps, H265VUIParameters* vui);
+  Result ParseAndIgnoreHrdParameters(bool common_inf_present_flag,
+                                     int max_num_sub_layers_minus1);
+  Result ParseAndIgnoreSubLayerHrdParameters(
+      int cpb_cnt,
+      bool sub_pic_hrd_params_present_flag);
 
   // Pointer to the current NALU in the stream.
   const uint8_t* stream_;
