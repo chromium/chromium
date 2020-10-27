@@ -1417,6 +1417,14 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_textFieldValue(@"concrete password")];
 
+  // Check that empty password is not allowed, and done button is disabled.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_clearText()];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
+                                   grey_not(grey_enabled()), nil)];
+
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"new password")];
 

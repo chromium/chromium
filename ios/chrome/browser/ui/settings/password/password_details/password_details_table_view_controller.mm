@@ -425,12 +425,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  BOOL isInputValid = YES;
-
-  if (tableViewItem == self.usernameTextItem) {
-    isInputValid = [self checkIfValidUsername];
-  }
-
+  BOOL isInputValid = [self checkIfValidUsername] & [self checkIfValidPassword];
   self.navigationItem.rightBarButtonItem.enabled = isInputValid;
 }
 
@@ -621,6 +616,17 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
   [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
   return !showUsernameAlreadyUsed;
+}
+
+// Checks if the password is valid and updates item accordingly.
+- (BOOL)checkIfValidPassword {
+  DCHECK(self.password.password);
+
+  BOOL passwordEmpty = [self.passwordTextItem.textFieldValue length] == 0;
+  self.passwordTextItem.hasValidText = !passwordEmpty;
+
+  [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+  return !passwordEmpty;
 }
 
 #pragma mark - Actions
