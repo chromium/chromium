@@ -4,8 +4,10 @@
 
 import("//build/toolchain/win/midl.gni")
 
-UpdaterClass_replaceable_uuid = "158428a4-6014-4978-83ba-9fad0dabe791"
-IUpdater_replaceable_uuid = "63B8FFB1-5314-48C9-9C57-93EC8BC6184B"
+UpdaterClass_replaceable_uuid =
+    "PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791"
+IUpdater_replaceable_uuid =
+    "PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B"
 
 # TODO(crbug.com/1099904): this CLSID needs to be regenerated for every build.
 # TODO(crbug.com/1099904): we need to use an indirection mechanism for the
@@ -13,28 +15,12 @@ IUpdater_replaceable_uuid = "63B8FFB1-5314-48C9-9C57-93EC8BC6184B"
 updater_clsid = "3d852661-c795-4d20-9b95-5561e9a1d2d9"
 IUPDATER_IID = "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83"
 
-action("generate_updater_idl") {
-  script = "//build/util/version.py"
-
-  inputs = [ "updater_idl.template" ]
-  outputs = [ "$target_gen_dir/updater_idl.idl" ]
-
-  args = [
-    "-e",
-    "$UpdaterClass_replaceable_uuid='$updater_clsid'",
-    "-e",
-    "$IUpdater_replaceable_uuid='$IUPDATER_IID'",
-    rebase_path(inputs[0], root_build_dir),
-    rebase_path(outputs[0], root_build_dir),
-  ]
-}
-
 midl("updater_idl_idl") {
   dynamic_guid = "$UpdaterClass_replaceable_uuid=$updater_clsid," +
                  "$IUpdater_replaceable_uuid=$IUPDATER_IID"
-  deps = [ ":generate_updater_idl" ]
+
   header_file = "updater_idl.h"
-  sources = get_target_outputs(":generate_updater_idl")
+  sources = [ "updater_idl.template" ]
 
   defines = [
     "IUPDATESTATE_IID=46ACF70B-AC13-406D-B53B-B2C4BF091FF6",

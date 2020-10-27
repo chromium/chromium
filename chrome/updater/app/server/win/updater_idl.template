@@ -257,7 +257,7 @@ interface IUpdaterObserver : IUnknown {
 [
   object,
   dual,
-  uuid(@63B8FFB1-5314-48C9-9C57-93EC8BC6184B@),
+  uuid(PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B),
   helpstring("IUpdater Interface"),
   pointer_default(unique)
 ]
@@ -299,7 +299,7 @@ library UpdaterLib {
   // single 'coclass' definition. Any other coclasses need to be defined in
   // constants.h/cc.
   [
-    uuid(@158428a4-6014-4978-83ba-9fad0dabe791@),
+    uuid(PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791),
     helpstring("Updater Class")
   ]
   coclass UpdaterClass

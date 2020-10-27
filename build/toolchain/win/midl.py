@@ -12,6 +12,7 @@ import filecmp
 import io
 import operator
 import os
+import posixpath
 import re
 import shutil
 import struct
@@ -189,24 +190,22 @@ def overwrite_cls_guid(h_file, iid_file, tlb_file, dynamic_guid):
 def overwrite_guids_h(h_file, dynamic_guids):
   contents = open(h_file, 'rb').read()
   for key in dynamic_guids:
-    contents = re.sub(key, dynamic_guids[key], contents, flags=re.IGNORECASE)
+    contents = re.sub(key, dynamic_guids[key], contents, flags=re.I)
   open(h_file, 'wb').write(contents)
 
 
-def get_uuid_format(guid, prefix, suffix):
-  formatted_uuid = '%s0x%s,0x%s,0x%s,' % (prefix, guid[0:8], guid[9:13],
-                                          guid[14:18])
+def get_uuid_format(guid, prefix):
+  formatted_uuid = '0x%s,0x%s,0x%s,' % (guid[0:8], guid[9:13], guid[14:18])
   formatted_uuid += '%s0x%s,0x%s' % (prefix, guid[19:21], guid[21:23])
   for i in range(24, len(guid), 2):
     formatted_uuid += ',0x' + guid[i:i + 2]
-  formatted_uuid += '%s%s' % (suffix, suffix)
   return formatted_uuid
 
 
 def get_uuid_format_iid_file(guid):
   # Convert from "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83" to
   # 0xD0E1CACC,0xC63C,0x4192,0x94,0xAB,0xBF,0x8E,0xAD,0x0E,0x3B,0x83.
-  return get_uuid_format(guid, '', '')
+  return get_uuid_format(guid, '')
 
 
 def overwrite_guids_iid(iid_file, dynamic_guids):
@@ -215,14 +214,14 @@ def overwrite_guids_iid(iid_file, dynamic_guids):
     contents = re.sub(get_uuid_format_iid_file(key),
                       get_uuid_format_iid_file(dynamic_guids[key]),
                       contents,
-                      flags=re.IGNORECASE)
+                      flags=re.I)
   open(iid_file, 'wb').write(contents)
 
 
 def get_uuid_format_proxy_file(guid):
   # Convert from "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83" to
   # {0xD0E1CACC,0xC63C,0x4192,{0x94,0xAB,0xBF,0x8E,0xAD,0x0E,0x3B,0x83}}.
-  return get_uuid_format(guid, '{', '}')
+  return get_uuid_format(guid, '{')
 
 
 def overwrite_guids_proxy(proxy_file, dynamic_guids):
@@ -231,7 +230,7 @@ def overwrite_guids_proxy(proxy_file, dynamic_guids):
     contents = re.sub(get_uuid_format_proxy_file(key),
                       get_uuid_format_proxy_file(dynamic_guids[key]),
                       contents,
-                      flags=re.IGNORECASE)
+                      flags=re.I)
   open(proxy_file, 'wb').write(contents)
 
 
@@ -261,18 +260,20 @@ def overwrite_guids_tlb(tlb_file, dynamic_guids):
   open(tlb_file, 'wb').write(contents)
 
 
-# Handle multiple guid substitutions, where |dynamic_guid| is of the form
-# "158428a4-6014-4978-83ba-9fad0dabe791=3d852661-c795-4d20-9b95-5561e9a1d2d9,"
-# "63B8FFB1-5314-48C9-9C57-93EC8BC6184B=D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83".
+# Handle multiple guid substitutions, where |dynamic_guids| is of the form
+# "PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791="
+# "3d852661-c795-4d20-9b95-5561e9a1d2d9,"
+# "PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B="
+# "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83".
 #
-# Before specifying |dynamic_guid| in the build, the IDL file is first compiled
+# Before specifying |dynamic_guids| in the build, the IDL file is first compiled
 # with "158428a4-6014-4978-83ba-9fad0dabe791" and
 # "63B8FFB1-5314-48C9-9C57-93EC8BC6184B". These are the "replaceable" guids,
 # i.e., guids that can be replaced in future builds. The resulting MIDL outputs
 # are copied over to src\third_party\win_build_output\.
 #
 # Then, in the future, any changes to these guids can be accomplished by
-# providing a |dynamic_guid| of the format above in the build file. These
+# providing |dynamic_guids| of the format above in the build file. These
 # "dynamic" guid changes by themselves will not require the MIDL compiler and
 # therefore will not require copying output over to
 # src\third_party\win_build_output\.
@@ -280,15 +281,62 @@ def overwrite_guids_tlb(tlb_file, dynamic_guids):
 # The pre-generated src\third_party\win_build_output\ files are used for
 # cross-compiling on other platforms, since the MIDL compiler is Windows-only.
 def overwrite_guids(h_file, iid_file, proxy_file, tlb_file, dynamic_guids):
-  n = len(dynamic_guids)
-  dynamic_guids = dynamic_guids.split(',')
-  dynamic_guids = dict(s.split('=') for s in dynamic_guids)
-
   # Fix up GUIDs in .h, _i.c, _p.c, and .tlb.
   overwrite_guids_h(h_file, dynamic_guids)
   overwrite_guids_iid(iid_file, dynamic_guids)
   overwrite_guids_proxy(proxy_file, dynamic_guids)
   overwrite_guids_tlb(tlb_file, dynamic_guids)
+
+
+# This function removes all occurrences of 'PLACEHOLDER-GUID-' from the
+# template, and if |dynamic_guids| is specified, also replaces the guids within
+# the file. Finally, it writes the resultant output to the |idl| file.
+def generate_idl_from_template(idl_template, dynamic_guids, idl):
+  contents = open(idl_template, 'rb').read()
+  contents = re.sub('PLACEHOLDER-GUID-', '', contents, flags=re.I)
+  if dynamic_guids:
+    for key in dynamic_guids:
+      contents = re.sub(key, dynamic_guids[key], contents, flags=re.I)
+  open(idl, 'wb').write(contents)
+
+
+# This function runs the MIDL compiler with the provided arguments. It creates
+# and returns a tuple of |0,midl_output_dir| on success.
+def run_midl(args, env_dict):
+  midl_output_dir = tempfile.mkdtemp()
+  delete_midl_output_dir = True
+
+  try:
+    popen = subprocess.Popen(args + ['/out', midl_output_dir],
+                             shell=True,
+                             env=env_dict,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+    out, _ = popen.communicate()
+    if popen.returncode != 0:
+      return popen.returncode, midl_output_dir
+
+    # Filter junk out of stdout, and write filtered versions. Output we want
+    # to filter is pairs of lines that look like this:
+    # Processing C:\Program Files (x86)\Microsoft SDKs\...\include\objidl.idl
+    # objidl.idl
+    lines = out.decode('utf-8').splitlines()
+    prefixes = ('Processing ', '64 bit Processing ')
+    processing = set(
+        os.path.basename(x) for x in lines if x.startswith(prefixes))
+    for line in lines:
+      if not line.startswith(prefixes) and line not in processing:
+        print(line)
+
+    for f in os.listdir(midl_output_dir):
+      ZapTimestamp(os.path.join(midl_output_dir, f))
+
+    delete_midl_output_dir = False
+  finally:
+    if os.path.exists(midl_output_dir) and delete_midl_output_dir:
+      shutil.rmtree(midl_output_dir)
+
+  return 0, midl_output_dir
 
 
 def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, clang,
@@ -300,24 +348,42 @@ def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, clang,
   source = os.path.join(source, arch.split('.')[1])  # Append 'x86' or 'x64'.
   source = os.path.normpath(source)
   distutils.dir_util.copy_tree(source, outdir, preserve_times=False)
+
+  dynamic_guids = None
   if dynamic_guid != 'none':
     if '=' not in dynamic_guid:
       overwrite_cls_guid(os.path.join(outdir, h), os.path.join(outdir, iid),
                          os.path.join(outdir, tlb), uuid.UUID(dynamic_guid))
     else:
+      dynamic_guids = re.sub('PLACEHOLDER-GUID-', '', dynamic_guid, flags=re.I)
+      dynamic_guids = dynamic_guids.split(',')
+      dynamic_guids = dict(s.split('=') for s in dynamic_guids)
       overwrite_guids(os.path.join(outdir, h), os.path.join(outdir, iid),
                       os.path.join(outdir, proxy), os.path.join(outdir, tlb),
-                      dynamic_guid)
+                      dynamic_guids)
 
   # On non-Windows, that's all we can do.
   if sys.platform != 'win32':
     return 0
 
+  idl_template = None
+  if dynamic_guids:
+    idl_template = idl
+
+    # posixpath is used here to keep the MIDL-generated files with a uniform
+    # separator of '/' instead of mixed '/' and '\\'.
+    idl = posixpath.join(
+        outdir,
+        os.path.splitext(os.path.basename(idl_template))[0] + '.idl')
+
+    # |idl_template| can contain one or more occurrences of guids that are
+    # substituted with |dynamic_guids|, and then MIDL is run on the substituted
+    # IDL file.
+    generate_idl_from_template(idl_template, dynamic_guids, idl)
+
   # On Windows, run midl.exe on the input and check that its outputs are
-  # identical to the checked-in outputs (after possibly replacing their main
-  # class guid).
-  tmp_dir = tempfile.mkdtemp()
-  delete_tmp_dir = True
+  # identical to the checked-in outputs (after replacing guids if
+  # |dynamic_guid(s)| is specified).
 
   # Read the environment block from the file. This is stored in the format used
   # by CreateProcess. Drop last 2 NULs, one for list terminator, one for
@@ -330,57 +396,48 @@ def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, clang,
   preprocessor_options += ''.join(
       [' ' + flag for flag in flags if flag.startswith('/D')])
   args = ['midl', '/nologo'] + list(flags) + [
-      '/out', tmp_dir,
-      '/tlb', tlb,
-      '/h', h,
-      '/dlldata', dlldata,
-      '/iid', iid,
-      '/proxy', proxy,
-      '/cpp_cmd', clang,
-      '/cpp_opt', preprocessor_options,
-      idl]
-  try:
-    popen = subprocess.Popen(args, shell=True, env=env_dict,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    out, _ = popen.communicate()
-    # Filter junk out of stdout, and write filtered versions. Output we want
-    # to filter is pairs of lines that look like this:
-    # Processing C:\Program Files (x86)\Microsoft SDKs\...\include\objidl.idl
-    # objidl.idl
-    lines = out.decode('utf-8').splitlines()
-    prefixes = ('Processing ', '64 bit Processing ')
-    processing = set(os.path.basename(x)
-                     for x in lines if x.startswith(prefixes))
-    for line in lines:
-      if not line.startswith(prefixes) and line not in processing:
-        print(line)
-    if popen.returncode != 0:
-      return popen.returncode
+      '/tlb', tlb, '/h', h, '/dlldata', dlldata, '/iid', iid, '/proxy', proxy,
+      '/cpp_cmd', clang, '/cpp_opt', preprocessor_options, idl
+  ]
 
-    for f in os.listdir(tmp_dir):
-      ZapTimestamp(os.path.join(tmp_dir, f))
+  returncode, midl_output_dir = run_midl(args, env_dict)
+  if returncode != 0:
+    return returncode
 
-    # Now compare the output in tmp_dir to the copied-over outputs.
-    diff = filecmp.dircmp(tmp_dir, outdir)
-    if diff.diff_files:
-      print('midl.exe output different from files in %s, see %s' % (outdir,
-                                                                    tmp_dir))
-      for f in diff.diff_files:
-        if f.endswith('.tlb'): continue
-        fromfile = os.path.join(outdir, f)
-        tofile = os.path.join(tmp_dir, f)
-        print(''.join(
-            difflib.unified_diff(
-                io.open(fromfile).readlines(),
-                io.open(tofile).readlines(), fromfile, tofile)))
-      delete_tmp_dir = False
-      print('To rebaseline:')
-      print(r'  copy /y %s\* %s' % (tmp_dir, source))
-      sys.exit(1)
-    return 0
-  finally:
-    if os.path.exists(tmp_dir) and delete_tmp_dir:
-      shutil.rmtree(tmp_dir)
+  # Now compare the output in midl_output_dir to the copied-over outputs.
+  diff = filecmp.dircmp(midl_output_dir, outdir)
+  if diff.diff_files:
+    print('midl.exe output different from files in %s, see %s' %
+          (outdir, midl_output_dir))
+    for f in diff.diff_files:
+      if f.endswith('.tlb'): continue
+      fromfile = os.path.join(outdir, f)
+      tofile = os.path.join(midl_output_dir, f)
+      print(''.join(
+          difflib.unified_diff(
+              io.open(fromfile).readlines(),
+              io.open(tofile).readlines(), fromfile, tofile)))
+
+    if dynamic_guids:
+      # |idl_template| can contain one or more occurrences of guids prefixed
+      # with 'PLACEHOLDER-GUID-'. We first remove the extraneous
+      # 'PLACEHOLDER-GUID-' prefix and then run MIDL on the substituted IDL
+      # file.
+      # No guid substitutions are done at this point, because we want to compile
+      # with the placeholder guids and then instruct the user to copy the output
+      # over to |source| which is typically src\third_party\win_build_output\.
+      # In future runs, the placeholder guids in |source| are replaced with the
+      # guids specified in |dynamic_guids|.
+      generate_idl_from_template(idl_template, None, idl)
+      returncode, midl_output_dir = run_midl(args, env_dict)
+      if returncode != 0:
+        return returncode
+
+    print('To rebaseline:')
+    print(r'  copy /y %s\* %s' % (midl_output_dir, source))
+    return 1
+
+  return 0
 
 
 if __name__ == '__main__':
