@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
   SiteInstance* site_instance = child->current_frame_host()->GetSiteInstance();
   RenderViewHost* rvh = child->current_frame_host()->render_view_host();
   RenderProcessHost* rph = child->current_frame_host()->GetProcess();
-  EXPECT_NE(shell()->web_contents()->GetRenderViewHost(), rvh);
+  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetRenderViewHost(), rvh);
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(), site_instance);
   EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
   {
@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossSiteIframe) {
   // top level one and the previous one.
   ASSERT_EQ(2U, root->child_count());
   child = root->child_at(0);
-  EXPECT_NE(shell()->web_contents()->GetRenderViewHost(),
+  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetRenderViewHost(),
             child->current_frame_host()->render_view_host());
   EXPECT_NE(rvh, child->current_frame_host()->render_view_host());
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
@@ -5832,8 +5832,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(root->child_at(0), root->frame_tree()->GetFocusedFrame());
 
   // Click on the root frame.
-  SimulateMouseClick(shell()->web_contents()->GetRenderViewHost()->GetWidget(),
-                     1, 1);
+  SimulateMouseClick(
+      shell()->web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget(),
+      1, 1);
 
   // Check that the subframe lost focus and fired blur event on its
   // document's body.
