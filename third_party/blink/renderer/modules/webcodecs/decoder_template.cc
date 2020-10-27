@@ -181,7 +181,7 @@ void DecoderTemplate<Traits>::close(ExceptionState& exception_state) {
   if (ThrowIfCodecStateClosed(state_, "close", exception_state))
     return;
 
-  Shutdown(false);
+  Shutdown();
 }
 
 template <typename Traits>
@@ -227,7 +227,9 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
                                      media_log_.get());
     if (!decoder_) {
-      HandleError();
+      HandleError("Configuration error",
+                  media::Status(media::StatusCode::kDecoderCreationFailed,
+                                "Could not create decoder."));
       return false;
     }
 
@@ -274,7 +276,10 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   // TODO(sandersd): If a reset has been requested, complete immediately.
 
   if (!decoder_) {
-    HandleError();
+    HandleError(
+        "Decoding error",
+        media::Status(media::StatusCode::kDecoderInitializeNeverCompleted,
+                      "No decoder found."));
     return false;
   }
 
@@ -286,7 +291,9 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
 
   // The request may be invalid, if so report that now.
   if (!request->decoder_buffer || request->decoder_buffer->data_size() == 0) {
-    HandleError();
+    HandleError("Decoding error",
+                media::Status(media::StatusCode::kDecoderFailedDecode,
+                              "Null or empty decoder buffer."));
     return false;
   }
 
@@ -353,16 +360,26 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
 }
 
 template <typename Traits>
-void DecoderTemplate<Traits>::HandleError() {
+void DecoderTemplate<Traits>::HandleError(std::string context,
+                                          media::Status status) {
   DVLOG(1) << __func__;
   if (IsClosed())
     return;
 
-  Shutdown(true);
+  media_log_->NotifyError(status);
+
+  std::string message =
+      context + (status.message().empty() ? "." : ": " + status.message());
+
+  // We could have different DOMExceptionCodes, but for the moment, all of our
+  // exceptions seem appropriate as operation errors.
+  auto* ex = MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kOperationError, message.c_str());
+  Shutdown(ex);
 }
 
 template <typename Traits>
-void DecoderTemplate<Traits>::Shutdown(bool is_error) {
+void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   DVLOG(3) << __func__;
   DCHECK(!IsClosed());
 
@@ -384,9 +401,12 @@ void DecoderTemplate<Traits>::Shutdown(bool is_error) {
   requested_resets_ = 0;
 
   // Fire the error callback if necessary.
-  // TODO(sandersd): Create a DOMException to report.
-  if (is_error)
-    error_cb->InvokeAndReportException(nullptr, nullptr);
+  if (exception)
+    error_cb->InvokeAndReportException(nullptr, exception);
+
+  // TODO(http://crbug.com/1139089): Should |exception| be given to the promise
+  // resolvers? VideoEncoder resolves promises with exceptions, so these should
+  // at least be unified.
 
   // Clear any pending requests, rejecting all promises.
   if (pending_request_ && pending_request_->resolver)
@@ -410,7 +430,7 @@ void DecoderTemplate<Traits>::OnConfigureFlushDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
   if (!status.is_ok()) {
-    HandleError();
+    HandleError("Configuration error", status);
     return;
   }
 
@@ -431,9 +451,7 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
   if (!status.is_ok()) {
-    // TODO(tmathmeyer): this drops the media error - should we consider logging
-    // it or converting it to the DOMException type somehow?
-    HandleError();
+    HandleError("Decoder initialization error", status);
     return;
   }
 
@@ -450,7 +468,7 @@ void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id, media::Status status) {
     return;
 
   if (!status.is_ok() && status.code() != media::StatusCode::kAborted) {
-    HandleError();
+    HandleError("Decoding error", status);
     return;
   }
 
@@ -470,7 +488,7 @@ void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kFlush);
 
   if (!status.is_ok()) {
-    HandleError();
+    HandleError("Flushing error", status);
     return;
   }
 

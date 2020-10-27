@@ -100,8 +100,8 @@ class MODULES_EXPORT DecoderTemplate
   bool ProcessDecodeRequest(Request* request);
   bool ProcessFlushRequest(Request* request);
   bool ProcessResetRequest(Request* request);
-  void HandleError();
-  void Shutdown(bool is_error);
+  void HandleError(std::string context, media::Status);
+  void Shutdown(DOMException* ex = nullptr);
 
   // Called by |decoder_|.
   void OnInitializeDone(media::Status status);
