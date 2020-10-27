@@ -66,15 +66,23 @@ void CopyLinkToTextMenuObserver::ExecuteCommand(int command_id) {
   // the generated string if it succeeds or an empty string if it fails.
   content::RenderFrameHost* main_frame =
       proxy_->GetWebContents()->GetMainFrame();
-  if (main_frame) {
-    main_frame->GetRemoteInterfaces()->GetInterface(
-        remote_.BindNewPipeAndPassReceiver());
-    remote_->GenerateSelector(
-        base::BindOnce(&CopyLinkToTextMenuObserver::OnGeneratedSelector,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::make_unique<ui::ClipboardDataEndpoint>(
-                           main_frame->GetLastCommittedOrigin())));
+  if (!main_frame)
+    return;
+
+  if (main_frame != proxy_->GetWebContents()->GetFocusedFrame()) {
+    OnGeneratedSelector(std::make_unique<ui::ClipboardDataEndpoint>(
+                            main_frame->GetLastCommittedOrigin()),
+                        std::string());
+    return;
   }
+
+  main_frame->GetRemoteInterfaces()->GetInterface(
+      remote_.BindNewPipeAndPassReceiver());
+  remote_->GenerateSelector(
+      base::BindOnce(&CopyLinkToTextMenuObserver::OnGeneratedSelector,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::make_unique<ui::ClipboardDataEndpoint>(
+                         main_frame->GetLastCommittedOrigin())));
 }
 
 void CopyLinkToTextMenuObserver::OnGeneratedSelector(

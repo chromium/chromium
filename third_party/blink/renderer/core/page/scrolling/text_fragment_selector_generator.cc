@@ -180,6 +180,8 @@ void TextFragmentSelectorGenerator::UpdateSelection(
 void TextFragmentSelectorGenerator::BindTextFragmentSelectorProducer(
     mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
         producer) {
+  DCHECK(selection_frame_);
+
   selector_producer_.reset();
   selector_producer_.Bind(
       std::move(producer),
