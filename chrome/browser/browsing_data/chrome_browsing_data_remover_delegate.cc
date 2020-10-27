@@ -157,8 +157,9 @@
 #include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/user_manager/user.h"
 #endif  // defined(OS_CHROMEOS)
@@ -1062,16 +1063,27 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (!user) {
         LOG(WARNING) << "Failed to find user for current profile.";
       } else {
-        chromeos::CryptohomeClient::Get()->TpmAttestationDeleteKeysByPrefix(
-            chromeos::attestation::KEY_USER,
-            cryptohome::CreateAccountIdentifierFromAccountId(
-                user->GetAccountId()),
-            chromeos::attestation::kContentProtectionKeyPrefix,
-            base::BindOnce(
-                &ChromeBrowsingDataRemoverDelegate::OnClearPlatformKeys,
-                weak_ptr_factory_.GetWeakPtr(),
-                CreateTaskCompletionClosure(
-                    TracingDataType::kTpmAttestationKeys)));
+        ::attestation::DeleteKeysRequest request;
+        request.set_username(cryptohome::CreateAccountIdentifierFromAccountId(
+                                 user->GetAccountId())
+                                 .account_id());
+        request.set_key_label_match(
+            chromeos::attestation::kContentProtectionKeyPrefix);
+        request.set_match_behavior(
+            ::attestation::DeleteKeysRequest::MATCH_BEHAVIOR_PREFIX);
+
+        auto callback = base::BindOnce(
+            &ChromeBrowsingDataRemoverDelegate::OnClearPlatformKeys,
+            weak_ptr_factory_.GetWeakPtr(),
+            CreateTaskCompletionClosure(TracingDataType::kTpmAttestationKeys));
+        chromeos::AttestationClient::Get()->DeleteKeys(
+            request, base::BindOnce(
+                         [](decltype(callback) cb,
+                            const ::attestation::DeleteKeysReply& reply) {
+                           std::move(cb).Run(reply.status() ==
+                                             ::attestation::STATUS_SUCCESS);
+                         },
+                         std::move(callback)));
       }
     }
 #endif  // defined(OS_CHROMEOS)
@@ -1281,9 +1293,8 @@ bool ChromeBrowsingDataRemoverDelegate::IsForAllTime() const {
 #if defined(OS_CHROMEOS)
 void ChromeBrowsingDataRemoverDelegate::OnClearPlatformKeys(
     base::OnceClosure done,
-    base::Optional<bool> result) {
-  LOG_IF(ERROR, !result.has_value() || !result.value())
-      << "Failed to clear platform keys.";
+    bool result) {
+  LOG_IF(ERROR, !result) << "Failed to clear platform keys.";
   std::move(done).Run();
 }
 #endif

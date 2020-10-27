@@ -2326,6 +2326,8 @@ static_library("browser") {
       "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/components/scanning",
       "//chromeos/components/scanning/mojom",
+      "//chromeos/dbus/attestation",
+      "//chromeos/dbus/attestation:attestation_proto",
       "//chromeos/dbus/cryptohome",
       "//chromeos/dbus/power",
       "//chromeos/services/device_sync/public/cpp:prefs",

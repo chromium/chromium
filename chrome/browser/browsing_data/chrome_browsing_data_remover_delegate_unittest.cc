@@ -143,7 +143,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // defined(OS_CHROMEOS)
@@ -269,27 +269,6 @@ class TestSearchEngineDelegate
 
  private:
   base::RepeatingClosure dse_changed_callback_;
-};
-#endif
-
-#if defined(OS_CHROMEOS)
-// Customized fake class to count TpmAttestationDeleteKeys call.
-class FakeCryptohomeClient : public chromeos::FakeCryptohomeClient {
- public:
-  void TpmAttestationDeleteKeysByPrefix(
-      chromeos::attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_prefix,
-      chromeos::DBusMethodCallback<bool> callback) override {
-    ++delete_keys_call_count_;
-    chromeos::FakeCryptohomeClient::TpmAttestationDeleteKeysByPrefix(
-        key_type, cryptohome_id, key_prefix, std::move(callback));
-  }
-
-  int delete_keys_call_count() const { return delete_keys_call_count_; }
-
- private:
-  int delete_keys_call_count_ = 0;
 };
 #endif
 
@@ -1766,19 +1745,18 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   user_manager::ScopedUserManager user_manager_enabler(
       base::WrapUnique(mock_user_manager));
 
-  // Creates a derived fake global instance destroyed in
-  // CryptohomeClient::Shutdown().
-  auto* cryptohome_client = new FakeCryptohomeClient();
-
+  chromeos::AttestationClient::InitializeFake();
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES, false);
 
-  // Expect exactly one call.  No calls means no attempt to delete keys and more
-  // than one call means a significant performance problem.
-  EXPECT_EQ(1, cryptohome_client->delete_keys_call_count());
+  const std::vector<::attestation::DeleteKeysRequest>& history =
+      chromeos::AttestationClient::Get()
+          ->GetTestInterface()
+          ->delete_keys_history();
+  EXPECT_EQ(history.size(), 1);
 
-  chromeos::CryptohomeClient::Shutdown();
+  chromeos::AttestationClient::Shutdown();
 }
 #endif
 

@@ -277,7 +277,7 @@ class ChromeBrowsingDataRemoverDelegate
   bool IsForAllTime() const;
 
 #if defined(OS_CHROMEOS)
-  void OnClearPlatformKeys(base::OnceClosure done, base::Optional<bool> result);
+  void OnClearPlatformKeys(base::OnceClosure done, bool);
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
