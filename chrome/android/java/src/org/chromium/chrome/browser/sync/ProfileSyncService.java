@@ -206,6 +206,11 @@ public class ProfileSyncService {
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
+    public boolean isAuthenticatedAccountPrimary() {
+        return ProfileSyncServiceJni.get().isAuthenticatedAccountPrimary(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
     /**
      * Gets the set of data types that are "preferred" in sync. Those are the
      * chosen ones (see getChosenDataTypes), plus any that are implied by them.
@@ -666,6 +671,8 @@ public class ProfileSyncService {
         void setDecoupledFromAndroidMasterSync(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean getDecoupledFromAndroidMasterSync(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isAuthenticatedAccountPrimary(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isEngineInitialized(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);

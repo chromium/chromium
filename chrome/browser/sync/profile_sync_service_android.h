@@ -137,6 +137,9 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   jboolean GetDecoupledFromAndroidMasterSync(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+  jboolean IsAuthenticatedAccountPrimary(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
 
   // Pure SyncPrefs calls.
   jboolean IsPassphrasePrompted(

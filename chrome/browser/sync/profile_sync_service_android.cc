@@ -406,6 +406,13 @@ jboolean ProfileSyncServiceAndroid::GetDecoupledFromAndroidMasterSync(
   return sync_service_->GetDecoupledFromAndroidMasterSync();
 }
 
+jboolean ProfileSyncServiceAndroid::IsAuthenticatedAccountPrimary(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return sync_service_->IsAuthenticatedAccountPrimary();
+}
+
 jboolean ProfileSyncServiceAndroid::IsPassphrasePrompted(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
