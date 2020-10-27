@@ -41,8 +41,10 @@ void MouseDownInWebContents(content::WebContents* web_contents) {
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(10, 10);
   mouse_event.click_count = 1;
-  web_contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  web_contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
 }
 
 void MouseUpInWebContents(content::WebContents* web_contents) {
@@ -52,8 +54,10 @@ void MouseUpInWebContents(content::WebContents* web_contents) {
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(10, 10);
   mouse_event.click_count = 1;
-  web_contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
-      mouse_event);
+  web_contents->GetMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardMouseEvent(mouse_event);
 }
 
 class ExtensionBindingsApiTest : public ExtensionApiTest {

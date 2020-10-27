@@ -364,6 +364,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, MAYBE_BookmarkAppGetsNormalProcess) {
   content::RenderProcessHost* old_process = browser()
                                                 ->tab_strip_model()
                                                 ->GetWebContentsAt(2)
+                                                ->GetMainFrame()
                                                 ->GetRenderViewHost()
                                                 ->GetProcess();
   NavigateInRenderer(browser()->tab_strip_model()->GetWebContentsAt(2),
