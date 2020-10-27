@@ -1887,9 +1887,6 @@ Polymer({
       case chromeos.networkConfig.mojom.NetworkType.kCellular:
         fields.push(
             'cellular.activationState', 'cellular.servingOperator.name');
-        if (this.managedProperties_.restrictedConnectivity) {
-          fields.push('restrictedConnectivity');
-        }
         break;
       case chromeos.networkConfig.mojom.NetworkType.kTether:
         fields.push(
@@ -1917,10 +1914,10 @@ Polymer({
         }
         break;
       case chromeos.networkConfig.mojom.NetworkType.kWiFi:
-        if (this.managedProperties_.restrictedConnectivity) {
-          fields.push('restrictedConnectivity');
-        }
         break;
+    }
+    if (OncMojo.isRestrictedConnectivity(this.managedProperties_.portalState)) {
+      fields.push('portalState');
     }
     return fields;
   },

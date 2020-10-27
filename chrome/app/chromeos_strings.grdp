@@ -1758,17 +1758,29 @@
   <message name="IDS_ONC_EAP_USER_CERT" desc="ONC Property label for EAP User Certs">
     User certificate
   </message>
-  <message name="IDS_ONC_NOT_CONNECTED" desc="Settings > Internet, text in network summary when a network is not connecting or connected.">
-    Not Connected
-  </message>
   <message name="IDS_ONC_MAC_ADDRESS" desc="ONC Property label for MacAddress">
     MAC address
   </message>
   <message name="IDS_ONC_NAME" desc="ONC Property label for the network Name (displayed when configuring a VPN service name)">
     Service name
   </message>
-  <message name="IDS_ONC_RESTRICTED_CONNECTIVITY" desc="ONC Property label for RestrictedConnectivity">
-    Restricted IP
+  <message name="IDS_ONC_NOT_CONNECTED" desc="Settings > Internet, text in network summary when a network is not connecting or connected.">
+    Not Connected
+  </message>
+  <message name="IDS_ONC_PORTAL_STATE" desc="Settings > Internet, label in network details page for the captive portal state.">
+    Portal State
+  </message>
+  <message name="IDS_ONC_PORTAL_STATE_NO_INTERNET" desc="Settings > Internet, text in network details page when no internet connection is avialable.">
+    No internet
+  </message>
+  <message name="IDS_ONC_PORTAL_STATE_PORTAL" desc="Settings > Internet, text in network details page when a portal state was detected.">
+    Captive portal detected
+  </message>
+  <message name="IDS_ONC_PORTAL_STATE_PORTAL_SUSPECTED" desc="Settings > Internet, text in network details page when a portal state is suspected.">
+    Captive portal suspected
+  </message>
+  <message name="IDS_ONC_PORTAL_STATE_PROXY_AUTH" desc="Settings > Internet, text in network details page when a portal state was detected.">
+    Proxy authentication required
   </message>
   <message name="IDS_ONC_TETHER_BATTERY_PERCENTAGE" desc="Settings > Internet > Title of section which displays the battery percentage of another device which provides a tether hotspot for the current device to connect to.">
     Battery

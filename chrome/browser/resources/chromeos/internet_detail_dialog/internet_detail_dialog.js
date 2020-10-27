@@ -534,17 +534,15 @@ Polymer({
       fields.push(
           'cellular.activationState', 'cellular.servingOperator.name',
           'cellular.roamingState');
-      if (this.managedProperties_.restrictedConnectivity) {
-        fields.push('restrictedConnectivity');
-      }
+    }
+    if (OncMojo.isRestrictedConnectivity(this.managedProperties_.portalState)) {
+      fields.push('portalState');
+    }
+    if (type == chromeos.networkConfig.mojom.NetworkType.kCellular) {
       fields.push(
           'cellular.homeProvider.name', 'cellular.meid', 'cellular.esn',
           'cellular.iccid', 'cellular.imei', 'cellular.imsi', 'cellular.mdn',
           'cellular.min');
-    } else if (type == chromeos.networkConfig.mojom.NetworkType.kWiFi) {
-      if (this.managedProperties_.restrictedConnectivity) {
-        fields.push('restrictedConnectivity');
-      }
     }
     return fields;
   },

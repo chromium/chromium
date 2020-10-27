@@ -187,6 +187,8 @@ struct NetworkStateProperties {
   string guid;
   // The human readable name of the network, e.g. WiFi SSID or network type.
   string name;
+  // The captive portal state when connectionState == kPortal.
+  PortalState portal_state = kUnknown;
   // The relative priority of the network. Larger values have higher priority.
   int32 priority;
   // The proxy mode affecting this network. Includes any settings that affect
@@ -575,7 +577,7 @@ struct ManagedProperties {
   ManagedString? name_servers_config_type;
   ManagedInt32? priority;
   ManagedProxySettings? proxy_settings;
-  bool restricted_connectivity = false;
+  PortalState portal_state = kUnknown;
   ManagedIPConfigProperties? static_ip_config;
   IPConfigProperties? saved_ip_config;
   // |type| is explicitly provided here to simplify UI code and will always

@@ -224,6 +224,26 @@ mojom::DeviceStateType GetMojoDeviceStateType(
   return mojom::DeviceStateType::kUnavailable;
 }
 
+mojom::PortalState GetMojoPortalState(
+    const NetworkState::PortalState portal_state) {
+  switch (portal_state) {
+    case NetworkState::PortalState::kUnknown:
+      return mojom::PortalState::kUnknown;
+    case NetworkState::PortalState::kOnline:
+      return mojom::PortalState::kOnline;
+    case NetworkState::PortalState::kPortalSuspected:
+      return mojom::PortalState::kPortalSuspected;
+    case NetworkState::PortalState::kPortal:
+      return mojom::PortalState::kPortal;
+    case NetworkState::PortalState::kProxyAuthRequired:
+      return mojom::PortalState::kProxyAuthRequired;
+    case NetworkState::PortalState::kNoInternet:
+      return mojom::PortalState::kNoInternet;
+  }
+  NOTREACHED();
+  return mojom::PortalState::kUnknown;
+}
+
 mojom::OncSource GetMojoOncSource(const NetworkState* network) {
   ::onc::ONCSource source = network->onc_source();
   switch (source) {
@@ -310,6 +330,7 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
     result->error_state = network->GetError();
   result->guid = network->guid();
   result->name = network->name();
+  result->portal_state = GetMojoPortalState(network->portal_state());
   result->priority = network->priority();
   result->prohibited_by_policy = network->blocked_by_policy();
   result->source = GetMojoOncSource(network);
@@ -1216,8 +1237,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       ip_configs.push_back(GetIPConfig(&ip_config_value));
     result->ip_configs = std::move(ip_configs);
   }
-  result->restricted_connectivity =
-      GetBoolean(properties, ::onc::network_config::kRestrictedConnectivity);
+  result->portal_state = GetMojoPortalState(network_state->portal_state());
   const base::Value* saved_ip_config =
       GetDictionary(properties, ::onc::network_config::kSavedIPConfig);
   if (saved_ip_config)

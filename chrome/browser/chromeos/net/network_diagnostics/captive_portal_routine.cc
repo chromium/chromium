@@ -82,7 +82,17 @@ void CaptivePortalRoutine::OnManagedPropertiesReceived(
     AnalyzeResultsAndExecuteCallback();
     return;
   }
-  restricted_connectivity_ = managed_properties->restricted_connectivity;
+  switch (managed_properties->portal_state) {
+    case network_config::mojom::PortalState::kUnknown:
+    case network_config::mojom::PortalState::kOnline:
+      break;
+    case network_config::mojom::PortalState::kPortalSuspected:
+    case network_config::mojom::PortalState::kPortal:
+    case network_config::mojom::PortalState::kProxyAuthRequired:
+    case network_config::mojom::PortalState::kNoInternet:
+      restricted_connectivity_ = true;
+      break;
+  }
   AnalyzeResultsAndExecuteCallback();
 }
 

@@ -303,6 +303,9 @@ Polymer({
         valueStr = OncMojo.getActivationStateTypeString(
             /** @type{!chromeos.networkConfig.mojom.ActivationStateType}*/ (
                 value));
+      } else if (key === 'portalState') {
+        valueStr = OncMojo.getPortalStateString(
+            /** @type{!chromeos.networkConfig.mojom.PortalState}*/ (value));
       } else if (key === 'vpn.type') {
         valueStr = OncMojo.getVpnTypeString(
             /** @type{!chromeos.networkConfig.mojom.VpnType}*/ (value));
