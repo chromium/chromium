@@ -183,8 +183,11 @@ class PasswordGenerationInteractiveTest
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
     event.windows_key_code = key;
-    WebContents()->GetRenderViewHost()->GetWidget()->ForwardKeyboardEvent(
-        event);
+    WebContents()
+        ->GetMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget()
+        ->ForwardKeyboardEvent(event);
   }
 
   bool GenerationPopupShowing() {

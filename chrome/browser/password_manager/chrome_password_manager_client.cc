@@ -272,7 +272,7 @@ ChromePasswordManagerClient::~ChromePasswordManagerClient() {
   VLOG(1) << "wc: " << web_contents();
   if (web_contents()) {
     VLOG(1) << "wc->GetRenderViewHost(): "
-            << web_contents()->GetRenderViewHost();
+            << web_contents()->GetMainFrame()->GetRenderViewHost();
   }
 #endif
 }
@@ -1196,7 +1196,8 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
   // TODO(https://crbug.com/1104919): Remove this logging.
   VLOG(1) << __FUNCTION__ << ": this: " << this;
   VLOG(1) << "wc: " << web_contents;
-  VLOG(1) << "wc->GetRenderViewHost(): " << web_contents->GetRenderViewHost();
+  VLOG(1) << "wc->GetRenderViewHost(): "
+          << web_contents->GetMainFrame()->GetRenderViewHost();
 #endif
 }
 
@@ -1233,10 +1234,11 @@ void ChromePasswordManagerClient::DidFinishNavigation(
   // TODO(https://crbug.com/1104919): Remove this logging.
   VLOG(1) << __FUNCTION__ << ": this: " << this;
   VLOG(1) << "wc: " << web_contents();
-  VLOG(1) << "wc->GetRenderViewHost(): " << web_contents()->GetRenderViewHost();
+  VLOG(1) << "wc->GetRenderViewHost(): "
+          << web_contents()->GetMainFrame()->GetRenderViewHost();
 #endif
   AddToWidgetInputEventObservers(
-      web_contents()->GetRenderViewHost()->GetWidget(), this);
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget(), this);
 #if defined(OS_ANDROID)
   // This unblacklisted info is only used after form submission to determine
   // whether to record PasswordManager.SaveUIDismissalReasonAfterUnblacklisting.
@@ -1257,16 +1259,17 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
   // don't like to be destroyed earlier than the pipe itself.
   content_credential_manager_.DisconnectBinding();
 
-  DCHECK(web_contents()->GetRenderViewHost());
+  DCHECK(web_contents()->GetMainFrame()->GetRenderViewHost());
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(https://crbug.com/1104919): Remove this logging.
   VLOG(1) << __FUNCTION__ << ": this: " << this;
   VLOG(1) << "wc: " << web_contents();
-  VLOG(1) << "wc->GetRenderViewHost(): " << web_contents()->GetRenderViewHost();
+  VLOG(1) << "wc->GetRenderViewHost(): "
+          << web_contents()->GetMainFrame()->GetRenderViewHost();
 #endif
   RemoveFromWidgetInputEventObservers(
-      web_contents()->GetRenderViewHost()->GetWidget(), this);
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget(), this);
 
   auto* autofill_assistant_manager =
       autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
@@ -1281,7 +1284,8 @@ void ChromePasswordManagerClient::OnPaste() {
   // TODO(https://crbug.com/1104919): Remove this logging.
   VLOG(1) << __FUNCTION__ << ": this: " << this;
   VLOG(1) << "wc: " << web_contents();
-  VLOG(1) << "wc->GetRenderViewHost(): " << web_contents()->GetRenderViewHost();
+  VLOG(1) << "wc->GetRenderViewHost(): "
+          << web_contents()->GetMainFrame()->GetRenderViewHost();
 #endif
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
