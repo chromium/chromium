@@ -70,7 +70,7 @@ class LocalNTPRenderTest : public InProcessBrowserTest {
     content::RenderFrameSubmissionObserver render_frame_observer(active_tab);
 
     content::RenderWidgetHost* render_widget_host =
-        active_tab->GetRenderViewHost()->GetWidget();
+        active_tab->GetMainFrame()->GetRenderViewHost()->GetWidget();
     content::RenderWidgetHostView* view = render_widget_host->GetView();
     ASSERT_TRUE(view && view->IsSurfaceAvailableForCopy());
 
