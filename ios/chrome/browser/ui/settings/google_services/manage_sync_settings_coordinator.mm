@@ -113,9 +113,16 @@ using signin_metrics::PromoAction;
 }
 
 - (void)stop {
+  // If kMobileIdentityConsistency is disabled,
+  // GoogleServicesSettingsCoordinator is in charge to enable sync or not when
+  // being closed. This coordinator displays a sub view.
+  // With kMobileIdentityConsistency enabled:
+  // This coordinator displays the main view and it is in charge to enable sync
+  // or not when being closed.
   // Sync changes should only be commited if the user is authenticated and
   // the sign-in has not been interrupted.
-  if (self.authService->IsAuthenticated() || !self.signinInterrupted) {
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
+      (self.authService->IsAuthenticated() || !self.signinInterrupted)) {
     SyncSetupService* syncSetupService =
         SyncSetupServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());

@@ -35,6 +35,8 @@ using chrome_test_util::AddAccountButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::SettingsDoneButton;
+using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::SyncSettingsConfirmButton;
 
 // Integration tests using the Google services settings screen.
 @interface GoogleServicesSettingsTestCase : ChromeTestCase
@@ -347,6 +349,47 @@ using chrome_test_util::SettingsDoneButton;
       [ChromeEarlGrey userBooleanPref:password_manager::prefs::
                                           kPasswordLeakDetectionEnabled],
       @"Failed to toggle-on password leak checks");
+}
+
+// Tests the following steps:
+//  + Opens sign-in from Google services
+//  + Taps on the settings link to open the advanced sign-in settings
+//  + Opens "Manage Sync" twice
+// The "Manage Sync" should not be disabled when closing "Manage Sync" view.
+- (void)testOpenManageSyncSettings {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::PrimarySignInButton()];
+  [SigninEarlGreyUI tapSettingsLink];
+  // Open "Manage Sync" settings.
+  id<GREYMatcher> manageSyncMatcher =
+      [self cellMatcherWithTitleID:IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE
+                      detailTextID:0];
+  [[EarlGrey selectElementWithMatcher:manageSyncMatcher]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> backButtonMatcher =
+      grey_allOf(SettingsMenuBackButton(),
+                 grey_descendant(grey_kindOfClass([UIImageView class])), nil);
+  // Back to the Google services settings view.
+  [[EarlGrey selectElementWithMatcher:backButtonMatcher]
+      performAction:grey_tap()];
+  // Open "Manage Sync" settings, again.
+  [[EarlGrey selectElementWithMatcher:manageSyncMatcher]
+      performAction:grey_tap()];
+  // Back to the Google services settings view.
+  [[EarlGrey selectElementWithMatcher:backButtonMatcher]
+      performAction:grey_tap()];
+
+  // Close the advance settings.
+  [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
+      performAction:grey_tap()];
+
+  // Test the user is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 #pragma mark - Helpers
