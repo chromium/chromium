@@ -6,6 +6,7 @@
 
 #include "base/fuchsia/service_directory_test_base.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -21,15 +22,31 @@ TEST_F(ScopedServiceBindingTest, ConnectTwice) {
   VerifyTestInterface(&stub2, ZX_OK);
 }
 
+// Verifies that ScopedServiceBinding allows connection more than once.
+TEST_F(ScopedServiceBindingTest, ConnectTwiceNewName) {
+  const char kInterfaceName[] = "fuchsia.TestInterface2";
+
+  ScopedServiceBinding<testfidl::TestInterface> new_service_binding(
+      outgoing_directory_.get(), &test_service_, kInterfaceName);
+
+  testfidl::TestInterfacePtr stub, stub2;
+  public_service_directory_->Connect(
+       kInterfaceName, stub.NewRequest().TakeChannel());
+  public_service_directory_->Connect(
+       kInterfaceName, stub2.NewRequest().TakeChannel());
+  VerifyTestInterface(&stub, ZX_OK);
+  VerifyTestInterface(&stub2, ZX_OK);
+}
+
 // Verifies that ScopedSingleClientServiceBinding allows a different name.
 TEST_F(ScopedServiceBindingTest, SingleClientConnectNewName) {
-  const std::string interface_name = "fuchsia.TestInterface2";
+  const char kInterfaceName[] = "fuchsia.TestInterface2";
   auto service_binding_new_name_ = std::make_unique<
       ScopedSingleClientServiceBinding<testfidl::TestInterface>>(
-          outgoing_directory_.get(), &test_service_, interface_name);
+          outgoing_directory_.get(), &test_service_, kInterfaceName);
 
   testfidl::TestInterfacePtr stub;
-  public_service_directory_->Connect(interface_name,
+  public_service_directory_->Connect(kInterfaceName,
                                      stub.NewRequest().TakeChannel());
   VerifyTestInterface(&stub, ZX_OK);
 }

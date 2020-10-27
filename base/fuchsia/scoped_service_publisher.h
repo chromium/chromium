@@ -14,6 +14,7 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 namespace fuchsia {
@@ -25,16 +26,16 @@ class BASE_EXPORT ScopedServicePublisher {
   // |outgoing_directory| and |handler| must outlive the binding.
   ScopedServicePublisher(sys::OutgoingDirectory* outgoing_directory,
                          fidl::InterfaceRequestHandler<Interface> handler,
-                         std::string name = Interface::Name_)
+                         base::StringPiece name = Interface::Name_)
       : ScopedServicePublisher(outgoing_directory->GetOrCreateDirectory("svc"),
-                               std::move(handler), std::move(name)) {}
+                               std::move(handler), name) {}
 
   // Publishes a service in the specified |pseudo_dir|. |pseudo_dir| and
   // |handler| must outlive the binding.
   ScopedServicePublisher(vfs::PseudoDir* pseudo_dir,
                          fidl::InterfaceRequestHandler<Interface> handler,
-                         std::string name = Interface::Name_)
-      : pseudo_dir_(pseudo_dir), name_(std::move(name)) {
+                         base::StringPiece name = Interface::Name_)
+      : pseudo_dir_(pseudo_dir), name_(name.as_string()) {
     pseudo_dir_->AddEntry(name_,
                           std::make_unique<vfs::Service>(std::move(handler)));
   }
