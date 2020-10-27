@@ -84,6 +84,12 @@ public class PaintPreviewHelper {
         tabModelSelector.addObserver(new EmptyTabModelSelectorObserver() {
             @Override
             public void onTabStateInitialized() {
+                // If the first tab shown is not a normal tab, then prevent showing previews in the
+                // future.
+                if (preventShowOnRestore(tabModelSelector.getCurrentTab())) {
+                    sShouldShowOnRestore = false;
+                }
+
                 // Avoid running the audit in multi-window mode as otherwise we will delete
                 // data that is possibly in use by the other Activity's TabModelSelector.
                 PaintPreviewTabServiceFactory.getServiceInstance().onRestoreCompleted(
@@ -91,6 +97,16 @@ public class PaintPreviewHelper {
                         !MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(activity),
                         /*captureOnSwitch=*/false);
                 tabModelSelector.removeObserver(this);
+            }
+
+            private boolean preventShowOnRestore(Tab tab) {
+                if (tab == null || tab.isShowingErrorPage() || tab.isNativePage()) {
+                    return true;
+                }
+
+                String scheme = tab.getUrl().getScheme();
+                boolean httpOrHttps = scheme.equals("http") || scheme.equals("https");
+                return !httpOrHttps;
             }
         });
     }
