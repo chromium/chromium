@@ -293,6 +293,13 @@ void ShellContentBrowserClient::OverrideWebkitPrefs(
     prefs->preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
   }
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceHighContrast)) {
+    prefs->preferred_contrast = blink::mojom::PreferredContrast::kMore;
+  } else {
+    prefs->preferred_contrast = blink::mojom::PreferredContrast::kNoPreference;
+  }
+
   if (override_web_preferences_callback_)
     override_web_preferences_callback_.Run(prefs);
 }

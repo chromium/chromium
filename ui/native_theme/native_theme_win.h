@@ -73,6 +73,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   gfx::Rect GetNinePatchAperture(Part part) const override;
   bool ShouldUseDarkColors() const override;
   PreferredColorScheme CalculatePreferredColorScheme() const override;
+  PreferredContrast CalculatePreferredContrast() const override;
   ColorScheme GetDefaultSystemColorScheme() const override;
 
  protected:
@@ -209,7 +210,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   gfx::ScopedSysColorChangeListener color_change_listener_;
 
   // Used to notify the web native theme of changes to dark mode, high
-  // contrast, and preferred color scheme.
+  // contrast, preferred color scheme, and preferred contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
 

@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
+import "third_party/blink/public/mojom/css/preferred_contrast.mojom";
 import "third_party/blink/public/mojom/v8_cache_options.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -384,6 +385,10 @@ struct WebPreferences {
   // evaluate the prefers-color-scheme media query and resolve UA color scheme
   // to be used based on the supported-color-schemes META tag and CSS property.
   PreferredColorScheme preferred_color_scheme;
+
+  // The preferred contrast for the web content. Used to evaluate the
+  // prefers-contrast media query.
+  PreferredContrast preferred_contrast;
 
   // Network quality threshold below which resources from iframes are assigned
   // either kVeryLow or kVeryLow Blink priority.

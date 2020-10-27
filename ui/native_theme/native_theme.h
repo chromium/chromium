@@ -107,10 +107,18 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   // OS-level preferred color scheme. (Ex. high contrast or dark mode color
   // preference.)
-  enum PreferredColorScheme {
-    kDark,
-    kLight,
+  enum class PreferredColorScheme {
+    kDark = 0,
+    kLight = 1,
     kMaxValue = kLight,
+  };
+
+  // OS-level preferred contrast. (Ex. high contrast or increased contrast.)
+  enum class PreferredContrast {
+    kNoPreference = 0,
+    kMore = 1,
+    kLess = 2,
+    kMaxValue = kLess,
   };
 
   // IMPORTANT!
@@ -435,6 +443,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // is calculated.
   virtual PreferredColorScheme GetPreferredColorScheme() const;
 
+  // Returns the OS-level user preferred contrast.
+  virtual PreferredContrast GetPreferredContrast() const;
+
   // Returns the system's caption style.
   virtual base::Optional<CaptionStyle> GetSystemCaptionStyle() const;
 
@@ -457,11 +468,14 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
     preferred_color_scheme_ = preferred_color_scheme;
   }
+  void set_preferred_contrast(PreferredContrast preferred_contrast) {
+    preferred_contrast_ = preferred_contrast;
+  }
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
 
-  // Updates the state of dark mode, high contrast, preferred color scheme,
-  // and the map of system colors. Returns true if NativeTheme was updated
-  // as a result, or false if the state of NativeTheme was untouched.
+  // Updates the state of dark mode, high contrast, and the map of system
+  // colors. Returns true if NativeTheme was updated as a result, or false if
+  // the state of NativeTheme was untouched.
   bool UpdateSystemColorInfo(
       bool is_dark_mode,
       bool is_high_contrast,
@@ -495,6 +509,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // calculation will follow the default behavior.
   virtual PreferredColorScheme CalculatePreferredColorScheme() const;
 
+  // Calculates and returns the current user preferred contrast.
+  virtual PreferredContrast CalculatePreferredContrast() const;
+
   // A function to be called by native theme instances that need to set state
   // or listeners with the webinstance in order to provide correct native
   // platform behaviors.
@@ -503,7 +520,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Allows one native theme to observe changes in another. For example, the
   // web native theme for Windows observes the corresponding ui native theme in
   // order to receive changes regarding the state of dark mode, high contrast,
-  // and preferred color scheme.
+  // preferred color scheme and preferred contrast.
   class NATIVE_THEME_EXPORT ColorSchemeNativeThemeObserver
       : public NativeThemeObserver {
    public:
@@ -529,6 +546,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   bool should_use_dark_colors_ = false;
   bool is_high_contrast_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
+  PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
 
   DISALLOW_COPY_AND_ASSIGN(NativeTheme);
 };

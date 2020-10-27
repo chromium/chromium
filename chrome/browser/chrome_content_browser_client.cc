@@ -3421,6 +3421,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     }
   }
 
+  auto* native_theme = GetWebTheme();
 #if !defined(OS_ANDROID)
   if (IsAutoplayAllowedByPolicy(contents, prefs)) {
     // If autoplay is allowed by policy then force the no user gesture required
@@ -3440,7 +3441,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
             : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   }
 
-  auto* native_theme = GetWebTheme();
   switch (native_theme->GetPreferredColorScheme()) {
     case ui::NativeTheme::PreferredColorScheme::kDark:
       web_prefs->preferred_color_scheme =
@@ -3452,6 +3452,19 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       break;
   }
 #endif  // !defined(OS_ANDROID)
+
+  switch (native_theme->GetPreferredContrast()) {
+    case ui::NativeTheme::PreferredContrast::kNoPreference:
+      web_prefs->preferred_contrast =
+          blink::mojom::PreferredContrast::kNoPreference;
+      break;
+    case ui::NativeTheme::PreferredContrast::kMore:
+      web_prefs->preferred_contrast = blink::mojom::PreferredContrast::kMore;
+      break;
+    case ui::NativeTheme::PreferredContrast::kLess:
+      web_prefs->preferred_contrast = blink::mojom::PreferredContrast::kLess;
+      break;
+  }
 
   UpdatePreferredColorSchemesBasedOnURLIfNeeded(
       web_prefs, rvh->GetSiteInstance()->GetSiteURL());

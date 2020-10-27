@@ -134,7 +134,7 @@ test("native_theme_unittests") {
   }
 
   if (is_mac) {
-    sources += [ "native_theme_mac_unittest.cc" ]
+    sources += [ "native_theme_mac_unittest.mm" ]
   }
 
   if (is_win) {

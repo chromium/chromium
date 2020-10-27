@@ -15,6 +15,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-shared.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -292,6 +293,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // to be used based on the supported-color-schemes META tag and CSS property.
   blink::mojom::PreferredColorScheme preferred_color_scheme =
       blink::mojom::PreferredColorScheme::kLight;
+
+  // The preferred contrast for the web content. The contrast is used to
+  // evaluate the prefers-contrast media query.
+  blink::mojom::PreferredContrast preferred_contrast =
+      blink::mojom::PreferredContrast::kNoPreference;
 
   // Network quality threshold below which resources from iframes are assigned
   // either kVeryLow or kVeryLow Blink priority.

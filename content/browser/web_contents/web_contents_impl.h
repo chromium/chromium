@@ -2079,14 +2079,17 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // with OOPIF renderers.
   blink::mojom::TextAutosizerPageInfo text_autosizer_page_info_;
 
-  // Observe native theme for changes to dark mode, and preferred color scheme.
-  // Used to notify the renderer of preferred color scheme changes.
+  // Observe native theme for changes to dark mode, preferred color scheme, and
+  // preferred contrast. Used to notify the renderer of preferred color scheme
+  // and preferred contrast changes.
   ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observer_;
 
   bool using_dark_colors_ = false;
   ui::NativeTheme::PreferredColorScheme preferred_color_scheme_ =
       ui::NativeTheme::PreferredColorScheme::kLight;
+  ui::NativeTheme::PreferredContrast preferred_contrast_ =
+      ui::NativeTheme::PreferredContrast::kNoPreference;
 
   // Prevents navigations in this contents while a javascript modal dialog is
   // showing.

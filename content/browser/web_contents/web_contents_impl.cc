@@ -849,6 +849,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   native_theme_observer_.Add(native_theme);
   using_dark_colors_ = native_theme->ShouldUseDarkColors();
   preferred_color_scheme_ = native_theme->GetPreferredColorScheme();
+  preferred_contrast_ = native_theme->GetPreferredContrast();
 
   screen_change_monitor_ =
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
@@ -8725,6 +8726,8 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   bool using_dark_colors = observed_theme->ShouldUseDarkColors();
   ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
       observed_theme->GetPreferredColorScheme();
+  ui::NativeTheme::PreferredContrast preferred_contrast =
+      observed_theme->GetPreferredContrast();
   bool preferences_changed = false;
 
   if (using_dark_colors_ != using_dark_colors) {
@@ -8733,6 +8736,10 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   }
   if (preferred_color_scheme_ != preferred_color_scheme) {
     preferred_color_scheme_ = preferred_color_scheme;
+    preferences_changed = true;
+  }
+  if (preferred_contrast_ != preferred_contrast) {
+    preferred_contrast_ = preferred_contrast;
     preferences_changed = true;
   }
 

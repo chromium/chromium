@@ -362,6 +362,86 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
 
 INSTANTIATE_TEST_SUITE_P(All, PrefersColorSchemeTest, testing::Bool());
 
+class PrefersContrastTest
+    : public testing::WithParamInterface<ui::NativeTheme::PreferredContrast>,
+      public InProcessBrowserTest {
+ protected:
+  PrefersContrastTest() : theme_client_(&test_theme_) {}
+
+  ~PrefersContrastTest() override {
+    CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
+  }
+
+  const char* ExpectedPrefersContrast() const {
+    switch (GetParam()) {
+      case ui::NativeTheme::PreferredContrast::kNoPreference:
+        return "no-preference";
+      case ui::NativeTheme::PreferredContrast::kMore:
+        return "more";
+      case ui::NativeTheme::PreferredContrast::kLess:
+        return "less";
+    }
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "PrefersContrast");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "ForcedColors");
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    original_client_ = SetBrowserClientForTesting(&theme_client_);
+  }
+
+ protected:
+  ui::TestNativeTheme test_theme_;
+
+ private:
+  content::ContentBrowserClient* original_client_ = nullptr;
+
+  class ChromeContentBrowserClientWithWebTheme
+      : public ChromeContentBrowserClient {
+   public:
+    explicit ChromeContentBrowserClientWithWebTheme(
+        const ui::NativeTheme* theme)
+        : theme_(theme) {}
+
+   protected:
+    const ui::NativeTheme* GetWebTheme() const override { return theme_; }
+
+   private:
+    const ui::NativeTheme* const theme_;
+  };
+
+  ChromeContentBrowserClientWithWebTheme theme_client_;
+};
+
+IN_PROC_BROWSER_TEST_P(PrefersContrastTest, PrefersContrast) {
+  test_theme_.set_preferred_contrast(GetParam());
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->OnWebPreferencesChanged();
+  ui_test_utils::NavigateToURL(
+      browser(),
+      ui_test_utils::GetTestUrl(
+          base::FilePath(base::FilePath::kCurrentDirectory),
+          base::FilePath(FILE_PATH_LITERAL("prefers-contrast.html"))));
+  base::string16 tab_title;
+  ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
+  EXPECT_EQ(base::ASCIIToUTF16(ExpectedPrefersContrast()), tab_title);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrefersContrastTest,
+    testing::Values(ui::NativeTheme::PreferredContrast::kNoPreference,
+                    ui::NativeTheme::PreferredContrast::kMore,
+                    ui::NativeTheme::PreferredContrast::kLess));
+
 class ProtocolHandlerTest : public InProcessBrowserTest {
  public:
   ProtocolHandlerTest() = default;

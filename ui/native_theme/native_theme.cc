@@ -233,7 +233,8 @@ void NativeTheme::NotifyObservers() {
 NativeTheme::NativeTheme(bool should_use_dark_colors)
     : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
       is_high_contrast_(IsForcedHighContrast()),
-      preferred_color_scheme_(CalculatePreferredColorScheme()) {
+      preferred_color_scheme_(CalculatePreferredColorScheme()),
+      preferred_contrast_(CalculatePreferredContrast()) {
 #if !defined(OS_ANDROID)
   // TODO(http://crbug.com/1057754): Merge this into the ColorProviderManager.
   static base::OnceClosure color_provider_manager_init = base::BindOnce([]() {
@@ -276,6 +277,10 @@ NativeTheme::PreferredColorScheme NativeTheme::GetPreferredColorScheme() const {
   return preferred_color_scheme_;
 }
 
+NativeTheme::PreferredContrast NativeTheme::GetPreferredContrast() const {
+  return preferred_contrast_;
+}
+
 bool NativeTheme::IsForcedDarkMode() const {
   static bool kIsForcedDarkMode =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -294,6 +299,11 @@ NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
     const {
   return ShouldUseDarkColors() ? NativeTheme::PreferredColorScheme::kDark
                                : NativeTheme::PreferredColorScheme::kLight;
+}
+
+NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
+  return IsForcedHighContrast() ? PreferredContrast::kMore
+                                : PreferredContrast::kNoPreference;
 }
 
 base::Optional<CaptionStyle> NativeTheme::GetSystemCaptionStyle() const {
@@ -359,6 +369,7 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
   bool is_high_contrast = observed_theme->UsesHighContrastColors();
   PreferredColorScheme preferred_color_scheme =
       observed_theme->GetPreferredColorScheme();
+  PreferredContrast preferred_contrast = observed_theme->GetPreferredContrast();
   bool notify_observers = false;
 
   if (theme_to_update_->ShouldUseDarkColors() != should_use_dark_colors) {
@@ -371,6 +382,10 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
   }
   if (theme_to_update_->GetPreferredColorScheme() != preferred_color_scheme) {
     theme_to_update_->set_preferred_color_scheme(preferred_color_scheme);
+    notify_observers = true;
+  }
+  if (theme_to_update_->GetPreferredContrast() != preferred_contrast) {
+    theme_to_update_->set_preferred_contrast(preferred_contrast);
     notify_observers = true;
   }
 

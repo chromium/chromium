@@ -2,11 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_mac.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
+
+class TestNativeThemeMac : public NativeThemeMac {
+ public:
+  TestNativeThemeMac() : NativeThemeMac(false, false) {}
+  TestNativeThemeMac& operator=(const TestNativeThemeMac&) = delete;
+
+  ~TestNativeThemeMac() override = default;
+};
 
 // Test to ensure any system colors that are looked up by name exist on all Mac
 // platforms Chrome supports, and that their colorspace and component count is
@@ -20,7 +28,7 @@ TEST(NativeThemeMacTest, SystemColorsExist) {
     EXPECT_NE(
         static_cast<SkColor>(0),
         native_theme->GetSystemColor(static_cast<NativeTheme::ColorId>(i)))
-            << "GetSystemColor() unexpectedly gave a fully transparent color.";
+        << "GetSystemColor() unexpectedly gave a fully transparent color.";
   }
 }
 
@@ -49,6 +57,19 @@ TEST(NativeThemeMacTest, GetPlatformHighContrastColorScheme) {
 
   native_theme->set_high_contrast(false);
   EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
+}
+
+TEST(NativeThemeMacTest, GetPreferredContrast) {
+  using PrefContrast = NativeTheme::PreferredContrast;
+
+  TestNativeThemeMac native_theme;
+
+  native_theme.set_high_contrast(false);
+  EXPECT_EQ(native_theme.CalculatePreferredContrast(),
+            PrefContrast::kNoPreference);
+
+  native_theme.set_high_contrast(true);
+  EXPECT_EQ(native_theme.CalculatePreferredContrast(), PrefContrast::kMore);
 }
 
 }  // namespace ui

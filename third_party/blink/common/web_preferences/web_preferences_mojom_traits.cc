@@ -329,6 +329,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.do_not_update_selection_on_mutating_selection_range();
   out->autoplay_policy = data.autoplay_policy();
   out->preferred_color_scheme = data.preferred_color_scheme();
+  out->preferred_contrast = data.preferred_contrast();
   out->picture_in_picture_enabled = data.picture_in_picture_enabled();
   out->translate_service_available = data.translate_service_available();
   out->lazy_load_enabled = data.lazy_load_enabled();

@@ -752,6 +752,13 @@ void WebTestControlHost::OverrideWebkitPrefs(
   } else {
     prefs->preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
   }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceHighContrast)) {
+    prefs->preferred_contrast = blink::mojom::PreferredContrast::kMore;
+  } else {
+    prefs->preferred_contrast = blink::mojom::PreferredContrast::kNoPreference;
+  }
 }
 
 void WebTestControlHost::OpenURL(const GURL& url) {

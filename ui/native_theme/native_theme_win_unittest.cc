@@ -15,14 +15,14 @@ using SystemThemeColor = NativeTheme::SystemThemeColor;
 class TestNativeThemeWin : public NativeThemeWin {
  public:
   TestNativeThemeWin() : NativeThemeWin(false, false) {}
+  TestNativeThemeWin& operator=(const TestNativeThemeWin&) = delete;
+
   ~TestNativeThemeWin() override = default;
 
   // NativeTheme:
   void SetSystemColor(SystemThemeColor system_color, SkColor color) {
     system_colors_[system_color] = color;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeThemeWin);
 };
 
 TEST(NativeThemeWinTest, CalculatePreferredColorScheme) {
@@ -50,6 +50,33 @@ TEST(NativeThemeWinTest, CalculatePreferredColorScheme) {
 
   theme.set_high_contrast(false);
   EXPECT_EQ(theme.CalculatePreferredColorScheme(), PrefScheme::kLight);
+}
+
+TEST(NativeThemeWinTest, CalculatePreferredContrast) {
+  using PrefContrast = NativeTheme::PreferredContrast;
+
+  TestNativeThemeWin theme;
+
+  theme.set_high_contrast(false);
+  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
+
+  theme.set_high_contrast(true);
+  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorBLACK);
+  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorWHITE);
+  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kMore);
+
+  theme.SetSystemColor(SystemThemeColor::kWindow, SK_ColorWHITE);
+  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorBLACK);
+  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kMore);
+
+  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorRED);
+  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
+
+  theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorYELLOW);
+  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kLess);
+
+  theme.set_high_contrast(false);
+  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
 }
 
 TEST(NativeThemeWinTest, GetDefaultSystemColorScheme) {

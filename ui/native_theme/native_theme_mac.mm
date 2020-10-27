@@ -239,6 +239,13 @@ base::Optional<SkColor> NativeThemeMac::GetOSColor(
   }
 }
 
+NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
+    const {
+  return UsesHighContrastColors()
+             ? NativeThemeAura::PreferredContrast::kMore
+             : NativeThemeAura::PreferredContrast::kNoPreference;
+}
+
 void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            Part part,
                            State state,
@@ -591,6 +598,8 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                          queue:nil
                     usingBlock:^(NSNotification* notification) {
                       theme->set_high_contrast(IsHighContrast());
+                      theme->set_preferred_contrast(
+                          CalculatePreferredContrast());
                       theme->NotifyObservers();
                     }];
   }
@@ -635,6 +644,7 @@ void NativeThemeMac::ConfigureWebInstance() {
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
   web_instance->set_use_dark_colors(IsDarkMode());
   web_instance->set_preferred_color_scheme(CalculatePreferredColorScheme());
+  web_instance->set_preferred_contrast(CalculatePreferredContrast());
   web_instance->set_high_contrast(IsHighContrast());
 
   // Add the web native theme as an observer to stay in sync with dark mode,

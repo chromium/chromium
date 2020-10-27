@@ -717,6 +717,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.preferred_color_scheme;
   }
 
+  static blink::mojom::PreferredContrast preferred_contrast(
+      const blink::web_pref::WebPreferences& r) {
+    return r.preferred_contrast;
+  }
+
   static net::EffectiveConnectionType low_priority_iframes_threshold(
       const blink::web_pref::WebPreferences& r) {
     return r.low_priority_iframes_threshold;
