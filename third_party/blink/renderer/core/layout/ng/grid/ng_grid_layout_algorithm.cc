@@ -297,8 +297,105 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems() {
     reordered_item_indices_.push_back(i);
 }
 
+namespace {
+
+using AxisEdge = NGGridLayoutAlgorithm::AxisEdge;
+
+// Given an |item_position| determines the correct |AxisEdge| alignment.
+// Additionally will determine if the grid-item should be stretched with the
+// |is_stretched| out-parameter.
+AxisEdge AxisEdgeFromItemPosition(const ComputedStyle& container_style,
+                                  const ComputedStyle& style,
+                                  const ItemPosition item_position,
+                                  bool is_inline_axis,
+                                  bool* is_stretched) {
+  DCHECK(is_stretched);
+  *is_stretched = false;
+
+  // Auto-margins take precedence over any alignment properties.
+  if (style.MayHaveMargin()) {
+    bool start_auto = is_inline_axis
+                          ? style.MarginStartUsing(container_style).IsAuto()
+                          : style.MarginBeforeUsing(container_style).IsAuto();
+    bool end_auto = is_inline_axis
+                        ? style.MarginEndUsing(container_style).IsAuto()
+                        : style.MarginAfterUsing(container_style).IsAuto();
+
+    if (start_auto && end_auto)
+      return AxisEdge::kCenter;
+    else if (start_auto)
+      return AxisEdge::kEnd;
+    else if (end_auto)
+      return AxisEdge::kStart;
+  }
+
+  const auto container_writing_direction =
+      container_style.GetWritingDirection();
+
+  switch (item_position) {
+    case ItemPosition::kSelfStart:
+    case ItemPosition::kSelfEnd: {
+      // In order to determine the correct "self" axis-edge without a
+      // complicated set of if-branches we use two converters.
+
+      // First use the grid-item's writing-direction to convert the logical
+      // edge into the physical coordinate space.
+      LogicalToPhysical<AxisEdge> physical(style.GetWritingDirection(),
+                                           AxisEdge::kStart, AxisEdge::kEnd,
+                                           AxisEdge::kStart, AxisEdge::kEnd);
+
+      // Then use the container's writing-direction to convert the physical
+      // edges, into our logical coordinate space.
+      PhysicalToLogical<AxisEdge> logical(container_writing_direction,
+                                          physical.Top(), physical.Right(),
+                                          physical.Bottom(), physical.Left());
+
+      if (is_inline_axis) {
+        return item_position == ItemPosition::kSelfStart ? logical.InlineStart()
+                                                         : logical.InlineEnd();
+      }
+      return item_position == ItemPosition::kSelfStart ? logical.BlockStart()
+                                                       : logical.BlockEnd();
+    }
+    case ItemPosition::kCenter:
+      return AxisEdge::kCenter;
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kStart:
+      return AxisEdge::kStart;
+    case ItemPosition::kFlexEnd:
+    case ItemPosition::kEnd:
+      return AxisEdge::kEnd;
+    case ItemPosition::kStretch:
+      *is_stretched = true;
+      return AxisEdge::kStart;
+    case ItemPosition::kBaseline:
+    case ItemPosition::kLastBaseline:
+      return AxisEdge::kBaseline;
+    case ItemPosition::kLeft:
+      DCHECK(is_inline_axis);
+      return container_writing_direction.IsLtr() ? AxisEdge::kStart
+                                                 : AxisEdge::kEnd;
+    case ItemPosition::kRight:
+      DCHECK(is_inline_axis);
+      return container_writing_direction.IsRtl() ? AxisEdge::kStart
+                                                 : AxisEdge::kEnd;
+    case ItemPosition::kLegacy:
+    case ItemPosition::kAuto:
+    case ItemPosition::kNormal:
+      NOTREACHED();
+      break;
+  }
+
+  NOTREACHED();
+  return AxisEdge::kStart;
+}
+
+}  // namespace
+
 NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
     const NGBlockNode node) {
+  const auto& container_style = Style();
+
   // Before we take track sizing into account for column width contributions,
   // have all child inline and min/max sizes measured for content-based width
   // resolution.
@@ -322,6 +419,23 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
     grid_item.inline_size = ComputeInlineSizeForFragment(
         constraint_space, node, border_padding_in_child_writing_mode);
   }
+
+  const ItemPosition normal_behaviour =
+      node.IsReplaced() ? ItemPosition::kStart : ItemPosition::kStretch;
+
+  // Determine the alignment for the grid-item ahead of time (we may need to
+  // know if it stretches ahead of time to correctly determine any block-axis
+  // contribution).
+  grid_item.inline_axis_alignment = AxisEdgeFromItemPosition(
+      container_style, child_style,
+      child_style.ResolvedJustifySelf(normal_behaviour, &container_style)
+          .GetPosition(),
+      /* is_inline_axis */ true, &grid_item.is_inline_axis_stretched);
+  grid_item.block_axis_alignment = AxisEdgeFromItemPosition(
+      container_style, child_style,
+      child_style.ResolvedAlignSelf(normal_behaviour, &container_style)
+          .GetPosition(),
+      /* is_inline_axis */ false, &grid_item.is_block_axis_stretched);
 
   grid_item.margins =
       ComputeMarginsFor(constraint_space, child_style, ConstraintSpace());
@@ -1053,6 +1167,31 @@ void NGGridLayoutAlgorithm::PlaceGridItems() {
   }
 }
 
+namespace {
+
+// Returns the alignment offset for either the inline or block direction.
+LayoutUnit AlignmentOffset(LayoutUnit container_size,
+                           LayoutUnit size,
+                           LayoutUnit margin_start,
+                           LayoutUnit margin_end,
+                           AxisEdge axis_edge) {
+  switch (axis_edge) {
+    case AxisEdge::kStart:
+      return margin_start;
+    case AxisEdge::kCenter:
+      return (container_size - size - margin_start - margin_end) / 2;
+    case AxisEdge::kEnd:
+      return container_size - margin_end - size;
+    case AxisEdge::kBaseline:
+      // TODO(ikilpatrick): Implement baseline alignment.
+      return margin_start;
+  }
+  NOTREACHED();
+  return LayoutUnit();
+}
+
+}  // namespace
+
 void NGGridLayoutAlgorithm::PlaceGridItem(const GridItemData& grid_item,
                                           LogicalOffset offset,
                                           LogicalSize size) {
@@ -1064,14 +1203,34 @@ void NGGridLayoutAlgorithm::PlaceGridItem(const GridItemData& grid_item,
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
   builder.SetTextDirection(item_style.Direction());
-  builder.SetIsShrinkToFit(item_style.LogicalWidth().IsAuto());
-  NGConstraintSpace constraint_space = builder.ToConstraintSpace();
+
+  // TODO(ikilpatrick): We need a slightly different constraint space API now.
+  // Instead of a "shrink-to-fit" bit, we should have a "is-stretched" bit to
+  // indicate if 'auto' should stretch to fill the available space. This should
+  // apply to both the inline, and block axis. E.g.
+  // IsInlineSizeStretched / IsBlockSizeStretched or similar.
+  builder.SetIsFixedBlockSize(item_style.LogicalHeight().IsAuto() &&
+                              grid_item.is_block_axis_stretched);
+  builder.SetIsShrinkToFit(item_style.LogicalWidth().IsAuto() &&
+                           !grid_item.is_inline_axis_stretched);
+
   scoped_refptr<const NGLayoutResult> result =
-      grid_item.node.Layout(constraint_space);
-  container_builder_.AddChild(
-      result->PhysicalFragment(),
-      {offset.inline_offset + grid_item.margins.inline_start,
-       offset.block_offset + grid_item.margins.block_start});
+      grid_item.node.Layout(builder.ToConstraintSpace());
+  const auto& physical_fragment = result->PhysicalFragment();
+
+  // Apply the grid-item's alignment (if any).
+  NGFragment fragment(ConstraintSpace().GetWritingDirection(),
+                      physical_fragment);
+  offset += LogicalOffset(
+      AlignmentOffset(size.inline_size, fragment.InlineSize(),
+                      grid_item.margins.inline_start,
+                      grid_item.margins.inline_end,
+                      grid_item.inline_axis_alignment),
+      AlignmentOffset(
+          size.block_size, fragment.BlockSize(), grid_item.margins.block_start,
+          grid_item.margins.block_end, grid_item.block_axis_alignment));
+
+  container_builder_.AddChild(physical_fragment, offset);
 }
 
 LayoutUnit NGGridLayoutAlgorithm::GridGap(
