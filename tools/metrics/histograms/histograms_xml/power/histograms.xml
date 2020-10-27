@@ -46,7 +46,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2021-02-21">
+<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2021-04-25">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the backlight as a percentage when the user is on AC. Sampled
@@ -367,7 +367,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.FirmwareResumeTimeOnAC" units="ms"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the firmware took to resume the Chrome OS device from
@@ -376,7 +376,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.FirmwareResumeTimeOnBattery" units="ms"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the firmware took to resume the Chrome OS device from
@@ -766,7 +766,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.Mac.IsOnBattery2" enum="BooleanOnBattery"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -807,7 +807,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.NumberOfSessionsPerCharge" units="units"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of user sessions that occured since the last time that the device
@@ -1037,7 +1037,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PowerML.SmartDimComponent.LoadComponentEvent"
     enum="PowerMLSmartDimComponentLoadComponentEvent"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -1048,7 +1048,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimComponent.VersionType"
-    enum="PowerMLSmartDimComponentVersionType" expires_after="2021-02-21">
+    enum="PowerMLSmartDimComponentVersionType" expires_after="2021-04-25">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>
@@ -1059,7 +1059,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimComponent.WorkerType"
-    enum="PowerMLSmartDimComponentWorkerType" expires_after="2021-02-21">
+    enum="PowerMLSmartDimComponentWorkerType" expires_after="2021-04-25">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>

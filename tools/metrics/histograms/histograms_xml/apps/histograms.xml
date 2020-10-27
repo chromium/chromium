@@ -346,7 +346,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.OmniboxProvider.ZeroStateLatency" units="ms"
-    expires_after="2020-12-31">
+    expires_after="2021-04-25">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -741,7 +741,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListFolder.ShowHide.AnimationSmoothness" units="%"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>wutao@chromium.org</owner>
   <summary>
     Relative smoothness of animations of showing and hiding app list folder.

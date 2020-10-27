@@ -1049,7 +1049,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
 
 <histogram
     name="Signin.TransactionalReauthGaiaNavigationDuration.FromConfirmClick"
-    units="ms" expires_after="2021-02-21">
+    units="ms" expires_after="2021-04-25">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1060,7 +1060,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
 
 <histogram
     name="Signin.TransactionalReauthGaiaNavigationDuration.FromReauthStart"
-    units="ms" expires_after="2021-02-21">
+    units="ms" expires_after="2021-04-25">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1070,7 +1070,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
 </histogram>
 
 <histogram name="Signin.TransactionalReauthResult" enum="SigninReauthResult"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
 <!-- Name completed by histogram_suffixes
 name="TransactionalReauthEntryPoint" -->
 
@@ -1084,7 +1084,7 @@ name="TransactionalReauthEntryPoint" -->
 </histogram>
 
 <histogram name="Signin.TransactionalReauthUserAction"
-    enum="SigninReauthUserAction" expires_after="2021-02-21">
+    enum="SigninReauthUserAction" expires_after="2021-04-25">
 <!-- Name completed by histogram_suffixes
 name="TransactionalReauthEntryPoint" -->
 
@@ -1124,7 +1124,7 @@ Chrome adds accounts to the Gaia cookies. -->
 </histogram>
 
 <histogram name="Signin.UserRequestedWipeDataOnSignout" enum="BooleanRequested"
-    expires_after="2021-02-20">
+    expires_after="2021-04-25">
   <owner>triploblastic@google.com</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>User requested to wipe local device data on signout.</summary>

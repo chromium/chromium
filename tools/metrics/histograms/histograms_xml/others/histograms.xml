@@ -1276,7 +1276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlueZ.ResultOfConnection" enum="BlueZResultOfConnection"
-    expires_after="2021-01-10">
+    expires_after="2021-04-25">
   <owner>mcchou@chromium.org</owner>
   <summary>
     This is specific to Chrome OS. Records the outcomes of connection requests
@@ -1540,7 +1540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>ianwen@chromium.org</owner>
   <summary>How users add a new bookmark.</summary>
 </histogram>
@@ -1583,7 +1583,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BootTime.Total2" units="ms" expires_after="2021-02-21">
+<histogram name="BootTime.Total2" units="ms" expires_after="2021-04-25">
   <owner>bccheng@chromium.org</owner>
   <owner>semenzato@chromium.org</owner>
   <summary>Time from power on to login panel ready (Chrome OS).</summary>
@@ -3590,7 +3590,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Discarding.DiscardCandidatesCount" units="tabs"
-    expires_after="2021-01-31">
+    expires_after="2021-04-25">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -8141,7 +8141,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MachineLearningService.HandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
-    expires_after="2021-01-01">
+    expires_after="2021-04-25">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
@@ -9388,7 +9388,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OAuth2Login.SessionRestore" enum="GaiaSessionRestoreOutcome"
-    expires_after="2020-12-17">
+    expires_after="2021-04-25">
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -11091,7 +11091,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PushMessaging.ReceivedMessageInBackground" enum="Boolean"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -16224,7 +16224,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Webapp.Install.DisplayMode2" enum="WebAppDisplayMode"
-    expires_after="2021-01-24">
+    expires_after="2021-04-25">
   <owner>ericwilligers@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -16629,7 +16629,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebController.ExternalURLRequestBlocking"
-    enum="IOSExternalURLRequestStatus" expires_after="2021-02-21">
+    enum="IOSExternalURLRequestStatus" expires_after="2021-04-25">
   <owner>mrefaat@chromium.org</owner>
   <summary>
     [iOS] Measures the proportion of external URL requests that originate from a
@@ -16775,7 +16775,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.LocalFontUsed" enum="BooleanUsage"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kenjibaheux@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>

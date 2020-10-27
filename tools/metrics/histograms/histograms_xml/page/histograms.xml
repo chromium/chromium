@@ -1423,7 +1423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.FirstInputTimestamp4" units="ms"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>tdresser@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -1912,7 +1912,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint.MainFrame"
-    units="ms" expires_after="2021-02-21">
+    units="ms" expires_after="2021-04-25">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

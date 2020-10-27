@@ -204,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.PasswordEntry.SiteEngagementLevel"
-    enum="SiteEngagementLevel" expires_after="2021-01-31">
+    enum="SiteEngagementLevel" expires_after="2021-04-25">
   <owner>meacer@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>

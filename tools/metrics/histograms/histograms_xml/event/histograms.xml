@@ -467,7 +467,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Scrollbar.GpuSwap2"
-    units="microseconds" expires_after="2021-02-21">
+    units="microseconds" expires_after="2021-04-25">
   <owner>nzolghadr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -828,7 +828,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2021-02-21">
+    units="microseconds" expires_after="2021-04-25">
   <owner>tdresser@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and the start of the frame
@@ -1386,7 +1386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2021-02-21">
+    units="microseconds" expires_after="2021-04-25">
   <owner>tdresser@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel event and start of the frame swap
@@ -1617,7 +1617,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.VizHitTest.AsyncHitTestReasons"
-    enum="AsyncHitTestReasons" expires_after="2021-02-21">
+    enum="AsyncHitTestReasons" expires_after="2021-04-25">
   <owner>yigu@chromium.org</owner>
   <summary>
     Tracks the reasons why sychronous hit testing could not be done for each hit

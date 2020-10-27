@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Stability.Android.OomKillReverseRank" units="rank"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -96,7 +96,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.Android.StrongBindingOomRemainingBindingState"
     enum="Android.ChildProcessBindingStateCombination"
-    expires_after="2021-02-21">
+    expires_after="2021-04-25">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>

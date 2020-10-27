@@ -39,7 +39,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.Document.execCommand" enum="MappedEditingCommands"
-    expires_after="2020-12-31">
+    expires_after="2021-04-25">
   <owner>yoichio@chromium.org</owner>
   <summary>
     Counts the number of times each document.execCommand is executed. This
