@@ -4172,11 +4172,10 @@ TEST_F(TabStripModelTestWithReadLaterEnabled, AddToReadLater) {
   TabStripModel* tabstrip = browser()->tab_strip_model();
   EXPECT_EQ(tabstrip->count(), 2);
 
-  // Add first tab to Read Later and verify it has been added and the tab has
-  // been closed.
+  // Add first tab to Read Later and verify it has been added.
   GURL expected_url = tabstrip->GetWebContentsAt(0)->GetURL();
   tabstrip->AddToReadLater({0});
   EXPECT_EQ(reading_list_model->size(), 1u);
   EXPECT_NE(reading_list_model->GetEntryByURL(expected_url), nullptr);
-  EXPECT_EQ(tabstrip->count(), 1);
+  EXPECT_EQ(tabstrip->count(), 2);
 }

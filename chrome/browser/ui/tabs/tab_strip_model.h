@@ -465,7 +465,7 @@ class TabStripModel : public TabGroupController {
   // supported by read later.
   bool IsReadLaterSupportedForAny(const std::vector<int> indices);
 
-  // Saves tabs with url supported by Read Later and closes those tabs.
+  // Saves tabs with url supported by Read Later.
   void AddToReadLater(const std::vector<int>& indices);
 
   // TabGroupController:

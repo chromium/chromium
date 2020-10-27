@@ -2090,7 +2090,6 @@ void TabStripModel::MoveAndSetGroup(
 void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
   ReadingListModel* model =
       ReadingListModelFactory::GetForBrowserContext(profile_);
-  std::vector<WebContents*> closing_contents;
   if (!model || !model->loaded())
     return;
 
@@ -2102,11 +2101,8 @@ void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
     if (model->IsUrlSupported(url)) {
       model->AddEntry(url, base::UTF16ToUTF8(title),
                       reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
-      closing_contents.push_back(contents);
     }
   }
-  InternalCloseTabs(closing_contents,
-                    CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
 }
 
 base::Optional<tab_groups::TabGroupId> TabStripModel::UngroupTab(int index) {

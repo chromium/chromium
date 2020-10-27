@@ -1045,11 +1045,6 @@ bool MoveCurrentTabToReadLater(Browser* browser) {
     return false;
   model->AddEntry(url, base::UTF16ToUTF8(title),
                   reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
-  // Close current tab.
-  int index = browser->tab_strip_model()->active_index();
-  browser->tab_strip_model()->CloseWebContentsAt(
-      index, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB |
-                 TabStripModel::CLOSE_USER_GESTURE);
   return true;
 }
 
