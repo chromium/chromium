@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
+#include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 #include "chrome/browser/chromeos/input_method/input_host_helper.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
@@ -60,6 +61,7 @@ namespace SetSelectionRange =
     extensions::api::input_method_private::SetSelectionRange;
 namespace FinishComposingText =
     extensions::api::input_method_private::FinishComposingText;
+namespace Autocorrect = extensions::api::input_ime::Autocorrect;
 using chromeos::InputMethodEngine;
 using chromeos::InputMethodEngineBase;
 using ui::IMEEngineHandlerInterface;
@@ -647,6 +649,23 @@ InputMethodEngineBase* InputImeEventRouter::GetEngineIfActive(
     *error = kErrorEngineNotActive;
     return nullptr;
   }
+}
+
+ExtensionFunction::ResponseAction InputImeAutocorrectFunction::Run() {
+  std::unique_ptr<Autocorrect::Params> parent_params(
+      Autocorrect::Params::Create(*args_));
+  const Autocorrect::Params::Parameters& params = parent_params->parameters;
+  std::string error;
+  chromeos::NativeInputMethodEngine* engine =
+      static_cast<chromeos::NativeInputMethodEngine*>(
+          GetEngineIfActive(Profile::FromBrowserContext(browser_context()),
+                            extension_id(), &error));
+  if (!engine)
+    return RespondNow(Error(InformativeError(error, static_function_name())));
+
+  engine->Autocorrect(params.typed_word, params.corrected_word,
+                      params.start_index);
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction InputImeClearCompositionFunction::Run() {

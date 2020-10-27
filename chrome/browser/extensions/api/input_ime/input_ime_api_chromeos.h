@@ -21,6 +21,15 @@ class InputMethodEngine;
 
 namespace extensions {
 
+class InputImeAutocorrectFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("input.ime.autocorrect", INPUT_IME_AUTOCORRECT)
+ protected:
+  ~InputImeAutocorrectFunction() override = default;
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class InputImeClearCompositionFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.clearComposition",

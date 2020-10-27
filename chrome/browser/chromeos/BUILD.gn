@@ -1427,6 +1427,8 @@ source_set("chromeos") {
     "input_method/assistive_window_controller_delegate.h",
     "input_method/assistive_window_properties.cc",
     "input_method/assistive_window_properties.h",
+    "input_method/autocorrect_manager.cc",
+    "input_method/autocorrect_manager.h",
     "input_method/browser_state_monitor.cc",
     "input_method/browser_state_monitor.h",
     "input_method/candidate_window_controller.cc",
