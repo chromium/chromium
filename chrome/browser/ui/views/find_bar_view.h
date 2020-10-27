@@ -14,8 +14,9 @@
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/box_layout_view.h"
 
 class FindBarHost;
 class FindBarMatchCountLabel;
@@ -41,7 +42,7 @@ class Textfield;
 // button. It communicates the user search words to the FindBarHost.
 //
 ////////////////////////////////////////////////////////////////////////////////
-class FindBarView : public views::View,
+class FindBarView : public views::BoxLayoutView,
                     public DropdownBarHostDelegate,
                     public views::TextfieldController {
  public:
@@ -122,7 +123,7 @@ class FindBarView : public views::View,
   DISALLOW_COPY_AND_ASSIGN(FindBarView);
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::View)
+BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::BoxLayoutView)
 VIEW_BUILDER_PROPERTY(FindBarHost*, Host)
 END_VIEW_BUILDER(/* no export */, FindBarView)
 

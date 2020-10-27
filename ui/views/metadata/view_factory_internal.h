@@ -64,21 +64,43 @@ class PropertySetter : public PropertySetterBase {
 };
 
 template <typename TClass, typename TValue>
-class ClassPropertySetter : public PropertySetterBase {
+class ClassPropertyValueSetter : public PropertySetterBase {
  public:
-  ClassPropertySetter(const ui::ClassProperty<TValue>* property,
-                      metadata::ArgType<TValue> value)
+  ClassPropertyValueSetter(const ui::ClassProperty<TValue>* property,
+                           TValue value)
+      : property_(property), value_(value) {}
+  ClassPropertyValueSetter(const ClassPropertyValueSetter&) = delete;
+  ClassPropertyValueSetter& operator=(const ClassPropertyValueSetter&) = delete;
+  ~ClassPropertyValueSetter() override = default;
+
+  void SetProperty(void* obj) override {
+    static_cast<TClass*>(obj)->SetProperty(property_, value_);
+  }
+
+ private:
+  const ui::ClassProperty<TValue>* property_;
+  TValue value_;
+};
+
+template <typename TClass, typename TValue>
+class ClassPropertyMoveSetter : public PropertySetterBase {
+ public:
+  ClassPropertyMoveSetter(const ui::ClassProperty<TValue*>* property,
+                          const TValue& value)
+      : property_(property), value_(value) {}
+  ClassPropertyMoveSetter(const ui::ClassProperty<TValue*>* property,
+                          TValue&& value)
       : property_(property), value_(std::move(value)) {}
-  ClassPropertySetter(const ClassPropertySetter&) = delete;
-  ClassPropertySetter& operator=(const ClassPropertySetter&) = delete;
-  ~ClassPropertySetter() override = default;
+  ClassPropertyMoveSetter(const ClassPropertyMoveSetter&) = delete;
+  ClassPropertyMoveSetter& operator=(const ClassPropertyMoveSetter&) = delete;
+  ~ClassPropertyMoveSetter() override = default;
 
   void SetProperty(void* obj) override {
     static_cast<TClass*>(obj)->SetProperty(property_, std::move(value_));
   }
 
  private:
-  const ui::ClassProperty<TValue>* property_;
+  const ui::ClassProperty<TValue*>* property_;
   TValue value_;
 };
 

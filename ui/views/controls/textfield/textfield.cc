@@ -383,6 +383,10 @@ void Textfield::SetAssociatedLabel(View* labelling_view) {
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
+void Textfield::SetController(TextfieldController* controller) {
+  controller_ = controller;
+}
+
 bool Textfield::GetReadOnly() const {
   return read_only_;
 }

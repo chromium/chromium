@@ -91,12 +91,17 @@ class VIEWS_EXPORT Textfield : public View,
   static const gfx::FontList& GetDefaultFontList();
 
   Textfield();
+  Textfield(const Textfield&) = delete;
+  Textfield& operator=(const Textfield&) = delete;
   ~Textfield() override;
 
   // Set the controller for this textfield.
   void set_controller(TextfieldController* controller) {
     controller_ = controller;
   }
+
+  // TODD (kylixrd): Remove set_controller and refactor codebase.
+  void SetController(TextfieldController* controller);
 
   // Gets/Sets whether or not the Textfield is read-only.
   bool GetReadOnly() const;
@@ -734,13 +739,12 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Used to bind callback functions to this object.
   base::WeakPtrFactory<Textfield> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Textfield);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Textfield, View)
 VIEW_BUILDER_PROPERTY(base::string16, AccessibleName)
 VIEW_BUILDER_PROPERTY(SkColor, BackgroundColor)
+VIEW_BUILDER_PROPERTY(TextfieldController*, Controller)
 VIEW_BUILDER_PROPERTY(bool, CursorEnabled)
 VIEW_BUILDER_PROPERTY(int, DefaultWidthInChars)
 VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
