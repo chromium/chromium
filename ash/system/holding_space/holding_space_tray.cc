@@ -7,6 +7,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -26,6 +27,19 @@
 #include "ui/views/vector_icons.h"
 
 namespace ash {
+
+namespace {
+
+// Returns whether the holding space model contains any finalized items.
+bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
+  for (const auto& item : model->items()) {
+    if (item->IsFinalized())
+      return true;
+  }
+  return false;
+}
+
+}  // namespace
 
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   controller_observer_.Add(HoldingSpaceController::Get());
@@ -147,7 +161,8 @@ void HoldingSpaceTray::UpdateVisibility() {
                 .has_value()
           : false;
 
-  SetVisiblePreferred(!model->items().empty() || !has_ever_pinned_item);
+  SetVisiblePreferred(!has_ever_pinned_item ||
+                      ModelContainsFinalizedItems(model));
 }
 
 base::string16 HoldingSpaceTray::GetAccessibleNameForBubble() {
@@ -177,6 +192,11 @@ void HoldingSpaceTray::OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) {
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) {
+  UpdateVisibility();
+}
+
+void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
+    const HoldingSpaceItem* item) {
   UpdateVisibility();
 }
 

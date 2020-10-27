@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -40,6 +41,10 @@ class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
               (override));
   MOCK_METHOD(void,
               OnHoldingSpaceItemRemoved,
+              (const HoldingSpaceItem* item),
+              (override));
+  MOCK_METHOD(void,
+              OnHoldingSpaceItemFinalized,
               (const HoldingSpaceItem* item),
               (override));
 };
@@ -103,8 +108,10 @@ const HoldingSpaceItem* AddHoldingSpaceItem(Profile* profile) {
         run_loop.Quit();
       });
 
+  base::FilePath item_path = CreateTextFile(profile);
   holding_space_model->AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kDownload, CreateTextFile(profile), GURL(),
+      HoldingSpaceItem::Type::kDownload, item_path,
+      holding_space_util::ResolveFileSystemUrl(profile, item_path),
       std::make_unique<HoldingSpaceImage>(
           /*placeholder=*/gfx::ImageSkia(),
           /*async_bitmap_resolver=*/base::DoNothing())));

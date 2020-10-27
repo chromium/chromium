@@ -148,10 +148,26 @@ void RecentFilesContainer::ViewHierarchyChanged(
 
 void RecentFilesContainer::AddHoldingSpaceItemView(
     const HoldingSpaceItem* item) {
+  DCHECK(item->IsFinalized());
+
+  if (item->type() != HoldingSpaceItem::Type::kScreenshot &&
+      item->type() != HoldingSpaceItem::Type::kDownload) {
+    return;
+  }
+
+  size_t index = 0;
+  for (const auto& candidate :
+       base::Reversed(HoldingSpaceController::Get()->model()->items())) {
+    if (candidate->id() == item->id())
+      break;
+    if (candidate->IsFinalized() && candidate->type() == item->type())
+      ++index;
+  }
+
   if (item->type() == HoldingSpaceItem::Type::kScreenshot)
-    AddHoldingSpaceScreenCaptureView(item);
+    AddHoldingSpaceScreenCaptureView(item, index);
   else if (item->type() == HoldingSpaceItem::Type::kDownload)
-    AddHoldingSpaceDownloadView(item);
+    AddHoldingSpaceDownloadView(item, index);
 }
 
 void RecentFilesContainer::RemoveAllHoldingSpaceItemViews() {
@@ -169,9 +185,13 @@ void RecentFilesContainer::RemoveHoldingSpaceItemView(
 }
 
 void RecentFilesContainer::AddHoldingSpaceScreenCaptureView(
-    const HoldingSpaceItem* item) {
+    const HoldingSpaceItem* item,
+    size_t index) {
   DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kScreenshot);
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
+
+  if (index >= kMaxScreenCaptures)
+    return;
 
   // Remove the last screen capture view if we are already at max capacity.
   if (screen_captures_container_->children().size() == kMaxScreenCaptures) {
@@ -185,7 +205,7 @@ void RecentFilesContainer::AddHoldingSpaceScreenCaptureView(
   // Add the screen capture view to the front in order to sort by recency.
   views_by_item_id_[item->id()] = screen_captures_container_->AddChildViewAt(
       std::make_unique<HoldingSpaceItemScreenCaptureView>(delegate_, item),
-      /*index=*/0);
+      index);
 }
 
 void RecentFilesContainer::RemoveHoldingSpaceScreenCaptureView(
@@ -208,7 +228,8 @@ void RecentFilesContainer::RemoveHoldingSpaceScreenCaptureView(
   // the back in order to maintain sort by recency.
   for (const auto& candidate :
        base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (candidate->type() == HoldingSpaceItem::Type::kScreenshot &&
+    if (candidate->IsFinalized() &&
+        candidate->type() == HoldingSpaceItem::Type::kScreenshot &&
         !base::Contains(views_by_item_id_, candidate->id())) {
       views_by_item_id_[candidate->id()] =
           screen_captures_container_->AddChildView(
@@ -220,9 +241,13 @@ void RecentFilesContainer::RemoveHoldingSpaceScreenCaptureView(
 }
 
 void RecentFilesContainer::AddHoldingSpaceDownloadView(
-    const HoldingSpaceItem* item) {
+    const HoldingSpaceItem* item,
+    size_t index) {
   DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kDownload);
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
+
+  if (index >= kMaxDownloads)
+    return;
 
   // Remove the last download view if we are already at max capacity.
   if (downloads_container_->children().size() == kMaxDownloads) {
@@ -234,7 +259,7 @@ void RecentFilesContainer::AddHoldingSpaceDownloadView(
 
   // Add the download view to the front in order to sort by recency.
   views_by_item_id_[item->id()] = downloads_container_->AddChildViewAt(
-      std::make_unique<HoldingSpaceItemChipView>(delegate_, item), /*index=*/0);
+      std::make_unique<HoldingSpaceItemChipView>(delegate_, item), index);
 }
 
 void RecentFilesContainer::RemoveHoldingSpaceDownloadView(
@@ -257,7 +282,8 @@ void RecentFilesContainer::RemoveHoldingSpaceDownloadView(
   // back in order to maintain sort by recency.
   for (const auto& candidate :
        base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (candidate->type() == HoldingSpaceItem::Type::kDownload &&
+    if (candidate->IsFinalized() &&
+        candidate->type() == HoldingSpaceItem::Type::kDownload &&
         !base::Contains(views_by_item_id_, candidate->id())) {
       views_by_item_id_[candidate->id()] = downloads_container_->AddChildView(
           std::make_unique<HoldingSpaceItemChipView>(delegate_,

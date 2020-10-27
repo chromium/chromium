@@ -50,6 +50,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
                                          const base::FilePath& file_path);
 
   // Creates a HoldingSpaceItem that's backed by a file system URL.
+  // NOTE: `file_system_url` is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
       Type type,
       const base::FilePath& file_path,
@@ -64,9 +65,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       std::unique_ptr<HoldingSpaceImage>(Type, const base::FilePath&)>;
 
   // Deserializes from `base::DictionaryValue` to `HoldingSpaceItem`.
+  // This creates a partially initialized item with an empty file system URL.
+  // The item should be finalized using `Finalize()`.
   static std::unique_ptr<HoldingSpaceItem> Deserialize(
       const base::DictionaryValue& dict,
-      FileSystemUrlResolver file_system_url_resolver,
       ImageResolver image_resolver);
 
   // Deserializes `id_` from a serialized `HoldingSpaceItem`.
@@ -77,6 +79,15 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   // Serializes from `HoldingSpaceItem` to `base::DictionaryValue`.
   base::DictionaryValue Serialize() const;
+
+  // Indicates whether the item has been finalized. This will be false for items
+  // created using `Deserialize()` for which `Finalize()` has not yet been
+  // called.
+  // Non-finalized items should not be shown in the holding space UI.
+  bool IsFinalized() const;
+
+  // Used to finalize partially initialized items created by `Deserialize()`.
+  void Finalize(const GURL& file_system_url);
 
   const std::string& id() const { return id_; }
 

@@ -42,6 +42,9 @@ void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemAdded(
 void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {}
 
+void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemFinalized(
+    const HoldingSpaceItem* item) {}
+
 void HoldingSpaceKeyedServiceDelegate::OnPersistenceRestored() {}
 
 }  // namespace ash

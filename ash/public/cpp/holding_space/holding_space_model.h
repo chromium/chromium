@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
 #include "base/observer_list.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -39,6 +40,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
 
   // Removes a single holding space item from the model.
   void RemoveItem(const std::string& id);
+
+  // Finalizes a partially initialized holding space item using the provided
+  // file system URL. The item will be removed if the file system url is empty.
+  void FinalizeOrRemoveItem(const std::string& id, const GURL& file_system_url);
 
   // Removes all holding space items from the model for which the specified
   // `predicate` returns true.

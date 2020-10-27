@@ -27,8 +27,10 @@ void HoldingSpaceItemViewsContainer::ChildVisibilityChanged(
 void HoldingSpaceItemViewsContainer::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
   model_observer_.Add(model);
-  for (const auto& item : model->items())
-    AddHoldingSpaceItemView(item.get());
+  for (const auto& item : model->items()) {
+    if (item->IsFinalized())
+      AddHoldingSpaceItemView(item.get());
+  }
 }
 
 void HoldingSpaceItemViewsContainer::OnHoldingSpaceModelDetached(
@@ -39,12 +41,20 @@ void HoldingSpaceItemViewsContainer::OnHoldingSpaceModelDetached(
 
 void HoldingSpaceItemViewsContainer::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
+  if (!item->IsFinalized())
+    return;
+
   AddHoldingSpaceItemView(item);
 }
 
 void HoldingSpaceItemViewsContainer::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
   RemoveHoldingSpaceItemView(item);
+}
+
+void HoldingSpaceItemViewsContainer::OnHoldingSpaceItemFinalized(
+    const HoldingSpaceItem* item) {
+  AddHoldingSpaceItemView(item);
 }
 
 }  // namespace ash

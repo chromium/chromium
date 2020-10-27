@@ -2129,6 +2129,7 @@ test("ash_unittests") {
     "system/bluetooth/tray_bluetooth_helper_legacy_unittest.cc",
     "system/caps_lock_notification_controller_unittest.cc",
     "system/gesture_education/gesture_education_notification_controller_unittest.cc",
+    "system/holding_space/holding_space_tray_unittest.cc",
     "system/ime/ime_feature_pod_controller_unittest.cc",
     "system/ime_menu/ime_menu_tray_unittest.cc",
     "system/locale/locale_feature_pod_controller_unittest.cc",
