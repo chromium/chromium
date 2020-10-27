@@ -398,7 +398,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
 
   void SetUpPeerConnection(const std::string& session_id = "") {
     auto* manager = WebRtcEventLogManager::GetInstance();
-    auto* rph = web_contents()->GetRenderViewHost()->GetProcess();
+    auto* rph =
+        web_contents()->GetMainFrame()->GetRenderViewHost()->GetProcess();
 
     const int render_process_id = rph->GetID();
     const int lid = 0;
