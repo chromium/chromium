@@ -2985,8 +2985,8 @@ inline void ComputedStyle::SetHasPseudoElementStyle(PseudoId pseudo) {
   DCHECK(pseudo >= kFirstPublicPseudoId);
   DCHECK(pseudo < kFirstInternalPseudoId);
   // TODO: Fix up this code. It is hard to understand.
-  SetPseudoBitsInternal(static_cast<PseudoId>(
-      PseudoBitsInternal() | 1 << (pseudo - kFirstPublicPseudoId)));
+  SetPseudoBitsInternal(PseudoBitsInternal() |
+                        1 << (pseudo - kFirstPublicPseudoId));
 }
 
 }  // namespace blink

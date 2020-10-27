@@ -103,7 +103,7 @@ struct SameSizeAsComputedStyleBase {
 
  private:
   void* data_refs[8];
-  unsigned bitfields[5];
+  unsigned bitfields[6];
 };
 
 struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase,

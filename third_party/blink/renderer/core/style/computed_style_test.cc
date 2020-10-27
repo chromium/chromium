@@ -145,6 +145,9 @@ TEST(ComputedStyleTest, LayoutContainmentStackingContext) {
 }
 
 TEST(ComputedStyleTest, FirstPublicPseudoStyle) {
+  static_assert(kFirstPublicPseudoId == kPseudoIdFirstLine,
+                "Make sure we are testing the first public pseudo id");
+
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   style->SetHasPseudoElementStyle(kPseudoIdFirstLine);
   EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdFirstLine));
@@ -152,9 +155,12 @@ TEST(ComputedStyleTest, FirstPublicPseudoStyle) {
 }
 
 TEST(ComputedStyleTest, LastPublicPseudoElementStyle) {
+  static_assert(kFirstInternalPseudoId - 1 == kPseudoIdTargetText,
+                "Make sure we are testing the last public pseudo id");
+
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
-  style->SetHasPseudoElementStyle(kPseudoIdScrollbar);
-  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdScrollbar));
+  style->SetHasPseudoElementStyle(kPseudoIdTargetText);
+  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdTargetText));
   EXPECT_TRUE(style->HasAnyPseudoElementStyles());
 }
 
