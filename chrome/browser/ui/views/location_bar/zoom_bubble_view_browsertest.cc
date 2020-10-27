@@ -93,7 +93,15 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
 // Test whether the zoom bubble is anchored to the same location if the toolbar
 // shows in fullscreen. And when the toolbar hides in fullscreen, the zoom
 // bubble should close and re-show in a new un-anchored position.
-IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, AnchorPositionsInFullscreen) {
+//
+// TODO(crbug.com/1142682): Fails on Lacros bots.
+#if BUILDFLAG(IS_LACROS)
+#define MAYBE_AnchorPositionsInFullscreen DISABLED_AnchorPositionsInFullscreen
+#else
+#define MAYBE_AnchorPositionsInFullscreen AnchorPositionsInFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
+                       MAYBE_AnchorPositionsInFullscreen) {
 #if defined(OS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
