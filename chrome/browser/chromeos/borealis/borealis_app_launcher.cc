@@ -22,7 +22,7 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
   //
   // TODO(b/170677773): Launch a _certain_ application...
   if (app_id == kBorealisAppId) {
-    std::move(callback).Run(kSuccess);
+    std::move(callback).Run(LaunchResult::kSuccess);
     return;
   }
 
@@ -31,7 +31,7 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
           ->GetRegistration(app_id);
 
   if (!reg) {
-    std::move(callback).Run(kUnknownApp);
+    std::move(callback).Run(LaunchResult::kUnknownApp);
     return;
   }
 
@@ -54,16 +54,16 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
                 if (!response) {
                   LOG(ERROR)
                       << "Failed to launch app: No response from cicerone";
-                  std::move(callback).Run(kNoResponse);
+                  std::move(callback).Run(LaunchResult::kNoResponse);
                   return;
                 }
                 if (!response->success()) {
                   LOG(ERROR)
                       << "Failed to launch app: " << response->failure_reason();
-                  std::move(callback).Run(kError);
+                  std::move(callback).Run(LaunchResult::kError);
                   return;
                 }
-                std::move(callback).Run(kSuccess);
+                std::move(callback).Run(LaunchResult::kSuccess);
               },
               std::move(callback)));
 }

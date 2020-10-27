@@ -25,7 +25,8 @@ MATCHER(IsSuccessResult, "") {
 }
 
 MATCHER(IsFailureResult, "") {
-  return !arg.Ok() && arg.Failure() == BorealisContextManager::kStartVmFailed &&
+  return !arg.Ok() &&
+         arg.Failure() == BorealisContextManager::Status::kStartVmFailed &&
          arg.FailureReason() == "Something went wrong!";
 }
 
@@ -36,10 +37,10 @@ class MockTask : public BorealisTask {
            BorealisTask::CompletionStatusCallback callback) override {
     if (success_) {
       context->set_vm_name("test_vm_name");
-      std::move(callback).Run(BorealisContextManager::kSuccess, "");
+      std::move(callback).Run(BorealisContextManager::Status::kSuccess, "");
     } else {
       // Just use a random error.
-      std::move(callback).Run(BorealisContextManager::kStartVmFailed,
+      std::move(callback).Run(BorealisContextManager::Status::kStartVmFailed,
                               "Something went wrong!");
     }
   }

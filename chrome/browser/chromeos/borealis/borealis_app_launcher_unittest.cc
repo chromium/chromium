@@ -84,21 +84,24 @@ class BorealisAppLauncherTest : public testing::Test {
 
 TEST_F(BorealisAppLauncherTest, LauncherAppAlwaysWorks) {
   CallbackFactory callback_check;
-  EXPECT_CALL(callback_check, Call(BorealisAppLauncher::kSuccess));
+  EXPECT_CALL(callback_check,
+              Call(BorealisAppLauncher::LaunchResult::kSuccess));
   BorealisAppLauncher::Launch(Context(), kBorealisAppId,
                               callback_check.BindOnce());
 }
 
 TEST_F(BorealisAppLauncherTest, UnknownAppCausesError) {
   CallbackFactory callback_check;
-  EXPECT_CALL(callback_check, Call(BorealisAppLauncher::kUnknownApp));
+  EXPECT_CALL(callback_check,
+              Call(BorealisAppLauncher::LaunchResult::kUnknownApp));
   BorealisAppLauncher::Launch(Context(), "non_existent_app",
                               callback_check.BindOnce());
 }
 
 TEST_F(BorealisAppLauncherTest, NoResponseCausesError) {
   CallbackFactory callback_check;
-  EXPECT_CALL(callback_check, Call(BorealisAppLauncher::kNoResponse));
+  EXPECT_CALL(callback_check,
+              Call(BorealisAppLauncher::LaunchResult::kNoResponse));
   std::string baz_id = SetDummyApp("foo.desktop");
   Cicerone()->SetOnLaunchContainerApplicationCallback(
       base::BindLambdaForTesting(
@@ -115,7 +118,7 @@ TEST_F(BorealisAppLauncherTest, NoResponseCausesError) {
 
 TEST_F(BorealisAppLauncherTest, ErrorResponseIsPropagated) {
   CallbackFactory callback_check;
-  EXPECT_CALL(callback_check, Call(BorealisAppLauncher::kError));
+  EXPECT_CALL(callback_check, Call(BorealisAppLauncher::LaunchResult::kError));
   std::string baz_id = SetDummyApp("bar.desktop");
   Cicerone()->SetOnLaunchContainerApplicationCallback(
       base::BindLambdaForTesting(
@@ -134,7 +137,8 @@ TEST_F(BorealisAppLauncherTest, ErrorResponseIsPropagated) {
 
 TEST_F(BorealisAppLauncherTest, SuccessfulLaunchHasSuccessResponse) {
   CallbackFactory callback_check;
-  EXPECT_CALL(callback_check, Call(BorealisAppLauncher::kSuccess));
+  EXPECT_CALL(callback_check,
+              Call(BorealisAppLauncher::LaunchResult::kSuccess));
   std::string baz_id = SetDummyApp("baz.desktop");
   Cicerone()->SetOnLaunchContainerApplicationCallback(
       base::BindLambdaForTesting(

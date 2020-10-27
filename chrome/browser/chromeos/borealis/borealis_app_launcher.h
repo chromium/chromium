@@ -16,7 +16,7 @@ class BorealisContext;
 // Helper class responsible for launching borealis' apps.
 class BorealisAppLauncher {
  public:
-  enum LaunchResult {
+  enum class LaunchResult {
     kSuccess,
     kUnknownApp,
     kNoResponse,

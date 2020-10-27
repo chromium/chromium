@@ -17,12 +17,12 @@ class BorealisContext;
 class BorealisContextManager : public KeyedService {
  public:
   // A list of possible outcomes for an attempt to startup borealis.
-  enum Status {
-    kSuccess = 0,
-    kMountFailed = 1,
-    kDiskImageFailed = 2,
-    kStartVmFailed = 3,
-    kAwaitBorealisStartupFailed = 4,
+  enum class Status {
+    kSuccess,
+    kMountFailed,
+    kDiskImageFailed,
+    kStartVmFailed,
+    kAwaitBorealisStartupFailed,
   };
 
   // An attempt to launch borealis. If the launch succeeds, holds a reference to

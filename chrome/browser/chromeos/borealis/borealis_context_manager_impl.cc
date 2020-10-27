@@ -15,15 +15,15 @@ namespace {
 std::ostream& operator<<(std::ostream& stream,
                          borealis::BorealisContextManager::Status status) {
   switch (status) {
-    case borealis::BorealisContextManager::kSuccess:
+    case borealis::BorealisContextManager::Status::kSuccess:
       return stream << "Success";
-    case borealis::BorealisContextManager::kMountFailed:
+    case borealis::BorealisContextManager::Status::kMountFailed:
       return stream << "Mount Failed";
-    case borealis::BorealisContextManager::kDiskImageFailed:
+    case borealis::BorealisContextManager::Status::kDiskImageFailed:
       return stream << "Disk Image Failed";
-    case borealis::BorealisContextManager::kStartVmFailed:
+    case borealis::BorealisContextManager::Status::kStartVmFailed:
       return stream << "Start VM Failed";
-    case borealis::BorealisContextManager::kAwaitBorealisStartupFailed:
+    case borealis::BorealisContextManager::Status::kAwaitBorealisStartupFailed:
       return stream << "Await Borealis Startup Failed";
   }
 }
@@ -72,7 +72,7 @@ void BorealisContextManagerImpl::NextTask() {
   if (task_queue_.empty()) {
     context_.set_borealis_running(true);
     is_borealis_running_ = true;
-    startup_status_ = kSuccess;
+    startup_status_ = Status::kSuccess;
     OnQueueComplete();
     return;
   }
@@ -86,7 +86,7 @@ void BorealisContextManagerImpl::NextTask() {
 void BorealisContextManagerImpl::TaskCallback(Status status,
                                               std::string error) {
   startup_status_ = status;
-  if (startup_status_ == kSuccess) {
+  if (startup_status_ == Status::kSuccess) {
     NextTask();
     return;
   }
@@ -106,7 +106,7 @@ void BorealisContextManagerImpl::OnQueueComplete() {
 }
 
 BorealisContextManager::Result BorealisContextManagerImpl::GetResult() {
-  if (startup_status_ == kSuccess) {
+  if (startup_status_ == Status::kSuccess) {
     return BorealisContextManager::Result(&context_);
   }
   return BorealisContextManager::Result(startup_status_, startup_error_);

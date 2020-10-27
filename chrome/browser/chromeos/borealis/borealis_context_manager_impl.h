@@ -45,7 +45,7 @@ class BorealisContextManagerImpl : public BorealisContextManager {
   bool is_borealis_starting_ = false;
 
   Profile* profile_ = nullptr;
-  BorealisContextManager::Status startup_status_ = kSuccess;
+  BorealisContextManager::Status startup_status_ = Status::kSuccess;
   std::string startup_error_;
   BorealisContext context_;
   base::queue<ResultCallback> callback_queue_;
