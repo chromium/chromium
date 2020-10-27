@@ -541,7 +541,6 @@ js_library("mock_timer.m") {
 js_library("test_util.m") {
   sources = [ "$root_gen_dir/chrome/test/data/webui/test_util.m.js" ]
   deps = [
-    ":chai_assert",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
