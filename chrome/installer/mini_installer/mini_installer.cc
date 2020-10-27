@@ -351,6 +351,23 @@ BOOL CALLBACK WriteResourceToDirectory(HMODULE module,
   return (resource.IsValid() && full_path.assign(base_path) &&
           full_path.append(name) && resource.WriteToDisk(full_path.get()));
 }
+
+// An EnumResNameProc callback that deletes the file corresponding to the
+// resource |name| from the directory |base_path_ptr| (which must end with a
+// path separator).
+BOOL CALLBACK DeleteResourceInDirectory(HMODULE module,
+                                        const wchar_t* type,
+                                        wchar_t* name,
+                                        LONG_PTR base_path_ptr) {
+  PathString full_path;
+
+  if (full_path.assign(reinterpret_cast<const wchar_t*>(base_path_ptr)) &&
+      full_path.append(name)) {
+    ::DeleteFile(full_path.get());
+  }
+
+  return TRUE;  // Continue enumeration.
+}
 #endif
 
 // Finds and writes to disk resources of various types. Returns false
@@ -533,14 +550,23 @@ ProcessExitResult RunSetup(const Configuration& configuration,
                            RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS);
 }
 
-// Deletes given files and working dir.
-void DeleteExtractedFiles(const wchar_t* base_path,
-                          const wchar_t* archive_path,
-                          const wchar_t* setup_path) {
-  ::DeleteFile(archive_path);
-  ::DeleteFile(setup_path);
+// Deletes the files extracted by UnpackBinaryResources and the work directory
+// created by GetWorkDir.
+void DeleteExtractedFiles(HMODULE module,
+                          const PathString& archive_path,
+                          const PathString& setup_path,
+                          const PathString& base_path) {
+  ::DeleteFile(archive_path.get());
+  ::DeleteFile(setup_path.get());
+
+#if defined(COMPONENT_BUILD)
+  // Delete the modules in a component build extracted for use by setup.exe.
+  ::EnumResourceNames(module, kBinResourceType, DeleteResourceInDirectory,
+                      reinterpret_cast<LONG_PTR>(base_path.get()));
+#endif
+
   // Delete the temp dir (if it is empty, otherwise fail).
-  ::RemoveDirectory(base_path);
+  ::RemoveDirectory(base_path.get());
 }
 
 // Returns true if the supplied path supports ACLs.
@@ -778,7 +804,7 @@ ProcessExitResult WMain(HMODULE module) {
     exit_code = RunSetup(configuration, archive_path.get(), setup_path.get());
 
   if (configuration.should_delete_extracted_files())
-    DeleteExtractedFiles(base_path.get(), archive_path.get(), setup_path.get());
+    DeleteExtractedFiles(module, archive_path, setup_path, base_path);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (exit_code.IsSuccess()) {
