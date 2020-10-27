@@ -116,9 +116,6 @@ class WebSecurityOrigin {
   BLINK_PLATFORM_EXPORT operator scoped_refptr<const SecurityOrigin>() const;
   BLINK_PLATFORM_EXPORT const SecurityOrigin* Get() const;
 #endif
-  // TODO(mkwst): A number of properties don't survive a round-trip
-  // ('document.domain', for instance).  We'll need to fix that for OOPI-enabled
-  // embedders, https://crbug.com/490074.
   BLINK_PLATFORM_EXPORT WebSecurityOrigin(const url::Origin&);
   BLINK_PLATFORM_EXPORT operator url::Origin() const;
 

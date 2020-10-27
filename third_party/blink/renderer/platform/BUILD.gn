@@ -2387,6 +2387,17 @@ fuzzer_test("blink_json_parser_fuzzer") {
   dict = "//testing/libfuzzer/fuzzers/dicts/json.dict"
 }
 
+# Fuzzer for blink::SecurityOrigin
+fuzzer_test("blink_security_origin_fuzzer") {
+  sources = [ "weborigin/security_origin_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  dict = "//url/gurl_fuzzer.dict"
+  defines = [ "INSIDE_BLINK" ]
+}
+
 fuzzer_test("blink_harfbuzz_shaper_fuzzer") {
   sources = [ "fonts/shaping/harfbuzz_shaper_fuzzer.cc" ]
   deps = [

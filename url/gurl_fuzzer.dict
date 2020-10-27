@@ -407,3 +407,9 @@
 # This comes from https://crbug.com/1128999.
 "file:///.//"
 "file:////"
+
+# Special scheme not mentionned above.
+"blob"
+"filesystem"
+"javascript"
+"about"
