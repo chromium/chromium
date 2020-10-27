@@ -111,14 +111,14 @@ float FilterOperations::MaximumPixelMovement() const {
     switch (op.type()) {
       case FilterOperation::BLUR:
         // |op.amount| here is the blur radius.
-        max_movement = fmax(max_movement, op.amount() * 2.f);
+        max_movement = fmax(max_movement, op.amount() * 3.f);
         continue;
       case FilterOperation::DROP_SHADOW:
         // |op.amount| here is the blur radius.
         max_movement =
             fmax(max_movement, fmax(std::abs(op.drop_shadow_offset().x()),
                                     std::abs(op.drop_shadow_offset().y())) +
-                                   op.amount() * 2.f);
+                                   op.amount() * 3.f);
         continue;
       case FilterOperation::ZOOM:
         max_movement = fmax(max_movement, op.zoom_inset());

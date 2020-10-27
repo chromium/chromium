@@ -932,12 +932,12 @@ TEST(FilterOperationsTest, MaximumPixelMovement) {
   FilterOperations filters;
 
   filters.Append(FilterOperation::CreateBlurFilter(20));
-  EXPECT_FLOAT_EQ(20.f * 2, filters.MaximumPixelMovement());
+  EXPECT_FLOAT_EQ(20.f * 3, filters.MaximumPixelMovement());
 
   filters.Clear();
   filters.Append(
       FilterOperation::CreateDropShadowFilter(gfx::Point(3, -8), 20, 0));
-  float max_movement = fmax(std::abs(3), std::abs(-8)) + 20.f * 2;
+  float max_movement = fmax(std::abs(3), std::abs(-8)) + 20.f * 3;
   EXPECT_FLOAT_EQ(max_movement, filters.MaximumPixelMovement());
 
   filters.Clear();

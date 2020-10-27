@@ -5139,16 +5139,14 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     auto* root_pass = root_pass_list[2].get();
     // Set the root damage rect which doesn't intersect with the expanded
     // filter_pass quad (-4, -4, 13, 13) (filter quad (0, 0, 5, 5) +
-    // MaximumPixelMovement(2 * 2 = 4)), so we don't have to add more damage
+    // MaximumPixelMovement(2 * 3 = 6)), so we don't have to add more damage
     // from the filter_pass and the first render pass draw quad will not be
     // drawn.
     root_pass->damage_rect = gfx::Rect(20, 20, 2, 2);
     SubmitPassListAsFrame(root_sink_.get(), root_local_surface_id_,
                           &root_pass_list, std::move(referenced_surfaces),
                           device_scale_factor);
-  }
 
-  {
     auto aggregated_frame = AggregateFrame(root_surface_id);
 
     const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
@@ -5203,16 +5201,14 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     filter_pass->filters.Append(cc::FilterOperation::CreateZoomFilter(2, 20));
     auto* root_pass = root_pass_list[2].get();
     // Make the root damage rect intersect with the expanded filter_pass
-    // quad (filter quad (0, 0, 5, 5) + MaximumPixelMovement(10 * 2) = (-20,
-    // -20, 45, 45)), but not with filter_pass quad itself (0, 0, 5, 5). The
+    // quad (filter quad (0, 0, 5, 5) + MaximumPixelMovement(10 * 3) = (-30,
+    // -30, 65, 65)), but not with filter_pass quad itself (0, 0, 5, 5). The
     // first render pass will be drawn.
     root_pass->damage_rect = gfx::Rect(20, 20, 2, 2);
     SubmitPassListAsFrame(root_sink_.get(), root_local_surface_id_,
                           &root_pass_list, std::move(referenced_surfaces),
                           device_scale_factor);
-  }
 
-  {
     auto aggregated_frame = AggregateFrame(root_surface_id);
 
     const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
@@ -5223,8 +5219,11 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     EXPECT_EQ(gfx::Rect(SurfaceSize()), aggregated_pass_list[1]->damage_rect);
     EXPECT_EQ(gfx::Rect(SurfaceSize()), aggregated_pass_list[2]->damage_rect);
     // The filter pass intersects with the root surface damage, the root damage
-    // increases (= original root damage + expanded filter pass quad).
-    EXPECT_EQ(gfx::Rect(0, 0, 25, 25), aggregated_pass_list[3]->damage_rect);
+    // should increase.
+    // damage_rect = original root damage (0, 0, 5, 5) + MaximumPixelMovement(10
+    // * 3) = (-30, -30, 65, 65). Then intersects with the root output_rect (0,
+    // 0, 100, 100) = (0, 0, 35, 35).
+    EXPECT_EQ(gfx::Rect(0, 0, 35, 35), aggregated_pass_list[3]->damage_rect);
     EXPECT_EQ(1u, aggregated_pass_list[0]->quad_list.size());
     EXPECT_EQ(1u, aggregated_pass_list[1]->quad_list.size());
     EXPECT_EQ(1u, aggregated_pass_list[2]->quad_list.size());
