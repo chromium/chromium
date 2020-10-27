@@ -4839,8 +4839,6 @@ crbug.com/862643 http/tests/serviceworker/navigation_preload/use-counter.html [ 
 # Sheriff 2018-7-13
 crbug.com/863599 [ Debug ] external/wpt/requestidlecallback/callback-iframe.html [ Pass Timeout ]
 
-crbug.com/864888 [ Mac ] editing/selection/offset-from-point-complex-scripts.html [ Failure Pass ]
-
 # Sheriff 2018-07-26
 crbug.com/867982 [ Debug ] external/wpt/requestidlecallback/basic.html [ Timeout Pass ]
 crbug.com/882756 [ Debug ] external/wpt/requestidlecallback/cancel-invoked.html [ Timeout Pass ]
