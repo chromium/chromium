@@ -110,6 +110,11 @@ void WebViewFrameWidget::EndCommitCompositorFrame(
       commit_start_time);
   web_view_->UpdatePreferredSize();
 
+  // TODO(https://crbug.com/1139104): Remove these CHECKS.
+  CHECK(web_view_);
+  CHECK(web_view_->MainFrameImpl());
+  CHECK(web_view_->MainFrameImpl()->GetFrame());
+  CHECK(web_view_->MainFrameImpl()->GetFrame()->View());
   web_view_->MainFrameImpl()
       ->GetFrame()
       ->View()
