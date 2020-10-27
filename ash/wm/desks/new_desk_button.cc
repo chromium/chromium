@@ -36,8 +36,9 @@ constexpr int kCornerRadius = 16;
 
 }  // namespace
 
-NewDeskButton::NewDeskButton(views::ButtonListener* listener)
-    : LabelButton(listener,
+NewDeskButton::NewDeskButton()
+    : LabelButton(base::BindRepeating(&NewDeskButton::OnButtonPressed,
+                                      base::Unretained(this)),
                   l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON)) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

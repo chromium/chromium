@@ -22,7 +22,7 @@ class ASH_EXPORT NewDeskButton
     : public views::LabelButton,
       public OverviewHighlightController::OverviewHighlightableView {
  public:
-  explicit NewDeskButton(views::ButtonListener* listener);
+  NewDeskButton();
   ~NewDeskButton() override = default;
 
   // Update the button's enable/disable state based on current desks state.

@@ -35,8 +35,7 @@ class OverviewItemView;
 class RoundedLabelWidget;
 
 // This class represents an item in overview mode.
-class ASH_EXPORT OverviewItem : public views::ButtonListener,
-                                public aura::WindowObserver,
+class ASH_EXPORT OverviewItem : public aura::WindowObserver,
                                 public WindowStateObserver {
  public:
   OverviewItem(aura::Window* window,
@@ -185,9 +184,6 @@ class ASH_EXPORT OverviewItem : public views::ButtonListener,
   void OnHighlightedViewActivated();
   void OnHighlightedViewClosed();
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
@@ -309,6 +305,8 @@ class ASH_EXPORT OverviewItem : public views::ButtonListener,
   // selection and stacks the window at the top of the Z order in order to keep
   // it visible while dragging around.
   void StartDrag();
+
+  void CloseButtonPressed();
 
   // TODO(sammiequon): Current events go from OverviewItemView to
   // OverviewItem to OverviewSession to OverviewWindowDragController. We may be

@@ -61,7 +61,7 @@ class WmHighlightItemBorder;
 // descendant of the other. Otherwise, this will trigger a render surface.
 class ASH_EXPORT DeskPreviewView : public views::Button {
  public:
-  explicit DeskPreviewView(DeskMiniView* mini_view);
+  DeskPreviewView(PressedCallback callback, DeskMiniView* mini_view);
   ~DeskPreviewView() override;
 
   // Returns the height of the DeskPreviewView based on whether the |compact|

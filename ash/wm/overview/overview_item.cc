@@ -902,18 +902,6 @@ void OverviewItem::OnHighlightedViewClosed() {
   overview_session_->OnHighlightedItemClosed(this);
 }
 
-void OverviewItem::ButtonPressed(views::Button* sender,
-                                 const ui::Event& event) {
-  DCHECK_EQ(sender, overview_item_view_->close_button());
-  base::RecordAction(
-      base::UserMetricsAction("WindowSelector_OverviewCloseButton"));
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    base::RecordAction(
-        base::UserMetricsAction("Tablet_WindowCloseFromOverviewButton"));
-  }
-  CloseWindow();
-}
-
 void OverviewItem::OnWindowPropertyChanged(aura::Window* window,
                                            const void* key,
                                            intptr_t old) {
@@ -1227,7 +1215,10 @@ void OverviewItem::CreateItemWidget() {
 
   overview_item_view_ =
       item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
-          this, GetWindow(), transform_window_.IsMinimized()));
+          this,
+          base::BindRepeating(&OverviewItem::CloseButtonPressed,
+                              base::Unretained(this)),
+          GetWindow(), transform_window_.IsMinimized()));
   item_widget_->Show();
   item_widget_->SetOpacity(0.f);
   item_widget_->GetLayer()->SetMasksToBounds(false);
@@ -1288,6 +1279,16 @@ void OverviewItem::StartDrag() {
     widget_window->parent()->StackChildAtTop(window);
     widget_window->parent()->StackChildBelow(widget_window, window);
   }
+}
+
+void OverviewItem::CloseButtonPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("WindowSelector_OverviewCloseButton"));
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    base::RecordAction(
+        base::UserMetricsAction("Tablet_WindowCloseFromOverviewButton"));
+  }
+  CloseWindow();
 }
 
 void OverviewItem::HandlePressEvent(const gfx::PointF& location_in_screen,

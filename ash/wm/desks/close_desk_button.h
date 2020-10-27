@@ -20,7 +20,7 @@ namespace ash {
 class ASH_EXPORT CloseDeskButton : public views::ImageButton,
                                    public views::ViewTargeterDelegate {
  public:
-  explicit CloseDeskButton(views::ButtonListener* listener);
+  explicit CloseDeskButton(PressedCallback callback);
   ~CloseDeskButton() override;
 
   // The size of the close button.

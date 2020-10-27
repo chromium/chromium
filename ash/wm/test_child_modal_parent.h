@@ -23,7 +23,6 @@ namespace ash {
 
 // Test window that can act as a parent for modal child windows.
 class TestChildModalParent : public views::WidgetDelegateView,
-                             public views::ButtonListener,
                              public views::WidgetObserver {
  public:
   // Create and show a top-level window that hosts a modal parent. Returns the
@@ -44,11 +43,10 @@ class TestChildModalParent : public views::WidgetDelegateView,
   void Layout() override;
   void AddedToWidget() override;
 
-  // Overridden from ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // Overridden from WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  void ButtonPressed();
 
   // The widget for the modal parent, a child of TestChildModalParent's Widget.
   std::unique_ptr<views::Widget> modal_parent_;

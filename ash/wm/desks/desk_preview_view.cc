@@ -205,8 +205,9 @@ class DeskPreviewView::ShadowRenderer : public ui::LayerDelegate {
 // -----------------------------------------------------------------------------
 // DeskPreviewView
 
-DeskPreviewView::DeskPreviewView(DeskMiniView* mini_view)
-    : views::Button(mini_view),
+DeskPreviewView::DeskPreviewView(PressedCallback callback,
+                                 DeskMiniView* mini_view)
+    : views::Button(std::move(callback)),
       mini_view_(mini_view),
       wallpaper_preview_(new DeskWallpaperPreview),
       desk_mirrored_contents_view_(new views::View),

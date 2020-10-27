@@ -74,9 +74,14 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
 
   // TODO(afakhry): Tooltips.
 
-  desk_preview_ = AddChildView(std::make_unique<DeskPreviewView>(this));
+  desk_preview_ = AddChildView(std::make_unique<DeskPreviewView>(
+      base::BindRepeating(&DeskMiniView::OnDeskPreviewPressed,
+                          base::Unretained(this)),
+      this));
   desk_name_view_ = AddChildView(std::move(desk_name_view));
-  close_desk_button_ = AddChildView(std::make_unique<CloseDeskButton>(this));
+  close_desk_button_ =
+      AddChildView(std::make_unique<CloseDeskButton>(base::BindRepeating(
+          &DeskMiniView::OnCloseButtonPressed, base::Unretained(this))));
 
   UpdateCloseButtonVisibility();
   UpdateBorderColor();
@@ -205,15 +210,6 @@ void DeskMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void DeskMiniView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateBorderColor();
-}
-
-void DeskMiniView::ButtonPressed(views::Button* sender,
-                                 const ui::Event& event) {
-  DCHECK(desk_);
-  if (sender == close_desk_button_)
-    OnCloseButtonPressed();
-  else if (sender == desk_preview_)
-    OnDeskPreviewPressed();
 }
 
 void DeskMiniView::OnContentChanged() {

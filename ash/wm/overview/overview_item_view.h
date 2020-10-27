@@ -8,6 +8,7 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/macros.h"
+#include "ui/views/controls/button/button.h"
 
 namespace aura {
 class Window;
@@ -37,6 +38,7 @@ class ASH_EXPORT OverviewItemView
   // If |show_preview| is true, this class will contain a child view which
   // mirrors |window|.
   OverviewItemView(OverviewItem* overview_item,
+                   views::Button::PressedCallback close_callback,
                    aura::Window* window,
                    bool show_preview);
   ~OverviewItemView() override;

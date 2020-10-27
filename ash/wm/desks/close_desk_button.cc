@@ -19,8 +19,8 @@
 
 namespace ash {
 
-CloseDeskButton::CloseDeskButton(views::ButtonListener* listener)
-    : ImageButton(listener) {
+CloseDeskButton::CloseDeskButton(PressedCallback callback)
+    : ImageButton(std::move(callback)) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 

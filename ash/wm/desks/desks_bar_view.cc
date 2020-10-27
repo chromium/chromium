@@ -129,7 +129,7 @@ class DeskBarHoverObserver : public ui::EventObserver {
 
 DesksBarView::DesksBarView(OverviewGrid* overview_grid)
     : background_view_(new views::View),
-      new_desk_button_(new NewDeskButton(this)),
+      new_desk_button_(new NewDeskButton()),
       overview_grid_(overview_grid) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -309,12 +309,6 @@ void DesksBarView::OnThemeChanged() {
 bool DesksBarView::UsesCompactLayout() const {
   return width() <= kUseCompactLayoutWidthThreshold ||
          width() <= min_width_to_fit_contents_;
-}
-
-void DesksBarView::ButtonPressed(views::Button* sender,
-                                 const ui::Event& event) {
-  if (sender == new_desk_button_)
-    new_desk_button_->OnButtonPressed();
 }
 
 void DesksBarView::OnDeskAdded(const Desk* desk) {

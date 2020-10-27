@@ -102,8 +102,8 @@ void AnimateLayerOpacity(ui::Layer* layer, bool visible) {
 // The close button for the overview item. It has a custom ink drop.
 class OverviewCloseButton : public views::ImageButton {
  public:
-  explicit OverviewCloseButton(views::ButtonListener* listener)
-      : views::ImageButton(listener) {
+  explicit OverviewCloseButton(PressedCallback callback)
+      : views::ImageButton(std::move(callback)) {
     SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
     SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
@@ -152,9 +152,11 @@ class OverviewCloseButton : public views::ImageButton {
 
 }  // namespace
 
-OverviewItemView::OverviewItemView(OverviewItem* overview_item,
-                                   aura::Window* window,
-                                   bool show_preview)
+OverviewItemView::OverviewItemView(
+    OverviewItem* overview_item,
+    views::Button::PressedCallback close_callback,
+    aura::Window* window,
+    bool show_preview)
     : WindowMiniView(window), overview_item_(overview_item) {
   DCHECK(overview_item_);
   // This should not be focusable. It's also to avoid accessibility error when
@@ -162,7 +164,7 @@ OverviewItemView::OverviewItemView(OverviewItem* overview_item,
   SetFocusBehavior(FocusBehavior::NEVER);
 
   close_button_ = header_view()->AddChildView(
-      std::make_unique<OverviewCloseButton>(overview_item_));
+      std::make_unique<OverviewCloseButton>(std::move(close_callback)));
   close_button_->SetPaintToLayer();
   close_button_->layer()->SetFillsBoundsOpaquely(false);
   // The button's image may be larger than |kHeaderHeightDp| due to added

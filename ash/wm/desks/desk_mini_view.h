@@ -29,7 +29,6 @@ class DesksBarView;
 // supports desk activation and removal.
 class ASH_EXPORT DeskMiniView
     : public views::View,
-      public views::ButtonListener,
       public Desk::Observer,
       public OverviewHighlightController::OverviewHighlightableView,
       public views::TextfieldController,
@@ -75,9 +74,6 @@ class ASH_EXPORT DeskMiniView
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Desk::Observer:
   void OnContentChanged() override;

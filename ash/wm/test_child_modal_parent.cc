@@ -94,7 +94,9 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
       base::ASCIIToUTF16("modal parent window"));
   modal_parent_->GetNativeView()->SetName("ModalParent");
   auto button = std::make_unique<views::MdTextButton>(
-      this, base::ASCIIToUTF16("Show/Hide Child Modal Window"));
+      base::BindRepeating(&TestChildModalParent::ButtonPressed,
+                          base::Unretained(this)),
+      base::ASCIIToUTF16("Show/Hide Child Modal Window"));
   button_ = AddChildView(std::move(button));
   AddChildView(textfield_);
   AddChildView(host_);
@@ -134,18 +136,16 @@ void TestChildModalParent::AddedToWidget() {
   GetWidget()->GetNativeView()->SetName("Parent");
 }
 
-void TestChildModalParent::ButtonPressed(views::Button* sender,
-                                         const ui::Event& event) {
-  DCHECK_EQ(sender, button_);
-  if (!modal_child_)
-    ShowModalChild();
-  else
-    modal_child_->Close();
-}
-
 void TestChildModalParent::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(modal_child_, widget);
   modal_child_ = nullptr;
+}
+
+void TestChildModalParent::ButtonPressed() {
+  if (modal_child_)
+    modal_child_->Close();
+  else
+    ShowModalChild();
 }
 
 }  // namespace ash
