@@ -36,6 +36,15 @@ const char BaseRenderingContext2D::kLtrDirectionString[] = "ltr";
 const char BaseRenderingContext2D::kAutoKerningString[] = "auto";
 const char BaseRenderingContext2D::kNormalKerningString[] = "normal";
 const char BaseRenderingContext2D::kNoneKerningString[] = "none";
+const char BaseRenderingContext2D::kNormalVariantString[] = "normal";
+const char BaseRenderingContext2D::kSmallCapsVariantString[] = "small-caps";
+const char BaseRenderingContext2D::kAllSmallCapsVariantString[] =
+    "all-small-caps";
+const char BaseRenderingContext2D::kPetiteVariantString[] = "petite-caps";
+const char BaseRenderingContext2D::kAllPetiteVariantString[] =
+    "all-petite-caps";
+const char BaseRenderingContext2D::kUnicaseVariantString[] = "unicase";
+const char BaseRenderingContext2D::kTitlingCapsVariantString[] = "titling-caps";
 const double BaseRenderingContext2D::kCDeviceScaleFactor = 1.0;
 
 BaseRenderingContext2D::BaseRenderingContext2D()
@@ -2072,6 +2081,10 @@ void BaseRenderingContext2D::setTextBaseline(const String& s) {
 
 String BaseRenderingContext2D::fontKerning() const {
   return FontDescription::ToString(GetState().GetFontKerning());
+}
+
+String BaseRenderingContext2D::fontVariantCaps() const {
+  return FontDescription::ToString(GetState().GetFontVariantCaps());
 }
 
 void BaseRenderingContext2D::Trace(Visitor* visitor) const {

@@ -683,6 +683,8 @@ interface CanvasRenderingContext2D
     getter fillStyle
     getter filter
     getter font
+    getter fontKerning
+    getter fontVariantCaps
     getter globalAlpha
     getter globalCompositeOperation
     getter imageSmoothingEnabled
@@ -701,7 +703,6 @@ interface CanvasRenderingContext2D
     getter textBaseline
     getter textLetterSpacing
     getter textWordSpacing
-    getter fontKerning
     method arc
     method arcTo
     method beginPath
@@ -749,6 +750,8 @@ interface CanvasRenderingContext2D
     setter fillStyle
     setter filter
     setter font
+    setter fontKerning
+    setter fontVariantCaps
     setter globalAlpha
     setter globalCompositeOperation
     setter imageSmoothingEnabled
@@ -767,7 +770,6 @@ interface CanvasRenderingContext2D
     setter textBaseline
     setter textLetterSpacing
     setter textWordSpacing
-    setter fontKerning
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor
@@ -4236,6 +4238,8 @@ interface OffscreenCanvasRenderingContext2D
     getter fillStyle
     getter filter
     getter font
+    getter fontKerning
+    getter fontVariantCaps
     getter globalAlpha
     getter globalCompositeOperation
     getter imageSmoothingEnabled
@@ -4254,7 +4258,6 @@ interface OffscreenCanvasRenderingContext2D
     getter textLetterSpacing
     getter textWordSpacing
     getter textBaseline
-    getter fontKerning
     method arc
     method arcTo
     method beginPath
@@ -4300,6 +4303,8 @@ interface OffscreenCanvasRenderingContext2D
     setter fillStyle
     setter filter
     setter font
+    setter fontKerning
+    setter fontVariantCaps
     setter globalAlpha
     setter globalCompositeOperation
     setter imageSmoothingEnabled
@@ -4318,7 +4323,6 @@ interface OffscreenCanvasRenderingContext2D
     setter textBaseline
     setter textLetterSpacing
     setter textWordSpacing
-    setter fontKerning
 interface Option
     attribute @@toStringTag
     getter defaultSelected

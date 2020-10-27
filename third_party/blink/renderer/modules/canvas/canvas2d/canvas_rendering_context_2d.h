@@ -130,6 +130,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void setTextWordSpacing(const double word_spacing);
 
   void setFontKerning(const String&);
+  void setFontVariantCaps(const String&);
 
   void fillText(const String& text, double x, double y);
   void fillText(const String& text, double x, double y, double max_width);

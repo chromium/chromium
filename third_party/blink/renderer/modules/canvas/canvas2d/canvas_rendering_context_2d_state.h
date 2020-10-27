@@ -140,6 +140,12 @@ class CanvasRenderingContext2DState final
                       FontSelector* selector);
   FontDescription::Kerning GetFontKerning() const { return font_kerning_; }
 
+  void SetFontVariantCaps(FontDescription::FontVariantCaps font_kerning,
+                          FontSelector* selector);
+  FontDescription::FontVariantCaps GetFontVariantCaps() const {
+    return font_variant_caps_;
+  }
+
   void SetLineWidth(double line_width) {
     stroke_flags_.setStrokeWidth(clampTo<float>(line_width));
   }
@@ -256,6 +262,8 @@ class CanvasRenderingContext2DState final
   float letter_spacing_{0};
   float word_spacing_{0};
   FontDescription::Kerning font_kerning_{FontDescription::kAutoKerning};
+  FontDescription::FontVariantCaps font_variant_caps_{
+      FontDescription::kCapsNormal};
 
   bool realized_font_ : 1;
   bool is_transform_invertible_ : 1;

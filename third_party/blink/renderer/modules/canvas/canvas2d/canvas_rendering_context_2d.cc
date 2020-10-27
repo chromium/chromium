@@ -846,6 +846,35 @@ void CanvasRenderingContext2D::setFontKerning(
   ModifiableState().SetFontKerning(kerning, Host()->GetFontSelector());
 }
 
+void CanvasRenderingContext2D::setFontVariantCaps(
+    const String& font_variant_caps_string) {
+  if (!GetState().HasRealizedFont())
+    setFont(font());
+  FontDescription::FontVariantCaps variant_caps;
+  String variant_caps_lower = font_variant_caps_string.LowerASCII();
+  if (variant_caps_lower == kNormalVariantString)
+    variant_caps = FontDescription::kCapsNormal;
+  else if (variant_caps_lower == kSmallCapsVariantString)
+    variant_caps = FontDescription::kSmallCaps;
+  else if (variant_caps_lower == kAllSmallCapsVariantString)
+    variant_caps = FontDescription::kAllSmallCaps;
+  else if (variant_caps_lower == kPetiteVariantString)
+    variant_caps = FontDescription::kPetiteCaps;
+  else if (variant_caps_lower == kAllPetiteVariantString)
+    variant_caps = FontDescription::kAllPetiteCaps;
+  else if (variant_caps_lower == kUnicaseVariantString)
+    variant_caps = FontDescription::kUnicase;
+  else if (variant_caps_lower == kTitlingCapsVariantString)
+    variant_caps = FontDescription::kTitlingCaps;
+  else
+    return;
+
+  if (GetState().GetFontVariantCaps() == variant_caps)
+    return;
+
+  ModifiableState().SetFontVariantCaps(variant_caps, Host()->GetFontSelector());
+}
+
 void CanvasRenderingContext2D::fillText(const String& text,
                                         double x,
                                         double y) {

@@ -1020,6 +1020,7 @@ interface OffscreenCanvasRenderingContext2D
     getter filter
     getter font
     getter fontKerning
+    getter fontVariantCaps
     getter globalAlpha
     getter globalCompositeOperation
     getter imageSmoothingEnabled
@@ -1087,6 +1088,7 @@ interface OffscreenCanvasRenderingContext2D
     setter filter
     setter font
     setter fontKerning
+    setter fontVariantCaps
     setter globalAlpha
     setter globalCompositeOperation
     setter imageSmoothingEnabled
