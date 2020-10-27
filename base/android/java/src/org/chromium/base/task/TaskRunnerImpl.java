@@ -131,13 +131,15 @@ public class TaskRunnerImpl implements TaskRunner {
     public void postDelayedTask(Runnable task, long delay) {
         // Lock-free path when native is initialized.
         if (mNativeTaskRunnerAndroid != 0) {
-            TaskRunnerImplJni.get().postDelayedTask(mNativeTaskRunnerAndroid, task, delay);
+            TaskRunnerImplJni.get().postDelayedTask(
+                    mNativeTaskRunnerAndroid, task, delay, task.getClass().getName());
             return;
         }
         synchronized (mPreNativeTaskLock) {
             oneTimeInitialization();
             if (mNativeTaskRunnerAndroid != 0) {
-                TaskRunnerImplJni.get().postDelayedTask(mNativeTaskRunnerAndroid, task, delay);
+                TaskRunnerImplJni.get().postDelayedTask(
+                        mNativeTaskRunnerAndroid, task, delay, task.getClass().getName());
                 return;
             }
             // We don't expect a whole lot of these, if that changes consider pooling them.
@@ -224,14 +226,15 @@ public class TaskRunnerImpl implements TaskRunner {
         synchronized (mPreNativeTaskLock) {
             if (mPreNativeTasks != null) {
                 for (Runnable task : mPreNativeTasks) {
-                    TaskRunnerImplJni.get().postDelayedTask(nativeTaskRunnerAndroid, task, 0);
+                    TaskRunnerImplJni.get().postDelayedTask(
+                            nativeTaskRunnerAndroid, task, 0, task.getClass().getName());
                 }
                 mPreNativeTasks = null;
             }
             if (mPreNativeDelayedTasks != null) {
                 for (Pair<Runnable, Long> task : mPreNativeDelayedTasks) {
-                    TaskRunnerImplJni.get().postDelayedTask(
-                            nativeTaskRunnerAndroid, task.first, task.second);
+                    TaskRunnerImplJni.get().postDelayedTask(nativeTaskRunnerAndroid, task.first,
+                            task.second, task.getClass().getName());
                 }
                 mPreNativeDelayedTasks = null;
             }
@@ -259,7 +262,8 @@ public class TaskRunnerImpl implements TaskRunner {
                 boolean useThreadPool, byte extensionId, byte[] extensionData);
 
         void destroy(long nativeTaskRunnerAndroid);
-        void postDelayedTask(long nativeTaskRunnerAndroid, Runnable task, long delay);
+        void postDelayedTask(
+                long nativeTaskRunnerAndroid, Runnable task, long delay, String runnableClassName);
         boolean belongsToCurrentThread(long nativeTaskRunnerAndroid);
     }
 }

@@ -4,6 +4,7 @@
 
 #include "base/android/task_scheduler/task_runner_android.h"
 
+#include "base/android/jni_string.h"
 #include "base/android/task_scheduler/post_task_android.h"
 #include "base/base_jni_headers/TaskRunnerImpl_jni.h"
 #include "base/bind.h"
@@ -53,11 +54,14 @@ void TaskRunnerAndroid::Destroy(JNIEnv* env) {
 void TaskRunnerAndroid::PostDelayedTask(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& task,
-    jlong delay) {
+    jlong delay,
+    jstring runnable_class_name) {
   task_runner_->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&PostTaskAndroid::RunJavaTask,
-                     base::android::ScopedJavaGlobalRef<jobject>(task)),
+      base::BindOnce(
+          &PostTaskAndroid::RunJavaTask,
+          base::android::ScopedJavaGlobalRef<jobject>(task),
+          android::ConvertJavaStringToUTF8(env, runnable_class_name)),
       TimeDelta::FromMilliseconds(delay));
 }
 

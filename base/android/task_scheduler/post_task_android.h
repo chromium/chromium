@@ -32,7 +32,8 @@ class BASE_EXPORT PostTaskAndroid {
 
   // We don't know ahead of time which thread this will run on so it looks up
   // the JNI environment and the bindings dynamically (albeit with caching).
-  static void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task);
+  static void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
+                          const std::string& runnable_class_name);
 
   DISALLOW_COPY_AND_ASSIGN(PostTaskAndroid);
 };
