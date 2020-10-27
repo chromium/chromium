@@ -58,6 +58,10 @@ bool WifiDataProviderCommon::GetData(WifiData* data) {
   return is_first_scan_complete_;
 }
 
+void WifiDataProviderCommon::ForceRescan() {
+  DoWifiScanTask();
+}
+
 void WifiDataProviderCommon::DoWifiScanTask() {
   // Abort the wifi scan if the provider is already being torn down.
   if (!wlan_api_)
