@@ -26,6 +26,7 @@
 #include "net/cookies/cookie_store_test_helpers.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/test_cookie_access_delegate.h"
+#include "net/url_request/url_request_context.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/session_cleanup_cookie_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -243,7 +244,6 @@ class SynchronousCookieManager {
   // No need to wrap Add*Listener and CloneInterface, since their use
   // is purely async.
  private:
-
   mojom::CookieManager* cookie_service_;
   uint32_t callback_counter_;
 
@@ -340,8 +340,10 @@ class CookieManagerTest : public testing::Test {
     connection_error_seen_ = false;
     cookie_monster_ = std::make_unique<net::CookieMonster>(
         std::move(store), nullptr /* netlog */);
+    url_request_context_ = std::make_unique<net::URLRequestContext>();
+    url_request_context_->set_cookie_store(cookie_monster_.get());
     cookie_service_ = std::make_unique<CookieManager>(
-        cookie_monster_.get(), std::move(cleanup_store), nullptr);
+        url_request_context_.get(), std::move(cleanup_store), nullptr);
     cookie_service_->AddReceiver(
         cookie_service_remote_.BindNewPipeAndPassReceiver());
     service_wrapper_ = std::make_unique<SynchronousCookieManager>(
@@ -359,6 +361,7 @@ class CookieManagerTest : public testing::Test {
   bool connection_error_seen_;
 
   std::unique_ptr<net::CookieMonster> cookie_monster_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<CookieManager> cookie_service_;
   mojo::Remote<mojom::CookieManager> cookie_service_remote_;
   std::unique_ptr<SynchronousCookieManager> service_wrapper_;

@@ -21,6 +21,7 @@
 
 namespace net {
 class CookieStore;
+class URLRequestContext;
 }
 
 class GURL;
@@ -33,9 +34,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
     : public mojom::CookieManager {
  public:
   // Construct a CookieService that can serve mojo requests for the underlying
-  // cookie store.  |*cookie_store| must outlive this object.
+  // cookie store.  |url_request_context->cookie_store()| must outlive this
+  // object.
   CookieManager(
-      net::CookieStore* cookie_store,
+      net::URLRequestContext* url_request_context,
       scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
       mojom::CookieManagerParamsPtr params);
 
