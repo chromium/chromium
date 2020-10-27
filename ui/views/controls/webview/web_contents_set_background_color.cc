@@ -35,6 +35,7 @@ WebContentsSetBackgroundColor::~WebContentsSetBackgroundColor() = default;
 
 void WebContentsSetBackgroundColor::RenderViewReady() {
   web_contents()
+      ->GetMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->GetView()
