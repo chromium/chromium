@@ -16,6 +16,8 @@ class LayoutNGTextControlSingleLine final : public LayoutNGBlockFlow {
 
  private:
   HTMLElement* InnerEditorElement() const;
+  Element* ContainerElement() const;
+  Element* EditingViewPortElement() const;
 
   bool IsOfType(LayoutObjectType) const override;
 
@@ -30,6 +32,11 @@ class LayoutNGTextControlSingleLine final : public LayoutNGBlockFlow {
   }
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+
+  bool NodeAtPoint(HitTestResult& result,
+                   const HitTestLocation& hit_test_location,
+                   const PhysicalOffset& accumulated_offset,
+                   HitTestAction hit_test_action) override;
 };
 
 }  // namespace blink
