@@ -6,10 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_PASSWORDS_ALL_PASSWORDS_BOTTOM_SHEET_VIEW_H_
 
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
-
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 // This interface is used for communicating between the all
 // passwords sheet controller and the Android frontend.
@@ -24,7 +21,8 @@ class AllPasswordsBottomSheetView {
   // Instructs All Passwords Sheet to show the provided |credentials| to the
   // user.
   virtual void Show(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>& credentials,
+      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+          credentials,
       autofill::mojom::FocusedFieldType focused_field_type) = 0;
 };
 

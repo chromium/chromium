@@ -58,8 +58,8 @@ class PasswordManagerPresenter
   const password_manager::PasswordForm* GetPassword(size_t index) const;
 
   // Gets the password entries corresponding to |sort_key|.
-  base::span<const std::unique_ptr<autofill::PasswordForm>> GetPasswordsForKey(
-      const std::string& sort_key) const;
+  base::span<const std::unique_ptr<password_manager::PasswordForm>>
+  GetPasswordsForKey(const std::string& sort_key) const;
 
   // Gets the vector of password entries with the same credentials and from the
   // same site as the one stored at |index|.

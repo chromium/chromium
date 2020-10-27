@@ -1848,7 +1848,7 @@ ChromePasswordProtectionService::GetStoreForReusedCredential(
   if (!profile_)
     return nullptr;
   return reused_credential.in_store ==
-                 autofill::PasswordForm::Store::kAccountStore
+                 password_manager::PasswordForm::Store::kAccountStore
              ? GetAccountPasswordStore()
              : GetProfilePasswordStore();
 }

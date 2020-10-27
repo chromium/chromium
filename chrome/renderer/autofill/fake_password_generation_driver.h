@@ -11,7 +11,6 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

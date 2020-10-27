@@ -291,12 +291,12 @@ TEST_F(PasswordManagerPresenterTest, UIControllerIsCalled) {
 }
 
 TEST_F(PasswordManagerPresenterTest, SavedPasswordsReturnedCorrectly) {
-  autofill::PasswordForm password1 =
+  password_manager::PasswordForm password1 =
       AddPasswordEntry(GURL(kExampleCom), kUsername, kPassword);
   AddPasswordEntry(GURL(kExampleOrg), kUsername, kPassword);
   UpdatePasswordLists();
 
-  base::span<const std::unique_ptr<autofill::PasswordForm>> passwords =
+  base::span<const std::unique_ptr<password_manager::PasswordForm>> passwords =
       GetUIController().GetPasswordManagerPresenter()->GetPasswordsForKey(
           password_manager::CreateSortKey(password1));
 

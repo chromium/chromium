@@ -23,7 +23,7 @@ class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {
     feature_list_.InitAndEnableFeature(
         password_manager::features::kEnablePasswordsAccountStorage);
 
-    autofill::PasswordForm pending_password;
+    password_manager::PasswordForm pending_password;
     pending_password.url = GURL("www.example.com");
     ON_CALL(*model_delegate_mock(), GetPendingPassword)
         .WillByDefault(testing::ReturnRef(pending_password));

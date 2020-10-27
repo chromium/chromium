@@ -212,7 +212,7 @@ void ExternalProcessImporterClient::OnFaviconsImportGroup(
 }
 
 void ExternalProcessImporterClient::OnPasswordFormImportReady(
-    const autofill::PasswordForm& form) {
+    const password_manager::PasswordForm& form) {
   if (cancelled_)
     return;
 

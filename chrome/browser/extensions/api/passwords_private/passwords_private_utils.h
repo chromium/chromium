@@ -11,10 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-
-namespace autofill {
-struct PasswordForm;
-}
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 namespace extensions {
 
@@ -22,7 +19,7 @@ namespace extensions {
 // URL used for internal logic, a human friendly string shown to the user as
 // well as a URL that is linked to.
 api::passwords_private::UrlCollection CreateUrlCollectionFromForm(
-    const autofill::PasswordForm& form);
+    const password_manager::PasswordForm& form);
 
 // This class is an id generator for an arbitrary key type. It is used by both
 // PasswordManagerPresenter and PasswordCheckDelegate to create ids send to the

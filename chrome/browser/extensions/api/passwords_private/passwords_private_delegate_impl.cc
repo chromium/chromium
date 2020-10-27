@@ -26,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -223,7 +224,7 @@ bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
   if (ids.empty() || sort_keys.size() != ids.size())
     return false;
 
-  std::vector<autofill::PasswordForm> forms_to_change;
+  std::vector<password_manager::PasswordForm> forms_to_change;
 
   for (const auto& key : sort_keys) {
     auto forms_for_key = password_manager_presenter_->GetPasswordsForKey(key);
@@ -359,7 +360,8 @@ Profile* PasswordsPrivateDelegateImpl::GetProfile() {
 }
 
 void PasswordsPrivateDelegateImpl::SetPasswordList(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& password_list) {
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+        password_list) {
   // Create a list of PasswordUiEntry objects to send to observers.
   current_entries_.clear();
 
@@ -397,7 +399,7 @@ void PasswordsPrivateDelegateImpl::SetPasswordList(
 }
 
 void PasswordsPrivateDelegateImpl::SetPasswordExceptionList(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>&
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
         password_exception_list) {
   // Creates a list of exceptions to send to observers.
   current_exceptions_.clear();

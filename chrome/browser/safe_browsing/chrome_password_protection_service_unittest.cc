@@ -1640,9 +1640,9 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
                           /*is_extended_reporting=*/true);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
       {.signon_realm = "http://example.test",
-       .in_store = autofill::PasswordForm::Store::kAccountStore},
+       .in_store = password_manager::PasswordForm::Store::kAccountStore},
       {.signon_realm = "http://2.example.test",
-       .in_store = autofill::PasswordForm::Store::kAccountStore}};
+       .in_store = password_manager::PasswordForm::Store::kAccountStore}};
 
   EXPECT_CALL(*account_password_store_, AddCompromisedCredentialsImpl(_))
       .Times(2);
@@ -1655,9 +1655,9 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
                           /*is_extended_reporting=*/true);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
       {"http://example.test", base::ASCIIToUTF16("username1"),
-       autofill::PasswordForm::Store::kAccountStore},
+       password_manager::PasswordForm::Store::kAccountStore},
       {"http://2.example.test", base::ASCIIToUTF16("username2"),
-       autofill::PasswordForm::Store::kAccountStore}};
+       password_manager::PasswordForm::Store::kAccountStore}};
 
   EXPECT_CALL(*account_password_store_,
               RemoveCompromisedCredentialsImpl(

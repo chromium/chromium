@@ -295,7 +295,7 @@ PasswordManagerPresenter::GetPasswords(size_t index) const {
   return TryGetPasswordForms(password_map_, index);
 }
 
-base::span<const std::unique_ptr<autofill::PasswordForm>>
+base::span<const std::unique_ptr<password_manager::PasswordForm>>
 PasswordManagerPresenter::GetPasswordsForKey(
     const std::string& sort_key) const {
   auto it = password_map_.find(sort_key);

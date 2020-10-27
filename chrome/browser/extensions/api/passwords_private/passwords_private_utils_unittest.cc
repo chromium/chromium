@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -12,7 +12,7 @@
 namespace extensions {
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromHtmlForm) {
-  autofill::PasswordForm html_form;
+  password_manager::PasswordForm html_form;
   html_form.url = GURL("http://example.com/LoginAuth");
   html_form.signon_realm = html_form.url.GetOrigin().spec();
 
@@ -24,7 +24,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromHtmlForm) {
 }
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromFederatedForm) {
-  autofill::PasswordForm federated_form;
+  password_manager::PasswordForm federated_form;
   federated_form.signon_realm = "federation://example.com/google.com";
   federated_form.url = GURL("https://example.com/");
   federated_form.federation_origin =
@@ -38,7 +38,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromFederatedForm) {
 }
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithoutDisplayName) {
-  autofill::PasswordForm android_form;
+  password_manager::PasswordForm android_form;
   android_form.signon_realm = "android://example@com.example.android";
   android_form.app_display_name.clear();
 
@@ -51,7 +51,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithoutDisplayName) {
 }
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithAppName) {
-  autofill::PasswordForm android_form;
+  password_manager::PasswordForm android_form;
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name = "Example Android App";
 

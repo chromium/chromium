@@ -59,7 +59,7 @@ CredentialsItemView::CredentialsItemView(
     PressedCallback callback,
     const base::string16& upper_text,
     const base::string16& lower_text,
-    const autofill::PasswordForm* form,
+    const password_manager::PasswordForm* form,
     network::mojom::URLLoaderFactory* loader_factory,
     int upper_text_style,
     int lower_text_style)
@@ -137,8 +137,8 @@ CredentialsItemView::CredentialsItemView(
 CredentialsItemView::~CredentialsItemView() = default;
 
 void CredentialsItemView::SetStoreIndicatorIcon(
-    autofill::PasswordForm::Store store) {
-  if (store == autofill::PasswordForm::Store::kAccountStore &&
+    password_manager::PasswordForm::Store store) {
+  if (store == password_manager::PasswordForm::Store::kAccountStore &&
       !store_indicator_icon_view_) {
     store_indicator_icon_view_ =
         AddChildView(std::make_unique<views::ImageView>());
@@ -150,7 +150,7 @@ void CredentialsItemView::SetStoreIndicatorIcon(
         vector_icons::kSyncIcon,
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
         gfx::kPlaceholderColor));
-  } else if (store == autofill::PasswordForm::Store::kProfileStore &&
+  } else if (store == password_manager::PasswordForm::Store::kProfileStore &&
              store_indicator_icon_view_) {
     RemoveChildView(store_indicator_icon_view_);
     store_indicator_icon_view_ = nullptr;

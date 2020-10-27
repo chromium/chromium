@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_unsynced_credentials_locally_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/view.h"

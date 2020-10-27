@@ -36,10 +36,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-using autofill::PasswordForm;
 using bookmarks::BookmarkModel;
 using bookmarks::TitledUrlMatch;
 using bookmarks::UrlAndTitle;
+using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 
 PasswordForm MakePasswordForm() {

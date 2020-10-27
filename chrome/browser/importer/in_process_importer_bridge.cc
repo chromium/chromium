@@ -16,8 +16,8 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_parser.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -126,7 +126,7 @@ void InProcessImporterBridge::SetKeywords(
 }
 
 void InProcessImporterBridge::SetPasswordForm(
-    const autofill::PasswordForm& form) {
+    const password_manager::PasswordForm& form) {
   writer_->AddPasswordForm(form);
 }
 

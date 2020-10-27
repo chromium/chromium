@@ -32,7 +32,7 @@ using passwords_helper::GetVerifierPasswordCount;
 using passwords_helper::GetVerifierPasswordStore;
 using passwords_helper::ProfileContainsSamePasswordFormsAsVerifier;
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 
 using testing::ElementsAre;
 using testing::IsEmpty;

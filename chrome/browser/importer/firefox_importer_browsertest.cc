@@ -23,8 +23,8 @@
 #include "chrome/common/importer/importer_data_types.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/search_engines/template_url.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -170,7 +170,7 @@ class FirefoxObserver : public ProfileWriter,
 
   bool TemplateURLServiceIsLoaded() const override { return true; }
 
-  void AddPasswordForm(const autofill::PasswordForm& form) override {
+  void AddPasswordForm(const password_manager::PasswordForm& form) override {
     PasswordInfo p = kFirefoxPasswords[password_count_];
     EXPECT_EQ(p.origin, form.url.spec());
     EXPECT_EQ(p.realm, form.signon_realm);

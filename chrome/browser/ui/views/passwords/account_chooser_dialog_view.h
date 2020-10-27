@@ -7,11 +7,8 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 namespace content {
 class WebContents;
@@ -43,7 +40,7 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   // Sets up the child views.
   void InitWindow();
 
-  void CredentialsItemPressed(const autofill::PasswordForm* form);
+  void CredentialsItemPressed(const password_manager::PasswordForm* form);
 
   // A weak pointer to the controller.
   CredentialManagerDialogController* controller_;

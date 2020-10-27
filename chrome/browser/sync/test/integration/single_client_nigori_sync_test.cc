@@ -201,7 +201,7 @@ class SingleClientNigoriSyncTest : public SyncTest {
   ~SingleClientNigoriSyncTest() override = default;
 
   bool WaitForPasswordForms(
-      const std::vector<autofill::PasswordForm>& forms) const {
+      const std::vector<password_manager::PasswordForm>& forms) const {
     return PasswordFormsChecker(0, forms).Wait();
   }
 
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
                                      specifics.mutable_encryption_keybag()));
   SetNigoriInFakeServer(specifics, GetFakeServer());
 
-  const autofill::PasswordForm password_form =
+  const password_manager::PasswordForm password_form =
       passwords_helper::CreateTestPasswordForm(0);
   passwords_helper::InjectEncryptedServerPassword(
       password_form, kKeyParams.password, kKeyParams.derivation_params,
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
                             /*keystore_key_params=*/kKeystoreKeyParams),
                         GetFakeServer());
 
-  const autofill::PasswordForm password_form =
+  const password_manager::PasswordForm password_form =
       passwords_helper::CreateTestPasswordForm(0);
   passwords_helper::InjectEncryptedServerPassword(
       password_form, kKeystoreKeyParams.password,
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
           /*keystore_decryptor_params*/ {kDefaultKeyParams},
           /*keystore_key_params=*/kKeystoreKeyParams),
       GetFakeServer());
-  const autofill::PasswordForm password_form =
+  const password_manager::PasswordForm password_form =
       passwords_helper::CreateTestPasswordForm(0);
   passwords_helper::InjectEncryptedServerPassword(
       password_form, kDefaultKeyParams.password,
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(
           /*keystore_key_params=*/kKeystoreKeyParams),
       GetFakeServer());
 
-  const autofill::PasswordForm password_form =
+  const password_manager::PasswordForm password_form =
       passwords_helper::CreateTestPasswordForm(0);
   passwords_helper::InjectEncryptedServerPassword(
       password_form, kDefaultKeyParams.password,
@@ -719,9 +719,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Ensure that client can decrypt with both |kTrustedVaultKeyParams|
   // and |kKeystoreKeyParams|.
-  const autofill::PasswordForm password_form1 =
+  const password_manager::PasswordForm password_form1 =
       passwords_helper::CreateTestPasswordForm(1);
-  const autofill::PasswordForm password_form2 =
+  const password_manager::PasswordForm password_form2 =
       passwords_helper::CreateTestPasswordForm(2);
 
   passwords_helper::InjectEncryptedServerPassword(
@@ -790,9 +790,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Ensure that client can decrypt with both |kTrustedVaultKeyParams|
   // and |kCustomPassphraseKeyParams|.
-  const autofill::PasswordForm password_form1 =
+  const password_manager::PasswordForm password_form1 =
       passwords_helper::CreateTestPasswordForm(1);
-  const autofill::PasswordForm password_form2 =
+  const password_manager::PasswordForm password_form2 =
       passwords_helper::CreateTestPasswordForm(2);
 
   passwords_helper::InjectEncryptedServerPassword(

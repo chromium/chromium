@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -140,7 +140,7 @@ void AccountChooserDialogView::InitWindow() {
 }
 
 void AccountChooserDialogView::CredentialsItemPressed(
-    const autofill::PasswordForm* form) {
+    const password_manager::PasswordForm* form) {
   // On Mac the button click event may be dispatched after the dialog was
   // hidden. Thus, the controller can be null.
   if (controller_) {

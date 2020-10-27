@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,11 +59,11 @@ enum PasswordItemsViewColumnSetType {
 };
 
 PasswordItemsViewColumnSetType InferColumnSetTypeFromCredentials(
-    const std::vector<autofill::PasswordForm>& credentials) {
+    const std::vector<password_manager::PasswordForm>& credentials) {
   if (std::any_of(credentials.begin(), credentials.end(),
-                  [](const autofill::PasswordForm& form) {
+                  [](const password_manager::PasswordForm& form) {
                     return form.in_store ==
-                           autofill::PasswordForm::Store::kAccountStore;
+                           password_manager::PasswordForm::Store::kAccountStore;
                   })) {
     return MULTI_STORE_PASSWORD_COLUMN_SET;
   }
@@ -139,7 +139,7 @@ void StartRow(views::GridLayout* layout,
 class PasswordItemsView::PasswordRow {
  public:
   PasswordRow(PasswordItemsView* parent,
-              const autofill::PasswordForm* password_form);
+              const password_manager::PasswordForm* password_form);
 
   void AddToLayout(views::GridLayout* layout,
                    PasswordItemsViewColumnSetType type_id);
@@ -153,7 +153,7 @@ class PasswordItemsView::PasswordRow {
   void UndoButtonPressed();
 
   PasswordItemsView* const parent_;
-  const autofill::PasswordForm* const password_form_;
+  const password_manager::PasswordForm* const password_form_;
   bool deleted_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordRow);
@@ -161,7 +161,7 @@ class PasswordItemsView::PasswordRow {
 
 PasswordItemsView::PasswordRow::PasswordRow(
     PasswordItemsView* parent,
-    const autofill::PasswordForm* password_form)
+    const password_manager::PasswordForm* password_form)
     : parent_(parent), password_form_(password_form) {}
 
 void PasswordItemsView::PasswordRow::AddToLayout(
@@ -207,7 +207,7 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
 
   if (type_id == MULTI_STORE_PASSWORD_COLUMN_SET) {
     if (password_form_->in_store ==
-        autofill::PasswordForm::Store::kAccountStore) {
+        password_manager::PasswordForm::Store::kAccountStore) {
       auto* image_view = layout->AddView(std::make_unique<views::ImageView>());
       image_view->SetImage(gfx::CreateVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -331,7 +331,7 @@ void PasswordItemsView::RecreateLayout() {
 }
 
 void PasswordItemsView::NotifyPasswordFormAction(
-    const autofill::PasswordForm& password_form,
+    const password_manager::PasswordForm& password_form,
     PasswordBubbleControllerBase::PasswordAction action) {
   RecreateLayout();
   // After the view is consistent, notify the model that the password needs to

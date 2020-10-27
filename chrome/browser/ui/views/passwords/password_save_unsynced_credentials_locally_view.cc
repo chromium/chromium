@@ -77,7 +77,7 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
   AddChildView(std::move(description));
 
   DCHECK(!controller_.unsynced_credentials().empty());
-  for (const autofill::PasswordForm& form :
+  for (const password_manager::PasswordForm& form :
        controller_.unsynced_credentials()) {
     auto* row_view = AddChildView(std::make_unique<views::View>());
     auto* checkbox = row_view->AddChildView(std::make_unique<views::Checkbox>(

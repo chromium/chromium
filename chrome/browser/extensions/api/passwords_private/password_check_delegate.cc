@@ -30,13 +30,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -55,11 +55,11 @@ namespace extensions {
 
 namespace {
 
-using autofill::PasswordForm;
 using password_manager::CanonicalizeUsername;
 using password_manager::CredentialWithPassword;
 using password_manager::InsecureCredentialTypeFlags;
 using password_manager::LeakCheckCredential;
+using password_manager::PasswordForm;
 using ui::TimeFormat;
 
 using InsecureCredentialsView =

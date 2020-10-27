@@ -10,7 +10,7 @@
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/style/typography.h"
 
@@ -37,7 +37,7 @@ class CredentialsItemView : public AccountAvatarFetcherDelegate,
   CredentialsItemView(PressedCallback callback,
                       const base::string16& upper_text,
                       const base::string16& lower_text,
-                      const autofill::PasswordForm* form,
+                      const password_manager::PasswordForm* form,
                       network::mojom::URLLoaderFactory* loader_factory,
                       int upper_text_style = views::style::STYLE_PRIMARY,
                       int lower_text_style = views::style::STYLE_SECONDARY);
@@ -45,7 +45,7 @@ class CredentialsItemView : public AccountAvatarFetcherDelegate,
 
   // If |store| is kAccountStore and the build is official, adds a G logo icon
   // to the view. If |store| is kProfileStore, removes any existing icon.
-  void SetStoreIndicatorIcon(autofill::PasswordForm::Store store);
+  void SetStoreIndicatorIcon(password_manager::PasswordForm::Store store);
 
   // AccountAvatarFetcherDelegate:
   void UpdateAvatar(const gfx::ImageSkia& image) override;

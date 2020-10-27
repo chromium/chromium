@@ -212,7 +212,7 @@ std::unique_ptr<views::ToggleImageButton> CreatePasswordViewButton(
 // Creates an EditableCombobox from |PasswordForm.all_possible_usernames| or
 // even just |PasswordForm.username_value|.
 std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
-    const autofill::PasswordForm& form) {
+    const password_manager::PasswordForm& form) {
   std::vector<base::string16> usernames = {form.username_value};
   for (const autofill::ValueElementPair& other_possible_username_pair :
        form.all_possible_usernames) {
@@ -239,7 +239,7 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
 // Creates an EditableCombobox from |PasswordForm.all_possible_passwords| or
 // even just |PasswordForm.password_value|.
 std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
-    const autofill::PasswordForm& form,
+    const password_manager::PasswordForm& form,
     bool are_passwords_revealed) {
   DCHECK(!form.IsFederatedCredential());
   std::vector<base::string16> passwords =
@@ -383,7 +383,8 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
         base::Unretained(this)));
     destination_dropdown_ = destination_dropdown.get();
   }
-  const autofill::PasswordForm& password_form = controller_.pending_password();
+  const password_manager::PasswordForm& password_form =
+      controller_.pending_password();
   if (password_form.IsFederatedCredential()) {
     // The credential to be saved doesn't contain password but just the identity
     // provider (e.g. "Sign in with Google"). Thus, the layout is different.

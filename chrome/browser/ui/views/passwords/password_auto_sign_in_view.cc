@@ -34,7 +34,7 @@ PasswordAutoSignInView::PasswordAutoSignInView(
                              /*easily_dismissable=*/false),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  const autofill::PasswordForm& form = controller_.pending_password();
+  const password_manager::PasswordForm& form = controller_.pending_password();
 
   SetShowCloseButton(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);

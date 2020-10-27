@@ -36,7 +36,7 @@ using passwords_helper::RemoveLogins;
 using passwords_helper::UpdateLogin;
 using passwords_helper::UpdateLoginWithPrimaryKey;
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 
 static const char* kValidPassphrase = "passphrase!";
 

@@ -13,7 +13,7 @@
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace syncer {
 class KeyDerivationParams;
@@ -29,33 +29,33 @@ namespace passwords_helper {
 // logins are normally added asynchronously, this method will block until the
 // login is added.
 void AddLogin(password_manager::PasswordStore* store,
-              const autofill::PasswordForm& form);
+              const password_manager::PasswordForm& form);
 
 // Update the data held in password store |store| with a modified |form|.
 // This method blocks until the operation is complete.
 void UpdateLogin(password_manager::PasswordStore* store,
-                 const autofill::PasswordForm& form);
+                 const password_manager::PasswordForm& form);
 
 // Removes |old_form| from password store |store| and immediately adds
 // |new_form|. This method blocks until the operation is complete.
 void UpdateLoginWithPrimaryKey(password_manager::PasswordStore* store,
-                               const autofill::PasswordForm& new_form,
-                               const autofill::PasswordForm& old_form);
+                               const password_manager::PasswordForm& new_form,
+                               const password_manager::PasswordForm& old_form);
 
 // Returns all logins from |store| matching a fake signon realm (see
 // CreateTestPasswordForm()).
 // TODO(treib): Rename this to make clear how specific it is.
-std::vector<std::unique_ptr<autofill::PasswordForm>> GetLogins(
+std::vector<std::unique_ptr<password_manager::PasswordForm>> GetLogins(
     password_manager::PasswordStore* store);
 
 // Returns all logins from |store| (including blacklisted ones)
-std::vector<std::unique_ptr<autofill::PasswordForm>> GetAllLogins(
+std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
     password_manager::PasswordStore* store);
 
 // Removes the login held in |form| from the password store |store|.  This
 // method blocks until the operation is complete.
 void RemoveLogin(password_manager::PasswordStore* store,
-                 const autofill::PasswordForm& form);
+                 const password_manager::PasswordForm& form);
 
 // Removes all password forms from the password store |store|.
 void RemoveLogins(password_manager::PasswordStore* store);
@@ -97,14 +97,14 @@ int GetVerifierPasswordCount();
 
 // Creates a test password form with a well known fake signon realm based on
 // |index|.
-autofill::PasswordForm CreateTestPasswordForm(int index);
+password_manager::PasswordForm CreateTestPasswordForm(int index);
 
 // Injects the password entity based on given |form| and encrypted with key
 // derived from |key_derivation_params| into |fake_server|.
 // For Keystore encryption, the |encryption_passphrase| is the base64 encoding
 // of FakeServer::GetKeystoreKeys().back().
 void InjectEncryptedServerPassword(
-    const autofill::PasswordForm& form,
+    const password_manager::PasswordForm& form,
     const std::string& encryption_passphrase,
     const syncer::KeyDerivationParams& key_derivation_params,
     fake_server::FakeServer* fake_server);
@@ -116,7 +116,7 @@ void InjectEncryptedServerPassword(
     fake_server::FakeServer* fake_server);
 // As above, but using standard Keystore encryption.
 void InjectKeystoreEncryptedServerPassword(
-    const autofill::PasswordForm& form,
+    const password_manager::PasswordForm& form,
     fake_server::FakeServer* fake_server);
 // As above, but using standard Keystore encryption and PasswordSpecificsData.
 void InjectKeystoreEncryptedServerPassword(
@@ -171,7 +171,7 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
  public:
   PasswordFormsChecker(
       int index,
-      const std::vector<autofill::PasswordForm>& expected_forms);
+      const std::vector<password_manager::PasswordForm>& expected_forms);
   ~PasswordFormsChecker() override;
 
   // StatusChangeChecker implementation.
@@ -181,7 +181,7 @@ class PasswordFormsChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfiedImpl(std::ostream* os);
 
   const int index_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> expected_forms_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> expected_forms_;
   bool in_progress_;
   bool needs_recheck_;
 };

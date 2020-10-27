@@ -6,14 +6,14 @@
 
 #include <tuple>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
 api::passwords_private::UrlCollection CreateUrlCollectionFromForm(
-    const autofill::PasswordForm& form) {
+    const password_manager::PasswordForm& form) {
   api::passwords_private::UrlCollection urls;
   GURL link_url;
   std::tie(urls.shown, link_url) =

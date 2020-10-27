@@ -24,15 +24,14 @@
 #include "chrome/browser/password_manager/android/password_accessory_metrics_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
 using autofill::AccessorySheetData;
 using autofill::FooterCommand;
-using autofill::PasswordForm;
 using autofill::UserInfo;
 using autofill::password_generation::PasswordGenerationUIData;
 using base::android::ConvertJavaStringToUTF16;
@@ -41,6 +40,7 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
+using password_manager::PasswordForm;
 
 ManualFillingViewAndroid::ManualFillingViewAndroid(
     ManualFillingController* controller)
@@ -225,8 +225,8 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
                                                      &usernames);
   base::android::AppendJavaStringArrayToStringVector(env, j_passwords,
                                                      &passwords);
-  std::vector<autofill::PasswordForm> password_forms(usernames.size());
-  std::vector<const autofill::PasswordForm*> credentials;
+  std::vector<password_manager::PasswordForm> password_forms(usernames.size());
+  std::vector<const password_manager::PasswordForm*> credentials;
   for (unsigned int i = 0; i < usernames.size(); ++i) {
     password_forms[i].url = origin.GetURL();
     password_forms[i].username_value = base::ASCIIToUTF16(usernames[i]);

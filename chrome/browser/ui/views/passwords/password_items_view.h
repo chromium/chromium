@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "ui/views/view.h"
 
 // A dialog for managing stored password and federated login information for a
@@ -31,7 +31,7 @@ class PasswordItemsView : public PasswordBubbleViewBase {
   const PasswordBubbleControllerBase* GetController() const override;
 
   void NotifyPasswordFormAction(
-      const autofill::PasswordForm& password_form,
+      const password_manager::PasswordForm& password_form,
       PasswordBubbleControllerBase::PasswordAction action);
   void RecreateLayout();
 

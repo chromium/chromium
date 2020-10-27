@@ -59,12 +59,12 @@ class PasswordSaveUpdateWithAccountStoreViewTest
   }
 
  protected:
-  autofill::PasswordForm pending_password_;
+  password_manager::PasswordForm pending_password_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
   PasswordSaveUpdateWithAccountStoreView* view_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> current_forms_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 
 PasswordSaveUpdateWithAccountStoreViewTest::
@@ -76,7 +76,8 @@ PasswordSaveUpdateWithAccountStoreViewTest::
       password_manager::features::kEnablePasswordsAccountStorage);
 
   ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
-      .WillByDefault(Return(autofill::PasswordForm::Store::kAccountStore));
+      .WillByDefault(
+          Return(password_manager::PasswordForm::Store::kAccountStore));
   ON_CALL(*model_delegate_mock(), GetOrigin)
       .WillByDefault(Return(url::Origin::Create(pending_password_.url)));
   ON_CALL(*model_delegate_mock(), GetState)
@@ -140,7 +141,8 @@ TEST_F(PasswordSaveUpdateWithAccountStoreViewTest,
   ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(true));
   ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
-      .WillByDefault(Return(autofill::PasswordForm::Store::kAccountStore));
+      .WillByDefault(
+          Return(password_manager::PasswordForm::Store::kAccountStore));
 
   SimulateSignIn();
 
@@ -159,7 +161,8 @@ TEST_F(PasswordSaveUpdateWithAccountStoreViewTest,
   ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(true));
   ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
-      .WillByDefault(Return(autofill::PasswordForm::Store::kProfileStore));
+      .WillByDefault(
+          Return(password_manager::PasswordForm::Store::kProfileStore));
   SimulateSignIn();
   CreateViewAndShow();
   ASSERT_TRUE(account_picker());

@@ -10,8 +10,8 @@
 #include "chrome/browser/password_check/android/password_check_bridge.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
@@ -35,7 +35,7 @@ base::string16 GetDisplayUsername(const base::string16& username) {
 
 }  // namespace
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 
 using CredentialsView =
     password_manager::InsecureCredentialsManager::CredentialsView;
@@ -143,7 +143,7 @@ PasswordCheckManager::PasswordCheckProgress::PasswordCheckProgress() = default;
 PasswordCheckManager::PasswordCheckProgress::~PasswordCheckProgress() = default;
 
 void PasswordCheckManager::PasswordCheckProgress::IncrementCounts(
-    const autofill::PasswordForm& password) {
+    const password_manager::PasswordForm& password) {
   ++remaining_in_queue_;
   ++counts_[password];
 }

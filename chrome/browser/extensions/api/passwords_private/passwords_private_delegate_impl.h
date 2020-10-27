@@ -95,10 +95,10 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // PasswordUIView implementation.
   Profile* GetProfile() override;
   void SetPasswordList(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>& password_list)
-      override;
+      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+          password_list) override;
   void SetPasswordExceptionList(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>&
+      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
           password_exception_list) override;
 
   // KeyedService overrides:

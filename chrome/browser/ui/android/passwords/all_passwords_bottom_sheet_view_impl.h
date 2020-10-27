@@ -9,10 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
-
-namespace autofill {
-struct PasswordForm;
-}  // namespace autofill
+#include "components/password_manager/core/browser/password_form_forward.h"
 
 class AllPasswordsBottomSheetController;
 
@@ -29,9 +26,9 @@ class AllPasswordsBottomSheetViewImpl : public AllPasswordsBottomSheetView {
   ~AllPasswordsBottomSheetViewImpl() override;
 
   // AllPasswordsBottomSheetView:
-  void Show(
-      const std::vector<std::unique_ptr<autofill::PasswordForm>>& credentials,
-      autofill::mojom::FocusedFieldType focused_field_type) override;
+  void Show(const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+                credentials,
+            autofill::mojom::FocusedFieldType focused_field_type) override;
 
   // Invoked in case the user chooses an entry from the credential list
   // presented to them.

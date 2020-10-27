@@ -11,8 +11,8 @@
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,7 +38,8 @@ AllPasswordsBottomSheetViewImpl::~AllPasswordsBottomSheetViewImpl() {
 }
 
 void AllPasswordsBottomSheetViewImpl::Show(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& credentials,
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+        credentials,
     FocusedFieldType focused_field_type) {
   auto java_object = GetOrCreateJavaObject();
   if (!java_object)

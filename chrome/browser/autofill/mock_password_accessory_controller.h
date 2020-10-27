@@ -20,10 +20,10 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
   MockPasswordAccessoryController();
   ~MockPasswordAccessoryController() override;
 
-  MOCK_METHOD2(
-      SavePasswordsForOrigin,
-      void(const std::map<base::string16, const autofill::PasswordForm*>&,
-           const url::Origin&));
+  MOCK_METHOD2(SavePasswordsForOrigin,
+               void(const std::map<base::string16,
+                                   const password_manager::PasswordForm*>&,
+                    const url::Origin&));
   MOCK_METHOD2(RefreshSuggestionsForField,
                void(autofill::mojom::FocusedFieldType, bool));
   MOCK_METHOD1(OnGenerationRequested,

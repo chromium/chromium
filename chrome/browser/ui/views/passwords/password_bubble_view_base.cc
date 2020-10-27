@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/views/controls/button/button.h"
 
@@ -158,7 +159,7 @@ PasswordBubbleViewBase::~PasswordBubbleViewBase() {
 
 // static
 std::unique_ptr<views::Label> PasswordBubbleViewBase::CreateUsernameLabel(
-    const autofill::PasswordForm& form) {
+    const password_manager::PasswordForm& form) {
   auto label = std::make_unique<views::Label>(
       GetDisplayUsername(form), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
@@ -168,7 +169,7 @@ std::unique_ptr<views::Label> PasswordBubbleViewBase::CreateUsernameLabel(
 
 // static
 std::unique_ptr<views::Label> PasswordBubbleViewBase::CreatePasswordLabel(
-    const autofill::PasswordForm& form) {
+    const password_manager::PasswordForm& form) {
   std::unique_ptr<views::Label> label;
   if (form.federation_origin.opaque()) {
     label = std::make_unique<views::Label>(

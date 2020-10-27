@@ -53,10 +53,10 @@
 #include "extensions/browser/view_type_utils.h"
 #endif
 
-using autofill::PasswordForm;
 using content::BrowserThread;
 using content::NavigationController;
 using content::WebContents;
+using password_manager::PasswordForm;
 
 namespace {
 
@@ -82,7 +82,7 @@ void RecordHttpAuthPromptType(AuthPromptType prompt_type) {
 
 LoginHandler::LoginModelData::LoginModelData(
     password_manager::HttpAuthManager* login_model,
-    const autofill::PasswordForm& observed_form)
+    const password_manager::PasswordForm& observed_form)
     : model(login_model), form(observed_form) {
   DCHECK(model);
 }

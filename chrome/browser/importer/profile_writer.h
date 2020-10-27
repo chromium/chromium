@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/password_manager/core/browser/password_form_forward.h"
 #include "components/search_engines/template_url_service.h"
 #include "url/gurl.h"
 
@@ -21,7 +22,6 @@ struct ImportedBookmarkEntry;
 class Profile;
 
 namespace autofill {
-struct PasswordForm;
 class AutofillEntry;
 }
 
@@ -38,7 +38,7 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
   virtual bool TemplateURLServiceIsLoaded() const;
 
   // Helper methods for adding data to local stores.
-  virtual void AddPasswordForm(const autofill::PasswordForm& form);
+  virtual void AddPasswordForm(const password_manager::PasswordForm& form);
 
   virtual void AddHistoryPage(const history::URLRows& page,
                               history::VisitSource visit_source);

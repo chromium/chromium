@@ -14,18 +14,18 @@
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/passwords_counter.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
 
-using autofill::PasswordForm;
 using browsing_data::BrowsingDataCounter;
+using password_manager::PasswordForm;
 
 class PasswordsCounterTest : public InProcessBrowserTest {
  public:

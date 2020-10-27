@@ -30,7 +30,7 @@
 #include "net/base/escape.h"
 #include "url/gurl.h"
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using password_manager::PasswordStore;
 using sync_datatype_helper::test;
 
@@ -80,7 +80,7 @@ void ClearSyncDateField(std::vector<std::unique_ptr<PasswordForm>>* forms) {
 }
 
 sync_pb::PasswordSpecificsData SpecificsDataFromPasswordForm(
-    const autofill::PasswordForm& password_form) {
+    const password_manager::PasswordForm& password_form) {
   sync_pb::PasswordSpecificsData password_data;
   password_data.set_scheme(static_cast<int>(password_form.scheme));
   password_data.set_signon_realm(password_form.signon_realm);
@@ -303,12 +303,12 @@ PasswordForm CreateTestPasswordForm(int index) {
   form.password_value =
       base::ASCIIToUTF16(base::StringPrintf("password%d", index));
   form.date_created = base::Time::Now();
-  form.in_store = autofill::PasswordForm::Store::kProfileStore;
+  form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   return form;
 }
 
 void InjectEncryptedServerPassword(
-    const autofill::PasswordForm& form,
+    const password_manager::PasswordForm& form,
     const std::string& encryption_passphrase,
     const syncer::KeyDerivationParams& key_derivation_params,
     fake_server::FakeServer* fake_server) {
@@ -333,7 +333,7 @@ void InjectEncryptedServerPassword(
 }
 
 void InjectKeystoreEncryptedServerPassword(
-    const autofill::PasswordForm& form,
+    const password_manager::PasswordForm& form,
     fake_server::FakeServer* fake_server) {
   InjectKeystoreEncryptedServerPassword(SpecificsDataFromPasswordForm(form),
                                         fake_server);
@@ -431,7 +431,7 @@ bool SamePasswordFormsAsVerifierChecker::IsExitConditionSatisfied(
 
 PasswordFormsChecker::PasswordFormsChecker(
     int index,
-    const std::vector<autofill::PasswordForm>& expected_forms)
+    const std::vector<password_manager::PasswordForm>& expected_forms)
     : SingleClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncService(index)),
       index_(index),
@@ -439,7 +439,7 @@ PasswordFormsChecker::PasswordFormsChecker(
       needs_recheck_(false) {
   for (auto& password_form : expected_forms) {
     expected_forms_.push_back(
-        std::make_unique<autofill::PasswordForm>(password_form));
+        std::make_unique<password_manager::PasswordForm>(password_form));
   }
   ClearSyncDateField(&expected_forms_);
 }

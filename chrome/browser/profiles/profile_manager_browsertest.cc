@@ -27,9 +27,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/prefs/pref_service.h"
@@ -181,7 +181,8 @@ class PasswordStoreConsumerVerifier
     : public password_manager::PasswordStoreConsumer {
  public:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override {
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
+      override {
     password_entries_.swap(results);
     run_loop_.Quit();
   }
@@ -190,14 +191,15 @@ class PasswordStoreConsumerVerifier
     run_loop_.Run();
   }
 
-  const std::vector<std::unique_ptr<autofill::PasswordForm>>& GetPasswords()
-      const {
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  GetPasswords() const {
     return password_entries_;
   }
 
  private:
   base::RunLoop run_loop_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> password_entries_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>
+      password_entries_;
 };
 
 base::FilePath GetFirstNonSigninNonLockScreenAppProfile(
@@ -621,8 +623,8 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, MAYBE_DeletePasswords) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   ASSERT_TRUE(profile);
 
-  autofill::PasswordForm form;
-  form.scheme = autofill::PasswordForm::Scheme::kHtml;
+  password_manager::PasswordForm form;
+  form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.signon_realm = "http://accounts.google.com/";
   form.username_value = base::ASCIIToUTF16("my_username");
