@@ -30,7 +30,6 @@
 #include "chrome/updater/win/task_scheduler.h"
 
 namespace updater {
-namespace {
 
 void DeleteComServer(HKEY root) {
   for (const auto& clsid : {__uuidof(UpdaterClass), CLSID_UpdaterControlClass,
@@ -67,40 +66,6 @@ void DeleteComInterfaces(HKEY root) {
   }
 }
 
-int RunUninstallScript(bool uninstall_all) {
-  base::FilePath versioned_dir;
-  if (!GetVersionedDirectory(&versioned_dir)) {
-    LOG(ERROR) << "GetVersionedDirectory failed.";
-    return -1;
-  }
-
-  base::char16 cmd_path[MAX_PATH] = {0};
-  DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\cmd.exe",
-                                        cmd_path, base::size(cmd_path));
-  if (!size || size >= MAX_PATH)
-    return -1;
-
-  base::FilePath script_path = versioned_dir.AppendASCII(kUninstallScript);
-
-  base::string16 cmdline = cmd_path;
-  base::StringAppendF(&cmdline, L" /Q /C \"%ls\" %ls",
-                      script_path.value().c_str(),
-                      uninstall_all ? L"all" : L"local");
-  base::LaunchOptions options;
-  options.start_hidden = true;
-
-  VLOG(1) << "Running " << cmdline;
-
-  base::Process process = base::LaunchProcess(cmdline, options);
-  if (!process.IsValid()) {
-    LOG(ERROR) << "Failed to create process " << cmdline;
-    return -1;
-  }
-  return 0;
-}
-
-}  // namespace
-
 // Reverses the changes made by setup. This is a best effort uninstall:
 // 1. Deletes the scheduled task.
 // 2. Deletes the Clients and ClientState keys.
@@ -132,22 +97,34 @@ int Uninstall(bool is_machine) {
     DeleteComService();
   DeleteComServer(key);
 
-  return RunUninstallScript(true);
-}
-
-// Uninstalls this version of the updater, without uninstalling any other
-// versions. This version is assumed to not be the active version.
-int UninstallCandidate(bool is_machine) {
-  {
-    auto scoped_com_initializer =
-        std::make_unique<base::win::ScopedCOMInitializer>(
-            base::win::ScopedCOMInitializer::kMTA);
-    updater::UnregisterWakeTask();
+  base::FilePath versioned_dir;
+  if (!GetVersionedDirectory(&versioned_dir)) {
+    LOG(ERROR) << "GetVersionedDirectory failed.";
+    return -1;
   }
 
-  // TODO(crbug.com/1140562): Remove the ControlService server as well.
+  base::char16 cmd_path[MAX_PATH] = {0};
+  auto size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\cmd.exe",
+                                       cmd_path, base::size(cmd_path));
+  if (!size || size >= MAX_PATH)
+    return -1;
 
-  return RunUninstallScript(false);
+  base::FilePath script_path = versioned_dir.AppendASCII(kUninstallScript);
+
+  base::string16 cmdline = cmd_path;
+  base::StringAppendF(&cmdline, L" /Q /C \"%ls\"", script_path.value().c_str());
+  base::LaunchOptions options;
+  options.start_hidden = true;
+
+  VLOG(1) << "Running " << cmdline;
+
+  auto process = base::LaunchProcess(cmdline, options);
+  if (!process.IsValid()) {
+    LOG(ERROR) << "Failed to create process " << cmdline;
+    return -1;
+  }
+
+  return 0;
 }
 
 }  // namespace updater

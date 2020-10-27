@@ -10,7 +10,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_tests.h"
@@ -39,15 +38,11 @@ base::FilePath GetProductPath() {
       .AppendASCII(UPDATER_VERSION_STRING);
 }
 
-}  // namespace
-
-base::FilePath GetInstalledExecutablePath() {
+base::FilePath GetExecutablePath() {
   return GetProductPath().AppendASCII("updater.exe");
 }
 
-base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version) {
-  return GetProductPath().AppendASCII(version.GetString());
-}
+}  // namespace
 
 base::FilePath GetDataDirPath() {
   base::FilePath app_data_dir;
@@ -108,19 +103,21 @@ void ExpectInstalled() {
   EXPECT_TRUE(base::PathExists(GetProductPath()));
 }
 
-void ExpectCandidateUninstalled() {
-  // TODO(crbug.com/1062288): Assert there are no side-by-side COM interfaces.
-  // TODO(crbug.com/1062288): Assert there are no Wake tasks.
-
-  // Files must not exist on the file system.
-  EXPECT_FALSE(base::PathExists(GetProductPath()));
-}
-
 void ExpectActive() {
   // TODO(crbug.com/1062288): Assert that COM interfaces point to this version.
 
   // Files must exist on the file system.
   EXPECT_TRUE(base::PathExists(GetProductPath()));
+}
+
+void RunWake(int expected_exit_code) {
+  const base::FilePath path = GetExecutablePath();
+  ASSERT_FALSE(path.empty());
+  base::CommandLine command_line(path);
+  command_line.AppendSwitch(kWakeSwitch);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(command_line, &exit_code));
+  EXPECT_EQ(exit_code, expected_exit_code);
 }
 
 void Install() {
@@ -134,7 +131,7 @@ void Install() {
 }
 
 void Uninstall() {
-  base::FilePath path = GetInstalledExecutablePath();
+  base::FilePath path = GetExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch("uninstall");

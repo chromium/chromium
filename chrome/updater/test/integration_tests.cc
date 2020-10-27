@@ -54,6 +54,8 @@ void PrintLog() {
 
 }  // namespace
 
+#if defined(OS_MAC)
+// TODO(crbug.com/1138014): These functions should be enabled on Win too.
 void RunWake(int expected_exit_code) {
   const base::FilePath installed_executable_path = GetInstalledExecutablePath();
   EXPECT_TRUE(base::PathExists(installed_executable_path));
@@ -101,6 +103,7 @@ void SetupFakeUpdaterLowerVersion() {
 void SetupFakeUpdaterHigherVersion() {
   SetupFakeUpdaterVersion(1);
 }
+#endif  // OS_MAC
 
 bool Run(base::CommandLine command_line, int* exit_code) {
   command_line.AppendSwitch("enable-logging");
@@ -153,6 +156,7 @@ TEST_F(IntegrationTest, InstallUninstall) {
   Uninstall();
 }
 
+#if defined(OS_MAC)
 TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Install();
   ExpectInstalled();
@@ -167,12 +171,9 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   SleepFor(11);
 
   ExpectCandidateUninstalled();
-  // The candidate uninstall should not have altered global prefs.
-  EXPECT_NE(CreateGlobalPrefs()->GetActiveVersion(), UPDATER_VERSION_STRING);
-  Clean();
+  Uninstall();
 }
 
-#if defined(OS_MAC)
 TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();
   ExpectInstalled();
