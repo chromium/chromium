@@ -31,10 +31,6 @@ AmbientBackendModel* AmbientViewDelegateImpl::GetAmbientBackendModel() {
   return ambient_controller_->GetAmbientBackendModel();
 }
 
-void AmbientViewDelegateImpl::OnBackgroundPhotoEvents() {
-  ambient_controller_->OnBackgroundPhotoEvents();
-}
-
 void AmbientViewDelegateImpl::OnPhotoTransitionAnimationCompleted() {
   for (auto& observer : view_delegate_observers_)
     observer.OnPhotoTransitionAnimationCompleted();

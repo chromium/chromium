@@ -28,6 +28,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
+#include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -47,7 +49,8 @@ class ASH_EXPORT AmbientController
       public SessionObserver,
       public PowerStatus::Observer,
       public chromeos::PowerManagerClient::Observer,
-      public device::mojom::FingerprintObserver {
+      public device::mojom::FingerprintObserver,
+      public ui::UserActivityObserver {
  public:
   static constexpr base::TimeDelta kAutoShowWaitTimeInterval =
       base::TimeDelta::FromSeconds(7);
@@ -85,6 +88,9 @@ class ASH_EXPORT AmbientController
                         bool enroll_session_complete,
                         int percent_complete) override {}
 
+  // ui::UserActivityObserver:
+  void OnUserActivity(const ui::Event* event) override;
+
   void AddAmbientViewDelegateObserver(AmbientViewDelegateObserver* observer);
   void RemoveAmbientViewDelegateObserver(AmbientViewDelegateObserver* observer);
 
@@ -98,9 +104,6 @@ class ASH_EXPORT AmbientController
 
   // Returns true if the |container_view_| is currently visible.
   bool IsShown() const;
-
-  // Handles events on the background photo.
-  void OnBackgroundPhotoEvents();
 
   void RequestAccessToken(
       AmbientAccessTokenController::AccessTokenCallback callback,
@@ -119,7 +122,6 @@ class ASH_EXPORT AmbientController
   AmbientUiModel* ambient_ui_model() { return &ambient_ui_model_; }
 
  private:
-  class InactivityMonitor;
   friend class AmbientAshTestBase;
 
   // Hide or close Ambient mode UI.
@@ -179,7 +181,7 @@ class ASH_EXPORT AmbientController
   AmbientPhotoController ambient_photo_controller_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
-  std::unique_ptr<InactivityMonitor> inactivity_monitor_;
+  base::OneShotTimer inactivity_timer_;
 
   // Lazily initialized on the first call of |AcquireWakeLock|.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
@@ -195,6 +197,8 @@ class ASH_EXPORT AmbientController
   ScopedObserver<chromeos::PowerManagerClient,
                  chromeos::PowerManagerClient::Observer>
       power_manager_client_observer_{this};
+  ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver>
+      user_activity_observer_{this};
 
   bool is_screen_off_ = false;
 

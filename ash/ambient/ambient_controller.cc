@@ -42,6 +42,8 @@
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -113,44 +115,6 @@ class AmbientWidgetDelegate : public views::WidgetDelegate {
 
 }  // namespace
 
-// AmbientController::InactivityMonitor----------------------------------
-
-// Monitors the events when ambient screen is hidden, and shows up the screen
-// automatically if the device has been inactive for a specific amount of time.
-class AmbientController::InactivityMonitor : public ui::EventHandler {
- public:
-  using AutoShowCallback = base::OnceCallback<void()>;
-
-  InactivityMonitor(base::WeakPtr<views::Widget> target_widget,
-                    AutoShowCallback callback)
-      : target_widget_(target_widget) {
-    timer_.Start(FROM_HERE, kAutoShowWaitTimeInterval, std::move(callback));
-
-    DCHECK(target_widget_);
-    target_widget_->GetNativeWindow()->AddPreTargetHandler(this);
-  }
-
-  ~InactivityMonitor() override {
-    if (target_widget_) {
-      target_widget_->GetNativeWindow()->RemovePreTargetHandler(this);
-    }
-  }
-
-  InactivityMonitor(const InactivityMonitor&) = delete;
-  InactivityMonitor& operator=(const InactivityMonitor&) = delete;
-
-  // ui::EventHandler:
-  void OnEvent(ui::Event* event) override {
-    // Restarts the timer upon events from the target widget.
-    timer_.Reset();
-  }
-
- private:
-  base::WeakPtr<views::Widget> target_widget_;
-  // Will be canceled when out-of-scope.
-  base::OneShotTimer timer_;
-};
-
 // static
 void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   if (chromeos::features::IsAmbientModeEnabled()) {
@@ -212,8 +176,8 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       DCHECK(!start_time_);
       start_time_ = base::Time::Now();
 
-      // Resets the monitor and cancels the timer upon shown.
-      inactivity_monitor_.reset();
+      // Cancels the timer upon shown.
+      inactivity_timer_.Stop();
 
       if (IsChargerConnected()) {
         // Requires wake lock to prevent display from sleeping.
@@ -224,6 +188,9 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       if (!power_status_observer_.IsObserving(PowerStatus::Get())) {
         power_status_observer_.Add(PowerStatus::Get());
       }
+
+      if (!user_activity_observer_.IsObserving(ui::UserActivityDetector::Get()))
+        user_activity_observer_.Add(ui::UserActivityDetector::Get());
 
       StartRefreshingImages();
       break;
@@ -257,17 +224,26 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       }
 
       if (visibility == AmbientUiVisibility::kHidden) {
-        // Creates the monitor and starts the auto-show timer upon hidden.
-        DCHECK(!inactivity_monitor_);
         if (LockScreen::HasInstance()) {
-          inactivity_monitor_ = std::make_unique<InactivityMonitor>(
-              LockScreen::Get()->widget()->GetWeakPtr(),
+          // Add observer for user activity.
+          if (!user_activity_observer_.IsObserving(
+                  ui::UserActivityDetector::Get())) {
+            user_activity_observer_.Add(ui::UserActivityDetector::Get());
+          }
+
+          // Start timer to show ambient mode.
+          inactivity_timer_.Start(
+              FROM_HERE, kAutoShowWaitTimeInterval,
               base::BindOnce(&AmbientController::OnAutoShowTimeOut,
                              weak_ptr_factory_.GetWeakPtr()));
         }
       } else {
         DCHECK(visibility == AmbientUiVisibility::kClosed);
-        inactivity_monitor_.reset();
+        inactivity_timer_.Stop();
+        if (user_activity_observer_.IsObserving(
+                ui::UserActivityDetector::Get())) {
+          user_activity_observer_.Remove(ui::UserActivityDetector::Get());
+        }
         if (power_status_observer_.IsObserving(PowerStatus::Get()))
           power_status_observer_.Remove(PowerStatus::Get());
       }
@@ -423,6 +399,10 @@ void AmbientController::OnAuthScanDone(
   DismissUI();
 }
 
+void AmbientController::OnUserActivity(const ui::Event* event) {
+  DismissUI();
+}
+
 void AmbientController::AddAmbientViewDelegateObserver(
     AmbientViewDelegateObserver* observer) {
   delegate_.AddObserver(observer);
@@ -472,10 +452,6 @@ void AmbientController::ToggleInSessionUi() {
 
 bool AmbientController::IsShown() const {
   return container_view_ && container_view_->IsDrawn();
-}
-
-void AmbientController::OnBackgroundPhotoEvents() {
-  DismissUI();
 }
 
 void AmbientController::AcquireWakeLock() {
@@ -541,6 +517,11 @@ void AmbientController::DismissUI() {
     return;
   }
 
+  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kHidden) {
+    inactivity_timer_.Reset();
+    return;
+  }
+
   if (LockScreen::HasInstance()) {
     ShowHiddenUi();
     return;
@@ -559,7 +540,7 @@ void AmbientController::OnImagesReady() {
 
 void AmbientController::OnImagesFailed() {
   LOG(ERROR) << "Ambient mode failed to start";
-  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
+  CloseUi();
 }
 
 std::unique_ptr<AmbientContainerView> AmbientController::CreateContainerView() {
