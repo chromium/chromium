@@ -295,7 +295,6 @@ HRESULT DWriteFontCollectionProxy::CreateStreamFromKey(
   mswr::ComPtr<FontFileStream> stream;
   if (!SUCCEEDED(
           mswr::MakeAndInitialize<FontFileStream>(&stream, file_handle))) {
-    DCHECK(false);
     return E_FAIL;
   }
   *font_file_stream = stream.Detach();
