@@ -594,6 +594,38 @@ void BluetoothAdapterBlueZ::ResetAdvertising(
                                         std::move(error_callback)));
 }
 
+void BluetoothAdapterBlueZ::ConnectDevice(
+    const std::string& address,
+    const base::Optional<device::BluetoothDevice::AddressType>& address_type,
+    ConnectDeviceCallback callback,
+    ErrorCallback error_callback) {
+  DCHECK(bluez::BluezDBusManager::Get());
+
+  base::Optional<BluetoothAdapterClient::AddressType> client_address_type;
+  if (address_type) {
+    switch (*address_type) {
+      case device::BluetoothDevice::AddressType::ADDR_TYPE_PUBLIC:
+        client_address_type = BluetoothAdapterClient::AddressType::kPublic;
+        break;
+      case device::BluetoothDevice::AddressType::ADDR_TYPE_RANDOM:
+        client_address_type = BluetoothAdapterClient::AddressType::kRandom;
+        break;
+      case device::BluetoothDevice::AddressType::ADDR_TYPE_UNKNOWN:
+      default:
+        // Keep |client_address_type| unset.
+        break;
+    };
+  }
+
+  bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->ConnectDevice(
+      object_path_, address, client_address_type,
+      base::BindOnce(&BluetoothAdapterBlueZ::OnConnectDevice,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      base::BindOnce(&BluetoothAdapterBlueZ::OnConnectDeviceError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(error_callback)));
+}
+
 device::BluetoothLocalGattService* BluetoothAdapterBlueZ::GetGattService(
     const std::string& identifier) const {
   const auto& service = owned_gatt_services_.find(dbus::ObjectPath(identifier));
@@ -1883,6 +1915,19 @@ void BluetoothAdapterBlueZ::ServiceRecordErrorConnector(
   }
 
   std::move(error_callback).Run(code);
+}
+
+void BluetoothAdapterBlueZ::OnConnectDevice(
+    ConnectDeviceCallback callback,
+    const dbus::ObjectPath& object_path) {
+  std::move(callback).Run(GetDeviceWithPath(object_path));
+}
+
+void BluetoothAdapterBlueZ::OnConnectDeviceError(
+    ErrorCallback error_callback,
+    const std::string& error_name,
+    const std::string& error_message) {
+  std::move(error_callback).Run();
 }
 
 void BluetoothAdapterBlueZ::UpdateDeviceBatteryLevelFromBatteryClient(

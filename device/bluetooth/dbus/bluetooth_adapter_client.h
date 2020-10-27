@@ -30,6 +30,11 @@ class BluetoothServiceRecordBlueZ;
 // local Bluetooth Adapters.
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
  public:
+  enum AddressType {
+    kPublic,
+    kRandom,
+  };
+
   // A DiscoveryFilter represents a filter passed to the SetDiscoveryFilter
   // method.
   struct DiscoveryFilter {
@@ -149,6 +154,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
   // Callback used to send back the handle of a created service record.
   using ServiceRecordCallback = base::OnceCallback<void(uint32_t)>;
 
+  // Callback used to send back the device resulting from ConnectDevice().
+  using ConnectDeviceCallback =
+      base::OnceCallback<void(const dbus::ObjectPath& device_path)>;
+
   // The ErrorCallback is used by adapter methods to indicate failure.
   // It receives two arguments: the name of the error in |error_name| and
   // an optional message in |error_message|.
@@ -220,6 +229,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
                                    uint32_t handle,
                                    base::OnceClosure callback,
                                    ErrorCallback error_callback) = 0;
+
+  // Connects to specified device, even if the device has not been discovered,
+  // on the adapter with the object path |object_path|. Not providing an
+  // |address_type| will create a BR/EDR device.
+  virtual void ConnectDevice(const dbus::ObjectPath& object_path,
+                             const std::string& address,
+                             const base::Optional<AddressType>& address_type,
+                             ConnectDeviceCallback callback,
+                             ErrorCallback error_callback) = 0;
 
   // Creates the instance.
   static BluetoothAdapterClient* Create();

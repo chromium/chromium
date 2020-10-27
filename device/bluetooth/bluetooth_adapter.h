@@ -333,6 +333,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   using CreateAdvertisementCallback =
       base::OnceCallback<void(scoped_refptr<BluetoothAdvertisement>)>;
   using AdvertisementErrorCallback = BluetoothAdvertisement::ErrorCallback;
+  using ConnectDeviceCallback = base::OnceCallback<void(BluetoothDevice*)>;
   using DiscoverySessionErrorCallback =
       base::OnceCallback<void(UMABluetoothDiscoverySessionOutcome)>;
   // The is_error bool is a flag to indicate if the result is an error(true)
@@ -578,6 +579,17 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // advertisements and will stop advertising them.
   virtual void ResetAdvertising(base::OnceClosure callback,
                                 AdvertisementErrorCallback error_callback) = 0;
+
+  // Connect to a device with |address| that is either undiscovered or not
+  // previously paired or connected. Callers are responsible for ensuring that
+  // the device with |address| is available and nearby via their own out-of-band
+  // mechanism, and should not call this method if GetDevice(address) returns
+  // a valid reference (in which case this method will fail).
+  virtual void ConnectDevice(
+      const std::string& address,
+      const base::Optional<BluetoothDevice::AddressType>& address_type,
+      ConnectDeviceCallback callback,
+      ErrorCallback error_callback) = 0;
 #endif
 
   // Returns the list of pending advertisements that are not registered yet.

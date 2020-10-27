@@ -417,6 +417,14 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
     NOTIMPLEMENTED();
   }
 
+  void ConnectDevice(const dbus::ObjectPath& object_path,
+                     const std::string& address,
+                     const base::Optional<AddressType>& address_type,
+                     ConnectDeviceCallback callback,
+                     ErrorCallback error_callback) override {
+    NOTIMPLEMENTED();
+  }
+
  private:
   // Keeps track of how many times methods have been called.
   struct CallCounts {

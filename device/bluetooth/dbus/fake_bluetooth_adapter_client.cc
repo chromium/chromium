@@ -302,6 +302,15 @@ void FakeBluetoothAdapterClient::RemoveServiceRecord(
   std::move(callback).Run();
 }
 
+void FakeBluetoothAdapterClient::ConnectDevice(
+    const dbus::ObjectPath& object_path,
+    const std::string& address,
+    const base::Optional<AddressType>& address_type,
+    ConnectDeviceCallback callback,
+    ErrorCallback error_callback) {
+  NOTIMPLEMENTED();
+}
+
 void FakeBluetoothAdapterClient::SetSimulationIntervalMs(int interval_ms) {
   simulation_interval_ms_ = interval_ms;
 }

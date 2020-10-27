@@ -113,6 +113,15 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                     CreateServiceErrorCallback error_callback));
   MOCK_CONST_METHOD1(GetGattService,
                      BluetoothLocalGattService*(const std::string& identifier));
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+  MOCK_METHOD4(
+      ConnectDevice,
+      void(const std::string& address,
+           const base::Optional<BluetoothDevice::AddressType>& address_type,
+           ConnectDeviceCallback callback,
+           ErrorCallback error_callback));
+
+#endif
 
   // BluetoothAdapter is supposed to manage the lifetime of BluetoothDevices.
   // This method takes ownership of the MockBluetoothDevice. This is only for

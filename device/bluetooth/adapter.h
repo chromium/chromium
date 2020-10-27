@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -71,8 +73,15 @@ class Adapter : public mojom::Adapter,
                      device::BluetoothDevice* device) override;
   void DeviceRemoved(device::BluetoothAdapter* adapter,
                      device::BluetoothDevice* device) override;
+  void GattServicesDiscovered(device::BluetoothAdapter* adapter,
+                              device::BluetoothDevice* device) override;
 
  private:
+  void OnDeviceFetchedForInsecureServiceConnection(
+      const device::BluetoothUUID& service_uuid,
+      ConnectToServiceInsecurelyCallback callback,
+      device::BluetoothDevice* device);
+
   void OnGattConnected(
       ConnectToDeviceCallback callback,
       std::unique_ptr<device::BluetoothGattConnection> connection);
@@ -112,6 +121,13 @@ class Adapter : public mojom::Adapter,
 
   // The adapter observers that listen to this service.
   mojo::RemoteSet<mojom::AdapterObserver> observers_;
+
+  // Arguments provided to ConnectToServiceInsecurely(), cached until the
+  // device is ready to be connected to.
+  std::vector<std::tuple<std::string,
+                         device::BluetoothUUID,
+                         ConnectToServiceInsecurelyCallback>>
+      pending_connect_to_service_args_;
 
   base::WeakPtrFactory<Adapter> weak_ptr_factory_{this};
 

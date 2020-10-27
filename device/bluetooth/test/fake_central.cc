@@ -591,6 +591,13 @@ void FakeCentral::ResetAdvertising(base::OnceClosure callback,
                                    AdvertisementErrorCallback error_callback) {
   NOTREACHED();
 }
+void FakeCentral::ConnectDevice(
+    const std::string& address,
+    const base::Optional<device::BluetoothDevice::AddressType>& address_type,
+    ConnectDeviceCallback callback,
+    ErrorCallback error_callback) {
+  NOTREACHED();
+}
 #endif
 
 device::BluetoothLocalGattService* FakeCentral::GetGattService(

@@ -6,21 +6,32 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
+#include "device/bluetooth/test/mock_bluetooth_socket.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::_;
+using base::test::RunOnceCallback;
+
+using testing::_;
+using testing::DoAll;
+using testing::InvokeWithoutArgs;
 using testing::NiceMock;
 using testing::Return;
 
 namespace {
 
+const char kKnownDeviceAddress[] = "00:00:00:00:01";
+const char kUnknownDeviceAddress[] = "00:00:00:00:02";
 const char kServiceId[] = "0000abcd-0000-0000-0000-000000000001";
 const char kDeviceServiceDataStr[] = "ServiceData";
 
@@ -72,6 +83,30 @@ class AdapterTest : public testing::Test {
         NiceMock<MockBluetoothAdapterWithAdvertisements>>();
     ON_CALL(*mock_bluetooth_adapter_, IsPresent()).WillByDefault(Return(true));
     ON_CALL(*mock_bluetooth_adapter_, IsPowered()).WillByDefault(Return(true));
+
+    // |mock_known_bluetooth_device_| is a device found via discovery.
+    mock_known_bluetooth_device_ =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            mock_bluetooth_adapter_.get(),
+            /*class=*/0, "Known Device", kKnownDeviceAddress,
+            /*paired=*/false,
+            /*connected=*/false);
+    // |mock_unknown_bluetooth_device_| is |connected| because it is created
+    // as a result of calling ConnectDevice().
+    mock_unknown_bluetooth_device_ =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            mock_bluetooth_adapter_.get(),
+            /*class=*/0, "Unknown Device", kUnknownDeviceAddress,
+            /*paired=*/false,
+            /*connected=*/true);
+
+    // |mock_bluetooth_adapter_| can only find |mock_known_bluetooth_device_|
+    // via GetDevice(), not |mock_unknown_bluetooth_device_|.
+    ON_CALL(*mock_bluetooth_adapter_, GetDevice(kKnownDeviceAddress))
+        .WillByDefault(Return(mock_known_bluetooth_device_.get()));
+
+    mock_bluetooth_socket_ =
+        base::MakeRefCounted<NiceMock<device::MockBluetoothSocket>>();
 
     adapter_ = std::make_unique<Adapter>(mock_bluetooth_adapter_);
   }
@@ -131,6 +166,11 @@ class AdapterTest : public testing::Test {
 
   scoped_refptr<NiceMock<MockBluetoothAdapterWithAdvertisements>>
       mock_bluetooth_adapter_;
+  std::unique_ptr<NiceMock<device::MockBluetoothDevice>>
+      mock_known_bluetooth_device_;
+  std::unique_ptr<NiceMock<device::MockBluetoothDevice>>
+      mock_unknown_bluetooth_device_;
+  scoped_refptr<NiceMock<device::MockBluetoothSocket>> mock_bluetooth_socket_;
   std::unique_ptr<Adapter> adapter_;
 
  private:
@@ -151,5 +191,132 @@ TEST_F(AdapterTest, TestRegisterAdvertisement_ScanResponseData) {
   RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/true);
   VerifyAdvertisementWithScanData();
 }
+
+TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Success) {
+  EXPECT_CALL(
+      *mock_known_bluetooth_device_,
+      ConnectToServiceInsecurely(device::BluetoothUUID(kServiceId), _, _))
+      .WillOnce(RunOnceCallback<1>(mock_bluetooth_socket_));
+
+  base::RunLoop run_loop;
+  adapter_->ConnectToServiceInsecurely(
+      kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
+            EXPECT_TRUE(connect_to_service_result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Error) {
+  EXPECT_CALL(
+      *mock_known_bluetooth_device_,
+      ConnectToServiceInsecurely(device::BluetoothUUID(kServiceId), _, _))
+      .WillOnce(RunOnceCallback<2>("Error"));
+
+  base::RunLoop run_loop;
+  adapter_->ConnectToServiceInsecurely(
+      kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
+            EXPECT_FALSE(connect_to_service_result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+TEST_F(
+    AdapterTest,
+    TestConnectToServiceInsecurely_UnknownDevice_Success_ServicesAlreadyResolved) {
+  EXPECT_CALL(*mock_bluetooth_adapter_,
+              ConnectDevice(kUnknownDeviceAddress, _, _, _))
+      .WillOnce(RunOnceCallback<2>(mock_unknown_bluetooth_device_.get()));
+  EXPECT_CALL(
+      *mock_unknown_bluetooth_device_,
+      ConnectToServiceInsecurely(device::BluetoothUUID(kServiceId), _, _))
+      .WillOnce(RunOnceCallback<1>(mock_bluetooth_socket_));
+  EXPECT_CALL(*mock_unknown_bluetooth_device_,
+              IsGattServicesDiscoveryComplete())
+      .WillOnce(Return(true));
+
+  base::RunLoop run_loop;
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
+            EXPECT_TRUE(connect_to_service_result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(
+    AdapterTest,
+    TestConnectToServiceInsecurely_UnknownDevice_Success_WaitForServicesToResolve) {
+  EXPECT_CALL(*mock_bluetooth_adapter_,
+              ConnectDevice(kUnknownDeviceAddress, _, _, _))
+      .WillOnce(RunOnceCallback<2>(mock_unknown_bluetooth_device_.get()));
+  EXPECT_CALL(
+      *mock_unknown_bluetooth_device_,
+      ConnectToServiceInsecurely(device::BluetoothUUID(kServiceId), _, _))
+      .WillOnce(RunOnceCallback<1>(mock_bluetooth_socket_));
+
+  // At first, return false to force |adapter_| to wait for the value to change,
+  // but subsequently return true. On that first call, post a task to trigger
+  // a notification that services are now resolved.
+  EXPECT_CALL(*mock_unknown_bluetooth_device_,
+              IsGattServicesDiscoveryComplete())
+      .WillOnce(DoAll(InvokeWithoutArgs([this]() {
+                        base::SequencedTaskRunnerHandle::Get()->PostTask(
+                            FROM_HERE, base::BindLambdaForTesting([&]() {
+                              adapter_->GattServicesDiscovered(
+                                  mock_bluetooth_adapter_.get(),
+                                  mock_unknown_bluetooth_device_.get());
+                            }));
+                      }),
+                      Return(false)))
+      .WillRepeatedly(Return(true));
+
+  base::RunLoop run_loop;
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
+            EXPECT_TRUE(connect_to_service_result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(AdapterTest, TestConnectToServiceInsecurely_UnknownDevice_Error) {
+  EXPECT_CALL(*mock_bluetooth_adapter_,
+              ConnectDevice(kUnknownDeviceAddress, _, _, _))
+      .WillOnce(RunOnceCallback<3>());
+
+  base::RunLoop run_loop;
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
+            EXPECT_FALSE(connect_to_service_result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+#else
+TEST_F(AdapterTest, TestConnectToServiceInsecurely_UnknownDevice) {
+  base::RunLoop run_loop;
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
+            EXPECT_FALSE(connect_to_service_result);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+#endif
 
 }  // namespace bluetooth

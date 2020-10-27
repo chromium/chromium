@@ -149,6 +149,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void ResetAdvertising(base::OnceClosure callback,
                         AdvertisementErrorCallback error_callback) override;
 
+  void ConnectDevice(
+      const std::string& address,
+      const base::Optional<device::BluetoothDevice::AddressType>& address_type,
+      ConnectDeviceCallback callback,
+      ErrorCallback error_callback) override;
+
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
 
@@ -466,6 +472,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void ServiceRecordErrorConnector(ServiceRecordErrorCallback error_callback,
                                    const std::string& error_name,
                                    const std::string& error_message);
+
+  void OnConnectDevice(ConnectDeviceCallback callback,
+                       const dbus::ObjectPath& object_path);
+  void OnConnectDeviceError(ErrorCallback error_callback,
+                            const std::string& error_name,
+                            const std::string& error_message);
 
   // Updates |battery_percentage| field of a device based on its corresponding
   // value in Battery interface. Should be called when receiving events about

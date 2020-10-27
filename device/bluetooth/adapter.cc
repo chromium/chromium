@@ -175,13 +175,28 @@ void Adapter::ConnectToServiceInsecurely(
     const std::string& address,
     const device::BluetoothUUID& service_uuid,
     ConnectToServiceInsecurelyCallback callback) {
+  auto* device = adapter_->GetDevice(address);
+  if (device) {
+    OnDeviceFetchedForInsecureServiceConnection(service_uuid,
+                                                std::move(callback), device);
+    return;
+  }
+
+  // This device has neither been discovered, nor has it been paired/connected
+  // to previously. Use the ConnectDevice() API, if available, to connect to it.
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  adapter_->GetDevice(address)->ConnectToServiceInsecurely(
-      service_uuid,
-      base::BindOnce(&Adapter::OnConnectToService,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+  adapter_->ConnectDevice(
+      address, /*address_type=*/base::nullopt,
+      base::BindOnce(&Adapter::OnDeviceFetchedForInsecureServiceConnection,
+                     weak_ptr_factory_.GetWeakPtr(), service_uuid,
+                     copyable_callback),
       base::BindOnce(&Adapter::OnConnectToServiceError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(), copyable_callback,
+                     "Cannot connect to device."));
+#else
+  OnConnectToServiceError(std::move(callback), "Device does not exist.");
+#endif
 }
 
 void Adapter::CreateRfcommService(const std::string& service_name,
@@ -242,6 +257,56 @@ void Adapter::DeviceRemoved(device::BluetoothAdapter* adapter,
   auto device_info = Device::ConstructDeviceInfoStruct(device);
   for (auto& observer : observers_)
     observer->DeviceRemoved(device_info->Clone());
+}
+
+void Adapter::GattServicesDiscovered(device::BluetoothAdapter* adapter,
+                                     device::BluetoothDevice* device) {
+  // GattServicesDiscovered() and IsGattServicesDiscoveryComplete() actually
+  // indicate that all services on the remote device, including SDP, are
+  // resolved. Once service probing for a device within a cached request (in
+  // |pending_connect_to_service_args_|) concludes, attempt socket creation
+  // again via OnDeviceFetchedForInsecureServiceConnection().
+  if (!device->IsGattServicesDiscoveryComplete())
+    return;
+
+  const std::string& address = device->GetAddress();
+
+  auto it = pending_connect_to_service_args_.begin();
+  while (it != pending_connect_to_service_args_.end()) {
+    if (address == std::get<0>(*it)) {
+      OnDeviceFetchedForInsecureServiceConnection(
+          /*service_uuid=*/std::get<1>(*it),
+          /*callback=*/std::move(std::get<2>(*it)), device);
+      it = pending_connect_to_service_args_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+void Adapter::OnDeviceFetchedForInsecureServiceConnection(
+    const device::BluetoothUUID& service_uuid,
+    ConnectToServiceInsecurelyCallback callback,
+    device::BluetoothDevice* device) {
+  if (device->IsConnected() && !device->IsGattServicesDiscoveryComplete()) {
+    // This provided device is most likely a result of calling ConnectDevice():
+    // it's connected, but the remote device's services are still being probed
+    // (IsGattServicesDiscoveryComplete() refers to all services, not just GATT
+    // services). That means attempting ConnectToServiceInsecurely() right now
+    // would fail with an "InProgress" error. Wait for GattServicesDiscovered()
+    // to be called to signal that ConnectToServiceInsecurely() can be called.
+    pending_connect_to_service_args_.emplace_back(
+        device->GetAddress(), service_uuid, std::move(callback));
+    return;
+  }
+
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  device->ConnectToServiceInsecurely(
+      service_uuid,
+      base::BindOnce(&Adapter::OnConnectToService,
+                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+      base::BindOnce(&Adapter::OnConnectToServiceError,
+                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
 }
 
 void Adapter::OnGattConnected(

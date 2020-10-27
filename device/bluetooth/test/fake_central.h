@@ -179,6 +179,11 @@ class FakeCentral final : public mojom::FakeCentral,
       AdvertisementErrorCallback error_callback) override;
   void ResetAdvertising(base::OnceClosure callback,
                         AdvertisementErrorCallback error_callback) override;
+  void ConnectDevice(
+      const std::string& address,
+      const base::Optional<device::BluetoothDevice::AddressType>& address_type,
+      ConnectDeviceCallback callback,
+      ErrorCallback error_callback) override;
 #endif
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
