@@ -140,6 +140,10 @@ AX_BASE_EXPORT bool IsSectionhead(const ax::mojom::Role role);
 // Returns true if the role is a subclass of the ARIA Select abstract role.
 AX_BASE_EXPORT bool IsSelect(const ax::mojom::Role role);
 
+// Returns true if the role is one of those exposed by the HTML <select>
+// element.
+AX_BASE_EXPORT bool IsSelectElement(const ax::mojom::Role role);
+
 // Returns true if the provided role is ordered-set like, specifically if it
 // can hold set_size values.
 AX_BASE_EXPORT bool IsSetLike(const ax::mojom::Role role);
@@ -168,6 +172,10 @@ AX_BASE_EXPORT bool IsTableRow(ax::mojom::Role role);
 // break, or inline text box.
 AX_BASE_EXPORT bool IsText(ax::mojom::Role role);
 
+// Returns true if the node should be read only by default
+AX_BASE_EXPORT bool ShouldHaveReadonlyStateByDefault(
+    const ax::mojom::Role role);
+
 // Returns true if the role supports expand/collapse.
 AX_BASE_EXPORT bool SupportsExpandCollapse(const ax::mojom::Role role);
 
@@ -182,10 +190,6 @@ AX_BASE_EXPORT bool SupportsSelected(const ax::mojom::Role role);
 
 // Returns true if the provided role supports toggle.
 AX_BASE_EXPORT bool SupportsToggle(const ax::mojom::Role role);
-
-// Returns true if the node should be read only by default
-AX_BASE_EXPORT bool ShouldHaveReadonlyStateByDefault(
-    const ax::mojom::Role role);
 
 }  // namespace ui
 

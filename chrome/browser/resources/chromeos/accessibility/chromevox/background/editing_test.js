@@ -1360,7 +1360,7 @@ TEST_F('ChromeVoxEditingTest', 'TextAreaBrailleEmptyLine', function() {
   this.runWithLoadedTree('<textarea></textarea>', function(root) {
     const textarea = root.find({role: RoleType.TEXT_FIELD});
     this.listenOnce(textarea, 'focus', function() {
-      this.listenOnce(textarea, 'valueChanged', function() {
+      this.listenOnce(textarea, 'valueInTextFieldChanged', function() {
         mockFeedback.call(this.press(KeyCode.UP)).expectBraille('\n');
         mockFeedback.call(this.press(KeyCode.UP)).expectBraille('two\n');
         mockFeedback.call(this.press(KeyCode.UP)).expectBraille('one\n');
@@ -1487,35 +1487,32 @@ TEST_F('ChromeVoxEditingTest', 'InputEvents', function() {
       this.listenOnce(input, 'focus', resolve);
     });
 
-    let event = await this.waitForEditableEvent();
+    // EventType.TEXT_SELECTION_CHANGED fires on focus as well.
+    //
+    // TODO(nektar): Deprecate and remove TEXT_SELECTION_CHANGED.
+    event = await this.waitForEditableEvent();
     assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
     assertEquals(input, event.target);
     assertEquals('', input.value);
 
     this.press(KeyCode.A)();
 
-    // Important to note that there's no document selection changes below.
     event = await this.waitForEditableEvent();
-    assertEquals(EventType.VALUE_CHANGED, event.type);
+    assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
     assertEquals(input, event.target);
     assertEquals('a', input.value);
 
+    // We deliberately used EventType.TEXT_SELECTION_CHANGED instead of
+    // EventType.DOCUMENT_SELECTION_CHANGED for text fields.
     event = await this.waitForEditableEvent();
     assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
-    assertEquals(input, event.target);
-    assertEquals('a', input.value);
-
-    // TODO(accessibility): this extra value change shouldn't happen.
-    // http://crbug.com/1135249.
-    event = await this.waitForEditableEvent();
-    assertEquals(EventType.VALUE_CHANGED, event.type);
     assertEquals(input, event.target);
     assertEquals('a', input.value);
 
     this.press(KeyCode.B)();
 
     event = await this.waitForEditableEvent();
-    assertEquals(EventType.VALUE_CHANGED, event.type);
+    assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
     assertEquals(input, event.target);
     assertEquals('ab', input.value);
 
@@ -1547,10 +1544,20 @@ TEST_F('ChromeVoxEditingTest', 'TextAreaEvents', function() {
     assertEquals(textArea, event.target);
     assertEquals('a', textArea.value);
 
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
+    assertEquals(textArea, event.target);
+    assertEquals('a', textArea.value);
+
     this.press(KeyCode.B)();
 
     event = await this.waitForEditableEvent();
     assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
+    assertEquals(textArea, event.target);
+    assertEquals('ab', textArea.value);
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
     assertEquals(textArea, event.target);
     assertEquals('ab', textArea.value);
   });
@@ -1577,10 +1584,20 @@ TEST_F('ChromeVoxEditingTest', 'ContentEditableEvents', function() {
     assertEquals(contentEditable, event.target);
     assertEquals('a', contentEditable.value);
 
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
+    assertEquals(contentEditable, event.target);
+    assertEquals('a', contentEditable.value);
+
     this.press(KeyCode.B)();
 
     event = await this.waitForEditableEvent();
     assertEquals(EventType.DOCUMENT_SELECTION_CHANGED, event.type);
+    assertEquals(contentEditable, event.target);
+    assertEquals('ab', contentEditable.value);
+
+    event = await this.waitForEditableEvent();
+    assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
     assertEquals(contentEditable, event.target);
     assertEquals('ab', contentEditable.value);
   });

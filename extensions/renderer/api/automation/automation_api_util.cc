@@ -159,20 +159,23 @@ bool ShouldIgnoreGeneratedEvent(ui::AXEventGenerator::Event event_type) {
     case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
+    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
     case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
     case ui::AXEventGenerator::Event::SORT_CHANGED:
     case ui::AXEventGenerator::Event::STATE_CHANGED:
     case ui::AXEventGenerator::Event::SUBTREE_CREATED:
     case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_MAX_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_MIN_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_STEP_CHANGED:
+    case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
       return false;
 
       // These enum values can be ignored and should not be mapped.
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
+    case ui::AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED:
       return true;
   }
 

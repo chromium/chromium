@@ -403,7 +403,9 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       FireWinAccessibilityEvent(IA2_EVENT_TEXT_ATTRIBUTE_CHANGED, node);
       HandleTextChangedEvent(*node);
       break;
-    case ui::AXEventGenerator::Event::VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
       FireWinAccessibilityEvent(EVENT_OBJECT_VALUECHANGE, node);
       if (node->GetData().IsRangeValueSupported()) {
         FireUiaPropertyChangedEvent(UIA_RangeValueValuePropertyId, node);
@@ -416,19 +418,19 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
         HandleTextChangedEvent(*node);
       }
       break;
-    case ui::AXEventGenerator::Event::VALUE_MAX_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
       if (node->GetData().IsRangeValueSupported()) {
         FireUiaPropertyChangedEvent(UIA_RangeValueMaximumPropertyId, node);
         HandleAriaPropertiesChangedEvent(*node);
       }
       break;
-    case ui::AXEventGenerator::Event::VALUE_MIN_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
       if (node->GetData().IsRangeValueSupported()) {
         FireUiaPropertyChangedEvent(UIA_RangeValueMinimumPropertyId, node);
         HandleAriaPropertiesChangedEvent(*node);
       }
       break;
-    case ui::AXEventGenerator::Event::VALUE_STEP_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
       if (node->GetData().IsRangeValueSupported()) {
         FireUiaPropertyChangedEvent(UIA_RangeValueSmallChangePropertyId, node);
         FireUiaPropertyChangedEvent(UIA_RangeValueLargeChangePropertyId, node);
@@ -450,6 +452,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
     case ui::AXEventGenerator::Event::STATE_CHANGED:
+    case ui::AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED:
       // There are some notifications that aren't meaningful on Windows.
       // It's okay to skip them.
       break;

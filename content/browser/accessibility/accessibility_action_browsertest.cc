@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 
   AccessibilityNotificationWaiter waiter2(
       shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::VALUE_CHANGED);
+      ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED);
   GetManager()->SetValue(*target, "Line1\nLine2");
   waiter2.WaitForNotification();
 

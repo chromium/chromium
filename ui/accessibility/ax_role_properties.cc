@@ -559,6 +559,18 @@ bool IsSelect(const ax::mojom::Role role) {
   }
 }
 
+bool IsSelectElement(const ax::mojom::Role role) {
+  // Depending on their "size" attribute, <select> elements come in two flavors:
+  // the first appears like a list box and the second like a popup menu.
+  switch (role) {
+    case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kPopUpButton:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsSetLike(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kDescriptionList:
@@ -694,6 +706,39 @@ bool IsText(ax::mojom::Role role) {
   }
 }
 
+bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kArticle:
+    case ax::mojom::Role::kDefinition:
+    case ax::mojom::Role::kDescriptionList:
+    case ax::mojom::Role::kDescriptionListTerm:
+    case ax::mojom::Role::kDocument:
+    case ax::mojom::Role::kGraphicsDocument:
+    case ax::mojom::Role::kImage:
+    case ax::mojom::Role::kImageMap:
+    case ax::mojom::Role::kList:
+    case ax::mojom::Role::kListItem:
+    case ax::mojom::Role::kProgressIndicator:
+    case ax::mojom::Role::kRootWebArea:
+    case ax::mojom::Role::kTerm:
+    case ax::mojom::Role::kTimer:
+    case ax::mojom::Role::kToolbar:
+    case ax::mojom::Role::kTooltip:
+    case ax::mojom::Role::kWebArea:
+      return true;
+
+    case ax::mojom::Role::kGrid:
+      // TODO(aleventhal) this changed between ARIA 1.0 and 1.1,
+      // need to determine whether grids/treegrids should really be readonly
+      // or editable by default
+      break;
+
+    default:
+      break;
+  }
+  return false;
+}
+
 bool SupportsExpandCollapse(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kComboBoxGrouping:
@@ -767,39 +812,6 @@ bool SupportsToggle(const ax::mojom::Role role) {
     default:
       return false;
   }
-}
-
-bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kArticle:
-    case ax::mojom::Role::kDefinition:
-    case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDescriptionListTerm:
-    case ax::mojom::Role::kDocument:
-    case ax::mojom::Role::kGraphicsDocument:
-    case ax::mojom::Role::kImage:
-    case ax::mojom::Role::kImageMap:
-    case ax::mojom::Role::kList:
-    case ax::mojom::Role::kListItem:
-    case ax::mojom::Role::kProgressIndicator:
-    case ax::mojom::Role::kRootWebArea:
-    case ax::mojom::Role::kTerm:
-    case ax::mojom::Role::kTimer:
-    case ax::mojom::Role::kToolbar:
-    case ax::mojom::Role::kTooltip:
-    case ax::mojom::Role::kWebArea:
-      return true;
-
-    case ax::mojom::Role::kGrid:
-      // TODO(aleventhal) this changed between ARIA 1.0 and 1.1,
-      // need to determine whether grids/treegrids should really be readonly
-      // or editable by default
-      break;
-
-    default:
-      break;
-  }
-  return false;
 }
 
 }  // namespace ui

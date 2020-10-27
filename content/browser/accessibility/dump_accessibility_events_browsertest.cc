@@ -283,8 +283,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-controls-changed.html"));
 }
 
+// TODO(nektar): Re-enable this test after kValueChanged is removed from Blink.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaComboBoxUneditable) {
+                       DISABLED_AccessibilityEventsAriaComboBoxUneditable) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-uneditable.html"));
 }
 

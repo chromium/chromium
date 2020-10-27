@@ -312,7 +312,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
       mac_notification = NSAccessibilityValueChangedNotification;
       if (base::mac::IsAtLeastOS10_11() && !text_edits_.empty()) {
         base::string16 deleted_text;
@@ -458,14 +460,15 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
     case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_CHANGED:
+    case ui::AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED:
     case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
     case ui::AXEventGenerator::Event::SORT_CHANGED:
     case ui::AXEventGenerator::Event::STATE_CHANGED:
     case ui::AXEventGenerator::Event::SUBTREE_CREATED:
     case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_MAX_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_MIN_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_STEP_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       // There are some notifications that aren't meaningful on Mac.
       // It's okay to skip them.

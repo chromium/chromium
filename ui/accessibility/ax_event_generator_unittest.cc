@@ -21,6 +21,8 @@ void PrintTo(const AXEventGenerator::TargetedEvent& event, std::ostream* os) {
 
 namespace {
 
+using testing::IsEmpty;
+using testing::IsSupersetOf;
 using testing::Matches;
 using testing::PrintToString;
 using testing::UnorderedElementsAre;
@@ -177,6 +179,7 @@ TEST(AXEventGeneratorTest, LoadCompleteSameTree) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate load_complete_update = initial_state;
   load_complete_update.tree_data.loaded = true;
 
@@ -195,6 +198,7 @@ TEST(AXEventGeneratorTest, LoadCompleteNewTree) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate load_complete_update;
   load_complete_update.root_id = 2;
   load_complete_update.nodes.resize(1);
@@ -252,6 +256,7 @@ TEST(AXEventGeneratorTest, LoadStart) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate load_start_update;
   load_start_update.root_id = 2;
   load_start_update.nodes.resize(1);
@@ -279,6 +284,7 @@ TEST(AXEventGeneratorTest, DocumentSelectionChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.tree_data.sel_focus_offset = 2;
 
@@ -298,6 +304,7 @@ TEST(AXEventGeneratorTest, DocumentTitleChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.tree_data.title = "After";
 
@@ -326,6 +333,7 @@ TEST(AXEventGeneratorTest, ExpandedAndRowCount) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[2].AddState(ax::mojom::State::kExpanded);
   update.nodes[3].state = 0;
@@ -365,6 +373,7 @@ TEST(AXEventGeneratorTest, SelectedAndSelectedChildren) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[2].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
   update.nodes.pop_back();
@@ -386,25 +395,242 @@ TEST(AXEventGeneratorTest, SelectedAndSelectedChildren) {
                          4)));
 }
 
-TEST(AXEventGeneratorTest, StringValueChanged) {
-  AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(1);
-  initial_state.nodes[0].id = 1;
-  initial_state.nodes[0].role = ax::mojom::Role::kTextField;
-  initial_state.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kValue,
-                                            "Before");
-  AXTree tree(initial_state);
+TEST(AXEventGeneratorTest, SelectedAndSelectedValueChanged) {
+  // This test is based on the following HTML snippet which produces the below
+  // simplified accessibility tree.
+  //
+  // <select>
+  //   <option selected>Item 1</option>
+  //   <option>Item 2</option>
+  // </select>
+  // <select size="2">
+  //   <option>Item 1</option>
+  //   <option selected>Item 2</option>
+  // </select>
+  //
+  // kRootWebArea
+  // ++kPopUpButton value="Item 1"
+  // ++++kMenuListPopup invisible
+  // ++++++kMenuListOption name="Item 1" selected=true
+  // ++++++kMenuListOption name="Item 2" selected=false
+  // ++kListBox value="Item 2"
+  // ++++kListBoxOption name="Item 1" selected=false
+  // ++++kListBoxOption name="Item 2" selected=true
 
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData popup_button;
+  popup_button.id = 2;
+  popup_button.role = ax::mojom::Role::kPopUpButton;
+  popup_button.SetValue("Item 1");
+
+  AXNodeData menu_list_popup;
+  menu_list_popup.id = 3;
+  menu_list_popup.role = ax::mojom::Role::kMenuListPopup;
+  menu_list_popup.AddState(ax::mojom::State::kInvisible);
+
+  AXNodeData menu_list_option_1;
+  menu_list_option_1.id = 4;
+  menu_list_option_1.role = ax::mojom::Role::kMenuListOption;
+  menu_list_option_1.SetName("Item 1");
+  menu_list_option_1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                      true);
+
+  AXNodeData menu_list_option_2;
+  menu_list_option_2.id = 5;
+  menu_list_option_2.role = ax::mojom::Role::kMenuListOption;
+  menu_list_option_2.SetName("Item 2");
+
+  AXNodeData list_box;
+  list_box.id = 6;
+  list_box.role = ax::mojom::Role::kListBox;
+  list_box.SetValue("Item 2");
+
+  AXNodeData list_box_option_1;
+  list_box_option_1.id = 7;
+  list_box_option_1.role = ax::mojom::Role::kListBoxOption;
+  list_box_option_1.SetName("Item 1");
+
+  AXNodeData list_box_option_2;
+  list_box_option_2.id = 8;
+  list_box_option_2.role = ax::mojom::Role::kRootWebArea;
+  list_box_option_2.SetName("Item 2");
+  list_box_option_2.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+
+  popup_button.child_ids = {menu_list_popup.id};
+  menu_list_popup.child_ids = {menu_list_option_1.id, menu_list_option_2.id};
+  list_box.child_ids = {list_box_option_1.id, list_box_option_2.id};
+  root.child_ids = {popup_button.id, list_box.id};
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root,
+                         popup_button,
+                         menu_list_popup,
+                         menu_list_option_1,
+                         menu_list_option_2,
+                         list_box,
+                         list_box_option_1,
+                         list_box_option_2};
+
+  AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
-  AXTreeUpdate update = initial_state;
-  update.nodes[0].string_attributes.clear();
-  update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kValue,
-                                     "After");
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  popup_button.SetValue("Item 2");
+  menu_list_option_1.RemoveBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+  menu_list_option_2.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                      true);
+  list_box.SetValue("Item 1");
+  list_box_option_1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+  list_box_option_2.RemoveBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+
+  AXTreeUpdate update;
+  update.nodes = {popup_button, menu_list_option_1, menu_list_option_2,
+                  list_box,     list_box_option_1,  list_box_option_2};
 
   ASSERT_TRUE(tree.Unserialize(update));
-  EXPECT_THAT(event_generator, UnorderedElementsAre(HasEventAtNode(
-                                   AXEventGenerator::Event::VALUE_CHANGED, 1)));
+  EXPECT_THAT(
+      event_generator,
+      IsSupersetOf(
+          {HasEventAtNode(AXEventGenerator::Event::SELECTED_VALUE_CHANGED,
+                          popup_button.id),
+           HasEventAtNode(AXEventGenerator::Event::SELECTED_CHANGED,
+                          menu_list_option_1.id),
+           HasEventAtNode(AXEventGenerator::Event::SELECTED_CHANGED,
+                          menu_list_option_2.id),
+           HasEventAtNode(AXEventGenerator::Event::SELECTED_VALUE_CHANGED,
+                          list_box.id),
+           HasEventAtNode(AXEventGenerator::Event::SELECTED_CHANGED,
+                          list_box_option_1.id),
+           HasEventAtNode(AXEventGenerator::Event::SELECTED_CHANGED,
+                          list_box_option_2.id)}));
+}
+
+TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.SetValue("Testing");
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+
+  root.child_ids = {text_field.id};
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root, text_field};
+
+  AXTreeData tree_data;
+  tree_data.sel_anchor_object_id = text_field.id;
+  tree_data.sel_anchor_offset = 0;
+  tree_data.sel_focus_object_id = text_field.id;
+  tree_data.sel_focus_offset = 0;
+  initial_state.tree_data = tree_data;
+  initial_state.has_tree_data = true;
+
+  AXTree tree(initial_state);
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  {
+    AXTreeData tree_data;
+    tree_data.sel_anchor_object_id = text_field.id;
+    tree_data.sel_anchor_offset = 0;
+    tree_data.sel_focus_object_id = text_field.id;
+    tree_data.sel_focus_offset = 2;
+    AXTreeUpdate update;
+    update.tree_data = tree_data;
+    update.has_tree_data = true;
+
+    ASSERT_TRUE(tree.Unserialize(update));
+    EXPECT_THAT(
+        event_generator,
+        UnorderedElementsAre(
+            HasEventAtNode(AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED,
+                           root.id),
+            HasEventAtNode(
+                AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED,
+                text_field.id)));
+  }
+
+  event_generator.ClearEvents();
+  {
+    // A selection that does not include a text field in it should not raise the
+    // "SELECTION_IN_TEXT_FIELD_CHANGED" event.
+    AXTreeData tree_data;
+    tree_data.sel_anchor_object_id = root.id;
+    tree_data.sel_anchor_offset = 0;
+    tree_data.sel_focus_object_id = root.id;
+    tree_data.sel_focus_offset = 0;
+    AXTreeUpdate update;
+    update.tree_data = tree_data;
+    update.has_tree_data = true;
+
+    ASSERT_TRUE(tree.Unserialize(update));
+    EXPECT_THAT(
+        event_generator,
+        UnorderedElementsAre(HasEventAtNode(
+            AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED, root.id)));
+  }
+
+  event_generator.ClearEvents();
+  {
+    // A selection that spans more than one node but which nevertheless ends on
+    // a text field should still raise the "SELECTION_IN_TEXT_FIELD_CHANGED"
+    // event.
+    AXTreeData tree_data;
+    tree_data.sel_anchor_object_id = root.id;
+    tree_data.sel_anchor_offset = 0;
+    tree_data.sel_focus_object_id = text_field.id;
+    tree_data.sel_focus_offset = 2;
+    AXTreeUpdate update;
+    update.tree_data = tree_data;
+    update.has_tree_data = true;
+
+    ASSERT_TRUE(tree.Unserialize(update));
+    EXPECT_THAT(
+        event_generator,
+        UnorderedElementsAre(
+            HasEventAtNode(AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED,
+                           root.id),
+            HasEventAtNode(
+                AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED,
+                text_field.id)));
+  }
+}
+
+TEST(AXEventGeneratorTest, ValueInTextFieldChanged) {
+  AXNodeData text_field;
+  text_field.id = 1;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  text_field.SetValue("Before");
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = text_field.id;
+  initial_state.nodes = {text_field};
+
+  AXTree tree(initial_state);
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  text_field.SetValue("After");
+  AXTreeUpdate update;
+  update.nodes = {text_field};
+
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(event_generator,
+              UnorderedElementsAre(HasEventAtNode(
+                  AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED,
+                  text_field.id)));
 }
 
 TEST(AXEventGeneratorTest, FloatValueChanged) {
@@ -418,29 +644,38 @@ TEST(AXEventGeneratorTest, FloatValueChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].float_attributes.clear();
   update.nodes[0].AddFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
                                     2.0);
 
   ASSERT_TRUE(tree.Unserialize(update));
-  EXPECT_THAT(event_generator, UnorderedElementsAre(HasEventAtNode(
-                                   AXEventGenerator::Event::VALUE_CHANGED, 1)));
+  EXPECT_THAT(event_generator,
+              UnorderedElementsAre(HasEventAtNode(
+                  AXEventGenerator::Event::RANGE_VALUE_CHANGED, 1)));
 }
 
 TEST(AXEventGeneratorTest, InvalidStatusChanged) {
-  AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(1);
-  initial_state.nodes[0].id = 1;
-  initial_state.nodes[0].role = ax::mojom::Role::kTextField;
-  initial_state.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kValue,
-                                            "Text");
-  AXTree tree(initial_state);
+  AXNodeData text_field;
+  text_field.id = 1;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kValue, "Text");
 
+  AXTreeUpdate initial_state;
+  initial_state.root_id = text_field.id;
+  initial_state.nodes = {text_field};
+
+  AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
-  AXTreeUpdate update = initial_state;
-  update.nodes[0].SetInvalidState(ax::mojom::InvalidState::kTrue);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update;
+  text_field.SetInvalidState(ax::mojom::InvalidState::kTrue);
+  update.nodes = {text_field};
+
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(event_generator,
               UnorderedElementsAre(HasEventAtNode(
@@ -455,6 +690,7 @@ TEST(AXEventGeneratorTest, AddLiveRegionAttribute) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
                                      "polite");
@@ -492,6 +728,7 @@ TEST(AXEventGeneratorTest, CheckedStateChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].SetCheckedState(ax::mojom::CheckedState::kTrue);
   ASSERT_TRUE(tree.Unserialize(update));
@@ -520,6 +757,7 @@ TEST(AXEventGeneratorTest, ActiveDescendantChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].int_attributes.clear();
   update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
@@ -540,6 +778,7 @@ TEST(AXEventGeneratorTest, CreateAlertAndLiveRegion) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes.resize(4);
   update.nodes[0].child_ids.push_back(2);
@@ -599,6 +838,7 @@ TEST(AXEventGeneratorTest, LiveRegionChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].string_attributes.clear();
   update.nodes[1].AddStringAttribute(
@@ -648,6 +888,7 @@ TEST(AXEventGeneratorTest, LiveRegionOnlyTextChanges) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kDescription,
                                      "Description 1");
@@ -693,6 +934,7 @@ TEST(AXEventGeneratorTest, BusyLiveRegionChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].string_attributes.clear();
   update.nodes[1].AddStringAttribute(
@@ -722,6 +964,7 @@ TEST(AXEventGeneratorTest, AddChild) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes.resize(3);
   update.nodes[0].child_ids.push_back(3);
@@ -746,6 +989,7 @@ TEST(AXEventGeneratorTest, RemoveChild) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes.resize(2);
   update.nodes[0].child_ids.clear();
@@ -769,6 +1013,7 @@ TEST(AXEventGeneratorTest, ReorderChildren) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].child_ids.clear();
   update.nodes[0].child_ids.push_back(3);
@@ -788,6 +1033,7 @@ TEST(AXEventGeneratorTest, ScrollHorizontalPositionChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kScrollX, 10);
   EXPECT_TRUE(tree.Unserialize(update));
@@ -805,6 +1051,7 @@ TEST(AXEventGeneratorTest, ScrollVerticalPositionChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kScrollY, 10);
   ASSERT_TRUE(tree.Unserialize(update));
@@ -850,6 +1097,7 @@ TEST(AXEventGeneratorTest, TextAttributeChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddIntAttribute(ax::mojom::IntAttribute::kColor, 0);
   update.nodes[2].AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor, 0);
@@ -925,6 +1173,7 @@ TEST(AXEventGeneratorTest, ObjectAttributeChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddIntAttribute(ax::mojom::IntAttribute::kTextAlign, 2);
   update.nodes[2].AddFloatAttribute(ax::mojom::FloatAttribute::kTextIndent,
@@ -960,6 +1209,7 @@ TEST(AXEventGeneratorTest, OtherAttributeChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                      "de");
@@ -993,6 +1243,7 @@ TEST(AXEventGeneratorTest, NameChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kName,
                                      "Hello");
@@ -1009,6 +1260,7 @@ TEST(AXEventGeneratorTest, DescriptionChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kDescription,
                                      "Hello");
@@ -1026,6 +1278,7 @@ TEST(AXEventGeneratorTest, RoleChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].role = ax::mojom::Role::kCheckBox;
   ASSERT_TRUE(tree.Unserialize(update));
@@ -1050,6 +1303,7 @@ TEST(AXEventGeneratorTest, MenuItemSelected) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].int_attributes.clear();
   update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
@@ -1086,6 +1340,7 @@ TEST(AXEventGeneratorTest, NodeBecomesIgnored) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[3].AddState(ax::mojom::State::kIgnored);
   ASSERT_TRUE(tree.Unserialize(update));
@@ -1119,6 +1374,7 @@ TEST(AXEventGeneratorTest, NodeBecomesIgnored2) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   // Marking as ignored should fire CHILDREN_CHANGED on 2
   update.nodes[3].AddState(ax::mojom::State::kIgnored);
@@ -1156,6 +1412,7 @@ TEST(AXEventGeneratorTest, NodeBecomesUnignored) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[3].state = 0;
   ASSERT_TRUE(tree.Unserialize(update));
@@ -1191,6 +1448,7 @@ TEST(AXEventGeneratorTest, NodeBecomesUnignored2) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   // Marking as no longer ignored should fire CHILDREN_CHANGED on 2
   update.nodes[3].state = 0;
@@ -1221,6 +1479,7 @@ TEST(AXEventGeneratorTest, NodeInsertedViaRoleChange) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update;
   update.root_id = 1;
   update.nodes.resize(3);
@@ -1255,6 +1514,7 @@ TEST(AXEventGeneratorTest, NodeInserted) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update;
   update.root_id = 1;
   update.nodes.resize(3);
@@ -1292,6 +1552,7 @@ TEST(AXEventGeneratorTest, SubtreeBecomesUnignored) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].RemoveState(ax::mojom::State::kIgnored);
   update.nodes[2].RemoveState(ax::mojom::State::kIgnored);
@@ -1320,6 +1581,7 @@ TEST(AXEventGeneratorTest, TwoNodesSwapIgnored) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddState(ax::mojom::State::kIgnored);
   update.nodes[2].RemoveState(ax::mojom::State::kIgnored);
@@ -1349,6 +1611,7 @@ TEST(AXEventGeneratorTest, TwoNodesSwapIgnored2) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].RemoveState(ax::mojom::State::kIgnored);
   update.nodes[2].AddState(ax::mojom::State::kIgnored);
@@ -1391,6 +1654,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly1) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddState(ax::mojom::State::kIgnored);
   update.nodes[2].RemoveState(ax::mojom::State::kIgnored);
@@ -1439,6 +1703,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly2) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[2].AddState(ax::mojom::State::kIgnored);
   update.nodes[3].RemoveState(ax::mojom::State::kIgnored);
@@ -1488,6 +1753,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly3) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddState(ax::mojom::State::kIgnored);
   update.nodes[2].RemoveState(ax::mojom::State::kIgnored);
@@ -1570,6 +1836,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly4) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[5].RemoveState(ax::mojom::State::kIgnored);
   update.nodes[6].RemoveState(ax::mojom::State::kIgnored);
@@ -1652,6 +1919,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly5) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddState(ax::mojom::State::kIgnored);
   update.nodes[5].RemoveState(ax::mojom::State::kIgnored);
@@ -1734,6 +2002,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly6) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].RemoveState(ax::mojom::State::kIgnored);
   update.nodes[5].RemoveState(ax::mojom::State::kIgnored);
@@ -1808,6 +2077,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly7) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].RemoveState(ax::mojom::State::kIgnored);
   update.nodes[1].RemoveState(ax::mojom::State::kIgnored);
@@ -1887,6 +2157,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly8) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].RemoveState(ax::mojom::State::kIgnored);
   update.nodes[2].RemoveState(ax::mojom::State::kIgnored);
@@ -1927,6 +2198,7 @@ TEST(AXEventGeneratorTest, ActiveDescendantChangeOnDescendant) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   initial_state.nodes[2].RemoveIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId);
   initial_state.nodes[2].AddIntAttribute(
@@ -1953,6 +2225,7 @@ TEST(AXEventGeneratorTest, ImageAnnotationChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddStringAttribute(
       ax::mojom::StringAttribute::kImageAnnotation, "Hello");
@@ -1970,6 +2243,7 @@ TEST(AXEventGeneratorTest, ImageAnnotationStatusChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].SetImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded);
@@ -2121,6 +2395,7 @@ TEST(AXEventGeneratorTest, AriaBusyChanged) {
                                           true);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, false);
 
@@ -2143,6 +2418,7 @@ TEST(AXEventGeneratorTest, MultiselectableStateChanged) {
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
 
   update.nodes[0].AddState(ax::mojom::State::kMultiselectable);
@@ -2158,18 +2434,25 @@ TEST(AXEventGeneratorTest, MultiselectableStateChanged) {
 }
 
 TEST(AXEventGeneratorTest, RequiredStateChanged) {
+  AXNodeData text_field;
+  text_field.id = 1;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+
   AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(1);
-  initial_state.nodes[0].id = 1;
-  initial_state.nodes[0].role = ax::mojom::Role::kTextField;
+  initial_state.root_id = text_field.id;
+  initial_state.nodes = {text_field};
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
-  AXTreeUpdate update = initial_state;
+  ASSERT_THAT(event_generator, IsEmpty());
 
-  update.nodes[0].AddState(ax::mojom::State::kRequired);
-  EXPECT_TRUE(tree.Unserialize(update));
+  AXTreeUpdate update;
+  text_field.AddState(ax::mojom::State::kRequired);
+  update.nodes = {text_field};
+
+  ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
       event_generator,
       UnorderedElementsAre(
@@ -2202,6 +2485,7 @@ TEST(AXEventGeneratorTest, FlowToChanged) {
   AXTree tree(initial_state);
 
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
   update.nodes[1].AddIntListAttribute(ax::mojom::IntListAttribute::kFlowtoIds,
                                       {4, 5, 6});
@@ -2227,6 +2511,7 @@ TEST(AXEventGeneratorTest, ControlsChanged) {
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
 
   std::vector<int> ids = {2};
@@ -2248,6 +2533,7 @@ TEST(AXEventGeneratorTest, AtomicChanged) {
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
 
   update.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic, true);
@@ -2265,6 +2551,7 @@ TEST(AXEventGeneratorTest, DropeffectChanged) {
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
 
   update.nodes[0].AddDropeffect(ax::mojom::Dropeffect::kCopy);
@@ -2282,6 +2569,7 @@ TEST(AXEventGeneratorTest, GrabbedChanged) {
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
 
   update.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kGrabbed, true);
@@ -2299,6 +2587,7 @@ TEST(AXEventGeneratorTest, HasPopupChanged) {
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
 
   update.nodes[0].SetHasPopup(ax::mojom::HasPopup::kTrue);
@@ -2319,6 +2608,7 @@ TEST(AXEventGeneratorTest, LiveRelevantChanged) {
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
 
   update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kLiveRelevant,
@@ -2337,6 +2627,7 @@ TEST(AXEventGeneratorTest, MultilineStateChanged) {
 
   AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
   AXTreeUpdate update = initial_state;
 
   update.nodes[0].AddState(ax::mojom::State::kMultiline);
@@ -2351,36 +2642,46 @@ TEST(AXEventGeneratorTest, MultilineStateChanged) {
 }
 
 TEST(AXEventGeneratorTest, EditableTextChanged) {
-  AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(3);
-  initial_state.nodes[0].id = 1;
-  initial_state.nodes[0].child_ids.push_back(2);
-  initial_state.nodes[1].id = 2;
-  initial_state.nodes[1].role = ax::mojom::Role::kTextField;
-  initial_state.nodes[1].AddState(ax::mojom::State::kEditable);
-  initial_state.nodes[1].AddBoolAttribute(
-      ax::mojom::BoolAttribute::kEditableRoot, true);
-  initial_state.nodes[1].child_ids.push_back(3);
-  initial_state.nodes[2].id = 3;
-  initial_state.nodes[2].role = ax::mojom::Role::kStaticText;
-  initial_state.nodes[2].AddState(ax::mojom::State::kEditable);
-  initial_state.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                            "Before");
-  AXTree tree(initial_state);
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
+  AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  text_field.SetValue("Before");
+  root.child_ids = {text_field.id};
+
+  AXNodeData static_text;
+  static_text.id = 3;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.AddState(ax::mojom::State::kEditable);
+  static_text.SetName("Before");
+  text_field.child_ids = {static_text.id};
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root, text_field, static_text};
+  AXTree tree(initial_state);
   AXEventGenerator event_generator(&tree);
-  AXTreeUpdate update = initial_state;
-  update.nodes[2].string_attributes.clear();
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                     "After");
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  text_field.SetValue("After");
+  static_text.SetName("After");
+  AXTreeUpdate update;
+  update.nodes = {text_field, static_text};
 
   ASSERT_TRUE(tree.Unserialize(update));
   EXPECT_THAT(
       event_generator,
       UnorderedElementsAre(
-          HasEventAtNode(AXEventGenerator::Event::EDITABLE_TEXT_CHANGED, 2),
-          HasEventAtNode(AXEventGenerator::Event::NAME_CHANGED, 3)));
+          HasEventAtNode(AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED,
+                         text_field.id),
+          HasEventAtNode(AXEventGenerator::Event::NAME_CHANGED, static_text.id),
+          HasEventAtNode(AXEventGenerator::Event::EDITABLE_TEXT_CHANGED,
+                         text_field.id)));
 }
 
 }  // namespace ui

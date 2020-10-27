@@ -2483,7 +2483,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   base::win::ScopedBstr new_value(L"New value");
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::VALUE_CHANGED);
+      ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED);
   EXPECT_HRESULT_SUCCEEDED(input->put_accValue(childid_self, new_value.Get()));
   waiter.WaitForNotification();
 
@@ -5279,7 +5279,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetCurrentValue) {
   // Call setCurrentValue on the slider, wait for the value changed event.
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::VALUE_CHANGED);
+      ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED);
   base::win::ScopedVariant new_value(5.0);
   ASSERT_HRESULT_SUCCEEDED(slider_iavalue->setCurrentValue(new_value));
   waiter.WaitForNotification();

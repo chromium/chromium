@@ -267,7 +267,7 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'textChanged': true,
   'textSelectionChanged': true,
   'treeChanged': true,
-  'valueChanged': true
+  'valueInTextFieldChanged': true
 };
 
 

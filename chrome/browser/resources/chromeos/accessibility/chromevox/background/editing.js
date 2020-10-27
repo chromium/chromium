@@ -80,8 +80,8 @@ editing.TextEditHandler = class {
 
   /**
    * Receives the following kinds of events when the node provided to the
-   * constructor is focuse: |focus|, |textChanged|, |textSelectionChanged| and
-   * |valueChanged|.
+   * constructor is focused: |focus|, |textChanged|, |textSelectionChanged| and
+   * |valueInTextFieldChanged|.
    * An implementation of this method should emit the appropriate braille and
    * spoken feedback for the event.
    * @param {!ChromeVoxEvent} evt

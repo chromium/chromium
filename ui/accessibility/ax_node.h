@@ -327,9 +327,9 @@ class AX_EXPORT AXNode final {
 
   // Returns the value of a control such as a text field, a slider, a <select>
   // element, a date picker or an ARIA combo box. In order to minimize
-  // cross-process communication between the renderer and the browser, may
-  // compute the value from the control's inner text in the case of a text
-  // field.
+  // cross-process communication between the renderer and the browser, this
+  // method may compute the value from the control's inner text in the case of a
+  // text field.
   std::string GetValueForControl() const;
 
   //

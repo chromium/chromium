@@ -3165,8 +3165,8 @@ TEST_F('ChromeVoxBackgroundTest', 'FocusOnWebAreaIgnoresEvents', function() {
     // Trigger another value update for the select.
     p.doDefault();
 
-    // This comes when the select's value changes.
-    await TestUtils.waitForEvent(application, EventType.VALUE_CHANGED);
+    // This comes when the <select>'s value changes.
+    await TestUtils.waitForEvent(application, EventType.SELECTED_VALUE_CHANGED);
 
     // Nothing should have been spoken.
     assertEquals(undefined, nextSpeech);

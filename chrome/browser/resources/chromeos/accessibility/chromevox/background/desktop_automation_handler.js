@@ -74,6 +74,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
     this.addListener_(EventType.MENU_END, this.onMenuEnd);
     this.addListener_(EventType.MENU_START, this.onMenuStart);
+    this.addListener_(EventType.RANGE_VALUE_CHANGED, this.onValueChanged);
     this.addListener_(
         EventType.SCROLL_POSITION_CHANGED, this.onScrollPositionChanged);
     this.addListener_(
@@ -87,6 +88,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     this.addListener_(EventType.SELECTION, this.onSelection);
     this.addListener_(
         EventType.TEXT_SELECTION_CHANGED, this.onEditableChanged_);
+    this.addListener_(
+        EventType.VALUE_IN_TEXT_FIELD_CHANGED, this.onEditableChanged_);
     this.addListener_(EventType.VALUE_CHANGED, this.onValueChanged);
 
     AutomationObjectConstructorInstaller.init(node, function() {
@@ -364,27 +367,44 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       return;
     }
 
+    // Skip all unfocused text fields.
+    if (!evt.target.state[StateType.FOCUSED] &&
+        evt.target.state[StateType.EDITABLE]) {
+      return;
+    }
+
     const isInput = evt.target.htmlTag == 'input';
     const isTextArea = evt.target.htmlTag == 'textarea';
     const isContentEditable = evt.target.state[StateType.RICHLY_EDITABLE];
 
     switch (evt.type) {
-      case EventType.TEXT_SELECTION_CHANGED:
-      case EventType.VALUE_CHANGED:
-        // Known to be duplicated by document selection changes for content
-        // editables and text areas.
-        if (isContentEditable || isTextArea) {
-          return;
-        }
-        break;
       case EventType.DOCUMENT_SELECTION_CHANGED:
-        // Known to be duplicated by text selection changes.
+        // Event type DOCUMENT_SELECTION_CHANGED is duplicated by
+        // TEXT_SELECTION_CHANGED for <input> elements.
         if (isInput) {
           return;
         }
         break;
       case EventType.FOCUS:
-        // Allowed no matter what.
+        // Allowed regardless of the role.
+        break;
+      case EventType.TEXT_SELECTION_CHANGED:
+        // Event type TEXT_SELECTION_CHANGED is duplicated by
+        // DOCUMENT_SELECTION_CHANGED for content editables and text areas.
+        if (isContentEditable || isTextArea) {
+          return;
+        }
+        break;
+      case EventType.VALUE_CHANGED:
+        // During a transition period, VALUE_CHANGED is duplicated by
+        // VALUE_IN_TEXT_FIELD_CHANGED for text field roles.
+        //
+        // TOTO(NEKTAR): Deprecate and remove VALUE_CHANGED.
+        if (isContentEditable || isInput || isTextArea) {
+          return;
+        }
+      case EventType.VALUE_IN_TEXT_FIELD_CHANGED:
+        // By design, generated only for text field roles.
         break;
       default:
         return;
@@ -421,18 +441,13 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
   }
 
   /**
-   * Provides all feedback once a value changed event fires.
+   * Provides all feedback once a rangeValueChanged or a valueInTextFieldChanged
+   * event fires.
    * @param {!ChromeVoxEvent} evt
    */
   onValueChanged(evt) {
     // Skip root web areas.
     if (evt.target.role == RoleType.ROOT_WEB_AREA) {
-      return;
-    }
-
-    // Skip all unfocused text fields.
-    if (!evt.target.state[StateType.FOCUSED] &&
-        evt.target.state[StateType.EDITABLE]) {
       return;
     }
 

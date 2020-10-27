@@ -226,7 +226,8 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       }
       break;
     }
-    case ui::AXEventGenerator::Event::VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
       if (android_node->IsTextField() && GetFocus() == node) {
         wcax->HandleEditableTextChanged(android_node->unique_id());
       } else if (android_node->IsSlider()) {
@@ -285,14 +286,16 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
+    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED:
     case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
     case ui::AXEventGenerator::Event::SORT_CHANGED:
     case ui::AXEventGenerator::Event::STATE_CHANGED:
     case ui::AXEventGenerator::Event::SUBTREE_CREATED:
     case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_MAX_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_MIN_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_STEP_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       // There are some notifications that aren't meaningful on Android.
       // It's okay to skip them.

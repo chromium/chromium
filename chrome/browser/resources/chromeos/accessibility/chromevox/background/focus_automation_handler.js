@@ -49,7 +49,8 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
         EventType.ACTIVE_DESCENDANT_CHANGED, this.onActiveDescendantChanged);
     this.addListener_(
         EventType.MENU_LIST_ITEM_SELECTED, this.onEventIfSelected);
-    this.addListener_(EventType.VALUE_CHANGED, this.onValueChanged_);
+    this.addListener_(
+        EventType.SELECTED_VALUE_CHANGED, this.onSelectedValueChanged_);
   }
 
   /**
@@ -99,7 +100,7 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
   /**
    * @param {!ChromeVoxEvent} evt
    */
-  onValueChanged_(evt) {
+  onSelectedValueChanged_(evt) {
     if (evt.target.role != RoleType.POP_UP_BUTTON ||
         evt.target.state.editable) {
       return;
