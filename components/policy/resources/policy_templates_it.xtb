@@ -4065,9 +4065,9 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Tieni presente che gli utenti potranno accedere ai servizi Google in uno stato non autenticato bloccando i loro cookie.</translation>
 <translation id="6843296367238757293">Questa norma è obsoleta. Ne sconsigliamo l'utilizzo. Leggi ulteriori informazioni all'indirizzo https://support.google.com/chrome/a/answer/7643500</translation>
-<translation id="6846126863870444592">Questo criterio specifica le estensioni consentite per ignorare la finestra di dialogo di conferma del processo di stampa utilizzando la funzione <ph name="SUBMIT_JOB_FUNCTION" /> di <ph name="PRINTING_API" /> per l'invio di un processo di stampa.
+<translation id="6846126863870444592">Questo criterio specifica le estensioni autorizzate a ignorare la finestra di dialogo di conferma del processo di stampa quando utilizzano la funzione <ph name="SUBMIT_JOB_FUNCTION" /> di <ph name="PRINTING_API" /> per l'invio di un processo di stampa.
 
-      Se un'estensione non è presente nell'elenco o non è configurato alcun elenco, la finestra di dialogo di conferma del processo di stampa verrà visualizzata dall'utente per ogni chiamata funzione <ph name="SUBMIT_JOB_FUNCTION" />.
+      Se un'estensione non è presente nell'elenco o non è configurato alcun elenco, la finestra di dialogo di conferma del processo di stampa verrà mostrata all'utente per ogni chiamata alla funzione <ph name="SUBMIT_JOB_FUNCTION" />.
 
       Questo criterio è deprecato, al suo posto utilizza <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="684856667300805181">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_GLS_POLICY_NAME" />.</translation>
@@ -4125,7 +4125,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
        Se il criterio non viene attivato e viene impostato su uno o più domini, non verrà visualizzata alcuna pagina di avviso di somiglianza quando l'utente visita le pagine di quel dominio.
 
-       Se il criterio è disattivato, non impostato o impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualunque sito visitato dall'utente.
+       Se il criterio è disattivato, non è impostato o è impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualsiasi sito visitato dall'utente.
 
        Un nome host può essere consentito nel caso di una completa corrispondenza del nome host o della corrispondenza con un qualsiasi dominio. Ad esempio, gli avvisi per un URL come "https://foo.example.com/bar" potrebbero essere eliminati se l'elenco include "foo.example.com" o "example.com".</translation>
 <translation id="6922884955650325312">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>

@@ -2069,6 +2069,7 @@
 <translation id="3428419049384081277">Најавени сте.</translation>
 <translation id="3428747202529429621">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени</translation>
 <translation id="3428800329481094896">Се преземаат SHH-клучевите за контејнерот за Linux</translation>
+<translation id="3429271624041785769">Јазици за содржини од интернет</translation>
 <translation id="3429275422858276529">Обележете ја страницава за полесно да ја најдете подоцна</translation>
 <translation id="3432227430032737297">Отстрани ги сите прикажани</translation>
 <translation id="3432757130254800023">Испратете аудио и видео на екрани на локалната мрежа</translation>
@@ -2474,7 +2475,6 @@
 <translation id="3856800405688283469">Изберете временска зона</translation>
 <translation id="3857807444929313943">Подигнете и допрете повторно</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронизацијата е паузирана</translation>
-<translation id="3861386850461794863">Јазици за апликациите и веб-сајтовите</translation>
 <translation id="3861638017150647085">Корисничкото име „<ph name="USERNAME" />“ не е достапно</translation>
 <translation id="3862693525629180217">Потврди преку вграден сензор</translation>
 <translation id="3862788408946266506">Апликацијата со атрибут на манифестот „kiosk_only“ мора да се инсталира во режим на киоск на Chrome OS</translation>
@@ -2494,6 +2494,7 @@
 <translation id="3879748587602334249">Управник со преземања</translation>
 <translation id="3881478300875776315">Прикажи помалку редови</translation>
 <translation id="3882165008614329320">Постојно видео од камера или датотека</translation>
+<translation id="3884152383786131369">Содржините од интернет што се достапни на повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Вашето барање за пристап на сајтов е испратено на <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Прибележување со <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Додајте OpenVPN / L2TP…</translation>
@@ -4477,7 +4478,6 @@
 <translation id="628352644014831790">4 секунди</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> обично не се презема и може да биде опасно.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Нов печатач на мрежата}one{Нов печатач на мрежата}other{Нови печатачи на мрежата}}</translation>
-<translation id="6289626062715012577">Апликациите и веб-сајтовите што поддржуваат повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставките за јазикот се синхронизираат со прелистувачот Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">За да го стартувате Linux, <ph name="ORGANIZATION_NAME" /> бара да направите бекап на вашите податоци и да го ресетирате овој Chromebook на фабричките поставки.</translation>
 <translation id="6291949900244949761">Прашај кога некој сајт сака да пристапи до USB-уредите (препорачано)</translation>
 <translation id="6291953229176937411">&amp;Прикажи во Наоѓач</translation>

@@ -2471,7 +2471,6 @@
 <translation id="3856800405688283469">समय क्षेत्र चयन गर्नुहोस्</translation>
 <translation id="3857807444929313943">औँला उठाई फेरि छुनुहोस्</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: सिंक गर्ने कार्य पज गरियो</translation>
-<translation id="3861386850461794863">एप तथा वेबसाइटका भाषाहरू</translation>
 <translation id="3861638017150647085">प्रयोगकर्ताको नाम "<ph name="USERNAME" />" उपलब्ध छैन</translation>
 <translation id="3862693525629180217">अन्तर्निर्मित सेन्सरद्वारा पुष्टि गर्नुहोस्</translation>
 <translation id="3862788408946266506">'Kiosk_only" नामक म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS को किओस्क मोडमा स्थापना गर्नु पर्छ</translation>
@@ -4472,7 +4471,6 @@
 <translation id="628352644014831790">४ सेकेन्ड</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> लाई सामान्यत: डाउनलोड गरिँदैन र यो खतरनाक हुन सक्छ।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{तपाईँको नेटवर्कमा नयाँ प्रिन्टर}other{ तपाईँको नेटवर्कमा नयाँ प्रिन्टरहरू}}</translation>
-<translation id="6289626062715012577">एकभन्दा बढी भाषा प्रयोग गर्न मिल्ने एप र वेबसाइटहरूले यो सूचीको प्रयोग गर्न मिल्ने पहिलो भाषा प्रयोग गर्ने छन्। भाषासम्बन्धी प्राथमिकताहरू Chrome ब्राउजरमा सिंक हुन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux सुरु गर्न <ph name="ORGANIZATION_NAME" /> को मागअनुसार तपाईंले आफ्नो डेटा ब्याकअप गरी यो Chromebook रिसेट गरेर फ्याक्ट्री सेटिङमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="6291949900244949761">कुनै साइटले USB यन्त्रहरूमाथि पहुँच राख्न खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="6291953229176937411">&amp;फोल्डरमा देखाउनुहोस्</translation>

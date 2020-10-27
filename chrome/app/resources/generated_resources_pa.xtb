@@ -2472,7 +2472,6 @@
 <translation id="3856800405688283469">ਸਮਾਂਜ਼ੋਨ ਚੁਣੋ</translation>
 <translation id="3857807444929313943">ਚੁੱਕੋ, ਫਿਰ ਦੁਬਾਰਾ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: ਸਮਕਾਲੀਕਰਨ ਰੋਕਿਆ ਗਿਆ</translation>
-<translation id="3861386850461794863">ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਭਾਸ਼ਾ</translation>
 <translation id="3861638017150647085">ਵਰਤੋਂਕਾਰ ਨਾਮ "<ph name="USERNAME" />" ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="3862693525629180217">ਬਿਲਟ-ਇਨ ਸੈਂਸਰ ਰਾਹੀਂ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="3862788408946266506">'kiosk_only' ਮੈਨੀਫ਼ੈਸਟ ਵਿਸ਼ੇਸ਼ਤਾ ਵਾਲੀ ਐਪ Chrome OS ਕਿਓਸਕ ਮੋਡ ਵਿੱਚ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਸਥਾਪਤ ਕੀਤੀ ਜਾਣੀ ਚਾਹੀਦੀ ਹੈ</translation>
@@ -4475,7 +4474,6 @@
 <translation id="628352644014831790">4 ਸਕਿੰਟ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ਆਮ ਤੌਰ 'ਤੇ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ ਅਤੇ ਇਹ ਹਾਨੀਕਾਰਕ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵਾਂ ਪ੍ਰਿੰਟਰ}one{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵੇਂ ਪ੍ਰਿੰਟਰ}other{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵੇਂ ਪ੍ਰਿੰਟਰ}}</translation>
-<translation id="6289626062715012577">ਕਈ ਭਾਸ਼ਾਵਾਂ ਦਾ ਸਮਰਥਨ ਕਰਨ ਵਾਲੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਇਸ ਸੂਚੀ ਤੋਂ ਪਹਿਲੀ ਸਮਰਥਿਤ ਭਾਸ਼ਾ ਦੀ ਵਰਤੋਂ ਕਰਨਗੀਆਂ। Chrome ਬ੍ਰਾਊਜ਼ਰ ਨਾਲ ਭਾਸ਼ਾ ਤਰਜੀਹਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਹੁੰਦਾ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux ਨੂੰ ਸ਼ੁਰੂ ਕਰਨ ਵਾਸਤੇ, <ph name="ORGANIZATION_NAME" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ ਇਸ Chromebook ਨੂੰ ਫੈਕਟਰੀ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="6291949900244949761">ਕਿਸੇ ਸਾਈਟ ਦੇ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵੇਲੇ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="6291953229176937411">&amp;ਫਾਈਂਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>

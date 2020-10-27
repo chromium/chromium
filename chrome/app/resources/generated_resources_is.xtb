@@ -2069,6 +2069,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3428419049384081277">Þú ert skráð(ur) inn!</translation>
 <translation id="3428747202529429621">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú ert skráð(ur) inn</translation>
 <translation id="3428800329481094896">Sækir SSH-lykla Linux-geymis</translation>
+<translation id="3429271624041785769">Tungumál vefefnis</translation>
 <translation id="3429275422858276529">Settu þessa síðu í bókamerki til að auðvelt sé að finna hana síðar</translation>
 <translation id="3432227430032737297">Fjarlægja öll sem birtast</translation>
 <translation id="3432757130254800023">Senda hljóð og mynd til skjáa á staðarnetinu</translation>
@@ -2474,7 +2475,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3856800405688283469">Veldu tímabelti</translation>
 <translation id="3857807444929313943">Lyftu upp og snertu aftur með fingrinum</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Samstilling stöðvuð</translation>
-<translation id="3861386850461794863">Tungumál forrita og vefsvæða</translation>
 <translation id="3861638017150647085">Notandanafnið „<ph name="USERNAME" />“ er ekki laust</translation>
 <translation id="3862693525629180217">Staðfesta með innbyggðum skynjara</translation>
 <translation id="3862788408946266506">Forrit með upplýsingaskráreigindina „kiosk_only“ verður að vera uppsett í sjálfsalastillingu Chrome OS</translation>
@@ -2494,6 +2494,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3879748587602334249">Niðurhalsstjórnun</translation>
 <translation id="3881478300875776315">Sýna færri línur</translation>
 <translation id="3882165008614329320">Fyrirliggjandi myndskeið úr myndavél eða skrá</translation>
+<translation id="3884152383786131369">Vefefni sem er í boði á mörgum tungumálum mun nota fyrsta studda tungumálið á listanum. Þessar kjörstillingar eru samstilltar vafrastillingunum. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Beiðni þín um aðgang að þessu vefsvæði hefur verið send til <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Glósur með <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Bæta við OpenVPN / L2TP...</translation>
@@ -4477,7 +4478,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="628352644014831790">4 sekúndur</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> er ekki sótt oft og kann að vera hættulegt.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nýr prentari á netinu}one{Nýir prentarar á netinu}other{Nýir prentarar á netinu}}</translation>
-<translation id="6289626062715012577">Forrit og vefsvæði sem styðja mörg tungumál munu nota fyrsta studda tungumálið á listanum. Tungumálastillingar eru samstilltar við Chrome vafra <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Til að ræsa Linux krefst <ph name="ORGANIZATION_NAME" /> þess að þú takir öryggisafrit af gögnunum þínum og núllstillir þessa Chromebook tölvu.</translation>
 <translation id="6291949900244949761">Spyrja þegar vefsvæði vill opna USB-tæki (ráðlagt)</translation>
 <translation id="6291953229176937411">&amp;Sýna í Finder</translation>

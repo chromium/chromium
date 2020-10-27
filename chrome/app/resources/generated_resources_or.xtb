@@ -2062,6 +2062,7 @@
 <translation id="3428419049384081277">ଆପଣ ସାଇନ୍‌ ଇନ୍ କରିଛନ୍ତି!</translation>
 <translation id="3428747202529429621">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଇନ୍ କରନ୍ତି ଏହା ଆପଣଙ୍କୁ Chromeରେ ସୁରକ୍ଷିତ ରଖେ ଏବଂ ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରେ ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ</translation>
 <translation id="3428800329481094896">Linux କଣ୍ଟେନରର ssh କୀଗୁଡ଼ିକ ଫେଚ୍ କରାଯାଉଛି</translation>
+<translation id="3429271624041785769">ୱେବ୍ ବିଷୟବସ୍ତୁ ଉପଲବ୍ଧ ଥିବା ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="3429275422858276529">ଏହାକୁ ପରେ ସହଜରେ ଖୋଜିବା ପାଇଁ ଏହି ପୃଷ୍ଠାକୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
 <translation id="3432227430032737297">ସମସ୍ତ ପ୍ରଦର୍ଶନକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="3432757130254800023">ସ୍ଥାନୀୟ ନେଟ୍‍ୱର୍କରେ ପ୍ରଦର୍ଶନ କରିବା ପାଇଁ ଅଡିଓ ଏବଂ ଭିଡିଓ ପଠାନ୍ତୁ</translation>
@@ -2467,7 +2468,6 @@
 <translation id="3856800405688283469">ଟାଇମ୍‌ ଜୋନ୍ ବାଛନ୍ତୁ</translation>
 <translation id="3857807444929313943">ଆଙ୍ଗୁଠି ଉଠାଇ ପୁଣି ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: ସିଙ୍କ ବିରତ ହୋଇଛି</translation>
-<translation id="3861386850461794863">ଆପ୍ ଏବଂ ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="3861638017150647085">ଉପଯୋଗକର୍ତ୍ତାନାମ "<ph name="USERNAME" />" ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3862693525629180217">ବିଲ୍ଟ-ଇନ୍ ସେନ୍ସର୍ ମାଧ୍ୟମରେ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3862788408946266506">Chrome OS କିଓସ୍କୋ ମୋଡ୍‌ରେ 'kiosk_only' ମାନିଫେଷ୍ଟ ବିଶେଷତାକୁ ନିଶ୍ଚିତରୂପେ ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ଉଚିତ୍‍</translation>
@@ -2487,6 +2487,7 @@
 <translation id="3879748587602334249">ଡାଉନ୍‌ଲୋଡ୍ ପରିଚାଳକ</translation>
 <translation id="3881478300875776315">କମ୍ ଲାଇନ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="3882165008614329320">କ୍ୟାମେରା କିମ୍ବା ଫାଇଲ୍‌ରେ ପୂର୍ବରୁ ଥିବା ଭିଡିଓ</translation>
+<translation id="3884152383786131369">ଏକାଧିକ ଭାଷାରେ ଉପଲବ୍ଧ ୱେବ୍ ବିଷୟବସ୍ତୁ ଏହି ତାଲିକାରୁ ପ୍ରଥମ ସମର୍ଥିତ ଭାଷାକୁ ବ୍ୟବହାର କରିବ। ଆପଣଙ୍କ ବ୍ରାଉଜର୍ ସେଟିଂସ୍ ସହିତ ଏହି ପସନ୍ଦଗୁଡ଼ିକୁ ସିଙ୍କ୍ କରାଯାଇଛି। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ଏହି ସାଇଟ୍‌କୁ ଆକ୍ସେସ୍‌ କରିବାକୁ ଆପଣଙ୍କର ଅନୁରୋଧ <ph name="NAME" />ଙ୍କୁ ପଠାଯାଇଛି</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />ରୁ ନୋଟ୍‌ ନେବା</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP ଯୋଗ କରନ୍ତୁ...</translation>
@@ -4469,7 +4470,6 @@
 <translation id="628352644014831790">4 ସେକେଣ୍ଡ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ସାଧାରଣତଃ ଡାଉନ୍‌ଲୋଡ୍ କରାଯାଏ ନାହିଁ ଏବଂ ଏହା ହୁଏତ ବିପଜ୍ଜନକ ହୋଇଥାଇପାରେ।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ଆପଣଙ୍କ ନେଟ୍‌ୱାର୍କରେ ନୂତନ ପ୍ରିଣ୍ଟର୍}other{ଆପଣଙ୍କ ନେଟ୍‌ୱାର୍କରେ ନୂତନ ପ୍ରିଣ୍ଟର୍‌ଗୁଡ଼ିକ}}</translation>
-<translation id="6289626062715012577">ଏକାଧିକ ଭାଷାକୁ ସମର୍ଥନ କରୁଥିବା ଆପ୍ ଏବଂ ୱେବସାଇଟଗୁଡ଼ିକ ଏହି ତାଲିକାରୁ ପ୍ରଥମ ସମର୍ଥିତ ଭାଷାକୁ ବ୍ୟବହାର କରିବ। ଭାଷାର ପସନ୍ଦଗୁଡ଼ିକୁ Chrome ବ୍ରାଉଜରରେ ସିଙ୍କ କରନ୍ତୁ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux ଆରମ୍ଭ କରିବା ନିମନ୍ତେ, <ph name="ORGANIZATION_NAME" /> ଆପଣ ଆପଣଙ୍କ ଡାଟା ବ୍ୟାକଅପ୍ କରିବା ଏବଂ ଏହି Chromebook ଫ୍ୟାକ୍ଟୋରୀ ସେଟିଂସକୁ ରିସେଟ୍ କରିବା ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="6291949900244949761">ଯେତେବେଳେ ଏକ ସାଇଟ୍‍ USB ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍‌ କରିବାକୁ ଚାହୁଁଛି, ସେତେବେଳେ ପଚାରନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="6291953229176937411">&amp;ଫାଇଣ୍ଡର୍‌ରେ ଦେଖାନ୍ତୁ</translation>

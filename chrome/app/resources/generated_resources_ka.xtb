@@ -2068,6 +2068,7 @@
 <translation id="3428419049384081277">თქვენ შესული ხართ.</translation>
 <translation id="3428747202529429621">უზრუნველყოფს თქვენს უსაფრთხოებას Chrome-ში და Google-ის სხვა აპებში, როცა სისტემაში შესული ხართ</translation>
 <translation id="3428800329481094896">Linux-ის კონტეინერისთვის SSH-გასაღებების მიღება</translation>
+<translation id="3429271624041785769">ვებკონტენტის ენები</translation>
 <translation id="3429275422858276529">დაამატეთ ეს გვერდი სანიშნეებს, რათა მოგვიანებით მარტივად იპოვოთ</translation>
 <translation id="3432227430032737297">ყველა ნაჩვენების ამოშლა</translation>
 <translation id="3432757130254800023">ადგილობრივ ქსელში არსებულ ეკრანებზე აუდიოსა და ვიდეოს გაგზავნა</translation>
@@ -2473,7 +2474,6 @@
 <translation id="3856800405688283469">აირჩიეთ დროის სარტყელი</translation>
 <translation id="3857807444929313943">აიღეთ თითი, შემდეგ კი ხელახლა შეეხეთ</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: სინქრონიზაცია დაპაუზებულია</translation>
-<translation id="3861386850461794863">ენები აპებისა და ვებსაიტებისთვის</translation>
 <translation id="3861638017150647085">მომხმარებლის სახელი „<ph name="USERNAME" />“ მიუწვდომელია</translation>
 <translation id="3862693525629180217">ჩაშენებული სენსორის მეშვეობით დადასტურება</translation>
 <translation id="3862788408946266506">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს Chrome OS-ის კიოსკის რეჟიმში</translation>
@@ -2493,6 +2493,7 @@
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
 <translation id="3881478300875776315">ნაკლები ხაზის ჩვენება</translation>
 <translation id="3882165008614329320">არსებული ვიდეო კამერიდან ან ფაილიდან</translation>
+<translation id="3884152383786131369">რამდენიმე ენაზე ხელმისაწვდომი ვებკონტენტი ამ სიიდან პირველ მხარდაჭერილ ენას გამოიყენებს. ეს პარამეტრები სინქრონიზდება თქვენი ბრაუზერის პარამეტრებთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა <ph name="NAME" />-ს</translation>
 <translation id="3888550877729210209">ჩანიშვნა <ph name="LOCK_SCREEN_APP_NAME" />-ის მეშვეობით</translation>
 <translation id="3892414795099177503">OpenVPN/L2TP-ის დამატება…</translation>
@@ -4476,7 +4477,6 @@
 <translation id="628352644014831790">4 წამი</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> შეიძლება სახიფათო იყოს, რადგან მისი ჩამოტვირთვა ხშირად არ ხორციელდება ხოლმე.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ახალი პრინტერი თქვენს ქსელში}other{ახალი პრინტერები თქვენს ქსელში}}</translation>
-<translation id="6289626062715012577">აპები და ვებსაიტები, რომელთა მიერაც მხარდაჭერილია რამდენიმე ენა, ამ სიიდან პირველ მხარდაჭერილ ენას გამოიყენებს. ენების არჩევანი სინქრონიზდება Chrome ბრაუზერთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux-ის გასაშვებად <ph name="ORGANIZATION_NAME" /> საჭიროებს თქვენი მონაცემების სარეზერვო ასლის შექმნასა და ამ Chromebook-ის ქარხნულ პარამეტრებზე დაბრუნებას.</translation>
 <translation id="6291949900244949761">საიტების მიერ USB-მოწყობილობებზე წვდომის მოთხოვნა (რეკომენდებულია)</translation>
 <translation id="6291953229176937411">ჩ&amp;ვენება მაძიებელში</translation>

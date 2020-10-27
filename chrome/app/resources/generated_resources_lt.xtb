@@ -2069,6 +2069,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3428419049384081277">Esate prisijungę!</translation>
 <translation id="3428747202529429621">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę</translation>
 <translation id="3428800329481094896">Gaunami „Linux“ sudėtinio rodinio SSH raktai</translation>
+<translation id="3429271624041785769">Žiniatinklio turinio kalbos</translation>
 <translation id="3429275422858276529">Pažymėkite šį puslapį, kad galėtumėte lengvai jį rasti vėliau</translation>
 <translation id="3432227430032737297">Pašalinti visus rodomus</translation>
 <translation id="3432757130254800023">Siųsti garso ir vaizdo įrašus vietiniame tinkle</translation>
@@ -2474,7 +2475,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3856800405688283469">Pasirinkti laiko juostą</translation>
 <translation id="3857807444929313943">Patraukite ir vėl prilieskite</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinchronizavimas pristabdytas</translation>
-<translation id="3861386850461794863">Programų ir svetainių kalbos</translation>
 <translation id="3861638017150647085">Naudotojo vardas „<ph name="USERNAME" />“ nepasiekiamas</translation>
 <translation id="3862693525629180217">Patvirtinti per įtaisytą jutiklį</translation>
 <translation id="3862788408946266506">Programa su aprašo atributu „kiosk_only“ turi būti įdiegta „Chrome“ OS viešojo terminalo režimu</translation>
@@ -2494,6 +2494,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3879748587602334249">Atsisiuntimų tvarkytuvė</translation>
 <translation id="3881478300875776315">Rodyti mažiau eilučių</translation>
 <translation id="3882165008614329320">Esamas vaizdo įrašas iš kameros ar failo</translation>
+<translation id="3884152383786131369">Žiniatinklio turiniui, kuris pasiekiamas keliomis kalbomis, bus naudojama pirma palaikoma kalba iš šio sąrašo. Šios nuostatos sinchronizuojamos su naršyklės nustatymais. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Jūsų užklausa pasiekti šią svetainę išsiųsta <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Užrašų kūrimas naudojant „<ph name="LOCK_SCREEN_APP_NAME" />“</translation>
 <translation id="3892414795099177503">Atidaryti „OpenVPN“ / L2TP...</translation>
@@ -4478,7 +4479,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="628352644014831790">4 sek.</translation>
 <translation id="6285120108426285413">„<ph name="FILE_NAME" />“ nėra įprastai atsisiunčiamas ir gali būti pavojingas.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Naujas spausdintuvas tinkle}one{Nauji spausdintuvai tinkle}few{Nauji spausdintuvai tinkle}many{Nauji spausdintuvai tinkle}other{Nauji spausdintuvai tinkle}}</translation>
-<translation id="6289626062715012577">Programose ir svetainėse, kuriose palaikomos kelios kalbos, bus naudojama pirma palaikoma kalba iš šio sąrašo. Kalbos nuostatos sinchronizuojamos su „Chrome“ naršykle. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Kad galėtumėte paleisti „Linux“, „<ph name="ORGANIZATION_NAME" />“ reikalauja, kad sukurtumėte atsarginę duomenų kopiją ir iš naujo nustatytumėte gamyklinius šio „Chromebook“ nustatymus.</translation>
 <translation id="6291949900244949761">Paklausti, kai svetainė nori pasiekti USB įrenginius (rekomenduojama)</translation>
 <translation id="6291953229176937411">&amp;Rodyti ieškojimo priemonėje</translation>

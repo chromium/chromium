@@ -2069,6 +2069,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3428419049384081277">Jy is aangemeld!</translation>
 <translation id="3428747202529429621">Hou jou veilig op Chrome en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is</translation>
 <translation id="3428800329481094896">Gaan haal tans die Linux-houer se ssh-sleutels</translation>
+<translation id="3429271624041785769">Webinhoudtale</translation>
 <translation id="3429275422858276529">Boekmerk hierdie bladsy om dit later maklik te kry</translation>
 <translation id="3432227430032737297">Verwyder alles wat gewys word</translation>
 <translation id="3432757130254800023">Stuur oudio en video na skerms in die plaaslike netwerk</translation>
@@ -2474,7 +2475,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3856800405688283469">Kies tydsone</translation>
 <translation id="3857807444929313943">Lig en raak dan weer</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sinkronisering is onderbreek</translation>
-<translation id="3861386850461794863">Tale vir programme en webwerwe</translation>
 <translation id="3861638017150647085">Gebruikernaam "<ph name="USERNAME" />" is nie beskikbaar nie</translation>
 <translation id="3862693525629180217">Verifieer deur ingeboude sensor</translation>
 <translation id="3862788408946266506">Program met "net_kiosk"-manifeseienskap moet in Chrome-bedryfstelsel se kioskmodus geïnstalleer word</translation>
@@ -2494,6 +2494,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3879748587602334249">Aflaaibestuurder</translation>
 <translation id="3881478300875776315">Wys minder reëls</translation>
 <translation id="3882165008614329320">Bestaande video van kamera of lêer af</translation>
+<translation id="3884152383786131369">Webinhoud wat in veelvuldige tale beskikbaar is, sal die eerste gesteunde taal op hierdie lys gebruik. Hierdie voorkeure word met jou blaaierinstellings gesinkroniseer. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Jou versoek om by hierdie werf in te gaan, is na <ph name="NAME" /> gestuur</translation>
 <translation id="3888550877729210209">Maak tans notas met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Voeg OpenVPN / L2TP by …</translation>
@@ -4478,7 +4479,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="628352644014831790">4 sekondes</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> word nie gewoonlik afgelaai nie en kan gevaarlik wees.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nuwe drukker in jou netwerk}other{Nuwe drukkers in jou netwerk}}</translation>
-<translation id="6289626062715012577">Programme en webwerwe wat veelvuldige tale steun, sal die eerste gesteunde taal op hierdie lys gebruik. Taalvoorkeure sinkroniseer met Chrome-blaaier. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370"><ph name="ORGANIZATION_NAME" /> vereis dat jy jou data rugsteun en hierdie Chromebook na die fabriekinstellings terugstel om Linux te begin.</translation>
 <translation id="6291949900244949761">Vra wanneer 'n werf toegang tot USB-toestelle wil hê (aanbeveel)</translation>
 <translation id="6291953229176937411">Wys in vinder</translation>

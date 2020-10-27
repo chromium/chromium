@@ -2474,7 +2474,6 @@
 <translation id="3856800405688283469">సమయ మండలిని ఎంచుకోండి</translation>
 <translation id="3857807444929313943">పైకి ఎత్తి, మళ్లీ తాకండి</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: సమకాలీకరణ పాజ్ అయింది</translation>
-<translation id="3861386850461794863">యాప్‌లు, వెబ్‌సైట్‌ల కోసం భాషలు</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" యూజర్‌నేమ్ అందుబాటులో లేదు</translation>
 <translation id="3862693525629180217">అంతర్నిర్మిత సెన్సార్ ద్వారా ధృవీకరించు</translation>
 <translation id="3862788408946266506">'kiosk_only' మానిఫెస్ట్ ఫీచర్ ఉన్న యాప్‌ను తప్పనిసరిగా Chrome OS కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
@@ -4477,7 +4476,6 @@
 <translation id="628352644014831790">4 సెకన్లు</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> సాధారణంగా డౌన్‌లోడ్ చేయబడలేదు మరియు ప్రమాదకరమైనది కావచ్చు.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{మీ నెట్‌వర్క్‌లోని కొత్త ప్రింటర్}other{మీ నెట్‌వర్క్‌లోని కొత్త ప్రింటర్‌లు}}</translation>
-<translation id="6289626062715012577">అనేక భాషలను సపోర్ట్ చేసే యాప్‌లు, వెబ్‌సైట్‌లు లిస్ట్ లోని మొదటి సపోర్ట్ చేసే భాషను ఉపయోగించుకుంటాయి. భాష ప్రాధాన్యతలు Chrome బ్రౌజర్‌కు సింక్ చేయబడ్డాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linuxను ప్రారంభించడానికి, <ph name="ORGANIZATION_NAME" />కు మీ డేటాను బ్యాకప్ చేసి, ఈ Chromebookను ఫ్యాక్టరీ సెట్టింగ్‌లకు రీసెట్ చేయాలి.</translation>
 <translation id="6291949900244949761">సైట్ USB పరికరాలను యాక్సెస్ చేయాలనుకున్నప్పుడు అడుగు (సిఫార్సు చేయబడింది)</translation>
 <translation id="6291953229176937411">శోధినిలో &amp;చూపించు</translation>

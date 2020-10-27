@@ -2066,6 +2066,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3428419049384081277">Umeingia katika akaunti!</translation>
 <translation id="3428747202529429621">Hulinda usalama wako kwenye Chrome na inaweza kutumiwa kuboresha usalama wako kwenye programu nyingine za Google ukiwa umeingia katika akaunti</translation>
 <translation id="3428800329481094896">Inatafuta misimbo ya ssh ya metadata ya Linux</translation>
+<translation id="3429271624041785769">Lugha za maudhui ya wavuti</translation>
 <translation id="3429275422858276529">Alamisha ukurasa huu ili uupate kwa urahisi baadaye</translation>
 <translation id="3432227430032737297">Futa Vidakuzi Vyote Vilivyoonyeshwa</translation>
 <translation id="3432757130254800023">Tuma sauti na video za kuonyesha kwenye mtandao wa ndani</translation>
@@ -2471,7 +2472,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3856800405688283469">Chagua saa za eneo</translation>
 <translation id="3857807444929313943">Inua, kisha uguse tena</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Umesitisha usawazishaji</translation>
-<translation id="3861386850461794863">Lugha zinazotumika kwenye programu na tovuti</translation>
 <translation id="3861638017150647085">Jina la mtumiaji "<ph name="USERNAME" />" halipatikani</translation>
 <translation id="3862693525629180217">Thibitisha kupitia kitambuzi kilichojumuishwa</translation>
 <translation id="3862788408946266506">Ni lazima programu iliyo na sifa ya faili ya maelezo ya 'kiosk_only' isakinishwe katika skrini nzima ya Mfumo wa Uendeshaji wa Chrome</translation>
@@ -2491,6 +2491,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3879748587602334249">Kidhibiti cha vipakuliwa</translation>
 <translation id="3881478300875776315">Onyesha mistari michache</translation>
 <translation id="3882165008614329320">Video iliyopo kutoka kwenye kamera au faili</translation>
+<translation id="3884152383786131369">Maudhui ya wavuti yanayopatikana katika lugha nyingi yatatumia lugha ya kwanza inayoweza kutumika kwenye orodha hii. Mapendeleo haya husawazishwa na mipangilio ya kivinjari chako. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Ombi lako la kufikia tovuti hii limetumwa kwa <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Madokezo yanachukuliwa na <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Ongeza OpenVPN / L2TP...</translation>
@@ -4472,7 +4473,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="628352644014831790">Sekunde 4</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> haipakuliwi kwa kawaida na huenda ikawa hatari.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printa mpya kwenye mtandao wako}other{Printa mpya kwenye mtandao wako}}</translation>
-<translation id="6289626062715012577">Programu na tovuti zinazoweza kutumia lugha nyingi zitatumia lugha ya kwanza inayoweza kutumika kwenye orodha hii. Mapendeleo ya lugha husawazishwa kwenye kivinjari cha Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Ili ufungue Linux, <ph name="ORGANIZATION_NAME" /> inataka uhifadhi nakala ya data yako na urejeshe mipangilio ambayo Chromebook hii ilitoka nayo kiwandani.</translation>
 <translation id="6291949900244949761">Iulize wakati tovuti inataka kufikia vifaa vya USB (inapendekezwa)</translation>
 <translation id="6291953229176937411">Onye&amp;sha katika Kipataji</translation>

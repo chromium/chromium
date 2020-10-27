@@ -2471,7 +2471,6 @@
 <translation id="3856800405688283469">Уақыт белдеуін таңдау</translation>
 <translation id="3857807444929313943">Саусағыңызды алып, қайта түртіңіз</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхрондау кідіртілді</translation>
-<translation id="3861386850461794863">Қолданбалар мен веб-сайттарға арналған тіл</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" деген пайдаланушы аты қолжетімді емес.</translation>
 <translation id="3862693525629180217">Ендірілген сенсор арқылы растау</translation>
 <translation id="3862788408946266506">"kiosk_only" манифест атрибутына ие қолданба Chrome OS киоск режимінде орнатылуы тиіс</translation>
@@ -4474,7 +4473,6 @@
 <translation id="628352644014831790">4 секунд</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> әдетте жүктеп алынбайды және ол қауіпті болуы мүмкін.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Желіңіздегі жаңа принтер бар}other{Желіңізде жаңа принтерлер бар}}</translation>
-<translation id="6289626062715012577">Бірнеше тілге қолдау көрсететін қолданбалар мен сайттар осы тізімдегі бірінші тілді пайдаланады. Тіл параметрлері Chrome браузерімен синхрондалады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux жүйесін іске қосу үшін <ph name="ORGANIZATION_NAME" /> деректердің сақтық көшірмесін жасауды және Chromebook құрылғысын зауыттық параметрлерге қайтаруды талап етеді.</translation>
 <translation id="6291949900244949761">Сайт USB құрылғыларын пайдаланғысы келгенде, рұқсат сұралсын (ұсынылады)</translation>
 <translation id="6291953229176937411">&amp;Іздеу жүйесінде көрсету</translation>

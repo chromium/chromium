@@ -2066,6 +2066,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3428419049384081277">Je i identifikuar!</translation>
 <translation id="3428747202529429621">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar</translation>
 <translation id="3428800329481094896">Po merr çelësat SSH të kontejnerit të Linux</translation>
+<translation id="3429271624041785769">Gjuhët e përmbajtjes së uebit</translation>
 <translation id="3429275422858276529">Shënoje këtë faqe për ta gjetur me lehtësi më vonë</translation>
 <translation id="3432227430032737297">Hiqi të gjitha të shfaqurat</translation>
 <translation id="3432757130254800023">Dërgo audion dhe videon tek ekranet në rrjetin lokal</translation>
@@ -2471,7 +2472,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3856800405688283469">Zgjidh zonën orare</translation>
 <translation id="3857807444929313943">Ngrije dhe më pas prek përsëri</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sinkronizimi u ndërpre</translation>
-<translation id="3861386850461794863">Gjuhët për aplikacionet dhe sajtet e uebit</translation>
 <translation id="3861638017150647085">Emri i përdoruesit "<ph name="USERNAME" />" nuk ofrohet</translation>
 <translation id="3862693525629180217">Verifikohu nëpërmjet sensorit të integruar</translation>
 <translation id="3862788408946266506">Aplikacioni me cilësinë e shfaqjes "kiosk_only" duhet të instalohet në modalitetin "kioskë" të sistemit operativ Chrome</translation>
@@ -2491,6 +2491,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
 <translation id="3881478300875776315">Shfaq më pak rreshta</translation>
 <translation id="3882165008614329320">Video ekzistuese nga kamera ose skedari</translation>
+<translation id="3884152383786131369">Përmbajtja e uebit që ofrohet në shumë gjuhë do të përdorë gjuhën e parë të mbështetur nga kjo listë. Këto preferenca sinkronizohen me cilësimet e shfletuesit tënd. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Kërkesa jote për qasje te ky sajt është dërguar te <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Marrja e shënimeve me <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Shto OpenVPN / L2TP...</translation>
@@ -4474,7 +4475,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="628352644014831790">4 sekonda</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printer i ri në rrjetin tënd}other{Printerë të rinj në rrjetin tënd}}</translation>
-<translation id="6289626062715012577">Aplikacionet dhe sajtet e uebit që mbështesin shumë gjuhë do të përdorin gjuhën e parë të mbështetur nga kjo listë. Preferencat e gjuhës sinkronizohen te shfletuesi Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Për të nisur Linux, <ph name="ORGANIZATION_NAME" /> kërkon që të rezervosh të dhënat e tua dhe ta rivendosësh këtë Chromebook te cilësimet e fabrikës.</translation>
 <translation id="6291949900244949761">Pyet kur një sajt dëshiron të ketë qasje në pajisje me USB (rekomandohet)</translation>
 <translation id="6291953229176937411">Shfaqe te "Gjetësi"</translation>

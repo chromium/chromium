@@ -2470,7 +2470,6 @@
 <translation id="3856800405688283469">选择时区</translation>
 <translation id="3857807444929313943">移开手指，然后再次触摸传感器</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />：已暂停同步</translation>
-<translation id="3861386850461794863">应用和网站的语言</translation>
 <translation id="3861638017150647085">用户名“<ph name="USERNAME" />”不可用</translation>
 <translation id="3862693525629180217">通过内置传感器进行验证</translation>
 <translation id="3862788408946266506">具有“kiosk_only”这项清单属性的应用必须在 Chrome 操作系统自助服务终端模式下进行安装</translation>
@@ -4472,7 +4471,6 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 的下载方式实属异常，因此它可能存在危险。</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您的网络中有 1 台新打印机}other{您的网络中有多台新打印机}}</translation>
-<translation id="6289626062715012577">支持多种语言的应用和网站将会使用此列表中第一种受支持的语言。语言偏好设置会同步到 Chrome 浏览器。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">根据 <ph name="ORGANIZATION_NAME" /> 的要求，您必须先备份自己的数据并将此 Chromebook 恢复出厂设置，然后才能启动 Linux。</translation>
 <translation id="6291949900244949761">当网站要访问 USB 设备时询问您（推荐）</translation>
 <translation id="6291953229176937411">在 Finder 中显示(&amp;S)</translation>

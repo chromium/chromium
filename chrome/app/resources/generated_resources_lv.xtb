@@ -2069,6 +2069,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3428419049384081277">Jūs esat pierakstījies!</translation>
 <translation id="3428747202529429621">Tiek nodrošināta jūsu aizsardzība pārlūkprogrammā Chrome. Šis režīms var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
 <translation id="3428800329481094896">Tiek iegūtas Linux konteinera SSH atslēgas</translation>
+<translation id="3429271624041785769">Tīmekļa satura valodas</translation>
 <translation id="3429275422858276529">Saglabājiet šo lapu kā grāmatzīmi, lai vēlāk varētu to viegli atrast</translation>
 <translation id="3432227430032737297">Noņemt visu parādīto</translation>
 <translation id="3432757130254800023">Sūtīt audio un video saturu uz ekrāniem lokālajā tīklā</translation>
@@ -2474,7 +2475,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3856800405688283469">Laika joslas atlasīšana</translation>
 <translation id="3857807444929313943">Paceliet un pieskarieties vēlreiz</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinhronizācija ir apturēta</translation>
-<translation id="3861386850461794863">Lietotņu un vietņu valodas</translation>
 <translation id="3861638017150647085">Lietotājvārds “<ph name="USERNAME" />” nav pieejams.</translation>
 <translation id="3862693525629180217">Apstiprināt, izmantojot iebūvētu sensoru</translation>
 <translation id="3862788408946266506">Lai instalētu lietotni ar manifesta atribūtu kiosk_only, ir jāizmanto Chrome OS kioska režīms.</translation>
@@ -2494,6 +2494,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3879748587602334249">Lejupielāžu pārvaldnieks</translation>
 <translation id="3881478300875776315">Rādīt mazāk rindu</translation>
 <translation id="3882165008614329320">Esošs videoklips no kameras vai faila</translation>
+<translation id="3884152383786131369">Tīmekļa saturam, kas ir pieejams vairākās valodās, tiks izmantota pirmā atbalstītā valoda no šī saraksta. Šīs preferences tiek sinhronizētas ar jūsu pārlūkprogrammas iestatījumiem. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="3886446263141354045">Pieprasījums piekļūt šai vietnei ir nosūtīts lietotājam <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Piezīmju rakstīšana, izmantojot <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Pievienot OpenVPN/otrā slāņa tunelēšanas protokolu...</translation>
@@ -4477,7 +4478,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="628352644014831790">4 sekundes</translation>
 <translation id="6285120108426285413">Fails <ph name="FILE_NAME" /> parasti netiek lejupielādēts, un tas var būt bīstams.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Jauns printeris jūsu tīklā}zero{Jauni printeri jūsu tīklā}one{Jauni printeri jūsu tīklā}other{Jauni printeri jūsu tīklā}}</translation>
-<translation id="6289626062715012577">Lietotnēs un tīmekļa vietnēs, kurās tiek atbalstītas vairākas valodas, tiks izmantota pirmā sarakstā norādītā valoda. Valodas preferences tiek sinhronizētas ar pārlūku Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Uzzināt vairāk<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Organizācija <ph name="ORGANIZATION_NAME" /> pieprasa, lai pirms Linux palaišanas jūs dublētu savus datus un atiestatītu šī Chromebook datora rūpnīcas iestatījumus.</translation>
 <translation id="6291949900244949761">Vaicāt, ja vietne vēlas piekļūt USB ierīcēm (ieteicams)</translation>
 <translation id="6291953229176937411">Rādīt lietojumprogrammā &amp;Finder</translation>

@@ -2069,6 +2069,7 @@
 <translation id="3428419049384081277">Вы ўвайшлі!</translation>
 <translation id="3428747202529429621">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="3428800329481094896">Атрыманне ключоў SSH для кантэйнера Linux</translation>
+<translation id="3429271624041785769">Мовы вэб-змесціва</translation>
 <translation id="3429275422858276529">Дадайце гэту старонку ў закладкі, каб палегчыць яе пошук у далейшым</translation>
 <translation id="3432227430032737297">Выдаліць усе паказаныя</translation>
 <translation id="3432757130254800023">Адпраўка аўдыя і відэа на дысплэі ў лакальнай сетцы</translation>
@@ -2474,7 +2475,6 @@
 <translation id="3856800405688283469">Выберыце часавы пояс</translation>
 <translation id="3857807444929313943">Адніміце палец і дакраніцеся зноў</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: сінхранізацыя прыпынена</translation>
-<translation id="3861386850461794863">Мовы праграм і вэб-сайтаў</translation>
 <translation id="3861638017150647085">Імя карыстальніка "<ph name="USERNAME" />" недаступнае</translation>
 <translation id="3862693525629180217">Прайсці спраўджанне з дапамогай убудаванага датчыка</translation>
 <translation id="3862788408946266506">Праграма з атрыбутам маніфеста "kiosk_only" павінна ўсталёўвацца ў рэжыме кіёска Chrome OS</translation>
@@ -2494,6 +2494,7 @@
 <translation id="3879748587602334249">Менеджар спамповак</translation>
 <translation id="3881478300875776315">Паказваць менш радкоў</translation>
 <translation id="3882165008614329320">Існуючае відэа з камеры або файла</translation>
+<translation id="3884152383786131369">Вэб-змесціва, даступнае на некалькіх мовах, будзе адлюстроўвацца на першай мове з дадзенага спіса. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Запыт на доступ да гэтага сайта адпраўлены карыстальніку <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Нататкі ў <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Дадаць OpenVPN/L2TP...</translation>
@@ -4477,7 +4478,6 @@
 <translation id="628352644014831790">4 секунды</translation>
 <translation id="6285120108426285413">Файл "<ph name="FILE_NAME" />" звычайна не спампоўваецца і можа быць небяспечным.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Новы прынтар у сетцы}one{Новыя прынтары ў сетцы}few{Новыя прынтары ў сетцы}many{Новыя прынтары ў сетцы}other{Новыя прынтары ў сетцы}}</translation>
-<translation id="6289626062715012577">Праграмы і вэб-сайты з падтрымкай некалькіх моў будуць выкарыстоўваць першую мову ў спісе Моўныя параметры сінхранізуюцца з браўзерам Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Для запуску Linux <ph name="ORGANIZATION_NAME" /> патрабуе ад вас стварыць рэзервовую копію даных і скінуць налады Chromebook да заводскіх значэнняў.</translation>
 <translation id="6291949900244949761">Пытацца, калі сайт запытвае доступ да USB-прылад (рэкамендуецца)</translation>
 <translation id="6291953229176937411">&amp;Паказаць у акне Finder</translation>

@@ -2066,6 +2066,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3428419049384081277">¡Accediste!</translation>
 <translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="3428800329481094896">Obteniendo claves SSH del contenedor de Linux</translation>
+<translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Agrega esta página a favoritos para encontrarla fácilmente más tarde</translation>
 <translation id="3432227430032737297">Quitar todo lo que se muestra</translation>
 <translation id="3432757130254800023">Enviar audio y video a pantallas en la red local</translation>
@@ -2471,7 +2472,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3856800405688283469">Seleccionar zona horaria</translation>
 <translation id="3857807444929313943">Levanta el dedo y vuelve a tocar</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Se pausó la sincronización</translation>
-<translation id="3861386850461794863">Idiomas para apps y sitios web</translation>
 <translation id="3861638017150647085">El nombre de usuario "<ph name="USERNAME" />" no está disponible</translation>
 <translation id="3862693525629180217">Verificar mediante el sensor incorporado</translation>
 <translation id="3862788408946266506">Se debe instalar la app con el atributo del manifiesto "kiosk_only" en el modo kiosco del Sistema operativo Chrome</translation>
@@ -2491,6 +2491,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3879748587602334249">Administrador de descargas</translation>
 <translation id="3881478300875776315">Mostrar menos líneas</translation>
 <translation id="3882165008614329320">Video existente de la cámara o archivo</translation>
+<translation id="3884152383786131369">El contenido web disponible en múltiples idiomas usará el primer idioma compatible de esta lista. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Tu solicitud de acceso a este sitio se envió a <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Agregar OpenVPN/L2TP…</translation>
@@ -4474,7 +4475,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> no es un archivo que se descargue de forma habitual y es posible que sea peligroso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nueva impresora en la red}other{Nuevas impresoras en la red}}</translation>
-<translation id="6289626062715012577">Las apps y los sitios web que admiten múltiples idiomas usarán el primer idioma de esta lista. Las preferencias de idioma se sincronizan con el navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Para iniciar Linux, <ph name="ORGANIZATION_NAME" /> requiere que hagas una copia de seguridad de tus datos y restablezcas esta Chromebook a la configuración de fábrica.</translation>
 <translation id="6291949900244949761">Preguntarme cuando un sitio desee acceder a dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">Mo&amp;strar en Buscador</translation>

@@ -2069,6 +2069,7 @@ Pretende pará-lo?</translation>
 <translation id="3428419049384081277">Tem sessão iniciada</translation>
 <translation id="3428747202529429621">Mantém a sua segurança no Chrome e pode ser utilizado para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="3428800329481094896">A obter as Chaves SSH do contentor do Linux…</translation>
+<translation id="3429271624041785769">Idiomas de conteúdo Web</translation>
 <translation id="3429275422858276529">Adicione esta página aos marcadores para encontrá-la facilmente mais tarde</translation>
 <translation id="3432227430032737297">Remover tudo o que é mostrado</translation>
 <translation id="3432757130254800023">Enviar áudio e vídeo para ecrãs na rede local</translation>
@@ -2474,7 +2475,6 @@ Pretende pará-lo?</translation>
 <translation id="3856800405688283469">Selecionar fuso horário</translation>
 <translation id="3857807444929313943">Levante e toque novamente</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sincronização em pausa</translation>
-<translation id="3861386850461794863">Idiomas para apps e Websites</translation>
 <translation id="3861638017150647085">O nome de utilizador "<ph name="USERNAME" />" não está disponível.</translation>
 <translation id="3862693525629180217">Validar através do sensor integrado</translation>
 <translation id="3862788408946266506">É necessário instalar a aplicação com o atributo de manifesto "kiosk_only" no modo quiosque do Chrome OS.</translation>
@@ -2494,6 +2494,7 @@ Pretende pará-lo?</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3882165008614329320">Vídeo existente da câmara ou do ficheiro</translation>
+<translation id="3884152383786131369">O conteúdo Web disponível em vários idiomas irá utilizar o primeiro idioma suportado desta lista. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">O seu pedido para aceder a este site foi enviado para <ph name="NAME" />.</translation>
 <translation id="3888550877729210209">Tirar notas com a aplicação <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Adicionar OpenVPN/L2TP...</translation>
@@ -4478,7 +4479,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> não é habitualmente transferido e pode ser perigoso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nova impressora na rede}other{Novas impressoras na rede}}</translation>
-<translation id="6289626062715012577">As apps e os Websites que suportam vários idiomas utilizam o primeiro idioma suportado desta lista. As preferências de idioma sincronizam-se com o navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Para iniciar o Linux, a entidade <ph name="ORGANIZATION_NAME" /> necessita que faça uma cópia de segurança dos seus dados e reponha as definições de fábrica deste Chromebook.</translation>
 <translation id="6291949900244949761">Perguntar quando um site pretender aceder a dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">Mo&amp;strar no Finder</translation>

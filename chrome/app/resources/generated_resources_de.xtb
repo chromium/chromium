@@ -2470,7 +2470,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3856800405688283469">Zeitzone auswählen</translation>
 <translation id="3857807444929313943">Anheben und erneut berühren</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Synchronisierung pausiert</translation>
-<translation id="3861386850461794863">Sprachen für Apps und Websites</translation>
 <translation id="3861638017150647085">Der Nutzername "<ph name="USERNAME" />" ist nicht verfügbar</translation>
 <translation id="3862693525629180217">Über integrierten Sensor bestätigen</translation>
 <translation id="3862788408946266506">App mit Manifest-Attribut "kiosk_only" muss im Chrome OS-Kioskmodus installiert werden</translation>
@@ -4473,7 +4472,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="628352644014831790">4 Sekunden</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ist ein ungewöhnlicher Download und könnte schädlich sein.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Neuer Drucker in Ihrem Netzwerk gefunden}other{Neue Drucker in Ihrem Netzwerk gefunden}}</translation>
-<translation id="6289626062715012577">Apps und Websites, die mehrere Sprachen unterstützen, verwenden die erste unterstützte Sprache auf dieser Liste. Spracheinstellungen werden mit dem Chrome-Browser synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Bevor Sie Linux starten können, müssen Sie laut <ph name="ORGANIZATION_NAME" /> Ihre Daten sichern und dieses Chromebook auf die Werkseinstellungen zurücksetzen.</translation>
 <translation id="6291949900244949761">Nachfragen, wenn eine Website auf USB-Geräte zugreifen möchte (empfohlen)</translation>
 <translation id="6291953229176937411">Im Finder &amp;zeigen</translation>

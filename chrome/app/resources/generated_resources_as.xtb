@@ -2066,6 +2066,7 @@
 <translation id="3428419049384081277">আপুনি ছাইন ইন কৰিলে!</translation>
 <translation id="3428747202529429621">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা সময়ত অন্য Google এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="3428800329481094896">Linux কণ্টেইনাৰ ssh কীসমূহ আহৰণ কৰি থকা হৈছে</translation>
+<translation id="3429271624041785769">ৱেবৰ সমলৰ ভাষা</translation>
 <translation id="3429275422858276529">পৰৱর্তী সময়ত এই পৃষ্ঠাটো সহজে বিচাৰি পাবলৈ ইয়াক বুকমার্ক কৰক</translation>
 <translation id="3432227430032737297">দেখুওৱা সকলো আঁতৰাওক</translation>
 <translation id="3432757130254800023">স্থানীয় নেটৱর্কৰ ডিছপ্লে’লৈ অডিঅ’ আৰু ভিডিঅ’ পঠিয়াওক</translation>
@@ -2471,7 +2472,6 @@
 <translation id="3856800405688283469">সময় মণ্ডল বাছনি কৰক</translation>
 <translation id="3857807444929313943">ওপৰলৈ উঠাওক, তাৰ পিছত পুনৰ স্পৰ্শ কৰক</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: ছিংক পজ হ'ল</translation>
-<translation id="3861386850461794863">এপ্ আৰু ৱেবছাইটসমূহৰ বাবে ভাষাসমূহ</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" ব্যৱহাৰকাৰীৰ নামটো উপলব্ধ নহয়</translation>
 <translation id="3862693525629180217">অন্তনির্মিত ছেন্সৰৰ দ্বাৰা সত্যাপন কৰক</translation>
 <translation id="3862788408946266506">’kiosk_only’ মেনিফেষ্ট বৈশিষ্ট থকা এপক Chrome OS কিঅ’স্ক ম’ডতেই ইনষ্টল কৰিব লাগিব</translation>
@@ -2491,6 +2491,7 @@
 <translation id="3879748587602334249">ডাউনল’ড মেনেজাৰ</translation>
 <translation id="3881478300875776315">শাৰী কমকৈ দেখুৱাওক</translation>
 <translation id="3882165008614329320">কেমেৰা অথবা ফাইলৰ পৰা ইতিমধ্যে থকা ভিডিঅ’</translation>
+<translation id="3884152383786131369">একাধিক ভাষাত উপলব্ধ ৱেবৰ সমলে এই সূচীখনৰ পৰা সমৰ্থিত প্ৰথম ভাষাটো ব্যৱহাৰ কৰিব। এই অগ্ৰাধিকাৰসমূহ আপোনাৰ ব্ৰাউজাৰৰ ছেটিঙৰ সৈতে ছিংক কৰা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">এই ছাইটটো এক্সেছ কৰিবলৈ আপুনি কৰা অনুৰোধ <ph name="NAME" />লৈ পঠিওৱা হৈছে</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />ৰ জৰিয়তে টোকা লৈ থকা হৈছে</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP যোগ কৰক...</translation>
@@ -4468,7 +4469,6 @@
 <translation id="628352644014831790">৪ছেকেণ্ড</translation>
 <translation id="6285120108426285413">সাধাৰণতে <ph name="FILE_NAME" /> ডাউনল'ড কৰা নহয় আৰু ই ক্ষতিকাৰক হ'ব পাৰে।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{আপোনাৰ নেটৱর্কত দেখুওৱা নতুন প্ৰিণ্টাৰ}one{আপোনাৰ নেটৱর্কত দেখুওৱা নতুন প্ৰিণ্টাৰসমূহ}other{আপোনাৰ নেটৱর্কত দেখুওৱা নতুন প্ৰিণ্টাৰসমূহ}}</translation>
-<translation id="6289626062715012577">একাধিক ভাষা সমৰ্থন কৰা এপ্ আৰু ৱেবছাইটসমূহে এই সূচীখনৰ পৰা প্ৰথম সমৰ্থিত ভাষাটো ব্যৱহাৰ কৰিব। ভাষাৰ অগ্ৰাধিকাৰসমূহ Chrome ব্ৰাউজাৰত ছিংক কৰক। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux ব্যৱহাৰ কৰা আৰম্ভ কৰিবলৈ, <ph name="ORGANIZATION_NAME" />ৰ বাবে আপুনি আপোনাৰ ডেটা বেকআপ লোৱা আৰু এই Chromebookক ফেক্টৰীৰ ছেটিংসমূহলৈ ৰিছেট কৰাটো আৱশ্যক হয়।</translation>
 <translation id="6291949900244949761">কোনো ছাইটে ইউএছবি ডিভাইচ এক্সেছ কৰিব বিচাৰিলে সোধক (আমি পৰামৰ্শ কৰোঁ)</translation>
 <translation id="6291953229176937411">&amp;Finderত দেখুৱাওক</translation>

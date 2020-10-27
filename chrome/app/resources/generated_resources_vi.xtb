@@ -2069,6 +2069,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3428419049384081277">Bạn đã đăng nhập!</translation>
 <translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3428800329481094896">Đang tìm nạp các khóa SSH của vùng chứa Linux</translation>
+<translation id="3429271624041785769">Ngôn ngữ dùng cho nội dung web</translation>
 <translation id="3429275422858276529">Đánh dấu trang này để dễ dàng tìm kiếm về sau</translation>
 <translation id="3432227430032737297">Xóa tất cả cookie hiển thị</translation>
 <translation id="3432757130254800023">Gửi âm thanh và video tới màn hình trên mạng cục bộ</translation>
@@ -2474,7 +2475,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3856800405688283469">Chọn múi giờ</translation>
 <translation id="3857807444929313943">Nhấc ngón tay lên rồi chạm lại</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Đã tạm dừng đồng bộ hóa</translation>
-<translation id="3861386850461794863">Ngôn ngữ cho ứng dụng và trang web</translation>
 <translation id="3861638017150647085">Tên người dùng "<ph name="USERNAME" />" không có sẵn</translation>
 <translation id="3862693525629180217">Xác minh qua cảm biến tích hợp</translation>
 <translation id="3862788408946266506">Phải cài đặt ứng dụng có thuộc tính tệp kê khai 'kiosk_only' ở chế độ kiosk Chrome OS</translation>
@@ -2494,6 +2494,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3879748587602334249">Trình quản lý tải xuống</translation>
 <translation id="3881478300875776315">Ẩn bớt dòng</translation>
 <translation id="3882165008614329320">Video hiện có từ camera hoặc tệp</translation>
+<translation id="3884152383786131369">Nội dung web có nhiều phiên bản ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Những tùy chọn này được đồng bộ hóa với tùy chọn cài đặt của trình duyệt. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Yêu cầu truy cập trang web này của bạn đã được gửi tới <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Ghi chú bằng <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Thêm OpenVPN / L2TP...</translation>
@@ -4477,7 +4478,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="628352644014831790">4 giây</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> thường không được tải xuống và có thể nguy hiểm.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Máy in mới trên mạng của bạn}other{Máy in mới trên mạng của bạn}}</translation>
-<translation id="6289626062715012577">Các ứng dụng và trang web hỗ trợ nhiều ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Các tùy chọn ngôn ngữ sẽ đồng bộ hóa với trình duyệt Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Để khởi động Linux, <ph name="ORGANIZATION_NAME" /> yêu cầu bạn sao lưu dữ liệu của mình và đặt lại thiết bị Chromebook này về trạng thái cài đặt ban đầu.</translation>
 <translation id="6291949900244949761">Hỏi khi một trang web muốn truy cập vào các thiết bị USB (khuyên dùng)</translation>
 <translation id="6291953229176937411">&amp;Hiển thị trong Trình tìm kiếm</translation>

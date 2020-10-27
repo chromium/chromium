@@ -2069,6 +2069,7 @@
 <translation id="3428419049384081277">คุณลงชื่อเข้าใช้แล้ว</translation>
 <translation id="3428747202529429621">รักษาความปลอดภัยของคุณใน Chrome และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="3428800329481094896">กำลังดึงข้อมูลคีย์ ssh ของคอนเทนเนอร์ Linux</translation>
+<translation id="3429271624041785769">ภาษาของเนื้อหาเว็บ</translation>
 <translation id="3429275422858276529">บุ๊กมาร์กหน้านี้เพื่อให้หาเจอง่ายในภายหลัง</translation>
 <translation id="3432227430032737297">นำรายการที่แสดงทั้งหมดออก</translation>
 <translation id="3432757130254800023">ส่งภาพและเสียงไปยังจอแสดงผลบนเครือข่ายเฉพาะที่</translation>
@@ -2474,7 +2475,6 @@
 <translation id="3856800405688283469">เลือกเขตเวลา</translation>
 <translation id="3857807444929313943">ยกนิ้วขึ้นแล้วแตะอีกครั้ง</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: การซิงค์หยุดชั่วคราว</translation>
-<translation id="3861386850461794863">ภาษาสำหรับแอปและเว็บไซต์</translation>
 <translation id="3861638017150647085">ใช้ชื่อผู้ใช้ "<ph name="USERNAME" />" ไม่ได้</translation>
 <translation id="3862693525629180217">ยืนยันผ่านเซ็นเซอร์ในเครื่อง</translation>
 <translation id="3862788408946266506">ต้องติดตั้งแอปที่มีแอตทริบิวต์ไฟล์ Manifest ที่ชื่อ "kiosk_only" ในโหมดคีออสก์ของ Chrome OS</translation>
@@ -2494,6 +2494,7 @@
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3881478300875776315">แสดงบรรทัดน้อยลง</translation>
 <translation id="3882165008614329320">วิดีโอที่มีอยู่จากกล้องหรือไฟล์</translation>
+<translation id="3884152383786131369">เนื้อหาเว็บที่มีหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ระบบจะซิงค์ค่ากำหนดเหล่านี้กับการตั้งค่าเบราว์เซอร์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ระบบส่งคำขอเข้าถึงเว็บไซต์นี้ของคุณให้ <ph name="NAME" /> แล้ว</translation>
 <translation id="3888550877729210209">จดโน้ตด้วย <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">เพิ่ม OpenVPN/L2TP...</translation>
@@ -4477,7 +4478,6 @@
 <translation id="628352644014831790">4 วินาที</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ไม่ได้ถูกดาวน์โหลดตามปกติและอาจเป็นอันตราย</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{เครื่องพิมพ์ใหม่บนเครือข่ายของคุณ}other{เครื่องพิมพ์ใหม่บนเครือข่ายของคุณ}}</translation>
-<translation id="6289626062715012577">แอปและเว็บไซต์ที่รองรับหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ค่ากำหนดภาษาจะซิงค์กับเบราว์เซอร์ Chrome <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">ในการเริ่มต้น Linux <ph name="ORGANIZATION_NAME" /> จะขอให้คุณสำรองข้อมูลและรีเซ็ต Chromebook เป็นการตั้งค่าเริ่มต้น</translation>
 <translation id="6291949900244949761">ถามเมื่อเว็บไซต์ต้องการเข้าถึงอุปกรณ์ USB (แนะนำ)</translation>
 <translation id="6291953229176937411">&amp;แสดงใน Finder</translation>

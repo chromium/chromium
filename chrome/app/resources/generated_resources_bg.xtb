@@ -2066,6 +2066,7 @@
 <translation id="3428419049384081277">Влязохте в профила си!</translation>
 <translation id="3428747202529429621">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="3428800329481094896">SSH ключовете на контейнера за Linux се извличат</translation>
+<translation id="3429271624041785769">Езици за уеб съдържанието</translation>
 <translation id="3429275422858276529">Запазете отметка към тази страница, за да я намирате лесно по-късно</translation>
 <translation id="3432227430032737297">Премахване на всички показани</translation>
 <translation id="3432757130254800023">Изпращане на аудио и видео до дисплеи в локалната мрежа</translation>
@@ -2473,7 +2474,6 @@
 <translation id="3856800405688283469">Изберете часова зона</translation>
 <translation id="3857807444929313943">Вдигнете пръст и докоснете отново</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронизирането е на пауза</translation>
-<translation id="3861386850461794863">Езици за приложенията и уебсайтовете</translation>
 <translation id="3861638017150647085">Потребителското име „<ph name="USERNAME" />“ е заето</translation>
 <translation id="3862693525629180217">Потвърждаване чрез вградения сензор</translation>
 <translation id="3862788408946266506">Приложенията с атрибут „kiosk_only“ в манифеста трябва да бъдат инсталирани в павилионния режим на Chrome OS</translation>
@@ -2493,6 +2493,7 @@
 <translation id="3879748587602334249">Мениджър на изтеглянията</translation>
 <translation id="3881478300875776315">Показване на по-малко редове</translation>
 <translation id="3882165008614329320">Съществуващ видеоклип от камерата или от файл</translation>
+<translation id="3884152383786131369">За показване на уеб съдържанието, което се предлага на няколко езика, ще се използва първият поддържан от този списък. Тези предпочитания се синхронизират с настройките на браузъра. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Заявката ви за достъп до този сайт бе изпратена до <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Водене на бележки с/ъс <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Добавяне на OpenVPN/L2TP...</translation>
@@ -4477,7 +4478,6 @@
 <translation id="628352644014831790">4 секунди</translation>
 <translation id="6285120108426285413">Файлът „<ph name="FILE_NAME" />“ не е често изтеглян и може да е опасен.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Нов принтер в мрежата ви}other{Нови принтери в мрежата ви}}</translation>
-<translation id="6289626062715012577">Приложенията и уебсайтовете, които поддържат няколко езика, ще използват първия подходящ от този списък. Езиковите предпочитания се синхронизират с браузъра Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">За да стартирате Linux, <ph name="ORGANIZATION_NAME" /> изисква да създадете резервно копие на данните си и да възстановите фабричните настройки на този Chromebook.</translation>
 <translation id="6291949900244949761">Извеждане на запитване, когато сайт иска достъп до USB устройства (препоръчително)</translation>
 <translation id="6291953229176937411">&amp;Показване във Finder</translation>

@@ -2069,6 +2069,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3428419049384081277">Prijavljeni ste</translation>
 <translation id="3428747202529429621">Štiti vas na Chromeu i može se upotrebljavati za poboljšanje vaše sigurnosti u drugim Googleovim aplikacijama kada ste prijavljeni</translation>
 <translation id="3428800329481094896">Dohvaćanje SSH ključeva za Linuxov spremnik</translation>
+<translation id="3429271624041785769">Jezici web-sadržaja</translation>
 <translation id="3429275422858276529">Označite ovu stranicu da biste je kasnije lakše pronašli</translation>
 <translation id="3432227430032737297">Ukloni sve prikazano</translation>
 <translation id="3432757130254800023">slati audio i videozapise na zaslone na lokalnoj mreži</translation>
@@ -2474,7 +2475,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3856800405688283469">Odaberite vremensku zonu</translation>
 <translation id="3857807444929313943">Podignite i ponovo dodirnite</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinkronizacija je pauzirana</translation>
-<translation id="3861386850461794863">Jezici za aplikacije i web-lokacije</translation>
 <translation id="3861638017150647085">Korisničko ime "<ph name="USERNAME" />" nije dostupno</translation>
 <translation id="3862693525629180217">Potvrda putem ugrađenog senzora</translation>
 <translation id="3862788408946266506">Aplikaciju s atributom manifesta "kiosk_only" potrebno je instalirati u načinu kioska OS-a Chrome</translation>
@@ -2494,6 +2494,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3879748587602334249">Upravitelj preuzimanja</translation>
 <translation id="3881478300875776315">Prikaži manje redaka</translation>
 <translation id="3882165008614329320">Postojeći videozapis s kamere ili iz datoteke</translation>
+<translation id="3884152383786131369">Web-sadržaj dostupan na više jezika koristit će prvi podržani jezik s ovog popisa. Te se postavke sinkroniziraju s postavkama vašeg preglednika. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Zahtjev za pristup toj web-lokaciji poslan je korisniku <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Izrada bilježaka pomoću aplikacije <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Dodaj OpenVPN/L2TP...</translation>
@@ -4477,7 +4478,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="628352644014831790">Četiri sekunde</translation>
 <translation id="6285120108426285413">Datoteka <ph name="FILE_NAME" /> obično se ne preuzima i mogla bi biti opasna.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Novi pisač na vašoj mreži}one{Novi pisači na vašoj mreži}few{Novi pisači na vašoj mreži}other{Novi pisači na vašoj mreži}}</translation>
-<translation id="6289626062715012577">Aplikacije i web-lokacije koje podržavaju više jezika koristit će prvi podržani jezik s ovog popisa. Postavke jezika sinkroniziraju se s preglednikom Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Da biste pokrenuli Linux, <ph name="ORGANIZATION_NAME" /> zahtijeva da sigurnosno kopirate svoje podatke i vratite ovaj Chromebook na tvorničke postavke.</translation>
 <translation id="6291949900244949761">Kada web-lokacija želi pristupiti USB uređajima, prikaži upit (preporučeno)</translation>
 <translation id="6291953229176937411">&amp;Prikaži u programu Finder</translation>

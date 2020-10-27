@@ -2474,7 +2474,6 @@
 <translation id="3856800405688283469">اختيار منطقة زمنية</translation>
 <translation id="3857807444929313943">رفع الإصبع، ثم اللمس مرة أخرى</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: تم إيقاف المزامنة مؤقتًا</translation>
-<translation id="3861386850461794863">لغات التطبيقات والمواقع الإلكترونية</translation>
 <translation id="3861638017150647085">اسم المستخدم "<ph name="USERNAME" />" غير متوفر.</translation>
 <translation id="3862693525629180217">التحقُّق عبر جهاز الاستشعار المضمَّن</translation>
 <translation id="3862788408946266506">‏يجب تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام تشغيل Chrome.</translation>
@@ -4476,7 +4475,6 @@
 <translation id="628352644014831790">4 ثوانٍ</translation>
 <translation id="6285120108426285413">لا يتم تنزيل <ph name="FILE_NAME" /> بشكل شائع وربما يكون ضارًا.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{طابعة جديدة على شبكتك}zero{طابعات جديدة على شبكتك}two{طابعتان جديدتان على شبكتك}few{طابعات جديدة على شبكتك}many{طابعات جديدة على شبكتك}other{طابعات جديدة على شبكتك}}</translation>
-<translation id="6289626062715012577">‏ستستخدم التطبيقات والمواقع الإلكترونية التي تدعم اللغات المتعدّدة أول لغة معتمَدة من هذه القائمة. وتتم مزامنة الإعدادت المفضّلة للغة مع متصفِّح Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">‏لبدء تشغيل نظام التشغيل Linux، تتطلّب شركة <ph name="ORGANIZATION_NAME" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإعادة ضبط جهاز Chromebook هذا على الإعدادات الأصلية.</translation>
 <translation id="6291949900244949761">‏طلب الإذن في حال محاولة أحد المواقع الوصول إلى أجهزة USB (مُوصى به)</translation>
 <translation id="6291953229176937411">إ&amp;ظهار في الباحث</translation>

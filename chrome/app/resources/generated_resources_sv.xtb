@@ -2069,6 +2069,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3428419049384081277">Du är inloggad!</translation>
 <translation id="3428747202529429621">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad</translation>
 <translation id="3428800329481094896">Linux-behållarens SSH-nycklar hämtas</translation>
+<translation id="3429271624041785769">Språk för webbinnehåll</translation>
 <translation id="3429275422858276529">Lägg till ett bokmärke för den här sidan så att du enkelt kan hitta tillbaka till den</translation>
 <translation id="3432227430032737297">Ta bort alla som visas</translation>
 <translation id="3432757130254800023">Skicka ljud och bild till skärmar i det lokala nätverket</translation>
@@ -2474,7 +2475,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3856800405688283469">Välj tidszon</translation>
 <translation id="3857807444929313943">Lyft och tryck sedan igen</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Synkroniseringen har pausats</translation>
-<translation id="3861386850461794863">Språk för appar och webbplatser</translation>
 <translation id="3861638017150647085">Användarnamnet <ph name="USERNAME" /> är inte tillgängligt</translation>
 <translation id="3862693525629180217">Verifiera via inbyggd sensor</translation>
 <translation id="3862788408946266506">En app med manifestattributet kiosk_only måste installeras i kioskläget i Chrome OS</translation>
@@ -2494,6 +2494,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3879748587602334249">Nedladdningshanterare</translation>
 <translation id="3881478300875776315">Visa färre rader</translation>
 <translation id="3882165008614329320">Befintlig video från kamera eller fil</translation>
+<translation id="3884152383786131369">Det första språk som stöds i den här listan kommer att användas för webbinnehåll som är tillgängligt på flera språk. Dessa inställningar synkroniseras med inställningarna för webbläsaren. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Din begäran om att få tillgång till denna webbplats har skickats till <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Anteckna med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Lägg till OpenVPN/L2TP …</translation>
@@ -4477,7 +4478,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> brukar inte laddas ned och kan vara skadlig.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ny skrivare i nätverket}other{Nya skrivare i nätverket}}</translation>
-<translation id="6289626062715012577">Det första språk som stöds i den här listan kommer att användas i appar och webbplatser som har stöd för flera språk. Språkinställningarna synkroniseras med webbläsaren Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">För att kunna starta Linux kräver <ph name="ORGANIZATION_NAME" /> att du säkerhetskopierar din data och återställer Chromebook-enheten till standardinställningarna.</translation>
 <translation id="6291949900244949761">Fråga när en webbplats försöker få åtkomst till USB-enheter (rekommenderas)</translation>
 <translation id="6291953229176937411">&amp;Visa i Finder</translation>

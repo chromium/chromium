@@ -2067,6 +2067,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="3428419049384081277">Ungene ngemvume!</translation>
 <translation id="3428747202529429621">Kukugcina uphephile ku-Chrome futhi kungase kusetshenziswe ukuthuthukisa ukuvikeleka kwakho kwezinye izinhlelo zokusebenza ze-Google lapho ungene ngemvume</translation>
 <translation id="3428800329481094896">Kulanda isiqukathi sokhiye we-ssh ye-Linux</translation>
+<translation id="3429271624041785769">Izilimi zokuqukethwe kwewebhu</translation>
 <translation id="3429275422858276529">Bekisa leli khasi ukuze uthole kalula muva</translation>
 <translation id="3432227430032737297">Susa konke okunonisiwe</translation>
 <translation id="3432757130254800023">Thumela umsindo nevidiyo kuzibonisi kunethiwekhi yasendaweni</translation>
@@ -2472,7 +2473,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="3856800405688283469">Khetha indawo yesikhathi</translation>
 <translation id="3857807444929313943">Phakamisa, bese uyathinta futhi</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Ukuvumelanisa kumiswe isikhashana</translation>
-<translation id="3861386850461794863">Izilimi zezinhlelo zokusebenza namawebhusayithi</translation>
 <translation id="3861638017150647085">Igama lomsebenzisi "<ph name="USERNAME" />" alitholakali</translation>
 <translation id="3862693525629180217">Qinisekisa ngenzwa eyakhelwe phakathi</translation>
 <translation id="3862788408946266506">Izinhelo zokusebenza ezinesibaluli se-manifest se-'kiosk_only' kumele sifakwe kumodi yekhiyoski ye-Chrome OS</translation>
@@ -2492,6 +2492,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="3879748587602334249">Isiphathi zokulayisha</translation>
 <translation id="3881478300875776315">Bonisa imigqa embalwa</translation>
 <translation id="3882165008614329320">Ividiyo ekhona kusuka kukhamera noma ifayela</translation>
+<translation id="3884152383786131369">Okuqukethwe kwewebhu okutholakala ngezilimi eziningi kuzosebenzisa ulimi lokuqala olusekelwe kusuka kulolu hlu. Lokhu okuncanyelwayo kuvunyelaniswa namasethingi wesiphequluli sakho. <ph name="BEGIN_LINK_LEARN_MORE" />Funda kabanzi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Isicelo sakho sokufinyelela kule sayithi sithunyelwe ku-<ph name="NAME" /></translation>
 <translation id="3888550877729210209">Ukuthatha amanothi nge-<ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Engeza i-OpenVPN / L2TP...</translation>
@@ -4477,7 +4478,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="628352644014831790">4 amasekhondi</translation>
 <translation id="6285120108426285413">I-<ph name="FILE_NAME" /> ayivamisile ukulandwa futhi ingaba yingozi.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Iphrinta entsha kunethiwekhi yakho}one{Amaphrinta amasha kunethiwekhi yakho}other{Amaphrinta amasha kunethiwekhi yakho}}</translation>
-<translation id="6289626062715012577">Izinhlelo zokusebenza namawebhusayithi asekela izilimi eziningi azosebenzisa ulimi lokuqala olusekelwe kusukela kuhlu. Okuncanyelwayo kolimi kuvunyelaniswa nesiphequluli se-Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Funda kabanzi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Ukuze uqalise i-Linux, i-<ph name="ORGANIZATION_NAME" /> idinga ukuba wenza isipele kudatha yakho bese usethe kabusha le-Chromebook kuzilungiselelo zasekuqaleni.</translation>
 <translation id="6291949900244949761">Buma uma isayithi lifuna ukufinyelela amadivayisi e-USB (kuyanconywa)</translation>
 <translation id="6291953229176937411">Bonisa kusitholi</translation>

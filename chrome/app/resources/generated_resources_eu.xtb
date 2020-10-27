@@ -2069,6 +2069,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3428419049384081277">Hasi duzu saioa!</translation>
 <translation id="3428747202529429621">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="3428800329481094896">Linux-en edukiontziko SSH gakoak eskuratzen</translation>
+<translation id="3429271624041785769">Web-edukien hizkuntzak</translation>
 <translation id="3429275422858276529">Egin orri honen laster-marka, geroago bizkor aurkitzeko</translation>
 <translation id="3432227430032737297">Kendu erakutsitako guztiak</translation>
 <translation id="3432757130254800023">Bidali audioa eta bideoa sare lokaleko pantailetara</translation>
@@ -2474,7 +2475,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3856800405688283469">Hautatu ordu-zona</translation>
 <translation id="3857807444929313943">Jaso hatza eta ukitu berriro</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinkronizazioa pausatu egin da</translation>
-<translation id="3861386850461794863">Aplikazioetarako eta webguneetarako hizkuntzak</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" erabiltzaile-izena ez dago erabilgarri</translation>
 <translation id="3862693525629180217">Egiaztatu sentsore integratuaren bidez</translation>
 <translation id="3862788408946266506">"kiosk_only" manifestu-atributua duen aplikazio bat instalatu behar da Chrome OS sistemaren modu espezializatuan</translation>
@@ -2494,6 +2494,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3879748587602334249">Deskargen kudeatzailea</translation>
 <translation id="3881478300875776315">Erakutsi lerro gutxiago</translation>
 <translation id="3882165008614329320">Kamerako bideo bat edo bideo-fitxategi bat (lehendik duzuna)</translation>
+<translation id="3884152383786131369">Hizkuntza onartuen zerrendan agertzen den lehenengo hizkuntza erabiliko dute hizkuntza batean baino gehiagotan dauden web-edukiek. Arakatzaileko ezarpenekin sinkronizatuta daude hobespen horiek. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Bidali zaio webgunean sartzeko eskaera <ph name="NAME" /> erabiltzaileari.</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> aplikazioarekin oharrak idaztea</translation>
 <translation id="3892414795099177503">Gehitu OpenVPN/L2TP…</translation>
@@ -4477,7 +4478,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="628352644014831790">4 segundo</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ez da deskargatzen sarriegi, eta arriskutsua izan liteke.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Inprimagailu berria dago sarean}other{Inprimagailu berriak daude sarean}}</translation>
-<translation id="6289626062715012577">Hizkuntza bat baino gehiago onartzen dituzten aplikazioek eta webguneek hizkuntza onartuen zerrendan agertzen den lehenengo hizkuntza erabiliko dute. Hizkuntza-hobespenak Chrome arakatzailearekin sinkronizatzen dira. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux abiarazteko, datuen babeskopia egitea eta Chromebook honen jatorrizko ezarpenak berrezartzea eskatzen du <ph name="ORGANIZATION_NAME" /> erakundeak.</translation>
 <translation id="6291949900244949761">Eskatu nire baimena webguneren batek USB gailuak atzitu nahi dituenean (gomendatua)</translation>
 <translation id="6291953229176937411">&amp;Erakutsi Finder-en</translation>

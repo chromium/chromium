@@ -2069,6 +2069,7 @@
 <translation id="3428419049384081277">आप साइन इन किए हुए हैं!</translation>
 <translation id="3428747202529429621">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है</translation>
 <translation id="3428800329481094896">Linux कंटेनर SSH कुंजियां लाई जा रही हैं</translation>
+<translation id="3429271624041785769">वेब कॉन्टेंट की भाषाएं</translation>
 <translation id="3429275422858276529">बाद में इस पेज को आसानी से पाने के लिए इसे बुकमार्क करें</translation>
 <translation id="3432227430032737297">दिखाई गईं सभी कुकी निकालें</translation>
 <translation id="3432757130254800023">स्‍थानीय नेटवर्क पर उपलब्‍ध प्रदर्शनों पर ऑडियो और वीडियो भेजें</translation>
@@ -2474,7 +2475,6 @@
 <translation id="3856800405688283469">समय क्षेत्र चुनें</translation>
 <translation id="3857807444929313943">उठाएं, फिर दोबारा छुएं</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: सिंक करना रोका गया</translation>
-<translation id="3861386850461794863">ऐप्लिकेशन और वेबसाइटों के लिए भाषाएं</translation>
 <translation id="3861638017150647085">उपयोगकर्ता नाम "<ph name="USERNAME" />" उपलब्ध नहीं है</translation>
 <translation id="3862693525629180217">पहले से मौजूद सेंसर के ज़रिए पुष्टि करें</translation>
 <translation id="3862788408946266506">'kiosk_only' मेनिफ़ेस्‍ट विशेषता वाला ऐप्लिकेशन Chrome OS कियोस्‍क मोड में इंस्‍टॉल किया जाना चाहिए</translation>
@@ -2494,6 +2494,7 @@
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
 <translation id="3881478300875776315">कम लाइनें दिखाएं</translation>
 <translation id="3882165008614329320">कैमरा या फ़ाइल से मौजूदा वीडियो</translation>
+<translation id="3884152383786131369">कई भाषाओं में उपलब्ध वेब कॉन्टेंट, इस सूची में दी गई पहली भाषा में दिखाया जाएगा. इन प्राथमिकताओं को आपके ब्राउज़र की सेटिंग के साथ सिंक किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">यह साइट एक्सेस करने का आपका अनुरोध <ph name="NAME" /> को भेज दिया गया है</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> से नोट लेना</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP जोड़ें...</translation>
@@ -4476,7 +4477,6 @@
 <translation id="628352644014831790">4 सेकंड</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> को आमतौर पर डाउनलोड नहीं किया जाता और यह खतरनाक हो सकता है.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{आपके नेटवर्क पर नया प्रिंटर}one{आपके नेटवर्क पर नए प्रिंटर}other{आपके नेटवर्क पर नए प्रिंटर}}</translation>
-<translation id="6289626062715012577">कई भाषाओं में काम करने वाले ऐप्लिकेशन और वेबसाइटें, इस सूची में दी गई पहली भाषा का इस्तेमाल करेंगी. Chrome ब्राउज़र में, भाषा की प्राथमिकताएं सिंक होती हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux शुरू करने के लिए, <ph name="ORGANIZATION_NAME" /> चाहता है कि आप अपने डेटा का बैक अप ले लें. साथ ही, इस Chromebook को फ़ैक्ट्री सेटिंग पर रीसेट कर लें.</translation>
 <translation id="6291949900244949761">जब कोई साइट USB डिवाइस एक्सेस करना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="6291953229176937411">खोजकर्ता में &amp;दिखाएं</translation>

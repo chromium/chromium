@@ -2470,7 +2470,6 @@
 <translation id="3856800405688283469">સમયઝોન પસંદ કરો</translation>
 <translation id="3857807444929313943">ઉપાડો, પછી ફરી સ્પર્શ કરો</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: સિંક થોભાવ્યું</translation>
-<translation id="3861386850461794863">ઍપ અને વેબસાઇટ માટેની ભાષાઓ</translation>
 <translation id="3861638017150647085">વપરાશકર્તાનું "<ph name="USERNAME" />" નામ ઉપલબ્ધ નથી</translation>
 <translation id="3862693525629180217">બિલ્ટ-ઇન સેન્સર મારફતે ચકાસો</translation>
 <translation id="3862788408946266506">'Kiosk_only' મેનિફેસ્ટ વિશેષતાવાળી ઍપ Chrome OS કિઓસ્ક મોડમાં ઇન્સ્ટૉલ કરેલી હોવી જરૂરી છે</translation>
@@ -4475,7 +4474,6 @@ USB ડિવાઇસ</translation>
 <translation id="628352644014831790">4 સેકન્ડ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> સામાન્ય રીતે ડાઉનલોડ થયેલું નથી અને જોખમકારક હોઈ શકે છે.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{તમારા નેટવર્ક પર નવું પ્રિન્ટર}one{તમારા નેટવર્ક પર નવા પ્રિન્ટર્સ}other{તમારા નેટવર્ક પર નવા પ્રિન્ટર્સ}}</translation>
-<translation id="6289626062715012577">એકથી વધારે ભાષાઓને સપોર્ટ કરતી ઍપ અને વેબસાઇટ આ સૂચિમાંની પહેલી સપોર્ટેડ ભાષાનો ઉપયોગ કરશે. ભાષાની પસંદગીઓ Chrome બ્રાઉઝર સાથે સિંક થાય છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux શરૂ કરવા માટે, <ph name="ORGANIZATION_NAME" /> માટે જરૂરી છે કે તમે તમારા ડેટાનો બૅકઅપ લો અને આ Chromebookને ફેક્ટરી સેટિંગ પર રીસેટ કરો.</translation>
 <translation id="6291949900244949761">જ્યારે કોઈ સાઇટ USB ઉપકરણોને ઍક્સેસ કરવા માગે ત્યારે પૂછો (સુઝાવ આપેલ)</translation>
 <translation id="6291953229176937411">ફાઇન્ડર માં &amp;બતાવો</translation>

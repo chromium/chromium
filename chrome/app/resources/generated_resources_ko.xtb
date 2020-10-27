@@ -2069,6 +2069,7 @@
 <translation id="3428419049384081277">로그인되었습니다</translation>
 <translation id="3428747202529429621">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 개선하는 데 사용될 수 있습니다.</translation>
 <translation id="3428800329481094896">Linux 컨테이너 SSH 키 가져오는 중</translation>
+<translation id="3429271624041785769">웹 콘텐츠 언어</translation>
 <translation id="3429275422858276529">이 페이지를 북마크에 추가하여 나중에 쉽게 찾으세요.</translation>
 <translation id="3432227430032737297">표시된 항목 모두 삭제</translation>
 <translation id="3432757130254800023">로컬 네트워크의 디스플레이로 오디오 및 동영상 전송</translation>
@@ -2474,7 +2475,6 @@
 <translation id="3856800405688283469">시간대 선택</translation>
 <translation id="3857807444929313943">손가락을 뗀 후 다시 터치</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: 동기화 중지됨</translation>
-<translation id="3861386850461794863">앱 및 웹사이트 언어</translation>
 <translation id="3861638017150647085">사용자 이름 ‘<ph name="USERNAME" />’은(는) 사용할 수 없습니다.</translation>
 <translation id="3862693525629180217">내장 센서를 통해 인증</translation>
 <translation id="3862788408946266506">'kiosk_only' 매니페스트 속성을 사용하는 앱은 Chrome OS 키오스크 모드에 설치해야 합니다</translation>
@@ -2494,6 +2494,7 @@
 <translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3881478300875776315">자막 접기</translation>
 <translation id="3882165008614329320">카메라 또는 파일의 기존 동영상</translation>
+<translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">사용자의 사이트 액세스 요청이 <ph name="NAME" />님에게 전송되었습니다.</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />(으)로 메모 작성</translation>
 <translation id="3892414795099177503">OpenVPN/L2TP... 추가</translation>
@@ -4475,7 +4476,6 @@
 <translation id="628352644014831790">4초</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 다운로드하지 않습니다.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{네트워크에 새로운 프린터 있음}other{네트워크에 새로운 프린터 있음}}</translation>
-<translation id="6289626062715012577">여러 언어를 지원하는 앱과 웹사이트는 이 목록 상의 첫 번째 지원 언어를 사용합니다. 언어 환경설정은 Chrome 브라우저에 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux를 시작하려면 <ph name="ORGANIZATION_NAME" />의 요건에 따라 데이터를 백업하고 이 Chromebook을 초기화해야 합니다.</translation>
 <translation id="6291949900244949761">사이트에서 USB 기기에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="6291953229176937411">Finder에서 보기(&amp;S)</translation>

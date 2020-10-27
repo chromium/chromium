@@ -2067,6 +2067,7 @@
 <translation id="3428419049384081277">ທ່ານເຂົ້າສູ່ລະບົບແລ້ວ!</translation>
 <translation id="3428747202529429621">ຮັກສາໃຫ້ທ່ານປອດໄພໃນ Chrome ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພໃນແອັບອື່ນຂອງ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ</translation>
 <translation id="3428800329481094896">ກຳລັງດຶງຂໍ້ມູນລະຫັດ ssh ຂອງກ່ອງບັນຈຸ Linux</translation>
+<translation id="3429271624041785769">ພາສາຂອງເນື້ອຫາເວັບ</translation>
 <translation id="3429275422858276529">ບຸກມາກໜ້ານີ້ໄວ້ເພື່ອຊອກຫາໄດ້ງ່າຍໃນພາຍຫຼັງ</translation>
 <translation id="3432227430032737297">ລຶບທຸກອັນທີ່ປາກົດ</translation>
 <translation id="3432757130254800023">ສົ່ງສຽງ ແລະວິດີໂອ ເພື່ອສະແດງຢູ່ໃນເຄືອຂ່າຍທ້ອງຖິ່ນ</translation>
@@ -2472,7 +2473,6 @@
 <translation id="3856800405688283469">ເລືອກເຂດເວລາ</translation>
 <translation id="3857807444929313943">ຍົກຂຶ້ນ, ຈາກນັ້ນແຕະອີກຄັ້ງ</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: ຢຸດການຊິ້ງຂໍ້ມູນໄວ້ແລ້ວ</translation>
-<translation id="3861386850461794863">ພາສາສຳລັບແອັບ ແລະ ເວັບໄຊ</translation>
 <translation id="3861638017150647085">ຊື່ຜູ້ໃຊ້ "<ph name="USERNAME" />" ບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="3862693525629180217">ຢັ້ງຢືນຜ່ານເຊັນເຊີທີ່ມາພ້ອມໃນເຄື່ອງ</translation>
 <translation id="3862788408946266506">ຕ້ອງຕິດຕັ້ງແອັບທີ່ມີຄຸນລັກສະນະ 'kiosk_only' manifest ຢູ່ໃນໂໝດ Chrome OS kiosk</translation>
@@ -2492,6 +2492,7 @@
 <translation id="3879748587602334249">ຕົວຈັດການການດາວໂຫລດ</translation>
 <translation id="3881478300875776315">ສະແດງແຖວໜ້ອຍລົງ</translation>
 <translation id="3882165008614329320">ວິດີໂອທີ່ມີຢູ່ແລ້ວຈາກກ້ອງຖ່າຍຮູບ ຫຼື ໄຟລ໌</translation>
+<translation id="3884152383786131369">ເນື້ອຫາເວັບທີ່ມີໃຫ້ເປັນຫຼາຍພາສາຈະໃຊ້ພາສາທີ່ຮອງຮັບທຳອິດຈາກລາຍຊື່ນີ້. ການຕັ້ງຄ່າເຫຼົ່ານີ້ຊິ້ງຂໍ້ມູນກັບການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ຄຳຂໍເຂົ້າຫາເວັບໄຊນີ້ຂອງທ່ານໄດ້ຖືກສົ່ງຫາ <ph name="NAME" /> ແລ້ວ</translation>
 <translation id="3888550877729210209">ກຳລັງຈົດບັນທຶກດ້ວຍ <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">ເພີ່ມ OpenVPN / L2TP...</translation>
@@ -4475,7 +4476,6 @@
 <translation id="628352644014831790">4 ວິນາທີ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ບໍ່ຖືກດາວໂຫຼດໂດຍທົ່ວໄປ ແລະ ອາດຈະເປັນອັນຕະລາຍ.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ເຄື່ອງ​ພິມ​ໃຫມ່​ຢູ່​ເທິງ​ເຄືອ​ຂ່າຍ​ຂອງ​ທ່ານ}other{ເຄື່ອງ​ພິມ​ໃຫມ່​ຢູ່​ເທິງ​ເຄືອ​ຂ່າຍ​ຂອງ​ທ່ານ}}</translation>
-<translation id="6289626062715012577">ແອັບ ແລະ ເວັບໄຊທີ່ຮອງຮັບຫຼາຍພາສາຈະໃຊ້ພາສາທີ່ຮອງຮັບທຳອິດຈາກລາຍການນີ້. ການຕັ້ງຄ່າພາສາຈະຊິ້ງຂໍ້ມູນກັບໂປຣແກຣມທ່ອງເວັບ Chrome <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">ເພື່ອເລີ່ມ Linux, <ph name="ORGANIZATION_NAME" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ຣີເຊັດ Chromebook ນີ້ເປັນການຕັ້ງຄ່າຈາກໂຮງງານ.</translation>
 <translation id="6291949900244949761">ຖາມເມື່ອເວັບໄຊໃດໜຶ່ງຕ້ອງການເຂົ້າເຖິງອຸປະກອນ USB (ແນະນຳ)</translation>
 <translation id="6291953229176937411">ສະແດງຢູ່ໃນຕົວຊອກ​ຫາ</translation>

@@ -3942,7 +3942,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6685903773201985073">Ambient-verificatie inschakelen in normale en gastsessies.</translation>
 <translation id="6689792153960219308">De hardwarestatus melden</translation>
 <translation id="6698632841807204978">Monochroom afdrukken inschakelen</translation>
-<translation id="6699880231565102694">Authenticatie in twee stappen inschakelen voor hosts voor externe toegang</translation>
+<translation id="6699880231565102694">Verificatie in 2 stappen inschakelen voor hosts voor externe toegang</translation>
 <translation id="6703251016607733593">Als je dit beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgeschakeld voor een lijst van <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hashes. Enterprise-hosts kunnen certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt). Als je de handhaving wilt uitschakelen, moet de hash aan een van de volgende voorwaarden voldoen:
 
       * De hash maakt deel uit van een <ph name="SUBJECT_PUBLIC_KEY_INFO" /> van het servercertificaat.
@@ -4747,7 +4747,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
           Als dit beleid niet is ingesteld, wordt het standaard weergaveprogramma gebruikt voor alle sites. (Het beleid <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> kan worden gebruikt om het standaard weergaveprogramma te configureren.)</translation>
 <translation id="7694245791806617022">Beheert of de functie 'Wachtwoord onthouden' is ingeschakeld in het dialoogvenster voor Kerberos-verificatie. Wachtwoorden worden versleuteld opgeslagen op een schijf, alleen toegankelijk voor de systeemdaemon van Kerberos en tijdens een gebruikerssessie.
 
-          Als dit beleid is ingeschakeld of niet is ingesteld, kunnen gebruikers besluiten of Kerberos-wachtwoorden worden onthouden, zodat deze niet opnieuw hoeven worden ingevoerd. Kerberos-tickets worden automatisch opgehaald tenzij aanvullende verificatie vereist is (verificatie in twee stappen).
+          Als dit beleid is ingeschakeld of niet is ingesteld, kunnen gebruikers besluiten of Kerberos-wachtwoorden worden onthouden, zodat deze niet opnieuw hoeven worden ingevoerd. Kerberos-tickets worden automatisch opgehaald tenzij aanvullende verificatie vereist is (verificatie in 2 stappen).
 
           Als dit beleid wordt uitgeschakeld, worden wachtwoorden nooit onthouden en worden alle eerder opgeslagen wachtwoorden verwijderd. Gebruikers moeten elke keer dat ze zich moeten verifiëren bij het Kerberos-systeem, hun wachtwoord invoeren. Afhankelijk van de serverinstelling gebeurt dit normaal elke acht uur tot een aantal maanden.</translation>
 <translation id="7694807474048279351">Plannen dat het apparaat automatisch opnieuw opstart nadat een update van <ph name="PRODUCT_OS_NAME" /> is uitgevoerd.
@@ -4792,11 +4792,11 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="7747447585227954402">Toestaan dat apparaten een <ph name="PLUGIN_VM_NAME" /> gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7749024457938190837">Extensies die het bevestigingsdialoogvenster mogen overslaan als ze afdruktaken sturen via chrome.printing API</translation>
-<translation id="7749402620209366169">Hiermee schakel je authenticatie in twee stappen in plaats van een door de gebruiker gedefinieerde pincode in voor hosts voor externe toegang.
+<translation id="7749402620209366169">Hiermee schakel je verificatie in 2 stappen in plaats van een door de gebruiker gedefinieerde pincode in voor hosts voor externe toegang.
 
           Als deze instelling is ingeschakeld, moeten gebruikers een geldige code in twee stappen opgeven wanneer ze toegang willen krijgen tot een host.
 
-          Als deze instelling is uitgeschakeld of niet is ingesteld, wordt authenticatie in twee stappen niet ingeschakeld en wordt het standaardgedrag van een door de gebruiker gedefinieerde pincode gebruikt.</translation>
+          Als deze instelling is uitgeschakeld of niet is ingesteld, wordt verificatie in 2 stappen niet ingeschakeld en wordt het standaardgedrag van een door de gebruiker gedefinieerde pincode gebruikt.</translation>
 <translation id="7749402921503577264">Als je dit beleid inschakelt of niet instelt, kunnen gebruikers klikken door waarschuwingspagina's die door <ph name="PRODUCT_NAME" /> worden weergegeven als gebruikers naar sites gaan die SSL-fouten bevatten.
 
       Als je het beleid uitschakelt, kunnen gebruikers niet door waarschuwingspagina's klikken.</translation>
@@ -4993,7 +4993,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="8050080920415773384">Systeemeigen printer</translation>
 <translation id="8053580360728293758">Hiermee overschrijf je de standaard kleurenmodus voor afdrukken. Als de modus niet beschikbaar is, wordt dit beleid genegeerd.</translation>
 <translation id="8059164285174960932">URL waarbij clients met externe toegang hun verificatietoken moeten ophalen</translation>
-<translation id="8077245272412229388">Hiermee worden vooraf ingevulde Kerberos-accounts toegevoegd. Als de Kerberos-gegevens overeenkomen met de inloggegevens, kan een account worden geconfigureerd om de inloggegevens opnieuw te gebruiken door '<ph name="LOGIN_EMAIL_PLACEHOLDER" />' en '<ph name="PASSWORD_PLACEHOLDER" />' te specificeren voor respectievelijk het hoofdaccount en wachtwoord. Hierdoor kan het Kerberos-ticket automatisch kan worden opgehaald, tenzij verificatie in twee stappen is geconfigureerd. Gebruikers kunnen accounts die zijn toegevoegd via dit beleid niet aanpassen.
+<translation id="8077245272412229388">Hiermee worden vooraf ingevulde Kerberos-accounts toegevoegd. Als de Kerberos-gegevens overeenkomen met de inloggegevens, kan een account worden geconfigureerd om de inloggegevens opnieuw te gebruiken door '<ph name="LOGIN_EMAIL_PLACEHOLDER" />' en '<ph name="PASSWORD_PLACEHOLDER" />' te specificeren voor respectievelijk het hoofdaccount en wachtwoord. Hierdoor kan het Kerberos-ticket automatisch kan worden opgehaald, tenzij verificatie in 2 stappen is geconfigureerd. Gebruikers kunnen accounts die zijn toegevoegd via dit beleid niet aanpassen.
 
           Als dit beleid is ingeschakeld, wordt de lijst met accounts die is gespecificeerd door het beleid, toegevoegd aan de instellingen voor Kerberos-accounts.
 

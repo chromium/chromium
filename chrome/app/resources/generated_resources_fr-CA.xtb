@@ -2070,6 +2070,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3428419049384081277">Vous êtes connecté!</translation>
 <translation id="3428747202529429621">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="3428800329481094896">Récupération des clés SSH du conteneur Linux en cours…</translation>
+<translation id="3429271624041785769">Langues pour le contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver plus facilement plus tard</translation>
 <translation id="3432227430032737297">Supprimer tous les éléments affichés</translation>
 <translation id="3432757130254800023">Envoyer des contenus audio et vidéo vers des écrans sur le réseau local</translation>
@@ -2475,7 +2476,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3856800405688283469">Sélectionner un fuseau horaire</translation>
 <translation id="3857807444929313943">Relever le doigt et toucher le capteur de nouveau</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" /> : synchronisation interrompue</translation>
-<translation id="3861386850461794863">Langues des applications et des sites Web</translation>
 <translation id="3861638017150647085">Le nom d'utilisateur « <ph name="USERNAME" /> » n'est pas disponible</translation>
 <translation id="3862693525629180217">Vérifier par l'intermédiaire d'un capteur intégré</translation>
 <translation id="3862788408946266506">L'application dont le fichier de configuration comporte un attribut « kiosk_only » doit être installée en mode Kiosque pour Chrome OS</translation>
@@ -2495,6 +2495,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante de la caméra ou du fichier</translation>
+<translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Votre demande d'accès à ce site a été envoyée à <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Prendre des notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Ajouter OpenVPN/L2TP…</translation>
@@ -4478,7 +4479,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="628352644014831790">4 secondes</translation>
 <translation id="6285120108426285413">Le fichier <ph name="FILE_NAME" /> n'est pas souvent téléchargé et peut être dangereux.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nouvelle imprimante sur le réseau}one{Nouvelle imprimante sur le réseau}other{Nouvelles imprimantes sur le réseau}}</translation>
-<translation id="6289626062715012577">Les applications et les sites Web prenant en charge plusieurs langues utiliseront la première langue compatible de cette liste. Les préférences linguistiques se synchronisent avec le navigateur Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Pour démarrer Linux, <ph name="ORGANIZATION_NAME" /> vous demande de sauvegarder vos données et de réinitialiser ce Chromebook à ses paramètres par défaut.</translation>
 <translation id="6291949900244949761">Demander une autorisation lorsqu'un site veut accéder à des appareils USB (recommandé)</translation>
 <translation id="6291953229176937411">&amp;Afficher dans le Finder</translation>

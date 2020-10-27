@@ -2066,6 +2066,7 @@
 <translation id="3428419049384081277">ඔබ පුරනය වී ඇත!</translation>
 <translation id="3428747202529429621">ඔබ පුරනය වී සිටින විට Chrome මත ඔබව ආරක්‍ෂිතව තබා ගන්නා අතර සහ අනෙකුත් Google යෙදුම් තුළ ඔබේ ආරක්ෂාව වැඩිදියුණු කිරීමට භාවිත කළ හැක</translation>
 <translation id="3428800329481094896">ලිනක්ස් භාජන ssh යතුරු ලබා ගැනීම</translation>
+<translation id="3429271624041785769">වෙබ් අන්තර්ගත භාෂා</translation>
 <translation id="3429275422858276529">පහසුවෙන් පසුව සොයා ගැනීමට මෙම පිටුව පිටුසන් කරන්න</translation>
 <translation id="3432227430032737297">පෙන්වන සියල්ල ඉවත් කරන්න</translation>
 <translation id="3432757130254800023">පෙදෙසි ජාලයේ ඇති දර්ශක වෙත ශ්‍රව්‍ය සහ වීඩියෝ යවන්න</translation>
@@ -2472,7 +2473,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3856800405688283469">වේලා කලාපය තෝරන්න</translation>
 <translation id="3857807444929313943">ඔසවා, පසුව නැවත ස්පර්ශ කරන්න</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: සමමුහුර්ත කිරීම විරාම කරන ලදී</translation>
-<translation id="3861386850461794863">යෙදුම් සහ වෙබ් අඩවි සඳහා භාෂා</translation>
 <translation id="3861638017150647085">පරිශීලක නාමය "<ph name="USERNAME" />" නොලැබේ</translation>
 <translation id="3862693525629180217">ආවේණික සංවේදකය හරහා තහවුරු කරන්න</translation>
 <translation id="3862788408946266506">'kiosk_only' මැනිෆෙස්ට් උපලක්ෂණය සහිත යෙදුම Chrome OS කියෝස්ක් ප්‍රකාරයේ ස්ථාපනය කළ යුතුය</translation>
@@ -2492,6 +2492,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3879748587602334249">බාගැනීමේ කළමනාකරු</translation>
 <translation id="3881478300875776315">පේළි අඩුවෙන් පෙන්වන්න</translation>
 <translation id="3882165008614329320">කැමරාවෙන් හෝ ගොනුවෙන් පවතින වීඩියෝව</translation>
+<translation id="3884152383786131369">භාෂා කිහිපයකින් ලබා ගත හැකි වෙබ් අන්තර්ගතය මෙම ලැයිස්තුවෙන් පළමු සහාය දක්වන භාෂාව භාවිත කරයි. මෙම මනාප ඔබගේ බ්‍රව්සර සැකසීම් සමඟ සමමුහුර්ත කර ඇත. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">මෙම අඩවියට පිවිසීමට ඔබ කළ ඉල්ලීම <ph name="NAME" /> වෙත යවන ලදී</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> සමඟ සටහන් ගැනීම</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP එක් කරන්න...</translation>
@@ -4476,7 +4477,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="628352644014831790">තත්පර 4ක</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> නිතර බාගැනීම සිදු නොවන අතර අනතුරුදායක විය හැකිය.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ඔබේ ජාලයේ නව මුද්‍රණ යන්ත්‍රය}one{ඔබේ ජාලයේ නව මුද්‍රණ යන්ත්‍ර}other{ඔබේ ජාලයේ නව මුද්‍රණ යන්ත්‍ර}}</translation>
-<translation id="6289626062715012577">බහු භාෂා සඳහා සහාය දක්වන යෙදුම් සහ වෙබ් අඩවි මෙම ලැයිස්තුවෙන් පළමු සහාය දක්වන භාෂාව භාවිත කරයි. භාෂා මනාප Chrome බ්‍රව්සරයට සමමුහුර්ත වේ. <ph name="BEGIN_LINK_LEARN_MORE" />තවත් දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">ලිනක්ස් ආරම්භ කිරීමට, <ph name="ORGANIZATION_NAME" /> ඔබ ඔබේ දත්ත උපස්ථ කර මෙම Chromebook එක කර්මාන්තශාලා සැකසීම් වෙත යළි සැකසීම අවශ්‍ය කරයි.</translation>
 <translation id="6291949900244949761">වෙබ් අඩවියකට USB උපාංග වෙත පිවිසීමට අවශ්‍ය විටදී අසන්න (නිර්දේශිතයි)</translation>
 <translation id="6291953229176937411">Finder තුළ පෙන්වන්න (&amp;S)</translation>

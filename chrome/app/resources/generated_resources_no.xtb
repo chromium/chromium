@@ -2066,6 +2066,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3428419049384081277">Du er pålogget</translation>
 <translation id="3428747202529429621">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
 <translation id="3428800329481094896">Henter SSH-nøklene for Linux-beholderen</translation>
+<translation id="3429271624041785769">Språk for nettinnhold</translation>
 <translation id="3429275422858276529">Sett denne siden som bokmerke for å finne den enkelt senere</translation>
 <translation id="3432227430032737297">Fjern alle som vises</translation>
 <translation id="3432757130254800023">Send lyd og bilde til skjermer på lokalnettverket</translation>
@@ -2471,7 +2472,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3856800405688283469">Velg tidssone</translation>
 <translation id="3857807444929313943">Løft fingeren og berør igjen</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Synkronisering er satt på pause</translation>
-<translation id="3861386850461794863">Språk for apper og nettsteder</translation>
 <translation id="3861638017150647085">Brukernavnet «<ph name="USERNAME" />» er ikke tilgjengelig</translation>
 <translation id="3862693525629180217">Bekreft via innebygd sensor</translation>
 <translation id="3862788408946266506">Apper med manifest-attributtet «kiosk_only» må være installert i Chrome OS-kioskmodus</translation>
@@ -2491,6 +2491,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3879748587602334249">Nedlastingsbehandling</translation>
 <translation id="3881478300875776315">Vis færre linjer</translation>
 <translation id="3882165008614329320">Eksisterende video fra kamera eller fil</translation>
+<translation id="3884152383786131369">Nettinnhold som er tilgjengelig på flere språk, bruker det første språket på denne listen som støttes. Disse preferansene synkroniseres med nettleserinnstillingene dine. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Forespørselen din om å få tilgang til dette nettstedet er sendt til <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tar notater med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Legg til OpenVPN/L2TP</translation>
@@ -4472,7 +4473,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> lastes sjelden ned og kan være farlig.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ny skriver på nettverket}other{Nye skrivere på nettverket}}</translation>
-<translation id="6289626062715012577">Apper og nettsteder som støtter flere språk, bruker det første støttede språket på denne listen. Språkpreferansene synkroniseres med Chrome-nettleseren. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Før du kan starte Linux, krever <ph name="ORGANIZATION_NAME" /> at du sikkerhetskopierer dataene dine og tilbakestiller Chromebook til fabrikkstandard.</translation>
 <translation id="6291949900244949761">Spør når et nettsted vil ha tilgang til USB-enheter (anbefales)</translation>
 <translation id="6291953229176937411">&amp;Vis i Finder</translation>

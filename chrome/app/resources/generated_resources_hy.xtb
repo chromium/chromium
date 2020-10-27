@@ -2070,6 +2070,7 @@
 <translation id="3428419049384081277">Դուք մուտք եք գործել</translation>
 <translation id="3428747202529429621">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ</translation>
 <translation id="3428800329481094896">Բեռնվում են Լինուքսի կոնտեյների SSH բանալիները</translation>
+<translation id="3429271624041785769">Վեբ բովանդակության լեզուներ</translation>
 <translation id="3429275422858276529">Էջանշեք այս կայքէջը՝ ավելի ուշ այն հեշտությամբ գտնելու համար</translation>
 <translation id="3432227430032737297">Հեռացնել բոլոր ցուցադրվածները</translation>
 <translation id="3432757130254800023">Ուղարկել աուդիո և վիդեո ֆայլերը տեղային ցանցի սարքերին</translation>
@@ -2475,7 +2476,6 @@
 <translation id="3856800405688283469">Ընտրեք ժամային գոտին</translation>
 <translation id="3857807444929313943">Բարձրացրեք մատը և նորից փորձեք</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />․ համաժամացումը դադարեցված է</translation>
-<translation id="3861386850461794863">Հավելվածների ու կայքերի լեզուն</translation>
 <translation id="3861638017150647085">«<ph name="USERNAME" />» օգտանունը հասանելի չէ</translation>
 <translation id="3862693525629180217">Հաստատել ներկառուցված սկաների միջոցով</translation>
 <translation id="3862788408946266506">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի Chrome OS-ի կրպակի ռեժիմում</translation>
@@ -2495,6 +2495,7 @@
 <translation id="3879748587602334249">Ներբեռնման կառավարիչ</translation>
 <translation id="3881478300875776315">Ցույց տալ ավելի քիչ տողեր</translation>
 <translation id="3882165008614329320">Տեսանյութ տեսախցիկից կամ ֆայլից</translation>
+<translation id="3884152383786131369">Տարբեր լեզուներով հասանելի վեբ բովանդակությունը կօգտագործի ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Այս կայք մուտք գործելու ձեր հարցումն ուղարկվել է <ph name="NAME" />-ին</translation>
 <translation id="3888550877729210209">Կատարեք նշումներ <ph name="LOCK_SCREEN_APP_NAME" />-ի միջոցով</translation>
 <translation id="3892414795099177503">Ավելացնել OpenVPN կամ L2TP...</translation>
@@ -4481,7 +4482,6 @@
 <translation id="628352644014831790">4 վայրկյան</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ֆայլը խորհուրդ չի տրվում ներբեռնել, այն կարող է վտանգավոր լինել:</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ձեր ցանցում նոր տպիչ է հայտնվել}one{Ձեր ցանցում նոր տպիչներ են հայտնվել}other{Ձեր ցանցում նոր տպիչներ են հայտնվել}}</translation>
-<translation id="6289626062715012577">Մի քանի լեզու աջակցող հավելվածներն ու կայքերը կօգտագործեն ցանկում նշված աջակցվող առաջին լեզուն։ Լեզվի կարգավորումները համաժամացվում են Chrome դիտարկիչի հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Լինուքսի մեկնարկի համար <ph name="ORGANIZATION_NAME" />-ին անհրաժեշտ է, որ պահուստավորեք ձեր տվյալներն ու վերակայեք այս Chromebook-ի գործարանային կարգավորումները։</translation>
 <translation id="6291949900244949761">Հարցնել, երբ որևէ կայք ուզում է օգտագործել USB սարքեր (խորհուրդ է տրվում)</translation>
 <translation id="6291953229176937411">&amp;Ցույց տալ Finder-ում</translation>

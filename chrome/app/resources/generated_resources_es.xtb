@@ -2069,6 +2069,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3428419049384081277">Has iniciado sesión</translation>
 <translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión</translation>
 <translation id="3428800329481094896">Obteniendo las claves SSH del contenedor de Linux</translation>
+<translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Añade esta página a marcadores para encontrarla fácilmente en otro momento</translation>
 <translation id="3432227430032737297">Quitar todas las que se muestran</translation>
 <translation id="3432757130254800023">Enviar audio y vídeo a pantallas de la red local</translation>
@@ -2474,7 +2475,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3856800405688283469">Seleccionar zona horaria</translation>
 <translation id="3857807444929313943">Levanta el dedo y toca de nuevo</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sincronización en pausa</translation>
-<translation id="3861386850461794863">Idiomas de aplicaciones y sitios web</translation>
 <translation id="3861638017150647085">El nombre de usuario "<ph name="USERNAME" />" no está disponible</translation>
 <translation id="3862693525629180217">Verificar mediante sensor integrado</translation>
 <translation id="3862788408946266506">La aplicación con el atributo del archivo de manifiesto "kiosk_only" se debe instalar en el modo kiosco de Chrome OS</translation>
@@ -2494,6 +2494,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3879748587602334249">Administrador de descargas</translation>
 <translation id="3881478300875776315">Mostrar menos líneas</translation>
 <translation id="3882165008614329320">Vídeo de la cámara o un archivo</translation>
+<translation id="3884152383786131369">El contenido web disponible que esté disponible en varios idiomas usará el primer idioma admitido de esta lista. Estas preferencias se sincronizan con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Tu solicitud de acceso a este sitio web se ha enviado a <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tomando notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Añadir OpenVPN / L2TP...</translation>
@@ -4476,7 +4477,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413">El archivo <ph name="FILE_NAME" /> no se descarga habitualmente y puede ser peligroso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nueva impresora en tu red}other{Nuevas impresoras en tu red}}</translation>
-<translation id="6289626062715012577">Las aplicaciones y los sitios web que admitan varios idiomas utilizarán el primer idioma compatible de esta lista. Las preferencias de idioma se sincronizan con el navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Para iniciar Linux, <ph name="ORGANIZATION_NAME" /> necesita que crees una copia de seguridad de tus datos y restablezcas la configuración de fábrica del Chromebook.</translation>
 <translation id="6291949900244949761">Preguntar cuando un sitio web quiera acceder a los dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">&amp;Mostrar en Finder</translation>

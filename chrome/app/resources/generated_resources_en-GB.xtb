@@ -2069,6 +2069,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3428419049384081277">You're signed in!</translation>
 <translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3428800329481094896">Fetching the Linux container SSH keys</translation>
+<translation id="3429271624041785769">Web content languages</translation>
 <translation id="3429275422858276529">Bookmark this page to easily find it later</translation>
 <translation id="3432227430032737297">Remove all shown</translation>
 <translation id="3432757130254800023">Send audio and video to displays on the local network</translation>
@@ -2474,7 +2475,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3856800405688283469">Select Time Zone</translation>
 <translation id="3857807444929313943">Lift, then touch again</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sync paused</translation>
-<translation id="3861386850461794863">Languages for apps and websites</translation>
 <translation id="3861638017150647085">Username '<ph name="USERNAME" />' is not available</translation>
 <translation id="3862693525629180217">Verify via built-in sensor</translation>
 <translation id="3862788408946266506">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
@@ -2494,6 +2494,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3881478300875776315">Show fewer lines</translation>
 <translation id="3882165008614329320">Existing video from camera or file</translation>
+<translation id="3884152383786131369">Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Your request to access this site has been sent to <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Taking notes with <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Add OpenVPN/L2TP...</translation>
@@ -4477,7 +4478,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="628352644014831790">4 seconds</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> is not commonly downloaded and may be dangerous.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{New printer on your network}other{New printers on your network}}</translation>
-<translation id="6289626062715012577">Apps and websites that support multiple languages will use the first supported language from this list. Language preferences sync to Chrome browser. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">To start Linux, <ph name="ORGANIZATION_NAME" /> requires you to back up your data and reset this Chromebook to factory settings.</translation>
 <translation id="6291949900244949761">Ask when a site wants to access USB devices (recommended)</translation>
 <translation id="6291953229176937411">&amp;Show in Finder</translation>

@@ -2069,6 +2069,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3428419049384081277">Te-ai conectat!</translation>
 <translation id="3428747202529429621">Te protejează în Chrome și poate fi folosită pentru a spori securitatea în alte aplicații Google dacă te-ai conectat</translation>
 <translation id="3428800329481094896">Se preiau cheile SSH din containerul Linux</translation>
+<translation id="3429271624041785769">Limbile conținutului web</translation>
 <translation id="3429275422858276529">Marchează această pagină pentru a o găsi ușor mai târziu</translation>
 <translation id="3432227430032737297">Elimină-le pe cele afișate</translation>
 <translation id="3432757130254800023">Trimite conținut audio și video pe afișajele din rețeaua locală</translation>
@@ -2474,7 +2475,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3856800405688283469">Selectează fusul orar</translation>
 <translation id="3857807444929313943">Ridică, apoi atinge din nou</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sincronizarea a fost întreruptă</translation>
-<translation id="3861386850461794863">Limbi pentru aplicații și site-uri</translation>
 <translation id="3861638017150647085">Numele de utilizator „<ph name="USERNAME" />” nu este disponibil</translation>
 <translation id="3862693525629180217">Confirmă prin senzorul încorporat</translation>
 <translation id="3862788408946266506">Aplicația cu atributul „kiosk_only” din manifest trebuie să fie instalată în modul chioșc pentru sistemul de operare Chrome</translation>
@@ -2494,6 +2494,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3879748587602334249">Manager de descărcări</translation>
 <translation id="3881478300875776315">Afișează mai puține rânduri</translation>
 <translation id="3882165008614329320">Videoclip existent din camera foto sau din fișier</translation>
+<translation id="3884152383786131369">Conținutul web care este disponibil în mai multe limbi va folosi prima limbă acceptată din această listă. Aceste preferințe se sincronizează cu setările browserului. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Solicitarea de a accesa acest site a fost trimisă către <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Scriere de notițe cu <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Adaugă OpenVPN/L2TP…</translation>
@@ -4477,7 +4478,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="628352644014831790">4 secunde</translation>
 <translation id="6285120108426285413">Fișierul <ph name="FILE_NAME" /> nu este descărcat de obicei și ar putea fi periculos.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Imprimantă nouă în rețea}few{Imprimante noi în rețea}other{Imprimante noi în rețea}}</translation>
-<translation id="6289626062715012577">Aplicațiile și site-urile care acceptă mai multe limbi vor folosi prima limbă acceptată din această listă. Preferințele pentru limbă se sincronizează cu browserul Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Pentru a inițializa Linux, <ph name="ORGANIZATION_NAME" /> îți solicită să faci backup datelor și să revii la setările din fabrică ale Chromebookului.</translation>
 <translation id="6291949900244949761">Anunță-mă dacă un site vrea să acceseze dispozitive USB (recomandat)</translation>
 <translation id="6291953229176937411">&amp;Afișează în Finder</translation>

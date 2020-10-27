@@ -2070,6 +2070,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3428419049384081277">Você está conectado</translation>
 <translation id="3428747202529429621">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada</translation>
 <translation id="3428800329481094896">Buscando as chaves SSH do contêiner Linux</translation>
+<translation id="3429271624041785769">Idiomas de conteúdo da Web</translation>
 <translation id="3429275422858276529">Adicionar esta página aos favoritos para encontrá-la mais facilmente depois</translation>
 <translation id="3432227430032737297">Remover todos os cookies mostrados</translation>
 <translation id="3432757130254800023">Enviar áudio e vídeo para telas na rede local</translation>
@@ -2475,7 +2476,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3856800405688283469">Selecionar fuso horário</translation>
 <translation id="3857807444929313943">Tire o dedo e toque novamente</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sincronização pausada</translation>
-<translation id="3861386850461794863">Idiomas para apps e sites</translation>
 <translation id="3861638017150647085">O nome de usuário "<ph name="USERNAME" />" não está disponível</translation>
 <translation id="3862693525629180217">Verificar pelo sensor integrado</translation>
 <translation id="3862788408946266506">O app com o atributo de manifesto "kiosk_only" precisa ser instalado no modo quiosque do Chrome OS</translation>
@@ -2495,6 +2495,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3879748587602334249">Gerenciador de downloads</translation>
 <translation id="3881478300875776315">Mostrar menos linhas</translation>
 <translation id="3882165008614329320">Vídeo existente de uma câmera ou de um arquivo</translation>
+<translation id="3884152383786131369">Conteúdos da Web disponíveis em vários idiomas usarão o primeiro idioma compatível desta lista. Estas preferências são sincronizadas com as configurações do navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Sua solicitação para acessar este site foi enviada para <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tomando notas com <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Adicionar OpenVPN / L2TP…</translation>
@@ -4480,7 +4481,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413">O arquivo <ph name="FILE_NAME" /> não costuma ser transferido por download e pode ser perigoso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nova impressora na sua rede}one{Novas impressoras na sua rede}other{Novas impressoras na sua rede}}</translation>
-<translation id="6289626062715012577">Apps e sites que oferecem compatibilidade com vários idiomas usarão o primeiro idioma compatível desta lista. As preferências de idioma são sincronizadas com o navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Para iniciar o Linux, <ph name="ORGANIZATION_NAME" /> exige que você faça backup dos seus dados e redefina o Chromebook para as configurações originais.</translation>
 <translation id="6291949900244949761">Perguntar quando um site quiser acessar dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">&amp;Mostrar no Finder</translation>

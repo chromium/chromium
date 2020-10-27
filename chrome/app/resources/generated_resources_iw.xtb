@@ -2472,7 +2472,6 @@
 <translation id="3856800405688283469">בחירת אזור זמן</translation>
 <translation id="3857807444929313943">יש להרים ולגעת בחיישן שוב</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: הסנכרון הושהה</translation>
-<translation id="3861386850461794863">שפות לאפליקציות ולאתרים</translation>
 <translation id="3861638017150647085">שם המשתמש "<ph name="USERNAME" />" לא זמין</translation>
 <translation id="3862693525629180217">אימות באמצעות חיישן מובנה</translation>
 <translation id="3862788408946266506">‏במצב קיוסק של Chrome OS, יש להתקין אפליקציות עם מאפיין המניפסט 'kiosk_only'</translation>
@@ -4475,7 +4474,6 @@
 <translation id="628352644014831790">4 שניות</translation>
 <translation id="6285120108426285413">הורדת הקובץ <ph name="FILE_NAME" /> אינה נפוצה והוא עלול להיות מסוכן.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{מדפסת חדשה ברשת שלך}two{מדפסות חדשות ברשת שלך}many{מדפסות חדשות ברשת שלך}other{מדפסות חדשות ברשת שלך}}</translation>
-<translation id="6289626062715012577">‏אפליקציות ואתרים שתומכים במספר שפות ישתמשו בשפה הנתמכת הראשונה ברשימה הזו. העדפות השפה מסונכרנות עם דפדפן Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">‏כדי להפעיל את Linux, עליך לגבות את הנתונים ולאפס את ה-Chromebook הזה להגדרות היצרן על פי דרישת <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="6291949900244949761">‏צריך לבקש ממני אישור כשאתר רוצה לגשת למכשירי USB (מומלץ)</translation>
 <translation id="6291953229176937411">‏&amp;הצגה ב-Finder</translation>

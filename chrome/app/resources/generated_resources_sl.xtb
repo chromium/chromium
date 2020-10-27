@@ -2069,6 +2069,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3428419049384081277">Prijavljeni ste.</translation>
 <translation id="3428747202529429621">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="3428800329481094896">Pridobivanje ključev ssh vsebnika za Linux</translation>
+<translation id="3429271624041785769">Jeziki za spletno vsebino</translation>
 <translation id="3429275422858276529">Dodajte to stran med zaznamke, da jo boste pozneje hitreje našli</translation>
 <translation id="3432227430032737297">Odstrani vse prikazane</translation>
 <translation id="3432757130254800023">Pošiljanje zvoka in videa zaslonom v lokalnem omrežju</translation>
@@ -2474,7 +2475,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3856800405688283469">Izbira časovnega pasu</translation>
 <translation id="3857807444929313943">Dvignite in se spet dotaknite</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinhronizacija je zaustavljena</translation>
-<translation id="3861386850461794863">Jeziki za aplikacije in spletna mesta</translation>
 <translation id="3861638017150647085">Uporabniško ime »<ph name="USERNAME" />« ni na voljo</translation>
 <translation id="3862693525629180217">Preverite prek vgrajenega tipala</translation>
 <translation id="3862788408946266506">Aplikacijo z atributom manifesta »kiosk_only« je treba namestiti v načinu kioska sistema OS Chrome</translation>
@@ -2494,6 +2494,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3879748587602334249">Upravitelj prenosov</translation>
 <translation id="3881478300875776315">Pokaži manj vrstic</translation>
 <translation id="3882165008614329320">Obstoječi videoposnetek iz fotoaparata ali datoteke</translation>
+<translation id="3884152383786131369">Za spletno vsebino, ki je na voljo v več jezikih, bo uporabljen prvi podprti jezik s tega seznama. Te nastavitve se sinhronizirajo z nastavitvami brskalnika. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Vaša zahteva za dostop do tega mesta je poslana uporabniku <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Ustvarjanje zapiskov z aplikacijo <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Dodaj OpenVPN/L2TP ...</translation>
@@ -4479,7 +4480,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="628352644014831790">4 sekunde</translation>
 <translation id="6285120108426285413">Datoteka <ph name="FILE_NAME" /> ni pogosto prenesena in je lahko nevarna.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nov tiskalnik v vašem omrežju}one{Novi tiskalniki v vašem omrežju}two{Novi tiskalniki v vašem omrežju}few{Novi tiskalniki v vašem omrežju}other{Novi tiskalniki v vašem omrežju}}</translation>
-<translation id="6289626062715012577">V aplikacijah in na spletnih mestih, ki podpirajo več jezikov, bo uporabljen prvi podprti jezik s tega seznama. Jezikovne nastavitve se sinhronizirajo z brskalnikom Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Če želite zagnati Linux, <ph name="ORGANIZATION_NAME" /> zahteva, da varnostno kopirate podatke in ta Chromebook ponastavite na tovarniške nastavitve.</translation>
 <translation id="6291949900244949761">Vprašaj, ko želi spletno mesto dostopati do naprav USB (priporočeno)</translation>
 <translation id="6291953229176937411">&amp;Pokaži v Finderju</translation>

@@ -2066,6 +2066,7 @@
 <translation id="3428419049384081277">وارد سیستم شده‌اید!</translation>
 <translation id="3428747202529429621">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="3428800329481094896">‏درحال واکشی کلیدهای ssh محتوی Linux</translation>
+<translation id="3429271624041785769">زبان محتوای وب</translation>
 <translation id="3429275422858276529">این صفحه را نشانک‌گذاری کنید تا بعداً آن را به‌آسانی پیدا کنید</translation>
 <translation id="3432227430032737297">حذف همه موارد نشان‌ داده‌شده</translation>
 <translation id="3432757130254800023">ارسال صوت و تصویر برای نمایش در شبکه محلی</translation>
@@ -2471,7 +2472,6 @@
 <translation id="3856800405688283469">انتخاب منطقه زمانی</translation>
 <translation id="3857807444929313943">بردارید و سپس دوباره لمس کنید</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: همگام‌سازی موقتاً متوقف شد</translation>
-<translation id="3861386850461794863">زبان‌های برنامه‌ها و وب‌سایت‌ها</translation>
 <translation id="3861638017150647085">نام کاربری «<ph name="USERNAME" />» در دسترس نیست</translation>
 <translation id="3862693525629180217">به‌تأیید رساندن ازطریق حسگر داخلی</translation>
 <translation id="3862788408946266506">‏برنامه‌ای با ویژگی مانیفست «kiosk_only» باید در حالت کیوسک Chrome OS نصب شود</translation>
@@ -2491,6 +2491,7 @@
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3881478300875776315">نمایش خطوط کمتر</translation>
 <translation id="3882165008614329320">ویدیوی موجود از دوربین یا فایل</translation>
+<translation id="3884152383786131369">محتوای وبی که به چند زبان دردسترس است از اولین زبان پشتیبانی‌شده در این فهرست استفاده خواهد کرد. این اولویت‌ها با تنظیمات مرورگرتان همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">درخواست شما برای دسترسی به این سایت برای <ph name="NAME" /> ارسال شده است</translation>
 <translation id="3888550877729210209">یادداشت‌برداری با <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">‏افزودن OpenVPN / L2TP…</translation>
@@ -4474,7 +4475,6 @@
 <translation id="628352644014831790">۴ ثانیه</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{چاپگر جدید در شبکه شما}one{چاپگر جدید در شبکه شما}other{چاپگر جدید در شبکه شما}}</translation>
-<translation id="6289626062715012577">‏برنامه‌ها و وب‌سایت‌هایی که از چند زبان پشتیبانی می‌کنند، از اولین زبان پشتیبانی‌شده در این فهرست استفاده خواهند کرد. اولویت‌های زبان با مرورگر Chrome همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">‏برای راه‌اندازی Linux، <ph name="ORGANIZATION_NAME" /> از شما می‌خواهد از داده‌هایتان پشتیبان بگیرید و این Chromebook را به تنظیمات کارخانه بازنشانی کنید.</translation>
 <translation id="6291949900244949761">‏وقتی سایتی می‌خواهد به دستگاه‌های USB‌ دسترسی پیدا کند سؤال شود (توصیه می‌شود)</translation>
 <translation id="6291953229176937411">‏&amp;نمایش در Finder</translation>

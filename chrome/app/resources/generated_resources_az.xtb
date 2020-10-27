@@ -2064,6 +2064,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3428419049384081277">Hesaba daxil olmusunuz!</translation>
 <translation id="3428747202529429621">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər</translation>
 <translation id="3428800329481094896">Linux konteyneri ssh açarları əldə edilir</translation>
+<translation id="3429271624041785769">Veb məzmun dilləri</translation>
 <translation id="3429275422858276529">Səhifəni sonradan asanlıqla tapmaq üçün əlfəcin qoyun</translation>
 <translation id="3432227430032737297">Bütün Göstərilənləri Silin</translation>
 <translation id="3432757130254800023">Yerli şəbəkədə görüntülənməsi üçün audio və video göndərin</translation>
@@ -2469,7 +2470,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3856800405688283469">Vaxt zonası seçin</translation>
 <translation id="3857807444929313943">Qaldırın və təkrar toxunun</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sinxronizasiya dayandırıldı</translation>
-<translation id="3861386850461794863">Tətbiqlər və veb-saytlar üçün dillər</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" istifadəçi adı əlçatan deyil</translation>
 <translation id="3862693525629180217">Daxili sensorla doğrulayın</translation>
 <translation id="3862788408946266506">"Yalnız_kiosk" funksiyası olan tətbiqlər Chrome OS kiosk rejimində quraşdırılmalıdır</translation>
@@ -2489,6 +2489,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3879748587602334249">Endirmə meneceri</translation>
 <translation id="3881478300875776315">Daha az sətir göstərin</translation>
 <translation id="3882165008614329320">Kamera və ya fayldan mövcud video</translation>
+<translation id="3884152383786131369">Bir neçə dildə əlçatan veb məzmun siyahıdakı ilk dəstəklənən dili istifadə edəcək. Bu tərcihlər brauzer ayarlarınızla sinxronlaşdırılır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Bu sayta giriş sorğunuz <ph name="NAME" /> ünvanına göndərilib</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ilə qeyd götürmə</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP əlavə edin...</translation>
@@ -4468,7 +4469,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="628352644014831790">4 saniyə</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> adətən endirilmir və təhlükəli ola bilər.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Şəbəkənizdəki yeni printer}other{Şəbəkənizdəki yeni printerlər}}</translation>
-<translation id="6289626062715012577">Çoxsaylı dilləri dəstəkləyən tətbiqlər və veb-saytlar siyahıdan ilk dəstəklənən dili istifadə edəcək. Dil seçimləri Chrome brauzerə sinxronlaşdırılır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux'u işə salmaq üçün <ph name="ORGANIZATION_NAME" /> sizdən datanızın ehtiyat nüsxəsini çıxarmağınızı və bu Chromebook'u zavod ayarlarına sıfırlamağınızı tələb edir.</translation>
 <translation id="6291949900244949761">Sayt USB cihazlarına daxil olmaq istədiyi zaman icazə tələb edin (məsləhətlidir)</translation>
 <translation id="6291953229176937411">&amp;Axtarıcıda göstərin</translation>

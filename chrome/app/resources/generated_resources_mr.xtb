@@ -2473,7 +2473,6 @@
 <translation id="3856800405688283469">टाइम झोन निवडा</translation>
 <translation id="3857807444929313943">उचला, नंतर पुन्हा स्पर्श करा</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: सिंक करणे थांबवले</translation>
-<translation id="3861386850461794863">अ‍ॅप्स आणि वेबसाइटसाठी भाषा</translation>
 <translation id="3861638017150647085">वापरकर्ता नाव "<ph name="USERNAME" />" उपलब्ध नाही</translation>
 <translation id="3862693525629180217">बिल्ट-इन सेन्सर वापरून पडताळणी करा</translation>
 <translation id="3862788408946266506">'kiosk_only' मॅनिफेस्ट विशेषता असलेले अ‍ॅप Chrome OS कियोस्क मोडमध्ये इंस्टॉल केले जाणे आवश्यक आहे</translation>
@@ -4475,7 +4474,6 @@
 <translation id="628352644014831790">चार सेकंद</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> सामान्यपणे डाउनलोड केले जात नाही आणि ते धोकादायक ठरु शकते.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{आपल्या नेटवर्कवरील नवीन प्रिंटर}other{आपल्या नेटवर्कवरील नवीन प्रिंटर}}</translation>
-<translation id="6289626062715012577">एकाहून अधिक भाषांना सपोर्ट करणारी अ‍ॅप्स किंवा साइट सूचीमधील सपोर्ट असलेली पहिली भाषा वापरतील. भाषा प्राधान्ये Chrome ब्राउझरशी सिंक होतात. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux सुरू करण्यासाठी, <ph name="ORGANIZATION_NAME" /> ला तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे Chromebook फॅक्टरी सेटिंग्जवर रीसेट करणे आवश्यक आहे.</translation>
 <translation id="6291949900244949761">साइटला केव्हा USB डिव्हाइस ॲक्सेस करायचे आहेत हे विचारा (शिफारस केलेले)</translation>
 <translation id="6291953229176937411">फाइंडर मध्ये &amp;दर्शवा</translation>

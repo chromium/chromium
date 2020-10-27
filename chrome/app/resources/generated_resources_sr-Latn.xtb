@@ -2066,6 +2066,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3428419049384081277">Prijavljeni ste!</translation>
 <translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3428800329481094896">Preuzimaju se SSH ključevi za Linux kontejner</translation>
+<translation id="3429271624041785769">Jezici veb-sadržaja</translation>
 <translation id="3429275422858276529">Obeležite ovu stranicu da biste je kasnije lakše pronašli</translation>
 <translation id="3432227430032737297">Ukloni sve prikazano</translation>
 <translation id="3432757130254800023">Šalji audio i video sadržaj ekranima na lokalnoj mreži</translation>
@@ -2471,7 +2472,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3856800405688283469">Izaberite vremensku zonu</translation>
 <translation id="3857807444929313943">Podignite, pa opet dodirnite</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinhronizacija je pauzirana</translation>
-<translation id="3861386850461794863">Jezici za aplikacije i veb-sajtove</translation>
 <translation id="3861638017150647085">Korisničko ime <ph name="USERNAME" /> nije dostupno</translation>
 <translation id="3862693525629180217">Potvrdi pomoću ugrađenog senzora</translation>
 <translation id="3862788408946266506">Aplikacija sa atributom manifesta „kiosk_only“ mora da se instalira u režimu kioska u Chrome OS-u</translation>
@@ -2491,6 +2491,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3879748587602334249">Menadžer preuzimanja</translation>
 <translation id="3881478300875776315">Prikaži manje redova</translation>
 <translation id="3882165008614329320">Postojeći video iz kamere ili datoteke</translation>
+<translation id="3884152383786131369">Veb-sadržaj koji je dostupan na više jezika koristi prvi podržani jezik sa ove liste. Ova podešavanja se sinhronizuju sa podešavanjima pregledača. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Zahtev za pristup ovom sajtu je poslat korisniku <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Pravljenje beležaka pomoću aplikacije <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Dodaj OpenVPN/L2TP...</translation>
@@ -4475,7 +4476,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="628352644014831790">4 sekunde</translation>
 <translation id="6285120108426285413">Datoteka <ph name="FILE_NAME" /> se obično ne preuzima i može da bude opasna.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nov štampač na mreži}one{Novi štampači na mreži}few{Novi štampači na mreži}other{Novi štampači na mreži}}</translation>
-<translation id="6289626062715012577">Aplikacije i veb-sajtovi koji podržavaju više jezika koriste prvi podržani jezik sa ove liste. Podešavanja jezika se sinhronizuju sa pregledačem Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Da biste pokrenuli Linux, <ph name="ORGANIZATION_NAME" /> zahteva da napravite rezervnu kopiju podataka i resetujete ovaj Chromebook na fabrička podešavanja.</translation>
 <translation id="6291949900244949761">Pitaj kada sajt želi da pristupi USB uređajima (preporučeno)</translation>
 <translation id="6291953229176937411">&amp;Prikaži u Finder-u</translation>

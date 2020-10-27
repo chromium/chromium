@@ -2069,6 +2069,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3428419049384081277">Anda sudah login</translation>
 <translation id="3428747202529429621">Memastikan Anda tetap aman di Chrome dan dapat digunakan untuk menyempurnakan keamanan Anda di aplikasi Google lainnya saat login</translation>
 <translation id="3428800329481094896">Mengambil kunci SSH container Linux</translation>
+<translation id="3429271624041785769">Bahasan konten web</translation>
 <translation id="3429275422858276529">Bookmark halaman ini agar mudah ditemukan nanti</translation>
 <translation id="3432227430032737297">Buang Semua Yang Ditampilkan</translation>
 <translation id="3432757130254800023">Kirim audio dan video ke layar di jaringan lokal</translation>
@@ -2474,7 +2475,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3856800405688283469">Pilih zona waktu</translation>
 <translation id="3857807444929313943">Angkat, kemudian sentuh lagi</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sinkronisasi dijeda</translation>
-<translation id="3861386850461794863">Bahasa untuk aplikasi dan situs</translation>
 <translation id="3861638017150647085">Nama pengguna "<ph name="USERNAME" />" tidak tersedia</translation>
 <translation id="3862693525629180217">Verifikasi melalui sensor bawaan</translation>
 <translation id="3862788408946266506">Aplikasi dengan atribut manifes 'kiosk_only' harus diinstal dalam mode kios Chrome OS</translation>
@@ -2494,6 +2494,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3879748587602334249">Pengelola download</translation>
 <translation id="3881478300875776315">Tampilkan lebih sedikit baris</translation>
 <translation id="3882165008614329320">Video yang sudah ada dari kamera atau file</translation>
+<translation id="3884152383786131369">Konten web yang tersedia dalam beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi ini akan disinkronkan dengan setelan browser Anda. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Permintaan Anda untuk mengakses situs ini telah dikirim ke <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Mencatat dengan <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Tambahkan OpenVPN / L2TP...</translation>
@@ -4477,7 +4478,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="628352644014831790">4 detik</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> tidak biasa didownload dan mungkin berbahaya.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printer baru di jaringan Anda}other{Printer baru di jaringan Anda}}</translation>
-<translation id="6289626062715012577">Aplikasi dan situs yang mendukung beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi bahasa disinkronkan ke browser Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Untuk memulai Linux, <ph name="ORGANIZATION_NAME" /> mengharuskan Anda mencadangkan data dan menyetel ulang Chromebook ini ke setelan pabrik.</translation>
 <translation id="6291949900244949761">Tanyakan saat situs ingin mengakses perangkat USB (direkomendasikan)</translation>
 <translation id="6291953229176937411">&amp;Tampilkan di Penemu</translation>

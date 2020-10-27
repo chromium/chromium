@@ -2067,6 +2067,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3428419049384081277">Hisobingizga kirdingiz!</translation>
 <translation id="3428747202529429621">Hisobingizga kirganingizda Chrome va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi</translation>
 <translation id="3428800329481094896">Linux konteyneri uchun SSH kalitlarni olinmoqda</translation>
+<translation id="3429271624041785769">Veb kontent tilllari</translation>
 <translation id="3429275422858276529">Bu sahifani xatcho‘plarga qo‘shib keyinchalik oson topishingiz mumkin</translation>
 <translation id="3432227430032737297">Barcha ko‘rsatilganlarni o‘chirish</translation>
 <translation id="3432757130254800023">Mahalliy tarmoqdagi ekranlarga audio va video uzatish</translation>
@@ -2472,7 +2473,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3856800405688283469">Vaqt mintaqasini tanlang</translation>
 <translation id="3857807444929313943">Barmoqni oling va qaytadan tekkizing</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinxronizatsiya to‘xtatilgan</translation>
-<translation id="3861386850461794863">Ilova va saytlardagi tillar</translation>
 <translation id="3861638017150647085">“<ph name="USERNAME" />” nomi band</translation>
 <translation id="3862693525629180217">Ichki o‘rnatilgan sensor orqali tasdiqlash</translation>
 <translation id="3862788408946266506">Manifest faylida “kiosk_only” atributi mavjud ilovalarni Chrome OS‘da faqatgina kiosk rejimida o‘rnatish mumkin</translation>
@@ -2492,6 +2492,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3879748587602334249">Yuklanmalar menejeri</translation>
 <translation id="3881478300875776315">Kamroq qatorlarni koʻrsatish</translation>
 <translation id="3882165008614329320">Kamera yoki galereyadan olingan video</translation>
+<translation id="3884152383786131369">Bir nechta tilda chiqadigan veb kontent shu roʻyxatdagi birinchi mos tilni ishlatadi. Bu parametrlar brauzeringiz sozlamalari bilan sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Bu saytni ochishga ruxsat so‘rovi <ph name="NAME" />ga yuborildi</translation>
 <translation id="3888550877729210209">Qaydlar <ph name="LOCK_SCREEN_APP_NAME" /> dasturida yoziladi</translation>
 <translation id="3892414795099177503">OpenVPN yoki L2TP qo‘shish...</translation>
@@ -4475,7 +4476,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="628352644014831790">4 soniya</translation>
 <translation id="6285120108426285413">“<ph name="FILE_NAME" />” faylini yuklab olish tavsiya etilmaydi, chunki bu fayl kompyuteringiz uchun xavfli bo‘lishi mumkin.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Tarmoqda yangi printer}other{Tarmoqda yangi printerlar}}</translation>
-<translation id="6289626062715012577">Bir nechta tilda ishlaydigan ilova va saytlar shu roʻyxatdagi birinchi mos tilni ishlatadi. Til parametrlari Chrome brauzeriga sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux ishga tushirilishi uchun <ph name="ORGANIZATION_NAME" /> maʼlumotlaringizni zaxiralash va bu Chromebookni zavod sozlamalariga qaytarishni talab qiladi.</translation>
 <translation id="6291949900244949761">Sayt USB qurilmalardan foydalanmoqchi bo‘lganda ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="6291953229176937411">&amp;Finder’da ko‘rsatish</translation>

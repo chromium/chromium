@@ -2065,6 +2065,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3428419049384081277">Jesteś zalogowany</translation>
 <translation id="3428747202529429621">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz</translation>
 <translation id="3428800329481094896">Pobieram klucze SSH kontenera Linuksa</translation>
+<translation id="3429271624041785769">Języki treści internetowych</translation>
 <translation id="3429275422858276529">Dodaj tę stronę do zakładek, by później łatwo ją znaleźć</translation>
 <translation id="3432227430032737297">Usuń wszystkie wyświetlone</translation>
 <translation id="3432757130254800023">Wysyłanie obrazu i dźwięku na ekrany w sieci lokalnej</translation>
@@ -2470,7 +2471,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3856800405688283469">Wybierz strefę czasową</translation>
 <translation id="3857807444929313943">Podnieś i przyłóż ponownie</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: synchronizacja wstrzymana</translation>
-<translation id="3861386850461794863">Języki aplikacji i stron</translation>
 <translation id="3861638017150647085">Nazwa użytkownika „<ph name="USERNAME" />” jest niedostępna</translation>
 <translation id="3862693525629180217">Zweryfikuj za pomocą wbudowanego czujnika</translation>
 <translation id="3862788408946266506">Aplikację z atrybutem „kiosk_only” w pliku manifestu należy zainstalować w Chrome OS w trybie kiosku</translation>
@@ -2490,6 +2490,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3879748587602334249">Menedżer pobierania</translation>
 <translation id="3881478300875776315">Pokaż mniej wierszy</translation>
 <translation id="3882165008614329320">Istniejący film z aparatu lub pliku</translation>
+<translation id="3884152383786131369">Treści internetowe dostępne w wielu językach będą wyświetlać się w pierwszym obsługiwanym języku z tej listy. Te ustawienia są zsynchronizowane z ustawieniami przeglądarki. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Twoja prośba o dostęp to tej strony została wysłana do: <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Robienie notatek w aplikacji <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">Dodaj OpenVPN/L2TP…</translation>
@@ -4473,7 +4474,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="628352644014831790">4 s</translation>
 <translation id="6285120108426285413">Plik <ph name="FILE_NAME" /> jest rzadko pobierany i może być niebezpieczny.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nowa drukarka w Twojej sieci}few{Nowe drukarki w Twojej sieci}many{Nowe drukarki w Twojej sieci}other{Nowe drukarki w Twojej sieci}}</translation>
-<translation id="6289626062715012577">Aplikacje i strony, które obsługują wiele języków, będą używać pierwszego obsługiwanego języka z tej listy. Preferowane języki są synchronizowane z przeglądarką Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Przed uruchomieniem Linuksa <ph name="ORGANIZATION_NAME" /> wymaga utworzenia kopii zapasowej danych oraz przywrócenia na tym Chromebooku ustawień fabrycznych.</translation>
 <translation id="6291949900244949761">Pytaj, gdy strona chce uzyskać dostęp do urządzeń USB (zalecane)</translation>
 <translation id="6291953229176937411">&amp;Pokaż w Finderze</translation>

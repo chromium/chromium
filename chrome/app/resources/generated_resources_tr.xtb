@@ -2069,6 +2069,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3428419049384081277">Oturum açtınız!</translation>
 <translation id="3428747202529429621">Chrome'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarındaki güvenliğinizi artırmak için kullanılabilir</translation>
 <translation id="3428800329481094896">Linux kapsayıcı SSH anahtarları getiriliyor</translation>
+<translation id="3429271624041785769">Web içerik dilleri</translation>
 <translation id="3429275422858276529">Bu sayfayı daha sonra kolayca bulmak için sayfaya yer işareti koyun</translation>
 <translation id="3432227430032737297">Tüm Gösterilenleri Kaldır</translation>
 <translation id="3432757130254800023">Yerel ağdaki ekranlara ses ve video gönderme</translation>
@@ -2474,7 +2475,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3856800405688283469">Saat dilimi seçin</translation>
 <translation id="3857807444929313943">Kaldırın, tekrar dokunun</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Senkronizasyon duraklatıldı</translation>
-<translation id="3861386850461794863">Uygulama ve web sitesi dilleri</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" kullanıcı adı kullanılamıyor</translation>
 <translation id="3862693525629180217">Yerleşik sensör kullanarak doğrula</translation>
 <translation id="3862788408946266506">"kiosk_only" manifest özelliğine sahip uygulamalar ChromeOS kiosk modunda yüklenmelidir</translation>
@@ -2494,6 +2494,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3879748587602334249">İndirme yöneticisi</translation>
 <translation id="3881478300875776315">Daha az satır göster</translation>
 <translation id="3882165008614329320">Kameradan veya dosyadan mevcut video</translation>
+<translation id="3884152383786131369">Birden fazla dilde sunulan web içeriği bu listedeki desteklenen ilk dili kullanır. Bu tercihler, tarayıcı ayarlarınızla senkronize edilir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Bu siteye erişim isteğiniz şu kişiye gönderildi: <ph name="NAME" /></translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ile not alınıyor</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP Ekle...</translation>
@@ -4478,7 +4479,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="628352644014831790">4 saniye</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> yaygın indirilen bir öğe değil, tehlikeli olabilir.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ağınızda yeni yazıcı}other{Ağınızda yeni yazıcılar}}</translation>
-<translation id="6289626062715012577">Birden fazla dili destekleyen uygulama ve web siteleri bu listedeki ilk desteklenen dili kullanır. Dil tercihleri Chrome tarayıcıya senkronize edilir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370"><ph name="ORGANIZATION_NAME" />, Linux'u başlatmak için verilerinizi yedekleyip bu Chromebook'u fabrika ayarlarına sıfırlamanızı zorunlu tutuyor.</translation>
 <translation id="6291949900244949761">Bir site USB cihazlarına erişmek istediğinde sor (önerilen)</translation>
 <translation id="6291953229176937411">Bulucu'da &amp;Göster</translation>

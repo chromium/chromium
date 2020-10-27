@@ -2069,6 +2069,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3428419049384081277">Je bent ingelogd.</translation>
 <translation id="3428747202529429621">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd</translation>
 <translation id="3428800329481094896">De SSH-codes van de Linux-container worden opgehaald</translation>
+<translation id="3429271624041785769">Talen voor webcontent</translation>
 <translation id="3429275422858276529">Stel een bookmark in voor deze pagina zodat je de pagina later makkelijk kunt terugvinden</translation>
 <translation id="3432227430032737297">Alle weergegeven verwijderen</translation>
 <translation id="3432757130254800023">Audio en video verzenden naar displays in het lokale netwerk</translation>
@@ -2474,7 +2475,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3856800405688283469">Tijdzone selecteren</translation>
 <translation id="3857807444929313943">Til je vinger op en plaats deze opnieuw op de sensor</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: synchronisatie gepauzeerd</translation>
-<translation id="3861386850461794863">Talen voor apps en websites</translation>
 <translation id="3861638017150647085">De gebruikersnaam '<ph name="USERNAME" />' is niet beschikbaar</translation>
 <translation id="3862693525629180217">Verifiëren via ingebouwde sensor</translation>
 <translation id="3862788408946266506">Een app met het manifestkenmerk 'kiosk_only' moet worden geïnstalleerd in de Chrome OS-kioskmodus</translation>
@@ -2494,6 +2494,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3881478300875776315">Minder regels weergeven</translation>
 <translation id="3882165008614329320">Bestaande video van camera of uit bestand</translation>
+<translation id="3884152383786131369">Voor webcontent die in meerdere talen beschikbaar is, wordt de eerste ondersteunde taal in deze lijst gebruikt. Deze voorkeuren worden gesynchroniseerd met je browserinstellingen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Je verzoek voor toegang tot deze website is verzonden naar <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Notities maken met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3892414795099177503">OpenVPN/L2TP toevoegen...</translation>
@@ -4477,7 +4478,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="628352644014831790">4 seconden</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> wordt niet vaak gedownload en kan gevaarlijk zijn.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nieuwe printer in je netwerk}other{Nieuwe printers in je netwerk}}</translation>
-<translation id="6289626062715012577">Apps en websites die meerdere talen ondersteunen, gebruiken de eerste ondersteunde taal uit deze lijst. Synchroniseer taalvoorkeuren naar Chrome-browser. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Als je Linux wilt starten, vereist <ph name="ORGANIZATION_NAME" /> dat je een back-up maakt van je gegevens en dat je deze Chromebook terugzet naar de fabrieksinstellingen.</translation>
 <translation id="6291949900244949761">Goedkeuring vragen wanneer een site toegang wil hebben tot USB-apparaten (aanbevolen)</translation>
 <translation id="6291953229176937411">&amp;Toon in Finder</translation>

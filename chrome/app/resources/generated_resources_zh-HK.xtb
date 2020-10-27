@@ -2473,7 +2473,6 @@
 <translation id="3856800405688283469">選取時區</translation>
 <translation id="3857807444929313943">提起手指，然後再次輕觸</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />：已暫停同步處理</translation>
-<translation id="3861386850461794863">應用程式和網站的語言</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
 <translation id="3862693525629180217">透過內置感應器驗證</translation>
 <translation id="3862788408946266506">含有 "kiosk_only" 資訊清單屬性的應用程式只能在 ChromeOS Kiosk 模式中安裝</translation>
@@ -4476,7 +4475,6 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 不常下載，代表此檔案可能不安全。</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您網絡上的新打印機}other{您網絡上的新打印機}}</translation>
-<translation id="6289626062715012577">支援多種語言的應用程式和網站將會使用此清單上的第一個支援語言。語言偏好設定會同步至 Chrome 瀏覽器。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">「<ph name="ORGANIZATION_NAME" />」要求您備份資料並將此 Chromebook 回復原廠設定，才能啟動 Linux。</translation>
 <translation id="6291949900244949761">在網站要存取 USB 裝置時詢問您 (建議)</translation>
 <translation id="6291953229176937411">在 Finder 中顯示(&amp;S)</translation>

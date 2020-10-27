@@ -2473,7 +2473,6 @@
 <translation id="3856800405688283469">সময় অঞ্চল বেছে নিন</translation>
 <translation id="3857807444929313943">আঙ্গুল লিফ্ট করে আবার টাচ করুন</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: সিঙ্ক থামানো হয়েছে</translation>
-<translation id="3861386850461794863">অ্যাপ ও ওয়েবসাইটের ভাষা</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" ইউজারনেমটি পাওয়া যাচ্ছে না</translation>
 <translation id="3862693525629180217">বিল্ট-ইন সেন্সর দ্বারা যাচাই করুন</translation>
 <translation id="3862788408946266506">'Kiosk_only' ম্যানিফেস্ট অ্যাট্রিবিউটের সাথে অ্যাপকে অবশ্যই Chrome OS কিয়স্ক মোডে ইনস্টল করতে হবে</translation>
@@ -4477,7 +4476,6 @@
 <translation id="628352644014831790">৪ সেকেন্ড</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> সাধারণভাবে ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{আপনার নেটওয়ার্কে নতুন প্রিন্টারটি}one{আপনার নেটওয়ার্কে নতুন প্রিন্টারগুলি}other{আপনার নেটওয়ার্কে নতুন প্রিন্টারগুলি}}</translation>
-<translation id="6289626062715012577">যেসব অ্যাপ ও ওয়েবসাইট একাধিক ভাষায় কাজ করে সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। Chrome ব্রাউজারে পছন্দমতো ভাষা সিঙ্ক করুন। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux চালু করার আগে, <ph name="ORGANIZATION_NAME" /> আপনাকে ডেটা ব্যাক-আপ নিতে ও এই Chromebook ফ্যাক্টরি সেটিংসে রিসেট করতে বলছে।</translation>
 <translation id="6291949900244949761">কোনও সাইট ইউএসবি ডিভাইস অ্যাক্সেস করতে চাইলে আমাকে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="6291953229176937411">ফাইন্ডারে &amp;দেখান</translation>

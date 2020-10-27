@@ -2067,6 +2067,7 @@
 <translation id="3428419049384081277">Вы вошли в аккаунт</translation>
 <translation id="3428747202529429621">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google при входе в аккаунт</translation>
 <translation id="3428800329481094896">Получение SSH-ключей для контейнера Linux</translation>
+<translation id="3429271624041785769">Языки веб-контента</translation>
 <translation id="3429275422858276529">Чтобы в будущем эту страницу было проще найти, добавьте ее в закладки</translation>
 <translation id="3432227430032737297">Удалить все показанные файлы cookie</translation>
 <translation id="3432757130254800023">Отправлять аудио и видео на устройства в локальной сети</translation>
@@ -2472,7 +2473,6 @@
 <translation id="3856800405688283469">Выберите часовой пояс</translation>
 <translation id="3857807444929313943">Коснитесь несколько раз</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронизация приостановлена</translation>
-<translation id="3861386850461794863">Языки для приложений и сайтов</translation>
 <translation id="3861638017150647085">Имя пользователя "<ph name="USERNAME" />" недоступно.</translation>
 <translation id="3862693525629180217">Подтвердить с помощью встроенного датчика</translation>
 <translation id="3862788408946266506">Приложения, у которых в манифесте есть атрибут kiosk_only, можно устанавливать только в режиме киоска</translation>
@@ -2492,6 +2492,7 @@
 <translation id="3879748587602334249">Диспетчер загрузки</translation>
 <translation id="3881478300875776315">Показать меньше строк</translation>
 <translation id="3882165008614329320">Видео с камеры или из файла</translation>
+<translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Ваш запрос на доступ к сайту отправлен пользователю <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Заметки в приложении "<ph name="LOCK_SCREEN_APP_NAME" />"</translation>
 <translation id="3892414795099177503">Включить OpenVPN/L2TP...</translation>
@@ -4475,7 +4476,6 @@
 <translation id="628352644014831790">4 секунды</translation>
 <translation id="6285120108426285413">Файл <ph name="FILE_NAME" /> скачивают редко. Возможно, он вредоносный.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Новый принтер в сети}one{Новые принтеры в сети}few{Новые принтеры в сети}many{Новые принтеры в сети}other{Новые принтеры в сети}}</translation>
-<translation id="6289626062715012577">Приложения и сайты, которые поддерживают несколько языков, будут использовать первый подходящий вариант из списка ниже. Языковые параметры синхронизируются с браузером Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Для запуска Linux организация <ph name="ORGANIZATION_NAME" /> требует выполнить резервное копирование данных и сбросить настройки устройства Chromebook до заводских.</translation>
 <translation id="6291949900244949761">Запрашивать мое разрешение на доступ сайтов к USB-устройствам (рекомендуется)</translation>
 <translation id="6291953229176937411">Показать в Finder</translation>

@@ -2069,6 +2069,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3428419049384081277">Sikeresen bejelentkezett.</translation>
 <translation id="3428747202529429621">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="3428800329481094896">A Linux-tároló SSH-kulcsainak lekérése</translation>
+<translation id="3429271624041785769">Webes tartalmak nyelvei</translation>
 <translation id="3429275422858276529">Adja hozzá az oldalt a könyvjelzőkhöz, hogy később könnyen megtalálja</translation>
 <translation id="3432227430032737297">Az összes megjelenített eltávolítása</translation>
 <translation id="3432757130254800023">Hang és videó küldése a helyi hálózaton lévő kijelzőkre</translation>
@@ -2474,7 +2475,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3856800405688283469">Időzóna kiválasztása</translation>
 <translation id="3857807444929313943">Emelje fel, majd érintse újra</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: a szinkronizálás szünetel</translation>
-<translation id="3861386850461794863">Az alkalmazásokban és a webhelyeken beállított nyelvek</translation>
 <translation id="3861638017150647085">A(z) „<ph name="USERNAME" />” felhasználónév nem áll rendelkezésre</translation>
 <translation id="3862693525629180217">Igazolás beépített érzékelő révén</translation>
 <translation id="3862788408946266506">A „kiosk_only” jegyzékattribútummal rendelkező alkalmazást kioszk módban kell telepíteni a Chrome OS rendszeren</translation>
@@ -2494,6 +2494,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3879748587602334249">Letöltéskezelő</translation>
 <translation id="3881478300875776315">Kevesebb sor megjelenítése</translation>
 <translation id="3882165008614329320">Meglévő videó a fényképezőgépről vagy fájlból</translation>
+<translation id="3884152383786131369">A több nyelven hozzáférhető webes tartalmak az ezen a listán szereplő első támogatott nyelvet használják majd. Ezeket a preferenciákat a rendszer szinkronizálja a böngésző beállításaival. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="3886446263141354045">Webhely-hozzáférési kérelme elküldve a következő személynek: <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Jegyzetek készítése a(z) <ph name="LOCK_SCREEN_APP_NAME" /> alkalmazással</translation>
 <translation id="3892414795099177503">OpenVPN/L2TP hozzáadása…</translation>
@@ -4478,7 +4479,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="628352644014831790">4 másodperc</translation>
 <translation id="6285120108426285413">A(z) <ph name="FILE_NAME" /> fájlt nem gyakran töltik le, és veszélyes lehet.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Új nyomtató a hálózaton}other{Új nyomtatók a hálózaton}}</translation>
-<translation id="6289626062715012577">A több nyelvet támogató alkalmazások és webhelyek az ezen a listán szereplő első támogatott nyelvet használják majd. A nyelvi beállítások szinkronizálódnak a Chrome böngészővel. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="6291163159361301370">A Linux indításához a(z) <ph name="ORGANIZATION_NAME" /> szervezet megköveteli, hogy készítsen biztonsági másolatot az adatairól, és állítsa vissza ennek a Chromebooknak a gyári beállításait.</translation>
 <translation id="6291949900244949761">Kérdezzen rá, ha valamelyik webhely hozzá szeretne férni az USB-eszközökhöz (ajánlott)</translation>
 <translation id="6291953229176937411">Me&amp;gjelenítés a Finderben</translation>
