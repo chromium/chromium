@@ -52,6 +52,8 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/ViewResizer.java",
     "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragReorderableListAdapter.java",
     "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragStateDelegate.java",
+    "java/src/org/chromium/components/browser_ui/widget/gesture/EmptySwipeHandler.java",
+    "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/PulseDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/PulseInterpolator.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/ViewHighlighter.java",
@@ -308,6 +310,7 @@ java_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegateUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/InsetObserverViewTest.java",
     "java/src/org/chromium/components/browser_ui/widget/LoadingViewTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListenerTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectionDelegateTest.java",
   ]
   deps = [

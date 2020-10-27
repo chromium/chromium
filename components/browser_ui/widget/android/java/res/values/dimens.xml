@@ -92,6 +92,10 @@
     <!-- Default list dimensions -->
     <dimen name="default_list_row_padding">16dp</dimen>
 
+    <!-- Swipe gesture listener dimensions -->
+    <dimen name="swipe_vertical_drag_threshold">5dp</dimen>
+    <dimen name="swipe_horizontal_drag_threshold">10dp</dimen>
+
   <!-- Query tile dimensions -->
   <dimen name="tile_ideal_width">80dp</dimen>
 
