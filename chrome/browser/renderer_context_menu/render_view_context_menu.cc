@@ -3132,8 +3132,9 @@ void RenderViewContextMenu::MediaPlayerActionAt(
 void RenderViewContextMenu::PluginActionAt(
     const gfx::Point& location,
     blink::mojom::PluginActionType plugin_action) {
-  source_web_contents_->GetRenderViewHost()->ExecutePluginActionAtLocation(
-      location, plugin_action);
+  source_web_contents_->GetMainFrame()
+      ->GetRenderViewHost()
+      ->ExecutePluginActionAtLocation(location, plugin_action);
 }
 
 Browser* RenderViewContextMenu::GetBrowser() const {

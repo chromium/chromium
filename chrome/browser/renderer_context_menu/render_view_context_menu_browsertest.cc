@@ -771,9 +771,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, RealMenu) {
   gfx::Rect offset = tab->GetContainerBounds();
   mouse_event.SetPositionInScreen(15 + offset.x(), 15 + offset.y());
   mouse_event.click_count = 1;
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
 
   // The menu_observer will select "Open in new tab", wait for the new tab to
   // be added.
@@ -939,9 +941,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, SuggestedFileName) {
   mouse_event.SetPositionInWidget(15, 15);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -969,9 +973,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   mouse_event.SetPositionInWidget(2, 2);  // This is over the main frame.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -1024,9 +1030,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   mouse_event.button = blink::WebMouseEvent::Button::kRight;
   mouse_event.SetPositionInWidget(25, 25);  // This is over the subframe.
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
@@ -1108,9 +1116,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, SuggestedFileNameCrossOrigin) {
   mouse_event.SetPositionInWidget(15, 15);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(mouse_event);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
 
   // Wait for context menu to be visible.
   menu_observer.WaitForMenuOpenAndClose();
