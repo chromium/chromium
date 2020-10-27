@@ -89,13 +89,19 @@ public class TabModelSelectorProfileSupplierTest {
     }
 
     @Test
-    public void tesIncognitoProfileForceCreated() {
-        doReturn(null).when(mIncognitoTabModel).getProfile();
-        doReturn(mProfile).when(mTabModel).getProfile();
-        doReturn(mIncognitoProfile).when(mProfile).getOffTheRecordProfile();
+    public void tesOTRProfileReturnsForIncognitoTabModel() {
+        doReturn(mIncognitoProfile).when(mIncognitoTabModel).getProfile();
         mSupplier.onTabModelSelected(mIncognitoTabModel, mTabModel);
 
         Assert.assertEquals(mIncognitoProfile, mSupplier.get());
+    }
+
+    @Test
+    public void tesRegularProfileReturnsForRegularTabModel() {
+        doReturn(mProfile).when(mTabModel).getProfile();
+        mSupplier.onTabModelSelected(mTabModel, mIncognitoTabModel);
+
+        Assert.assertEquals(mProfile, mSupplier.get());
     }
 
     @Test
