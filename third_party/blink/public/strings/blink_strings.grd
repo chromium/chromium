@@ -841,6 +841,14 @@ below:
           </message>
         </else>
       </if>
+      <if expr="is_android">
+        <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_LTR" desc="Accessibility message spoken out loud to screen reader users on Android to inform them that they can get a description of an image by opening the 'More Options' menu on the top right. This is only for LTR languages. The 'more options' text should match TC ID 8110367050267853536">
+          This image isn‘t labeled. Open the More Options menu at the top right to get image descriptions.
+        </message>
+        <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_RTL" desc="Accessibility message spoken out loud to screen reader users on Android to inform them that they can get a description of an image by opening the 'More Options' menu on the top left. This is only for RTL languages. The 'more options' text should match TC ID 8110367050267853536">
+          This image isn‘t labeled. Open the More Options menu at the top left to get image descriptions.
+        </message>
+      </if>
       <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION" desc="Accessibility message spoken out loud to screen reader users to inform them that they can get a description of an image by opening the context menu.">
         To get missing image descriptions, open the context menu.
       </message>

@@ -91,6 +91,50 @@ void BrowserAccessibilityAndroid::OnLocationChanged() {
   manager->FireLocationChanged(this);
 }
 
+base::string16
+BrowserAccessibilityAndroid::GetLocalizedStringForImageAnnotationStatus(
+    ax::mojom::ImageAnnotationStatus status) const {
+  // Default to standard text, except for special case of eligible.
+  if (status != ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation)
+    return BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
+        status);
+
+  ContentClient* content_client = content::GetContentClient();
+
+  int message_id = 0;
+
+  switch (static_cast<ax::mojom::WritingDirection>(
+      GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
+    case ax::mojom::WritingDirection::kRtl:
+      message_id = IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_RTL;
+      break;
+    case ax::mojom::WritingDirection::kTtb:
+    case ax::mojom::WritingDirection::kBtt:
+    case ax::mojom::WritingDirection::kNone:
+    case ax::mojom::WritingDirection::kLtr:
+      message_id = IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_LTR;
+      break;
+  }
+
+  DCHECK(message_id);
+
+  return content_client->GetLocalizedString(message_id);
+}
+
+void BrowserAccessibilityAndroid::AppendTextToString(
+    base::string16 extra_text,
+    base::string16* string) const {
+  if (extra_text.empty())
+    return;
+
+  if (string->empty()) {
+    *string = extra_text;
+    return;
+  }
+
+  *string += base::string16(base::ASCIIToUTF16(", ")) + extra_text;
+}
+
 bool BrowserAccessibilityAndroid::IsCheckable() const {
   return GetData().HasCheckedState();
 }
@@ -479,6 +523,31 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
   if (GetRole() == ax::mojom::Role::kRootWebArea)
     return text;
 
+  // Append image description strings to the text.
+  auto status = GetData().GetImageAnnotationStatus();
+  switch (status) {
+    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+      AppendTextToString(GetLocalizedStringForImageAnnotationStatus(status),
+                         &text);
+      break;
+
+    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+      AppendTextToString(
+          GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation),
+          &text);
+      break;
+
+    case ax::mojom::ImageAnnotationStatus::kNone:
+    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+      break;
+  }
+
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
   if (text.empty() && (HasOnlyTextChildren() ||
@@ -754,6 +823,24 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
         static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
     if (parent->IsHeadingLink())
       return parent->GetRoleDescription();
+  }
+
+  // If this node is an image, check status and potentially add unlabeled role.
+  auto status = GetData().GetImageAnnotationStatus();
+  switch (status) {
+    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+      return GetLocalizedRoleDescriptionForUnlabeledImage();
+
+    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+    case ax::mojom::ImageAnnotationStatus::kNone:
+    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+      break;
   }
 
   int message_id = -1;
