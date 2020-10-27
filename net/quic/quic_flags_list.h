@@ -285,7 +285,7 @@ QUIC_FLAG(bool,
           true)
 
 // If true, HTTP/3 will treat HTTP/2 specific SETTINGS as error.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_reject_spdy_settings, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_reject_spdy_settings, true)
 
 // If true, discard 0-RTT keys after installing 1-RTT keys on the client side.
 QUIC_FLAG(bool,
@@ -322,7 +322,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_reject_spdy_frames, false)
 // connections that know its own address.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_connection_set_initial_self_address,
-          false)
+          true)
 
 // If true, let QUIC connection handle PINGs instead of going through session.
 QUIC_FLAG(bool,
@@ -336,7 +336,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_bbr2_flip_bbq2, true)
 
 // If true, use http2::HuffmanEncodeFast() instead of HuffmanEncode() and
 // eliminate one string copy for QPACK encoding used in IETF QUIC.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_fast_huffman_encoder, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_fast_huffman_encoder, true)
 
 // When true, QUIC+TLS versions will support key updates.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_key_update_supported, false)
@@ -361,14 +361,14 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_can_send_ack_frequency, false)
 // when bootstrapping cwnd.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_bbr2_support_max_bootstrap_cwnd,
-          false)
+          true)
 
 // If true, QUIC BBR2 will not exit STARTUP on excessive loss, if there was
 // enough bandwidth growth in round.
 QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_bbr2_no_exit_startup_on_loss_with_bw_growth,
-    false)
+    true)
 
 // Honor the AEAD confidentiality and integrity limits by initiating key update
 // (if enabled) and/or closing the connection, as necessary.
