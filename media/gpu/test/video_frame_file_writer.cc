@@ -175,6 +175,11 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
     const base::FilePath& filename) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
+  if (VideoFrame::BytesPerElement(video_frame->format(), 0) > 1) {
+    LOG(ERROR) << "We don't support more than 8 bits color depth for PNG"
+               << " output. Please use YUV output";
+    return;
+  }
   auto mapped_frame = video_frame;
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
@@ -225,32 +230,37 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame));
   }
 #endif
-
   if (!mapped_frame) {
     LOG(ERROR) << "Failed to map video frame";
     return;
   }
 
-  scoped_refptr<const VideoFrame> I420_out_frame = mapped_frame;
-  if (I420_out_frame->format() != PIXEL_FORMAT_I420) {
-    I420_out_frame = ConvertVideoFrame(I420_out_frame.get(),
-                                       VideoPixelFormat::PIXEL_FORMAT_I420);
+  const VideoPixelFormat yuv_out_format =
+      VideoFrame::BytesPerElement(mapped_frame->format(), 0) > 1
+          ? PIXEL_FORMAT_YUV420P10
+          : PIXEL_FORMAT_I420;
+  scoped_refptr<const VideoFrame> out_frame = mapped_frame;
+  if (out_frame->format() != PIXEL_FORMAT_I420 &&
+      out_frame->format() != PIXEL_FORMAT_YUV420P10) {
+    out_frame = ConvertVideoFrame(out_frame.get(), yuv_out_format);
   }
 
   // Write the YUV data to file.
   base::FilePath file_path(
       output_folder_.Append(filename)
           .AddExtension(FILE_PATH_LITERAL(".yuv"))
-          .InsertBeforeExtension(FILE_PATH_LITERAL("_I420")));
+          .InsertBeforeExtension(yuv_out_format == PIXEL_FORMAT_I420
+                                     ? FILE_PATH_LITERAL("_I420")
+                                     : FILE_PATH_LITERAL("_I420P10")));
   base::File yuv_file(file_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
 
-  const gfx::Size visible_size = I420_out_frame->visible_rect().size();
-  const VideoPixelFormat pixel_format = I420_out_frame->format();
+  const gfx::Size visible_size = out_frame->visible_rect().size();
+  const VideoPixelFormat pixel_format = out_frame->format();
   const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
   for (size_t i = 0; i < num_planes; i++) {
-    const uint8_t* data = I420_out_frame->data(i);
-    const int stride = I420_out_frame->stride(i);
+    const uint8_t* data = out_frame->data(i);
+    const int stride = out_frame->stride(i);
     const size_t rows =
         VideoFrame::Rows(i, pixel_format, visible_size.height());
     const int row_bytes =
