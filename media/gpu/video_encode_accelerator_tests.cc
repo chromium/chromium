@@ -313,6 +313,9 @@ TEST_F(VideoEncoderTest, DynamicBitrateChange) {
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
+  // Set longer event timeout than the default (30 sec) because encoding 2160p
+  // and validating the stream take much time.
+  encoder->SetEventWaitTimeout(base::TimeDelta::FromSeconds(180));
 
   // Encode the video with the first bitrate.
   const uint32_t first_bitrate = config.bitrate;
@@ -341,6 +344,9 @@ TEST_F(VideoEncoderTest, DynamicFramerateChange) {
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
+  // Set longer event timeout than the default (30 sec) because encoding 2160p
+  // and validating the stream take much time.
+  encoder->SetEventWaitTimeout(base::TimeDelta::FromSeconds(180));
 
   // Encode the video with the first framerate.
   const uint32_t first_framerate = config.framerate;
