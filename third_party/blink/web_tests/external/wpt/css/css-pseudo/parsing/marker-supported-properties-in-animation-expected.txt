@@ -16,6 +16,7 @@ PASS Animation of font-variant-ligatures in ::marker
 PASS Animation of font-variant-numeric in ::marker
 FAIL Animation of font-variant-position in ::marker assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
 PASS Animation of font-weight in ::marker
+PASS Animation of line-height in ::marker
 FAIL Animation of white-space in ::marker assert_equals: expected "nowrap" but got "pre"
 PASS Animation of color in ::marker
 PASS Animation of text-combine-upright in ::marker
@@ -43,7 +44,6 @@ PASS Animation of list-style in ::marker
 PASS Animation of list-style-image in ::marker
 PASS Animation of list-style-position in ::marker
 PASS Animation of list-style-type in ::marker
-PASS Animation of line-height in ::marker
 PASS Transition of font in ::marker
 PASS Transition of font-family in ::marker
 PASS Transition of font-feature-settings in ::marker
@@ -60,6 +60,7 @@ PASS Transition of font-variant-ligatures in ::marker
 PASS Transition of font-variant-numeric in ::marker
 FAIL Transition of font-variant-position in ::marker assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
 PASS Transition of font-weight in ::marker
+PASS Transition of line-height in ::marker
 FAIL Transition of white-space in ::marker assert_equals: expected "nowrap" but got "pre"
 PASS Transition of color in ::marker
 PASS Transition of text-combine-upright in ::marker
@@ -87,6 +88,5 @@ PASS Transition of list-style in ::marker
 PASS Transition of list-style-image in ::marker
 PASS Transition of list-style-position in ::marker
 PASS Transition of list-style-type in ::marker
-PASS Transition of line-height in ::marker
 Harness: the test ran to completion.
 

@@ -2388,6 +2388,7 @@
       typedom_types: ["Keyword", "Length", "Number", "Percentage"],
       valid_for_first_letter: true,
       valid_for_cue: true,
+      valid_for_marker: true,
     },
     {
       name: "line-height-step",

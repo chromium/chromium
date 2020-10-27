@@ -96,6 +96,7 @@ crbug.com/1101040 external/wpt/css/css-pseudo/marker-content-016.html [ Failure 
 crbug.com/1101034 external/wpt/css/css-pseudo/marker-content-018.html [ Failure ]
 crbug.com/1108830 external/wpt/css/css-pseudo/marker-hyphens.html [ Failure ]
 crbug.com/1108830 external/wpt/css/css-pseudo/marker-line-break.html [ Failure ]
+crbug.com/1108830 external/wpt/css/css-pseudo/marker-line-height.html [ Failure ]
 crbug.com/1108830 external/wpt/css/css-pseudo/marker-overflow-wrap.html [ Failure ]
 crbug.com/1108830 external/wpt/css/css-pseudo/marker-text-decoration-skip-ink.html [ Failure ]
 crbug.com/1108830 external/wpt/css/css-pseudo/marker-text-emphasis.html [ Failure ]
