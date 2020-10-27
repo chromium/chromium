@@ -79,4 +79,10 @@ bool LayoutNGTextControlSingleLine::NodeAtPoint(
   return true;
 }
 
+bool LayoutNGTextControlSingleLine::AllowsNonVisibleOverflow() const {
+  NOT_DESTROYED();
+  // Do not show scrollbars even if overflow:scroll is specified.
+  return false;
+}
+
 }  // namespace blink

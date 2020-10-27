@@ -37,6 +37,8 @@ class LayoutNGTextControlSingleLine final : public LayoutNGBlockFlow {
                    const HitTestLocation& hit_test_location,
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction hit_test_action) override;
+
+  bool AllowsNonVisibleOverflow() const override;
 };
 
 }  // namespace blink
