@@ -56,6 +56,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             "--binary-arg=--host-resolver-rules="
                 "MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1",
             "--binary-arg=--enable-experimental-web-platform-features",
+            "--binary-arg=--enable-blink-test-features",
             "--binary-arg=--enable-blink-features=MojoJS,MojoJSTest",
             "--webdriver-binary=" + CHROMEDRIVER_BINARY.format(target_dir),
             "--webdriver-arg=--enable-chrome-logs",
