@@ -134,24 +134,12 @@ void VideoFrameValidator::ProcessVideoFrameTask(
     // not allow us to map GpuMemoryBuffers easily for testing. Therefore, we
     // extract the dma-buf FDs. Alternatively, we could consider creating our
     // own ClientNativePixmapFactory for testing.
-    gfx::GpuMemoryBuffer* gmb = video_frame->GetGpuMemoryBuffer();
-    gfx::GpuMemoryBufferHandle gmb_handle = gmb->CloneHandle();
-    ASSERT_EQ(gmb_handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
-    std::vector<ColorPlaneLayout> planes;
-    std::vector<base::ScopedFD> dmabuf_fds;
-    for (auto& plane : gmb_handle.native_pixmap_handle.planes) {
-      planes.emplace_back(plane.stride, plane.offset, plane.size);
-      dmabuf_fds.emplace_back(plane.fd.release());
+    frame = CreateDmabufVideoFrame(frame.get());
+    if (!frame) {
+      LOG(ERROR) << "Failed to create Dmabuf-backed VideoFrame from "
+                 << "GpuMemoryBuffer-based VideoFrame";
+      return;
     }
-    auto layout = VideoFrameLayout::CreateWithPlanes(
-        frame->format(), video_frame->coded_size(), std::move(planes),
-        VideoFrameLayout::kBufferAddressAlignment,
-        gmb_handle.native_pixmap_handle.modifier);
-    ASSERT_TRUE(layout);
-    frame = VideoFrame::WrapExternalDmabufs(
-        *layout, frame->visible_rect(), frame->natural_size(),
-        std::move(dmabuf_fds), frame->timestamp());
-    ASSERT_TRUE(frame);
   }
 
   if (frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {

@@ -14,8 +14,10 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/gpu/buildflags.h"
 #include "media/gpu/video_frame_mapper.h"
 #include "media/gpu/video_frame_mapper_factory.h"
+#include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -127,26 +129,39 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   const gfx::Size& visible_size = video_frame->visible_rect().size();
   base::SStringPrintf(&filename, FILE_PATH_LITERAL("frame_%04zu_%dx%d"),
                       frame_index, visible_size.width(), visible_size.height());
-
-#if BUILDFLAG(IS_ASH)
+  // Copies to |frame| in this function so that |video_frame| stays alive until
+  // in the end of function.
+  auto frame = video_frame;
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
+    // creates ClientNativePixmapOpaque for SCANOUT_VDA_WRITE buffers which does
+    // not allow us to map GpuMemoryBuffers easily for testing. Therefore, we
+    // extract the dma-buf FDs. Alternatively, we could consider creating our
+    // own ClientNativePixmapFactory for testing.
+    frame = CreateDmabufVideoFrame(frame.get());
+    if (!frame) {
+      LOG(ERROR) << "Failed to create Dmabuf-backed VideoFrame from "
+                 << "GpuMemoryBuffer-based VideoFrame";
+      return;
+    }
+  }
   // Create VideoFrameMapper if not yet created. The decoder's output pixel
   // format is not known yet when creating the VideoFrameWriter. We can only
   // create the VideoFrameMapper upon receiving the first video frame.
-  if ((video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-       video_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) &&
+  if (frame->storage_type() == VideoFrame::STORAGE_DMABUFS &&
       !video_frame_mapper_) {
     video_frame_mapper_ = VideoFrameMapperFactory::CreateMapper(
-        video_frame->format(), video_frame->storage_type());
+        frame->format(), frame->storage_type());
     ASSERT_TRUE(video_frame_mapper_) << "Failed to create VideoFrameMapper";
   }
-#endif
-
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   switch (output_format_) {
     case OutputFormat::kPNG:
-      WriteVideoFramePNG(video_frame, base::FilePath(filename));
+      WriteVideoFramePNG(frame, base::FilePath(filename));
       break;
     case OutputFormat::kYUV:
-      WriteVideoFrameYUV(video_frame, base::FilePath(filename));
+      WriteVideoFrameYUV(frame, base::FilePath(filename));
       break;
   }
 
@@ -161,14 +176,12 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if BUILDFLAG(IS_ASH)
-  if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-      video_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame));
   }
-
-#endif
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   if (!mapped_frame) {
     LOG(ERROR) << "Failed to map video frame";
@@ -206,9 +219,8 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if BUILDFLAG(IS_ASH)
-  if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
-      video_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame));
   }

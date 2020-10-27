@@ -70,6 +70,12 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
     VideoFrame::StorageType dst_storage_type = VideoFrame::STORAGE_OWNED_MEMORY,
     base::Optional<gfx::BufferUsage> dst_buffer_usage = base::nullopt);
 
+// Create Dmabuf-backed VideoFrame from |src_frame|. The created VideoFrame
+// doesn't depend on |src_frame|'s lifetime. |src_frame| should be a
+// GpuMemoryBuffer-backed VideoFrame.
+scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
+    const VideoFrame* const src_frame);
+
 // Create GpuMemoryBuffer-based VideoFrame from |frame|. The created VideoFrame
 // doesn't depend on |frame|'s lifetime.
 // |frame| should be a DMABUF-backed VideoFrame. |buffer_usage| is a
