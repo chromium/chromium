@@ -178,6 +178,10 @@ TEST_F(BluetoothSocketTest, TestClose) {
   fake_socket_->SetOnDestroyCallback(run_loop.QuitClosure());
   EXPECT_TRUE(bluetooth_socket_->Close().Ok());
   run_loop.Run();
+
+  // Ensure that calls to Close() succeed even after the underlying socket is
+  // destroyed.
+  EXPECT_TRUE(bluetooth_socket_->Close().Ok());
 }
 
 TEST_F(BluetoothSocketTest, TestDestroy) {

@@ -314,8 +314,7 @@ BluetoothSocket::BluetoothSocket(
 }
 
 BluetoothSocket::~BluetoothSocket() {
-  if (socket_)
-    Close();
+  Close();
 
   // These properties must be destroyed on the same sequence they are later run
   // on. See |task_runner_|.
@@ -347,8 +346,10 @@ OutputStream& BluetoothSocket::GetOutputStream() {
 }
 
 Exception BluetoothSocket::Close() {
-  socket_->Disconnect();
-  socket_.reset();
+  if (socket_) {
+    socket_->Disconnect();
+    socket_.reset();
+  }
   Exception input_exception = input_stream_->Close();
   Exception output_exception = output_stream_->Close();
   if (input_exception.Ok() && output_exception.Ok())
