@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.ExitCause;
@@ -28,8 +29,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
-import java.util.concurrent.Callable;
-
 /**
  * Used for displaying a paint preview representation of a tab on startup.
  */
@@ -46,7 +45,8 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     private int mSnackbarShownCount;
     private boolean mShowingSnackbar;
     private long mActivityCreationTimestampMs;
-    private Callable<Boolean> mShouldRecordFirstPaint;
+    private Supplier<Boolean> mShouldRecordFirstPaint;
+    private Supplier<Boolean> mIsOfflinePage;
 
     private static final int DEFAULT_INITIAL_REMOVE_DELAY_MS = 0;
     private static final String INITIAL_REMOVE_DELAY_PARAM = "initial_remove_delay_ms";
@@ -83,8 +83,12 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         mActivityCreationTimestampMs = activityCreationTimestampMs;
     }
 
-    public void setShouldRecordFirstPaint(Callable<Boolean> shouldRecordFirstPaint) {
+    public void setShouldRecordFirstPaint(Supplier<Boolean> shouldRecordFirstPaint) {
         mShouldRecordFirstPaint = shouldRecordFirstPaint;
+    }
+
+    public void setIsOfflinePage(Supplier<Boolean> isOfflinePage) {
+        mIsOfflinePage = isOfflinePage;
     }
 
     private void remove(@ExitCause int exitCause) {
@@ -229,6 +233,17 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     }
 
     private class StartupPaintPreviewTabObserver extends EmptyTabObserver {
+        @Override
+        public void onPageLoadFinished(Tab tab, String url) {
+            // onWebContentsFirstMeaningfulPaint won't be called if we're loading an offline page,
+            // hence the preview won't get removed.
+            // We need to listen to onPageLoadFinished and remove the preview if an offline page is
+            // being displayed.
+            if (mIsOfflinePage == null || !mIsOfflinePage.get()) return;
+
+            remove(ExitCause.OFFLINE_AVAILABLE);
+        }
+
         @Override
         public void onRestoreStarted(Tab tab) {
             mDidStartRestore = true;
