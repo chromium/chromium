@@ -731,7 +731,8 @@ bool IsClipboardHistoryNudgeSessionResetEnabled() {
 }
 
 bool IsClipboardHistorySimpleRenderEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistorySimpleRender);
+  return base::FeatureList::IsEnabled(kClipboardHistory) ||
+         base::FeatureList::IsEnabled(kClipboardHistorySimpleRender);
 }
 
 bool IsPhoneHubEnabled() {

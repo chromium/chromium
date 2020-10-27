@@ -124,7 +124,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
   // Populate a builder with all the data formats that we expect to handle.
   ClipboardHistoryItemBuilder builder;
   builder.SetText("Text")
-      .SetMarkup("Markup")
+      .SetMarkup("<img Markup")
       .SetRtf("Rtf")
       .SetBookmarkTitle("Bookmark Title")
       .SetBitmap(gfx::test::CreateBitmap(10, 10))
@@ -139,7 +139,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
 
   // In the absence of bitmap data, HTML data takes precedence.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
-            base::UTF8ToUTF16("Markup"));
+            base::UTF8ToUTF16("<img Markup"));
 
   builder.ClearMarkup();
 
@@ -173,9 +173,9 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
             base::UTF8ToUTF16("File.txt, Other File.txt"));
 }
 
-// Tests that Render is called once when an eligible item is added
+// Tests that Render is called once when an eligible <img> is added
 // to ClipboardHistory.
-TEST_F(ClipboardHistoryResourceManagerTest, BasicCachedImageModel) {
+TEST_F(ClipboardHistoryResourceManagerTest, BasicImgCachedImageModel) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
       .WillByDefault(testing::WithArg<2>(
@@ -188,13 +188,58 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicCachedImageModel) {
   // Write a basic ClipboardData which is eligible to render HTML.
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(base::UTF8ToUTF16("test"), "source_url");
+    scw.WriteHTML(base::UTF8ToUTF16("<img test>"), "source_url");
   }
 
   FlushMessageLoop();
 
   EXPECT_EQ(expected_image_model, resource_manager()->GetImageModel(
                                       clipboard_history()->GetItems().front()));
+}
+
+// Tests that Render is called once when an eligible <table> is added
+// to ClipboardHistory.
+TEST_F(ClipboardHistoryResourceManagerTest, BasicTableCachedImageModel) {
+  ui::ImageModel expected_image_model = GetRandomImageModel();
+  ON_CALL(*mock_image_factory(), Render)
+      .WillByDefault(testing::WithArg<2>(
+          [&](ClipboardImageModelFactory::ImageModelCallback callback) {
+            std::move(callback).Run(expected_image_model);
+          }));
+  EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
+  EXPECT_CALL(*mock_image_factory(), Render).Times(1);
+
+  // Write a basic ClipboardData which is eligible to render HTML.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteHTML(base::UTF8ToUTF16("<table test>"), "source_url");
+  }
+
+  FlushMessageLoop();
+
+  EXPECT_EQ(expected_image_model, resource_manager()->GetImageModel(
+                                      clipboard_history()->GetItems().front()));
+}
+
+// Tests that Render is not called ineligble html is added to ClipboarHistory
+TEST_F(ClipboardHistoryResourceManagerTest, BasicIneligibleCachedImageModel) {
+  ui::ImageModel expected_image_model = GetRandomImageModel();
+  ON_CALL(*mock_image_factory(), Render)
+      .WillByDefault(testing::WithArg<2>(
+          [&](ClipboardImageModelFactory::ImageModelCallback callback) {
+            std::move(callback).Run(expected_image_model);
+          }));
+  EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
+  EXPECT_CALL(*mock_image_factory(), Render).Times(0);
+
+  // Write a basic ClipboardData which is eligible to render HTML.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteHTML(base::UTF8ToUTF16("html with no img or table tag"),
+                  "source_url");
+  }
+
+  FlushMessageLoop();
 }
 
 // Tests that copying duplicate HTML to the buffer results in only one render
@@ -214,7 +259,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, DuplicateHTML) {
   for (int i = 0; i < 2; ++i) {
     {
       ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-      scw.WriteHTML(base::UTF8ToUTF16("test"), "source_url");
+      scw.WriteHTML(base::UTF8ToUTF16("<img test>"), "source_url");
     }
     FlushMessageLoop();
   }
@@ -242,12 +287,12 @@ TEST_F(ClipboardHistoryResourceManagerTest, DifferentHTML) {
   EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(base::UTF8ToUTF16("test"), "source_url");
+    scw.WriteHTML(base::UTF8ToUTF16("<img test>"), "source_url");
   }
   FlushMessageLoop();
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(base::UTF8ToUTF16("different"), "source_url");
+    scw.WriteHTML(base::UTF8ToUTF16("<img different>"), "source_url");
   }
   FlushMessageLoop();
 
