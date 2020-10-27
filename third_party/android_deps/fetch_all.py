@@ -361,6 +361,7 @@ def ParseDeps(root_dir, libs_dir):
     and |package_name| and |package_tag| are the extracted from it.
   """
     result = {}
+    root_dir = os.path.abspath(root_dir)
     libs_dir = os.path.abspath(os.path.join(root_dir, libs_dir))
     for cipd_file in FindInDirectory(libs_dir, 'cipd.yaml'):
         pkg_name, pkg_tag = GetCipdPackageInfo(cipd_file)

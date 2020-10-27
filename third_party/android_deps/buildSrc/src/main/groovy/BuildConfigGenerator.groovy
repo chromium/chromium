@@ -100,7 +100,6 @@ class BuildConfigGenerator extends DefaultTask {
 
         def graph = new ChromiumDepGraph(project: project, skipLicenses: skipLicenses)
         def normalisedRepoPath = normalisePath(repositoryPath)
-        def rootDirPath = normalisePath(".")
 
         // 1. Parse the dependency data
         graph.collectDependencies()
@@ -158,7 +157,7 @@ class BuildConfigGenerator extends DefaultTask {
         // 3. Generate the root level build files
         updateBuildTargetDeclaration(graph, repositoryPath, normalisedRepoPath)
         updateDepsDeclaration(graph, cipdBucket, stripFromCipdPath, repositoryPath,
-                              "${rootDirPath}/DEPS")
+                              "${normalisedRepoPath}/../../DEPS")
         dependencyDirectories.sort { path1, path2 -> return path1.compareTo(path2) }
         updateReadmeReferenceFile(dependencyDirectories,
                                   "${normalisedRepoPath}/additional_readme_paths.json")
