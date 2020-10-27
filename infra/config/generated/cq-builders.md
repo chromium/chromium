@@ -350,8 +350,14 @@ as required builders.
 * [fuchsia-compile-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/fuchsia-compile-x64-dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+fuchsia-compile-x64-dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+fuchsia-compile-x64-dbg))
   * Experiment percentage: 50
 
-* [ios-simulator-code-coverage](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-code-coverage) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-code-coverage)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-code-coverage))
+* [ios-simulator-coverage-exp](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-coverage-exp) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-coverage-exp)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-coverage-exp))
   * Experiment percentage: 3
+
+* [ios-simulator-full-configs-coverage-exp](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-full-configs-coverage-exp) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-full-configs-coverage-exp)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-full-configs-coverage-exp))
+  * Experiment percentage: 3
+
+  Path regular expressions:
+  * [`//ios/.+`](https://cs.chromium.org/chromium/src/ios/)
 
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-perfetto-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-perfetto-rel))
   * Experiment percentage: 100

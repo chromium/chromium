@@ -2322,6 +2322,19 @@
           'isolated_scripts': 'ios_code_coverage_tests',
         },
       },
+      'ios-simulator-coverage-exp': {
+        'mixins': [
+          'isolate_profile_data',
+          'mac_10.15',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_12a7209',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_simulator_tests',
+        },
+      },
       'ios-simulator-cronet': {
         'mixins': [
           'mac_10.15',
@@ -2333,6 +2346,19 @@
         'test_suites': {
           'isolated_scripts': 'ios_simulator_cronet_tests',
         }
+      },
+      'ios-simulator-full-configs-coverage-exp': {
+        'mixins': [
+          'isolate_profile_data',
+          'mac_10.15',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_12a7209',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_simulator_full_configs_tests',
+        },
       },
       'ios-simulator-multi-window': {
         'mixins': [
