@@ -15,7 +15,7 @@ class WebAccessibleResourcesManifestTest : public ChromeManifestTest {
 TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
   // No web_accessible_resources.
   scoped_refptr<Extension> none(
-      LoadAndExpectSuccess("web_accessible_resources_none.json"));
+      LoadAndExpectSuccess("web_accessible_resources/v2/none.json"));
   EXPECT_FALSE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(none.get()));
   EXPECT_FALSE(
@@ -23,7 +23,7 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
 
   // web_accessible_resources: ["test"].
   scoped_refptr<Extension> single(
-      LoadAndExpectSuccess("web_accessible_resources_single.json"));
+      LoadAndExpectSuccess("web_accessible_resources/v2/single.json"));
   EXPECT_TRUE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(single.get()));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(single.get(),
@@ -33,7 +33,7 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
 
   // web_accessible_resources: ["*"].
   scoped_refptr<Extension> wildcard(
-      LoadAndExpectSuccess("web_accessible_resources_wildcard.json"));
+      LoadAndExpectSuccess("web_accessible_resources/v2/wildcard.json"));
   EXPECT_TRUE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(wildcard.get()));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
@@ -43,7 +43,7 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
 
   // web_accessible_resources: ["path/*.ext"].
   scoped_refptr<Extension> pattern(
-      LoadAndExpectSuccess("web_accessible_resources_pattern.json"));
+      LoadAndExpectSuccess("web_accessible_resources/v2/pattern.json"));
   EXPECT_TRUE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(pattern.get()));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
