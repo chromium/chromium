@@ -187,6 +187,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
 
   message_receiver_->AddObserver(this);
   feature_status_provider_->AddObserver(this);
+  multidevice_setup_client_->AddObserver(this);
 
   MaybeSetPhoneModelName(multidevice_setup_client_->GetHostStatus().second);
 }
@@ -194,6 +195,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
 PhoneStatusProcessor::~PhoneStatusProcessor() {
   message_receiver_->RemoveObserver(this);
   feature_status_provider_->RemoveObserver(this);
+  multidevice_setup_client_->RemoveObserver(this);
 }
 
 void PhoneStatusProcessor::SetReceivedNotifications(

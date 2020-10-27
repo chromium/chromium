@@ -248,7 +248,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_FALSE(mutable_phone_model_->phone_status_model().has_value());
 }
 
-TEST_F(PhoneStatusProcessorTest, NoHostPhoneName) {
+TEST_F(PhoneStatusProcessorTest, PhoneName) {
   fake_multidevice_setup_client_->SetHostStatusWithDevice(
       std::make_pair(HostStatus::kHostVerified, base::nullopt));
   CreatePhoneStatusProcessor();
@@ -265,6 +265,17 @@ TEST_F(PhoneStatusProcessorTest, NoHostPhoneName) {
 
   EXPECT_EQ(0u, fake_notification_manager_->num_notifications());
   EXPECT_EQ(base::nullopt, mutable_phone_model_->phone_name());
+
+  // Create new fake phone with name.
+  const multidevice::RemoteDeviceRef kFakePhoneA =
+      multidevice::RemoteDeviceRefBuilder().SetName("Phone A").Build();
+
+  // Trigger a host status update and expect a new phone with new name to be
+  // updated.
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(HostStatus::kHostVerified, kFakePhoneA));
+
+  EXPECT_EQ(base::UTF8ToUTF16("Phone A"), mutable_phone_model_->phone_name());
 }
 
 }  // namespace phonehub
