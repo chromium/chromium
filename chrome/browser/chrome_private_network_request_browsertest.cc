@@ -165,8 +165,9 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
 // This test verifies that when a non-secure context served from the public
 // address space loads a resource from the local network, the correct WebFeature
 // is use-counted.
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkRequestBrowserTest,
-                       RecordsAddressSpaceFeatureForFetchInNonSecureContext) {
+IN_PROC_BROWSER_TEST_F(
+    ChromePrivateNetworkRequestBrowserTest,
+    DISABLED_RecordsAddressSpaceFeatureForFetchInNonSecureContext) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
