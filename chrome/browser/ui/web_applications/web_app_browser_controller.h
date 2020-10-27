@@ -67,6 +67,7 @@ class WebAppBrowserController : public AppBrowserController,
   void Uninstall() override;
   bool IsInstalled() const override;
   bool IsHostedApp() const override;
+  bool IsWindowControlsOverlayEnabled() const override;
 
 #if defined(OS_CHROMEOS)
   bool ShouldShowCustomTabBar() const override;

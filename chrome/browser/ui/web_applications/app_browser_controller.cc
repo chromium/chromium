@@ -322,6 +322,10 @@ AppBrowserController::GetTabMenuModelFactory() const {
   return nullptr;
 }
 
+bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
+  return false;
+}
+
 bool AppBrowserController::IsHostedApp() const {
   return false;
 }

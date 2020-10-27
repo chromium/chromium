@@ -181,9 +181,12 @@ bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest,
 }
 
 bool ShouldRejectDisplayMode(blink::mojom::DisplayMode display_mode) {
-  return !(display_mode == blink::mojom::DisplayMode::kStandalone ||
-           display_mode == blink::mojom::DisplayMode::kFullscreen ||
-           display_mode == blink::mojom::DisplayMode::kMinimalUi);
+  return !(
+      display_mode == blink::mojom::DisplayMode::kStandalone ||
+      display_mode == blink::mojom::DisplayMode::kFullscreen ||
+      display_mode == blink::mojom::DisplayMode::kMinimalUi ||
+      (display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay &&
+       base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay)));
 }
 
 // Returns true if |params| specifies a full PWA check.

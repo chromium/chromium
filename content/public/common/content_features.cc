@@ -735,6 +735,10 @@ const base::Feature kV8VmFuture{"V8VmFuture",
 const base::Feature kWebAppManifestDisplayOverride{
     "WebAppManifestDisplayOverride", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable window controls overlays for desktop PWAs
+const base::Feature kWebAppWindowControlsOverlay{
+    "WebAppWindowControlsOverlay", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable WebAssembly baseline compilation (Liftoff).
 const base::Feature kWebAssemblyBaseline{"WebAssemblyBaseline",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

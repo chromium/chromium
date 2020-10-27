@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -56,6 +57,14 @@ bool WebAppBrowserController::HasMinimalUiButtons() const {
 
 bool WebAppBrowserController::IsHostedApp() const {
   return true;
+}
+
+bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
+  if (!base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay))
+    return false;
+
+  DisplayMode display = registrar().GetAppEffectiveDisplayMode(GetAppId());
+  return display == DisplayMode::kWindowControlsOverlay;
 }
 
 #if defined(OS_CHROMEOS)

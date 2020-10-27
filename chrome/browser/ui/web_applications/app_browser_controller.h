@@ -139,6 +139,8 @@ class AppBrowserController : public TabStripModelObserver,
 
   virtual std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const;
 
+  virtual bool IsWindowControlsOverlayEnabled() const;
+
   // Updates the custom tab bar's visibility based on whether it should be
   // currently visible or not. If |animate| is set, the change will be
   // animated.

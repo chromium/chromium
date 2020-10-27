@@ -26,8 +26,12 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
       FALLTHROUGH;
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
-    case DisplayMode::kWindowControlsOverlay:
       return DisplayMode::kStandalone;
+    case DisplayMode::kWindowControlsOverlay:
+      if (base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay))
+        return DisplayMode::kWindowControlsOverlay;
+      else
+        return DisplayMode::kStandalone;
   }
 }
 }  // namespace

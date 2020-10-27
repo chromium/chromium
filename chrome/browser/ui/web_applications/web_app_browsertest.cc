@@ -164,6 +164,21 @@ class WebAppBrowserTest_DisplayOverride : public WebAppBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// A dedicated test fixture for WindowControlsOverlay, which requires a command
+// line switch to enable manifest parsing.
+class WebAppBrowserTest_WindowControlsOverlay : public WebAppBrowserTest {
+ public:
+  WebAppBrowserTest_WindowControlsOverlay() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kWebAppManifestDisplayOverride,
+         features::kWebAppWindowControlsOverlay},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 using WebAppTabRestoreBrowserTest = WebAppBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
@@ -1081,6 +1096,27 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopupLocationBar) {
 
   EXPECT_TRUE(
       popup_browser->CanSupportWindowFeature(Browser::FEATURE_LOCATIONBAR));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
+                       WindowControlsOverlay) {
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_window_controls_overlay.json");
+  NavigateToURLAndWait(browser(), test_url);
+
+  const AppId app_id = InstallPwaForCurrentUrl();
+  auto* provider = WebAppProvider::Get(profile());
+
+  std::vector<DisplayMode> app_display_mode_override =
+      provider->registrar().GetAppDisplayModeOverride(app_id);
+
+  ASSERT_EQ(1u, app_display_mode_override.size());
+  EXPECT_EQ(DisplayMode::kWindowControlsOverlay, app_display_mode_override[0]);
+
+  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  EXPECT_EQ(true,
+            app_browser->app_controller()->IsWindowControlsOverlayEnabled());
 }
 
 }  // namespace web_app
