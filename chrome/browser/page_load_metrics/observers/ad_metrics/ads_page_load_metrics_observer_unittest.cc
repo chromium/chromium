@@ -417,10 +417,11 @@ class FrameRemoteTester : public content::FakeLocalFrame {
   // blink::mojom::LocalFrame
   void SendInterventionReport(const std::string& id,
                               const std::string& message) override {
-    if (!on_empty_report_callback_)
-      return;
 
     if (id.empty()) {
+      if (!on_empty_report_callback_)
+        return;
+
       std::move(on_empty_report_callback_).Run();
       return;
     }
@@ -2533,11 +2534,18 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPolicyProvided) {
   };
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf(
+        "policy: %s, exceed_network: %d, exceed_cpu: %d,  "
+        "intervention_expected: %d",
+        test_case.policy.c_str(), test_case.exceed_network,
+        test_case.exceed_cpu, test_case.intervention_expected));
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         features::kHeavyAdIntervention, {{"kUnloadPolicy", test_case.policy}});
     RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
     RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
+    // Clear out any pending messages.
+    HasInterventionReportsAfterFlush(ad_frame);
 
     ErrorPageWaiter waiter(web_contents());
     if (test_case.exceed_network) {
