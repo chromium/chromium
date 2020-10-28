@@ -7,10 +7,10 @@ module blink.mojom;
 // These values map to the features which can be controlled by Feature Policy.
 //
 // Features are listed in
-// https://github.com/WICG/feature-policy/blob/master/features.md. Not all
-// listed features are supported in Blink, and many are gated by runtime flags.
-// See renderer/platform/feature_policy/feature_policy.cc for the feature names
-// which will be recognized in policy declarations.
+// https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md.
+// Not all listed features are supported in Blink, and many are gated by runtime
+// flags. See renderer/core/feature_policy/feature_policy_features.json5 for the
+// feature names which will be recognized in policy declarations.
 enum FeaturePolicyFeature {
   kNotFound = 0,
   // Controls access to media autoplay.
