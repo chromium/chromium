@@ -29,13 +29,7 @@ namespace chromeos {
 namespace {
 
 const char kDataURIPrefix[] = "data:text/html;charset=utf-8,";
-const char kTestHtmlContent1[] =
-    "<body style=\"margin-top:0;margin-left:0\">"
-    "<button type=\"button\" name=\"test_button_1\" id=\"test_button\" "
-    "style=\"margin-left:200;margin-top:200;width:100;height:50\">"
-    "Big Button 1</button>"
-    "</body>";
-const char kTestHtmlContent2[] =
+const char kTestHtmlContent[] =
     "<body style=\"margin-top:0;margin-left:0\">"
     "<button type=\"button\" name=\"test_button_1\" id=\"test_button\" "
     "style=\"margin-left:200;margin-top:200;width:100;height:50\">"
@@ -165,52 +159,10 @@ class MagnificationControllerTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(MagnificationControllerTest,
-                       FollowFocusOnWebPageButtonNotIntersected) {
-  DCHECK(IsMagnifierEnabled());
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestHtmlContent1)));
-
-  // Move the magnifier window to not intersect with the button.
-  const gfx::Rect button_bounds = GetControlBoundsInRoot("test_button");
-  MoveMagnifierWindow(button_bounds.right() + 100,
-                      button_bounds.bottom() + 100);
-  EXPECT_FALSE(GetViewPort().Intersects(button_bounds));
-
-  // Set the focus on the button.
-  SetFocusOnElement("test_button");
-
-  // Verify the magnifier window is moved to contain the focused button,
-  // and the button is centered at the magnifier window.
-  EXPECT_TRUE(GetViewPort().Contains(button_bounds));
-  EXPECT_EQ(GetViewPort().CenterPoint(), button_bounds.CenterPoint());
-}
-
-IN_PROC_BROWSER_TEST_F(MagnificationControllerTest,
-                       FollowFocusOnWebPageButtonIntersected) {
-  DCHECK(IsMagnifierEnabled());
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestHtmlContent1)));
-
-  // Move the magnifier window to intersect with the button.
-  const gfx::Rect button_bounds = GetControlBoundsInRoot("test_button");
-  MoveMagnifierWindow(button_bounds.CenterPoint().x(),
-                      button_bounds.CenterPoint().y());
-  EXPECT_TRUE(GetViewPort().Intersects(button_bounds));
-
-  // Set the focus on the button.
-  SetFocusOnElement("test_button");
-
-  // Verify the magnifier window is moved to contain the focused button,
-  // and the button is centered at the magnifier window.
-  EXPECT_TRUE(GetViewPort().Contains(button_bounds));
-  EXPECT_EQ(GetViewPort().CenterPoint(), button_bounds.CenterPoint());
-}
-
-IN_PROC_BROWSER_TEST_F(MagnificationControllerTest,
                        FollowFocusOnWebButtonContained) {
   DCHECK(IsMagnifierEnabled());
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestHtmlContent2)));
+      browser(), GURL(std::string(kDataURIPrefix) + kTestHtmlContent)));
 
   // Move magnifier window to contain the button.
   const gfx::Rect button_bounds = GetControlBoundsInRoot("test_button");

@@ -83,6 +83,13 @@ const base::Feature kAccessibilityCursorColor{"AccessibilityCursorColor",
 bool IsAccessibilityCursorColorEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityCursorColor);
 }
+
+const base::Feature kMagnifierNewFocusFollowing{
+    "MagnifierNewFocusFollowing", base::FEATURE_ENABLED_BY_DEFAULT};
+
+bool IsMagnifierNewFocusFollowingEnabled() {
+  return base::FeatureList::IsEnabled(::features::kMagnifierNewFocusFollowing);
+}
 #endif  // defined(OS_CHROMEOS)
 
 const base::Feature kAugmentExistingImageLabels{

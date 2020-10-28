@@ -3643,15 +3643,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilityChromeVoxTutorial)},
-    {"enable-experimental-accessibility-magnifier-new-focus-following",
-     flag_descriptions::
-         kExperimentalAccessibilityMagnifierNewFocusFollowingName,
-     flag_descriptions::
-         kExperimentalAccessibilityMagnifierNewFocusFollowingDescription,
-     kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::
-             kEnableExperimentalAccessibilityMagnifierNewFocusFollowing)},
+    {"enable-magnifier-new-focus-following",
+     flag_descriptions::kMagnifierNewFocusFollowingName,
+     flag_descriptions::kMagnifierNewFocusFollowingDescription,
+     kOsCrOS, FEATURE_VALUE_TYPE(features::kMagnifierNewFocusFollowing)},
 #endif  // OS_CHROMEOS
 #if defined(OS_MAC)
     {"enable-immersive-fullscreen-toolbar",

@@ -23,7 +23,7 @@
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -343,8 +343,7 @@ void MagnificationManager::HandleFocusChangedInPage(
 
 void MagnificationManager::HandleFocusChanged(const gfx::Rect& bounds_in_screen,
                                               bool is_editable) {
-  if (::switches::
-          IsExperimentalAccessibilityMagnifierNewFocusFollowingEnabled())
+  if (features::IsMagnifierNewFocusFollowingEnabled())
     return;
 
   if (bounds_in_screen.IsEmpty())

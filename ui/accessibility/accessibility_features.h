@@ -68,6 +68,13 @@ AX_BASE_EXPORT extern const base::Feature kAccessibilityCursorColor;
 // Returns true if the accessibility cursor color feature is enabled, letting
 // users pick a custom cursor color.
 AX_BASE_EXPORT bool IsAccessibilityCursorColorEnabled();
+
+// Enables new magnifier focus following feature, which provides a richer
+// focus following experience.
+AX_BASE_EXPORT extern const base::Feature kMagnifierNewFocusFollowing;
+
+// Returns true if the new magnifier focus following feature is enabled.
+AX_BASE_EXPORT bool IsMagnifierNewFocusFollowingEnabled();
 #endif  // defined(OS_CHROMEOS)
 
 // Enables Get Image Descriptions to augment existing images labels,

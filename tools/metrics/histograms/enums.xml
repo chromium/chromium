@@ -43864,6 +43864,7 @@ from previous Chrome versions.
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
   <int value="33778663" label="OriginTrials:enabled"/>
   <int value="34399969" label="SplitPartiallyOccludedQuads:enabled"/>
+  <int value="35716183" label="MagnifierNewFocusFollowing:disabled"/>
   <int value="36110634" label="AllowScrollSettings:disabled"/>
   <int value="36422284"
       label="AutofillSaveCardDialogUnlabeledExpirationDate:enabled"/>
@@ -44491,6 +44492,7 @@ from previous Chrome versions.
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
+  <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
   <int value="679931272" label="DcheckIsFatal:enabled"/>

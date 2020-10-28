@@ -24,8 +24,6 @@ AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityChromeVoxAnnotations[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityChromeVoxTutorial[];
-AX_BASE_EXPORT extern const char
-    kEnableExperimentalAccessibilityMagnifierNewFocusFollowing[];
 AX_BASE_EXPORT extern const char kEnableSwitchAccessPointScanning[];
 
 // Returns true if experimental accessibility language detection is enabled.
@@ -38,11 +36,6 @@ IsExperimentalAccessibilityLanguageDetectionDynamicEnabled();
 
 // Returns true if experimental accessibility Switch Access text is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
-
-// Returns true if experimental accessibility Magnifier new focus following is
-// enabled.
-AX_BASE_EXPORT bool
-IsExperimentalAccessibilityMagnifierNewFocusFollowingEnabled();
 
 #if defined(OS_WIN)
 AX_BASE_EXPORT extern const char kEnableExperimentalUIAutomation[];

@@ -34,6 +34,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -404,8 +405,8 @@ AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction::Run() {
       params = accessibility_private::HandleScrollableBoundsForPointFound::
           Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
-  accessibility_private::ScreenRect rect = std::move(params->rect);
-  gfx::Rect bounds(rect.left, rect.top, rect.width, rect.height);
+  gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
+                   params->rect.height);
   ash::AccessibilityController::Get()->HandleAutoclickScrollableBoundsFound(
       bounds);
   return RespondNow(NoArguments());
@@ -416,12 +417,11 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
   std::unique_ptr<accessibility_private::MoveMagnifierToRect::Params> params =
       accessibility_private::MoveMagnifierToRect::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
-  if (!::switches::
-          IsExperimentalAccessibilityMagnifierNewFocusFollowingEnabled()) {
+  if (!features::IsMagnifierNewFocusFollowingEnabled()) {
     return RespondNow(NoArguments());
   }
-  accessibility_private::ScreenRect rect = std::move(params->rect);
-  gfx::Rect bounds(rect.left, rect.top, rect.width, rect.height);
+  gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
+                   params->rect.height);
 
   chromeos::MagnificationManager* magnification_manager =
       chromeos::MagnificationManager::Get();

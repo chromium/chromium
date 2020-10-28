@@ -1508,11 +1508,6 @@
     "expiry_milestone": 87
   },
   {
-    "name": "enable-experimental-accessibility-magnifier-new-focus-following",
-    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "enable-experimental-accessibility-switch-access-text",
     "owners": [ "anastasi@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 90
@@ -1764,6 +1759,11 @@
     // console messages in system logs for debugging purposes. It's disabled by
     // default because logs may contain PII.
     "expiry_milestone": -1
+  },
+  {
+    "name": "enable-magnifier-new-focus-following",
+    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 88
   },
   {
     "name": "enable-mark-http-as",
