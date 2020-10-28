@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
@@ -67,6 +68,9 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
         execution_context, GetDawnControlClient(), this, device_client_id,
         descriptor);
     resolver->Resolve(device);
+    ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
+        .SetGPUDevice(static_cast<int>(true))
+        .Record(execution_context->UkmRecorder());
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError,

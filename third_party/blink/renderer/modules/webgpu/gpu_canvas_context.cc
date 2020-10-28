@@ -17,7 +17,12 @@ GPUCanvasContext::Factory::~Factory() {}
 CanvasRenderingContext* GPUCanvasContext::Factory::Create(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs) {
-  return MakeGarbageCollected<GPUCanvasContext>(host, attrs);
+  CanvasRenderingContext* rendering_context =
+      MakeGarbageCollected<GPUCanvasContext>(host, attrs);
+  DCHECK(host);
+  rendering_context->RecordUKMCanvasRenderingAPI(
+      CanvasRenderingContext::CanvasRenderingAPI::kWebgpu);
+  return rendering_context;
 }
 
 CanvasRenderingContext::ContextType GPUCanvasContext::Factory::GetContextType()

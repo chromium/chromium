@@ -7,4 +7,5 @@ include_rules = [
     "+gpu/command_buffer/common/sync_token.h",
     "+gpu/command_buffer/client/shared_image_interface.h",
     "+gpu/command_buffer/client/webgpu_interface.h",
+    "+services/metrics/public/cpp/ukm_builders.h",
 ]

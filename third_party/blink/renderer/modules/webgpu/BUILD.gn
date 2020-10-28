@@ -81,6 +81,7 @@ blink_modules_sources("webgpu") {
   ]
   deps = [
     "//gpu/command_buffer/client:webgpu_interface",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/dawn/src/dawn:dawn_headers",
   ]
 }
