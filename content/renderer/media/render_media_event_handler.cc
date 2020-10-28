@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/renderer/media/render_media_event_handler.h"
-#include "content/common/view_messages.h"
 #include "content/public/renderer/render_thread.h"
 
 namespace content {

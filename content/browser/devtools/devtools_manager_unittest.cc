@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/common/content_constants_internal.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"

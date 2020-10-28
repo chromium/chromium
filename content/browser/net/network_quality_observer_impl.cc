@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_quality_observer_factory.h"
 #include "content/public/browser/notification_registrar.h"

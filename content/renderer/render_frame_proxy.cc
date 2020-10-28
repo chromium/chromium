@@ -18,7 +18,6 @@
 #include "content/common/input_messages.h"
 #include "content/common/page_messages.h"
 #include "content/common/unfreezable_frame_messages.h"
-#include "content/common/view_messages.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/impression.h"

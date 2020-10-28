@@ -25,7 +25,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_params.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"

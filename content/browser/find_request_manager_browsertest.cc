@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/common/content_switches.h"

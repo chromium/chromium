@@ -31,7 +31,6 @@
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/input_messages.h"
-#include "content/common/view_messages.h"
 #include "content/public/android/content_jni_headers/WebContentsImpl_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"

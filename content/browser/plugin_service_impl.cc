@@ -32,7 +32,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/pepper_plugin_list.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"

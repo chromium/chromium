@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "content/common/view_messages.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ipc/ipc_test_sink.h"
 #include "mojo/public/cpp/bindings/remote.h"

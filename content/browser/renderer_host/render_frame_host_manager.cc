@@ -48,7 +48,6 @@
 #include "content/common/navigation_params_utils.h"
 #include "content/common/page_messages.h"
 #include "content/common/unfreezable_frame_messages.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"

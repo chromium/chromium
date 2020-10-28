@@ -33,7 +33,6 @@
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/common/page_messages.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"

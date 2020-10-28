@@ -18,7 +18,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_utils.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/navigation_policy.h"
 #include "content/public/common/url_constants.h"

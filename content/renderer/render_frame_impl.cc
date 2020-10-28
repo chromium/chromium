@@ -64,7 +64,6 @@
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/common/unfreezable_frame_messages.h"
-#include "content/common/view_messages.h"
 #include "content/common/web_package/signed_exchange_utils.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_constants.h"

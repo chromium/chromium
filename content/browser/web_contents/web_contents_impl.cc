@@ -105,7 +105,6 @@
 #include "content/common/input_messages.h"
 #include "content/common/page_messages.h"
 #include "content/common/render_message_filter.mojom.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_context.h"

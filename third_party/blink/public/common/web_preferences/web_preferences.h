@@ -39,7 +39,7 @@ BLINK_COMMON_EXPORT extern const char kCommonScript[];
 // A struct for managing blink's settings.
 //
 // Adding new values to this class probably involves updating
-// blink::WebSettings, content/common/view_messages.h,
+// blink::WebSettings,
 // browser/profiles/profile.cc, and
 // content/public/common/common_param_traits_macros.h
 struct BLINK_COMMON_EXPORT WebPreferences {

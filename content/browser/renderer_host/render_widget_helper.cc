@@ -11,7 +11,6 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 
 namespace content {

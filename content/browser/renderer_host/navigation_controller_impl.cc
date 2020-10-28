@@ -64,7 +64,6 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/frame_messages.h"
 #include "content/common/trace_utils.h"
-#include "content/common/view_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/invalidate_type.h"

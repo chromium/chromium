@@ -678,31 +678,6 @@ struct FuzzTraits<blink::mojom::EmulatedScreenType> {
 };
 
 template <>
-struct FuzzTraits<viz::CompositorFrame> {
-  static bool Fuzz(viz::CompositorFrame* p, Fuzzer* fuzzer) {
-    // TODO(mbarbella): Support mutation.
-    if (!fuzzer->ShouldGenerate())
-      return true;
-
-    if (!FuzzParam(&p->metadata, fuzzer))
-      return false;
-
-    switch (RandInRange(2)) {
-      case 0: {
-        if (!FuzzParam(&p->resource_list, fuzzer))
-          return false;
-        if (!FuzzParam(&p->render_pass_list, fuzzer))
-          return false;
-        return true;
-      }
-      default:
-        // Fuzz nothing to handle the no frame case.
-        return true;
-    }
-  }
-};
-
-template <>
 struct FuzzTraits<viz::FrameSinkId> {
   static bool Fuzz(viz::FrameSinkId* p, Fuzzer* fuzzer) {
     uint32_t client_id;
@@ -739,66 +714,6 @@ struct FuzzTraits<viz::ResourceFormat> {
   static bool Fuzz(viz::ResourceFormat* p, Fuzzer* fuzzer) {
     int format = RandInRange(viz::ResourceFormat::RESOURCE_FORMAT_MAX + 1);
     *p = static_cast<viz::ResourceFormat>(format);
-    return true;
-  }
-};
-
-template <class A>
-struct FuzzTraits<cc::ListContainer<A>> {
-  static bool Fuzz(cc::ListContainer<A>* p, Fuzzer* fuzzer) {
-    // TODO(mbarbella): This should actually do something.
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<viz::QuadList> {
-  static bool Fuzz(viz::QuadList* p, Fuzzer* fuzzer) {
-    // TODO(mbarbella): This should actually do something.
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<viz::CompositorRenderPass> {
-  static bool Fuzz(viz::CompositorRenderPass* p, Fuzzer* fuzzer) {
-    if (!FuzzParam(&p->id, fuzzer))
-      return false;
-    if (!FuzzParam(&p->output_rect, fuzzer))
-      return false;
-    if (!FuzzParam(&p->damage_rect, fuzzer))
-      return false;
-    if (!FuzzParam(&p->transform_to_root_target, fuzzer))
-      return false;
-    if (!FuzzParam(&p->has_transparent_background, fuzzer))
-      return false;
-    if (!FuzzParam(&p->quad_list, fuzzer))
-      return false;
-    if (!FuzzParam(&p->shared_quad_state_list, fuzzer))
-      return false;
-    // Omitting |copy_requests| as it is not sent over IPC.
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<viz::CompositorRenderPassList> {
-  static bool Fuzz(viz::CompositorRenderPassList* p, Fuzzer* fuzzer) {
-    if (!fuzzer->ShouldGenerate()) {
-      for (size_t i = 0; i < p->size(); ++i) {
-        if (!FuzzParam(p->at(i).get(), fuzzer))
-          return false;
-      }
-      return true;
-    }
-
-    size_t count = RandElementCount();
-    for (size_t i = 0; i < count; ++i) {
-      auto render_pass = viz::CompositorRenderPass::Create();
-      if (!FuzzParam(render_pass.get(), fuzzer))
-        return false;
-      p->push_back(std::move(render_pass));
-    }
     return true;
   }
 };
