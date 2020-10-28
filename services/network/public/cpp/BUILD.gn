@@ -103,6 +103,8 @@ component("cpp") {
     "source_stream_to_data_pipe.h",
     "spki_hash_set.cc",
     "spki_hash_set.h",
+    "supports_loading_mode/supports_loading_mode_parser.cc",
+    "supports_loading_mode/supports_loading_mode_parser.h",
     "trust_token_operation_authorization.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",
@@ -326,6 +328,7 @@ source_set("tests") {
     "simple_url_loader_unittest.cc",
     "site_for_cookies_mojom_traits_unittest.cc",
     "source_stream_to_data_pipe_unittest.cc",
+    "supports_loading_mode/supports_loading_mode_parser_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
     "web_sandbox_flags_unittests.cc",
   ]

@@ -473,6 +473,7 @@ mojom("mojom") {
     "referrer_policy.mojom",
     "source_location.mojom",
     "ssl_config.mojom",
+    "supports_loading_mode.mojom",
     "tcp_socket.mojom",
     "tls_socket.mojom",
     "udp_socket.mojom",
