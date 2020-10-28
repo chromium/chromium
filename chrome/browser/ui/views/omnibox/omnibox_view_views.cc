@@ -2351,7 +2351,7 @@ void OmniboxViewViews::OnAfterUserAction(views::Textfield* sender) {
 void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
   ui::Clipboard* cb = ui::Clipboard::GetForCurrentThread();
   base::string16 selected_text;
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   cb->ReadText(clipboard_buffer, &data_dst, &selected_text);
   GURL url;

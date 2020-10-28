@@ -26,8 +26,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
-#include "ui/base/clipboard/clipboard_dlp_controller.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
+#include "ui/base/clipboard/data_transfer_policy_controller.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -707,16 +707,17 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   Release(ui::KeyboardCode::VKEY_COMMAND);
 }
 
-class FakeDlpController : public ui::ClipboardDlpController {
+class FakeDataTransferPolicyController
+    : public ui::DataTransferPolicyController {
  public:
-  FakeDlpController()
+  FakeDataTransferPolicyController()
       : allowed_origin_(url::Origin::Create(GURL(kUrlString))) {}
-  ~FakeDlpController() override = default;
+  ~FakeDataTransferPolicyController() override = default;
 
-  // ui::ClipboardDlpController:
+  // ui::DataTransferPolicyController:
   bool IsDataReadAllowed(
-      const ui::ClipboardDataEndpoint* const data_src,
-      const ui::ClipboardDataEndpoint* const data_dst) const override {
+      const ui::DataTransferEndpoint* const data_src,
+      const ui::DataTransferEndpoint* const data_dst) const override {
     // The multipaste menu should have access to any clipboard data.
     if (data_dst && data_dst->type() == ui::EndpointType::kClipboardHistory)
       return true;
@@ -731,12 +732,13 @@ class FakeDlpController : public ui::ClipboardDlpController {
   const url::Origin allowed_origin_;
 };
 
-// The browser test equipped with the custom DLP controller.
+// The browser test equipped with the custom policy controller.
 class ClipboardHistoryWithMockDLPBrowserTest
     : public ClipboardHistoryTextfieldBrowserTest {
  public:
   ClipboardHistoryWithMockDLPBrowserTest()
-      : dlp_controller_(std::make_unique<FakeDlpController>()) {}
+      : data_transfer_policy_controller_(
+            std::make_unique<FakeDataTransferPolicyController>()) {}
   ~ClipboardHistoryWithMockDLPBrowserTest() override = default;
 
   // Write text into the clipboard buffer and it should be inaccessible from
@@ -750,7 +752,7 @@ class ClipboardHistoryWithMockDLPBrowserTest
   // the multipaste menu.
   void SetClipboardTextWithAccessibleSrc(const std::string& text) {
     ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,
-                              std::make_unique<ui::ClipboardDataEndpoint>(
+                              std::make_unique<ui::DataTransferEndpoint>(
                                   url::Origin::Create(GURL(kUrlString))))
         .WriteText(base::UTF8ToUTF16(text));
 
@@ -761,7 +763,8 @@ class ClipboardHistoryWithMockDLPBrowserTest
   }
 
  private:
-  std::unique_ptr<FakeDlpController> dlp_controller_;
+  std::unique_ptr<FakeDataTransferPolicyController>
+      data_transfer_policy_controller_;
 };
 
 // Verifies the basic features related to the inaccessible menu item, the one

@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 #include <utility>
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/events/gesture_event_details.h"
 
 #if defined(OS_WIN)
@@ -1775,8 +1775,8 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::COPY:
       return readable && HasSelection();
     case ui::TextEditCommand::PASTE: {
-      ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kDefault,
-                                         show_rejection_ui_if_any_);
+      ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault,
+                                        show_rejection_ui_if_any_);
       ui::Clipboard::GetForCurrentThread()->ReadText(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
     }

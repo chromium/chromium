@@ -39,8 +39,8 @@
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
-#include "ui/base/clipboard/clipboard_dlp_controller.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
+#include "ui/base/clipboard/data_transfer_policy_controller.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
@@ -104,19 +104,19 @@ class ClipboardTest : public PlatformTest {
 };
 
 // A mock delegate for testing.
-class MockClipboardDlpController : public ClipboardDlpController {
+class MockPolicyController : public DataTransferPolicyController {
  public:
-  MockClipboardDlpController();
-  ~MockClipboardDlpController() override;
+  MockPolicyController();
+  ~MockPolicyController() override;
 
   MOCK_CONST_METHOD2(IsDataReadAllowed,
-                     bool(const ClipboardDataEndpoint* const data_src,
-                          const ClipboardDataEndpoint* const data_dst));
+                     bool(const DataTransferEndpoint* const data_src,
+                          const DataTransferEndpoint* const data_dst));
 };
 
-MockClipboardDlpController::MockClipboardDlpController() = default;
+MockPolicyController::MockPolicyController() = default;
 
-MockClipboardDlpController::~MockClipboardDlpController() = default;
+MockPolicyController::~MockPolicyController() = default;
 
 // Hack for tests that need to call static methods of ClipboardTest.
 struct NullClipboardTraits {
@@ -1083,55 +1083,55 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
   scw.WriteImage(SkBitmap());
 }
 
-// DLP is only intended to be used in Chrome OS, so the following DLP related
-// tests are only run on Chrome OS.
+// Policy controller is only intended to be used in Chrome OS, so the following
+// policy related tests are only run on Chrome OS.
 #if defined(OS_CHROMEOS)
-// Test that copy/paste would work normally if the dlp controller didn't
+// Test that copy/paste would work normally if the policy controller didn't
 // restrict the clipboard data.
-TYPED_TEST(ClipboardTest, DlpAllowDataRead) {
-  auto dlp_controller = std::make_unique<MockClipboardDlpController>();
+TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
+  auto policy_controller = std::make_unique<MockPolicyController>();
   const base::string16 kTestText(base::UTF8ToUTF16("World"));
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<ClipboardDataEndpoint>(url::Origin()));
+        std::make_unique<DataTransferEndpoint>(url::Origin()));
     writer.WriteText(kTestText);
   }
-  EXPECT_CALL(*dlp_controller, IsDataReadAllowed)
+  EXPECT_CALL(*policy_controller, IsDataReadAllowed)
       .WillRepeatedly(testing::Return(true));
   base::string16 read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
-  ::testing::Mock::VerifyAndClearExpectations(dlp_controller.get());
+  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
   EXPECT_EQ(kTestText, read_result);
 }
 
-// Test that pasting clipboard data would not work if the dlp controller
+// Test that pasting clipboard data would not work if the policy controller
 // restricted it.
-TYPED_TEST(ClipboardTest, DlpDisallow_ReadText) {
-  auto dlp_controller = std::make_unique<MockClipboardDlpController>();
+TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
+  auto policy_controller = std::make_unique<MockPolicyController>();
   const base::string16 kTestText(base::UTF8ToUTF16("World"));
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<ClipboardDataEndpoint>(url::Origin()));
+        std::make_unique<DataTransferEndpoint>(url::Origin()));
     writer.WriteText(kTestText);
   }
-  EXPECT_CALL(*dlp_controller, IsDataReadAllowed)
+  EXPECT_CALL(*policy_controller, IsDataReadAllowed)
       .WillRepeatedly(testing::Return(false));
   base::string16 read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
-  ::testing::Mock::VerifyAndClearExpectations(dlp_controller.get());
+  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
   EXPECT_EQ(base::string16(), read_result);
 }
 
-TYPED_TEST(ClipboardTest, DlpDisallow_ReadImage) {
-  auto dlp_controller = std::make_unique<MockClipboardDlpController>();
-  EXPECT_CALL(*dlp_controller, IsDataReadAllowed)
+TYPED_TEST(ClipboardTest, PolicyDisallow_ReadImage) {
+  auto policy_controller = std::make_unique<MockPolicyController>();
+  EXPECT_CALL(*policy_controller, IsDataReadAllowed)
       .WillRepeatedly(testing::Return(false));
   const SkBitmap& image = clipboard_test_util::ReadImage(&this->clipboard());
-  ::testing::Mock::VerifyAndClearExpectations(dlp_controller.get());
+  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
   EXPECT_EQ(true, image.empty());
 }
 

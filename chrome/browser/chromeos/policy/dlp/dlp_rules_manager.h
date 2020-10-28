@@ -42,7 +42,8 @@ class DlpRulesManager {
   // A restriction that can be set by DataLeakPreventionRulesList policy.
   enum class Restriction {
     kUnknownRestriction = 0,
-    kClipboard = 1,      // Restricts sharing the clipboard data.
+    kClipboard = 1,      // Restricts sharing the data via clipboard and
+                         // drag-n-drop.
     kScreenshot = 2,     // Restricts taking screenshots of confidential screen
                          // content.
     kPrinting = 3,       // Restricts printing confidential screen content.

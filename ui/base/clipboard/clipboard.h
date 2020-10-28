@@ -28,13 +28,14 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 
 class SkBitmap;
 
 namespace ui {
 class TestClipboard;
 class ScopedClipboardWriter;
-class ClipboardDataEndpoint;
+class DataTransferEndpoint;
 
 // Clipboard:
 // - reads from and writes to the system clipboard.
@@ -97,7 +98,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual bool IsFormatAvailable(
       const ClipboardFormatType& format,
       ClipboardBuffer buffer,
-      const ClipboardDataEndpoint* data_dst) const = 0;
+      const DataTransferEndpoint* data_dst) const = 0;
 
   // Returns whether the clipboard has data that is marked by its originator as
   // confidential. This is available for opt-in checking by the user of this API
@@ -118,23 +119,23 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // Includes all sanitized types.
   // Also, includes pickled types by splitting them out of the pickled format.
   virtual void ReadAvailableTypes(ClipboardBuffer buffer,
-                                  const ClipboardDataEndpoint* data_dst,
+                                  const DataTransferEndpoint* data_dst,
                                   std::vector<base::string16>* types) const = 0;
   // Includes all types, including unsanitized types.
   // Omits formats held within pickles, as they're different from what a native
   // application would see.
   virtual std::vector<base::string16> ReadAvailablePlatformSpecificFormatNames(
       ClipboardBuffer buffer,
-      const ClipboardDataEndpoint* data_dst) const = 0;
+      const DataTransferEndpoint* data_dst) const = 0;
 
   // Reads Unicode text from the clipboard, if available.
   virtual void ReadText(ClipboardBuffer buffer,
-                        const ClipboardDataEndpoint* data_dst,
+                        const DataTransferEndpoint* data_dst,
                         base::string16* result) const = 0;
 
   // Reads ASCII text from the clipboard, if available.
   virtual void ReadAsciiText(ClipboardBuffer buffer,
-                             const ClipboardDataEndpoint* data_dst,
+                             const DataTransferEndpoint* data_dst,
                              std::string* result) const = 0;
 
   // Reads HTML from the clipboard, if available. If the HTML fragment requires
@@ -142,7 +143,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // markup indicating the beginning and end of the actual fragment. Otherwise,
   // they will contain 0 and markup->size().
   virtual void ReadHTML(ClipboardBuffer buffer,
-                        const ClipboardDataEndpoint* data_dst,
+                        const DataTransferEndpoint* data_dst,
                         base::string16* markup,
                         std::string* src_url,
                         uint32_t* fragment_start,
@@ -150,36 +151,36 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   // Reads an SVG image from the clipboard, if available.
   virtual void ReadSvg(ClipboardBuffer buffer,
-                       const ClipboardDataEndpoint* data_dst,
+                       const DataTransferEndpoint* data_dst,
                        base::string16* result) const = 0;
   // Reads RTF from the clipboard, if available. Stores the result as a byte
   // vector.
   virtual void ReadRTF(ClipboardBuffer buffer,
-                       const ClipboardDataEndpoint* data_dst,
+                       const DataTransferEndpoint* data_dst,
                        std::string* result) const = 0;
 
   using ReadImageCallback = base::OnceCallback<void(const SkBitmap&)>;
 
   // Reads an image from the clipboard, if available.
   virtual void ReadImage(ClipboardBuffer buffer,
-                         const ClipboardDataEndpoint* data_dst,
+                         const DataTransferEndpoint* data_dst,
                          ReadImageCallback callback) const = 0;
 
   virtual void ReadCustomData(ClipboardBuffer buffer,
                               const base::string16& type,
-                              const ClipboardDataEndpoint* data_dst,
+                              const DataTransferEndpoint* data_dst,
                               base::string16* result) const = 0;
 
   // Reads a bookmark from the clipboard, if available.
   // |title| or |url| may be null.
-  virtual void ReadBookmark(const ClipboardDataEndpoint* data_dst,
+  virtual void ReadBookmark(const DataTransferEndpoint* data_dst,
                             base::string16* title,
                             std::string* url) const = 0;
 
   // Reads raw data from the clipboard with the given format type. Stores result
   // as a byte vector.
   virtual void ReadData(const ClipboardFormatType& format,
-                        const ClipboardDataEndpoint* data_dst,
+                        const DataTransferEndpoint* data_dst,
                         std::string* result) const = 0;
 
   // Returns an estimate of the time the clipboard was last updated.  If the
@@ -262,7 +263,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WritePortableRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,
-      std::unique_ptr<ClipboardDataEndpoint> data_src) = 0;
+      std::unique_ptr<DataTransferEndpoint> data_src) = 0;
 
   // Write |platform_representations|, in the order of their appearance in
   // |platform_representations|. Also, adds the source of the data to the
@@ -272,7 +273,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WritePlatformRepresentations(
       ClipboardBuffer buffer,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
-      std::unique_ptr<ClipboardDataEndpoint> data_src) = 0;
+      std::unique_ptr<DataTransferEndpoint> data_src) = 0;
 
   void DispatchPortableRepresentation(PortableFormat format,
                                       const ObjectMapParams& params);

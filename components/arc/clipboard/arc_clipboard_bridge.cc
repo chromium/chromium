@@ -16,8 +16,8 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace arc {
@@ -49,7 +49,7 @@ mojom::ClipRepresentationPtr CreateHTML(const ui::Clipboard* clipboard) {
   // Unused. URL is sent from CreatePlainText() by reading it from the Bookmark.
   std::string url;
   uint32_t fragment_start, fragment_end;
-  const ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kArc);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
 
   clipboard->ReadHTML(ui::ClipboardBuffer::kCopyPaste, &data_dst, &markup16,
                       &url, &fragment_start, &fragment_end);
@@ -71,7 +71,7 @@ mojom::ClipRepresentationPtr CreatePlainText(const ui::Clipboard* clipboard) {
   base::string16 title;
   std::string text;
   std::string mime_type(ui::kMimeTypeText);
-  const ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kArc);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
 
   // Both Bookmark and AsciiText are represented by text/plain. If both are
   // present, only use Bookmark.
@@ -87,7 +87,7 @@ mojom::ClipDataPtr GetClipData(const ui::Clipboard* clipboard) {
   DCHECK(clipboard);
 
   std::vector<base::string16> mime_types;
-  const ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kArc);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
   clipboard->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &data_dst,
                                 &mime_types);
 
@@ -178,7 +178,7 @@ void ArcClipboardBridge::SetClipContent(mojom::ClipDataPtr clip_data) {
   base::AutoReset<bool> auto_reset(&event_originated_at_instance_, true);
   ui::ScopedClipboardWriter writer(
       ui::ClipboardBuffer::kCopyPaste,
-      std::make_unique<ui::ClipboardDataEndpoint>(ui::EndpointType::kArc));
+      std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kArc));
 
   for (const auto& repr : clip_data->representations) {
     const std::string& mime_type(repr->mime_type);

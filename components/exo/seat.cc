@@ -28,8 +28,8 @@
 #include "components/exo/xkb_tracker.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/aura/client/focus_client.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -160,7 +160,7 @@ class Seat::RefCountedScopedClipboardWriter
  public:
   explicit RefCountedScopedClipboardWriter()
       : ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,
-                              std::make_unique<ui::ClipboardDataEndpoint>(
+                              std::make_unique<ui::DataTransferEndpoint>(
                                   ui::EndpointType::kGuestOs)) {}
 
  private:

@@ -10,9 +10,9 @@
 #include "ash/shell.h"
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 
 namespace ash {
 
@@ -82,7 +82,7 @@ void ClipboardHistory::OnClipboardDataChanged() {
   auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
   CHECK(clipboard);
 
-  ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   const auto* clipboard_data = clipboard->GetClipboardData(&data_dst);
   CHECK(clipboard_data);
 

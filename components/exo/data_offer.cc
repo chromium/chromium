@@ -26,7 +26,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
@@ -123,7 +123,7 @@ scoped_refptr<base::RefCountedString> EncodeAsRefCountedString(
 
 void ReadTextFromClipboard(const std::string& charset, base::ScopedFD fd) {
   base::string16 text;
-  const ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kGuestOs);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
   WriteFileDescriptor(std::move(fd), EncodeAsRefCountedString(text, charset));
@@ -133,7 +133,7 @@ void ReadHTMLFromClipboard(const std::string& charset, base::ScopedFD fd) {
   base::string16 text;
   std::string url;
   uint32_t start, end;
-  const ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kGuestOs);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
   ui::Clipboard::GetForCurrentThread()->ReadHTML(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &text, &url, &start, &end);
   WriteFileDescriptor(std::move(fd), EncodeAsRefCountedString(text, charset));
@@ -141,7 +141,7 @@ void ReadHTMLFromClipboard(const std::string& charset, base::ScopedFD fd) {
 
 void ReadRTFFromClipboard(base::ScopedFD fd) {
   std::string text;
-  const ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kGuestOs);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
   ui::Clipboard::GetForCurrentThread()->ReadRTF(ui::ClipboardBuffer::kCopyPaste,
                                                 &data_dst, &text);
   WriteFileDescriptor(std::move(fd), base::RefCountedString::TakeString(&text));
@@ -168,7 +168,7 @@ void OnReceivePNGFromClipboard(base::ScopedFD fd, const SkBitmap& sk_bitmap) {
 }
 
 void ReadPNGFromClipboard(base::ScopedFD fd) {
-  const ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kGuestOs);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
   ui::Clipboard::GetForCurrentThread()->ReadImage(
       ui::ClipboardBuffer::kCopyPaste, &data_dst,
       base::BindOnce(&OnReceivePNGFromClipboard, std::move(fd)));
@@ -318,7 +318,7 @@ void DataOffer::SetDropData(FileHelper* file_helper,
 void DataOffer::SetClipboardData(FileHelper* file_helper,
                                  const ui::Clipboard& data) {
   DCHECK_EQ(0u, data_.size());
-  const ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kGuestOs);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
   if (data.IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     auto utf8_callback =

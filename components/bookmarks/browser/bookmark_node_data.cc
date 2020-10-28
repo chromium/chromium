@@ -138,7 +138,7 @@ BookmarkNodeData::~BookmarkNodeData() {
 #if !defined(OS_APPLE)
 // static
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
       ui::ClipboardFormatType::GetType(kClipboardFormatString),

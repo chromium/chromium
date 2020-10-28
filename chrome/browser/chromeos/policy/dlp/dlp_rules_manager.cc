@@ -15,7 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/dlp/enterprise_clipboard_dlp_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -257,7 +257,7 @@ void DlpRulesManager::OnPolicyUpdate() {
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 
   if (!rules_list) {
-    EnterpriseClipboardDlpController::DeleteInstance();
+    DataTransferDlpController::DeleteInstance();
     return;
   }
 
@@ -325,9 +325,9 @@ void DlpRulesManager::OnPolicyUpdate() {
   }
 
   if (base::Contains(restrictions_map_, Restriction::kClipboard)) {
-    EnterpriseClipboardDlpController::Init();
+    DataTransferDlpController::Init();
   } else {
-    EnterpriseClipboardDlpController::DeleteInstance();
+    DataTransferDlpController::DeleteInstance();
   }
 }
 

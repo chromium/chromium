@@ -10,12 +10,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 
 base::string16 GetClipboardText(bool notify_if_restricted) {
   // Try text format.
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, notify_if_restricted);
   if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(),
                                    ui::ClipboardBuffer::kCopyPaste,

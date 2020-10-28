@@ -13,6 +13,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -70,7 +71,7 @@ void CopyLinkToTextMenuObserver::ExecuteCommand(int command_id) {
     return;
 
   if (main_frame != proxy_->GetWebContents()->GetFocusedFrame()) {
-    OnGeneratedSelector(std::make_unique<ui::ClipboardDataEndpoint>(
+    OnGeneratedSelector(std::make_unique<ui::DataTransferEndpoint>(
                             main_frame->GetLastCommittedOrigin()),
                         std::string());
     return;
@@ -81,12 +82,12 @@ void CopyLinkToTextMenuObserver::ExecuteCommand(int command_id) {
   remote_->GenerateSelector(
       base::BindOnce(&CopyLinkToTextMenuObserver::OnGeneratedSelector,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::make_unique<ui::ClipboardDataEndpoint>(
+                     std::make_unique<ui::DataTransferEndpoint>(
                          main_frame->GetLastCommittedOrigin())));
 }
 
 void CopyLinkToTextMenuObserver::OnGeneratedSelector(
-    std::unique_ptr<ui::ClipboardDataEndpoint> endpoint,
+    std::unique_ptr<ui::DataTransferEndpoint> endpoint,
     const std::string& selector) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
                                 std::move(endpoint));

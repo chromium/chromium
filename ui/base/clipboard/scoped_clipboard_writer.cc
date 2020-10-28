@@ -19,7 +19,7 @@ namespace ui {
 
 ScopedClipboardWriter::ScopedClipboardWriter(
     ClipboardBuffer buffer,
-    std::unique_ptr<ClipboardDataEndpoint> data_src)
+    std::unique_ptr<DataTransferEndpoint> data_src)
     : buffer_(buffer), data_src_(std::move(data_src)) {}
 
 ScopedClipboardWriter::~ScopedClipboardWriter() {

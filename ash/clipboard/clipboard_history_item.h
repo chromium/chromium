@@ -19,7 +19,7 @@ class ASH_EXPORT ClipboardHistoryItem {
   ClipboardHistoryItem(ClipboardHistoryItem&&);
 
   // Copy/move assignment operators are deleted to be consistent with
-  // ui::ClipboardData and ui::ClipboardDataEndpoint.
+  // ui::ClipboardData and ui::DataTransferEndpoint.
   ClipboardHistoryItem& operator=(const ClipboardHistoryItem&) = delete;
   ClipboardHistoryItem& operator=(ClipboardHistoryItem&&) = delete;
 

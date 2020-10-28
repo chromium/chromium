@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_CLIPBOARD_CLIPBOARD_DATA_ENDPOINT_H_
-#define UI_BASE_CLIPBOARD_CLIPBOARD_DATA_ENDPOINT_H_
+#ifndef UI_BASE_CLIPBOARD_DATA_TRANSFER_ENDPOINT_H_
+#define UI_BASE_CLIPBOARD_DATA_TRANSFER_ENDPOINT_H_
 
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -11,8 +11,8 @@
 
 namespace ui {
 
-// EndpointType can represent either the source of the clipboard data or the
-// destination trying to read the clipboard data.
+// EndpointType can represent either the source of the transferred data or the
+// destination trying to read the data.
 // Whenever a new format is supported, a new enum should be added.
 enum class EndpointType {
   kDefault = 0,  // This type shouldn't be used if any of the following types is
@@ -29,32 +29,32 @@ enum class EndpointType {
   kMaxValue = kClipboardHistory
 };
 
-// ClipboardDataEndpoint represents:
-// - The source of the data in the clipboard.
-// - The destination trying to access the clipboard data.
+// DataTransferEndpoint represents:
+// - The source of the data being ransferred.
+// - The destination trying to access the data.
 // - Whether the user should see a notification if the data access is not
 // allowed.
-// Passing ClipboardDataEndpoint as a nullptr is equivalent to
-// ClipboardDataEndpoint(kDefault, true). Both specify the same types of
+// Passing DataTransferEndpoint as a nullptr is equivalent to
+// DataTransferEndpoint(kDefault, true). Both specify the same types of
 // endpoints (not a URL/ARC++/...etc, and should show a notification to the user
-// if the clipboard data read is not allowed.)
-class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardDataEndpoint {
+// if the data read is not allowed.)
+class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) DataTransferEndpoint {
  public:
-  explicit ClipboardDataEndpoint(const url::Origin& origin,
-                                 bool notify_if_restricted = true);
+  explicit DataTransferEndpoint(const url::Origin& origin,
+                                bool notify_if_restricted = true);
   // This constructor shouldn't be used if |type| == EndpointType::kUrl.
-  explicit ClipboardDataEndpoint(EndpointType type,
-                                 bool notify_if_restricted = true);
+  explicit DataTransferEndpoint(EndpointType type,
+                                bool notify_if_restricted = true);
 
-  ClipboardDataEndpoint(const ClipboardDataEndpoint& other);
-  ClipboardDataEndpoint(ClipboardDataEndpoint&& other);
+  DataTransferEndpoint(const DataTransferEndpoint& other);
+  DataTransferEndpoint(DataTransferEndpoint&& other);
 
-  ClipboardDataEndpoint& operator=(const ClipboardDataEndpoint& other) = delete;
-  ClipboardDataEndpoint& operator=(ClipboardDataEndpoint&& other) = delete;
+  DataTransferEndpoint& operator=(const DataTransferEndpoint& other) = delete;
+  DataTransferEndpoint& operator=(DataTransferEndpoint&& other) = delete;
 
-  bool operator==(const ClipboardDataEndpoint& other) const;
+  bool operator==(const DataTransferEndpoint& other) const;
 
-  ~ClipboardDataEndpoint();
+  ~DataTransferEndpoint();
 
   bool IsUrlType() const { return type_ == EndpointType::kUrl; }
 
@@ -67,16 +67,16 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardDataEndpoint {
  private:
   // This variable should always have a value representing the object type.
   const EndpointType type_;
-  // The url::Origin of the data endpoint. It always has a value if |type_| ==
+  // The url::Origin of the data endpoint. It always has a value if `type_` ==
   // EndpointType::kUrl, otherwise it's empty.
   const base::Optional<url::Origin> origin_;
   // This variable should be set to true, if paste is initiated by the user.
   // Otherwise it should be set to false, so the user won't see a notification
-  // when the clipboard data is restricted by the rules of data leak prevention
-  // policy and something in the background is trying to access it.
+  // when the data is restricted by the rules of data leak prevention policy
+  // and something in the background is trying to access it.
   bool notify_if_restricted_ = true;
 };
 
 }  // namespace ui
 
-#endif  // UI_BASE_CLIPBOARD_CLIPBOARD_DATA_ENDPOINT_H_
+#endif  // UI_BASE_CLIPBOARD_DATA_TRANSFER_ENDPOINT_H_

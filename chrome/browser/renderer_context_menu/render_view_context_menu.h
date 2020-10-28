@@ -64,7 +64,7 @@ class MediaPlayerAction;
 }
 
 namespace ui {
-class ClipboardDataEndpoint;
+class DataTransferEndpoint;
 }
 
 class RenderViewContextMenu : public RenderViewContextMenuBase {
@@ -201,7 +201,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   void AppendSharedClipboardItem();
   void AppendQRCodeGeneratorItem(bool for_image, bool draw_icon);
 
-  std::unique_ptr<ui::ClipboardDataEndpoint> CreateDataEndpoint(
+  std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
       bool notify_if_restricted) const;
 
   // Command enabled query functions.

@@ -24,12 +24,12 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
-#include "ui/base/clipboard/clipboard_dlp_controller.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
+#include "ui/base/clipboard/data_transfer_policy_controller.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/buildflags.h"
 
@@ -240,12 +240,13 @@ class ClipboardInternal {
     return previous_data;
   }
 
-  bool IsReadAllowed(const ClipboardDataEndpoint* data_dst) const {
-    ClipboardDlpController* dlp_controller = ClipboardDlpController::Get();
+  bool IsReadAllowed(const DataTransferEndpoint* data_dst) const {
+    DataTransferPolicyController* policy_controller =
+        DataTransferPolicyController::Get();
     auto* data = GetData();
-    if (!dlp_controller || !data)
+    if (!policy_controller || !data)
       return true;
-    return dlp_controller->IsDataReadAllowed(data->source(), data_dst);
+    return policy_controller->IsDataReadAllowed(data->source(), data_dst);
   }
 
  private:
@@ -271,7 +272,7 @@ class ClipboardDataBuilder {
   // confidential and the data can be pasted in any document.
   static void CommitToClipboard(
       ClipboardInternal* clipboard,
-      std::unique_ptr<ClipboardDataEndpoint> data_src) {
+      std::unique_ptr<DataTransferEndpoint> data_src) {
     ClipboardData* data = GetCurrentData();
     data->set_source(std::move(data_src));
     clipboard->WriteData(TakeCurrentData());
@@ -375,7 +376,7 @@ ClipboardNonBacked::~ClipboardNonBacked() {
 }
 
 const ClipboardData* ClipboardNonBacked::GetClipboardData(
-    ClipboardDataEndpoint* data_dst) const {
+    DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
 
   if (!clipboard_internal_->IsReadAllowed(data_dst))
@@ -400,7 +401,7 @@ uint64_t ClipboardNonBacked::GetSequenceNumber(ClipboardBuffer buffer) const {
 bool ClipboardNonBacked::IsFormatAvailable(
     const ClipboardFormatType& format,
     ClipboardBuffer buffer,
-    const ClipboardDataEndpoint* data_dst) const {
+    const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardBuffer(buffer));
 
@@ -438,7 +439,7 @@ void ClipboardNonBacked::Clear(ClipboardBuffer buffer) {
 
 void ClipboardNonBacked::ReadAvailableTypes(
     ClipboardBuffer buffer,
-    const ClipboardDataEndpoint* data_dst,
+    const DataTransferEndpoint* data_dst,
     std::vector<base::string16>* types) const {
   DCHECK(CalledOnValidThread());
   DCHECK(types);
@@ -472,7 +473,7 @@ void ClipboardNonBacked::ReadAvailableTypes(
 std::vector<base::string16>
 ClipboardNonBacked::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
-    const ClipboardDataEndpoint* data_dst) const {
+    const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
 
   std::vector<base::string16> types;
@@ -503,7 +504,7 @@ ClipboardNonBacked::ReadAvailablePlatformSpecificFormatNames(
 }
 
 void ClipboardNonBacked::ReadText(ClipboardBuffer buffer,
-                                  const ClipboardDataEndpoint* data_dst,
+                                  const DataTransferEndpoint* data_dst,
                                   base::string16* result) const {
   DCHECK(CalledOnValidThread());
 
@@ -519,7 +520,7 @@ void ClipboardNonBacked::ReadText(ClipboardBuffer buffer,
 }
 
 void ClipboardNonBacked::ReadAsciiText(ClipboardBuffer buffer,
-                                       const ClipboardDataEndpoint* data_dst,
+                                       const DataTransferEndpoint* data_dst,
                                        std::string* result) const {
   DCHECK(CalledOnValidThread());
 
@@ -535,7 +536,7 @@ void ClipboardNonBacked::ReadAsciiText(ClipboardBuffer buffer,
 }
 
 void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
-                                  const ClipboardDataEndpoint* data_dst,
+                                  const DataTransferEndpoint* data_dst,
                                   base::string16* markup,
                                   std::string* src_url,
                                   uint32_t* fragment_start,
@@ -554,7 +555,7 @@ void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
 }
 
 void ClipboardNonBacked::ReadSvg(ClipboardBuffer buffer,
-                                 const ClipboardDataEndpoint* data_dst,
+                                 const DataTransferEndpoint* data_dst,
                                  base::string16* result) const {
   DCHECK(CalledOnValidThread());
 
@@ -566,7 +567,7 @@ void ClipboardNonBacked::ReadSvg(ClipboardBuffer buffer,
 }
 
 void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
-                                 const ClipboardDataEndpoint* data_dst,
+                                 const DataTransferEndpoint* data_dst,
                                  std::string* result) const {
   DCHECK(CalledOnValidThread());
 
@@ -582,7 +583,7 @@ void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
 }
 
 void ClipboardNonBacked::ReadImage(ClipboardBuffer buffer,
-                                   const ClipboardDataEndpoint* data_dst,
+                                   const DataTransferEndpoint* data_dst,
                                    ReadImageCallback callback) const {
   DCHECK(CalledOnValidThread());
 
@@ -601,7 +602,7 @@ void ClipboardNonBacked::ReadImage(ClipboardBuffer buffer,
 
 void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
                                         const base::string16& type,
-                                        const ClipboardDataEndpoint* data_dst,
+                                        const DataTransferEndpoint* data_dst,
                                         base::string16* result) const {
   DCHECK(CalledOnValidThread());
 
@@ -616,7 +617,7 @@ void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
 #endif
 }
 
-void ClipboardNonBacked::ReadBookmark(const ClipboardDataEndpoint* data_dst,
+void ClipboardNonBacked::ReadBookmark(const DataTransferEndpoint* data_dst,
                                       base::string16* title,
                                       std::string* url) const {
   DCHECK(CalledOnValidThread());
@@ -633,7 +634,7 @@ void ClipboardNonBacked::ReadBookmark(const ClipboardDataEndpoint* data_dst,
 }
 
 void ClipboardNonBacked::ReadData(const ClipboardFormatType& format,
-                                  const ClipboardDataEndpoint* data_dst,
+                                  const DataTransferEndpoint* data_dst,
                                   std::string* result) const {
   DCHECK(CalledOnValidThread());
 
@@ -659,7 +660,7 @@ bool ClipboardNonBacked::IsSelectionBufferAvailable() const {
 void ClipboardNonBacked::WritePortableRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
-    std::unique_ptr<ClipboardDataEndpoint> data_src) {
+    std::unique_ptr<DataTransferEndpoint> data_src) {
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardBuffer(buffer));
   for (const auto& object : objects)
@@ -671,7 +672,7 @@ void ClipboardNonBacked::WritePortableRepresentations(
 void ClipboardNonBacked::WritePlatformRepresentations(
     ClipboardBuffer buffer,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
-    std::unique_ptr<ClipboardDataEndpoint> data_src) {
+    std::unique_ptr<DataTransferEndpoint> data_src) {
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardBuffer(buffer));
 

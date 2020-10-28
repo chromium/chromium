@@ -10,7 +10,7 @@
 #include "base/strings/string_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 
 namespace {
 // Schemes appropriate for suggestion by ClipboardRecentContent.
@@ -46,7 +46,7 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   // Get and clean up the clipboard before processing.
   std::string gurl_string;
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &data_dst,
                            &gurl_string);
@@ -89,7 +89,7 @@ ClipboardRecentContentGeneric::GetRecentTextFromClipboard() {
     return base::nullopt;
 
   base::string16 text_from_clipboard;
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &text_from_clipboard);
@@ -107,7 +107,7 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
   if (GetClipboardContentAge() > MaximumAgeOfClipboard())
     return;
 
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   ui::Clipboard::GetForCurrentThread()->ReadImage(
       ui::ClipboardBuffer::kCopyPaste, &data_dst,
@@ -118,7 +118,7 @@ bool ClipboardRecentContentGeneric::HasRecentImageFromClipboard() {
   if (GetClipboardContentAge() > MaximumAgeOfClipboard())
     return false;
 
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
       ui::ClipboardFormatType::GetBitmapType(), ui::ClipboardBuffer::kCopyPaste,

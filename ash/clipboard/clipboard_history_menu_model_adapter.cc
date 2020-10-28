@@ -10,8 +10,8 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
-#include "ui/base/clipboard/clipboard_dlp_controller.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
+#include "ui/base/clipboard/data_transfer_policy_controller.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -22,13 +22,13 @@
 namespace ash {
 
 namespace {
-bool IsDataReadAllowed(ui::ClipboardDataEndpoint* source,
-                       ui::ClipboardDataEndpoint* destination) {
-  ui::ClipboardDlpController* dlp_controller =
-      ui::ClipboardDlpController::Get();
-  if (!dlp_controller)
+bool IsDataReadAllowed(ui::DataTransferEndpoint* source,
+                       ui::DataTransferEndpoint* destination) {
+  ui::DataTransferPolicyController* policy_controller =
+      ui::DataTransferPolicyController::Get();
+  if (!policy_controller)
     return true;
-  return dlp_controller->IsDataReadAllowed(source, destination);
+  return policy_controller->IsDataReadAllowed(source, destination);
 }
 }  // namespace
 

@@ -30,10 +30,10 @@
 #include "skia/ext/skia_utils_win.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_util_win.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -251,7 +251,7 @@ uint64_t ClipboardWin::GetSequenceNumber(ClipboardBuffer buffer) const {
 bool ClipboardWin::IsFormatAvailable(
     const ClipboardFormatType& format,
     ClipboardBuffer buffer,
-    const ClipboardDataEndpoint* data_dst) const {
+    const DataTransferEndpoint* data_dst) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   return ::IsClipboardFormatAvailable(format.ToFormatEtc().cfFormat) != FALSE;
 }
@@ -269,7 +269,7 @@ void ClipboardWin::Clear(ClipboardBuffer buffer) {
 // platforms.
 void ClipboardWin::ReadAvailableTypes(
     ClipboardBuffer buffer,
-    const ClipboardDataEndpoint* data_dst,
+    const DataTransferEndpoint* data_dst,
     std::vector<base::string16>* types) const {
   DCHECK(types);
 
@@ -305,7 +305,7 @@ void ClipboardWin::ReadAvailableTypes(
 std::vector<base::string16>
 ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
-    const ClipboardDataEndpoint* data_dst) const {
+    const DataTransferEndpoint* data_dst) const {
   int count = ::CountClipboardFormats();
   if (!count)
     return {};
@@ -331,7 +331,7 @@ ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadText(ClipboardBuffer buffer,
-                            const ClipboardDataEndpoint* data_dst,
+                            const DataTransferEndpoint* data_dst,
                             base::string16* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
@@ -360,7 +360,7 @@ void ClipboardWin::ReadText(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
-                                 const ClipboardDataEndpoint* data_dst,
+                                 const DataTransferEndpoint* data_dst,
                                  std::string* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
@@ -389,7 +389,7 @@ void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
-                            const ClipboardDataEndpoint* data_dst,
+                            const DataTransferEndpoint* data_dst,
                             base::string16* markup,
                             std::string* src_url,
                             uint32_t* fragment_start,
@@ -450,7 +450,7 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadSvg(ClipboardBuffer buffer,
-                           const ClipboardDataEndpoint* data_dst,
+                           const DataTransferEndpoint* data_dst,
                            base::string16* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kSvg);
@@ -466,7 +466,7 @@ void ClipboardWin::ReadSvg(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
-                           const ClipboardDataEndpoint* data_dst,
+                           const DataTransferEndpoint* data_dst,
                            std::string* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kRtf);
@@ -478,7 +478,7 @@ void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadImage(ClipboardBuffer buffer,
-                             const ClipboardDataEndpoint* data_dst,
+                             const DataTransferEndpoint* data_dst,
                              ReadImageCallback callback) const {
   RecordRead(ClipboardFormatMetric::kImage);
   std::move(callback).Run(ReadImageInternal(buffer));
@@ -488,7 +488,7 @@ void ClipboardWin::ReadImage(ClipboardBuffer buffer,
 // platforms.
 void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
                                   const base::string16& type,
-                                  const ClipboardDataEndpoint* data_dst,
+                                  const DataTransferEndpoint* data_dst,
                                   base::string16* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kCustomData);
@@ -509,7 +509,7 @@ void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardWin::ReadBookmark(const ClipboardDataEndpoint* data_dst,
+void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
                                 base::string16* title,
                                 std::string* url) const {
   RecordRead(ClipboardFormatMetric::kBookmark);
@@ -540,7 +540,7 @@ void ClipboardWin::ReadBookmark(const ClipboardDataEndpoint* data_dst,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadData(const ClipboardFormatType& format,
-                            const ClipboardDataEndpoint* data_dst,
+                            const DataTransferEndpoint* data_dst,
                             std::string* result) const {
   RecordRead(ClipboardFormatMetric::kData);
   if (!result) {
@@ -566,7 +566,7 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
 void ClipboardWin::WritePortableRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
-    std::unique_ptr<ClipboardDataEndpoint> data_src) {
+    std::unique_ptr<DataTransferEndpoint> data_src) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   ScopedClipboard clipboard;
@@ -584,7 +584,7 @@ void ClipboardWin::WritePortableRepresentations(
 void ClipboardWin::WritePlatformRepresentations(
     ClipboardBuffer buffer,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
-    std::unique_ptr<ClipboardDataEndpoint> data_src) {
+    std::unique_ptr<DataTransferEndpoint> data_src) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   ScopedClipboard clipboard;

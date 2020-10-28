@@ -31,7 +31,7 @@
 #include "components/query_parser/query_parser.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
@@ -146,7 +146,7 @@ std::string TruncateUrl(const std::string& url) {
 GURL GetUrlFromClipboard(bool notify_if_restricted) {
   base::string16 url_text;
 #if !defined(OS_IOS)
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, notify_if_restricted);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &url_text);

@@ -22,8 +22,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/models/image_model.h"
@@ -287,7 +287,7 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
 
   // If necessary, replace the clipboard's |original_data| temporarily so that
   // we can paste the selected history item.
-  ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   if (paste_plain_text ||
       selected_item.data() != *clipboard->GetClipboardData(&data_dst)) {
     std::unique_ptr<ui::ClipboardData> temp_data;
@@ -295,10 +295,10 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
       // When the shift key is pressed, we only paste plain text.
       temp_data = std::make_unique<ui::ClipboardData>();
       temp_data->set_text(selected_item.data().text());
-      ui::ClipboardDataEndpoint* data_src = selected_item.data().source();
+      ui::DataTransferEndpoint* data_src = selected_item.data().source();
       if (data_src) {
         temp_data->set_source(
-            std::make_unique<ui::ClipboardDataEndpoint>(*data_src));
+            std::make_unique<ui::DataTransferEndpoint>(*data_src));
       }
     } else {
       temp_data = std::make_unique<ui::ClipboardData>(selected_item.data());

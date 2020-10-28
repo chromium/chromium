@@ -107,7 +107,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #endif
 
@@ -1294,7 +1294,7 @@ void ChromePasswordManagerClient::OnPaste() {
   // Given that this clipboard data read happens in the background and not
   // initiated by a user gesture, then the user shouldn't see a notification if
   // the clipboard is restricted by the rules of data leak prevention policy.
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
   was_on_paste_called_ = true;

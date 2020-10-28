@@ -12,7 +12,7 @@
 
 class RenderViewContextMenuProxy;
 namespace ui {
-class ClipboardDataEndpoint;
+class DataTransferEndpoint;
 }
 
 // A class that implements the menu item for copying selected text and a link
@@ -31,7 +31,7 @@ class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
 
-  void OnGeneratedSelector(std::unique_ptr<ui::ClipboardDataEndpoint> endpoint,
+  void OnGeneratedSelector(std::unique_ptr<ui::DataTransferEndpoint> endpoint,
                            const std::string& selector);
   // Convenience method for overriding the generated selector to bypass making
   // calls to the remote interface during tests.

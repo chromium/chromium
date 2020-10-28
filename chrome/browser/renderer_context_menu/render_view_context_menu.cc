@@ -157,7 +157,7 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2755,11 +2755,11 @@ void RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
   }
 }
 
-std::unique_ptr<ui::ClipboardDataEndpoint>
+std::unique_ptr<ui::DataTransferEndpoint>
 RenderViewContextMenu::CreateDataEndpoint(bool notify_if_restricted) const {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (render_frame_host) {
-    return std::make_unique<ui::ClipboardDataEndpoint>(
+    return std::make_unique<ui::DataTransferEndpoint>(
         render_frame_host->GetLastCommittedOrigin(), notify_if_restricted);
   }
   return nullptr;

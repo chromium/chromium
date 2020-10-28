@@ -12,7 +12,7 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace {
@@ -85,7 +85,7 @@ void ClipboardAura::CheckClipboardForChanges() {
 
   protocol::ClipboardEvent event;
   std::string data;
-  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &data);
   event.set_mime_type(kMimeTypeTextUtf8);

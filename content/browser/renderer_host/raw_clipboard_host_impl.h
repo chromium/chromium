@@ -44,7 +44,7 @@ class CONTENT_EXPORT RawClipboardHostImpl
   void Write(const base::string16& format, mojo_base::BigBuffer data) override;
   void CommitWrite() override;
 
-  std::unique_ptr<ui::ClipboardDataEndpoint> CreateDataEndpoint();
+  std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
   bool HasTransientUserActivation() const;
 
   // The render frame is not owned.

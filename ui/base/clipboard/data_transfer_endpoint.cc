@@ -31,8 +31,7 @@ DataTransferEndpoint::DataTransferEndpoint(DataTransferEndpoint&& other) =
     default;
 
 bool DataTransferEndpoint::operator==(const DataTransferEndpoint& other) const {
-  return origin_ == other.origin_ && type_ == other.type_ &&
-         notify_if_restricted_ == other.notify_if_restricted_;
+  return origin_ == other.origin_ && type_ == other.type_;
 }
 
 DataTransferEndpoint::~DataTransferEndpoint() = default;

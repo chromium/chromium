@@ -59,10 +59,6 @@ component("clipboard") {
   sources = [
     "clipboard.cc",
     "clipboard.h",
-    "clipboard_data_endpoint.cc",
-    "clipboard_data_endpoint.h",
-    "clipboard_dlp_controller.cc",
-    "clipboard_dlp_controller.h",
     "clipboard_metrics.cc",
     "clipboard_metrics.h",
     "clipboard_monitor.cc",
@@ -71,6 +67,10 @@ component("clipboard") {
     "clipboard_observer.h",
     "custom_data_helper.cc",
     "custom_data_helper.h",
+    "data_transfer_endpoint.cc",
+    "data_transfer_endpoint.h",
+    "data_transfer_policy_controller.cc",
+    "data_transfer_policy_controller.h",
     "scoped_clipboard_writer.cc",
     "scoped_clipboard_writer.h",
   ]

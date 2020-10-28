@@ -18,8 +18,8 @@
 #include "third_party/blink/public/mojom/clipboard/raw_clipboard.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace content {
@@ -162,14 +162,14 @@ void RawClipboardHostImpl::CommitWrite() {
       ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
 }
 
-std::unique_ptr<ui::ClipboardDataEndpoint>
+std::unique_ptr<ui::DataTransferEndpoint>
 RawClipboardHostImpl::CreateDataEndpoint() {
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(render_frame_routing_id_);
   if (!render_frame_host)
     return nullptr;
 
-  return std::make_unique<ui::ClipboardDataEndpoint>(
+  return std::make_unique<ui::DataTransferEndpoint>(
       render_frame_host->GetLastCommittedOrigin(),
       render_frame_host->HasTransientUserActivation());
 }

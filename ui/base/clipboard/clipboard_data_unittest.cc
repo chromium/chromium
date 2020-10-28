@@ -8,7 +8,7 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -34,12 +34,12 @@ TEST(ClipboardDataTest, BitMapTest) {
 TEST(ClipboardDataTest, DataSrcTest) {
   url::Origin origin(url::Origin::Create(GURL("www.example.com")));
   ClipboardData data1;
-  data1.set_source(std::make_unique<ClipboardDataEndpoint>(origin));
+  data1.set_source(std::make_unique<DataTransferEndpoint>(origin));
 
   ClipboardData data2;
   EXPECT_NE(data1, data2);
 
-  data2.set_source(std::make_unique<ClipboardDataEndpoint>(origin));
+  data2.set_source(std::make_unique<DataTransferEndpoint>(origin));
   EXPECT_EQ(data1, data2);
 }
 

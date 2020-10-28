@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/enterprise_clipboard_dlp_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 
 #include <vector>
 
@@ -19,7 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_data_endpoint.h"
+#include "ui/base/clipboard/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -33,14 +33,14 @@ constexpr int kToastDurationMs = 2500;
 }  // namespace
 
 // static
-void EnterpriseClipboardDlpController::Init() {
+void DataTransferDlpController::Init() {
   if (!HasInstance())
-    new EnterpriseClipboardDlpController();
+    new DataTransferDlpController();
 }
 
-bool EnterpriseClipboardDlpController::IsDataReadAllowed(
-    const ui::ClipboardDataEndpoint* const data_src,
-    const ui::ClipboardDataEndpoint* const data_dst) const {
+bool DataTransferDlpController::IsDataReadAllowed(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst) const {
   if (!data_src || data_src->type() == ui::EndpointType::kClipboardHistory) {
     return true;
   }
@@ -81,11 +81,11 @@ bool EnterpriseClipboardDlpController::IsDataReadAllowed(
   return level == DlpRulesManager::Level::kAllow;
 }
 
-EnterpriseClipboardDlpController::EnterpriseClipboardDlpController() = default;
+DataTransferDlpController::DataTransferDlpController() = default;
 
-EnterpriseClipboardDlpController::~EnterpriseClipboardDlpController() = default;
+DataTransferDlpController::~DataTransferDlpController() = default;
 
-void EnterpriseClipboardDlpController::ShowBlockToast(
+void DataTransferDlpController::ShowBlockToast(
     const base::string16& text) const {
   ash::ToastData toast(kToastId, text, kToastDurationMs, base::nullopt);
   toast.is_managed = true;
@@ -93,9 +93,9 @@ void EnterpriseClipboardDlpController::ShowBlockToast(
   ash::ToastManager::Get()->Show(toast);
 }
 
-base::string16 EnterpriseClipboardDlpController::GetToastText(
-    const ui::ClipboardDataEndpoint* const data_src,
-    const ui::ClipboardDataEndpoint* const data_dst) const {
+base::string16 DataTransferDlpController::GetToastText(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst) const {
   DCHECK(data_src);
   DCHECK(data_src->origin());
   base::string16 host_name = base::UTF8ToUTF16(data_src->origin()->host());
