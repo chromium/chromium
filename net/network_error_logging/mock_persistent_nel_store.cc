@@ -132,33 +132,4 @@ MockPersistentNelStore::CommandList MockPersistentNelStore::GetAllCommands()
   return command_list_;
 }
 
-std::string MockPersistentNelStore::GetDebugString() const {
-  std::ostringstream s;
-
-  for (const Command& command : command_list_) {
-    switch (command.type) {
-      case Command::Type::LOAD_NEL_POLICIES:
-        s << "LOAD; ";
-        break;
-      case Command::Type::ADD_NEL_POLICY:
-        s << "ADD(" << command.key.network_isolation_key.ToDebugString() << ", "
-          << command.key.origin.Serialize() << "); ";
-        break;
-      case Command::Type::UPDATE_NEL_POLICY:
-        s << "UPDATE(" << command.key.network_isolation_key.ToDebugString()
-          << ", " << command.key.origin.Serialize() << "); ";
-        break;
-      case Command::Type::DELETE_NEL_POLICY:
-        s << "DELETE(" << command.key.network_isolation_key.ToDebugString()
-          << ", " << command.key.origin.Serialize() << "); ";
-        break;
-      case Command::Type::FLUSH:
-        s << "FLUSH; ";
-        break;
-    }
-  }
-
-  return s.str();
-}
-
 }  // namespace net

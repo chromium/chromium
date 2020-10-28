@@ -1604,7 +1604,6 @@ TEST_P(NetworkErrorLoggingServiceTest,
   expected_commands.emplace_back(
       MockPersistentNelStore::Command::Type::ADD_NEL_POLICY, policy1);
   EXPECT_TRUE(store()->VerifyCommands(expected_commands));
-  LOG(INFO) << store()->GetDebugString();
 
   service()->OnRequest(
       MakeRequestDetails(kNik_, kOrigin_.GetURL(), ERR_CONNECTION_REFUSED));

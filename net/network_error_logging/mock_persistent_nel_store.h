@@ -94,9 +94,6 @@ class MockPersistentNelStore
   // this were a real store.
   int StoredPoliciesCount() const { return policy_count_; }
 
-  // Generates a string with the list of commands, for ease of debugging.
-  std::string GetDebugString() const;
-
  private:
   // List of commands that we have received so far.
   CommandList command_list_;
