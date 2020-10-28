@@ -832,7 +832,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   topToolbar.leadingButton.target = self;
   if (base::FeatureList::IsEnabled(kEnableCloseAllTabsConfirmation)) {
     topToolbar.leadingButton.action =
-        @selector(closeAllButtonTappedShowConfirmation:);
+        @selector(closeAllButtonTappedShowConfirmation);
   } else {
     topToolbar.leadingButton.action = @selector(closeAllButtonTapped:);
   }
@@ -876,7 +876,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   bottomToolbar.leadingButton.target = self;
   if (base::FeatureList::IsEnabled(kEnableCloseAllTabsConfirmation)) {
     bottomToolbar.leadingButton.action =
-        @selector(closeAllButtonTappedShowConfirmation:);
+        @selector(closeAllButtonTappedShowConfirmation);
   } else {
     bottomToolbar.leadingButton.action = @selector(closeAllButtonTapped:);
   }
@@ -1324,15 +1324,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Shows an action sheet that asks for confirmation when 'Close All' button is
 // tapped.
-- (void)closeAllButtonTappedShowConfirmation:(UIBarButtonItem*)button {
+- (void)closeAllButtonTappedShowConfirmation {
+  // Sets the action sheet anchor on the leading button of the top
+  // toolbar in order to avoid alignment issues when changing the device
+  // orientation to landscape in multi window mode.
+  UIBarButtonItem* buttonAnchor = self.topToolbar.leadingButton;
+
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsDelegate
-          showCloseAllConfirmationActionSheetWithAnchor:button];
+          showCloseAllConfirmationActionSheetWithAnchor:buttonAnchor];
       break;
     case TabGridPageRegularTabs:
       [self.regularTabsDelegate
-          showCloseAllConfirmationActionSheetWithAnchor:button];
+          showCloseAllConfirmationActionSheetWithAnchor:buttonAnchor];
       break;
     case TabGridPageRemoteTabs:
       NOTREACHED() << "It is invalid to call close all tabs on remote tabs.";
