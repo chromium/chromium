@@ -1523,7 +1523,8 @@ TEST_F('ChromeVoxEditingTest', 'InputEvents', function() {
   });
 });
 
-TEST_F('ChromeVoxEditingTest', 'TextAreaEvents', function() {
+// Flaky test, see https://crbug.com/1143192
+TEST_F('ChromeVoxEditingTest', 'DISABLED_TextAreaEvents', function() {
   const site = `<textarea></textarea>`;
   this.runWithLoadedTree(site, async function(root) {
     const textArea = root.find({role: RoleType.TEXT_FIELD});
@@ -1563,7 +1564,8 @@ TEST_F('ChromeVoxEditingTest', 'TextAreaEvents', function() {
   });
 });
 
-TEST_F('ChromeVoxEditingTest', 'ContentEditableEvents', function() {
+// Flaky test, see https://crbug.com/1143192
+TEST_F('ChromeVoxEditingTest', 'DISABLED_ContentEditableEvents', function() {
   const site = `<div role="textbox" contenteditable></div>`;
   this.runWithLoadedTree(site, async function(root) {
     const contentEditable = root.find({role: RoleType.TEXT_FIELD});
