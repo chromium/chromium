@@ -18,7 +18,7 @@ buildflag_header("buildflags") {
   flags = [ "ENABLE_VR=$enable_vr" ]
 }
 
-aggregate_vector_icons2("omnibox_vector_icons") {
+aggregate_vector_icons("omnibox_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [

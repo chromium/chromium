@@ -8,7 +8,7 @@ import("//components/vector_icons/vector_icons.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
-aggregate_vector_icons2("message_center_vector_icons") {
+aggregate_vector_icons("message_center_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [

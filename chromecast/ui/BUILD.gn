@@ -105,7 +105,7 @@ if (use_aura) {
 # Rules for generating vector icon source files.
 # Adapted from //components/vector_icons/BUILD.gn
 
-aggregate_vector_icons2("media_controls_vector_icons") {
+aggregate_vector_icons("media_controls_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [

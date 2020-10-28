@@ -21,50 +21,6 @@
 # Example
 #
 #   See BUILD.gn in this directory (//components/vector_icons/) for an example.
-#
-# TODO(estade): rename to aggregate_vector_icons after all clients are updated.
-template("aggregate_vector_icons2") {
-  assert(defined(invoker.sources),
-         "Need sources in $target_name listing the icon files.")
-  assert(
-      defined(invoker.icon_directory),
-      "Need icon_directory in $target_name where the icons and templates live.")
-
-  action(target_name) {
-    visibility = [ ":*" ]
-
-    script = "//components/vector_icons/aggregate_vector_icons.py"
-
-    output_cc = "$target_gen_dir/vector_icons.cc"
-    output_h = "$target_gen_dir/vector_icons.h"
-
-    templates = [
-      "vector_icons.cc.template",
-      "vector_icons.h.template",
-    ]
-    inputs =
-        rebase_path(templates + invoker.sources, ".", invoker.icon_directory) +
-        [ "//components/vector_icons/aggregate_vector_icons.py" ]
-
-    outputs = [
-      output_cc,
-      output_h,
-    ]
-
-    response_file_contents =
-        rebase_path(invoker.sources, root_build_dir, invoker.icon_directory)
-
-    args = [
-      "--working_directory=" +
-          rebase_path(invoker.icon_directory, root_build_dir),
-      "--file_list={{response_file_name}}",
-      "--output_cc=" + rebase_path(output_cc, root_build_dir),
-      "--output_h=" + rebase_path(output_h, root_build_dir),
-    ]
-  }
-}
-
-# Deprecated version. TODO(estade): remove when all clients are updated.
 template("aggregate_vector_icons") {
   assert(defined(invoker.sources),
          "Need sources in $target_name listing the icon files.")

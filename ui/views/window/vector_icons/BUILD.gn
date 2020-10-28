@@ -4,7 +4,7 @@
 
 import("//components/vector_icons/vector_icons.gni")
 
-aggregate_vector_icons2("window_control_vector_icons") {
+aggregate_vector_icons("window_control_vector_icons") {
   icon_directory = "."
 
   sources = [

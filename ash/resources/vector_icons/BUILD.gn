@@ -5,7 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//components/vector_icons/vector_icons.gni")
 
-aggregate_vector_icons2("ash_vector_icons") {
+aggregate_vector_icons("ash_vector_icons") {
   icon_directory = "."
 
   sources = [
