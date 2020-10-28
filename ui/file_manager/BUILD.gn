@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_grit.gni")
 
 grit("resources") {
   source = "file_manager_resources.grd"
@@ -69,4 +70,31 @@ group("unit_test_data") {
     "image_loader:js_test_gen_html",
     "video_player/js:js_test_gen_html",
   ]
+}
+
+preprocess_folder = "$target_gen_dir/preprocessed"
+
+# Inline images and move files to the preprocessed folder to combine all
+# resources in the same folder to be able to generate the JS bundle.
+# This is for files direct from the src/:  input_folder="./".
+preprocess_grit("preprocess_static") {
+  in_folder = "./"
+  out_folder = preprocess_folder
+
+  in_files = [ "audio_player/js/main.m.js" ]
+
+  deps = [ "//ui/file_manager/audio_player/js:main.m" ]
+}
+
+# This is for files that are generated in "gen/": input_folder=target_gen_dir.
+preprocess_grit("preprocess_generated") {
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder
+
+  in_files = [
+    "base/js/app_util.m.js",
+    "base/js/volume_manager_types.m.js",
+  ]
+
+  deps = [ "//ui/file_manager/base/js:modulize" ]
 }

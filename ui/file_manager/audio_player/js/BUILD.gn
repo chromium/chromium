@@ -2,9 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_type_check("closure_compile") {
+group("closure_compile") {
+  testonly = true
+  deps = [
+    ":closure_compile_jsmodules",
+    ":closure_compile_legacy",
+  ]
+}
+
+js_type_check("closure_compile_legacy") {
   deps = [
     ":audio_player",
     ":background",
@@ -12,6 +21,11 @@ js_type_check("closure_compile") {
     ":error_util",
     ":metadata_worker",
   ]
+}
+
+js_type_check("closure_compile_jsmodules") {
+  uses_js_modules = true
+  deps = [ ":main.m" ]
 }
 
 js_library("closure_compile_externs") {
@@ -52,5 +66,31 @@ js_library("error_util") {
 js_library("metadata_worker") {
   deps = [
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_dispatcher",
+  ]
+}
+
+js_library("main.m") {
+  deps = [
+    "//ui/file_manager/base/js:app_util.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+  ]
+}
+
+preprocess_folder =
+    rebase_path("$target_gen_dir/../../preprocessed/audio_player/js",
+                root_build_dir)
+
+optimize_webui("audio_player_bundle") {
+  host = "audio_player"
+
+  input = preprocess_folder
+  js_module_in_files = [ "main.m.js" ]
+
+  js_out_files = [ "main.m.rollup.js" ]
+
+  deps = [
+    ":main.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
   ]
 }
