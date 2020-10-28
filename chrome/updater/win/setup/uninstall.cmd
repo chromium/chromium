@@ -4,7 +4,9 @@ rem directory path.  Sleeps 3 seconds and tries 3 times to delete the
 rem directory.
 @echo off
 set Directory=%~dp0
-FOR %%a IN ("%Directory:~0,-1%") DO set Directory=%%~dpa
+IF "%1%" EQU "all" (
+  FOR %%a IN ("%Directory:~0,-1%") DO set Directory=%%~dpa
+)
 @echo %Directory% | FindStr /R \\AppData\\Local\\@COMPANY_SHORTNAME@\\@PRODUCT_FULLNAME@\\ > nul
 IF %ERRORLEVEL% NEQ 0 exit 1
 @echo Deleting "%Directory%"...

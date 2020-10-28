@@ -9,6 +9,8 @@ namespace updater {
 
 int Uninstall(bool is_machine);
 
+int UninstallCandidate(bool is_machine);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_SETUP_UNINSTALL_H_
