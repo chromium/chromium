@@ -43,12 +43,14 @@ class DownloadItem;
 
 namespace content {
 class BrowserContext;
+class DevToolsAgentHostImpl;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
 class NavigationThrottle;
 class RenderFrameHostImpl;
 class RenderProcessHost;
+class SharedWorkerHost;
 class SignedExchangeEnvelope;
 class WebContents;
 
@@ -82,9 +84,18 @@ bool WillCreateURLLoaderFactory(
         loader_factory_receiver,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override);
 
+bool WillCreateURLLoaderFactoryForWorker(
+    DevToolsAgentHostImpl* host,
+    const base::UnguessableToken& worker_token,
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+
 bool WillCreateURLLoaderFactoryForServiceWorker(
     RenderProcessHost* rph,
     int routing_id,
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+
+bool WillCreateURLLoaderFactoryForSharedWorker(
+    SharedWorkerHost* host,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override);
 
 bool WillCreateURLLoaderFactory(

@@ -41,6 +41,8 @@ class CONTENT_EXPORT SharedWorkerDevToolsManager {
           agent_host_receiver);
   void WorkerDestroyed(SharedWorkerHost* worker_host);
 
+  SharedWorkerDevToolsAgentHost* GetDevToolsHost(SharedWorkerHost* host);
+
  private:
   friend struct base::DefaultSingletonTraits<SharedWorkerDevToolsManager>;
 

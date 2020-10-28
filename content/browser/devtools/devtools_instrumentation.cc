@@ -494,19 +494,10 @@ bool WillCreateURLLoaderFactory(
   return true;
 }
 
-bool WillCreateURLLoaderFactoryForServiceWorker(
-    RenderProcessHost* rph,
-    int routing_id,
+bool WillCreateURLLoaderFactoryForWorker(
+    DevToolsAgentHostImpl* host,
+    const base::UnguessableToken& worker_token,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
-  DCHECK(factory_override);
-
-  ServiceWorkerDevToolsAgentHost* worker_agent_host =
-      ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForWorker(rph->GetID(), routing_id);
-  if (!worker_agent_host) {
-    NOTREACHED();
-    return false;
-  }
   network::mojom::URLLoaderFactoryOverride devtools_override;
   // If caller passed some existing overrides, use those.
   // Otherwise, use our local var, then if handlers actually
@@ -514,12 +505,10 @@ bool WillCreateURLLoaderFactoryForServiceWorker(
   network::mojom::URLLoaderFactoryOverride* handler_override =
       *factory_override ? factory_override->get() : &devtools_override;
 
-  const base::UnguessableToken& worker_token =
-      worker_agent_host->devtools_worker_token();
-
+  RenderProcessHost* rph = host->GetProcessHost();
   bool had_interceptors =
       MaybeCreateProxyForInterception<protocol::FetchHandler>(
-          worker_agent_host, rph, worker_token, false, false, handler_override);
+          host, rph, worker_token, false, false, handler_override);
 
   // TODO(caseq): assure deterministic order of browser agents (or sessions).
   for (auto* browser_agent_host : BrowserDevToolsAgentHost::Instances()) {
@@ -539,6 +528,36 @@ bool WillCreateURLLoaderFactoryForServiceWorker(
         std::move(devtools_override.overridden_factory_receiver), false);
   }
   return true;
+}
+
+bool WillCreateURLLoaderFactoryForServiceWorker(
+    RenderProcessHost* rph,
+    int routing_id,
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+  DCHECK(factory_override);
+
+  ServiceWorkerDevToolsAgentHost* worker_agent_host =
+      ServiceWorkerDevToolsManager::GetInstance()
+          ->GetDevToolsAgentHostForWorker(rph->GetID(), routing_id);
+  if (!worker_agent_host) {
+    NOTREACHED();
+    return false;
+  }
+  return WillCreateURLLoaderFactoryForWorker(
+      worker_agent_host, worker_agent_host->devtools_worker_token(),
+      factory_override);
+}
+
+bool WillCreateURLLoaderFactoryForSharedWorker(
+    SharedWorkerHost* host,
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+  auto* worker_agent_host = SharedWorkerDevToolsAgentHost::GetFor(host);
+  if (!worker_agent_host)
+    return false;
+
+  return WillCreateURLLoaderFactoryForWorker(
+      worker_agent_host, worker_agent_host->devtools_worker_token(),
+      factory_override);
 }
 
 bool WillCreateURLLoaderFactory(

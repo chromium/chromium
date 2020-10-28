@@ -21,6 +21,8 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
  public:
   using List = std::vector<scoped_refptr<SharedWorkerDevToolsAgentHost>>;
 
+  static SharedWorkerDevToolsAgentHost* GetFor(SharedWorkerHost* worker_host);
+
   SharedWorkerDevToolsAgentHost(
       SharedWorkerHost* worker_host,
       const base::UnguessableToken& devtools_worker_token);

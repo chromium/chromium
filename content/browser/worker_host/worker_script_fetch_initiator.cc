@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/data_url_loader_factory.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/file_url_loader_factory.h"
@@ -79,6 +80,8 @@ void WorkerScriptFetchInitiator::Start(
     StoragePartitionImpl* storage_partition,
     const std::string& storage_domain,
     ukm::SourceId worker_source_id,
+    DevToolsAgentHostImpl* devtools_agent_host,
+    const base::UnguessableToken& devtools_worker_token,
     CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(storage_partition);
@@ -183,7 +186,7 @@ void WorkerScriptFetchInitiator::Start(
       std::move(service_worker_context), service_worker_handle,
       std::move(appcache_host), std::move(blob_url_loader_factory),
       std::move(url_loader_factory_override), worker_source_id,
-      std::move(callback));
+      devtools_agent_host, devtools_worker_token, std::move(callback));
 }
 
 std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -306,6 +309,8 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_override,
     ukm::SourceId worker_source_id,
+    DevToolsAgentHostImpl* devtools_agent_host,
+    const base::UnguessableToken& devtools_worker_token,
     CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -355,8 +360,13 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
     factory_bundle_for_browser_info->set_bypass_redirect_checks(
         bypass_redirect_checks);
 
-    // TODO(nhiroki): Call
-    // devtools_instrumentation::WillCreateURLLoaderFactory() here.
+    // TODO(crbug.com/1143102): make this unconditional when dedicated workers
+    // are supported.
+    if (devtools_agent_host) {
+      devtools_instrumentation::WillCreateURLLoaderFactoryForWorker(
+          devtools_agent_host, devtools_worker_token,
+          &factory_params->factory_override);
+    }
     factory_process->CreateURLLoaderFactory(std::move(default_factory_receiver),
                                             std::move(factory_params));
 

@@ -81,6 +81,12 @@ void SharedWorkerDevToolsManager::AgentHostDestroyed(
     terminated_hosts_.erase(it);
 }
 
+SharedWorkerDevToolsAgentHost* SharedWorkerDevToolsManager::GetDevToolsHost(
+    SharedWorkerHost* host) {
+  auto it = live_hosts_.find(host);
+  return it == live_hosts_.end() ? nullptr : it->second.get();
+}
+
 SharedWorkerDevToolsManager::SharedWorkerDevToolsManager() = default;
 SharedWorkerDevToolsManager::~SharedWorkerDevToolsManager() = default;
 

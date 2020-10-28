@@ -42,6 +42,7 @@ class SharedURLLoaderFactory;
 namespace content {
 
 class AppCacheHost;
+class DevToolsAgentHostImpl;
 class BrowserContext;
 class RenderFrameHost;
 class ServiceWorkerContextWrapper;
@@ -88,6 +89,8 @@ class CONTENT_EXPORT WorkerScriptFetchInitiator {
       StoragePartitionImpl* storage_partition,
       const std::string& storage_domain,
       ukm::SourceId worker_source_id,
+      DevToolsAgentHostImpl* devtools_agent_host,
+      const base::UnguessableToken& devtools_worker_token,
       CompletionCallback callback);
 
   // Used for specifying how URLLoaderFactoryBundle is used.
@@ -132,6 +135,8 @@ class CONTENT_EXPORT WorkerScriptFetchInitiator {
       scoped_refptr<network::SharedURLLoaderFactory>
           url_loader_factory_override,
       ukm::SourceId worker_source_id,
+      DevToolsAgentHostImpl* devtools_agent_host,
+      const base::UnguessableToken& devtools_worker_token,
       CompletionCallback callback);
 
   static void DidCreateScriptLoader(

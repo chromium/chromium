@@ -13,6 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/unguessable_token.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -286,8 +287,8 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       &factory_params->header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, &factory_params->factory_override);
 
-  // TODO(nhiroki): Call devtools_instrumentation::WillCreateURLLoaderFactory()
-  // here.
+  devtools_instrumentation::WillCreateURLLoaderFactoryForSharedWorker(
+      this, &factory_params->factory_override);
 
   // TODO(yhirano): Support COEP.
   worker_process_host_->CreateURLLoaderFactory(

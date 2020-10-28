@@ -1,0 +1,6 @@
+Tests that shared worker requests are intercepted.
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/worker.js, type: Other
+test token in overriden worker body: OK: overriden worker body
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/hello-world.txt, type: XHR
+got overriden fetch body
+
