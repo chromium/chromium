@@ -197,39 +197,35 @@ TextPaintStyle HighlightPaintingUtils::SelectionPaintingStyle(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
-    bool have_selection,
     const TextPaintStyle& text_style,
     const PaintInfo& paint_info) {
   TextPaintStyle selection_style = text_style;
   bool uses_text_as_clip = paint_info.phase == PaintPhase::kTextClip;
-  bool is_printing = paint_info.IsPrinting();
   const GlobalPaintFlags global_paint_flags = paint_info.GetGlobalPaintFlags();
 
-  if (have_selection) {
-    if (!uses_text_as_clip) {
-      selection_style.fill_color =
-          SelectionForegroundColor(document, style, node, global_paint_flags);
-      selection_style.emphasis_mark_color =
-          SelectionEmphasisMarkColor(document, style, node, global_paint_flags);
-    }
-
-    if (scoped_refptr<const ComputedStyle> pseudo_style =
-            HighlightPseudoStyle(node, kPseudoIdSelection)) {
-      selection_style.stroke_color =
-          uses_text_as_clip ? Color::kBlack
-                            : pseudo_style->VisitedDependentColor(
-                                  GetCSSPropertyWebkitTextStrokeColor());
-      selection_style.stroke_width = pseudo_style->TextStrokeWidth();
-      selection_style.shadow =
-          uses_text_as_clip ? nullptr : pseudo_style->TextShadow();
-      selection_style.selection_text_decoration =
-          SelectionTextDecoration(style, *pseudo_style);
-    }
-
-    // Text shadows are disabled when printing. http://crbug.com/258321
-    if (is_printing)
-      selection_style.shadow = nullptr;
+  if (!uses_text_as_clip) {
+    selection_style.fill_color =
+        SelectionForegroundColor(document, style, node, global_paint_flags);
+    selection_style.emphasis_mark_color =
+        SelectionEmphasisMarkColor(document, style, node, global_paint_flags);
   }
+
+  if (scoped_refptr<const ComputedStyle> pseudo_style =
+          HighlightPseudoStyle(node, kPseudoIdSelection)) {
+    selection_style.stroke_color =
+        uses_text_as_clip ? Color::kBlack
+                          : pseudo_style->VisitedDependentColor(
+                                GetCSSPropertyWebkitTextStrokeColor());
+    selection_style.stroke_width = pseudo_style->TextStrokeWidth();
+    selection_style.shadow =
+        uses_text_as_clip ? nullptr : pseudo_style->TextShadow();
+    selection_style.selection_text_decoration =
+        SelectionTextDecoration(style, *pseudo_style);
+  }
+
+  // Text shadows are disabled when printing. http://crbug.com/258321
+  if (paint_info.IsPrinting())
+    selection_style.shadow = nullptr;
 
   return selection_style;
 }

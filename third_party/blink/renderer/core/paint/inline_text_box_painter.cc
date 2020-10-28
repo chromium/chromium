@@ -260,10 +260,12 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   TextPaintStyle text_style = TextPainterBase::TextPaintingStyle(
       inline_text_box_.GetLineLayoutItem().GetDocument(), style_to_use,
       paint_info);
-  TextPaintStyle selection_style = TextPainterBase::SelectionPaintingStyle(
-      inline_text_box_.GetLineLayoutItem().GetDocument(), style_to_use,
-      inline_text_box_.GetLineLayoutItem().GetNode(), have_selection,
-      paint_info, text_style);
+  TextPaintStyle selection_style = text_style;
+  if (have_selection) {
+    selection_style = TextPainterBase::SelectionPaintingStyle(
+        inline_text_box_.GetLineLayoutItem().GetDocument(), style_to_use,
+        inline_text_box_.GetLineLayoutItem().GetNode(), paint_info, text_style);
+  }
   bool paint_selected_text_only =
       (paint_info.phase == PaintPhase::kSelectionDragImage);
   bool paint_selected_text_separately =

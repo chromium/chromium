@@ -74,7 +74,6 @@ class CORE_EXPORT TextPainterBase {
       const Document&,
       const ComputedStyle&,
       Node*,
-      bool have_selection,
       const PaintInfo&,
       const TextPaintStyle& text_style);
 

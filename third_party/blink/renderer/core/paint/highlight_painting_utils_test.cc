@@ -169,8 +169,7 @@ TEST_F(HighlightPaintingUtilsTest, SelectedTextInputShadow) {
   TextPaintStyle paint_style;
 
   paint_style = HighlightPaintingUtils::SelectionPaintingStyle(
-      GetDocument(), text_style, text_node, true /* have_selection */,
-      paint_style, paint_info);
+      GetDocument(), text_style, text_node, paint_style, paint_info);
 
   EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
   EXPECT_TRUE(paint_style.shadow);

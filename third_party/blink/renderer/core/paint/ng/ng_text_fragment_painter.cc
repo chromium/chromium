@@ -382,7 +382,7 @@ class SelectionPaintState {
                              const PaintInfo& paint_info,
                              const TextPaintStyle& text_style) {
     selection_style_ = TextPainterBase::SelectionPaintingStyle(
-        document, style, node, /*have_selection*/ true, paint_info, text_style);
+        document, style, node, paint_info, text_style);
     paint_selected_text_only_ =
         (paint_info.phase == PaintPhase::kSelectionDragImage);
     paint_selected_text_separately_ =

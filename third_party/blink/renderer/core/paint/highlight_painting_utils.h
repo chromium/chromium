@@ -41,7 +41,6 @@ class CORE_EXPORT HighlightPaintingUtils {
   static TextPaintStyle SelectionPaintingStyle(const Document&,
                                                const ComputedStyle&,
                                                Node*,
-                                               bool have_selection,
                                                const TextPaintStyle& text_style,
                                                const PaintInfo&);
 };

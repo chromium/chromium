@@ -163,11 +163,10 @@ TextPaintStyle TextPainterBase::SelectionPaintingStyle(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
-    bool have_selection,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  return HighlightPaintingUtils::SelectionPaintingStyle(
-      document, style, node, have_selection, text_style, paint_info);
+  return HighlightPaintingUtils::SelectionPaintingStyle(document, style, node,
+                                                        text_style, paint_info);
 }
 
 void TextPainterBase::DecorationsStripeIntercepts(
