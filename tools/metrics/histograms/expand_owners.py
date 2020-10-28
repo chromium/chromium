@@ -212,6 +212,20 @@ def _ComponentFromDirmd(json_data, subpath):
                                                {}).get('component', '')
 
 
+# Memoize decorator from: https://stackoverflow.com/a/1988826
+# TODO(asvitkine): Replace with @functools.cache once we're on Python 3.9+.
+class Memoize:
+  def __init__(self, f):
+    self.f = f
+    self.memo = {}
+
+  def __call__(self, *args):
+    if not args in self.memo:
+      self.memo[args] = self.f(*args)
+    return self.memo[args]
+
+
+@Memoize
 def _ExtractComponentViaDirmd(path):
   """Returns the component for monorail issues at the given path.
 
@@ -223,7 +237,7 @@ def _ExtractComponentViaDirmd(path):
   Returns an empty string if no component can be extracted.
 
   Args:
-    path: The path to an directory to query, e.g. 'src/storage'.
+    path: The path to a directory to query, e.g. 'src/storage'.
   """
   # Verify that the paths are absolute and the root is a parent of the
   # passed in path.
