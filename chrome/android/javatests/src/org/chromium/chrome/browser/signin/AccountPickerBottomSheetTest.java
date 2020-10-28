@@ -44,7 +44,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MetricsUtils;
@@ -363,7 +362,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowExpandedBottomSheet();
         onView(withText(PROFILE_DATA2.getAccountName())).perform(click());
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
-                R.id.account_picker_continue_as_button)::isShown);
+                R.id.account_picker_selected_account)::isShown);
         clickContinueButtonAndCheckSignInInProgressSheet();
         Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
     }
@@ -569,11 +568,7 @@ public class AccountPickerBottomSheetTest {
     }
 
     private void checkIncognitoInterstitialSheet() {
-        onView(withId(R.id.account_picker_bottom_sheet_logo)).check(matches(isDisplayed()));
-        onView(withId(R.id.account_picker_bottom_sheet_title))
-                .check(matches(isDisplayed()))
-                .check(matches(withText(R.string.incognito_interstitial_title)));
-        onView(withId(R.id.incognito_interstitial_bottom_sheet_view)).check(matches(isDisplayed()));
+        onView(withText(R.string.incognito_interstitial_title)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_interstitial_message)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_interstitial_learn_more)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_interstitial_continue_button)).check(matches(isDisplayed()));
@@ -592,29 +587,26 @@ public class AccountPickerBottomSheetTest {
             bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
         });
         CriteriaHelper.pollUiThread(() -> {
-            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown()
-                    && bottomSheetView.findViewById(R.id.account_picker_bottom_sheet_subtitle)
-                               .isShown();
+            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown();
         });
     }
 
     private void clickContinueButtonAndCheckSignInInProgressSheet() {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        ThreadUtils.runOnUiThread(
-                bottomSheetView.findViewById(R.id.account_picker_continue_as_button)::performClick);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
+        });
         CriteriaHelper.pollUiThread(() -> {
-            return !bottomSheetView.findViewById(R.id.account_picker_continue_as_button).isShown();
+            return bottomSheetView.findViewById(R.id.account_picker_signin_spinner_view).isShown();
         });
         // TODO(https://crbug.com/1116348): Check AccountPickerDelegate.signIn() is called
         // after solving AsyncTask wait problem in espresso
-        Assert.assertTrue(
-                bottomSheetView.findViewById(R.id.account_picker_signin_spinner_view).isShown());
         // Currently the ProgressBar animation cannot be disabled on android-marshmallow-arm64-rel
         // bot with DisableAnimationsTestRule, we hide the ProgressBar manually here to enable
         // checks of other elements on the screen.
         // TODO(https://crbug.com/1115067): Delete this line once DisableAnimationsTestRule is
         // fixed.
-        ThreadUtils.runOnUiThread(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             bottomSheetView.findViewById(R.id.account_picker_signin_spinner_view)
                     .setVisibility(View.GONE);
         });

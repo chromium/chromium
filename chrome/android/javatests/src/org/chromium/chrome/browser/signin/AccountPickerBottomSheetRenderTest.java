@@ -303,8 +303,8 @@ public class AccountPickerBottomSheetRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             accountListView.findViewHolderForAdapterPosition(3).itemView.performClick();
         });
-        CriteriaHelper.pollUiThread(bottomSheetView.findViewById(
-                R.id.incognito_interstitial_bottom_sheet_view)::isShown);
+        CriteriaHelper.pollUiThread(
+                bottomSheetView.findViewById(R.id.incognito_interstitial_learn_more)::isShown);
     }
 
     private void clickContinueButtonAndWaitForErrorView() {
@@ -313,9 +313,7 @@ public class AccountPickerBottomSheetRenderTest {
             bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
         });
         CriteriaHelper.pollUiThread(() -> {
-            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown()
-                    && bottomSheetView.findViewById(R.id.account_picker_bottom_sheet_subtitle)
-                               .isShown();
+            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown();
         });
     }
 
