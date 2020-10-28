@@ -4,6 +4,7 @@
 
 #include "math.h"
 
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"

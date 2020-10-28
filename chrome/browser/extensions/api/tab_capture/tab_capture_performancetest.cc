@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
