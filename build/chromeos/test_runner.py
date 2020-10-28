@@ -30,6 +30,7 @@ CHROMIUM_SRC_PATH = os.path.abspath(
 # output json ourselves.
 sys.path.insert(0, os.path.join(CHROMIUM_SRC_PATH, 'build', 'android'))
 from pylib.base import base_test_result  # pylint: disable=import-error
+from pylib.base import result_sink  # pylint: disable=import-error
 from pylib.results import json_results  # pylint: disable=import-error
 
 import subprocess32 as subprocess  # pylint: disable=import-error
@@ -87,6 +88,7 @@ class RemoteTest(object):
     self._test_launcher_summary_output = args.test_launcher_summary_output
     self._logs_dir = args.logs_dir
     self._use_vm = args.use_vm
+    self._rdb_client = result_sink.TryInitClient()
 
     self._retries = 0
     self._timeout = None
@@ -374,6 +376,21 @@ class TastTest(RemoteTest):
           test['name'], result, duration=duration_ms, log=error_log)
       suite_results.AddResult(base_result)
       self._maybe_handle_perf_results(test['name'])
+
+      if self._rdb_client:
+        # Walk the contents of the test's "outDir" and atttach any file found
+        # inside as an RDB 'artifact'. (This could include system logs, screen
+        # shots, etc.)
+        artifacts = {}
+        artifacts_dir = test['outDir']
+        for dirpath, _, filenames in os.walk(artifacts_dir):
+          for f in filenames:
+            artifact_path = os.path.join(dirpath, f)
+            artifacts[os.path.relpath(artifact_path, artifacts_dir)] = {
+                'filePath': artifact_path,
+            }
+
+        self._rdb_client.Post(test['name'], result, error_log, artifacts)
 
     if self._test_launcher_summary_output:
       with open(self._test_launcher_summary_output, 'w') as f:
