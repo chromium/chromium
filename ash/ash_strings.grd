@@ -2593,7 +2593,7 @@ This file contains the strings for ash.
       </message>
 
       <message name="IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE" desc="The label used as global media controls' title.">
-        Media Controls
+        Media controls
       </message>
 
       <message name="IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT" desc="Tooltip for pinned button showing in global media controls' title.">
