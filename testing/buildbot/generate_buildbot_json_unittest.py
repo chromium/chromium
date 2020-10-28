@@ -71,6 +71,7 @@ class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
         (pyl_files_dir, 'test_suite_exceptions.pyl'): exceptions,
         (pyl_files_dir, 'mixins.pyl'): mixins,
         (pyl_files_dir, 'gn_isolate_map.pyl'): gn_isolate_map,
+        (pyl_files_dir, 'gn_isolate_map2.pyl'): GPU_TELEMETRY_GN_ISOLATE_MAP,
         (pyl_files_dir, 'variants.pyl'): variants,
         (infra_config_dir, 'generated/project.pyl'): project_pyl,
         (infra_config_dir, 'generated/luci-milo.cfg'): luci_milo_cfg,
@@ -2230,6 +2231,32 @@ class UnitTest(TestCase):
                                            VARIATION_GTEST_OUTPUT)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
+
+  def test_load_multiple_isolate_map_files_with_duplicates(self):
+    self.args.isolate_map_files = ['gn_isolate_map.pyl']
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    REUSING_TEST_WITH_DIFFERENT_NAME,
+                    LUCI_MILO_CFG,
+                    gn_isolate_map=GN_ISOLATE_MAP)
+    with self.assertRaisesRegexp(generate_buildbot_json.BBGenErr,
+                                 'Duplicate targets in isolate map files.*'):
+      fbb.load_configuration_files()
+
+  def test_load_multiple_isolate_map_files_without_duplicates(self):
+    self.args.isolate_map_files = ['gn_isolate_map2.pyl']
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    REUSING_TEST_WITH_DIFFERENT_NAME,
+                    LUCI_MILO_CFG,
+                    gn_isolate_map=GN_ISOLATE_MAP)
+    fbb.load_configuration_files()
+    isolate_dict = {}
+    isolate_map_1 = fbb.load_pyl_file('gn_isolate_map.pyl')
+    isolate_map_2 = fbb.load_pyl_file('gn_isolate_map2.pyl')
+    isolate_dict.update(isolate_map_1)
+    isolate_dict.update(isolate_map_2)
+    self.assertEquals(isolate_dict, fbb.gn_isolate_map)
 
   def test_gn_isolate_map_with_label_mismatch(self):
     fbb = FakeBBGen(self.args,

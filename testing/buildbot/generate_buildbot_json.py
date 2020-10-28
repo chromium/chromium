@@ -314,6 +314,12 @@ class BBJSONGenerator(object):
         metavar='JSON_FILE_PATH',
         help='Outputs results into a json file. Only works with query function.'
     )
+    parser.add_argument('--isolate-map-file',
+                        metavar='PATH',
+                        help='path to additional isolate map files.',
+                        default=[],
+                        action='append',
+                        dest='isolate_map_files')
     parser.add_argument(
         '--infra-config-dir',
         help='Path to the LUCI services configuration directory',
@@ -1120,6 +1126,14 @@ class BBJSONGenerator(object):
     self.exceptions = self.load_pyl_file('test_suite_exceptions.pyl')
     self.mixins = self.load_pyl_file('mixins.pyl')
     self.gn_isolate_map = self.load_pyl_file('gn_isolate_map.pyl')
+    for isolate_map in self.args.isolate_map_files:
+      isolate_map = self.load_pyl_file(isolate_map)
+      duplicates = set(isolate_map).intersection(self.gn_isolate_map)
+      if duplicates:
+        raise BBGenErr('Duplicate targets in isolate map files: %s.' %
+                       ', '.join(duplicates))
+      self.gn_isolate_map.update(isolate_map)
+
     self.variants = self.load_pyl_file('variants.pyl')
 
   def resolve_configuration_files(self):
