@@ -154,17 +154,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
       const std::string& key_name,
       const std::string& challenge,
       AsyncMethodCallback callback) override;
-  void TpmAttestationGetKeyPayload(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_name,
-      DBusMethodCallback<TpmAttestationDataResult> callback) override;
-  void TpmAttestationSetKeyPayload(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& key_name,
-      const std::string& payload,
-      DBusMethodCallback<bool> callback) override;
   void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) override;
   void GetKeyDataEx(
       const cryptohome::AccountIdentifier& cryptohome_id,
@@ -333,12 +322,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   void SetTpmAttestationDeviceCertificate(const std::string& key_name,
                                           const std::string& certificate);
 
-  base::Optional<std::string> GetTpmAttestationDeviceKeyPayload(
-      const std::string& key_name) const;
-
-  void SetTpmAttestationDeviceKeyPayload(const std::string& key_name,
-                                         const std::string& payload);
-
   // Calls TpmInitStatusUpdated() on Observer instances.
   void NotifyTpmInitStatusUpdated(bool ready,
                                   bool owned,
@@ -461,9 +444,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
 
   // Device attestation certificate mapped by key_name.
   std::map<std::string, std::string> device_certificate_map_;
-
-  // Device key payload data mapped by key_name.
-  std::map<std::string, std::string> device_key_payload_map_;
 
   base::RepeatingTimer dircrypto_migration_progress_timer_;
   uint64_t dircrypto_migration_progress_ = 0;

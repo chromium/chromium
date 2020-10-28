@@ -450,30 +450,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
       const std::string& challenge,
       AsyncMethodCallback callback) = 0;
 
-  // Gets the payload associated with the key specified by |key_type| and
-  // |key_name|.  The |callback| will be called when the operation completes.
-  // If the key does not exist the callback |result| parameter will be false.
-  // If no payload has been set for the key the callback |result| parameter will
-  // be true and the |data| parameter will be empty.  If |key_type| is
-  // KEY_USER, a |id| must be provided.  Otherwise |id| is ignored.
-  virtual void TpmAttestationGetKeyPayload(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      DBusMethodCallback<TpmAttestationDataResult> callback) = 0;
-
-  // Sets the |payload| associated with the key specified by |key_type| and
-  // |key_name|.  The |callback| will be called when the operation completes.
-  // If the operation succeeds, the callback |result| parameter will be true.
-  // If |key_type| is KEY_USER, a |id| must be provided.  Otherwise |id| is
-  // ignored.
-  virtual void TpmAttestationSetKeyPayload(
-      attestation::AttestationKeyType key_type,
-      const cryptohome::AccountIdentifier& id,
-      const std::string& key_name,
-      const std::string& payload,
-      DBusMethodCallback<bool> callback) = 0;
-
   // Asynchronously gets the underlying TPM version information and passes it to
   // the given callback.
   virtual void TpmGetVersion(DBusMethodCallback<TpmVersionInfo> callback) = 0;
