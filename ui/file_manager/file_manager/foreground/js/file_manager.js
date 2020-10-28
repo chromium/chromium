@@ -1273,6 +1273,7 @@ class FileManager extends cr.EventTarget {
     // query, and select it if exists.
     const searchQuery = this.launchParams_.searchQuery;
     if (searchQuery) {
+      metrics.startInterval('Load.ProcessInitialSearchQuery');
       this.searchController_.setSearchQuery(searchQuery);
       // Show a spinner, as the crossover search function call could be slow.
       const hideSpinnerCallback = this.spinnerController_.show();
@@ -1283,6 +1284,7 @@ class FileManager extends cr.EventTarget {
         nextCurrentDirEntry = queryMatchedDirEntry;
       }
       hideSpinnerCallback();
+      metrics.recordInterval('Load.ProcessInitialSearchQuery');
     }
 
     // Resolve the currentDirectoryURL to currentDirectoryEntry (if not done by

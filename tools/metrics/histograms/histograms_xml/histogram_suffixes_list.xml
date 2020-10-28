@@ -6542,6 +6542,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Deprecated as of 12/2016.
     </obsolete>
   </suffix>
+  <suffix name="ProcessInitialSearchQuery"
+      label="Time to process LaunchParam.searchQuery (time to find a
+             query-matched directory)."/>
   <suffix name="Roots" label="Time to enumerate file system roots.">
     <obsolete>
       Deprecated as of 12/2016.
