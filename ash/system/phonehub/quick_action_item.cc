@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -16,22 +17,17 @@ namespace ash {
 
 namespace {
 
-constexpr int kQuickActionItemLabelSize = 14;
-
-void ConfigureLabel(views::Label* label, bool is_primary) {
+void ConfigureLabel(views::Label* label, int line_height, int font_size) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
   label->SetCanProcessEventsWithinSubtree(false);
 
-  auto type = is_primary
-                  ? AshColorProvider::ContentLayerType::kTextColorPrimary
-                  : AshColorProvider::ContentLayerType::kTextColorSecondary;
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(type));
+  label->SetLineHeight(line_height);
 
   gfx::Font default_font;
-  gfx::Font label_font = default_font.Derive(
-      kQuickActionItemLabelSize - default_font.GetFontSize(), gfx::Font::NORMAL,
-      gfx::Font::Weight::NORMAL);
+  gfx::Font label_font =
+      default_font.Derive(font_size - default_font.GetFontSize(),
+                          gfx::Font::NORMAL, gfx::Font::Weight::NORMAL);
   gfx::FontList font_list(label_font);
   label->SetFontList(font_list);
 }
@@ -43,6 +39,7 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
                                  const gfx::VectorIcon& icon_on,
                                  const gfx::VectorIcon& icon_off)
     : delegate_(delegate), icon_on_(icon_on), icon_off_(icon_off) {
+  SetPreferredSize(kUnifiedFeaturePodSize);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kUnifiedFeaturePodSpacing));
@@ -58,7 +55,13 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
 
   label_ = label_view->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(label_id)));
+  label_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(0, 0, /*bottom=*/kUnifiedFeaturePodInterLabelPadding, 0)));
   sub_label_ = label_view->AddChildView(std::make_unique<views::Label>());
+  ConfigureLabel(label_, kUnifiedFeaturePodLabelLineHeight,
+                 kUnifiedFeaturePodLabelFontSize);
+  ConfigureLabel(sub_label_, kUnifiedFeaturePodSubLabelLineHeight,
+                 kUnifiedFeaturePodSubLabelFontSize);
 
   SetEnabled(true /* enabled */);
 
@@ -115,8 +118,10 @@ void QuickActionItem::SetEnabled(bool enabled) {
         GetItemLabel()));
     SetIcon(false /* is_on */);
   } else {
-    ConfigureLabel(label_, true /* is_primary */);
-    ConfigureLabel(sub_label_, false /* is_primary */);
+    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    sub_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary));
   }
 }
 

@@ -16,7 +16,6 @@ namespace ash {
 namespace {
 
 constexpr gfx::Insets kQuickActionsViewPadding(16, 4, 12, 4);
-constexpr int kQuickActionsItemSpacing = 36;
 
 }  // namespace
 
@@ -26,8 +25,7 @@ QuickActionsView::QuickActionsView(
   SetID(PhoneHubViewID::kQuickActionsView);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kQuickActionsViewPadding,
-      kQuickActionsItemSpacing));
+      views::BoxLayout::Orientation::kHorizontal, kQuickActionsViewPadding));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
