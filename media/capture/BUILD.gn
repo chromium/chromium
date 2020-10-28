@@ -117,6 +117,7 @@ component("capture_lib") {
     "video/video_capture_buffer_pool.h",
     "video/video_capture_buffer_pool_impl.cc",
     "video/video_capture_buffer_pool_impl.h",
+    "video/video_capture_buffer_tracker.cc",
     "video/video_capture_buffer_tracker.h",
     "video/video_capture_buffer_tracker_factory.h",
     "video/video_capture_buffer_tracker_factory_impl.cc",

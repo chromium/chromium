@@ -474,11 +474,12 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     base::TimeDelta timestamp) {
   // Reserve an ID for this buffer that will not conflict with any of the IDs
   // used by |buffer_pool_|.
-  std::vector<int> buffer_ids_to_drop;
-  int buffer_id = buffer_pool_->ReserveIdForExternalBuffer(&buffer_ids_to_drop);
+  int buffer_id_to_drop = VideoCaptureBufferPool::kInvalidId;
+  int buffer_id =
+      buffer_pool_->ReserveIdForExternalBuffer(handle, &buffer_id_to_drop);
 
   // If a buffer to retire was specified, retire one.
-  for (int buffer_id_to_drop : buffer_ids_to_drop) {
+  if (buffer_id_to_drop != VideoCaptureBufferPool::kInvalidId) {
     auto entry_iter =
         std::find(buffer_ids_known_by_receiver_.begin(),
                   buffer_ids_known_by_receiver_.end(), buffer_id_to_drop);
@@ -488,32 +489,13 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     }
   }
 
-  // Register the buffer with the receiver.
-  {
+  // Register the buffer with the receiver if it is new.
+  if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
         media::mojom::VideoBufferHandle::New();
     buffer_handle->set_gpu_memory_buffer_handle(std::move(handle));
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
     buffer_ids_known_by_receiver_.push_back(buffer_id);
-  }
-
-  // Wrap |scoped_access_permission_to_wrap| in a ScopedAccessPermission that
-  // will retire |buffer_id| as soon as access ends.
-  std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-      scoped_access_permission;
-  {
-    auto callback_lambda =
-        [](int buffer_id, scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-           std::unique_ptr<
-               VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-               scoped_access_permission) {
-          buffer_pool->RelinquishExternalBufferReservation(buffer_id);
-        };
-    auto closure = base::BindOnce(callback_lambda, buffer_id, buffer_pool_,
-                                  std::move(scoped_access_permission_to_wrap));
-    scoped_access_permission =
-        std::make_unique<ScopedAccessPermissionEndWithCallback>(
-            std::move(closure));
   }
 
   // Tell |receiver_| that the frame has been received.
@@ -526,9 +508,14 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     info->visible_rect = gfx::Rect(format.frame_size);
     info->metadata.frame_rate = format.frame_rate;
     info->metadata.reference_time = reference_time;
-    receiver_->OnFrameReadyInBuffer(buffer_id, 0 /* frame_feedback_id */,
-                                    std::move(scoped_access_permission),
-                                    std::move(info));
+
+    buffer_pool_->HoldForConsumers(buffer_id, 1);
+    buffer_pool_->RelinquishProducerReservation(buffer_id);
+    receiver_->OnFrameReadyInBuffer(
+        buffer_id, 0 /* frame_feedback_id */,
+        std::make_unique<ScopedBufferPoolReservation<ConsumerReleaseTraits>>(
+            buffer_pool_, buffer_id),
+        std::move(info));
   }
 }
 

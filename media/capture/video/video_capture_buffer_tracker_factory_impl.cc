@@ -37,4 +37,14 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
   }
 }
 
+std::unique_ptr<VideoCaptureBufferTracker>
+VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalGpuMemoryBuffer(
+    const gfx::GpuMemoryBufferHandle& handle) {
+#if defined(OS_MAC)
+  return std::make_unique<GpuMemoryBufferTrackerMac>(handle.io_surface);
+#else
+  return nullptr;
+#endif
+}
+
 }  // namespace media

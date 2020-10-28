@@ -15,12 +15,16 @@ class CAPTURE_EXPORT GpuMemoryBufferTrackerMac final
     : public VideoCaptureBufferTracker {
  public:
   GpuMemoryBufferTrackerMac();
+  explicit GpuMemoryBufferTrackerMac(
+      base::ScopedCFTypeRef<IOSurfaceRef> io_surface);
   ~GpuMemoryBufferTrackerMac() override;
 
   // VideoCaptureBufferTracker
   bool Init(const gfx::Size& dimensions,
             VideoPixelFormat format,
             const mojom::PlaneStridesPtr& strides) override;
+  bool IsSameGpuMemoryBuffer(
+      const gfx::GpuMemoryBufferHandle& handle) const override;
   bool IsReusableForFormat(const gfx::Size& dimensions,
                            VideoPixelFormat format,
                            const mojom::PlaneStridesPtr& strides) override;
@@ -29,9 +33,17 @@ class CAPTURE_EXPORT GpuMemoryBufferTrackerMac final
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override;
   mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
+  void OnHeldByConsumersChanged(bool is_held_by_consumers) override;
 
  private:
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
+  bool is_external_io_surface_ = false;
+  gfx::ScopedIOSurface io_surface_;
+
+  // External IOSurfaces come from a CVPixelBufferPool. An IOSurface in a
+  // CVPixelBufferPool will be reused by the pool as soon IOSurfaceIsInUse is
+  // false. To prevent reuse while consumers are accessing the IOSurface, use
+  // |in_use_for_consumers_| to maintain IOSurfaceIsInUse as true.
+  gfx::ScopedInUseIOSurface in_use_for_consumers_;
 
   DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferTrackerMac);
 };

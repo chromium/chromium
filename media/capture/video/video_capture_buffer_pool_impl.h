@@ -50,8 +50,8 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
       int* buffer_id,
       int* buffer_id_to_drop) override;
   void RelinquishProducerReservation(int buffer_id) override;
-  int ReserveIdForExternalBuffer(std::vector<int>* buffer_ids_to_drop) override;
-  void RelinquishExternalBufferReservation(int buffer_id) override;
+  int ReserveIdForExternalBuffer(const gfx::GpuMemoryBufferHandle& handle,
+                                 int* buffer_id_to_drop) override;
   double GetBufferPoolUtilization() const override;
   void HoldForConsumers(int buffer_id, int num_clients) override;
   void RelinquishConsumerHold(int buffer_id, int num_clients) override;
@@ -86,10 +86,6 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
   // The buffers, indexed by the first parameter, a buffer id.
   std::map<int, std::unique_ptr<VideoCaptureBufferTracker>> trackers_
       GUARDED_BY(lock_);
-
-  // The external buffers, indexed by buffer id. The second parameter is whether
-  // or not the the buffer's reservation has been relinquished.
-  std::map<int, bool> external_buffers_ GUARDED_BY(lock_);
 
   const std::unique_ptr<VideoCaptureBufferTrackerFactory>
       buffer_tracker_factory_ GUARDED_BY(lock_);

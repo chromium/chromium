@@ -133,33 +133,49 @@ void VideoCaptureBufferPoolImpl::RelinquishProducerReservation(int buffer_id) {
     NOTREACHED() << "Invalid buffer_id.";
     return;
   }
-  DCHECK(tracker->held_by_producer());
-  tracker->set_held_by_producer(false);
+  tracker->SetHeldByProducer(false);
 }
 
 int VideoCaptureBufferPoolImpl::ReserveIdForExternalBuffer(
-    std::vector<int>* buffer_ids_to_drop) {
+    const gfx::GpuMemoryBufferHandle& handle,
+    int* buffer_id_to_drop) {
   base::AutoLock lock(lock_);
-  int buffer_id = next_buffer_id_++;
-  external_buffers_[buffer_id] = false;
 
-  for (auto it = external_buffers_.begin(); it != external_buffers_.end();) {
-    if (it->second) {
-      buffer_ids_to_drop->push_back(it->first);
-      it = external_buffers_.erase(it);
-    } else {
-      ++it;
+  // Look for a tracker that matches this buffer and is not in use. While
+  // iterating, find the least recently used tracker.
+  *buffer_id_to_drop = kInvalidId;
+  auto lru_tracker_it = trackers_.end();
+  for (auto it = trackers_.begin(); it != trackers_.end(); ++it) {
+    VideoCaptureBufferTracker* const tracker = it->second.get();
+    if (tracker->IsHeldByProducerOrConsumer())
+      continue;
+
+    if (tracker->IsSameGpuMemoryBuffer(handle)) {
+      tracker->SetHeldByProducer(true);
+      return it->first;
+    }
+
+    if (lru_tracker_it == trackers_.end() ||
+        lru_tracker_it->second->LastCustomerUseSequenceNumber() >
+            tracker->LastCustomerUseSequenceNumber()) {
+      lru_tracker_it = it;
     }
   }
-  return buffer_id;
-}
 
-void VideoCaptureBufferPoolImpl::RelinquishExternalBufferReservation(
-    int buffer_id) {
-  base::AutoLock lock(lock_);
-  auto found = external_buffers_.find(buffer_id);
-  CHECK(found != external_buffers_.end());
-  found->second = true;
+  // Free the least recently used tracker, if needed.
+  if (trackers_.size() >= static_cast<size_t>(count_) &&
+      lru_tracker_it != trackers_.end()) {
+    *buffer_id_to_drop = lru_tracker_it->first;
+    trackers_.erase(lru_tracker_it);
+  }
+
+  // Create the new tracker.
+  const int new_buffer_id = next_buffer_id_++;
+  auto tracker =
+      buffer_tracker_factory_->CreateTrackerForExternalGpuMemoryBuffer(handle);
+  tracker->SetHeldByProducer(true);
+  trackers_[new_buffer_id] = std::move(tracker);
+  return new_buffer_id;
 }
 
 void VideoCaptureBufferPoolImpl::HoldForConsumers(int buffer_id,
@@ -170,11 +186,8 @@ void VideoCaptureBufferPoolImpl::HoldForConsumers(int buffer_id,
     NOTREACHED() << "Invalid buffer_id.";
     return;
   }
-  DCHECK(tracker->held_by_producer());
-  DCHECK(!tracker->consumer_hold_count());
-
-  tracker->set_consumer_hold_count(num_clients);
-  // Note: |held_by_producer()| will stay true until
+  tracker->AddConsumerHolds(num_clients);
+  // Note: The buffer will stay held by the producer until
   // RelinquishProducerReservation() (usually called by destructor of the object
   // wrapping this tracker, e.g. a VideoFrame).
 }
@@ -187,10 +200,7 @@ void VideoCaptureBufferPoolImpl::RelinquishConsumerHold(int buffer_id,
     NOTREACHED() << "Invalid buffer_id.";
     return;
   }
-  DCHECK_GE(tracker->consumer_hold_count(), num_clients);
-
-  tracker->set_consumer_hold_count(tracker->consumer_hold_count() -
-                                   num_clients);
+  tracker->RemoveConsumerHolds(num_clients);
 }
 
 double VideoCaptureBufferPoolImpl::GetBufferPoolUtilization() const {
@@ -198,7 +208,7 @@ double VideoCaptureBufferPoolImpl::GetBufferPoolUtilization() const {
   int num_buffers_held = 0;
   for (const auto& entry : trackers_) {
     VideoCaptureBufferTracker* const tracker = entry.second.get();
-    if (tracker->held_by_producer() || tracker->consumer_hold_count() > 0)
+    if (tracker->IsHeldByProducerOrConsumer())
       ++num_buffers_held;
   }
   return static_cast<double>(num_buffers_held) / count_;
@@ -221,10 +231,10 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
   auto tracker_to_drop = trackers_.end();
   for (auto it = trackers_.begin(); it != trackers_.end(); ++it) {
     VideoCaptureBufferTracker* const tracker = it->second.get();
-    if (!tracker->consumer_hold_count() && !tracker->held_by_producer()) {
+    if (!tracker->IsHeldByProducerOrConsumer()) {
       if (tracker->IsReusableForFormat(dimensions, pixel_format, strides)) {
         // Reuse this buffer
-        tracker->set_held_by_producer(true);
+        tracker->SetHeldByProducer(true);
         tracker->set_frame_feedback_id(frame_feedback_id);
         *buffer_id = it->first;
         return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
@@ -261,7 +271,7 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
     return VideoCaptureDevice::Client::ReserveResult::kAllocationFailed;
   }
 
-  tracker->set_held_by_producer(true);
+  tracker->SetHeldByProducer(true);
   tracker->set_frame_feedback_id(frame_feedback_id);
   trackers_[new_buffer_id] = std::move(tracker);
 

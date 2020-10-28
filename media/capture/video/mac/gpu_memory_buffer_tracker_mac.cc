@@ -10,11 +10,16 @@ namespace media {
 
 GpuMemoryBufferTrackerMac::GpuMemoryBufferTrackerMac() {}
 
+GpuMemoryBufferTrackerMac::GpuMemoryBufferTrackerMac(
+    base::ScopedCFTypeRef<IOSurfaceRef> io_surface)
+    : is_external_io_surface_(true), io_surface_(std::move(io_surface)) {}
+
 GpuMemoryBufferTrackerMac::~GpuMemoryBufferTrackerMac() {}
 
 bool GpuMemoryBufferTrackerMac::Init(const gfx::Size& dimensions,
                                      VideoPixelFormat format,
                                      const mojom::PlaneStridesPtr& strides) {
+  DCHECK(!io_surface_);
   if (format != PIXEL_FORMAT_NV12) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
                  << VideoPixelFormatToString(format);
@@ -32,10 +37,19 @@ bool GpuMemoryBufferTrackerMac::Init(const gfx::Size& dimensions,
   }
 }
 
+bool GpuMemoryBufferTrackerMac::IsSameGpuMemoryBuffer(
+    const gfx::GpuMemoryBufferHandle& handle) const {
+  if (!is_external_io_surface_)
+    return false;
+  return IOSurfaceGetID(io_surface_) == IOSurfaceGetID(handle.io_surface);
+}
+
 bool GpuMemoryBufferTrackerMac::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
+  if (is_external_io_surface_)
+    return false;
   gfx::Size surface_size(IOSurfaceGetWidth(io_surface_),
                          IOSurfaceGetHeight(io_surface_));
   return format == PIXEL_FORMAT_NV12 && dimensions == surface_size;
@@ -71,6 +85,20 @@ GpuMemoryBufferTrackerMac::GetGpuMemoryBufferHandle() {
   gmb_handle.id.id = -1;
   gmb_handle.io_surface = io_surface_;
   return gmb_handle;
+}
+
+void GpuMemoryBufferTrackerMac::OnHeldByConsumersChanged(
+    bool is_held_by_consumers) {
+  if (!is_external_io_surface_)
+    return;
+
+  if (is_held_by_consumers) {
+    DCHECK(!in_use_for_consumers_);
+    in_use_for_consumers_.reset(io_surface_.get(), base::scoped_policy::RETAIN);
+  } else {
+    DCHECK(in_use_for_consumers_);
+    in_use_for_consumers_.reset();
+  }
 }
 
 }  // namespace media

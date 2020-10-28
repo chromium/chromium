@@ -24,25 +24,33 @@ namespace media {
 // for implementations using different kinds of storage.
 class CAPTURE_EXPORT VideoCaptureBufferTracker {
  public:
-  VideoCaptureBufferTracker()
-      : held_by_producer_(false),
-        consumer_hold_count_(0),
-        frame_feedback_id_(0) {}
+  VideoCaptureBufferTracker() = default;
   virtual bool Init(const gfx::Size& dimensions,
                     VideoPixelFormat format,
                     const mojom::PlaneStridesPtr& strides) = 0;
   virtual ~VideoCaptureBufferTracker() {}
 
-  bool held_by_producer() const { return held_by_producer_; }
-  void set_held_by_producer(bool value) { held_by_producer_ = value; }
-  int consumer_hold_count() const { return consumer_hold_count_; }
-  void set_consumer_hold_count(int value) { consumer_hold_count_ = value; }
+  bool IsHeldByProducerOrConsumer() const {
+    return held_by_producer_ || consumer_hold_count_ > 0;
+  }
+  void SetHeldByProducer(bool value);
+  void AddConsumerHolds(int count);
+  void RemoveConsumerHolds(int count);
+
   void set_frame_feedback_id(int value) { frame_feedback_id_ = value; }
   int frame_feedback_id() { return frame_feedback_id_; }
 
+  // Returns true if |handle| refers to the same buffer as |this|. This is used
+  // to reuse buffers that were externally allocated.
+  virtual bool IsSameGpuMemoryBuffer(
+      const gfx::GpuMemoryBufferHandle& handle) const;
+
+  // Returns true if |this| matches the specified parameters. This is used to
+  // reuse buffers that were internally allocated.
   virtual bool IsReusableForFormat(const gfx::Size& dimensions,
                                    VideoPixelFormat format,
                                    const mojom::PlaneStridesPtr& strides) = 0;
+
   virtual uint32_t GetMemorySizeInBytes() = 0;
 
   virtual std::unique_ptr<VideoCaptureBufferHandle> GetMemoryMappedAccess() = 0;
@@ -51,15 +59,28 @@ class CAPTURE_EXPORT VideoCaptureBufferTracker {
   virtual mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() = 0;
   virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() = 0;
 
+  // This is called when the number of consumers goes from zero to non-zero (in
+  // which case |is_held_by_consumers| is true) or from non-zero to zero (in
+  // which case |is_held_by_consumers| is false).
+  virtual void OnHeldByConsumersChanged(bool is_held_by_consumers);
+
+  // External buffers are to be freed in least-recently-used order. This
+  // function returns a number which is greater for more recently used buffers.
+  uint64_t LastCustomerUseSequenceNumber() const {
+    return last_customer_use_sequence_number_;
+  }
+
  private:
   // Indicates whether this VideoCaptureBufferTracker is currently referenced by
   // the producer.
-  bool held_by_producer_;
+  bool held_by_producer_ = false;
 
   // Number of consumer processes which hold this VideoCaptureBufferTracker.
-  int consumer_hold_count_;
+  int consumer_hold_count_ = 0;
 
-  int frame_feedback_id_;
+  int frame_feedback_id_ = 0;
+
+  uint64_t last_customer_use_sequence_number_ = 0;
 };
 
 }  // namespace media
