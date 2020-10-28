@@ -190,7 +190,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     void setUpIncognitoInterstitialView() {
-        mLogoImage.setImageResource(R.drawable.location_bar_incognito_badge);
+        mLogoImage.setImageResource(R.drawable.ic_incognito_filled_24dp);
         mAccountPickerTitle.setText(R.string.incognito_interstitial_title);
         mIncognitoInterstitialView.setVisibility(View.VISIBLE);
 

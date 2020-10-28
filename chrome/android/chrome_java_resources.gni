@@ -690,6 +690,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_google_services_48dp.xml",
   "java/res/drawable/ic_image_descriptions.xml",
   "java/res/drawable/ic_incognito_24dp.xml",
+  "java/res/drawable/ic_incognito_filled_24dp.xml",
   "java/res/drawable/ic_logo_googleg_20dp.xml",
   "java/res/drawable/ic_loop_round.xml",
   "java/res/drawable/ic_music_note_24dp.xml",
