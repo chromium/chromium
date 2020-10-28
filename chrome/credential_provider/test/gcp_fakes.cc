@@ -646,12 +646,18 @@ FakeWinHttpUrlFetcherFactory::Response::~Response() = default;
 
 FakeWinHttpUrlFetcherFactory::FakeWinHttpUrlFetcherFactory()
     : original_creator_(*WinHttpUrlFetcher::GetCreatorFunctionStorage()) {
-  *WinHttpUrlFetcher::GetCreatorFunctionStorage() = base::BindRepeating(
-      &FakeWinHttpUrlFetcherFactory::Create, base::Unretained(this));
+  fake_creator_ = base::BindRepeating(&FakeWinHttpUrlFetcherFactory::Create,
+                                      base::Unretained(this));
+  *WinHttpUrlFetcher::GetCreatorFunctionStorage() = fake_creator_;
 }
 
 FakeWinHttpUrlFetcherFactory::~FakeWinHttpUrlFetcherFactory() {
   *WinHttpUrlFetcher::GetCreatorFunctionStorage() = original_creator_;
+}
+
+WinHttpUrlFetcher::CreatorCallback
+FakeWinHttpUrlFetcherFactory::GetCreatorCallback() {
+  return fake_creator_;
 }
 
 void FakeWinHttpUrlFetcherFactory::SetFakeResponse(

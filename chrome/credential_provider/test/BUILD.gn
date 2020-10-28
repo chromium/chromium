@@ -38,6 +38,7 @@ test("gcp_unittests") {
     "../gaiacp:common",
     "../gaiacp:gaia_credential_provider_idl",
     "../gaiacp:gaiacp_lib",
+    "../gaiacp:policies",
     "../gaiacp:string_resources",
     "../gaiacp:util",
     "../gaiacp:version",

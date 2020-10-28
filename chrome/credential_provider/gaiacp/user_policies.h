@@ -5,13 +5,14 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_USER_POLICIES_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_USER_POLICIES_H_
 
+#include "base/component_export.h"
 #include "base/values.h"
 #include "chrome/credential_provider/gaiacp/gcpw_version.h"
 
 namespace credential_provider {
 
 // Structure to hold the policies for each user.
-struct UserPolicies {
+struct COMPONENT_EXPORT(GCPW_POLICIES) UserPolicies {
   // Controls whether MDM enrollment is enabled/disabled.
   bool enable_dm_enrollment;
 

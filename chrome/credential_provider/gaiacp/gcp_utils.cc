@@ -50,6 +50,7 @@
 #include "chrome/common/chrome_version.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
+#include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/token_generator.h"
@@ -57,6 +58,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace credential_provider {
 
@@ -83,6 +85,13 @@ base::FilePath g_test_chrome_path(L"");
 
 const wchar_t kKernelLibFile[] = L"kernel32.dll";
 const int kVersionStringSize = 128;
+
+constexpr wchar_t kDefaultMdmUrl[] =
+    L"https://deviceenrollmentforwindows.googleapis.com/v1/discovery";
+
+constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
+const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh =
+    base::TimeDelta::FromDays(1);
 
 namespace {
 
@@ -1222,5 +1231,27 @@ HRESULT GetGCPWDmToken(const base::string16& sid, base::string16* token) {
 FakesForTesting::FakesForTesting() {}
 
 FakesForTesting::~FakesForTesting() {}
+
+GURL GetGcpwServiceUrl() {
+  base::string16 dev = GetGlobalFlagOrDefault(kRegDeveloperMode, L"");
+  if (!dev.empty())
+    return GURL(GetDevelopmentUrl(kDefaultGcpwServiceUrl, dev));
+
+  return GURL(kDefaultGcpwServiceUrl);
+}
+
+base::string16 GetDevelopmentUrl(const base::string16& url,
+                                 const base::string16& dev) {
+  std::string project;
+  std::string final_part;
+  if (re2::RE2::FullMatch(base::UTF16ToUTF8(url),
+                          "https://(.*).(googleapis.com.*)", &project,
+                          &final_part)) {
+    std::string url_prefix = "https://" + base::UTF16ToUTF8(dev) + "-";
+    return base::UTF8ToUTF16(
+        base::JoinString({url_prefix + project, "sandbox", final_part}, "."));
+  }
+  return url;
+}
 
 }  // namespace credential_provider

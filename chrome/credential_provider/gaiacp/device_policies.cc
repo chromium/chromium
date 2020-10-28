@@ -9,7 +9,6 @@
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
-#include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 
 namespace credential_provider {
@@ -48,7 +47,7 @@ DevicePolicies::DevicePolicies()
       enable_multi_user_login(kDevicePolicyDefaultMultiUserLogin) {
   // Override with the policies set in the registry.
 
-  base::string16 mdm_url = GetMdmUrl();
+  base::string16 mdm_url = GetGlobalFlagOrDefault(kRegMdmUrl, kDefaultMdmUrl);
   DWORD reg_enable_dm_enrollment;
   HRESULT hr = GetGlobalFlag(kRegEnableDmEnrollment, &reg_enable_dm_enrollment);
   if (SUCCEEDED(hr)) {

@@ -36,6 +36,8 @@ class TaskManagerTest : public ::testing::Test {
   }
 
   void SetUp() override {
+    ScopedLsaPolicy::SetCreatorForTesting(
+        fake_scoped_lsa_factory_.GetCreatorCallback());
     registry_override.OverrideRegistry(HKEY_LOCAL_MACHINE);
   }
 
@@ -51,6 +53,7 @@ class TaskManagerTest : public ::testing::Test {
  private:
   FakeTaskManager fake_task_manager_;
   FakeOSUserManager fake_os_user_manager_;
+  FakeScopedLsaPolicyFactory fake_scoped_lsa_factory_;
   registry_util::RegistryOverrideManager registry_override;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};

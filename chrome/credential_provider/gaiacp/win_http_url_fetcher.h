@@ -53,6 +53,12 @@ class WinHttpUrlFetcher {
   virtual HRESULT Fetch(std::vector<char>* response);
   virtual HRESULT Close();
 
+  using CreatorFunc = decltype(Create);
+  using CreatorCallback = base::RepeatingCallback<CreatorFunc>;
+
+  // Set the creator callback function to use in tests.
+  static void SetCreatorForTesting(CreatorCallback creator);
+
  protected:
   using Headers = std::map<std::string, std::string>;
 
@@ -75,8 +81,6 @@ class WinHttpUrlFetcher {
 
   // Gets storage of the function pointer used to create instances of this
   // class for tests.
-  using CreatorFunc = decltype(Create);
-  using CreatorCallback = base::RepeatingCallback<CreatorFunc>;
   static CreatorCallback* GetCreatorFunctionStorage();
 };
 

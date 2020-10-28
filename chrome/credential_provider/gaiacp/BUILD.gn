@@ -16,29 +16,14 @@ import("//tools/grit/grit_rule.gni")
 # This static library is shared with the setup program.
 source_set("common") {
   sources = [
-    "device_policies.cc",
-    "device_policies.h",
-    "device_policies_manager.cc",
-    "device_policies_manager.h",
     "gcp_crash_reporter_client.cc",
     "gcp_crash_reporter_client.h",
     "gcp_crash_reporting_utils.cc",
     "gcp_crash_reporting_utils.h",
-    "gcpw_strings.cc",
-    "gcpw_strings.h",
-    "gcpw_version.cc",
-    "gcpw_version.h",
-    "mdm_utils.cc",
-    "mdm_utils.h",
+    "gem_device_details_manager.cc",
+    "gem_device_details_manager.h",
     "os_user_manager.cc",
     "os_user_manager.h",
-    "scoped_handle.h",
-    "user_policies.cc",
-    "user_policies.h",
-    "user_policies_manager.cc",
-    "user_policies_manager.h",
-    "win_http_url_fetcher.cc",
-    "win_http_url_fetcher.h",
   ]
   public_configs = [ ":common_config" ]
   public_deps = [ "//chrome/credential_provider/common:common_constants" ]
@@ -55,7 +40,6 @@ source_set("common") {
     "//components/crash/core/common",
     "//components/version_info",
     "//google_apis:google_apis",
-    "//third_party/re2",
     "//url",
   ]
 }
@@ -79,14 +63,19 @@ source_set("util") {
   sources = [
     "gcp_utils.cc",
     "gcp_utils.h",
+    "gcpw_strings.cc",
+    "gcpw_strings.h",
     "logging.cc",
     "logging.h",
     "reg_utils.cc",
     "reg_utils.h",
+    "scoped_handle.h",
     "scoped_lsa_policy.cc",
     "scoped_lsa_policy.h",
     "token_generator.cc",
     "token_generator.h",
+    "win_http_url_fetcher.cc",
+    "win_http_url_fetcher.h",
   ]
   public_configs = [ ":util_config" ]
   public_deps = [ "//chrome/credential_provider/common:common_constants" ]
@@ -98,6 +87,7 @@ source_set("util") {
     "//chrome/common:version_header",
     "//chrome/installer/launcher_support",
     "//google_apis:google_apis",
+    "//third_party/re2",
     "//url:url",
   ]
 }
@@ -106,6 +96,31 @@ config("util_config") {
   defines = [
     # Needed in order to include the win32 header security.h.
     "SECURITY_WIN32",
+  ]
+}
+
+# This component is used for the cloud policies feature.
+component("policies") {
+  output_name = "gcpw_policies"
+  sources = [
+    "device_policies.cc",
+    "device_policies.h",
+    "device_policies_manager.cc",
+    "device_policies_manager.h",
+    "gcpw_version.cc",
+    "gcpw_version.h",
+    "user_policies.cc",
+    "user_policies.h",
+    "user_policies_manager.cc",
+    "user_policies_manager.h",
+  ]
+  defines = [ "IS_GCPW_POLICIES_IMPL" ]
+  deps = [
+    ":common",
+    ":util",
+    "../extension:extension_lib",
+    "//base",
+    "//url",
   ]
 }
 
@@ -139,11 +154,11 @@ source_set("gaiacp_lib") {
     "gaia_credential_provider_module.h",
     "gcp_crash_reporting.cc",
     "gcp_crash_reporting.h",
-    "gem_device_details_manager.cc",
-    "gem_device_details_manager.h",
     "initguid.cc",
     "internet_availability_checker.cc",
     "internet_availability_checker.h",
+    "mdm_utils.cc",
+    "mdm_utils.h",
     "os_process_manager.cc",
     "os_process_manager.h",
     "password_recovery_manager.cc",
@@ -158,6 +173,7 @@ source_set("gaiacp_lib") {
   public_deps = [ ":common" ]
   deps = [
     ":gaia_credential_provider_idl",
+    ":policies",
     ":static_resources",
     ":string_resources",
     ":util",
@@ -272,6 +288,7 @@ shared_library("gaia1_0") {
   deps = [
     ":common",
     ":gaiacp_lib",
+    ":policies",
     ":util",
     ":version",
     "//base",

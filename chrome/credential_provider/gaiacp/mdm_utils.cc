@@ -31,38 +31,16 @@
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace credential_provider {
 
-constexpr wchar_t kRegEnableVerboseLogging[] = L"enable_verbose_logging";
-constexpr wchar_t kRegInitializeCrashReporting[] = L"enable_crash_reporting";
-constexpr wchar_t kRegMdmUrl[] = L"mdm";
-constexpr wchar_t kRegEnableDmEnrollment[] = L"enable_dm_enrollment";
-constexpr wchar_t kRegDeveloperMode[] = L"developer_mode";
 constexpr wchar_t kRegMdmEnforceOnlineLogin[] = L"enforce_online_login";
-constexpr wchar_t kRegMdmEnableForcePasswordReset[] =
-    L"enable_force_reset_password_option";
-constexpr wchar_t kRegDisablePasswordSync[] = L"disable_password_sync";
-constexpr wchar_t kRegMdmSupportsMultiUser[] = L"enable_multi_user_login";
-constexpr wchar_t kRegMdmAllowConsumerAccounts[] = L"enable_consumer_accounts ";
-constexpr wchar_t kRegDeviceDetailsUploadStatus[] =
-    L"device_details_upload_status";
-constexpr wchar_t kRegDeviceDetailsUploadFailures[] =
-    L"device_details_upload_failures";
-constexpr wchar_t kRegUpdateCredentialsOnChange[] =
-    L"update_credentials_on_change";
-constexpr wchar_t kRegUseShorterAccountName[] = L"use_shorter_account_name";
 constexpr wchar_t kUserPasswordLsaStoreKeyPrefix[] =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     L"Chrome-GCPW-";
 #else
     L"Chromium-GCPW-";
 #endif
-const char kErrorKeyInRequestResult[] = "error";
-constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
-const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh =
-    base::TimeDelta::FromDays(1);
 
 // Overridden in tests to force the MDM enrollment to either succeed or fail.
 enum class EnrollmentStatus {
@@ -99,9 +77,6 @@ DeviceDetailsUploadNeeded g_device_details_upload_needed =
     DeviceDetailsUploadNeeded::kDontForce;
 
 namespace {
-
-constexpr wchar_t kDefaultMdmUrl[] =
-    L"https://deviceenrollmentforwindows.googleapis.com/v1/discovery";
 
 constexpr wchar_t kDefaultEscrowServiceServerUrl[] =
     L"https://devicepasswordescrowforwindows-pa.googleapis.com";
@@ -375,7 +350,8 @@ bool UploadDeviceDetailsNeeded(const base::string16& sid) {
     DWORD device_upload_failures = 1;
     GetUserProperty(sid, kRegDeviceDetailsUploadFailures,
                     &device_upload_failures);
-    if (device_upload_failures > kMaxNumConsecutiveUploadDeviceFailures) {
+    if (device_upload_failures >
+        DWORD(kMaxNumConsecutiveUploadDeviceFailures)) {
       LOGFN(WARNING) << "Reauth not enforced due to upload device details "
                         "failures exceeding threshhold.";
       return false;
@@ -433,14 +409,6 @@ GURL EscrowServiceUrl() {
 
   // By default, the password recovery feature should be enabled.
   return GURL(base::UTF16ToUTF8(kDefaultEscrowServiceServerUrl));
-}
-
-GURL GetGcpwServiceUrl() {
-  base::string16 dev = GetGlobalFlagOrDefault(kRegDeveloperMode, L"");
-  if (!dev.empty())
-    return GURL(GetDevelopmentUrl(kDefaultGcpwServiceUrl, dev));
-
-  return GURL(kDefaultGcpwServiceUrl);
 }
 
 bool PasswordRecoveryEnabled() {
@@ -507,20 +475,6 @@ base::string16 GetUserPasswordLsaStoreKey(const base::string16& sid) {
   DCHECK(sid.size());
 
   return kUserPasswordLsaStoreKeyPrefix + sid;
-}
-
-base::string16 GetDevelopmentUrl(const base::string16& url,
-                                 const base::string16& dev) {
-  std::string project;
-  std::string final_part;
-  if (re2::RE2::FullMatch(base::UTF16ToUTF8(url),
-                          "https://(.*).(googleapis.com.*)", &project,
-                          &final_part)) {
-    std::string url_prefix = "https://" + base::UTF16ToUTF8(dev) + "-";
-    return base::UTF8ToUTF16(
-        base::JoinString({url_prefix + project, "sandbox", final_part}, "."));
-  }
-  return url;
 }
 
 // GoogleMdmEnrollmentStatusForTesting ////////////////////////////////////////

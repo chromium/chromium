@@ -8,10 +8,12 @@
 #include <array>
 #include <string>
 
+#include "base/component_export.h"
+
 namespace credential_provider {
 
 // A structure to hold the version of GCPW.
-class GcpwVersion {
+class COMPONENT_EXPORT(GCPW_POLICIES) GcpwVersion {
  public:
   // Create a default version which is not valid.
   GcpwVersion();
