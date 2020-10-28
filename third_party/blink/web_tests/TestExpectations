@@ -6209,4 +6209,4 @@ crbug.com/1140329 virtual/threaded/external/wpt/web-animations/timing-model/anim
 crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Pass Failure ]
 
 #Sheriff 2020-10-26
-crbug.com/1142877 external/wpt/mediacapture-fromelement/capture.html [ Pass Failure ]
+crbug.com/1142877 external/wpt/mediacapture-fromelement/capture.html [ Pass Failure Crash ]
