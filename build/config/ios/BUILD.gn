@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/sysroot.gni")
 import("//build/toolchain/toolchain.gni")
 
 declare_args() {
@@ -27,7 +26,7 @@ declare_args() {
 # is applied to all targets. It is here to separate out the logic.
 config("compiler") {
   # These flags are shared between the C compiler and linker.
-  common_ios_flags = []
+  common_flags = []
 
   # CPU architecture.
   if (current_cpu == "x64") {
@@ -45,15 +44,19 @@ config("compiler") {
   # Environment.
   if (target_environment == "simulator") {
     triplet_environment = "-simulator"
-  } else {
+  } else if (target_environment == "device") {
     triplet_environment = ""
+  } else if (target_environment == "catalyst") {
+    triplet_environment = "-macabi"
+  } else {
+    assert(false, "unsupported environment: $target_environment")
   }
 
   # OS.
   triplet_os = "apple-ios"
 
   # Set target.
-  common_ios_flags = [
+  common_flags = [
     "-target",
     "$triplet_cpu-$triplet_os$ios_deployment_target$triplet_environment",
   ]
@@ -63,9 +66,9 @@ config("compiler") {
   # when their commandline changes). Nothing should ever read this define.
   defines = [ "CR_XCODE_VERSION=$xcode_version" ]
 
-  asmflags = common_ios_flags
-  cflags = common_ios_flags
-  swiftflags = common_ios_flags
+  asmflags = common_flags
+  cflags = common_flags
+  swiftflags = common_flags
 
   swiftflags += [
     "-swift-version",
@@ -76,7 +79,7 @@ config("compiler") {
   # an Objective C struct won't be called, which is very bad.
   cflags_objcc = [ "-fobjc-call-cxx-cdtors" ]
 
-  ldflags = common_ios_flags
+  ldflags = common_flags
 }
 
 # This is included by reference in the //build/config/compiler:runtime_library
@@ -84,19 +87,32 @@ config("compiler") {
 # that is iOS-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
 config("runtime_library") {
-  _sysroot_path = sysroot
+  # The variable ios_sdk_path may be relative to root_out_dir on the bots. As
+  # it is passed to the compiler via cflags, ldflags which do not rebase the
+  # values (since they are compiler flags, not paths), it may be required to
+  # rebase it. Use a local variable to avoid repeating the rebase invocation.
+  _sdk_root = ios_sdk_path
   if (ios_enable_relative_sdk_path) {
-    _sysroot_path = rebase_path(sysroot, root_build_dir)
+    _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
   }
 
   common_flags = [
     "-isysroot",
-    _sysroot_path,
+    _sdk_root,
   ]
   swiftflags = [
     "-sdk",
-    _sysroot_path,
+    _sdk_root,
   ]
+
+  if (target_environment == "catalyst") {
+    common_flags += [
+      "-isystem",
+      "$_sdk_root/System/iOSSupport/usr/include",
+      "-iframework",
+      "$_sdk_root/System/iOSSupport/System/Library/Frameworks",
+    ]
+  }
 
   if (use_xcode_clang && enable_ios_bitcode && target_environment == "device") {
     if (is_debug) {
@@ -112,11 +128,52 @@ config("runtime_library") {
 }
 
 config("ios_executable_flags") {
+  ldflags = []
+
+  # On "catalyst", the bundle structure is different (uses the same structure
+  # as a regular macOS app), so an additional -rpath is required.
+  if (target_environment == "catalyst") {
+    ldflags += [ "-Wl,-rpath,@loader_path/../Frameworks" ]
+  }
+
+  ldflags += [ "-Wl,-rpath,@executable_path/Frameworks" ]
+}
+
+config("ios_extension_executable_flags") {
+  configs = default_executable_configs
+
+  ldflags = [
+    "-e",
+    "_NSExtensionMain",
+    "-fapplication-extension",
+  ]
+
+  # On "catalyst", the bundle structure is different (uses the same structure
+  # as a regular macOS app), so an additional -rpath is required.
+  if (target_environment == "catalyst") {
+    ldflags += [ "-Wl,-rpath,@loader_path/../Frameworks" ]
+  }
+
+  ldflags += [ "-Wl,-rpath,@executable_path/Frameworks" ]
 }
 
 config("ios_dynamic_flags") {
-  ldflags = [ "-Wl,-ObjC" ]  # Always load Objective-C categories and class.
-  lib_dirs = [ "$sysroot/usr/lib/swift" ]
+  ldflags = [
+    # Always load Objective-C categories and class.
+    "-Wl,-ObjC",
+
+    # Uses version 2 of Objective-C ABI.
+    "-Wl,-objc_abi_version,2",
+  ]
+
+  lib_dirs = [ "$ios_sdk_path/usr/lib/swift" ]
+}
+
+config("ios_shared_library_flags") {
+  ldflags = [
+    "-Wl,-rpath,@executable_path/Frameworks",
+    "-Wl,-rpath,@loader_path/Frameworks",
+  ]
 }
 
 config("xctest_config") {

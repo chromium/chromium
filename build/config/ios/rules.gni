@@ -696,32 +696,6 @@ template("ios_app_bundle") {
     }
     frameworks += [ "UIKit.framework" ]
 
-    if (!defined(ldflags)) {
-      ldflags = []
-    }
-    ldflags += [
-      "-Xlinker",
-      "-rpath",
-      "-Xlinker",
-      "@executable_path/Frameworks",
-      "-Xlinker",
-      "-objc_abi_version",
-      "-Xlinker",
-      "2",
-    ]
-
-    # Application extension may share private frameworks with the application
-    # itself, so they need to look in both their own bundle and the surrounding
-    # app bundle for the frameworks.
-    if (!_is_app_bundle) {
-      ldflags += [
-        "-Xlinker",
-        "-rpath",
-        "-Xlinker",
-        "@executable_path/../../Frameworks",
-      ]
-    }
-
     if (target_environment == "simulator") {
       deps += [ ":$_generate_entitlements_target($default_toolchain)" ]
 
@@ -733,16 +707,8 @@ template("ios_app_bundle") {
       if (!defined(ldflags)) {
         ldflags = []
       }
-      ldflags += [
-        "-Xlinker",
-        "-sectcreate",
-        "-Xlinker",
-        "__TEXT",
-        "-Xlinker",
-        "__entitlements",
-        "-Xlinker",
-        rebase_path(_generate_entitlements_output, root_build_dir),
-      ]
+      ldflags += [ "-Wl,-sectcreate,__TEXT,__entitlements," +
+                   rebase_path(_generate_entitlements_output, root_build_dir) ]
     }
 
     output_name = _output_name
@@ -979,22 +945,11 @@ template("ios_appex_bundle") {
                              "product_type",
                            ])
     product_type = _ios_xcode_appex_bundle_id
-
-    # Add linker flags required for an application extension (determined by
-    # inspecting the link command-line when using Xcode 9.0+).
-    if (!defined(ldflags)) {
-      ldflags = []
-    }
-    ldflags += [
-      "-e",
-      "_NSExtensionMain",
-      "-fapplication-extension",
-    ]
   }
 }
 
 set_defaults("ios_appex_bundle") {
-  configs = default_executable_configs
+  configs = [ "//build/config/ios:ios_extension_executable_flags" ]
 }
 
 # Template to compile .xib and .storyboard files.
@@ -1354,16 +1309,8 @@ template("ios_framework_bundle") {
     if (!defined(ldflags)) {
       ldflags = []
     }
-    ldflags += [
-      "-Xlinker",
-      "-install_name",
-      "-Xlinker",
-      "@rpath/$_output_name.framework/$_output_name",
-      "-Xlinker",
-      "-objc_abi_version",
-      "-Xlinker",
-      "2",
-    ]
+    ldflags +=
+        [ "-Wl,-install_name,@rpath/$_output_name.framework/$_output_name" ]
 
     output_extension = ""
     output_name = _output_name
@@ -1889,20 +1836,6 @@ template("ios_xctest_test") {
       }
       bundle_deps += [ ":$_xctest_bundle" ]
     }
-
-    if (!defined(ldflags)) {
-      ldflags = []
-    }
-    ldflags += [
-      "-Xlinker",
-      "-rpath",
-      "-Xlinker",
-      "@executable_path/Frameworks",
-      "-Xlinker",
-      "-rpath",
-      "-Xlinker",
-      "@loader_path/Frameworks",
-    ]
   }
 }
 

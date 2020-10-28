@@ -126,8 +126,11 @@ if (ios_sdk_path == "") {
   } else if (target_environment == "device") {
     ios_sdk_name = "iphoneos"
     ios_sdk_platform = "iPhoneOS"
+  } else if (target_environment == "catalyst") {
+    ios_sdk_name = "macosx"
+    ios_sdk_platform = "MacOSX"
   } else {
-    assert("unsupported target_environment: $target_environment")
+    assert(false, "unsupported environment: $target_environment")
   }
 
   ios_sdk_info_args = [ "--get_sdk_info" ]

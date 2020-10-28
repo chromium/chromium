@@ -41,14 +41,8 @@ template("ios_eg2_test_app_host") {
       ldflags = []
     }
     ldflags += [
-      "-Xlinker",
-      "-rpath",
-      "-Xlinker",
-      "@executable_path/Frameworks",
-      "-Xlinker",
-      "-rpath",
-      "-Xlinker",
-      "@loader_path/Frameworks",
+      "-Wl,-rpath,@executable_path/Frameworks",
+      "-Wl,-rpath,@loader_path/Frameworks",
     ]
   }
 }
