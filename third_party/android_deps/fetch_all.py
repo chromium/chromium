@@ -96,13 +96,13 @@ _AAR_PY = os.path.join(_CHROMIUM_SRC, 'build', 'android', 'gyp', 'aar.py')
 def BuildDir(dirname=None):
     """Helper function used to manage a build directory.
 
-  Args:
-    dirname: Optional build directory path. If not provided, a temporary
-      directory will be created and cleaned up on exit.
-  Returns:
-    A python context manager modelling a directory path. The manager
-    removes the directory if necessary on exit.
-  """
+    Args:
+      dirname: Optional build directory path. If not provided, a temporary
+        directory will be created and cleaned up on exit.
+    Returns:
+      A python context manager modelling a directory path. The manager
+      removes the directory if necessary on exit.
+    """
     delete = False
     if not dirname:
         dirname = tempfile.mkdtemp()
@@ -134,7 +134,7 @@ def RaiseCommandException(args, returncode, output, error):
     raise Exception(message)
 
 
-def RunCommand(args, print_stdout=False):
+def RunCommand(args, print_stdout=False, cwd=None):
     """Run a new shell command.
 
   This function runs without printing anything.
@@ -147,7 +147,7 @@ def RunCommand(args, print_stdout=False):
   """
     logging.debug('Run %s', args)
     stdout = None if print_stdout else subprocess.PIPE
-    p = subprocess.Popen(args, stdout=stdout)
+    p = subprocess.Popen(args, stdout=stdout, cwd=cwd)
     pout, _ = p.communicate()
     if p.returncode != 0:
         RaiseCommandException(args, p.returncode, None, pout)
@@ -264,7 +264,7 @@ def NormalizeAndroidDepsDir(unnormalized_path):
     normalized_path = os.path.relpath(unnormalized_path, _CHROMIUM_SRC)
     build_gradle_dir = os.path.join(_CHROMIUM_SRC, normalized_path)
     if not os.path.isfile(os.path.join(build_gradle_dir, _BUILD_GRADLE)):
-        raise Exception('--android-deps-path {} does not contain {}.'.format(
+        raise Exception('--android-deps-dir {} does not contain {}.'.format(
             build_gradle_dir, _BUILD_GRADLE))
     return normalized_path
 
@@ -576,10 +576,11 @@ def main():
         logging.info('# Reformat %s.',
                      os.path.join(args.android_deps_dir, _BUILD_GN))
         gn_args = [
-            _GN_PATH, 'format',
-            os.path.join(build_android_deps_dir, _BUILD_GN)
+            os.path.relpath(_GN_PATH, _CHROMIUM_SRC), 'format',
+            os.path.join(os.path.relpath(build_android_deps_dir, _CHROMIUM_SRC),
+                         _BUILD_GN)
         ]
-        RunCommand(gn_args, print_stdout=debug)
+        RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
 
         logging.info('# Jetify all libraries.')
         aar_files = FindInDirectory(build_libs_dir, '*.aar')
