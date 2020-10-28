@@ -15,9 +15,7 @@ namespace ash {
 class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
  public:
   LoginErrorBubble();
-  LoginErrorBubble(views::View* content,
-                   views::View* anchor_view,
-                   bool is_persistent);
+  LoginErrorBubble(views::View* content, views::View* anchor_view);
   ~LoginErrorBubble() override;
 
   void SetContent(views::View* content);
@@ -29,17 +27,12 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   // on bubble show – when the alert event occurs.
   void SetAccessibleName(const base::string16& name);
 
-  // LoginBaseBubbleView:
-  bool IsPersistent() const override;
-  void SetPersistent(bool persistent) override;
-
   // views::View:
   const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   views::View* content_ = nullptr;
-  bool is_persistent_;
 
   // Accessibility data.
   base::string16 accessible_name_;

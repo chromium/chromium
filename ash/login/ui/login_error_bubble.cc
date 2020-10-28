@@ -26,14 +26,11 @@ constexpr int kAlertIconSizeDp = 20;
 }  // namespace
 
 LoginErrorBubble::LoginErrorBubble()
-    : LoginErrorBubble(nullptr /*content*/,
-                       nullptr /*anchor_view*/,
-                       false /*is_persistent*/) {}
+    : LoginErrorBubble(nullptr /*content*/, nullptr /*anchor_view*/) {}
 
 LoginErrorBubble::LoginErrorBubble(views::View* content,
-                                   views::View* anchor_view,
-                                   bool is_persistent)
-    : LoginBaseBubbleView(anchor_view), is_persistent_(is_persistent) {
+                                   views::View* anchor_view)
+    : LoginBaseBubbleView(anchor_view) {
   views::ImageView* alert_icon = new views::ImageView();
   alert_icon->SetPreferredSize(gfx::Size(kAlertIconSizeDp, kAlertIconSizeDp));
   alert_icon->SetImage(
@@ -62,14 +59,6 @@ void LoginErrorBubble::SetTextContent(const base::string16& message) {
 
 void LoginErrorBubble::SetAccessibleName(const base::string16& name) {
   accessible_name_ = name;
-}
-
-bool LoginErrorBubble::IsPersistent() const {
-  return is_persistent_;
-}
-
-void LoginErrorBubble::SetPersistent(bool persistent) {
-  is_persistent_ = persistent;
 }
 
 const char* LoginErrorBubble::GetClassName() const {

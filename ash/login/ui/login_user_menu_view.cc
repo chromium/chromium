@@ -191,6 +191,10 @@ LoginUserMenuView::LoginUserMenuView(
     remove_user_button_->SetID(kUserMenuRemoveUserButtonIdForTest);
     AddChildView(remove_user_button_);
   }
+
+  set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);
+  SetPadding(kHorizontalPaddingLoginUserMenuViewDp,
+             kVerticalPaddingLoginUserMenuViewDp);
 }
 
 LoginUserMenuView::~LoginUserMenuView() = default;
@@ -241,13 +245,6 @@ void LoginUserMenuView::ButtonPressed(views::Button* sender,
 
   if (on_remove_user_requested_)
     std::move(on_remove_user_requested_).Run();
-}
-
-gfx::Point LoginUserMenuView::CalculatePosition() {
-  return CalculatePositionUsingDefaultStrategy(
-      PositioningStrategy::kShowOnRightSideOrLeftSide,
-      kHorizontalPaddingLoginUserMenuViewDp,
-      kVerticalPaddingLoginUserMenuViewDp);
 }
 
 void LoginUserMenuView::RequestFocus() {

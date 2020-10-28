@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenViewBasedTest, InfoBubbleVisible) {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsUserAddingScreenBubbleShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsUserAddingScreenIndicatorShown());
 
   LoginUser(users[0].account_id);
   EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 1u);
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenViewBasedTest, InfoBubbleVisible) {
     EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
               session_manager::SessionState::LOGIN_SECONDARY);
 
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsUserAddingScreenBubbleShown());
+    EXPECT_TRUE(ash::LoginScreenTestApi::IsUserAddingScreenIndicatorShown());
 
     AddUser(users[i].account_id);
     users_in_session_order_.push_back(users[i].account_id);

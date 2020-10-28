@@ -44,12 +44,12 @@ views::Label* CreateBubbleLabel(
 // Get the bubble container for |view| to place a LoginBaseBubbleView.
 views::View* GetBubbleContainer(views::View* view);
 
-ASH_EXPORT gfx::Point CalculateBubblePositionLeftRightStrategy(
+ASH_EXPORT gfx::Point CalculateBubblePositionAfterBeforeStrategy(
     gfx::Rect anchor,
     gfx::Size bubble,
     gfx::Rect bounds);
 
-ASH_EXPORT gfx::Point CalculateBubblePositionRightLeftStrategy(
+ASH_EXPORT gfx::Point CalculateBubblePositionBeforeAfterStrategy(
     gfx::Rect anchor,
     gfx::Size bubble,
     gfx::Rect bounds);

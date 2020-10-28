@@ -26,8 +26,8 @@ TEST_F(LoginErrorBubbleTest, PersistentEventHandling) {
                                  views::style::CONTEXT_LABEL,
                                  views::style::STYLE_PRIMARY);
 
-  auto* bubble = new LoginErrorBubble(label /*content*/, anchor_view,
-                                      true /*is_persistent*/);
+  auto* bubble = new LoginErrorBubble(label /*content*/, anchor_view);
+  bubble->set_persistent(true);
   container->AddChildView(bubble);
 
   EXPECT_FALSE(bubble->GetVisible());

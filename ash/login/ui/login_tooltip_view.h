@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_LOGIN_UI_LOGIN_UNPOSITIONED_TOOLTIP_VIEW_H_
-#define ASH_LOGIN_UI_LOGIN_UNPOSITIONED_TOOLTIP_VIEW_H_
+#ifndef ASH_LOGIN_UI_LOGIN_TOOLTIP_VIEW_H_
+#define ASH_LOGIN_UI_LOGIN_TOOLTIP_VIEW_H_
 
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -15,13 +15,10 @@ class Label;
 
 namespace ash {
 
-// TODO(crbug.com/1109266): Get rid of this class and make
-// LoginBaseBubbleView more configurable.
-class LoginUnpositionedTooltipView : public LoginBaseBubbleView {
+class LoginTooltipView : public LoginBaseBubbleView {
  public:
-  LoginUnpositionedTooltipView(const base::string16& message,
-                               views::View* anchor_view);
-  ~LoginUnpositionedTooltipView() override;
+  LoginTooltipView(const base::string16& message, views::View* anchor_view);
+  ~LoginTooltipView() override;
 
   void SetText(const base::string16& message);
 
@@ -34,9 +31,9 @@ class LoginUnpositionedTooltipView : public LoginBaseBubbleView {
  private:
   views::Label* label_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(LoginUnpositionedTooltipView);
+  DISALLOW_COPY_AND_ASSIGN(LoginTooltipView);
 };
 
 }  // namespace ash
 
-#endif  // ASH_LOGIN_UI_LOGIN_UNPOSITIONED_TOOLTIP_VIEW_H_
+#endif  // ASH_LOGIN_UI_LOGIN_TOOLTIP_VIEW_H_

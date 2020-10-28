@@ -82,6 +82,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -127,8 +128,26 @@ constexpr int kBottomStatusIndicatorChildSpacingDp = 8;
 // Spacing between child of LoginBaseBubbleView.
 constexpr int kBubbleBetweenChildSpacingDp = 16;
 
-// Width of login screen pop-ups.
-constexpr int kLoginScreenPopUpWidth = 400;
+// Border radius of the rounded bubble.
+constexpr int kBubbleBorderRadius = 8;
+
+// Width of the management bubble.
+constexpr int kManagementBubbleWidth = 400;
+
+// Width of the user adding screen
+constexpr int kUserAddingScreenIndicatorWidth = 512;
+
+// Distance from the top of the user view to the user icon.
+constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 24;
+
+// Distance from the bottom of the user adding screen indicator to the user
+// icon.
+constexpr int kDistanceFromBottomOfIndicatorToUserIconDp =
+    96 - kDistanceFromTopOfBigUserViewToUserIconDp;
+
+// Min distance from the top of the screen to the top of the user adding screen
+// indicator.
+constexpr int kMinDistanceFromTopOfScreenToIndicatorDp = 8;
 
 // Padding around the login screen bubble view.
 constexpr int kBubblePaddingDp = 16;
@@ -140,14 +159,10 @@ constexpr int kInfoIconSizeDp = 20;
 constexpr int kHorizontalPaddingLoginTooltipViewDp = 8;
 constexpr int kVerticalPaddingLoginTooltipViewDp = 8;
 
-// Maximum width of the login screen pop-ups' labels.
-constexpr int kLoginPopUpLabelMaxWidth =
-    kLoginScreenPopUpWidth - 2 * kBubblePaddingDp - kInfoIconSizeDp -
+// Maximum width of the management bubble label.
+constexpr int kManagementBubbleLabelMaxWidth =
+    kManagementBubbleWidth - 2 * kBubblePaddingDp - kInfoIconSizeDp -
     kBubbleBetweenChildSpacingDp;
-
-// Y of the user adding pop-up in the screen coordinates when the auth user view
-// is not set.
-constexpr int kUserAddingPopUpDefaultYPosition = 100;
 
 constexpr char kAuthErrorContainerName[] = "AuthErrorContainer";
 
@@ -301,18 +316,59 @@ struct MediumViewLayout {
   int right_flex_width = 0;
 };
 
+class UserAddingScreenIndicator : public views::View {
+ public:
+  UserAddingScreenIndicator() {
+    views::BoxLayout* layout_manager =
+        SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal,
+            gfx::Insets(kBubblePaddingDp), kBubbleBetweenChildSpacingDp));
+    layout_manager->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
+
+    views::ImageView* info_icon = new views::ImageView();
+    info_icon->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
+    info_icon->SetImage(gfx::CreateVectorIcon(views::kInfoIcon, SK_ColorWHITE));
+    AddChildView(info_icon);
+
+    base::string16 message =
+        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_USER_ADDING_BANNER);
+    views::Label* label_ = login_views_utils::CreateBubbleLabel(
+        message, gfx::kGoogleGrey200, this);
+    label_->SetText(message);
+    AddChildView(label_);
+
+    SetPaintToLayer();
+    SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80);
+    layer()->SetBackgroundBlur(
+        static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+    SetBackground(views::CreateRoundedRectBackground(background_color,
+                                                     kBubbleBorderRadius));
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  UserAddingScreenIndicator(const UserAddingScreenIndicator&) = delete;
+  UserAddingScreenIndicator& operator=(const UserAddingScreenIndicator&) =
+      delete;
+  ~UserAddingScreenIndicator() override = default;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override {
+    return gfx::Size(kUserAddingScreenIndicatorWidth,
+                     GetHeightForWidth(kUserAddingScreenIndicatorWidth));
+  }
+};
+
 }  // namespace
 
 class LockContentsView::AuthErrorBubble : public LoginErrorBubble,
                                           public views::ButtonListener {
  public:
-  AuthErrorBubble() = default;
-
-  // LoginErrorBubble:
-  gfx::Point CalculatePosition() override {
-    return CalculatePositionUsingDefaultStrategy(
-        PositioningStrategy::kShowOnRightSideOrLeftSide,
-        kHorizontalPaddingAuthErrorBubbleDp, kVerticalPaddingAuthErrorBubbleDp);
+  AuthErrorBubble() {
+    set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);
+    SetPadding(kHorizontalPaddingAuthErrorBubbleDp,
+               kVerticalPaddingAuthErrorBubbleDp);
   }
 
   // views::ButtonListener:
@@ -323,109 +379,26 @@ class LockContentsView::AuthErrorBubble : public LoginErrorBubble,
   }
 };
 
-class LockContentsView::LoginTooltipView : public LoginUnpositionedTooltipView {
+class LockContentsView::ManagementBubble : public LoginTooltipView {
  public:
-  LoginTooltipView(const base::string16& message, views::View* anchor_view)
-      : LoginUnpositionedTooltipView(message, anchor_view) {}
-
-  // LoginBaseBubbleView:
-  gfx::Point CalculatePosition() override {
-    return CalculatePositionUsingDefaultStrategy(
-        PositioningStrategy::kShowOnLeftSideOrRightSide,
-        kHorizontalPaddingLoginTooltipViewDp,
-        kVerticalPaddingLoginTooltipViewDp);
-  }
-};
-
-class LoginScreenPopUp : public LoginUnpositionedTooltipView {
- public:
-  LoginScreenPopUp(const base::string16& message, views::View* anchor_view)
-      : LoginUnpositionedTooltipView(message, anchor_view) {
+  ManagementBubble(const base::string16& message, views::View* anchor_view)
+      : LoginTooltipView(message, anchor_view) {
     views::BoxLayout* layout_manager =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
             gfx::Insets(kBubblePaddingDp), kBubbleBetweenChildSpacingDp));
     layout_manager->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
-    label()->SetMaximumWidth(kLoginPopUpLabelMaxWidth);
-    SetVisible(false);
+    label()->SetMaximumWidth(kManagementBubbleLabelMaxWidth);
+
+    set_positioning_strategy(PositioningStrategy::kShowAbove);
   }
 
   // LoginBaseBubbleView:
   gfx::Size CalculatePreferredSize() const override {
-    gfx::Size size;
-    size.set_width(kLoginScreenPopUpWidth);
-    size.set_height(GetHeightForWidth(kLoginScreenPopUpWidth));
-    return size;
+    return gfx::Size(kManagementBubbleWidth,
+                     GetHeightForWidth(kManagementBubbleWidth));
   }
-};
-
-class LockContentsView::ManagementPopUp : public LoginScreenPopUp {
- public:
-  ManagementPopUp(const base::string16& message, views::View* anchor_view)
-      : LoginScreenPopUp(message, anchor_view) {}
-
-  // LoginBaseBubbleView:
-  gfx::Point CalculatePosition() override {
-    DCHECK(GetAnchorView());
-    gfx::Point top_center = GetAnchorView()->bounds().top_center();
-    gfx::Point position =
-        top_center - gfx::Vector2d(GetPreferredSize().width() / 2,
-                                   GetPreferredSize().height());
-    ConvertPointToTarget(GetAnchorView()->parent() /*source*/,
-                         parent() /*target*/, &position);
-    return position;
-  }
-};
-
-class LockContentsView::UserAddingPopUp : public LoginScreenPopUp {
- public:
-  UserAddingPopUp(const base::string16& message,
-                  LockContentsView* lock_contents_view)
-      : LoginScreenPopUp(message, lock_contents_view),
-        lock_contents_view_(lock_contents_view) {}
-
-  // LoginBaseBubbleView:
-  bool IsPersistent() const override { return true; }
-  // The pop-up is placed mid-way between the top of the screen and the auth
-  // user view. When the pop-up is shown, the screen should look like this:
-  //  _____________________________________
-  // |                                     |
-  // |           _______________           |
-  // |           |   POP-UP    |           |
-  // |           _______________           |
-  // |                                     |
-  // |           _______________           |
-  // |           |             |           |
-  // |           |             |           |
-  // |           |  AUTH USER  |           |
-  // |           |    VIEW     |           |
-  // |           |             |           |
-  // |                 ...                 |
-  gfx::Point CalculatePosition() override {
-    DCHECK(lock_contents_view_);
-    gfx::Point popup_center;
-    popup_center.set_x(GetAnchorView()->bounds().width() / 2);
-    if (lock_contents_view_->CurrentBigUserView() &&
-        lock_contents_view_->CurrentBigUserView()->auth_user()) {
-      // Calculate auth_user y position in the screen coordinates.
-      gfx::Point auth_user_view_y(
-          0,
-          lock_contents_view_->CurrentBigUserView()->auth_user()->bounds().y());
-      ConvertPointToTarget(lock_contents_view_->CurrentBigUserView() /*source*/,
-                           GetAnchorView() /*target*/, &auth_user_view_y);
-      popup_center.set_y(auth_user_view_y.y() / 2);
-    } else {
-      popup_center.set_y(kUserAddingPopUpDefaultYPosition +
-                         GetPreferredSize().height() / 2);
-    }
-    // The position is defined by the coordinates of the top-left corner.
-    return popup_center - gfx::Vector2d(GetPreferredSize().width() / 2,
-                                        GetPreferredSize().height() / 2);
-  }
-
- private:
-  LockContentsView* lock_contents_view_ = nullptr;
 };
 
 class LockContentsView::AutoLoginUserActivityHandler
@@ -514,8 +487,8 @@ LockContentsView::TestApi::supervised_user_deprecation_bubble() const {
   return view_->supervised_user_deprecation_bubble_;
 }
 
-views::View* LockContentsView::TestApi::user_adding_screen_bubble() const {
-  return view_->user_adding_screen_bubble_;
+views::View* LockContentsView::TestApi::user_adding_screen_indicator() const {
+  return view_->user_adding_screen_indicator_;
 }
 
 views::View* LockContentsView::TestApi::system_info() const {
@@ -679,16 +652,20 @@ LockContentsView::LockContentsView(
 
   supervised_user_deprecation_bubble_ =
       AddChildView(std::make_unique<LoginErrorBubble>());
-  supervised_user_deprecation_bubble_->SetPersistent(true);
+  supervised_user_deprecation_bubble_->set_persistent(true);
 
   detachable_base_error_bubble_ =
       AddChildView(std::make_unique<LoginErrorBubble>());
-  detachable_base_error_bubble_->SetPersistent(true);
+  detachable_base_error_bubble_->set_persistent(true);
 
   tooltip_bubble_ = AddChildView(std::make_unique<LoginTooltipView>(
       base::UTF8ToUTF16("") /*message*/, nullptr /*anchor_view*/));
+  tooltip_bubble_->set_positioning_strategy(
+      LoginBaseBubbleView::PositioningStrategy::kTryBeforeThenAfter);
+  tooltip_bubble_->SetPadding(kHorizontalPaddingLoginTooltipViewDp,
+                              kVerticalPaddingLoginTooltipViewDp);
 
-  management_bubble_ = new ManagementPopUp(
+  management_bubble_ = new ManagementBubble(
       l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_ENTERPRISE_MANAGED_POP_UP,
                                  ui::GetChromeOSDeviceName(),
                                  base::UTF8ToUTF16(enterprise_domain_manager)),
@@ -696,15 +673,14 @@ LockContentsView::LockContentsView(
   AddChildView(management_bubble_);
 
   warning_banner_bubble_ = AddChildView(std::make_unique<LoginErrorBubble>());
-  warning_banner_bubble_->SetPersistent(true);
+  warning_banner_bubble_->set_persistent(true);
 
   auth_error_bubble_ = AddChildView(std::make_unique<AuthErrorBubble>());
 
   if (Shell::Get()->session_controller()->GetSessionState() ==
       session_manager::SessionState::LOGIN_SECONDARY) {
-    user_adding_screen_bubble_ = AddChildView(std::make_unique<UserAddingPopUp>(
-        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_USER_ADDING_BANNER),
-        this /* anchor_view */));
+    user_adding_screen_indicator_ =
+        AddChildView(std::make_unique<UserAddingScreenIndicator>());
   }
 
   OnLockScreenNoteStateChanged(initial_note_action_state);
@@ -864,6 +840,7 @@ void LockContentsView::Layout() {
   View::Layout();
   LayoutTopHeader();
   LayoutBottomStatusIndicator();
+  LayoutUserAddingScreenIndicator();
   LayoutPublicSessionView();
 
   if (users_list_)
@@ -1794,6 +1771,33 @@ void LockContentsView::LayoutBottomStatusIndicator() {
     management_bubble_->Layout();
 }
 
+void LockContentsView::LayoutUserAddingScreenIndicator() {
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::LOGIN_SECONDARY)
+    return;
+
+  // The primary big view may not be ready yet.
+  if (!primary_big_view_)
+    return;
+
+  user_adding_screen_indicator_->SizeToPreferredSize();
+  // The element is placed at the middle of the screen horizontally. It is
+  // placed kDistanceFromBottomOfIndicatorToUserIconDp above the user icon.
+  // However, if the screen is too small, it is placed
+  // kMinDistanceFromTopOfScreenToIndicatorDp from top of screen.
+  int y =
+      std::max(kMinDistanceFromTopOfScreenToIndicatorDp,
+               primary_big_view_->y() -
+                   user_adding_screen_indicator_->GetPreferredSize().height() -
+                   kDistanceFromBottomOfIndicatorToUserIconDp);
+  gfx::Point position(
+      bounds().width() / 2 -
+          user_adding_screen_indicator_->GetPreferredSize().width() / 2,
+      y);
+
+  user_adding_screen_indicator_->SetPosition(position);
+}
+
 void LockContentsView::LayoutPublicSessionView() {
   gfx::Rect bounds = GetContentsBounds();
   bounds.ClampToCenteredSize(expanded_view_->GetPreferredSize());
@@ -1949,12 +1953,6 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
   Layout();
   apply_animation_post_layout(to_update);
   apply_animation_post_layout(opt_to_hide);
-
-  // The user adding screen should be layout after the auth user view.
-  if (Shell::Get()->session_controller()->GetSessionState() ==
-      session_manager::SessionState::LOGIN_SECONDARY) {
-    user_adding_screen_bubble_->Show();
-  }
 }
 
 void LockContentsView::SwapToBigUser(int user_index) {
@@ -2125,7 +2123,6 @@ void LockContentsView::ShowAuthErrorMessage() {
       big_view->auth_user()->GetActiveInputView());
   auth_error_bubble_->SetContent(container.release());
   auth_error_bubble_->SetAccessibleName(error_text);
-  auth_error_bubble_->SetPersistent(false);
   auth_error_bubble_->Show();
 }
 

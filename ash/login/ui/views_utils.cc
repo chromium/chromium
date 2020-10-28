@@ -148,13 +148,13 @@ views::View* GetBubbleContainer(views::View* view) {
   return container;
 }
 
-gfx::Point CalculateBubblePositionLeftRightStrategy(gfx::Rect anchor,
-                                                    gfx::Size bubble,
-                                                    gfx::Rect bounds) {
+gfx::Point CalculateBubblePositionBeforeAfterStrategy(gfx::Rect anchor,
+                                                      gfx::Size bubble,
+                                                      gfx::Rect bounds) {
   gfx::Rect result(anchor.x() - bubble.width(), anchor.y(), bubble.width(),
                    bubble.height());
-  // Trying to show on the left side.
-  // If there is not enough space show on the right side.
+  // Trying to show before (on the left side in LTR).
+  // If there is not enough space show after (on the right side in LTR).
   if (result.x() < bounds.x()) {
     result.Offset(anchor.width() + result.width(), 0);
   }
@@ -162,13 +162,13 @@ gfx::Point CalculateBubblePositionLeftRightStrategy(gfx::Rect anchor,
   return result.origin();
 }
 
-gfx::Point CalculateBubblePositionRightLeftStrategy(gfx::Rect anchor,
-                                                    gfx::Size bubble,
-                                                    gfx::Rect bounds) {
+gfx::Point CalculateBubblePositionAfterBeforeStrategy(gfx::Rect anchor,
+                                                      gfx::Size bubble,
+                                                      gfx::Rect bounds) {
   gfx::Rect result(anchor.x() + anchor.width(), anchor.y(), bubble.width(),
                    bubble.height());
-  // Trying to show on the right side.
-  // If there is not enough space show on the left side.
+  // Trying to show after (on the right side in LTR).
+  // If there is not enough space show before (on the left side in LTR).
   if (result.right() > bounds.right()) {
     result.Offset(-anchor.width() - result.width(), 0);
   }
