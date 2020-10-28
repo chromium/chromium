@@ -142,6 +142,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/new_tab_page_resources.pak",
         "$root_gen_dir/chrome/read_later_resources.pak",
         "$root_gen_dir/chrome/settings_resources.pak",
+        "$root_gen_dir/chrome/tab_search_resources.pak",
         "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
         "$root_gen_dir/headless/headless_lib_resources.pak",
         "$root_gen_dir/ui/resources/webui_generated_resources.pak",
@@ -154,6 +155,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources:local_ntp_resources",
         "//chrome/browser/resources:new_tab_page_resources",
         "//chrome/browser/resources:read_later_resources",
+        "//chrome/browser/resources:tab_search_resources",
         "//chrome/browser/resources/bookmarks:bookmarks_resources",
         "//chrome/browser/resources/commander:commander_resources",
         "//chrome/browser/resources/downloads:downloads_resources",
@@ -259,10 +261,6 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/chrome/print_preview_resources.pak" ]
       deps +=
           [ "//chrome/browser/resources/print_preview:print_preview_resources" ]
-    }
-    if (enable_tab_search) {
-      sources += [ "$root_gen_dir/chrome/tab_search_resources.pak" ]
-      deps += [ "//chrome/browser/resources:tab_search_resources" ]
     }
     if (enable_webui_tab_strip) {
       sources += [ "$root_gen_dir/chrome/tab_strip_resources.pak" ]

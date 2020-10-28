@@ -26,11 +26,8 @@ if (include_js_tests) {
       "history/history_focus_test.js",
       "print_preview/print_preview_interactive_ui_tests.js",
       "settings/cr_settings_v3_interactive_ui_tests.js",
+      "tab_search_merge/tab_search_interactive_ui_tests.js",
     ]
-
-    if (enable_tab_search) {
-      sources += [ "tab_search_merge/tab_search_interactive_ui_tests.js" ]
-    }
 
     gen_include_files = [
       "polymer_browser_test_base.js",
@@ -100,6 +97,7 @@ if (include_js_tests) {
       "settings/a11y/v3_a11y_browsertest.js",
       "settings/cr_settings_v3_browsertest.js",
       "settings/settings_idle_load_v3_browsertest.js",
+      "tab_search_merge/tab_search_browsertest.js",
       "text_defaults_browsertest.js",
       "webui_resource_async_browsertest.js",
     ]
@@ -178,9 +176,6 @@ if (include_js_tests) {
     }
     if (enable_print_preview) {
       sources += [ "print_preview/print_preview_ui_browsertest.js" ]
-    }
-    if (enable_tab_search) {
-      sources += [ "tab_search_merge/tab_search_browsertest.js" ]
     }
     if (enable_webui_tab_strip) {
       sources += [ "tab_strip/tab_strip_browsertest.js" ]
@@ -494,6 +489,7 @@ group("closure_compile") {
     "read_later:closure_compile",
     "settings:closure_compile",
     "signin:closure_compile",
+    "tab_search_merge:closure_compile",
     "tab_strip:closure_compile",
 
     # TODO(crbug.com/1000989): Add page specific targets here.
@@ -505,9 +501,6 @@ group("closure_compile") {
       "nearby_share:closure_compile",
       "nearby_share/shared:closure_compile",
     ]
-  }
-  if (enable_tab_search) {
-    deps += [ "tab_search_merge:closure_compile" ]
   }
   if (!is_android) {
     deps += [ "commander:closure_compile" ]

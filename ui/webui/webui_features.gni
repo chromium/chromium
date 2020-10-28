@@ -12,10 +12,4 @@ declare_args() {
 
   # Enable the WebUI version of the browser's tab strip.
   enable_webui_tab_strip = is_chromeos || is_linux || is_win
-
-  # Enable tab search only on a branded desktop build.
-  # In order to get commit queue coverage for C++ tests,
-  # this flag only gates the html/js webui resources, not the C++
-  # files
-  enable_tab_search = !is_android && !is_ios && is_chrome_branded
 }

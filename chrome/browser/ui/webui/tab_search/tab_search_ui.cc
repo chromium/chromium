@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/tab_search_resources.h"
+#include "chrome/grit/tab_search_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -20,17 +22,10 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 
-#if BUILDFLAG(ENABLE_TAB_SEARCH)
-#include "chrome/grit/tab_search_resources.h"
-#include "chrome/grit/tab_search_resources_map.h"
-#endif  // BUILDFLAG(ENABLE_TAB_SEARCH)
-
-#if BUILDFLAG(ENABLE_TAB_SEARCH)
 namespace {
 constexpr char kGeneratedPath[] =
     "@out_folder@/gen/chrome/browser/resources/tab_search_merge/";
 }
-#endif  // BUILDFLAG(ENABLE_TAB_SEARCH)
 
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui,
@@ -38,7 +33,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       webui_load_timer_(web_ui->GetWebContents(),
                         "Tabs.TabSearch.WebUI.LoadDocumentTime",
                         "Tabs.TabSearch.WebUI.LoadCompletedTime") {
-#if BUILDFLAG(ENABLE_TAB_SEARCH)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUITabSearchHost);
   static constexpr webui::LocalizedString kStrings[] = {
@@ -87,7 +81,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-#endif  // BUILDFLAG(ENABLE_TAB_SEARCH)
 }
 
 TabSearchUI::~TabSearchUI() = default;

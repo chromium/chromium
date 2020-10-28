@@ -1511,6 +1511,7 @@ if (!is_android) {
       "../browser/ui/webui/settings/settings_secure_dns_handler_browsertest.cc",
       "../browser/ui/webui/settings/settings_ui_browsertest.cc",
       "../browser/ui/webui/signin/user_manager_ui_browsertest.cc",
+      "../browser/ui/webui/tab_search/tab_search_ui_browsertest.cc",
       "../browser/ui/webui/webui_load_timer_browsertest.cc",
       "../browser/ui/webui/webui_webview_browsertest.cc",
       "../browser/ui/zoom/zoom_controller_browsertest.cc",
@@ -3119,11 +3120,6 @@ if (!is_android) {
         "../browser/ui/webui/tab_strip/chrome_content_browser_client_tab_strip_part_browsertest.cc",
         "../browser/ui/webui/tab_strip/tab_strip_ui_browsertest.cc",
       ]
-    }
-
-    if (enable_tab_search) {
-      sources +=
-          [ "../browser/ui/webui/tab_search/tab_search_ui_browsertest.cc" ]
     }
 
     if (enable_spellcheck) {

@@ -52,6 +52,7 @@ if (enable_js_type_check) {
         "settings:closure_compile",
         "settings:closure_compile_module",
         "signin:closure_compile",
+        "tab_search_merge:closure_compile",
         "usb_internals:closure_compile",
         "user_manager:closure_compile",
         "web_app_internals:closure_compile",
@@ -75,9 +76,6 @@ if (enable_js_type_check) {
     }
     if (enable_nacl) {
       deps += [ "about_nacl:closure_compile" ]
-    }
-    if (enable_tab_search) {
-      deps += [ "tab_search_merge:closure_compile" ]
     }
     if (enable_webui_tab_strip) {
       deps += [ "tab_strip:closure_compile" ]
@@ -219,6 +217,26 @@ if (!is_android) {
       "grit/read_later_resources_map.cc",
       "grit/read_later_resources_map.h",
       "read_later_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
+  grit("tab_search_resources") {
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+    source = "tab_search_merge/tab_search_resources.grd"
+    deps = [
+      "//chrome/browser/resources/tab_search_merge:web_components",
+      "//chrome/browser/ui/webui/tab_search:mojo_bindings_js",
+    ]
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/tab_search_resources.h",
+      "grit/tab_search_resources_map.cc",
+      "grit/tab_search_resources_map.h",
+      "tab_search_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }
@@ -371,28 +389,6 @@ if (enable_extensions) {
     outputs = [
       "grit/sync_file_system_internals_resources.h",
       "sync_file_system_internals_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-}
-
-if (enable_tab_search) {
-  grit("tab_search_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-    source = "tab_search_merge/tab_search_resources.grd"
-    deps = [
-      "//chrome/browser/resources/tab_search_merge:web_components",
-      "//chrome/browser/ui/webui/tab_search:mojo_bindings_js",
-    ]
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/tab_search_resources.h",
-      "grit/tab_search_resources_map.cc",
-      "grit/tab_search_resources_map.h",
-      "tab_search_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

@@ -1352,6 +1352,7 @@ group("extra_resources") {
       "//chrome/browser/resources:local_ntp_resources",
       "//chrome/browser/resources:new_tab_page_resources",
       "//chrome/browser/resources:read_later_resources",
+      "//chrome/browser/resources:tab_search_resources",
       "//chrome/browser/resources/bookmarks:bookmarks_resources",
       "//chrome/browser/resources/commander:commander_resources",
       "//chrome/browser/resources/downloads:downloads_resources",
@@ -1397,10 +1398,6 @@ group("extra_resources") {
   if (enable_print_preview) {
     public_deps +=
         [ "//chrome/browser/resources/print_preview:print_preview_resources" ]
-  }
-
-  if (enable_tab_search) {
-    public_deps += [ "//chrome/browser/resources:tab_search_resources" ]
   }
 }
 
