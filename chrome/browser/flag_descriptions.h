@@ -2095,9 +2095,6 @@ extern const char kAppServiceExternalProtocolDescription[];
 extern const char kAppServiceIntentHandlingName[];
 extern const char kAppServiceIntentHandlingDescription[];
 
-extern const char kArcApplicationZoomName[];
-extern const char kArcApplicationZoomDescription[];
-
 extern const char kArcCustomTabsExperimentName[];
 extern const char kArcCustomTabsExperimentDescription[];
 

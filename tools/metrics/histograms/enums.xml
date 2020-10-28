@@ -41791,7 +41791,6 @@ from previous Chrome versions.
   <int value="-1972219399" label="NTPSaveToOffline:enabled"/>
   <int value="-1971086581" label="print-scaling"/>
   <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
-  <int value="-1967387994" label="ArcEnableApplicationZoomFeature:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
   <int value="-1964261747" label="WebVrVsyncAlign:disabled"/>
   <int value="-1963838301"
@@ -44700,7 +44699,6 @@ from previous Chrome versions.
   <int value="880510010" label="enable-permissions-bubbles"/>
   <int value="883190338" label="PrintWithReducedRasterization:disabled"/>
   <int value="884106779" label="supervised-user-safesites"/>
-  <int value="885004540" label="ArcEnableApplicationZoomFeature:enabled"/>
   <int value="885186849" label="finch-seed-expiration-age"/>
   <int value="885971656" label="EnablePlayStoreAppSearch:enabled"/>
   <int value="886907524" label="autoplay-policy"/>
