@@ -54,8 +54,6 @@ DeskNameView::DeskNameView() {
 
   SetCursorEnabled(true);
   SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-  SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
-                                                   kDeskNameViewBorderRadius));
 }
 
 DeskNameView::~DeskNameView() = default;
@@ -129,6 +127,8 @@ void DeskNameView::OnMouseExited(const ui::MouseEvent& event) {
 
 void DeskNameView::OnThemeChanged() {
   Textfield::OnThemeChanged();
+  SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
+                                                   kDeskNameViewBorderRadius));
   AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor text_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
@@ -138,7 +138,7 @@ void DeskNameView::OnThemeChanged() {
   const SkColor selection_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusAuraColor);
   SetSelectionBackgroundColor(selection_color);
-  UpdateViewAppearance();
+  UpdateBorderState();
 }
 
 views::View* DeskNameView::GetView() {
