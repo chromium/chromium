@@ -23,6 +23,7 @@ class InstallTest(test_base.UpdaterTestBase):
     super(InstallTest, self).tearDown()
 
   def test_install(self):
+    logging.info('Build dir: %s', self.context.build_dir)
     updater_util.Install()
 
 

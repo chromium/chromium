@@ -12,13 +12,13 @@ intended action before test run and after test run respectively.
 
 import logging
 import os
-import unittest
+import typ
 
 from test.integration_tests.common import logger_util
 from test.integration_tests.updater.lib import updater_util
 
 
-class UpdaterTestBase(unittest.TestCase):
+class UpdaterTestBase(typ.TestCase):
   """Base test class for updater testing on new infra."""
 
   @classmethod

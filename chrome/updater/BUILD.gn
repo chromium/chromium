@@ -347,9 +347,13 @@ if (is_win || is_mac) {
   script_test("updater_integration_tests") {
     script = "//testing/scripts/run_isolated_script_test.py"
 
-    args = [ "@WrappedPath(" +
-             rebase_path("//chrome/updater/run_updater_tests.py",
-                         root_build_dir) + ")" ]
+    args = [
+      "@WrappedPath(" +
+          rebase_path("//chrome/updater/run_updater_tests.py", root_build_dir) +
+          ")",
+      "--build-dir",
+      "@WrappedPath(" + rebase_path(root_build_dir, root_build_dir) + ")",
+    ]
 
     data = [
       "//chrome/updater/run_updater_tests.py",
