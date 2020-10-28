@@ -1388,9 +1388,9 @@ try_.chromium_mac_ios_builder(
 
 try_.chromium_mac_ios_builder(
     name = "ios14-sdk-simulator",
-    caches = [xcode_cache.x12b5025f],
+    caches = [xcode_cache.x12b5035g],
     properties = {
-        "xcode_build_version": "12b5025f",
+        "xcode_build_version": "12b5035g",
     },
 )
 

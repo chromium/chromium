@@ -2410,7 +2410,7 @@
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12b5025f',
+          'xcode_12b5035g',
           'xctest',
         ],
         'test_suites': {
@@ -2427,7 +2427,7 @@
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12b5025f',
+          'xcode_12b5035g',
           'xctest',
         ],
         'test_suites': {
