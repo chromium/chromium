@@ -1,0 +1,291 @@
+This test verifies a11y attributes for a node.
+
+button{
+  "paths": [
+    {
+      "path": [
+        "M",
+        16,
+        11,
+        "L",
+        41.921875,
+        11,
+        "L",
+        41.921875,
+        26,
+        "L",
+        16,
+        26,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        10,
+        "L",
+        47.921875,
+        10,
+        "L",
+        47.921875,
+        27,
+        "L",
+        10,
+        27,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        49.921875,
+        8,
+        "L",
+        49.921875,
+        29,
+        "L",
+        8,
+        29,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        49.921875,
+        8,
+        "L",
+        49.921875,
+        29,
+        "L",
+        8,
+        29,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "button",
+    "idValue": "button",
+    "nodeWidth": "41.9219",
+    "nodeHeight": "21",
+    "isKeyboardFocusable": true,
+    "accessibleName": "click",
+    "accessibleRole": "button",
+    "layoutObjectName": "LayoutNGButton",
+    "showAccessibilityInfo": true
+  }
+}
+input{
+  "paths": [
+    {
+      "path": [
+        "M",
+        57.921875,
+        11,
+        "L",
+        202.921875,
+        11,
+        "L",
+        202.921875,
+        26,
+        "L",
+        57.921875,
+        26,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        55.921875,
+        10,
+        "L",
+        204.921875,
+        10,
+        "L",
+        204.921875,
+        27,
+        "L",
+        55.921875,
+        27,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        53.921875,
+        8,
+        "L",
+        206.921875,
+        8,
+        "L",
+        206.921875,
+        29,
+        "L",
+        53.921875,
+        29,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        53.921875,
+        8,
+        "L",
+        206.921875,
+        8,
+        "L",
+        206.921875,
+        29,
+        "L",
+        53.921875,
+        29,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "input",
+    "idValue": "input",
+    "nodeWidth": "153",
+    "nodeHeight": "21",
+    "isKeyboardFocusable": true,
+    "accessibleName": "",
+    "accessibleRole": "textbox",
+    "layoutObjectName": "LayoutTextControl",
+    "showAccessibilityInfo": true
+  }
+}
+div{
+  "paths": [
+    {
+      "path": [
+        "M",
+        8,
+        29,
+        "L",
+        792,
+        29,
+        "L",
+        792,
+        47,
+        "L",
+        8,
+        47,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        29,
+        "L",
+        792,
+        29,
+        "L",
+        792,
+        47,
+        "L",
+        8,
+        47,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        29,
+        "L",
+        792,
+        29,
+        "L",
+        792,
+        47,
+        "L",
+        8,
+        47,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        29,
+        "L",
+        792,
+        29,
+        "L",
+        792,
+        47,
+        "L",
+        8,
+        47,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "div",
+    "nodeWidth": "784",
+    "nodeHeight": "18",
+    "isKeyboardFocusable": true,
+    "accessibleName": "click",
+    "accessibleRole": "button",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
+  }
+}
+

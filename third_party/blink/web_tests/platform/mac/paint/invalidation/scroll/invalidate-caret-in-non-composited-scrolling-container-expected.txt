@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutTextControl INPUT id='root'",
+      "name": "LayoutNGTextControlSingleLine INPUT id='root'",
       "position": [-2, -2],
       "bounds": [52, 25],
       "backgroundColor": "#FFFFFF",

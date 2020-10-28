@@ -188,7 +188,7 @@ input{
     "isKeyboardFocusable": true,
     "accessibleName": "",
     "accessibleRole": "textbox",
-    "layoutObjectName": "LayoutTextControl",
+    "layoutObjectName": "LayoutNGTextControlSingleLine",
     "showAccessibilityInfo": true
   }
 }
