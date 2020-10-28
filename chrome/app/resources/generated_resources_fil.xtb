@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Na-lock ang security key dahil napakaraming beses nang nailagay ang maling PIN. Para i-unlock ito, alisin at ipasok ulit ito.</translation>
 <translation id="1137589305610962734">pansamantalang data</translation>
 <translation id="1137673463384776352">Buksan ang link sa <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Bagong Notification}one{# Bagong Notification}other{# na Bagong Notification}}</translation>
 <translation id="1139343347646843679">Nagka-error habang kino-configure ang Linux. Makipag-ugnayan sa iyong administrator.</translation>
 <translation id="1140351953533677694">I-access ang iyong mga Bluetooth at Serial device</translation>
 <translation id="114036956334641753">Audio at mga caption</translation>
@@ -1672,6 +1673,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="291056154577034373">HINDI PA NABABASA</translation>
 <translation id="2910718431259223434">Nagkaproblema. Pakisubukan ulit o makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Payagan ang mga site na mag-save at magbasa ng data ng cookie (inirerekomenda)</translation>
+<translation id="2915016304249900997">Nakatago ang mga detalye habang ibinabahagi mo ang iyong screen</translation>
 <translation id="2915102088417824677">Tingnan ang log ng aktibidad</translation>
 <translation id="2915873080513663243">Awtomatikong Pag-scan</translation>
 <translation id="2916073183900451334">Ang pagpindot sa Tab sa isang webpage ay nagha-highlight ng mga link, pati na rin ang mga field ng form</translation>
@@ -2442,6 +2444,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3819257035322786455">Backup</translation>
 <translation id="3819261658055281761">Hindi na-store ng system ang pangmatagalang token ng access ng API para sa device na ito.</translation>
 <translation id="3819800052061700452">&amp;Full screen</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ipakita}one{Ipakita lahat}other{Ipakita lahat}}</translation>
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (na tinatawag ding NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Inaprubahan ang isang extension}one{# extension ang inaprubahan}other{# na extension ang inaprubahan}}</translation>
 <translation id="3822559385185038546">Ipinapatupad ng iyong administrator ang proxy na ito</translation>
@@ -2832,6 +2835,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4285498937028063278">I-unpin</translation>
 <translation id="428565720843367874">Hindi inaasahang nabigo ang software ng anti-virus habang ini-scan ang file na ito.</translation>
 <translation id="4287099557599763816">Screen reader</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ipakita}one{Ipakita Lahat}other{Ipakita Lahat}}</translation>
 <translation id="4289372044984810120">Pamahalaan ang iyong mga account dito. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4295072614469448764">Available ang app sa iyong terminal. Maaari ding magkaroon ng icon sa iyong Launcher.</translation>
@@ -6150,6 +6154,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="820568752112382238">Mga pinakamadalas bisitahing site</translation>
 <translation id="8206745257863499010">Musika</translation>
 <translation id="8206859287963243715">Cellular</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Bagong notification}one{# bagong notification}other{# na bagong notification}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Kasalukuyang isinasagawa ang pag-download}one{Kasalukuyang isinasagawa ang mga pag-download}other{Kasalukuyang isinasagawa ang mga pag-download}}</translation>
 <translation id="8213449224684199188">Nailagay sa photo mode</translation>
 <translation id="8213577208796878755">Isang iba pang available na device.</translation>

@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Säkerhetsnyckeln har låsts eftersom du har angett fel pinkod för många gånger. Ta ur och sätt i säkerhetsnyckeln igen för att låsa upp den.</translation>
 <translation id="1137589305610962734">tillfälligt sparad data</translation>
 <translation id="1137673463384776352">Öppna länken i <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny avisering}other{# nya aviseringar}}</translation>
 <translation id="1139343347646843679">Ett fel uppstod när Linux skulle konfigureras. Kontakta administratören.</translation>
 <translation id="1140351953533677694">Få åtkomst till dina Bluetooth-enheter och seriella enheter</translation>
 <translation id="114036956334641753">Ljud och textning</translation>
@@ -1672,6 +1673,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="291056154577034373">OLÄSTA</translation>
 <translation id="2910718431259223434">Något gick fel. Försök igen eller kontakta enhetens ägare eller administratör. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Tillåt att webbplatser sparar och läser cookiedata (rekommenderas)</translation>
+<translation id="2915016304249900997">Informationen är dold medan du delar skärmen</translation>
 <translation id="2915102088417824677">Visa aktivitetslogg</translation>
 <translation id="2915873080513663243">Automatisk genomsökning</translation>
 <translation id="2916073183900451334">Om du trycker på Tabb på en webbsida markeras länkar och formulärfält</translation>
@@ -2442,6 +2444,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3819257035322786455">Säkerhetskopiera</translation>
 <translation id="3819261658055281761">Det gick inte att lagra någon långsiktig API-åtkomsttoken för den här enheten.</translation>
 <translation id="3819800052061700452">&amp;Helskärm</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Visa}other{Visa alla}}</translation>
 <translation id="3820749202859700794">SECG med elliptisk kurva secp521r1 (kallas även NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ett tillägg har godkänts}other{# tillägg har godkänts}}</translation>
 <translation id="3822559385185038546">Administratören har gjort den här proxyn obligatorisk</translation>
@@ -2832,6 +2835,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="428565720843367874">Ett oväntat fel uppstod i antivirusprogrammet när filen skulle genomsökas.</translation>
 <translation id="4287099557599763816">Skärmläsningsprogram</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Visa}other{Visa alla}}</translation>
 <translation id="4289372044984810120">Hantera dina konton här. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="4295072614469448764">Appen är tillgänglig via terminalen. Det kan också finnas en ikon för den i startprogrammet.</translation>
@@ -6150,6 +6154,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="820568752112382238">Mest besökta webbplatser</translation>
 <translation id="8206745257863499010">Bluesig</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny avisering}other{# nya aviseringar}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Nedladdning pågår}other{Nedladdningar pågår}}</translation>
 <translation id="8213449224684199188">Fotoläget har aktiverats</translation>
 <translation id="8213577208796878755">En till tillgänglig enhet.</translation>

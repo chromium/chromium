@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">PIN коды бірнеше рет қате енгізілгендіктен, қауіпсіздік кілті құлыпталған. Құлпын ашу үшін оны өшіріңіз де, қайта енгізіңіз.</translation>
 <translation id="1137589305610962734">уақытша дерек</translation>
 <translation id="1137673463384776352">Сілтемені <ph name="APP" /> қолданбасында ашу</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңа хабарландыру}other{# жаңа хабарландыру}}</translation>
 <translation id="1139343347646843679">Linux жүйесін конфигурациялау кезінде қате шықты. Әкімшіге хабарласыңыз.</translation>
 <translation id="1140351953533677694">Bluetooth және сериялық құрылғыларға кіру</translation>
 <translation id="114036956334641753">Аудио және жазулар</translation>
@@ -1669,6 +1670,7 @@
 <translation id="291056154577034373">ОҚЫЛМАҒАН</translation>
 <translation id="2910718431259223434">Бірдеңе дұрыс болмады. Әрекетті қайталаңыз немесе құрылғының иесіне не әкімшісіне хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Сайттарға cookie деректерін сақтауға және оқуға рұқсат беру (ұсынылған)</translation>
+<translation id="2915016304249900997">Экран бөлісіліп жатқанда, мәліметтер жасырын тұрады.</translation>
 <translation id="2915102088417824677">Әрекеттер журналын көру</translation>
 <translation id="2915873080513663243">Автоматты түрде сканерлеу</translation>
 <translation id="2916073183900451334">Веб-бетте "Қойынды" түймесін басқанда, сілтемелер мен нысан өрістері бөлектеледі</translation>
@@ -2439,6 +2441,7 @@
 <translation id="3819257035322786455">Сақтық көшірме жасау</translation>
 <translation id="3819261658055281761">Жүйе бұл құрылғыға арналған ұзақ мерзімдік API кіру таңбалауышын сақтай алмады.</translation>
 <translation id="3819800052061700452">&amp;Толық экран</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Көрсету}other{Барлығын көрсету}}</translation>
 <translation id="3820749202859700794">SECG эллипстік қисық сызығы secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Кеңейтім мақұлданды.}other{# кеңейтім мақұлданды.}}</translation>
 <translation id="3822559385185038546">Бұл прокси-серверді әкімші іске қосқан</translation>
@@ -2829,6 +2832,7 @@
 <translation id="4285498937028063278">Босату</translation>
 <translation id="428565720843367874">Бұл файлды тексеру кезінде антивирустық бағдарламалық жасақтама күптегенде сәтсіз аяқталды.</translation>
 <translation id="4287099557599763816">Экранды оқу құралы</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Көрсету}other{Барлығын көрсету}}</translation>
 <translation id="4289372044984810120">Есептік жазбаларыңызды осы жерде басқарыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Шолу</translation>
 <translation id="4295072614469448764">Қолданба терминалда қолжетімді. Сонымен қатар Launcher қолданбасында белгіше болуы мүмкін.</translation>
@@ -6146,6 +6150,7 @@
 <translation id="820568752112382238">Көп кіретін сайттар</translation>
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Ұялы</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңа хабарландыру}other{# жаңа хабарландыру}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Файл жүктеп алынуда}other{Файлдар жүктеп алынуда}}</translation>
 <translation id="8213449224684199188">Фото режимі қосылды</translation>
 <translation id="8213577208796878755">Басқа бір қолжетімді құрылғы.</translation>

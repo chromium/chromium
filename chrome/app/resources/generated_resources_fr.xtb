@@ -2077,6 +2077,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3428419049384081277">Vous êtes connecté</translation>
 <translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
 <translation id="3428800329481094896">Extraction des clés SSH du conteneur Linux…</translation>
+<translation id="3429271624041785769">Langues du contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
 <translation id="3432227430032737297">Supprimer tous les cookies affichés</translation>
 <translation id="3432757130254800023">Envoyer les contenus audio et vidéo aux écrans sur le réseau local</translation>
@@ -2502,6 +2503,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante filmée avec la caméra ou lue à partir d'un fichier</translation>
+<translation id="3884152383786131369">Le contenu Web disponible dans plusieurs langues vous sera proposé dans la première langue disponible de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Votre demande d'accès à ce site a bien été envoyée à <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Prise de notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Activer la synchronisation Chrome pour utiliser Sync Wi-Fi</translation>
@@ -4356,6 +4358,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6112727384379533756">Ajouter un ticket</translation>
 <translation id="6112931163620622315">Vérifier le téléphone</translation>
 <translation id="6112952769866305444">Modifier la personne, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Définissez un moteur de recherche par défaut pour le navigateur Chrome et le Lanceur d'applications <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pour utiliser Smart Lock, passez au profil de l'utilisateur principal sur votre téléphone</translation>
 <translation id="6116921718742659598">Modifier les paramètres de langue et de saisie</translation>
 <translation id="6120205520491252677">Épingler cette page à l'écran de démarrage…</translation>
@@ -5222,6 +5225,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7140928199327930795">Aucun autre périphérique disponible</translation>
 <translation id="7141105143012495934">Échec de la connexion, car il est impossible de récupérer les informations relatives à votre compte. Veuillez contacter votre administrateur ou réessayer.</translation>
 <translation id="7143207342074048698">Connexion</translation>
+<translation id="7143358760238281735">Aucune application disponible</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7149893636342594995">Dernières 24 heures</translation>
@@ -5693,6 +5697,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
 <translation id="7709152031285164251">Échec – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Caster…</translation>
+<translation id="7712739869553853093">Boîte de dialogue d'aperçu avant impression</translation>
 <translation id="7712836429117959503">Extension inconnue avec l'ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Les cookies du domaine <ph name="DOMAIN" /> ont été autorisés</translation>
 <translation id="7714464543167945231">Certificat</translation>

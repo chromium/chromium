@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Ключът за сигурност е заключен поради многократно въвеждане на грешен ПИН код. Премахнете ключа и го поставете отново, за да го отключите.</translation>
 <translation id="1137589305610962734">временни данни</translation>
 <translation id="1137673463384776352">Отваряне на връзката чрез <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известие}other{# нови известия}}</translation>
 <translation id="1139343347646843679">При конфигурирането на Linux възникна грешка. Моля, обърнете се към администратора си.</translation>
 <translation id="1140351953533677694">Достъп до серийните и устройствата ви с Bluetooth</translation>
 <translation id="114036956334641753">Аудио и надписи</translation>
@@ -1669,6 +1670,7 @@
 <translation id="291056154577034373">НЕПРОЧЕТЕНИ</translation>
 <translation id="2910718431259223434">Нещо се обърка. Моля, опитайте отново или се обърнете към собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Разрешаване на сайтовете да запазват „бисквитки“ и да четат данни от такива (препоръчително)</translation>
+<translation id="2915016304249900997">Подробностите са скрити, когато споделяте екрана си</translation>
 <translation id="2915102088417824677">Преглед на регистрационния файл за активността</translation>
 <translation id="2915873080513663243">Автоматично сканиране</translation>
 <translation id="2916073183900451334">При натискането на клавиша „Tab“ върху уеб страница се открояват връзките, както и полетата на формулярите</translation>
@@ -2440,6 +2442,7 @@
 <translation id="3819257035322786455">Резервно копие</translation>
 <translation id="3819261658055281761">Системата не успя да съхрани дългосрочното означение за достъп на това устройство до API.</translation>
 <translation id="3819800052061700452">На &amp;цял екран</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Показване}other{Показване на всички}}</translation>
 <translation id="3820749202859700794">Елиптична крива secp521r1 по SECG (позната и като NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Разширение бе одобрено}other{# разширения бяха одобрени}}</translation>
 <translation id="3822559385185038546">Този прокси сървър е наложен от администратора ви</translation>
@@ -2831,6 +2834,7 @@
 <translation id="4285498937028063278">Освобождаване</translation>
 <translation id="428565720843367874">Неочаквано сканирането на този файл от антивирусния софтуер не бе успешно.</translation>
 <translation id="4287099557599763816">Екранен четец</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Показване}other{Показване на всички}}</translation>
 <translation id="4289372044984810120">Управлявайте профилите си оттук. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4295072614469448764">Приложението е налично в терминала. Възможно е също да има икона в стартовия панел.</translation>
@@ -6150,6 +6154,7 @@
 <translation id="820568752112382238">Най-посещавани сайтове</translation>
 <translation id="8206745257863499010">Музикант</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известие}other{# нови известия}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Изтегля се файл}other{Изтеглят се файлове}}</translation>
 <translation id="8213449224684199188">Преминахте в режим за снимки</translation>
 <translation id="8213577208796878755">Още едно налично устройство.</translation>

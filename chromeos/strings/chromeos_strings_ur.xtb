@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">پرنٹ ہو گیا</translation>
 <translation id="1979103255016296513">پاس ورڈ تبدیل کرنے میں تاخیر ہو گئی ہے</translation>
 <translation id="2049639323467105390">یہ آلہ <ph name="DOMAIN" /> کے زیر انتظام ہے۔</translation>
+<translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2161394479394250669">پرنٹ جاب منسوخ کریں</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> کوششیں باقی ہیں</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} کوشش باقی ہے}other{<ph name="ERROR_MESSAGE" /> {0} کوششیں باقی ہیں}}</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2872961005593481000">بند کریں</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> اس صارف کا نظم کرتا ہے اور دور سے ترتیبات کا نظم اور صارف کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="520299634122159966">کوئی اسکینرز دستیاب نہیں ہے</translation>
 <translation id="5212543919916444558">مجھے آپ کی اسکرین پر ایسا کچھ نہیں ملا جس سے متعلق میں آپ کی مدد کر سکوں۔ مجھ سے کچھ بھی پوچھنے کے لیے مائیک کو تھپتھپانے کی کوشش کریں۔</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>

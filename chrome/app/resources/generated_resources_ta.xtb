@@ -2077,6 +2077,7 @@
 <translation id="3428419049384081277">உள்நுழைந்துவிட்டீர்கள்!</translation>
 <translation id="3428747202529429621">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்</translation>
 <translation id="3428800329481094896">Linux கண்டெய்னர் ssh விசைகளைப் பெறுகிறது</translation>
+<translation id="3429271624041785769">இணைய உள்ளடக்கத்திற்கான மொழிகள்</translation>
 <translation id="3429275422858276529">இந்தப் பக்கத்தைப் பிறகு எளிதாகக் கண்டறிய, புத்தகக்குறியிடவும்</translation>
 <translation id="3432227430032737297">காட்டப்படும் அனைத்தையும் அகற்று</translation>
 <translation id="3432757130254800023">அக நெட்வொர்க்கில் உள்ள காட்சிகளுக்கு ஆடியோவையும் வீடியோவையும் அனுப்பு</translation>
@@ -2502,6 +2503,7 @@
 <translation id="3879748587602334249">பதிவிறக்க நிர்வாகி</translation>
 <translation id="3881478300875776315">குறைவான வரிகளைக் காட்டும்</translation>
 <translation id="3882165008614329320">கேமரா அல்லது கோப்பிலிருக்கும் வீடியோ</translation>
+<translation id="3884152383786131369">பல மொழிகளில் கிடைக்கும் இணைய உள்ளடக்கம், இந்தப் பட்டியலில் முதலில் உள்ள ஆதரிக்கப்படும் மொழியைப் பயன்படுத்தும். இந்த விருப்பத்தேர்வுகள் உங்கள் உலாவி அமைப்புகளுடன் ஒத்திசைக்கப்படும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">இந்தத் தளத்தை அணுகுவதற்கான உங்கள் கோரிக்கை <ph name="NAME" />க்கு அனுப்பப்பட்டது</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> மூலம் குறிப்புகளை எடுத்தல்</translation>
 <translation id="3890064827463908288">Wi-Fi ஒத்திசைவைப் பயன்படுத்த Chrome ஒத்திசைவை இயக்க வேண்டும்</translation>
@@ -4356,6 +4358,7 @@
 <translation id="6112727384379533756">டிக்கெட்டைச் சேர்</translation>
 <translation id="6112931163620622315">மொபைலைப் பார்க்கவும்</translation>
 <translation id="6112952769866305444">பயனரைத் திருத்தவும், <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Chrome உலாவிக்கும் <ph name="DEVICE_TYPE" /> தொடக்கிக்கும் இயல்பான தேடல் இன்ஜினை அமைக்கலாம்</translation>
 <translation id="6113942107547980621">Smart Lockகைப் பயன்படுத்த உங்கள் மொபைலில் உள்ள முதன்மைப் பயனர் கணக்கிற்கு மாறவும்</translation>
 <translation id="6116921718742659598">மொழி மற்றும் உள்ளீட்டு அமைப்புகளை மாற்றவும்</translation>
 <translation id="6120205520491252677">தொடக்கத் திரையில் இந்தப் பக்கத்தைப் பொருத்து...</translation>
@@ -5222,6 +5225,7 @@
 <translation id="7140928199327930795">பிற கிடைக்கும் சாதனங்கள் இல்லை.</translation>
 <translation id="7141105143012495934">உங்கள் கணக்கு விவரங்களை மீட்டெடுக்க முடியாததால் உள்நுழைவு தோல்வியானது. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும் அல்லது மீண்டும் முயலவும்.</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
+<translation id="7143358760238281735">ஆப்ஸ் எதுவுமில்லை</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
 <translation id="7149893636342594995">கடந்த 24 மணிநேரம்</translation>
@@ -5693,6 +5697,7 @@
 <translation id="7707922173985738739">மொபைல் டேட்டாவைப் பயன்படுத்து</translation>
 <translation id="7709152031285164251">தோல்வி - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;அனுப்பு...</translation>
+<translation id="7712739869553853093">பிரிண்ட் உரையாடலின் மாதிரிக்காட்சி</translation>
 <translation id="7712836429117959503">அறியப்படாத நீட்டிப்பு; ஐடி: <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> இன் குக்கீகள் அனுமதிக்கப்படுகின்றன</translation>
 <translation id="7714464543167945231">சான்றிதழ்</translation>

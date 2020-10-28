@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">ትክክል ያልሆነ ፒን ከልክ በላይ ለብዙ ጊዜ ስለገባ ይህ የደህንነት ቁልፍ ተቆልፏል። ለመክፈት፣ ያስወግዱት እና እንደገና ያስገቡት።</translation>
 <translation id="1137589305610962734">ጊዜያዊ ውሂብ</translation>
 <translation id="1137673463384776352">አገናኝን በ<ph name="APP" /> ውስጥ ክፈት</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{አዲስ ማሳወቂያ}one{# አዲስ ማሳወቂያዎች}other{# አዲስ ማሳወቂያዎች}}</translation>
 <translation id="1139343347646843679">Linuxን በማዋቀር ላይ ሳለ አንድ ስህተት ተከስቶ ነበር። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="1140351953533677694">የእርስዎን የብሉቱዝ እና ተከታታይ መሣሪያዎች ይደርሳል</translation>
 <translation id="114036956334641753">ኦዲዮ እና መገለጫ ጽሑፎች</translation>
@@ -1671,6 +1672,7 @@
 <translation id="291056154577034373">ያልተነበበ</translation>
 <translation id="2910718431259223434">የሆነ ችግር ተፈጥሯል። እባክዎ እንደገና ይሞክሩ ወይም የእርስዎን መሣሪያ ባለቤት ወይም አስተዳዳሪ ያነጋግሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="2913331724188855103">ጣቢያዎች የኩኪ ውሂብ እንዲያስቀምጡ እና እንዲያነቡ ይፍቀዱ (የሚመከር)</translation>
+<translation id="2915016304249900997">የእርስዎን ማያ ገጽ በሚያጋሩበት ጊዜ ዝርዝሮች ይደበቃሉ</translation>
 <translation id="2915102088417824677">የእንቅስቃሴ ምዝግብ ማስታወሻን ይመልከቱ</translation>
 <translation id="2915873080513663243">ራስ-ቅኝት</translation>
 <translation id="2916073183900451334">አንድ ድረ-ገጽ ላይ Tabን መጫን አገናኞችንና እንዲሁም የቅጽ መስኮችን ያደምቃል።</translation>
@@ -2441,6 +2443,7 @@
 <translation id="3819257035322786455">ምትኬ ያስቀምጡ</translation>
 <translation id="3819261658055281761">ሥርዓቱ ለዚህ መሣሪያ የረጅም ጊዜ ኤፒአይ መዳረሻ ማስመሰያን ማከማቸት አልቻለም።</translation>
 <translation id="3819800052061700452">&amp;በሙሉ ገጽ ማያ አሳይ</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{አሳይ}one{ሁሉንም አሳይ}other{ሁሉንም አሳይ}}</translation>
 <translation id="3820749202859700794">የSECG ሞላላ ጥምዝ secp521r1 (እንዲሁም NIST P-521 በመባል የሚታወቅ)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{አንድ ቅጥያ ጸድቋል}one{# ቅጥያዎች ጸድቀዋል}other{# ቅጥያዎች ጸድቀዋል}}</translation>
 <translation id="3822559385185038546">ይህ ተኪ በአስተዳዳሪዎ ተገዳጅ ይሆናል</translation>
@@ -2829,6 +2832,7 @@
 <translation id="4285498937028063278">ይንቀሉ</translation>
 <translation id="428565720843367874">የጸረ-ቫይረስ ሶፍትዌር ይህንን ፋይል እየቃኘ ሳለ ድንገት አልተሳካም።</translation>
 <translation id="4287099557599763816">ማያ ገጽ አንባቢ</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{አሳይ}one{ሁሉንም አሳይ}other{ሁሉንም አሳይ}}</translation>
 <translation id="4289372044984810120">የእርስዎን መለያዎች እዚህ ላይ ያቀናብሩ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">ማጠቃለያ</translation>
 <translation id="4295072614469448764">መተግበሪያ በእርስዎ መን There may also be an icon in your Launcher.</translation>
@@ -6151,6 +6155,7 @@ nil</translation>
 <translation id="820568752112382238">በብዛት የተጎበኙ ጣቢያዎች</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{አዲስ ማሳወቂያ}one{# አዲስ ማሳወቂያዎች}other{# አዲስ ማሳወቂያዎች}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ማውረድ በሂደት ላይ ነው}one{ውርዶች በሂደት ላይ ናቸው}other{ውርዶች በሂደት ላይ ናቸው}}</translation>
 <translation id="8213449224684199188">ወደ የፎቶ ሁነታ ተገብቷል</translation>
 <translation id="8213577208796878755">አንድ ሌላ የሚገኝ መሣሪያ።</translation>

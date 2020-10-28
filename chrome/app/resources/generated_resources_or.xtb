@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">ଅନେକ ଥର ଭୁଲ ପିନ୍ ଦିଆଯାଇଥିବା ହେତୁ ସୁରକ୍ଷା କୀ ଲକ୍ ହୋଇଯାଇଛି । ଏହାକୁ ଅନ୍‍ଲକ୍ କରିବା ପାଇଁ, ଏହାକୁ କାଢ଼ନ୍ତୁ ଏବଂ ପୁଣି ଭର୍ତ୍ତି କରନ୍ତୁ।</translation>
 <translation id="1137589305610962734">ଅସ୍ଥାୟୀ ଡାଟା</translation>
 <translation id="1137673463384776352"><ph name="APP" />ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ନୂଆ ବିଜ୍ଞପ୍ତି}other{#ଟି ନୂଆ ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="1139343347646843679">Linux କନଫିଗର୍ କରାଯାଉଥିବା ସମୟରେ ଏକ ତ୍ରୁଟି ହୋଇଥିଲା। ଦୟାକରି ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="1140351953533677694">ଆପଣଙ୍କର ବ୍ଲୁଟୁଥ୍ ଏବଂ ସିରିୟଲ୍ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଆକ୍‌ସେସ୍ କରନ୍ତୁ</translation>
 <translation id="114036956334641753">ଅଡିଓ ଏବଂ କ୍ୟାପ୍‌ସନ୍‌ଗୁଡ଼ିକ</translation>
@@ -1665,6 +1666,7 @@
 <translation id="291056154577034373">ପଢ଼ାଯାଇନଥିବା</translation>
 <translation id="2910718431259223434">କିଛି ତ୍ରୁଟି ହୋଇଗଲା। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ଡିଭାଇସର ମାଲିକ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ଯୋଗାଯୋଗ କରନ୍ତୁ। ତ୍ରୁଟି କୋଡ୍: <ph name="ERROR_CODE" />।</translation>
 <translation id="2913331724188855103">କୁକୀ ଡାଟାଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଏବଂ ପଢ଼ିବା ପାଇଁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
+<translation id="2915016304249900997">ଆପଣ ଆପଣଙ୍କ ସ୍କ୍ରିନ୍ ସେୟାର୍ କରିବା ସମୟରେ ବିବରଣୀକୁ ଲୁଚାଯାଇଛି</translation>
 <translation id="2915102088417824677">କାର୍ଯ୍ୟକଳାପ ଲଗ୍ ଦେଖନ୍ତୁ</translation>
 <translation id="2915873080513663243">ସ୍ୱତଃ ସ୍କାନ୍</translation>
 <translation id="2916073183900451334">ୱେବ୍‌ପୃଷ୍ଠାରେ ଟାବ୍ ପ୍ରେସ୍ କରିବା ଦ୍ବାରା ଲିଙ୍କ୍ ସହ ଫିଲ୍ଡ ହାଇଲାଇଟ୍ ହୁଏ</translation>
@@ -2435,6 +2437,7 @@
 <translation id="3819257035322786455">ବ୍ୟାକ୍‍ଅପ୍</translation>
 <translation id="3819261658055281761">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ଲମ୍ବା ଅବଧିର API ଆକ୍ସେସ୍‍ ଟୋକନ୍ ଷ୍ଟୋର୍‌ କରିବାରେ ସିଷ୍ଟମ୍‌ ବିଫଳ ହେଲା।</translation>
 <translation id="3819800052061700452">&amp;ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ଦେଖାନ୍ତୁ}other{ସବୁ ଦେଖାନ୍ତୁ}}</translation>
 <translation id="3820749202859700794">SECG ଅଣ୍ଡାକାର ବକ୍ର secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ଗୋଟିଏ ଏକ୍ସଟେନସନକୁ ଅନୁମୋଦନ କରାଯାଇଛି}other{#ଟି ଏକ୍ସଟେନସନକୁ ଅନୁମୋଦନ କରାଯାଇଛି}}</translation>
 <translation id="3822559385185038546">ଏହି ପ୍ରୋକ୍ସି ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଲାଗୁ କରାଯାଇଛି।</translation>
@@ -2824,6 +2827,7 @@
 <translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="428565720843367874">ଏହି ଫାଇଲ୍ ସ୍କାନିଂ କରିବା ସମୟରେ ଆଣ୍ଟି-ଭାଇରସ୍ ସଫ୍ଟୱେର୍ ହଠାତ୍ ବନ୍ଦ ହୋଇଗଲା।</translation>
 <translation id="4287099557599763816">ସ୍କ୍ରିନ୍ ରିଡର୍</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ଦେଖାନ୍ତୁ}other{ସବୁ ଦେଖାନ୍ତୁ}}</translation>
 <translation id="4289372044984810120">ଏଠାରେ ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">ଅବଲୋକନ</translation>
 <translation id="4295072614469448764">ଆପଣଙ୍କର ଟର୍ମିନଲ୍‌ରେ ଆପ୍ ଉପଲବ୍ଧ ଅଛି। ଆପଣଙ୍କର ଲଞ୍ଚର୍‌ରେ ଗୋଟିଏ ଆଇକନ୍ ମଧ୍ୟ ଥାଇପାରେ।</translation>
@@ -6141,6 +6145,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="820568752112382238">ଅଧିକ ଦେଖାଯାଇଥିବା ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="8206745257863499010">ବ୍ଲୁସୀ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ନୂଆ ବିଜ୍ଞପ୍ତି}other{#ଟି ନୂଆ ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ଡାଉନ୍‌ଲୋଡ୍‌ ଚାଲିଛି}other{ଡାଉନ୍‌ଲୋଡ୍‌ ଚାଲିଛି}}</translation>
 <translation id="8213449224684199188">ଫଟୋ ମୋଡ୍‌ରେ ପ୍ରବେଶ ହୋଇଛି</translation>
 <translation id="8213577208796878755">ଅନ୍ୟ ଏକ ଉପଲବ୍ଧ ଡିଭାଇସ୍।</translation>

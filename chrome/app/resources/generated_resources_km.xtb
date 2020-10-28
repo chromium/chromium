@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">សោសុវត្ថិភាព​ជាប់សោហើយ ដោយសារបញ្ចូល​កូដ PIN មិនត្រឹមត្រូវ​ច្រើនដងពេក។ ដើម្បីដោះសោ​សោសុវត្ថិភាពនេះ សូមដកចេញ រួចដោតបញ្ចូលវាម្ដងទៀត។</translation>
 <translation id="1137589305610962734">ទិន្នន័យ​បណ្ដោះអាសន្ន</translation>
 <translation id="1137673463384776352">បើក​តំណ​នៅក្នុង <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ការជូនដំណឹងថ្មី}other{ការជូនដំណឹងថ្មីៗ #}}</translation>
 <translation id="1139343347646843679">មានបញ្ហា ពេលកំពុងកំណត់រចនាសម្ព័ន្ធ Linux។ សូមទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="1140351953533677694">ចូលប្រើឧបករណ៍ប៊្លូធូស និងសេរ៊ីរបស់អ្នក</translation>
 <translation id="114036956334641753">សំឡេង និង​អក្សររត់</translation>
@@ -1672,6 +1673,7 @@
 <translation id="291056154577034373">មិនទាន់អាន</translation>
 <translation id="2910718431259223434">មានអ្វីមួយខុសប្រក្រតី។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ទាក់ទង​អ្នកគ្រប់គ្រង ឬម្ចាស់ឧបករណ៍របស់អ្នក។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="2913331724188855103">អនុញ្ញាតឲ្យគេហទំព័ររក្សាទុក និងអានទិន្នន័យខុកឃី (បានណែនាំ)</translation>
+<translation id="2915016304249900997">ព័ត៌មានលម្អិត​ត្រូវបានលាក់ ពេលអ្នកចែករំលែក​អេក្រង់របស់អ្នក</translation>
 <translation id="2915102088417824677">មើល​កំណត់ហេតុ​សកម្មភាព</translation>
 <translation id="2915873080513663243">ស្កេនដោយស្វ័យប្រវត្តិ</translation>
 <translation id="2916073183900451334">ចុច ផ្ទាំង នៅលើតំណដិតគេហទំព័រ ក៏ដូចជាប្រអប់បែបបទ</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3819257035322786455">បម្រុង​ទុក</translation>
 <translation id="3819261658055281761">ប្រព័ន្ធ​មិន​អាចផ្ទុក​ទិន្នន័យចូល API រយៈពេលវែង​សម្រាប់ឧបករណ៍​នេះ​បាន​ទេ។</translation>
 <translation id="3819800052061700452">ពេញអេក្រង់</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{បង្ហាញ}other{បង្ហាញ​ទាំងអស់}}</translation>
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{កម្មវិធីបន្ថែមមួយ​ត្រូវបាន​អនុញ្ញាតហើយ}other{កម្មវិធីបន្ថែម # ត្រូវបាន​អនុញ្ញាតហើយ}}</translation>
 <translation id="3822559385185038546">ប្រូកស៊ី​នេះ​ត្រូវបាន​អនុវត្ត​ដោយ​អ្នកគ្រប់គ្រង​របស់​អ្នក</translation>
@@ -2832,6 +2835,7 @@
 <translation id="4285498937028063278">ដកការដៅ</translation>
 <translation id="428565720843367874">កម្មវិធីកម្ចាត់មេរោគបានបរាជ័យដោយមិនមានរំពឹងទុក ខណៈពេលកំពុងស្កេនឯកសារនេះ។</translation>
 <translation id="4287099557599763816">កម្មវិធី​អាន​អេក្រង់</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{បង្ហាញ}other{បង្ហាញ​ទាំងអស់}}</translation>
 <translation id="4289372044984810120">គ្រប់គ្រង​គណនី​របស់អ្នក​នៅទីនេះ​។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">ទិដ្ឋភាពទូទៅ</translation>
 <translation id="4295072614469448764">កម្មវិធី​មាននៅក្នុង​ស្ថានីយ​​របស់អ្នក​ ហើយវា​ក៏​អាច​មានរូបតំណាង​នៅក្នុង​កម្មវិធី​ចាប់ផ្ដើម​របស់អ្នក​ផងដែរ។</translation>
@@ -6150,6 +6154,7 @@
 <translation id="820568752112382238">គេហទំព័រ​ដែលចូលមើល​ញឹកញាប់បំផុត</translation>
 <translation id="8206745257863499010">ប៊្លូស៊ី</translation>
 <translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ការជូនដំណឹងថ្មី}other{ការជូនដំណឹង​ថ្មីៗ #}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ការទាញយក​កំពុង​ដំណើរការ}other{ការទាញយក​កំពុង​ដំណើរការ}}</translation>
 <translation id="8213449224684199188">បាន​ចូល​មុខងារ​រូបថត</translation>
 <translation id="8213577208796878755">ឧបករណ៍មួយផ្សេងទៀតដែលមាន។</translation>

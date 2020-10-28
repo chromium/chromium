@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Il token di sicurezza è stato bloccato perché è stato inserito troppe volte il PIN errato. Per sbloccarlo, rimuovilo e inseriscilo di nuovo.</translation>
 <translation id="1137589305610962734">dati temporanei</translation>
 <translation id="1137673463384776352">Apri link in <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuova notifica}other{# nuove notifiche}}</translation>
 <translation id="1139343347646843679">Si è verificato un errore durante la configurazione di Linux. Contatta l'amministratore.</translation>
 <translation id="1140351953533677694">Accesso ai dispositivi seriali e Bluetooth</translation>
 <translation id="114036956334641753">Audio e sottotitoli</translation>
@@ -1671,6 +1672,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="291056154577034373">DA LEGGERE</translation>
 <translation id="2910718431259223434">Si è verificato un problema. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Consenti ai siti di salvare e leggere i dati dei cookie (opzione consigliata)</translation>
+<translation id="2915016304249900997">I dettagli sono nascosti durante la condivisione dello schermo</translation>
 <translation id="2915102088417824677">Apri log delle attività</translation>
 <translation id="2915873080513663243">Scansione automatica</translation>
 <translation id="2916073183900451334">Se premi Tab in una pagina web vengono evidenziati i link, così come i campi dei moduli</translation>
@@ -2441,6 +2443,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3819257035322786455">Backup</translation>
 <translation id="3819261658055281761">Il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
 <translation id="3819800052061700452">&amp;Schermo intero</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostra}other{Mostra tutto}}</translation>
 <translation id="3820749202859700794">Curva ellittica SECG secp521r1 (anche nota come NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Un'estensione è stata approvata}other{# estensioni sono state approvate}}</translation>
 <translation id="3822559385185038546">Questo proxy è stato applicato dall'amministratore</translation>
@@ -2831,6 +2834,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4285498937028063278">Sblocca</translation>
 <translation id="428565720843367874">La scansione del software antivirus non è inaspettatamente riuscita durante la scansione di questo file.</translation>
 <translation id="4287099557599763816">Screen reader</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostra}other{Mostra tutto}}</translation>
 <translation id="4289372044984810120">Gestisci i tuoi account qui. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Panoramica</translation>
 <translation id="4295072614469448764">L'app è disponibile nel tuo terminale. Potrebbe anche essere presente un'icona nell'Avvio app.</translation>
@@ -6148,6 +6152,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="820568752112382238">Siti più visitati</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Cellulare</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuova notifica}other{# nuove notifiche}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download in corso}other{Download in corso}}</translation>
 <translation id="8213449224684199188">Modalità foto attivata</translation>
 <translation id="8213577208796878755">Un altro dispositivo disponibile.</translation>

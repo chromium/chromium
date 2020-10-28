@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">La clé de sécurité est verrouillée, car un NIP incorrect a été entré trop de fois. Pour la déverrouiller, retirez-la et insérez-la de nouveau.</translation>
 <translation id="1137589305610962734">données temporaires</translation>
 <translation id="1137673463384776352">Ouvrir le lien dans <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
 <translation id="1139343347646843679">Une erreur s'est produite lors de la configuration de Linux. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="1140351953533677694">Accéder à vos appareils connectés par Bluetooth et en série</translation>
 <translation id="114036956334641753">Audio et sous-titres</translation>
@@ -1673,6 +1674,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="291056154577034373">NON LU</translation>
 <translation id="2910718431259223434">Une erreur s'est produite. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Autoriser les sites à enregistrer et à lire les données des témoins (recommandé)</translation>
+<translation id="2915016304249900997">Les renseignements sont masqués quand vous partagez votre écran</translation>
 <translation id="2915102088417824677">Consulter le journal d'activité</translation>
 <translation id="2915873080513663243">Analyse automatique</translation>
 <translation id="2916073183900451334">Appuyer sur la touche de tabulation dans une page Web permet de sélectionner des liens et des champs de formulaire</translation>
@@ -2443,6 +2445,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3819257035322786455">Sauvegarder</translation>
 <translation id="3819261658055281761">Le système n'a pas réussi à stocker le jeton d'accès aux API à long terme pour cet appareil.</translation>
 <translation id="3819800052061700452">&amp;Plein écran</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Afficher}one{Tout afficher}other{Tout afficher}}</translation>
 <translation id="3820749202859700794">Courbe elliptique SECG secp521r1 (aussi appelée NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Une extension a été approuvée}one{# extension a été approuvée}other{# extensions ont été approuvées}}</translation>
 <translation id="3822559385185038546">Votre administrateur impose ces paramètres de mandataire</translation>
@@ -2833,6 +2836,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4285498937028063278">Annuler l'épinglage</translation>
 <translation id="428565720843367874">Erreur inattendue de vérification de sécurité pendant l'analyse de ce fichier par l'antivirus.</translation>
 <translation id="4287099557599763816">Lecteur d'écran</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Afficher}one{Tout afficher}other{Tout afficher}}</translation>
 <translation id="4289372044984810120">Gérez vos comptes ici. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Aperçu</translation>
 <translation id="4295072614469448764">L'application est disponible dans votre terminal. Une icône peut également être disponible dans votre lanceur d'applications.</translation>
@@ -6150,6 +6154,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="820568752112382238">Sites les plus visités</translation>
 <translation id="8206745257863499010">Mélodie</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Téléchargement en cours…}one{Téléchargement en cours…}other{Téléchargements en cours…}}</translation>
 <translation id="8213449224684199188">Mode photo activé</translation>
 <translation id="8213577208796878755">Un autre périphérique visible.</translation>

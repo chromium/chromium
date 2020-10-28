@@ -446,7 +446,7 @@
 <translation id="1509281256533087115">Auf <ph name="DEVICE_NAME_AND_VENDOR" /> per USB zugreifen</translation>
 <translation id="1509960214886564027">Funktionen auf vielen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="1510238584712386396">Launcher</translation>
-<translation id="151070646350206700">Websites können Sie nicht unterbrechen und fragen, ob Sie Benachrichtigungen erhalten möchten</translation>
+<translation id="151070646350206700">Websites können Sie nicht unterbrechen, wenn sie fragen, ob Sie Benachrichtigungen erhalten möchten</translation>
 <translation id="1510785804673676069">Wenn Sie einen Proxy-Server verwenden, überprüfen Sie Ihre Proxy-Einstellungen oder erkundigen Sie sich bei Ihrem Netzwerkadministrator, ob der Proxy-Server funktioniert. Wenn Sie keinen Proxy-Server verwenden möchten, ändern Sie Ihre <ph name="LINK_START" />Proxy-Einstellungen<ph name="LINK_END" />.</translation>
 <translation id="1511997356770098059">Auf diesem Sicherheitsschlüssel können keine Anmeldedaten gespeichert werden</translation>
 <translation id="1512210426710821809">Dies kann nur durch eine Neuinstallation von <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> rückgängig gemacht werden</translation>
@@ -2073,6 +2073,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3428419049384081277">Sie sind angemeldet.</translation>
 <translation id="3428747202529429621">Schützt Sie in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn Sie angemeldet sind</translation>
 <translation id="3428800329481094896">SSH-Schlüssel des Linux-Containers werden abgerufen</translation>
+<translation id="3429271624041785769">Sprachen für Webinhalte</translation>
 <translation id="3429275422858276529">Seite als Lesezeichen speichern, um sie später schneller zu finden</translation>
 <translation id="3432227430032737297">Alle angezeigten Cookies entfernen</translation>
 <translation id="3432757130254800023">Audio und Video auf Bildschirme im lokalen Netzwerk senden</translation>
@@ -2498,6 +2499,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3879748587602334249">Download-Manager</translation>
 <translation id="3881478300875776315">Weniger Zeilen anzeigen</translation>
 <translation id="3882165008614329320">Vorhandenes Video von der Kamera oder als Datei</translation>
+<translation id="3884152383786131369">Für Webinhalte in mehreren Sprachen wird die erste unterstützte Sprache aus dieser Liste verwendet. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Deine Anfrage zum Zugriff auf diese Website wurde an <ph name="NAME" /> gesendet</translation>
 <translation id="3888550877729210209">Notizerstellung mit <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Chrome-Synchronisierung aktivieren, um WLAN-Synchronisation zu verwenden</translation>
@@ -3232,7 +3234,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4778644898150334464">Anderes Passwort verwenden</translation>
 <translation id="4779083564647765204">Zoomen</translation>
 <translation id="4779136857077979611">Onigiri</translation>
-<translation id="4779766576531456629">eSIM-Mobilfunknetzwerk umbenennen</translation>
+<translation id="4779766576531456629">eSIM-Mobilfunknetz umbenennen</translation>
 <translation id="4780321648949301421">Seite speichern unter...</translation>
 <translation id="4785719467058219317">Sie verwenden einen Sicherheitsschlüssel, der nicht auf dieser Website registriert ist</translation>
 <translation id="4788092183367008521">Bitte überprüfen Sie die Netzwerkverbindung und versuchen Sie es noch einmal.</translation>
@@ -3675,7 +3677,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5324780743567488672">Zeitzone automatisch anhand des Standorts einstellen</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5327570636534774768">Dieses Gerät ist für die Verwaltung durch eine andere Domain markiert. Heben Sie die Bereitstellung von dieser Domain aus auf, bevor Sie den Demomodus einrichten.</translation>
-<translation id="5327912693242073631">Funktionen, die Benachrichtigungen erfordern, funktionieren nicht</translation>
+<translation id="5327912693242073631">Funktionen, die Benachrichtigungen erfordern, funktionieren dann nicht</translation>
 <translation id="532943162177641444">Tippen Sie auf die Benachrichtigung auf Ihrem <ph name="PHONE_NAME" />, um einen mobilen Hotspot einzurichten, den dieses Gerät nutzen kann.</translation>
 <translation id="5329858601952122676">&amp;Löschen</translation>
 <translation id="5331069282670671859">In dieser Kategorie befinden sich keine Zertifikate</translation>
@@ -4030,7 +4032,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5739235828260127894">Bestätigung steht aus. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Sehr groß</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
-<translation id="5740820643029013514">Symbole als Aufforderung zum Annehmen von Benachrichtigungen verwenden (empfohlen)</translation>
+<translation id="5740820643029013514">Unaufdringlichere Benachrichtigungen verwenden (empfohlen)</translation>
 <translation id="574104302965107104">Displayspiegelung</translation>
 <translation id="574209121243317957">Tonhöhe</translation>
 <translation id="5746169159649715125">Als PDF speichern</translation>
@@ -4351,6 +4353,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6112727384379533756">Ticket hinzufügen</translation>
 <translation id="6112931163620622315">Smartphone prüfen</translation>
 <translation id="6112952769866305444">Person bearbeiten: <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Hier können Sie die Standardsuchmaschine für den Chrome-Browser und <ph name="DEVICE_TYPE" /> Launcher festlegen</translation>
 <translation id="6113942107547980621">Wenn Sie Smart Lock verwenden möchten, wechseln Sie zum Profil des Hauptnutzers Ihres Smartphones</translation>
 <translation id="6116921718742659598">Sprach- und Eingabeeinstellungen ändern</translation>
 <translation id="6120205520491252677">Diese Seite an Startbildschirm anpinnen...</translation>
@@ -5217,6 +5220,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7140928199327930795">Keine weiteren Geräte vorhanden</translation>
 <translation id="7141105143012495934">Sie konnten nicht angemeldet werden, weil Ihre Kontodetails nicht abgerufen werden konnten. Bitte wenden Sie sich an Ihren Administrator oder versuchen Sie es erneut.</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
+<translation id="7143358760238281735">Keine Apps verfügbar</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
@@ -5688,6 +5692,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7707922173985738739">Mobile Daten verwenden</translation>
 <translation id="7709152031285164251">Fehler – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Streamen...</translation>
+<translation id="7712739869553853093">Dialogfeld zur Druckvorschau</translation>
 <translation id="7712836429117959503">Unbekannte Erweiterung mit der ID "<ph name="EXTENSION_ID" />"</translation>
 <translation id="7714307061282548371">Cookies von <ph name="DOMAIN" /> zugelassen</translation>
 <translation id="7714464543167945231">Zertifikat</translation>

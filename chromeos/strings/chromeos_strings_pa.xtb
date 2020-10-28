@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">ਪ੍ਰਿੰਟ ਕੀਤੀ ਗਈ</translation>
 <translation id="1979103255016296513">ਪਾਸਵਰਡ ਬਦਲਣਾ ਬਾਕੀ ਹੈ</translation>
 <translation id="2049639323467105390">ਇਹ ਡੀਵਾਈਸ <ph name="DOMAIN" /> ਵੱਲੋਂ ਵਿਵਸਥਿਤ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ਪ੍ਰਿੰਟ ਜੌਬ ਰੱਦ ਕਰੋ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ਨੇੜਲੇ ਡਿਵਾਈਸਾਂ ਨੂੰ ਲੱਭਣ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}one{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}other{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ}}</translation>
 <translation id="2517472476991765520">ਸਕੈਨ ਕਰੋ</translation>
 <translation id="2805756323405976993">ਐਪਸ</translation>
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">ਛੇਤੀ ਇੱਕ ਨਵਾਂ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
 <translation id="4917889632206600977">ਬੰਦ ਹੋ ਗਿਆ - ਕਾਗਜ਼ ਖਤਮ ਹੋ ਗਏ</translation>
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ਇਸ ਵਰਤੋਂਕਾਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ ਅਤੇ ਦੂਰ-ਦਰਾਡੇ ਤੋਂ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਅਤੇ ਵਰਤੋਂਕਾਰ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="520299634122159966">ਕੋਈ ਸਕੈਨਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="5212543919916444558">ਮੈਨੂੰ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ 'ਤੇ ਅਜਿਹਾ ਕੁਝ ਵੀ ਨਹੀਂ ਮਿਲਿਆ ਜਿਸ ਵਿੱਚ ਮੈਂ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਾਂ। ਮੇਰੇ ਤੋਂ ਕੁਝ ਵੀ ਪੁੱਛਣ ਲਈ ਮਾਈਕ 'ਤੇ ਟੈਪ ਕਰਕੇ ਦੇਖੋ।</translation>
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>

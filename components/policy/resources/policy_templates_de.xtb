@@ -189,6 +189,7 @@
       Wenn Sie diese Einstellung aktivieren, sind in der Google Suche SafeSearch und auf YouTube der moderate eingeschränkte Modus immer aktiv.
 
       Wenn Sie diese Einstellung deaktivieren oder keinen Wert festlegen, werden SafeSearch in der Google Suche und der eingeschränkte Modus auf YouTube nicht erzwungen.</translation>
+<translation id="134745581157553029">Wenn die Richtlinie „DeviceArcDataSnapshotHours“ eingestellt wurde, ist die Schnappschussfunktion für ARC-Daten aktiviert. In den festgelegten Zeiträumen kann die Aktualisierung des ARC-Datenschnappschusses automatisch gestartet werden. Ist zu Beginn eines solchen Zeitraums eine Aktualisierung des ARC-Datenschnappschusses erforderlich und kein Nutzer angemeldet, beginnt der Prozess ohne Benachrichtigung des Nutzers. Ist eine Nutzersitzung im Gange, muss einer Benachrichtigung auf der Benutzeroberfläche zugestimmt werden, damit das Gerät neu startet und die Aktualisierung des ARC-Datenschnappschusses beginnt. Hinweis: Während der Aktualisierung des ARC-Datenschnappschusses kann das Gerät nicht benutzt werden.</translation>
 <translation id="1353416417709895349">DNS-Abfangprüfungen und „Meinten Sie: http://intranetsite/“-Infoleisten deaktivieren.</translation>
 <translation id="1353985065430729216">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die Websites angeben, die auf Sensoren wie Bewegungs- und Lichtsensoren zugreifen dürfen.
 
@@ -412,11 +413,11 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Die URL-Muster haben das gleiche Format wie die Richtlinie "<ph name="URL_BLOCKLIST_POLICY_NAME" />", die unter https://www.chromium.org/administrators/url-blacklist-filter-format beschrieben ist.
       </translation>
 <translation id="1645793986494086629">Schema:</translation>
-<translation id="1647558381546345298">Wenn Sie diese Richtlinie festlegen, wird die Cache-Größe konfiguriert, die <ph name="PRODUCT_NAME" /> zum Speichern von Mediendateien im Cache auf dem Datenträger verwendet unabhängig davon, ob der Nutzer den Parameter "--media-cache-size" angegeben hat oder nicht. Der in dieser Richtlinie angegebene Wert ist keine feste Grenze, sondern ein Richtwert für das Caching-System. Werte, die kleiner als einige Megabyte sind, werden aufgerundet.
+<translation id="1647558381546345298">Wenn Sie diese Richtlinie festlegen, wird die Cache-Größe konfiguriert, die <ph name="PRODUCT_NAME" /> zum Speichern von Mediendateien im Cache auf dem Datenträger verwendet, und zwar unabhängig davon, ob der Nutzer den Parameter "--media-cache-size" angegeben hat oder nicht. Der in dieser Richtlinie angegebene Wert ist keine feste Grenze, sondern ein Richtwert für das Caching-System. Werte, die kleiner als einige Megabyte sind, werden aufgerundet.
 
       Wird der Wert dieser Richtlinie auf 0 gesetzt, wird die Standard-Cache-Größe verwendet und Nutzer können sie nicht ändern.
 
-      Wird diese Richtlinie nicht festgelegt, wird die Standardgröße verwendet und der Nutzer kann diese mit dem Parameter "--disk-cache-size" ändern.</translation>
+      Wird diese Richtlinie nicht festgelegt, wird die Standardgröße verwendet und der Nutzer kann diese mit dem Parameter "--media-cache-size" ändern.</translation>
 <translation id="1648816843164517573">Liste der Namen, die vom HSTS-Richtliniencheck ausgenommen sind</translation>
 <translation id="1654087023995670109">Gastmodus im Browser erzwingen</translation>
 <translation id="1655229863189977773">Cache-Größe für Datenträger in Byte festlegen</translation>
@@ -465,6 +466,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
       Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Erweiterungen zulässig sind. Der Wert "<ph name="ALL_EXTENSIONS" />" für "<ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" />" gibt an, dass alle Erweiterungen gesperrt sind. Nutzer können nur Erweiterungen installieren, die ausdrücklich zugelassen sind. Standardmäßig können alle Erweiterungen installiert werden. Wurden jedoch alle Erweiterungen durch eine Richtlinie auf die Sperrliste gesetzt, kann diese Richtlinie mithilfe der Zulassungsliste außer Kraft gesetzt werden.</translation>
 <translation id="1781356041596378058">Diese Richtlinie steuert zudem den Zugriff auf Android-Entwickleroptionen. Wenn Sie diese Richtlinie auf "true" setzen, können Nutzer nicht auf die Entwickleroptionen zugreifen. Wenn Sie diese Richtlinie auf "false" setzen oder nicht konfigurieren, können Nutzer auf die Entwickleroptionen zugreifen, indem sie siebenmal auf die Build-Nummer in der Android-App "Einstellungen" tippen.</translation>
+<translation id="1787790976045065845">Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" />“ auf „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />“ oder „<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />“ eingestellt ist und ein Nutzer, der sich mit einer Smartcard authentifiziert hat, diese entfernt. Dann legt diese Richtlinie fest, wie viele Sekunden lang eine Benachrichtigung angezeigt wird, die den Nutzer über bevorstehende Aktionen informiert. Diese Benachrichtigung blockiert den Bildschirm. Die Aktion beginnt erst nach dem Ablauf der Benachrichtigung. Der Nutzer kann die Aktion unterbinden, wenn die Smartcard vor dem Ablauf der Benachrichtigung wieder eingeführt wird. Wenn für diese Richtlinie „0“ konfiguriert ist, wird keine Benachrichtigung angezeigt und die Aktion sofort ausgeführt.</translation>
 <translation id="1793346220873697538">PIN-Druckmodus standardmäßig deaktivieren</translation>
 <translation id="179694024208061102">Ist die Richtlinie aktiviert, versucht <ph name="PRODUCT_NAME" />, einige URLs in einem alternativen Browser, wie z. B. <ph name="IE_PRODUCT_NAME" />, zu öffnen. Diese Funktion wird mithilfe der Richtlinien in der Gruppe "<ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />" festgelegt.
 
@@ -979,6 +981,10 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Wenn die Richtlinie nicht konfiguriert ist, werden keine Nutzungsbedingungen angezeigt.
 
       Für die Richtlinie muss eine URL angegeben werden, von der <ph name="PRODUCT_OS_NAME" /> die Nutzungsbedingungen herunterladen kann. Die Nutzungsbedingungen sind im MIME-Typformat „Nur Text“ bereitzustellen. Es ist kein Markup möglich.</translation>
+<translation id="2500699707048942472">Durch die Funktion zur automatischen Eingabe von PINs ändert sich die PIN-Eingabe in Chrome OS.
+          Statt das Textfeld anzuzeigen, das auch für die Eingabe des Passworts verwendet wird, zeigt diese Funktion eine spezielle UI, an der Nutzer erkennen, wie viele Ziffern für die PIN benötigt werden. In der Folge wird die Länge der jeweiligen PIN außerhalb der verschlüsselten Nutzerdaten gespeichert. Es werden nur PINs mit mindestens 6 und höchstens 12 Ziffern unterstützt.
+
+          Wenn diese Richtlinie auf „False“ gesetzt ist, können Nutzer diese Funktion nicht in den Einstellungen aktivieren.</translation>
 <translation id="2502467045153796624">Verhalten zum Versionsdowngrade</translation>
 <translation id="250670737672448119">Mit dieser Richtlinie wird die Bedienungshilfe "Textcursor hervorheben" aktiviert.
 
@@ -3955,7 +3961,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
 
       Wird die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit und Stabilität von <ph name="PRODUCT_NAME" />, da dann unbekannter und potenziell schädlicher Code in den Rendererprozessen von <ph name="PRODUCT_NAME" /> geladen werden kann. Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb der Rendererprozesse von <ph name="PRODUCT_NAME" /> ausgeführt werden muss.
 
-      Hinweis: Weitere Informationen zu Prozessschutzrichtlinien finden Sie unter ( https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
+      Hinweis: Weitere Informationen zu Prozessschutzrichtlinien finden Sie unter https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="6833023569065717572">Wenn die Richtlinie auf "True" gesetzt ist, wird auf dem Gerät das 24-Stunden-Uhrzeitformat verwendet.
 
       Wird die Richtlinie auf "False" gesetzt, dann wird auf dem Gerät das 12-Stunden-Uhrzeitformat verwendet.

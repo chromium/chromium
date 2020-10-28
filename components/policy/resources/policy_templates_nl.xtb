@@ -5015,6 +5015,13 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="8133152694354699657">Als je het beleid instelt op 'True' of niet instelt, wordt 'Tikken om te zoeken' beschikbaar voor gebruikers. Ze kunnen de functie in- of uitschakelen.
 
       Als je het beleid instelt op 'False', wordt 'Tikken om te zoeken' volledig uitgeschakeld.</translation>
+<translation id="8136906469922284163">Als je het beleid instelt op True, kunnen pagina's pop-ups laten zien terwijl het laden van de pagina's ongedaan wordt gemaakt.
+
+      Als je het beleid instelt op False of niet instelt, kunnen pagina's geen pop-ups laten zien terwijl het laden van de pagina's ongedaan wordt gemaakt.
+
+      Dit beleid is verwijderd in Chrome 88 en wordt genegeerd als het is ingesteld.
+
+      Zie https://www.chromestatus.com/feature/5989473649164288.</translation>
 <translation id="8141795997560411818">Met dit beleid wordt niet voorkomen dat gebruiker de Google Drive-app voor Android gebruikt. Als je de toegang tot Google Drive wilt blokkeren, moet je ook de installatie van de Google Drive-app voor Android blokkeren.</translation>
 <translation id="8142894094385450823">Instellen van de aanbevolen landinstellingen voor een beheerde sessie</translation>
 <translation id="8146727383888924340">Gebruikers toestaan aanbiedingen in te wisselen via registratie van Chrome OS</translation>

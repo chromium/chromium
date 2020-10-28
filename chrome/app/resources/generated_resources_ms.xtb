@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Kunci keselamatan dikunci kerana PIN yang salah dimasukkan terlalu banyak kali. Untuk membuka kunci, cabut dan masukkan kunci keselamatan semula.</translation>
 <translation id="1137589305610962734">data sementara</translation>
 <translation id="1137673463384776352">Buka pautan dalam <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pemberitahuan Baharu}other{# Pemberitahuan Baharu}}</translation>
 <translation id="1139343347646843679">Ralat telah berlaku semasa mengkonfigurasi Linux. Sila hubungi pentadbir anda.</translation>
 <translation id="1140351953533677694">Akses peranti Bluetooth dan Bersiri anda</translation>
 <translation id="114036956334641753">Audio dan kapsyen</translation>
@@ -1672,6 +1673,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="291056154577034373">BELUM DIBACA</translation>
 <translation id="2910718431259223434">Kesilapan telah berlaku. Sila cuba lagi atau hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Benarkan tapak untuk menyimpan dan membaca data kuki (disyorkan)</translation>
+<translation id="2915016304249900997">Butiran disembunyikan semasa anda berkongsi skrin anda</translation>
 <translation id="2915102088417824677">Lihat log aktiviti</translation>
 <translation id="2915873080513663243">Autoimbas</translation>
 <translation id="2916073183900451334">Menekan Tab pada pautan serlahan halaman web, dan juga medan borang</translation>
@@ -2442,6 +2444,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3819257035322786455">Sandaran</translation>
 <translation id="3819261658055281761">Sistem gagal menyimpan token akses API jangka panjang untuk peranti ini.</translation>
 <translation id="3819800052061700452">&amp;Skrin penuh</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Tunjukkan}other{Tunjukkan semua}}</translation>
 <translation id="3820749202859700794">Lengkung eliptik SECG secp521r1 (alias NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah diluluskan}other{# sambungan telah diluluskan}}</translation>
 <translation id="3822559385185038546">Proksi ini dikuatkuasakan oleh pentadbir anda</translation>
@@ -2832,6 +2835,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4285498937028063278">Menyahpin</translation>
 <translation id="428565720843367874">Perisian anti-virus gagal tanpa dijangka semasa mengimbas fail ini.</translation>
 <translation id="4287099557599763816">Pembaca skrin</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Tunjukkan}other{Tunjukkan Semua}}</translation>
 <translation id="4289372044984810120">Urus akaun anda di sini. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="4295072614469448764">Apl tersedia di terminal anda. Mungkin terdapat ikon dalam Pelancar anda juga.</translation>
@@ -6150,6 +6154,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="820568752112382238">Tapak yang paling kerap dilawati</translation>
 <translation id="8206745257863499010">Sayu</translation>
 <translation id="8206859287963243715">Selular</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pemberitahuan baharu}other{# pemberitahuan baharu}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Muat turun sedang berlangsung}other{Muat turun sedang berlangsung}}</translation>
 <translation id="8213449224684199188">Mod foto dimasukkan</translation>
 <translation id="8213577208796878755">Satu peranti lain yang tersedia.</translation>

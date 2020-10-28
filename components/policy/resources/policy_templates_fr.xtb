@@ -189,6 +189,7 @@
       Si vous activez ce paramètre, SafeSearch est toujours activé dans la recherche Google, et le mode restreint modéré est toujours appliqué sur YouTube.
 
       Si vous désactivez ce paramètre ou ne définissez pas de valeur, SafeSearch n'est pas activé dans la recherche, et le mode restreint modéré n'est pas appliqué sur YouTube.</translation>
+<translation id="134745581157553029">Si la règle "DeviceArcDataSnapshotHours" est définie, le mécanisme de capture des données ARC est activé. La mise à jour de l'instantané des données ARC peut être lancée automatiquement pendant les intervalles de temps définis. Au démarrage d'un intervalle, lorsque cette mise à jour est requise et qu'aucun utilisateur n'est connecté, elle est lancée sans que l'utilisateur en soit averti. Si la session utilisateur est active, la notification s'affiche dans l'UI. Cette notification doit être validée pour redémarrer l'appareil et lancer le processus de mise à jour de l'instantané des données ARC. Remarque : durant le processus de mise à jour de l'instantané des données ARC, l'appareil est bloqué et ne peut pas être utilisé.</translation>
 <translation id="1353416417709895349">Désactiver les contrôles d'interception des requêtes DNS et les barres d'infos "Essayez avec http://siteintranet/".</translation>
 <translation id="1353985065430729216">Permet d'établir une liste de formats d'URL indiquant les sites autorisés à accéder aux capteurs (de mouvement et de lumière, par exemple).
 
@@ -476,6 +477,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Celle-ci permet de déterminer quelles extensions sont exclues de la liste des extensions interdites. Si vous saisissez la valeur "<ph name="ALL_EXTENSIONS" />" pour la règle <ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" />, toutes les extensions sont interdites, et les utilisateurs ne peuvent installer que les extensions spécifiquement autorisées. Par défaut, toutes les extensions sont autorisées. Toutefois, si vous avez interdit les extensions via une règle, utilisez la liste des extensions autorisées pour modifier cette règle.</translation>
 <translation id="1781356041596378058">Cette règle permet également de contrôler l'accès aux options pour les développeurs Android. Si vous définissez cette règle sur "True", les utilisateurs ne pourront pas accéder aux options pour les développeurs. Si vous la définissez sur "False" ou si vous ne la modifiez pas, les utilisateurs pourront accéder aux options pour les développeurs en appuyant sept fois sur le numéro de version dans l'application des paramètres Android.</translation>
+<translation id="1787790976045065845">Cette règle ne prend effet que si la règle <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> est définie sur <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> ou <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />, et si un utilisateur qui s'authentifie au moyen d'une carte à puce retire celle-ci. Elle indique alors la durée d'affichage, en secondes, d'une notification informant l'utilisateur de l'action qui va être exécutée. Cette notification bloque l'écran. L'action ne s'exécute que lorsque la notification disparaît. L'utilisateur peut empêcher l'action de s'exécuter en réinsérant la carte à puce avant que la notification disparaisse. Si cette règle est définie sur zéro, aucune notification ne s'affiche, et l'action s'exécute immédiatement.</translation>
 <translation id="1793346220873697538">Désactiver l'impression par code définie par défaut</translation>
 <translation id="179694024208061102">Si cette règle est activée, <ph name="PRODUCT_NAME" /> tente d'ouvrir certaines URL dans un autre navigateur (par exemple, <ph name="IE_PRODUCT_NAME" />). Cette fonctionnalité est configurée à l'aide des règles du groupe <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
@@ -1009,6 +1011,10 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle n'est pas configurée, les conditions d'utilisation ne sont pas présentées aux utilisateurs.
 
       La règle doit être définie sur une URL à partir de laquelle <ph name="PRODUCT_OS_NAME" /> peut télécharger les conditions d'utilisation. Ces conditions doivent être en texte brut et proposées avec le type MIME text/plain. Aucun balisage n'est autorisé.</translation>
+<translation id="2500699707048942472">La fonctionnalité d'envoi automatique du code modifie la façon dont celui-ci est saisi dans Chrome OS.
+          Au lieu d'afficher le champ de texte utilisé pour la saisie du mot de passe, cette fonctionnalité présente une interface utilisateur spéciale qui indique clairement à l'utilisateur le nombre de chiffres à saisir pour son code. De ce fait, la longueur du code de l'utilisateur est stockée en dehors des données chiffrées de l'utilisateur. Les codes compatibles comptent entre 6 et 12 chiffres.
+
+          Si cette règle est définie sur "False", aucun utilisateur ne peut activer la fonctionnalité sur la page des paramètres.</translation>
 <translation id="2502467045153796624">Comportement de retour à une version antérieure</translation>
 <translation id="250670737672448119">Active la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie.
 

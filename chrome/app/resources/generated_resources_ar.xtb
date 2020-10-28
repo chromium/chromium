@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">تم قفل مفتاح الأمان بسبب إدخال رقم التعريف الشخصي غير الصحيح عدّة مرات. لفتح قفله، يمكنك إزالته وإعادة إدخاله.</translation>
 <translation id="1137589305610962734">معلومات مؤقتة</translation>
 <translation id="1137673463384776352">فتح الرابط في <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{إشعار واحد جديد}zero{# إشعار جديد}two{إشعاران جديدان}few{# إشعارات جديدة}many{# إشعارًا جديدًا}other{# إشعار جديد}}</translation>
 <translation id="1139343347646843679">‏حدث خطأ أثناء إعداد نظام التشغيل Linux. يُرجى التواصل مع المشرف.</translation>
 <translation id="1140351953533677694">الوصول إلى بلوتوث والأجهزة التسلسلية</translation>
 <translation id="114036956334641753">الصوت والترجمة</translation>
@@ -1672,6 +1673,7 @@
 <translation id="291056154577034373">غير مقروءة</translation>
 <translation id="2910718431259223434">حدث خطأ. يُرجى إعادة المحاولة أو التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2913331724188855103">السماح للمواقع الإلكترونية بحفظ بيانات ملفات تعريف الارتباط وقراءتها (موصى به)</translation>
+<translation id="2915016304249900997">يتم إخفاء محتوى الإشعارات أثناء مشاركة الشاشة.</translation>
 <translation id="2915102088417824677">عرض سِجلّ الأنشطة</translation>
 <translation id="2915873080513663243">المسح التلقائي</translation>
 <translation id="2916073183900451334">يؤدي الضغط على علامة تبويب في صفحة الويب إلى إبراز الروابط وكذلك حقول النماذج</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3819257035322786455">النسخ الاحتياطي</translation>
 <translation id="3819261658055281761">تعذَّر على النظام تخزين الرمز المميَّز طويل الأجل للوصول إلى واجهة برمجة التطبيقات على هذا الجهاز.</translation>
 <translation id="3819800052061700452">م&amp;لء الشاشة</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{عرض}zero{عرض محتوى الإشعارات}two{عرض محتوى الإشعارَين}few{عرض محتوى الإشعارات}many{عرض محتوى الإشعارات}other{عرض محتوى الإشعارات}}</translation>
 <translation id="3820749202859700794">‏منحنى SECG ناقص المقطع secp521r1‏ (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{تمت الموافقة على إضافة واحدة.}zero{تمّت الموافقة على # إضافة.}two{تمت الموافقة على إضافتَين.}few{تمت الموافقة على # إضافات.}many{تمت الموافقة على # إضافةً.}other{تمت الموافقة على # إضافة.}}</translation>
 <translation id="3822559385185038546">تم فرض هذا الخادم الوكيل بواسطة المشرف</translation>
@@ -2829,6 +2832,7 @@
 <translation id="4285498937028063278">إزالة تثبيت</translation>
 <translation id="428565720843367874">تعذّر برنامج مكافحة الفيروسات بشكل غير متوقع أثناء فحص هذا الملف.</translation>
 <translation id="4287099557599763816">قارئ الشاشة</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{عرض}zero{عرض محتوى الإشعارات}two{عرض محتوى الإشعارَين}few{عرض محتوى الإشعارات}many{عرض محتوى الإشعارات}other{عرض محتوى الإشعارات}}</translation>
 <translation id="4289372044984810120">يمكنك إدارة حساباتك هنا. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">نظرة عامة</translation>
 <translation id="4295072614469448764">أصبح التطبيق متاحًا في الوحدة الطرفية وقد تجد رمزًا له في مشغِّل التطبيقات.</translation>
@@ -6149,6 +6153,7 @@
 <translation id="820568752112382238">المواقع الأكثر زيارة</translation>
 <translation id="8206745257863499010">موسيقي</translation>
 <translation id="8206859287963243715">خلوي</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{إشعار واحد جديد}zero{# إشعار جديد}two{إشعاران جديدان}few{# إشعارات جديدة}many{# إشعارًا جديدًا}other{# إشعار جديد}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{جارٍ تنزيل عنصر واحد}zero{جارٍ تنزيل عدّة عناصر}two{جارِ تنزيل عنصرين}few{جارٍ تنزيل عدّة عناصر}many{جارٍ تنزيل عدّة عناصر}other{جارٍ تنزيل عدّة عناصر}}</translation>
 <translation id="8213449224684199188">تم الدخول إلى وضع الصور</translation>
 <translation id="8213577208796878755">جهاز واحد آخر متاح.</translation>

@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Туура эмес PIN код өтө көп жолу киргизилгендиктен, коопсуздук ачкычы кулпуланып калды. Бөгөттөн чыгаруу үчүн аны чыгарып, кайра салыңыз.</translation>
 <translation id="1137589305610962734">убактылуу маалымат</translation>
 <translation id="1137673463384776352">Шилтемени <ph name="APP" /> колдонмосунда ачуу</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңы билдирме}other{# жаңы билдирме}}</translation>
 <translation id="1139343347646843679">Linux'ту конфигурациялоодо ката кетти. Администраторуңузга кайрылыңыз.</translation>
 <translation id="1140351953533677694">Bluetooth жана Ыраатталган интерфейстүү түзмөктөрүңүздү колдонуу мүмкүнчүлүгүн алыңыз</translation>
 <translation id="114036956334641753">Аудио жана коштомо жазуулар</translation>
@@ -1672,6 +1673,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="291056154577034373">ОКУЛБАГАНДАР</translation>
 <translation id="2910718431259223434">Бир жерден ката кетти. Кайталап көрүңүз, болбосо, түзмөктүн ээсине же администраторго кайрылыңыз. Ката коду: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Сайттарга куки дайындарын сактоого жана окууга уруксат берүү (сунушталат)</translation>
+<translation id="2915016304249900997">Экраныңызды бөлүшүп жатканда чоо-жайы жашырылып турат</translation>
 <translation id="2915102088417824677">Аракеттер таржымалын көрүү</translation>
 <translation id="2915873080513663243">Авто-скандоо</translation>
 <translation id="2916073183900451334">Веб-беттеги Өтмөктү басканда, шилтемелер жана форма талаалары бөлүнүп көрсөтүлөт.</translation>
@@ -2442,6 +2444,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3819257035322786455">Камдык көчүрмөнү сактоо</translation>
 <translation id="3819261658055281761">Тутум бул түзмөктө API'ге кирүү үчүн узак мөөнөттүү уруксат токенин сактап кала алган жок.</translation>
 <translation id="3819800052061700452">&amp;Толук экран</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Көрсөтүү}other{Баарын көрсөтүү}}</translation>
 <translation id="3820749202859700794">SECG эллиптикалык ийри сызыгы secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Кеңейтүү жактырылды}other{# кеңейтүү жактырылды}}</translation>
 <translation id="3822559385185038546">Бул проксини администраторуңуз күчүнө киргизген</translation>
@@ -2832,6 +2835,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4285498937028063278">Бошотуу</translation>
 <translation id="428565720843367874">Бул файл сканерленип жатканда, антивирус программасы күтүүсүздөн үзгүлтүккө учурады.</translation>
 <translation id="4287099557599763816">Экрандагыны окугуч</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Көрсөтүү}other{Баарын көрсөтүү}}</translation>
 <translation id="4289372044984810120">Аккаунттарыңызды бул жерден башкарыңыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Сереп салуу</translation>
 <translation id="4295072614469448764">Колдонмо терминалда жеткиликтүү. Ошондой эле Жүргүзгүчкө анын сүрөтчөсү кошулушу мүмкүн.</translation>
@@ -6149,6 +6153,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="820568752112382238">Эң көп кирген сайттар</translation>
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Уюктук</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңы билдирме}other{# жаңы билдирме}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Жүктөп алуу аткарылууда}other{Жүктөп алуулар аткарылууда}}</translation>
 <translation id="8213449224684199188">Сүрөт режими киргизилди</translation>
 <translation id="8213577208796878755">Башка бир түзмөк бар.</translation>

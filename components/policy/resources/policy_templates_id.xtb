@@ -977,6 +977,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
        Jika kebijakan tidak disetel, pelaporan metrik dan data diagnostik akan dinonaktifkan di perangkat yang tidak terkelola dan akan diaktifkan di perangkat terkelola.</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
+<translation id="2455033019778127130">Menggunakan perilaku browser default, menampilkan ToS, dan menunggu penerimaan dari pengguna.</translation>
 <translation id="2463034609187171371">Mengaktifkan paket penyandian DHE di TLS</translation>
 <translation id="2463365186486772703">Lokal aplikasi</translation>
 <translation id="2463832514638083341">Kebijakan ini mengontrol jangka waktu penyimpanan metadata pekerjaan cetak di perangkat, dalam hari.
@@ -1083,6 +1084,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Menyetel kebijakan akan menentukan host pesan native mana yang tidak boleh dimuat. Nilai <ph name="WILDCARD_VALUE" /> untuk daftar yang ditolak berarti semua host pesan native ditolak, kecuali diizinkan secara eksplisit.
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan memuat semua host pesan native yang terinstal.</translation>
+<translation id="2568488785376704318">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2571066091915960923">Mengaktifkan atau menonaktifkan proxy kompresi data dan mencegah agar pengguna tidak mengubah setelan ini.
 
       Jika Anda mengaktifkan atau menonaktifkan setelan ini, pengguna tidak dapat mengubah atau mengganti setelan ini.
@@ -1290,6 +1292,11 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika setelan ini diaktifkan, Pratinjau Cetak akan menggunakan printer default sistem OS sebagai pilihan tujuan default.</translation>
 <translation id="285627849510728211">Menetapkan konfigurasi hari mode pengisian daya baterai lanjutan</translation>
 <translation id="2856674246949497058">Rollback dan tetap menggunakan versi target jika versi OS lebih baru dari target. Lakukan powerwash selama prosesnya.</translation>
+<translation id="2857886155146264716">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu di layar login. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
+
+      Model izin USB menggunakan URL peminta dan sematan untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta dapat berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom <ph name="URLS_FIELD_NAME" /> dapat memiliki hingga dua string URL yang dipisahkan dengan koma untuk menentukan URL peminta dan URL sematan masing-masing. Jika hanya ada satu URL yang ditentukan, akses ke perangkat USB yang sesuai akan diberikan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematannya. URL harus valid. Jika tidak, kebijakan akan diabaikan.
+
+      Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua situs (tidak ada akses otomatis).</translation>
 <translation id="2869762730352628426">Mengaktifkan klik otomatis di layar login</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2874209944580848064">Catatan untuk perangkat <ph name="PRODUCT_OS_NAME" /> yang mendukung aplikasi Android:</translation>
@@ -2241,6 +2248,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
           Jika Anda menetapkan kebijakan ini, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, klik otomatis mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
+<translation id="4214536984333857724">Jika setelan ini diaktifkan, permintaan autentikasi gnubby akan diberi proxy di seluruh koneksi host jarak jauh.
+
+          Perlu diperhatikan bahwa fitur ini memerlukan komponen tambahan yang tidak tersedia di luar lingkungan jaringan Google agar dapat berfungsi sebagaimana mestinya.
+
+          Jika setelan ini dinonaktifkan, permintaan autentikasi gnubby tidak akan diberi proxy.</translation>
 <translation id="4215197846797661927">Menetapkan konfigurasi hari mode pengisian daya baterai lanjutan.
 
           Kebijakan ini hanya digunakan jika <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_NAME" /> ditetapkan ke true.
@@ -2403,6 +2415,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4554651132977135445">Mode pemrosesan loopback kebijakan pengguna</translation>
 <translation id="4555850956567117258">Mengaktifkan pengesahan jarak jauh bagi pengguna</translation>
 <translation id="4557134566541205630">URL halaman tab baru penyedia penelusuran default</translation>
+<translation id="4558166110367609724">Otomatis melewati ToS dan memuat browser.</translation>
 <translation id="4562165737444703281">Mengizinkan pengguna untuk [mengaktifkan/mengonfigurasi] penerusan port Crostini</translation>
 <translation id="456686782928669977">Kebijakan ini akan mengontrol apakah untuk memuat aturan dari kebijakan SiteList <ph name="IE_PRODUCT_NAME" /> atau tidak.
 
@@ -2569,7 +2582,27 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="487460824085252184">Migrasi otomatis, jangan tanya persetujuan pengguna.</translation>
 <translation id="4874982543810021567">Blokir WebUSB di situs ini</translation>
 <translation id="4876805738539874299">Versi SSL maksimum diaktifkan</translation>
+<translation id="487928067861956387">Mengonfigurasi nama domain host wajib yang akan diberlakukan pada host akses jarak jauh dan mencegah pengguna mengubahnya.
+
+          Jika setelan ini diaktifkan dan disetel ke satu atau beberapa domain, host hanya dapat dibagikan menggunakan akun yang terdaftar pada salah satu nama domain yang telah ditentukan.
+
+          Jika setelan ini dinonaktifkan, tidak disetel, atau disetel ke daftar kosong, host dapat dibagikan menggunakan akun apa pun.
+
+          Setelan ini akan menggantikan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, jika ada.
+
+          Lihat juga <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Mengaktifkan halaman untuk pengubahan sandi dalam-sesi bagi pengguna SAML</translation>
+<translation id="4892647988357350237">Secara default, Persyaratan Layanan akan ditampilkan saat CCT pertama kali dijalankan. Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, dialog Persyaratan Layanan tidak akan muncul saat pengalaman pertama kali dijalankan atau dijalankan untuk selanjutnya. Jika kebijakan ini disetel ke <ph name="STANDARD_TOS_DIALOG" /> atau tidak disetel, dialog Persyaratan Layanan akan muncul saat pengalaman pertama kali dijalankan. Peringatan lainnya:
+
+      - Kebijakan ini hanya berfungsi pada perangkat Android terkelola sepenuhnya yang dapat dikonfigurasikan oleh vendor Unified Endpoint Management.
+
+      - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, kebijakan BrowserSignin tidak akan berpengaruh.
+
+      - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, metrik​ tidak akan dikirim ke server.
+
+      - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, browser akan memiliki fungsi terbatas.
+
+      - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
 <translation id="4894290482695457375">Kecuali <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke Nonaktif, menyetel <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> ke Aktif akan menghubungkan <ph name="PRODUCT_NAME" /> ke perangkat Cast di semua alamat IP, bukan hanya alamat pribadi RFC1918/RFC4193.
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> hanya akan terhubung ke perangkat Cast di RFC1918/RFC4193.
@@ -2813,6 +2846,15 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       "Versi" di sini bisa merupakan versi yang tepat seperti '61.0.3163.120' atau awalan versi, seperti '61.0'  </translation>
 <translation id="5247006254130721952">Blokir download berbahaya</translation>
+<translation id="5249303875508803168">Mengonfigurasi nama domain klien wajib yang akan diberlakukan pada klien akses jarak jauh dan mencegah pengguna mengubahnya.
+
+          Jika setelan ini diaktifkan dan disetel ke satu atau beberapa domain, hanya klien dari salah satu domain yang telah ditentukan yang dapat terhubung ke host.
+
+          Jika setelan ini dinonaktifkan, tidak disetel, atau disetel ke daftar kosong, kebijakan default untuk jenis koneksi akan berlaku. Untuk bantuan jarak jauh, setelan ini memungkinkan klien dari domain mana pun terhubung ke host; untuk akses jarak jauh kapan saja, hanya pemilik host yang dapat terhubung.
+
+          Setelan ini akan menggantikan <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, jika ada.
+
+          Lihat juga <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Pengguna dapat menambahkan akun Kerberos</translation>
 <translation id="5252995168844634755">Jika kebijakan ditetapkan ke Benar (True), Desktop Terpadu akan diaktifkan, yang memungkinkan aplikasi ditampilkan di beberapa layar. Pengguna dapat menonaktifkan Desktop Terpadu untuk tampilan individu.
 
@@ -3013,6 +3055,13 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan ini tidak ditetapkan atau ditetapkan ke 'Izinkan upload dan download', <ph name="PRODUCT_NAME" /> akan berperilaku sesuai dengan aturan yang dijelaskan di 'Izinkan download' dan 'Izinkan upload'.
       </translation>
+<translation id="5440507358161332552">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
+
+      Model izin USB menggunakan URL peminta dan sematan untuk mengizinkan URL peminta mengakses perangkat USB. URL peminta dapat berbeda dengan URL sematan saat situs peminta dimuat dalam iframe. Jadi, kolom <ph name="URLS_FIELD_NAME" /> dapat memiliki hingga dua string URL yang dipisahkan dengan koma untuk menentukan URL peminta dan URL sematan masing-masing. Jika hanya ada satu URL yang ditentukan, akses ke perangkat USB yang sesuai akan diberikan saat URL situs peminta cocok dengan URL ini, terlepas dari status sematannya. URL harus valid. Jika tidak, kebijakan akan diabaikan.
+
+      Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> akan berlaku, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
+
+      Pola URL dalam kebijakan ini tidak boleh bertentangan dengan pola URL yang dikonfigurasi melalui <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Jika bertentangan, kebijakan ini akan lebih diprioritaskan daripada <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="5442026853063570579">Kebijakan ini juga mengontrol akses ke Opsi Developer Android. Jika Anda menetapkan kebijakan ini ke 'DeveloperToolsDisallowed' (nilai 2), pengguna tidak dapat mengakses Opsi Developer. Jika Anda menetapkan kebijakan ini ke nilai lain atau tidak menetapkannya, pengguna dapat mengakses Opsi Developer dengan mengetuk nomor build di aplikasi setelan Android sebanyak 7 kali.</translation>
 <translation id="5445596354079213552">Kebijakan ini hanya berlaku jika perangkat telah mencapai batas akhir update otomatis dan tidak memenuhi versi minimum <ph name="PRODUCT_OS_NAME" /> yang diizinkan sebagaimana disetel melalui kebijakan <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
@@ -3253,6 +3302,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan disetel, video dapat diputar secara otomatis (tanpa persetujuan pengguna) dengan konten audio di <ph name="PRODUCT_NAME" />. Jika kebijakan <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> disetel ke Benar (True), kebijakan ini tidak akan berpengaruh. Jika kebijakan <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> disetel ke Salah (False), pola URL yang disetel di kebijakan ini tetap dapat diputar. Jika kebijakan ini berubah saat <ph name="PRODUCT_NAME" /> sedang berjalan, kebijakan hanya akan berlaku untuk tab yang baru dibuka.
 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="5749396052108288586">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Mengaktifkan pintasan fitur aksesibilitas di layar login</translation>
 <translation id="5755002458331714762"> Web Components v0 API (Shadow DOM v0, Custom Elements v0, dan HTML Imports) sudah tidak digunakan lagi pada tahun 2018, dan telah dinonaktifkan secara default mulai dari M80. Kebijakan ini akan memungkinkan fitur ini diaktifkan ulang secara selektif hingga M84.
 
@@ -3828,6 +3878,19 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Catatan: Untuk instances Windows® yang tidak tergabung dalam domain <ph name="MS_AD_NAME" />, penginstalan otomatis dibatasi untuk aplikasi dan ekstensi yang tersedia di Chrome Web Store.</translation>
 <translation id="6598235178374410284">Gambar avatar pengguna</translation>
 <translation id="6603004149426829878">Selalu kirim sinyal lokasi yang tersedia ke server sembari menentukan zona waktu</translation>
+<translation id="660567106648774919">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      Secara default, Persyaratan Layanan akan ditampilkan saat CCT pertama kali dijalankan. Jika kebijakan ini disetel ke Nonaktif, dialog Persyaratan Layanan tidak akan muncul saat pengalaman pertama kali dijalankan atau dijalankan untuk selanjutnya. Jika kebijakan ini disetel ke Aktif atau tidak disetel, dialog Persyaratan Layanan akan muncul saat pengalaman pertama kali dijalankan. Peringatan lainnya:
+
+      - Kebijakan ini hanya berfungsi pada perangkat Android terkelola sepenuhnya yang dapat dikonfigurasikan oleh vendor Unified Endpoint Management.
+
+      - Jika kebijakan ini Dinonaktifkan, kebijakan BrowserSignin tidak akan berpengaruh.
+
+      - Jika kebijakan ini Dinonaktifkan, metrik​ tidak akan dikirim ke server.
+
+      - Jika kebijakan ini Dinonaktifkan, browser akan memiliki fungsi terbatas.
+
+      - Jika kebijakan ini Dinonaktifkan, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
 <translation id="6614020900120353107">Mengontrol apakah klien DNS built-in akan digunakan dalam <ph name="PRODUCT_NAME" />.
 
       Kebijakan ini tidak memengaruhi server DNS mana yang digunakan, hanya stack software yang digunakan untuk berkomunikasi dengan server tersebut. Misalnya, jika sistem operasi dikonfigurasi untuk menggunakan server DNS perusahaan, server yang sama tersebut akan digunakan oleh klien DNS built-in. Namun, mungkin saja klien DNS built-in akan menangani server dengan cara yang berbeda menggunakan protokol terkait DNS yang lebih modern seperti DNS-over-TLS.
@@ -4176,6 +4239,7 @@ Kebijakan ini hanya berlaku jika dukungan aplikasi Linux diaktifkan.</translatio
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab setelah beralih ke browser alternatif, meskipun itu adalah tab terakhir. Hal ini menyebabkan <ph name="PRODUCT_NAME" /> keluar sepenuhnya.</translation>
 <translation id="7019805045859631636">Cepat</translation>
+<translation id="7025332601572838001">Mengonfigurasi perilaku ToS saat CCT pertama kali dijalankan</translation>
 <translation id="7026351325994257733">Mengizinkan konfigurasi jaringan Wi-Fi disinkronkan di seluruh perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung.</translation>
 <translation id="7027785306666625591">Mengonfigurasi pengelolaan daya di <ph name="PRODUCT_OS_NAME" />.
 
@@ -4976,6 +5040,13 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8133152694354699657">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, fitur Sentuh untuk Menelusuri akan tersedia bagi pengguna, dan mereka dapat mengaktifkan atau menonaktifkannya.
 
       Jika kebijakan ditetapkan ke Salah (False), fitur Sentuh untuk Menelusuri akan dinonaktifkan sepenuhnya.</translation>
+<translation id="8136906469922284163">Jika kebijakan disetel ke Benar (True), halaman akan menampilkan pop-up saat halaman menghapus muatan.
+
+      Jika kebijakan disetel ke Salah (False) atau tidak disetel, halaman tidak akan dapat menampilkan pop-up saat halaman menghapus muatan.
+
+      Kebijakan ini dihapus di Chrome 88 dan akan diabaikan jika disetel.
+
+      Buka https://www.chromestatus.com/feature/5989473649164288.</translation>
 <translation id="8141795997560411818">Kebijakan ini tidak mencegah pengguna menggunakan aplikasi Google Drive Android. Jika ingin mencegah akses ke Google Drive, sebaiknya Anda tidak mengizinkan pemasangan aplikasi Google Drive Android.</translation>
 <translation id="8142894094385450823">Menetapkan lokal yang direkomendasikan untuk sesi terkelola</translation>
 <translation id="8146727383888924340">Memungkinkan pengguna menukarkan penawaran melalui Pendaftaran Chrome OS</translation>

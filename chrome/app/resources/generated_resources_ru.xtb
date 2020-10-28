@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Слишком много попыток ввода PIN-кода. Электронный ключ заблокирован. Чтобы разблокировать ключ, извлеките его и вставьте снова.</translation>
 <translation id="1137589305610962734">временные данные</translation>
 <translation id="1137673463384776352">Открыть ссылку в приложении "<ph name="APP" />"</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новое уведомление}one{# новое уведомление}few{# новых уведомления}many{# новых уведомлений}other{# нового уведомления}}</translation>
 <translation id="1139343347646843679">При настройке Linux произошла ошибка. Обратитесь к администратору.</translation>
 <translation id="1140351953533677694">Доступ к Bluetooth- и последовательным устройствам</translation>
 <translation id="114036956334641753">Звук и субтитры</translation>
@@ -1670,6 +1671,7 @@
 <translation id="291056154577034373">НЕ ПРОЧИТАНО</translation>
 <translation id="2910718431259223434">Произошла ошибка. Повторите попытку или обратитесь к владельцу или администратору устройства. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Разрешить сайтам сохранять и читать файлы cookie (рекомендуется)</translation>
+<translation id="2915016304249900997">Во время демонстрации экрана содержание уведомлений скрыто.</translation>
 <translation id="2915102088417824677">Показать журнал активности</translation>
 <translation id="2915873080513663243">Автосканирование</translation>
 <translation id="2916073183900451334">Нажатие клавиши Tab на веб-странице приводит к выделению ссылок, а также полей формы</translation>
@@ -2440,6 +2442,7 @@
 <translation id="3819257035322786455">Резервное копирование</translation>
 <translation id="3819261658055281761">Системе не удалось сохранить токен доступа для API на этом устройстве.</translation>
 <translation id="3819800052061700452">Полно&amp;экранный режим</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Показать}one{Показать все}few{Показать все}many{Показать все}other{Показать все}}</translation>
 <translation id="3820749202859700794">Эллиптическая кривая SECG secp521r1 (она же NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Расширение одобрено}one{# расширение одобрено}few{# расширения одобрено}many{# расширений одобрено}other{# расширения одобрено}}</translation>
 <translation id="3822559385185038546">Прокси-сервер принудительно включен администратором</translation>
@@ -2830,6 +2833,7 @@
 <translation id="4285498937028063278">Открепить из Быстрого запуска</translation>
 <translation id="428565720843367874">При сканировании этого файла произошел сбой антивирусного ПО.</translation>
 <translation id="4287099557599763816">Программа чтения с экрана</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Показать}one{Показать все}few{Показать все}many{Показать все}other{Показать все}}</translation>
 <translation id="4289372044984810120">Здесь можно управлять своими аккаунтами. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Обзор</translation>
 <translation id="4295072614469448764">Приложение доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
@@ -6147,6 +6151,7 @@
 <translation id="820568752112382238">Часто открываемые сайты</translation>
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Сотовый</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новое уведомление}one{# новое уведомление}few{# новых уведомления}many{# новых уведомлений}other{# нового уведомления}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Выполняется скачивание}one{Выполняется скачивание}few{Выполняется скачивание}many{Выполняется скачивание}other{Выполняется скачивание}}</translation>
 <translation id="8213449224684199188">Включён режим фотосъёмки</translation>
 <translation id="8213577208796878755">Обнаружено одно доступное устройство.</translation>

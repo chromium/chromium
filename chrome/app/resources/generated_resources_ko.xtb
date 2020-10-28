@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 분리한 후 다시 삽입하세요.</translation>
 <translation id="1137589305610962734">임시 데이터</translation>
 <translation id="1137673463384776352"><ph name="APP" />에서 링크 열기</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{새 알림}other{새 알림 #개}}</translation>
 <translation id="1139343347646843679">Linux를 설정하는 중에 오류가 발생했습니다. 관리자에게 문의하세요.</translation>
 <translation id="1140351953533677694">블루투스 및 직렬 기기에 액세스</translation>
 <translation id="114036956334641753">오디오 및 자막</translation>
@@ -1672,6 +1673,7 @@
 <translation id="291056154577034373">읽지 않음</translation>
 <translation id="2910718431259223434">문제가 발생했습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="2913331724188855103">사이트에서 쿠키 데이터를 저장하고 읽도록 허용(권장)</translation>
+<translation id="2915016304249900997">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
 <translation id="2915102088417824677">활동 로그 보기</translation>
 <translation id="2915873080513663243">자동 스캔</translation>
 <translation id="2916073183900451334">웹페이지에서 Tab 키를 누르면 링크뿐 아니라 양식 입력란도 강조표시됩니다.</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3819257035322786455">백업</translation>
 <translation id="3819261658055281761">시스템에서 이 기기의 장기 API 액세스 토큰을 저장하지 못했습니다.</translation>
 <translation id="3819800052061700452">전체화면(&amp;F)</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{표시}other{모두 표시}}</translation>
 <translation id="3820749202859700794">SECG 타원 곡선 secp521r1(또는 NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 승인됨}other{확장 프로그램 #개 승인됨}}</translation>
 <translation id="3822559385185038546">이 프록시는 관리자가 강제로 설정해 놓았습니다.</translation>
@@ -2830,6 +2833,7 @@
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="428565720843367874">파일을 검사하는 동안 바이러스 백신 소프트웨어에 예기치 않은 오류가 발생했습니다.</translation>
 <translation id="4287099557599763816">스크린 리더</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{표시}other{모두 표시}}</translation>
 <translation id="4289372044984810120">여기에서 계정을 관리하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">개요</translation>
 <translation id="4295072614469448764">단말기에서 앱을 사용할 수 있습니다. 런처에 아이콘이 있을 수도 있습니다.</translation>
@@ -6148,6 +6152,7 @@
 <translation id="820568752112382238">자주 방문한 사이트</translation>
 <translation id="8206745257863499010">음악</translation>
 <translation id="8206859287963243715">휴대전화</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{새 알림}other{새 알림 #개}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{다운로드 진행 중}other{다운로드 진행 중}}</translation>
 <translation id="8213449224684199188">사진 모드 시작됨</translation>
 <translation id="8213577208796878755">사용 가능한 다른 기기가 1개 있습니다.</translation>

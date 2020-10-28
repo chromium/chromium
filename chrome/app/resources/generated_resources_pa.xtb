@@ -2075,6 +2075,7 @@
 <translation id="3428419049384081277">ਤੁਸੀਂ ਸਾਈਨ-ਇਨ ਹੋ!</translation>
 <translation id="3428747202529429621">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ Chrome ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਸ਼ਾਇਦ ਹੋਰ Google ਐਪਾਂ ਵਿੱਚ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਨੂੰ ਸੁਧਾਰਨ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕੇ</translation>
 <translation id="3428800329481094896">Linux ਕੰਟੇਨਰ ਦੀਆਂ SSH ਕੁੰਜੀਆਂ ਪ੍ਰਾਪਤ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ</translation>
+<translation id="3429271624041785769">ਵੈੱਬ ਸਮੱਗਰੀ ਦੀਆਂ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="3429275422858276529">ਇਸ ਪੰਨੇ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਲੱਭਣ ਲਈ ਇਸਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ</translation>
 <translation id="3432227430032737297">ਸਾਰੇ ਵਿਖਾਏ ਗਏ ਹਟਾਓ</translation>
 <translation id="3432757130254800023">ਸਥਾਨਕ ਨੈੱਟਵਰਕ 'ਤੇ ਦਿਖਾਉਣ ਲਈ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਭੇਜੋ</translation>
@@ -2500,6 +2501,7 @@
 <translation id="3879748587602334249">ਡਾਊਨਲੋਡ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="3881478300875776315">ਘੱਟ ਲਾਈਨਾਂ ਦਿਖਾਓ</translation>
 <translation id="3882165008614329320">ਕੈਮਰੇ ਜਾਂ ਫ਼ਾਈਲ ਤੋਂ ਮੌਜੂਦਾ ਵੀਡੀਓ</translation>
+<translation id="3884152383786131369">ਕਈ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਉਪਲਬਧ ਵੈੱਬ ਸਮੱਗਰੀ ਇਸ ਸੂਚੀ ਤੋਂ ਪਹਿਲੀ ਸਮਰਥਿਤ ਭਾਸ਼ਾ ਦੀ ਵਰਤੋਂ ਕਰੇਗੀ। ਇਹ ਤਰਜੀਹਾਂ ਤੁਹਾਡੀਆਂ ਬ੍ਰਾਊਜ਼ਰ ਸੈਟਿੰਗਾਂ ਨਾਲ ਸਮਕਾਲੀਕਿਰਤ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ਇਸ ਸਾਈਟ 'ਤੇ ਪਹੁੰਚ ਦੀ ਤੁਹਾਡੀ ਬੇਨਤੀ <ph name="NAME" /> ਨੂੰ ਭੇਜੀ ਗਈ ਹੈ</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ਨਾਲ ਨੋਟ-ਕਥਨ ਲਏ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="3890064827463908288">ਵਾਈ-ਫਾਈ ਸਿੰਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ Chrome ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
@@ -4353,6 +4355,7 @@
 <translation id="6112727384379533756">ਟਿਕਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6112931163620622315">ਆਪਣੇ ਫ਼ੋਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="6112952769866305444">ਵਿਅਕਤੀ, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /> ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="6113434369102685411">Chrome ਬ੍ਰਾਊਜ਼ਰ ਅਤੇ <ph name="DEVICE_TYPE" /> ਲਾਂਚਰ ਲਈ ਆਪਣੀ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="6113942107547980621">ਸਮਾਰਟ ਲਾਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਪ੍ਰਾਇਮਰੀ ਵਰਤੋਂਕਾਰ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
 <translation id="6116921718742659598">ਭਾਸ਼ਾ ਅਤੇ ਇਨਪੁੱਟ ਸੈਟਿੰਗਾਂ ਬਦਲੋ</translation>
 <translation id="6120205520491252677">ਸਟਾਰਟ ਸਕ੍ਰੀਨ ਲਈ ਇਹ ਸਫ਼ਾ ਪਿਨ ਕਰੋ...</translation>
@@ -5219,6 +5222,7 @@
 <translation id="7140928199327930795">ਕੋਈ ਹੋਰ ਉਪਲਬਧ ਡਿਵਾਈਸਾਂ ਨਹੀਂ।</translation>
 <translation id="7141105143012495934">ਸਾਈਨ-ਇਨ ਅਸਫਲ ਹੋਇਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਖਾਤੇ ਦਾ ਵੇਰਵਿਆਂ ਨੂੰ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="7143358760238281735">ਕੋਈ ਐਪ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="714876143603641390">LAN ਕਨੈਕਟੀਵਿਟੀ</translation>
 <translation id="7149893636342594995">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
@@ -5690,6 +5694,7 @@
 <translation id="7707922173985738739">ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤੋ</translation>
 <translation id="7709152031285164251">ਅਸਫਲ - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;ਕਾਸਟ...</translation>
+<translation id="7712739869553853093">ਪ੍ਰਿੰਟ ਪੂਰਵ-ਝਲਕ ਵਿੰਡੋ</translation>
 <translation id="7712836429117959503"><ph name="EXTENSION_ID" /> ਆਈ.ਡੀ. ਵਾਲੀ ਅਗਿਆਤ ਐਕਸਟੈਂਸ਼ਨ</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> ਤੋਂ ਕੁਕੀਜ਼ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="7714464543167945231">ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>

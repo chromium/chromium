@@ -58,6 +58,7 @@
 <translation id="1455242230282523554">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1460620680449458626">ਅਵਾਜ਼ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
 <translation id="1467432559032391204">ਖੱਬੇ ਪਾਸੇ</translation>
+<translation id="1475439723810528286">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਟੈਪ ਕਰੋ</translation>
 <translation id="1479909375538722835">ਫ਼ਲੋਟਿੰਗ ਪਹੁੰਚਯੋਗਤਾ ਮੀਨੂ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">ਇਹ ਮਾਲਕ ਖਾਤਾ ਇੱਕ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਸੈਸ਼ਨ ਵਿੱਚ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਖਾਤਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
@@ -121,6 +122,7 @@
 <translation id="209965399369889474">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ</translation>
 <translation id="2126242104232412123">ਨਵਾਂ ਡੈਸਕ</translation>
 <translation id="2127372758936585790">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ</translation>
+<translation id="2132302418721800944">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="2135456203358955318">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
 <translation id="2144487987174258011">Adobe ਫਲੈਸ਼ ਪਲੇਅਰ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2180011262286780504">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਕਰਨ ਦੀ ਸਮਰੱਥਾ ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
@@ -192,6 +194,7 @@
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
 <translation id="2878884018241093801">ਕੋਈ ਹਾਲੀਆ ਆਈਟਮਾਂ ਨਹੀਂ</translation>
 <translation id="2903844815300039659"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ, <ph name="STRENGTH" /></translation>
+<translation id="2914580577416829331">ਸਕ੍ਰੀਨ ਕੈਪਚਰ</translation>
 <translation id="2942350706960889382">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
 <translation id="2942516765047364088">ਸ਼ੈਲਫ ਪੋਜੀਸ਼ਨ</translation>
 <translation id="2946119680249604491">ਕਨੈਕਸ਼ਨ ਜੋੜੋ</translation>
@@ -367,6 +370,7 @@
 <translation id="4513946894732546136">ਫ਼ੀਡਬੈਕ</translation>
 <translation id="4527045527269911712">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="453661520163887813">ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME" /> ਬਾਕੀ</translation>
+<translation id="4538824937723742295">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
 <translation id="4544483149666270818">ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਕੋਈ ਵਿੰਡੋ ਚੁਣੋ</translation>
 <translation id="4560576029703263363">ਚਾਲੂ</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -422,12 +426,14 @@
 <translation id="4969092041573468113"><ph name="HOURS" />ਘੰ <ph name="MINUTES" />ਮਿੰ <ph name="SECONDS" />ਸਕਿੰ</translation>
 <translation id="4975771730019223894">ਐਪ ਬੈਜਿੰਗ</translation>
 <translation id="5030687792513154421">ਸਮਾਂ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ</translation>
+<translation id="5033299697334913360">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />ਨੂੰ ਨਵੇਂ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5035389544768382859">ਡਿਸਪਲੇ ਸੰਰੂਪਣ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="5083553833479578423">'ਸਹਾਇਕ' ਦੀਆਂ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ।</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5168181903108465623">ਕਾਸਟ ਡਿਵਾਈਸਾਂ ਉਪਲਬਧ</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
+<translation id="5176318573511391780">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="5207949376430453814">ਲਿਖਤ ਕੈਰੇਟ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="5208059991603368177">ਚਾਲੂ ਹੈ</translation>
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
@@ -488,6 +494,7 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> 'ਤੇ <ph name="ROUTE_TITLE" /> ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
 <translation id="5876666360658629066">ਮਾਂ-ਪਿਓ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="5881540930187678962">ਫ਼ੋਨ ਹੱਬ ਦਾ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="589817443623831496">ਪੁਆਇੰਟ ਸਕੈਨਿੰਗ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -542,6 +549,7 @@
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="643147933154517414">ਸਭ ਹੋ ਗਿਆ</translation>
+<translation id="6431865393913628856">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਰ</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> 'ਤੇ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6452181791372256707">ਰੱਦ ਕਰੋ</translation>
 <translation id="6453179446719226835">ਭਾਸ਼ਾ ਬਦਲ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
@@ -627,6 +635,7 @@
 <translation id="7346909386216857016">ਠੀਕ, ਸਮਝ ਲਿਆ</translation>
 <translation id="7348093485538360975">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="735745346212279324">VPN ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ</translation>
+<translation id="7371404428569700291">ਰਿਕਾਰਡ ਵਿੰਡੋ</translation>
 <translation id="7377169924702866686">Caps Lock ਚਾਲੂ ਹੈ।</translation>
 <translation id="7378203170292176219">ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਕਿਸੇ ਖੇਤਰ ਨੂੰ ਚੁਣਨ ਵਾਸਤੇ ਘਸੀਟੋ</translation>
 <translation id="7378594059915113390">ਮੀਡੀਆ ਕੰਟਰੋਲ</translation>
@@ -815,6 +824,7 @@
 <translation id="9084606467167974638">ਮੀਨੂ ਸਥਿਤੀ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="9089416786594320554">ਇਨਪੁਟ ਵਿਧੀਆਂ</translation>
 <translation id="9091626656156419976">ਡਿਲਪਲੇ <ph name="DISPLAY_NAME" /> ਨੂੰ ਹਟਾਇਆ ਗਿਆ</translation>
+<translation id="9092749890156285613">ਹਾਲੀਆ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਅਤੇ ਡਾਊਨਲੋਡ</translation>
 <translation id="9151726767154816831">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਅਤੇ ਪਾਵਰਵਾਸ਼ ਕਰੋ</translation>
 <translation id="9166331175924255663">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਉੱਚ ਦਿਖਣਯੋਗਤਾ ਨੂੰ ਟੌਗਲ ਕਰੋ।</translation>
 <translation id="9168436347345867845">ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>

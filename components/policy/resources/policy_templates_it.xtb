@@ -959,6 +959,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
        Se il criterio non viene configurato, la segnalazione di metriche e dati diagnostici rimane disattivata sui dispositivi non gestiti e attiva sui dispositivi gestiti.</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
+<translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
 <translation id="2463034609187171371">Attiva i pacchetti di crittografia DHE in TLS</translation>
 <translation id="2463365186486772703">Lingua dell'applicazione</translation>
 <translation id="2463832514638083341">Questo criterio controlla per quanto tempo i metadati dei processi di stampa vengono memorizzati sul dispositivo, con valore espresso in giorni.
@@ -1065,6 +1066,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       La configurazione del criterio consente di specificare quale host di messaggistica nativo non deve essere caricato. Il valore <ph name="WILDCARD_VALUE" /> nell'elenco di host non consentiti comporta il rifiuto di tutti gli host di messaggistica nativi, a meno che non siano consentiti in modo esplicito.
 
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> carica tutti gli host di messaggistica nativi installati.</translation>
+<translation id="2568488785376704318">Questo criterio è deprecato. Usa il criterio <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2571066091915960923">Consente di attivare o disattivare il proxy di compressione dei dati e di impedire agli utenti di cambiare questa impostazione.
 
 Se attivi o disattivi questa impostazione, gli utenti non potranno cambiarla o ignorarla.
@@ -1272,6 +1274,11 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Se attivi questa impostazione, in Anteprima di stampa viene usata la stampante predefinita del sistema operativo come destinazione predefinita.</translation>
 <translation id="285627849510728211">Imposta la configurazione giornaliera per la modalità di ricarica avanzata della batteria</translation>
 <translation id="2856674246949497058">Esegui il rollback e rimani nella versione target se la versione del sistema operativo è più recente di quella target. Esegui un powerwash durante la procedura.</translation>
+<translation id="2857886155146264716">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati nella schermata di accesso. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
+
+      Il modello di autorizzazione USB utilizza l'URL richiedente e l'URL di incorporamento per consentire all'URL richiedente di accedere al dispositivo USB. L'URL richiedente può essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Pertanto, il campo <ph name="URLS_FIELD_NAME" /> può contenere fino a 2 stringhe URL delimitate da una virgola per specificare rispettivamente l'URL richiedente e l'URL di incorporamento. Se viene specificato un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL in questione, a prescindere dallo stato di incorporamento. Se gli URL non sono validi, il criterio viene ignorato.
+
+      Se il criterio non viene configurato, viene utilizzato il valore predefinito globale per tutti i siti (nessun accesso automatico).</translation>
 <translation id="2869762730352628426">Attiva la funzione di clic automatico nella schermata di accesso</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2874209944580848064">Nota per i dispositivi <ph name="PRODUCT_OS_NAME" /> che supportano le app Android:</translation>
@@ -2220,6 +2227,11 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
+<translation id="4214536984333857724">Se questa impostazione viene attivata, le richieste di autenticazione Gnubby verranno trasferite al proxy tramite una connessione host remota.
+
+          Tieni presente che per il corretto comportamento di questa funzionalità sono necessari componenti aggiuntivi non disponibili al di fuori dell'ambiente della rete Google.
+
+          Se questa impostazione viene disattivata, le richieste di autenticazione Gnubby non verranno trasferite al proxy.</translation>
 <translation id="4215197846797661927">Consente di impostare la configurazione giornaliera per la modalità di ricarica avanzata della batteria.
 
           Questo criterio viene usato soltanto se il criterio <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_NAME" /> è impostato su true.
@@ -2382,6 +2394,7 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 <translation id="4554651132977135445">Modalità di elaborazione loopback dei criteri relativi agli utenti</translation>
 <translation id="4555850956567117258">Attivazione dell'attestazione da remoto per l'utente</translation>
 <translation id="4557134566541205630">URL pagina Nuova scheda provider di ricerca predefinito</translation>
+<translation id="4558166110367609724">Salta automaticamente TdS e carica il browser</translation>
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
 <translation id="456686782928669977">Questo criterio consente di stabilire se caricare o meno le regole del criterio SiteList di <ph name="IE_PRODUCT_NAME" />.
 
@@ -2548,7 +2561,27 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="487460824085252184">Esegui automaticamente la migrazione senza chiedere il consenso dell'utente</translation>
 <translation id="4874982543810021567">Blocca WebUSB su questi siti</translation>
 <translation id="4876805738539874299">Versione SSL massima abilitata</translation>
+<translation id="487928067861956387">Consente di configurare i nomi di dominio dell'host che verranno imposti sugli host di accesso remoto e impedisce agli utenti di modificarli.
+
+          Se questa impostazione viene attivata e configurata su uno o più domini, gli host possono essere condivisi solo utilizzando gli account registrati su uno dei nomi di dominio specificati.
+
+          Se questa impostazione viene disattivata, non viene configurata o viene impostato un elenco vuoto, gli host possono essere condivisi utilizzando qualsiasi account.
+
+          Questa impostazione sostituirà <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se presente.
+
+          Vedi anche <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Attiva una pagina per la modifica della password all'interno della sessione per gli utenti SAML</translation>
+<translation id="4892647988357350237">Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questo criterio viene impostato su <ph name="STANDARD_TOS_DIALOG" /> o se non viene configurato, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
+
+      - Questo criterio funziona solo su dispositivi Android completamente gestiti che possono essere configurati da fornitori dell'Unified Endpoint Management.
+
+      - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, il criterio BrowserSignin non ha effetto.
+
+      - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, le metriche​ non vengono inviate al server.
+
+      - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, il browser ha una funzionalità limitata.
+
+      - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, gli amministratori devono comunicarlo agli utenti finali del dispositivo.</translation>
 <translation id="4894290482695457375">A meno che <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> non sia impostato su Disattivato, l'impostazione di <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> su Attivato connetterà <ph name="PRODUCT_NAME" /> ai dispositivi di trasmissione su tutti gli indirizzi IP e non solo su indirizzi privati RFC1918/RFC4193.
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> si connetterà ai dispositivi di trasmissione solo su indirizzi RFC1918/RFC4193.
@@ -2794,6 +2827,15 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 
       Per "versione" si intende sia una versione esatta, ad esempio "61.0.3163.120", sia un prefisso di versione, ad esempio "61.0".  </translation>
 <translation id="5247006254130721952">Blocca download pericolosi</translation>
+<translation id="5249303875508803168">Consente di configurare i nomi di dominio client richiesti che verranno imposti ai client di accesso remoto e impedisce agli utenti di modificarli.
+
+          Se questa impostazione viene attivata e configurata su uno o più domini, solo i client di uno dei domini specificati potranno connettersi all'host.
+
+          Se questa impostazione viene disattivata, non viene configurata o viene impostato un elenco vuoto, viene applicato il criterio predefinito per il tipo di connessione. Per l'assistenza remota, l'impostazione consente ai client di qualsiasi dominio di connettersi all'host; per l'accesso remoto in qualsiasi momento, può connettersi solo il proprietario dell'host.
+
+          Questa impostazione sostituirà <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, se presente.
+
+          Vedi anche <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Gli utenti possono aggiungere account Kerberos</translation>
 <translation id="5252995168844634755">Se il criterio viene impostato su True, viene attivata la modalità Desktop unificato, che consente di visualizzare le applicazioni su più schermi. Gli utenti possono disattivare questa modalità per singoli schermi.
 
@@ -2994,6 +3036,13 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
 
       Se questo criterio non viene impostato o viene impostato su "Consenti caricamenti e download", <ph name="PRODUCT_NAME" /> si comporta secondo le regole descritte nelle impostazioni "Consenti download" e "Consenti caricamenti".
       </translation>
+<translation id="5440507358161332552">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
+
+      Il modello di autorizzazione USB utilizza l'URL richiedente e l'URL di incorporamento per consentire all'URL richiedente di accedere al dispositivo USB. L'URL richiedente può essere diverso dall'URL di incorporamento quando il sito richiedente viene caricato in un iframe. Pertanto, il campo <ph name="URLS_FIELD_NAME" /> può contenere fino a 2 stringhe URL delimitate da una virgola per specificare rispettivamente l'URL richiedente e l'URL di incorporamento. Se viene specificato un solo URL, l'accesso ai dispositivi USB corrispondenti viene concesso quando l'URL del sito richiedente corrisponde all'URL in questione, a prescindere dallo stato di incorporamento. Se gli URL non sono validi, il criterio viene ignorato.
+
+      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      I pattern URL di questo criterio non devono essere in conflitto con quelli configurati tramite il criterio <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza sui criteri <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="5442026853063570579">Questa norma consente di controllare anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su "DeveloperToolsDisallowed" (valore 2), gli utenti non potranno accedere alle Opzioni sviluppatore. Se la norma viene impostata su un altro valore o non viene impostata, gli utenti potranno accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
 <translation id="5445596354079213552">Questo criterio viene applicato soltanto se il dispositivo ha raggiunto la scadenza dell'aggiornamento automatico e non rispetta la versione minima consentita di <ph name="PRODUCT_OS_NAME" /> impostata tramite il criterio <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
@@ -3234,6 +3283,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio viene configurato, la riproduzione video automatica (senza il consenso dell'utente) con contenuti audio è consentita in <ph name="PRODUCT_NAME" />. Se il criterio <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostato su true, tale criterio non ha effetto. Se il criterio <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostato su false, l'insieme di pattern URL in tale criterio può comunque essere riprodotto. Se il criterio viene modificato mentre <ph name="PRODUCT_NAME" /> è in esecuzione, viene applicato solo alle nuove schede aperte.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="5749396052108288586">Questo criterio è deprecato. Usa il criterio <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Attiva le scorciatoie delle funzioni di accessibilità nella schermata di accesso</translation>
 <translation id="5755002458331714762"> Le API Web Components v0 (Shadow DOM v0, Custom Elements v0 e HTML Imports) sono state ritirate nel 2018 e sono state disattivate per impostazione predefinita a partire dalla versione M80. Questo criterio consente di riattivare selettivamente queste funzionalità fino alla versione M84.
 
@@ -3807,6 +3857,19 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Nota: per le istanze di Windows® che non fanno parte di un dominio <ph name="MS_AD_NAME" />, l'installazione forzata è limitata alle app e alle estensioni elencate nel Chrome Web Store.</translation>
 <translation id="6598235178374410284">Immagine avatar utente</translation>
 <translation id="6603004149426829878">Consente di inviare sempre al server i segnali relativi alla posizione disponibili durante le operazioni per stabilire il fuso orario</translation>
+<translation id="660567106648774919">Questo criterio è deprecato. Utilizza il criterio <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questo criterio viene impostato su Disattivato, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questo criterio viene impostato su Attivato o se non viene configurato, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
+
+      - Questo criterio funziona solo su dispositivi Android completamente gestiti che possono essere configurati da fornitori dell'Unified Endpoint Management.
+
+      - Se questo criterio viene impostato su Disattivato, il criterio BrowserSignin non ha effetto.
+
+      - Se questo criterio viene impostato su Disattivato, le metriche​ non vengono inviate al server.
+
+      - Se questo criterio viene impostato su Disattivato, il browser ha una funzionalità limitata.
+
+      - Se questo criterio viene impostato su Disattivato, gli amministratori devono comunicarlo agli utenti finali del dispositivo.</translation>
 <translation id="6614020900120353107">Consente di stabilire se usare o meno in <ph name="PRODUCT_NAME" /> il client DNS integrato.
 
       Questo criterio non influisce sui server DNS utilizzati, ma soltanto sullo stack software usato per comunicare con loro. Ad esempio, se il sistema operativo è configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Tuttavia, è possibile che il client DNS integrato indirizzi i server in modi diversi usando protocolli DNS più moderni, come DNS-over-TLS.
@@ -4157,6 +4220,7 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda dopo il passaggio a un browser alternativo, anche se era l'ultima scheda. Questo causa l'uscita da <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7019805045859631636">Veloce</translation>
+<translation id="7025332601572838001">Configurazione del comportamento dei TdS alla prima esecuzione di CCT</translation>
 <translation id="7026351325994257733">Consenti la sincronizzazione delle configurazioni di reti Wi-Fi tra i dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android collegato</translation>
 <translation id="7027785306666625591">Configura la gestione dell'alimentazione in <ph name="PRODUCT_OS_NAME" />.
 
@@ -4966,6 +5030,13 @@ Se attivi questa impostazione o non imposti un valore, la funzione Compilazione 
 <translation id="8133152694354699657">Se il criterio viene impostato su True o non viene impostato, la funzionalità Tocca per cercare sarà a disposizione degli utenti, che potranno scegliere se attivarla o disattivarla.
 
       Se il criterio viene impostato su False, la funzionalità Tocca per cercare verrà disattivata completamente.</translation>
+<translation id="8136906469922284163">Se il criterio viene impostato su Vero, le pagine possono mostrare popup durante l'unload.
+
+      Se il criterio viene impostato su Falso o se non viene configurato, le pagine non possono mostrare popup durante l'unload.
+
+      Questo criterio è stato rimosso nella versione 88 di Chrome e viene ignorato se viene impostato.
+
+      Visita la pagina https://www.chromestatus.com/feature/5989473649164288.</translation>
 <translation id="8141795997560411818">Questa norma non impedisce all'utente di utilizzare l'app Google Drive per Android. Se vuoi impedire l'accesso a Google Drive, non devi consentire l'installazione dell'app Google Drive per Android.</translation>
 <translation id="8142894094385450823">Questa norma consente di impostare le impostazioni internazionali consigliate per una sessione gestita</translation>
 <translation id="8146727383888924340">Consenti agli utenti di utilizzare le offerte tramite la registrazione a Chrome OS</translation>

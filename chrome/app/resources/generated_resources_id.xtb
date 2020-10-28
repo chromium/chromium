@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Kunci keamanan dikunci karena Anda terlalu sering memasukkan PIN yang salah. Untuk membukanya, lepaskan kunci keamanan dan pasang kembali.</translation>
 <translation id="1137589305610962734">data sementara</translation>
 <translation id="1137673463384776352">Buka link di <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notifikasi Baru}other{# Notifikasi Baru}}</translation>
 <translation id="1139343347646843679">Terjadi error saat mengonfigurasi Linux. Harap hubungi administrator Anda.</translation>
 <translation id="1140351953533677694">Mengakses perangkat Seri dan Bluetooth Anda</translation>
 <translation id="114036956334641753">Audio dan teks</translation>
@@ -1672,6 +1673,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="291056154577034373">BELUM DIBACA</translation>
 <translation id="2910718431259223434">Terjadi error. Coba lagi atau hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Izinkan situs untuk menyimpan dan membaca data cookie (disarankan)</translation>
+<translation id="2915016304249900997">Detail disembunyikan saat Anda membagikan layar</translation>
 <translation id="2915102088417824677">Lihat log aktivitas</translation>
 <translation id="2915873080513663243">Pemindaian otomatis</translation>
 <translation id="2916073183900451334">Menekan Tab pada halaman web akan menyorot link, juga bidang formulir</translation>
@@ -2442,6 +2444,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3819257035322786455">Cadangan</translation>
 <translation id="3819261658055281761">Sistem gagal menyimpan token akses API jangka panjang untuk perangkat ini.</translation>
 <translation id="3819800052061700452">Layar penuh</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Tampilkan}other{Tampilkan semua}}</translation>
 <translation id="3820749202859700794">Kurva eliptis SECG secp521r1 (alias NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ekstensi telah disetujui}other{# ekstensi telah disetujui}}</translation>
 <translation id="3822559385185038546">Proxy ini diberlakukan oleh administrator Anda</translation>
@@ -2832,6 +2835,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4285498937028063278">Lepas pin</translation>
 <translation id="428565720843367874">Software antivirus gagal secara tak terduga saat memindai file ini.</translation>
 <translation id="4287099557599763816">Pembaca layar</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Tampilkan}other{Tampilkan Semua}}</translation>
 <translation id="4289372044984810120">Kelola akun Anda di sini. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Ikhtisar</translation>
 <translation id="4295072614469448764">Aplikasi tersedia di terminal Anda. Ikonnya juga mungkin tersedia di Peluncur.</translation>
@@ -6150,6 +6154,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="820568752112382238">Situs yang paling sering dikunjungi</translation>
 <translation id="8206745257863499010">Jazzy</translation>
 <translation id="8206859287963243715">Seluler</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notifikasi baru}other{# notifikasi baru}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Proses download sedang berlangsung}other{Proses download sedang berlangsung}}</translation>
 <translation id="8213449224684199188">Masuk ke mode foto</translation>
 <translation id="8213577208796878755">Satu perangkat lain tersedia.</translation>
@@ -6665,7 +6670,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8812552797690463522">Jaringan ini dibagikan kepada Anda.</translation>
 <translation id="8812593354822910461">Hapus juga data penjelajahan (<ph name="URL" />) yang akan membuat Anda logout dari <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Ingatkan saya nanti</translation>
-<translation id="8813698869395535039">Tidak dapat masuk ke <ph name="USERNAME" /></translation>
+<translation id="8813698869395535039">Tidak dapat login ke <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Minta orang tuamu menyetujui "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8813969267212093033">Teks sistem ditampilkan dalam bahasa ini</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

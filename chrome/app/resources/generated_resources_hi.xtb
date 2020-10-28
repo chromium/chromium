@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">सुरक्षा कुंजी लॉक कर दी गई है क्योंकि गलत पिन कई बार डाला गया है. सुरक्षा कुंजी को अनलॉक करने के लिए, इसे हटाएं और फिर से लगाएं.</translation>
 <translation id="1137589305610962734">यह डेटा कुछ समय के लिए है</translation>
 <translation id="1137673463384776352"><ph name="APP" /> में लिंक खोलें</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नई सूचना}one{# नई सूचना}other{# नई सूचनाएं}}</translation>
 <translation id="1139343347646843679">Linux को कॉन्फ़िगर करने में गड़बड़ी हुई. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="1140351953533677694">अपने ब्लूटूथ और Serial डिवाइस एक्सेस करें</translation>
 <translation id="114036956334641753">ऑडियो और कैप्शन</translation>
@@ -1672,6 +1673,7 @@
 <translation id="291056154577034373">नहीं पढ़ा गया</translation>
 <translation id="2910718431259223434">कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें. इसके अलावा, डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">साइटों को कुकी डेटा सेव करने और पढ़ने की अनुमति दें (सुझाए गए)</translation>
+<translation id="2915016304249900997">स्क्रीन शेयर करने के दौरान सूचना का कॉन्टेंट छिपा रहता है</translation>
 <translation id="2915102088417824677">गतिविधि लॉग देखें</translation>
 <translation id="2915873080513663243">अपने आप स्कैन होने की सुविधा</translation>
 <translation id="2916073183900451334">किसी वेबपेज पर टैब दबाने से लिंक के साथ-साथ फ़ॉर्म भी हाइलाइट होते हैं</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3819257035322786455">बैकअप लें</translation>
 <translation id="3819261658055281761">सिस्टम इस डिवाइस के लिए लंबी समयावधि का API (एपीआई) ऐक्सेस टोकन स्टोर नहीं कर सका.</translation>
 <translation id="3819800052061700452">&amp;पूर्ण स्क्रीन</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{दिखाएं}one{सूचना का पूरा कॉन्टेंट दिखाएं}other{सूचनाओं का पूरा कॉन्टेंट दिखाएं}}</translation>
 <translation id="3820749202859700794">SECG अंडाकार वक्र secp521r1 (अर्थात NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एक्सटेंशन को मंज़ूरी दी गई}one{# एक्सटेंशन को मंज़ूरी दी गई}other{# एक्सटेंशन को मंज़ूरी दी गई}}</translation>
 <translation id="3822559385185038546">यह प्रॉक्सी आपके व्‍यवस्‍थापक ने लागू किया है</translation>
@@ -2831,6 +2834,7 @@
 <translation id="4285498937028063278">टैब बड़ी करें</translation>
 <translation id="428565720843367874">इस फ़ाइल को स्कैन करते समय एंटी-वायरस साफ़्टवेयर अनपेक्षित रूप से विफल रहा.</translation>
 <translation id="4287099557599763816">स्क्रीन रीडर</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{दिखाएं}one{सूचना का पूरा कॉन्टेंट दिखाएं}other{सूचनाओं का पूरा कॉन्टेंट दिखाएं}}</translation>
 <translation id="4289372044984810120">अपने खाते यहां प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4295072614469448764">ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध है. आपके 'लॉन्चर' में एक आइकॉन भी मौजूद हो सकता है.</translation>
@@ -6148,6 +6152,7 @@
 <translation id="820568752112382238">सबसे ज़्यादा देखी गई साइटें</translation>
 <translation id="8206745257863499010">ब्‍लुसी</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नई सूचना}one{# नई सूचना}other{# नई सूचनाएं}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड जारी है}one{डाउनलोड जारी हैं}other{डाउनलोड जारी हैं}}</translation>
 <translation id="8213449224684199188">आप फ़ोटो मोड में हैं</translation>
 <translation id="8213577208796878755">एक अन्य उपलब्ध डिवाइस.</translation>

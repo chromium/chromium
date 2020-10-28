@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Suojausavain on lukittu, koska väärä PIN-koodi syötettiin liian monta kertaa. Avaa lukitus poistamalla avain ja asettamalla se uudelleen.</translation>
 <translation id="1137589305610962734">väliaikainen data</translation>
 <translation id="1137673463384776352">Avaa linkki: <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Uusi ilmoitus}other{# uutta ilmoitusta}}</translation>
 <translation id="1139343347646843679">Linuxin määrityksessä tapahtui virhe. Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="1140351953533677694">Käyttää Bluetooth- ja sarjaporttilaitteitasi</translation>
 <translation id="114036956334641753">Audio ja tekstitykset</translation>
@@ -1672,6 +1673,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="291056154577034373">LUKEMATTA</translation>
 <translation id="2910718431259223434">Jotain meni pieleen. Yritä uudelleen tai ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Salli sivustojen tallentaa ja lukea evästetietoja (suositus)</translation>
+<translation id="2915016304249900997">Tiedot on piilotettu näytön jakamisen ajaksi</translation>
 <translation id="2915102088417824677">Näytä tapahtumaloki</translation>
 <translation id="2915873080513663243">Automaattinen skannaus</translation>
 <translation id="2916073183900451334">Sarkaimen painaminen verkkosivulla korostaa linkit ja lomakekentät</translation>
@@ -2442,6 +2444,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3819257035322786455">Varmuuskopiointi</translation>
 <translation id="3819261658055281761">Järjestelmä ei voinut tallentaa laitteen pitkäaikaista API-käyttötunnusta.</translation>
 <translation id="3819800052061700452">&amp;Koko näyttö</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Näytä}other{Näytä kaikki}}</translation>
 <translation id="3820749202859700794">SECG elliptinen käyrä secp521r1 (eli NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Laajennus on hyväksytty}other{# laajennusta on hyväksytty}}</translation>
 <translation id="3822559385185038546">Järjestelmänvalvojasi edellyttää tämän välityspalvelimen käyttöä.</translation>
@@ -2829,6 +2832,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4285498937028063278">Irrota</translation>
 <translation id="428565720843367874">Viruksentorjuntaohjelma ei pystynyt tarkistamaan tätä tiedostoa.</translation>
 <translation id="4287099557599763816">Näytönlukuohjelma</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Näytä}other{Näytä kaikki}}</translation>
 <translation id="4289372044984810120">Tässä voit ylläpitää tilejäsi. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="4295072614469448764">Sovellus on saatavilla terminaalissa. Käynnistysohjelmassa saattaa myös näkyä kuvake.</translation>
@@ -6148,6 +6152,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="820568752112382238">Useimmin vieraillut sivustot</translation>
 <translation id="8206745257863499010">Muusikko</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Uusi ilmoitus}other{# uutta ilmoitusta}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Lataus on käynnissä}other{Latauksia on käynnissä}}</translation>
 <translation id="8213449224684199188">Valokuvatilaan siirrytty</translation>
 <translation id="8213577208796878755">Yksi muu käytettävissä oleva laite.</translation>

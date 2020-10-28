@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Çelësi i sigurisë është i kyçur sepse është futur shumë herë kod PIN i gabuar. Për ta shkyçur, hiqe dhe rifute atë.</translation>
 <translation id="1137589305610962734">të dhënat e përkohshme</translation>
 <translation id="1137673463384776352">Hape lidhjen në <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Njoftim i ri}other{# njoftime të reja}}</translation>
 <translation id="1139343347646843679">Ndodhi një gabim gjatë konfigurimit të Linux. Kontakto me administratorin tënd.</translation>
 <translation id="1140351953533677694">Qasu në pajisjet e tua me Bluetooth dhe Serial</translation>
 <translation id="114036956334641753">Audioja dhe titrat</translation>
@@ -1669,6 +1670,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="291056154577034373">TË PALEXUARA</translation>
 <translation id="2910718431259223434">Ndodhi një gabim. Provo përsëri ose kontakto me zotëruesin e pajisjes ose administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive (rekomandohet)</translation>
+<translation id="2915016304249900997">Detajet janë të fshehura ndërkohë që ndan ekranin tënd</translation>
 <translation id="2915102088417824677">Shiko evidencën e aktivitetit</translation>
 <translation id="2915873080513663243">Skanimi automatik</translation>
 <translation id="2916073183900451334">Shtypja e Skedës në lidhjet e theksuara të faqeve të uebit, si dhe në fushat e formularëve</translation>
@@ -2439,6 +2441,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3819257035322786455">Rezervimi</translation>
 <translation id="3819261658055281761">Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
 <translation id="3819800052061700452">&amp;Ekran i plotë</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Shfaq}other{Shfaqi të gjitha}}</translation>
 <translation id="3820749202859700794">Kurba eliptike SECG secp521r1 (e njohur edhe si NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Një shtesë është miratuar}other{# shtesa janë miratuar}}</translation>
 <translation id="3822559385185038546">Ky përfaqësues zbatohet nga administratori yt</translation>
@@ -2829,6 +2832,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4285498937028063278">Zhgozhdo</translation>
 <translation id="428565720843367874">Softueri i antivirusit dështoi papritur gjatë skanimit të këtij skedari.</translation>
 <translation id="4287099557599763816">Lexuesi i ekranit</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Shfaq}other{Shfaqi të gjitha}}</translation>
 <translation id="4289372044984810120">Menaxho llogaritë e tua këtu. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4295072614469448764">Aplikacioni ofrohet në terminalin tënd. Mund dhe të ketë një ikonë te "Nisësi" yt.</translation>
@@ -6145,6 +6149,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="820568752112382238">Sajtet më të vizituara</translation>
 <translation id="8206745257863499010">Bluzi</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Njoftim i ri}other{# ‏njoftime të reja}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Shkarkimi është në vazhdim}other{Shkarkimet janë në vazhdim}}</translation>
 <translation id="8213449224684199188">Kalove te modaliteti i fotografisë</translation>
 <translation id="8213577208796878755">Ofrohet një tjetër pajisje.</translation>

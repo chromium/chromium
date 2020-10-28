@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">ပင်နံပါတ်အမှားကို အကြိမ်များစွာထည့်သဖြင့် လုံခြုံရေးကီးကို လော့ခ်ချလိုက်ပါသည်။ ၎င်းကိုဖွင့်ရန် ဖယ်ရှားပြီး ပြန်ထည့်သွင်းပါ။</translation>
 <translation id="1137589305610962734">ယာယီဒေတာ</translation>
 <translation id="1137673463384776352"><ph name="APP" /> တွင် လင့်ခ်ကို ဖွင့်ရန်</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{အကြောင်းကြားချက်အသစ်}other{အကြောင်းကြားချက်အသစ် # ခု}}</translation>
 <translation id="1139343347646843679">Linux ကို စီစဉ်သတ်မှတ်နေစဉ် အမှားအယွင်းရှိနေသည်။ သင်၏စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="1140351953533677694">သင်၏ ဘလူးတုသ် နှင့် ဆင့်ဆက် ကိရိယာများကို ရယူသုံးရန်</translation>
 <translation id="114036956334641753">အသံနှင့် စာတန်းများ</translation>
@@ -1673,6 +1674,7 @@
 <translation id="291056154577034373">မဖတ်ရသေးသည်များ</translation>
 <translation id="2910718431259223434">တစ်ခုခုမှားသွားသည်။ ထပ်စမ်းကြည့်ပါ သို့မဟုတ် သင့်စက်ပိုင်ရှင် သို့မဟုတ် စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ် - <ph name="ERROR_CODE" />။</translation>
 <translation id="2913331724188855103">ဆိုဒ်များကို ကွက်ကီးများ ဖတ်ရန်နှင့် သိမ်းရန် ခွင့်ပြုသည် (အကြံပြုထား)</translation>
+<translation id="2915016304249900997">သင်၏ဖန်သားပြင်ကို မျှဝေနေစဉ် အသေးစိတ်ကို ဖျောက်ထားသည်</translation>
 <translation id="2915102088417824677">လုပ်ဆောင်ချက်မှတ်တမ်းကို ကြည့်ရန်</translation>
 <translation id="2915873080513663243">အလိုအလျောက် ရှာဖွေခြင်း</translation>
 <translation id="2916073183900451334">ဝဘ်စာမျက်နှာ တစ်ခုမှာ တဲဘ်ကို နှိပ်လိုက်ခြင်းက လင့်က်များကိုရော ပုံစံ အကွက်များကိုပါ ခွဲခြားပြပေးသည်။</translation>
@@ -2443,6 +2445,7 @@
 <translation id="3819257035322786455">အရန်သိမ်းပါ</translation>
 <translation id="3819261658055281761">စနစ်သည် ဤစက်ပစ္စည်းအတွက် ကာလကြာရှည် API အသုံးပြုခွင့်တိုကင်နံပါတ်ကို သိမ်းဆည်း၍မရပါ။</translation>
 <translation id="3819800052061700452">&amp;မျက်နှာပြင် အပြည့်</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ပြရန်}other{အားလုံးပြရန်}}</translation>
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{နောက်ဆက်တွဲကို ခွင့်ပြုလိုက်သည်}other{နောက်ဆက်တွဲ # ခုကို ခွင့်ပြုလိုက်သည်}}</translation>
 <translation id="3822559385185038546">ဤပရောက်စီကို သင်၏ စီမံခန့်ခွဲသူက ပြဌာန်းထားခြင်းဖြစ်သည်</translation>
@@ -2832,6 +2835,7 @@
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="428565720843367874">ဤဖိုင်အား စစ်ဆေးနေစဉ် ဗိုင်းရပ်စ်စစ် ဆော့ဝဲ မမျှော်လင့်စွာ ရှုံးခဲ့သည်။</translation>
 <translation id="4287099557599763816">ဖန်သားပြင်ဖတ် အက်ပ်</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ပြရန်}other{အားလုံးပြရန်}}</translation>
 <translation id="4289372044984810120">သင့်အကောင့်များကို ဤနေရာတွင် စီမံနိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">အကျဉ်းချုပ်</translation>
 <translation id="4295072614469448764">သင့်စက်တွင် အက်ပ်ရနိုင်ပါသည်။ သင်၏ Launcher ထဲတွင် သင်္ကေတရှိနေနိုင်ပါသည်။</translation>
@@ -6147,6 +6151,7 @@
 <translation id="820568752112382238">အများဆုံး ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="8206745257863499010">အပြာရောင်ဂီတသင်္ကေတ</translation>
 <translation id="8206859287963243715">ဆဲလ်လူလာ</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{အကြောင်းကြားချက်အသစ်}other{အကြောင်းကြားချက်အသစ် # ခု}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ဒေါင်းလုဒ် လုပ်နေဆဲဖြစ်သည်}other{ဒေါင်းလုဒ်များ လုပ်နေဆဲဖြစ်သည်}}</translation>
 <translation id="8213449224684199188">ဓာတ်ပုံမုဒ်သို့ ပြောင်းလိုက်ပါပြီ</translation>
 <translation id="8213577208796878755">ရနိုင်သည့် နောက် ကိရိယာ တစ်ခု။</translation>

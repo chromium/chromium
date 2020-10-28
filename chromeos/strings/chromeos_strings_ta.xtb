@@ -18,10 +18,12 @@
 <translation id="1947737735496445907">அச்சிடப்பட்டது</translation>
 <translation id="1979103255016296513">கடவுச்சொல்லை மாற்ற வேண்டும்</translation>
 <translation id="2049639323467105390"><ph name="DOMAIN" /> ஆல் இந்த சாதனம் நிர்வகிக்கப்படுகிறது.</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">அருகிலுள்ள சாதனங்களைக் கண்டறிய, புளூடூத்தை இயக்கவும்</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> முயற்சிகள் மீதமுள்ளன</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} முயற்சி மீதமுள்ளது}other{<ph name="ERROR_MESSAGE" /> {0} முயற்சிகள் மீதமுள்ளன}}</translation>
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
@@ -59,6 +61,7 @@
 <translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4932733599132424254">தேதி</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> இந்தப் பயனரை நிர்வகிக்கிறது. இது தொலைநிலையிலிருந்து அமைப்புகளை நிர்வகிக்கலாம், அத்துடன் பயனர் செயல்பாட்டையும் கண்காணிக்கலாம்.</translation>
 <translation id="520299634122159966">ஸ்கேனர்கள் எதுவும் இல்லை</translation>
 <translation id="5212543919916444558">உங்களுக்கு நான் உதவும் வகையில், உங்கள் திரையில் எதுவுமில்லை.
 என்னிடம் ஏதேனும் கேட்க, மைக்கைத் தட்டவும்.</translation>

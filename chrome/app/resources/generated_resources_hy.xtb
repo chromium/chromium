@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Անվտանգության բանալին կողպվել է, քանի որ PIN կոդի սխալ մուտքագրված փորձերը շատ էին։ Բանալին ապակողպելու համար հեռացրեք ու նորից տեղադրեք այն։</translation>
 <translation id="1137589305610962734">ժամանակավոր տվյալներ</translation>
 <translation id="1137673463384776352">Բացել հղումը <ph name="APP" /> հավելվածում</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Նոր ծանուցում}one{# նոր ծանուցում}other{# նոր ծանուցում}}</translation>
 <translation id="1139343347646843679">Չհաջողվեց կարգավորել Լինուքսը։ Կապվեք ձեր ադմինիստրատորի հետ։</translation>
 <translation id="1140351953533677694">Մուտք գործել ձեր Bluetooth և հաջորդական սարքեր</translation>
 <translation id="114036956334641753">Աուդիո և ենթագրեր</translation>
@@ -1673,6 +1674,7 @@
 <translation id="291056154577034373">ՉԿԱՐԴԱՑՎԱԾ</translation>
 <translation id="2910718431259223434">Սխալ առաջացավ։ Փորձեք նորից կամ կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="2913331724188855103">Թույլատրել կայքերին պահել և կարդալ քուքիների տվյալները (խորհուրդ է տրվում)</translation>
+<translation id="2915016304249900997">Էկրանի ցուցադրման ժամանակ ծանուցումների մանրամասները թաքցվում են</translation>
 <translation id="2915102088417824677">Դիտել գործողությունների մատյանը</translation>
 <translation id="2915873080513663243">Ավտոմատ սկանավորում</translation>
 <translation id="2916073183900451334">Tab ստեղնը սեղմելիս գունանշվում են հղումները և ձևադաշտերը</translation>
@@ -2443,6 +2445,7 @@
 <translation id="3819257035322786455">Պահուստավորում</translation>
 <translation id="3819261658055281761">Համակարգին չհաջողվեց պահել այս սարքի երկարաժամկետ API-ի մուտքի թոքենը:</translation>
 <translation id="3819800052061700452">&amp;Լիաէկրան</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ցույց տալ}one{Ցույց տալ բոլորը}other{Ցույց տալ բոլորը}}</translation>
 <translation id="3820749202859700794">SECG օվալաձև կոր secp521r1 (հայտնի է նաև որպես NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ընդլայնումը հաստատվեց}one{# ընդլայնում հաստատվեց}other{# ընդլայնում հաստատվեց}}</translation>
 <translation id="3822559385185038546">Այս միջնորդ սերվերը պարտադրաբար միացվել է ադմինիստրատորի կողմից</translation>
@@ -2833,6 +2836,7 @@
 <translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="428565720843367874">Այս ֆայլը ստուգելիս՝ հակավիրուսի ծրագիրն անսպասելիորեն խափանվեց:</translation>
 <translation id="4287099557599763816">Էկրանի ընթերցիչ</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ցույց տալ}one{Ցույց տալ բոլորը}other{Ցույց տալ բոլորը}}</translation>
 <translation id="4289372044984810120">Կառավարեք ձեր հաշիվներն այստեղ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Համատեսք</translation>
 <translation id="4295072614469448764">Հավելվածը հասանելի է ձեր տերմինալում: Հնարավոր է նաև պատկերակ լինի ձեր գործարկիչում:</translation>
@@ -6152,6 +6156,7 @@
 <translation id="820568752112382238">Հաճախ այցելած կայքեր</translation>
 <translation id="8206745257863499010">Բլյուզ</translation>
 <translation id="8206859287963243715">Բջջային</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Նոր ծանուցում}one{# նոր ծանուցում}other{# նոր ծանուցում}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Ներբեռնումն ընթացքում է}one{Ներբեռնումն ընթացքում է}other{Ներբեռնումներն ընթացքում են}}</translation>
 <translation id="8213449224684199188">Լուսանկարելու ռեժիմը միացավ</translation>
 <translation id="8213577208796878755">Մեկ այլ մատչելի սարք:</translation>

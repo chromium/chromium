@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Çok sayıda yanlış PIN girildiği için güvenlik anahtarı kilitlendi. Kilidi açmak için anahtarı çıkarıp tekrar takın.</translation>
 <translation id="1137589305610962734">geçici veriler</translation>
 <translation id="1137673463384776352">Bağlantıyı <ph name="APP" /> uygulamasında aç</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yeni Bildirim}other{# Yeni Bildirim}}</translation>
 <translation id="1139343347646843679">Linux yapılandırılırken bir hata oluştu. Lütfen yöneticinizle görüşün.</translation>
 <translation id="1140351953533677694">Bluetooth ve Seri cihazlarınıza erişme</translation>
 <translation id="114036956334641753">Ses ve altyazı</translation>
@@ -1672,6 +1673,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="291056154577034373">OKUNMAYANLAR</translation>
 <translation id="2910718431259223434">Bir hata oluştu. Lütfen tekrar deneyin veya cihaz sahibi ya da yöneticisiyle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Sitelerin, çerez verilerini kaydetmelerine ve okumalarına izin ver (önerilir)</translation>
+<translation id="2915016304249900997">Ekranınızı paylaşırken ayrıntılar gizlenir</translation>
 <translation id="2915102088417824677">Etkinlik günlüğünü göster</translation>
 <translation id="2915873080513663243">Otomatik tarama</translation>
 <translation id="2916073183900451334">Bir web sayfasında Sekme tuşuna basıldığında bağlantılar ve form alanları vurgulanır</translation>
@@ -2442,6 +2444,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3819257035322786455">Yedekleme</translation>
 <translation id="3819261658055281761">Sistem bu cihaza ait uzun vadeli API erişim jetonunu kaydedemedi.</translation>
 <translation id="3819800052061700452">Tam ek&amp;ran</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Göster}other{Tümünü göster}}</translation>
 <translation id="3820749202859700794">SECG eliptik eğri secp521r1 (önceki adı NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Bir uzantı onaylandı}other{# uzantı onaylandı}}</translation>
 <translation id="3822559385185038546">Bu proxy, yöneticiniz tarafından uygulanıyor</translation>
@@ -2832,6 +2835,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4285498937028063278">Sabitlemeyi kaldır</translation>
 <translation id="428565720843367874">Virüsten koruma yazılımı, bu dosyayı tararken beklenmedik bir şekilde başarısız oldu.</translation>
 <translation id="4287099557599763816">Ekran okuyucu</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Göster}other{Tümünü Göster}}</translation>
 <translation id="4289372044984810120">Hesaplarınızı buradan yönetin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Genel bakış</translation>
 <translation id="4295072614469448764">Uygulama sizin terminalinizde mevcut. Ayrıca Başlatıcınızda bir simge olabilir.</translation>
@@ -6150,6 +6154,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="820568752112382238">En çok ziyaret edilen siteler</translation>
 <translation id="8206745257863499010">Melodi</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yeni bildirim}other{# yeni bildirim}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{İndirme işlemi devam ediyor}other{İndirme işlemleri devam ediyor}}</translation>
 <translation id="8213449224684199188">Fotoğraf moduna girildi</translation>
 <translation id="8213577208796878755">Kullanılabilir bir cihaz daha var.</translation>

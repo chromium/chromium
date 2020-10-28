@@ -123,6 +123,7 @@
 <translation id="1136712381129578788">Həddindən çox yanlış PIN daxil edildiyinə görə güvənlik açarı kilidləndi. Kiliddən çıxarmaq üçün çıxarıb yenidən daxil edin.</translation>
 <translation id="1137589305610962734">müvəqqəti data</translation>
 <translation id="1137673463384776352">Linki <ph name="APP" /> tətbiqində açın</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yeni Bildiriş}other{# Yeni Bildiriş}}</translation>
 <translation id="1139343347646843679">Linux'u konfiqurasiya edərkən xəta baş verdi. İnzibatçınız ilə əlaqə saxlayın.</translation>
 <translation id="1140351953533677694">Bluetooth və Dövri cihazlarınıza daxil olun</translation>
 <translation id="114036956334641753">Audio və subtitrlar</translation>
@@ -1667,6 +1668,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="291056154577034373">OXUNMAMIŞ</translation>
 <translation id="2910718431259223434">Xəta baş verdi. Yenidən cəhd edin və ya cihaz sahibi və ya administrator ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Saytlara kuki datanı saxlamağa və oxumağa imkan verir (tövsiyə olunur)</translation>
+<translation id="2915016304249900997">Ekranınızı paylaşdığınız zaman detallar gizlədilir</translation>
 <translation id="2915102088417824677">Fəaliyyət qeydinə baxın</translation>
 <translation id="2915873080513663243">Avtomatik skan etmə</translation>
 <translation id="2916073183900451334">Ve səhifə başlıqlarında, həmçinin forma sahələrində Panel basılır</translation>
@@ -2437,6 +2439,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3819257035322786455">Yedəkləyin</translation>
 <translation id="3819261658055281761">Sistem bu cihazda uzunmüddətli API giriş açarını saxlaya bilmədi.</translation>
 <translation id="3819800052061700452">Tam ekran</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Göstərin}other{Hamısını göstərin}}</translation>
 <translation id="3820749202859700794">SECG oval əyrisi secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Artırma təsdiq edilib}other{# artırma təsdiq edilib}}</translation>
 <translation id="3822559385185038546">Bu proksi administrator tərəfindən icra olunur</translation>
@@ -2825,6 +2828,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4285498937028063278">Çıxarın</translation>
 <translation id="428565720843367874">Bu faylı skan edərkən antivirus dayandı.</translation>
 <translation id="4287099557599763816">Ekran oxuyucusu</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Göstərin}other{Hamısını göstərin}}</translation>
 <translation id="4289372044984810120">Hesablarınızı burada idarə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Baxış</translation>
 <translation id="4295072614469448764">Terminalda tətbiq əlçatandır. Başladıcınızda da işarə görünə bilər.</translation>
@@ -6140,6 +6144,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="820568752112382238">Ən çox daxil olduğunuz saytlar</translation>
 <translation id="8206745257863499010">Blyuz</translation>
 <translation id="8206859287963243715">Mobil</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yeni bildiriş}other{# yeni bildiriş}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Endirmə gözlənilir}other{Endirmə gözlənilir}}</translation>
 <translation id="8213449224684199188">Foto rejimi daxil edildi</translation>
 <translation id="8213577208796878755">Başqa əlçatan cihaz.</translation>

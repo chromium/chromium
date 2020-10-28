@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Khóa bảo mật đã bị khóa do bạn nhập sai mã PIN quá nhiều lần. Để mở khóa, hãy rút ra và cắm lại.</translation>
 <translation id="1137589305610962734">dữ liệu tạm thời</translation>
 <translation id="1137673463384776352">Mở liên kết trong <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Thông báo mới}other{# thông báo mới}}</translation>
 <translation id="1139343347646843679">Đã xảy ra lỗi khi định cấu hình Linux. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1140351953533677694">Truy cập thiết bị tuần tự và Bluetooth của bạn</translation>
 <translation id="114036956334641753">Âm thanh và phụ đề</translation>
@@ -1672,6 +1673,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="291056154577034373">CHƯA ĐỌC</translation>
 <translation id="2910718431259223434">Đã xảy ra lỗi. Vui lòng thử lại hoặc liên hệ với quản trị viên hay chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Cho phép trang web lưu và đọc dữ liệu cookie (được đề xuất)</translation>
+<translation id="2915016304249900997">Thông tin chi tiết sẽ bị ẩn trong khi bạn chia sẻ màn hình</translation>
 <translation id="2915102088417824677">Xem nhật ký hoạt động</translation>
 <translation id="2915873080513663243">Tự động quét</translation>
 <translation id="2916073183900451334">Bấm Thẻ trên liên kết đánh dấu của trang web, cũng như các trường biểu mẫu</translation>
@@ -2442,6 +2444,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3819257035322786455">Sao lưu</translation>
 <translation id="3819261658055281761">Hệ thống không lưu trữ được mã thông báo truy cập API dài hạn cho thiết bị này.</translation>
 <translation id="3819800052061700452">&amp;Toàn màn hình</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Hiển thị}other{Hiển thị tất cả}}</translation>
 <translation id="3820749202859700794">Đường cong elip SECG secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{1 tiện ích đã được phê duyệt}other{# tiện ích đã được phê duyệt}}</translation>
 <translation id="3822559385185038546">Proxy này được quản trị viên của bạn thực thi</translation>
@@ -2832,6 +2835,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="428565720843367874">Phần mềm chống vi-rút bị lỗi bất ngờ khi đang quét tệp này.</translation>
 <translation id="4287099557599763816">Trình đọc màn hình</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Hiển thị}other{Hiển thị tất cả}}</translation>
 <translation id="4289372044984810120">Quản lý các tài khoản của bạn tại đây. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Tổng quan</translation>
 <translation id="4295072614469448764">Ứng dụng này hiện đã có trong thiết bị của bạn. Ngoài ra, có thể có một biểu tượng trong Trình chạy.</translation>
@@ -6150,6 +6154,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="820568752112382238">Trang web truy cập nhiều nhất</translation>
 <translation id="8206745257863499010">Nốt nhạc xanh</translation>
 <translation id="8206859287963243715">Di động</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Thông báo mới}other{# thông báo mới}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Đang tải xuống}other{Đang tải xuống}}</translation>
 <translation id="8213449224684199188">Đã chuyển sang chế độ ảnh</translation>
 <translation id="8213577208796878755">Hiện có một thiết bị khác.</translation>

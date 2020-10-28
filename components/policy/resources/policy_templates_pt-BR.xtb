@@ -960,6 +960,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
        Se a política não for definida, as informações de métrica e dados de diagnóstico ficarão desativados nos dispositivos não gerenciados e ativados nos dispositivos gerenciados.</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
+<translation id="2455033019778127130">Usa o comportamento padrão do navegador, exibe os TOS e espera até eles serem aceitos pelo usuário.</translation>
 <translation id="2463034609187171371">Ativar pacotes de criptografia DHE em TLS</translation>
 <translation id="2463365186486772703">Localidade do aplicativo</translation>
 <translation id="2463832514638083341">Esta política controla a duração, em dias, do armazenamento de metadados de trabalhos de impressão no dispositivo.
@@ -1066,6 +1067,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       A definição da política especifica quais hosts de mensagens nativas não serão carregados. Um valor de <ph name="WILDCARD_VALUE" /> da lista de proibições significa que todos os hosts de mensagens nativas serão proibidos, a menos que tenham permissão explícita.
 
       Se a política for deixada sem definição, o <ph name="PRODUCT_NAME" /> carregará todos os hosts de mensagens nativas instalados.</translation>
+<translation id="2568488785376704318">Essa política está obsoleta. Use a <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2571066091915960923">Ativa ou desativa o proxy de compactação de dados e impede que os usuários alterem essa configuração.
 
       Se você ativar ou desativar essa configuração, os usuários não poderão alterá-la ou substituí-la.
@@ -1273,6 +1275,11 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se você ativar essa configuração, a Visualização de impressão utilizará a impressora padrão do sistema operacional como a escolha padrão.</translation>
 <translation id="285627849510728211">Definir a configuração do dia para o modo avançado de carregamento de bateria</translation>
 <translation id="2856674246949497058">Faça a reversão e permaneça na versão de destino se a versão do SO for mais recente que a de destino. Execute um Powerwash durante o processo.</translation>
+<translation id="2857886155146264716">Definir a política permite criar uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados na tela de login. Cada item na lista precisa ter um campo "<ph name="DEVICES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que a política seja válida. Cada item no campo "<ph name="DEVICES_FIELD_NAME" />" pode ter um campo "<ph name="VENDOR_ID_FIELD_NAME" />" e "<ph name="PRODUCT_ID_FIELD_NAME" />". A omissão do campo "<ph name="VENDOR_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo. A omissão do campo "<ph name="PRODUCT_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "<ph name="PRODUCT_ID_FIELD_NAME" />" que não tiver um campo "<ph name="VENDOR_ID_FIELD_NAME" />" será inválida.
+
+      O modelo de permissão de USB usa o URL solicitante e o de incorporação para permitir que o URL solicitante acesse o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante está carregado em um iframe. Portanto, o campo "<ph name="URLS_FIELD_NAME" />" pode conter até duas strings delimitadas por vírgula para especificar o URL solicitante e o de incorporação, respectivamente. Se apenas um URL for especificado, o acesso aos dispositivos USB correspondentes será concedido quando o URL do site solicitante coincidir com esse, independentemente do status de incorporação. Os URLs precisam ser válidos. Caso contrário, a política será ignorada.
+
+      Se a política não for definida, o valor padrão global será usado para todos os sites (sem acesso automático).</translation>
 <translation id="2869762730352628426">Ativar clique automático na tela de login</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="2874209944580848064">Observação para dispositivos <ph name="PRODUCT_OS_NAME" /> compatíveis com apps Android:</translation>
@@ -2216,6 +2223,11 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o clique automático ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="4214536984333857724">Se esta configuração estiver ativada, as solicitações de autenticação gnubby serão transmitidas por proxy por uma conexão de host remoto.
+
+          Observe que, para funcionar adequadamente, este recurso precisa de outros componentes que não estão disponíveis fora do ambiente da Rede do Google.
+
+          Se esta configuração estiver desativada, as solicitações de autenticação gnubby não serão transmitidas por proxy.</translation>
 <translation id="4215197846797661927">Definir a configuração do dia para o modo avançado de carregamento de bateria.
 
           Esta política será usada apenas se <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_NAME" /> estiver definida como verdadeira.
@@ -2378,6 +2390,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="4554651132977135445">Modo de processamento loopback da política do usuário</translation>
 <translation id="4555850956567117258">Ativar declaração remota para o usuário</translation>
 <translation id="4557134566541205630">URL da página "Nova guia" do provedor de pesquisa padrão</translation>
+<translation id="4558166110367609724">Ignora os TOS automaticamente e carrega o navegador.</translation>
 <translation id="4562165737444703281">Permitir que os usuários [ativem/configurem] o encaminhamento de portas do Crostini</translation>
 <translation id="456686782928669977">Esta política controla o carregamento das regras da política SiteList do <ph name="IE_PRODUCT_NAME" />.
 
@@ -2542,7 +2555,27 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="487460824085252184">Migrar automaticamente, sem autorização do usuário.</translation>
 <translation id="4874982543810021567">Bloquear o WebUSB nesses sites</translation>
 <translation id="4876805738539874299">Versão máxima de SSL ativada</translation>
+<translation id="487928067861956387">Configura os nomes de domínio de host necessários que serão impostos em hosts de acesso remoto e impede que os usuários façam alterações.
+
+          Se esta configuração for ativada e definida para um ou mais domínios, os hosts poderão ser compartilhados apenas por meio de contas registradas em um dos nomes de domínio especificados.
+
+          Se a configuração for desativada, não for definida ou for definida como uma lista vazia, os hosts poderão ser compartilhados por meio de qualquer conta.
+
+          Esta configuração substituirá a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se ela estiver presente.
+
+          Veja também: <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="4887274746092315609">Ativa uma página para alteração de senha durante a sessão para usuários do SAML</translation>
+<translation id="4892647988357350237">Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", a caixa de diálogo de Termos de Serviço não aparecerá na primeira execução e nas execuções subsequentes. Se ela for definida como "<ph name="STANDARD_TOS_DIALOG" />" ou não for definida, a caixa de diálogo de Termos de Serviço aparecerá na primeira execução. As outras ressalvas são as seguintes:
+
+      - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de gerenciamento unificado de endpoints.
+
+      - Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", a BrowserSignin não terá efeito.
+
+      - Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", as métricas​ não serão enviadas para o servidor.
+
+      - Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", o navegador terá funcionalidade limitada.
+
+      - Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", os administradores precisarão informar isso para os usuários finais do dispositivo.</translation>
 <translation id="4894290482695457375">A menos que <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> esteja definida como desativada, definir <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> como ativada irá conectar o <ph name="PRODUCT_NAME" /> aos dispositivos Cast em todos os endereços IP, não apenas no endereço particular RFC1918/RFC4193.
 
       Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193.
@@ -2783,6 +2816,15 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Aqui, "versão" pode ser uma versão exata, como "61.0.3163.120", ou um prefixo de versão, como "61.0".  </translation>
 <translation id="5247006254130721952">Bloquear downloads perigosos</translation>
+<translation id="5249303875508803168">Configura os nomes de domínio de cliente necessários que serão impostos aos clientes de acesso remoto e impede os usuários de modificá-los.
+
+          Se a configuração for ativada e definida para um ou mais domínios, apenas clientes de um dos domínios especificados poderão se conectar ao host.
+
+          Se a configuração for desativada, não for definida ou for definida como uma lista vazia, a política padrão do tipo de conexão será aplicada. Para assistência remota, isso permite que clientes de qualquer domínio se conectem ao host. Para acesso remoto a qualquer momento, apenas o proprietário do host pode se conectar.
+
+          Esta configuração substituirá a <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, se ela estiver presente.
+
+          Veja também: <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="5249453807420671499">Os usuários podem adicionar contas do Kerberos</translation>
 <translation id="5252995168844634755">Se a política for definida como verdadeira, a área de trabalho unificada será ativada e permitirá que aplicativos apareçam em várias telas. Os usuários poderão desativar essa configuração para usarem as telas individualmente.
 
@@ -2979,6 +3021,13 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se esta política não for definida ou for definida como "Permitir uploads e downloads", o <ph name="PRODUCT_NAME" /> se comportará de acordo com as regras descritas em "Permitir downloads" e "Permitir uploads".
       </translation>
+<translation id="5440507358161332552">Se a política for definida, será possível criar uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e de fornecedor especificados. Cada item na lista precisa ter um campo "<ph name="DEVICES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que a política seja válida. Cada item no campo "<ph name="DEVICES_FIELD_NAME" />" pode ter um campo "<ph name="VENDOR_ID_FIELD_NAME" />" e "<ph name="PRODUCT_ID_FIELD_NAME" />". A omissão do campo "<ph name="VENDOR_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo. A omissão do campo "<ph name="PRODUCT_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "<ph name="PRODUCT_ID_FIELD_NAME" />" que não tiver um campo "<ph name="VENDOR_ID_FIELD_NAME" />" será inválida.
+
+      O modelo de permissão de USB usa o URL solicitante e o de incorporação para permitir que o URL solicitante acesse o dispositivo USB. O URL solicitante pode ser diferente do URL de incorporação quando o site solicitante está carregado em um iframe. Portanto, o campo "<ph name="URLS_FIELD_NAME" />" pode conter até duas strings delimitadas por vírgula para especificar o URL solicitante e o de incorporação, respectivamente. Se apenas um URL for especificado, o acesso aos dispositivos USB correspondentes será concedido quando o URL do site solicitante coincidir com esse, independentemente do status de incorporação. Os URLs precisam ser válidos. Caso contrário, a política será ignorada.
+
+      Se a política não tiver definição, a <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
+
+      Os padrões de URL desta política não podem entrar em conflito com os configurados pela <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="5442026853063570579">Esta política também controla o acesso às Opções do desenvolvedor Android. Se esta política for definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar as Opções do desenvolvedor. Se for definida como falsa ou se não for definida, os usuários poderão acessar as Opções do desenvolvedor tocando sete vezes no número da versão no app de configurações do Android.</translation>
 <translation id="5445596354079213552">Esta política só será eficaz quando o dispositivo tiver atingido a data de expiração da atualização automática e não atender mais os requisitos mínimos permitidos pela versão do <ph name="PRODUCT_OS_NAME" /> definidos pela <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
@@ -3216,6 +3265,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Se a política for definida, será possível iniciar vídeos automaticamente (sem o consentimento do usuário) com conteúdo de áudio no <ph name="PRODUCT_NAME" />. Se a política <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> for definida como verdadeira, esta política não terá efeito. Se a política <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> for definida como falsa, todos os padrões de URL definidos nesta política terão permissão para serem iniciados. Se a política for modificada enquanto o <ph name="PRODUCT_NAME" /> estiver em execução, ela se aplicará apenas a guias abertas recentemente.
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="5749396052108288586">Essa política está obsoleta. Use a <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Ativar atalhos de recursos de acessibilidade na tela de login</translation>
 <translation id="5755002458331714762"> As APIs Web Components v0 (Shadow DOM v0, Custom Elements v0 e HTML Imports) se tornaram obsoletas em 2018 e estão desativadas por padrão desde o M80. Esta política permite que esses recursos sejam seletivamente reativados até o M84.
 
@@ -3787,6 +3837,19 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Observação: para instâncias do Windows® que não estão associadas a um domínio do <ph name="MS_AD_NAME" />, a instalação forçada é limitada a apps e extensões listados na Chrome Web Store.</translation>
 <translation id="6598235178374410284">Imagem do avatar do usuário</translation>
 <translation id="6603004149426829878">Sempre enviar qualquer sinal de localização disponível para o servidor ao determinar o fuso horário</translation>
+<translation id="660567106648774919">Esta política está obsoleta. Use a <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Definir esta política como "Desativada" fará com que a caixa de diálogo de Termos de Serviço não apareça na primeira execução e nas execuções subsequentes. Definir a política como "Ativada" ou deixá-la sem definição fará com que a caixa de diálogo de Termos de Serviço apareça na primeira execução. As outras ressalvas são as seguintes:
+
+      - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de gerenciamento unificado de endpoints.
+
+      - Se esta política for desativada, a BrowserSignin não terá efeito.
+
+      - Se esta política for desativada, as métricas​ não serão enviadas para o servidor.
+
+      - Se esta política for desativada, o navegador terá funcionalidade limitada.
+
+      - Se esta política for desativada, os administradores precisarão informar isso para os usuários finais do dispositivo.</translation>
 <translation id="6614020900120353107">Controla se o cliente DNS integrado é usado no <ph name="PRODUCT_NAME" />.
 
       Isso não afeta quais servidores DNS são usados, somente a pilha de software que é usada para se comunicar com eles. Por exemplo, se um sistema operacional for configurado para usar um servidor DNS empresarial, o mesmo servidor será usado pelo cliente DNS integrado. No entanto, é possível que o cliente DNS integrado interaja com servidores de maneiras diferentes usando protocolos de DNS mais modernos, como DNS sobre TLS.
@@ -4135,6 +4198,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechará a guia depois de mudar para um navegador alternativo, mesmo se essa for a última guia. Isso faz com que o <ph name="PRODUCT_NAME" /> seja completamente fechado.</translation>
 <translation id="7019805045859631636">Rápida</translation>
+<translation id="7025332601572838001">Como configurar o comportamento dos TOS durante a primeira execução do CCT</translation>
 <translation id="7026351325994257733">Permitir que as configurações de rede Wi-Fi sejam sincronizadas entre dispositivos <ph name="PRODUCT_OS_NAME" /> e um smartphone Android conectado.</translation>
 <translation id="7027785306666625591">Configura o gerenciamento de energia no <ph name="PRODUCT_OS_NAME" />.
 
@@ -4942,6 +5006,13 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8133152694354699657">Se a política for definida como verdadeira ou não for definida, a opção "Tocar para pesquisar" ficará disponível para o usuário, e ele poderá ativar ou desativar esse recurso.
 
       Se ela for definida como falsa, o recurso será totalmente desativado.</translation>
+<translation id="8136906469922284163">Se a política for definida como verdadeira, páginas poderão mostrar pop-ups enquanto são descarregadas.
+
+      Se ela for definida como falsa ou não for definida, páginas não poderão mostrar pop-ups enquanto são descarregadas.
+
+      Esta política foi removida no Chrome 88 e, se definida, será ignorada.
+
+      Consulte https://www.chromestatus.com/feature/5989473649164288 (em inglês).</translation>
 <translation id="8141795997560411818">Esta política não impede que os usuários usem o app Google Drive para Android. Para impedir o acesso ao Google Drive, bloqueie também a instalação do app Google Drive para Android.</translation>
 <translation id="8142894094385450823">Definir as localidades recomendadas para uma sessão gerenciada</translation>
 <translation id="8146727383888924340">Permitir que os usuários resgatem ofertas pelo Registro do Chrome OS</translation>

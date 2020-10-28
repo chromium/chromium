@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">คีย์ความปลอดภัยถูกล็อกเพราะคุณป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป หากต้องการปลดล็อก ให้ถอดคีย์ความปลอดภัยออกแล้วเสียบกลับเข้าไปใหม่</translation>
 <translation id="1137589305610962734">ข้อมูลชั่วคราว</translation>
 <translation id="1137673463384776352">เปิดลิงก์ใน <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{การแจ้งเตือนใหม่}other{การแจ้งเตือนใหม่ # รายการ}}</translation>
 <translation id="1139343347646843679">เกิดข้อผิดพลาดขณะกำหนดค่า Linux โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="1140351953533677694">เข้าถึงอุปกรณ์บลูทูธและอุปกรณ์ซีเรียล</translation>
 <translation id="114036956334641753">เสียงและคำบรรยายวิดีโอ</translation>
@@ -1672,6 +1673,7 @@
 <translation id="291056154577034373">ยังไม่อ่าน</translation>
 <translation id="2910718431259223434">มีข้อผิดพลาดเกิดขึ้น โปรดลองอีกครั้งหรือติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="2913331724188855103">อนุญาตให้เว็บไซต์บันทึกและอ่านข้อมูลคุกกี้ (แนะนำ)</translation>
+<translation id="2915016304249900997">รายละเอียดจะซ่อนอยู่ขณะที่คุณแชร์หน้าจอ</translation>
 <translation id="2915102088417824677">ดูบันทึกกิจกรรม</translation>
 <translation id="2915873080513663243">สแกนอัตโนมัติ</translation>
 <translation id="2916073183900451334">การกดแท็บบนหน้าเว็บจะเน้นลิงก์ และฟิลด์ของฟอร์ม</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3819257035322786455">การสำรองข้อมูล</translation>
 <translation id="3819261658055281761">ระบบจัดเก็บโทเค็นเพื่อการเข้าถึง API ในระยะยาวสำหรับอุปกรณ์นี้ไม่สำเร็จ</translation>
 <translation id="3819800052061700452">เ&amp;ต็มหน้าจอ</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{แสดง}other{แสดงทั้งหมด}}</translation>
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (เรียกอีกอย่างว่า NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ส่วนขยาย 1 รายการได้รับการอนุมัติ}other{ส่วนขยาย # รายการได้รับการอนุมัติ}}</translation>
 <translation id="3822559385185038546">ผู้ดูแลระบบของคุณกำหนดให้ใช้พร็อกซีนี้</translation>
@@ -2832,6 +2835,7 @@
 <translation id="4285498937028063278">เลิกตรึง</translation>
 <translation id="428565720843367874">ซอฟต์แวร์ป้องกันไวรัสล้มเหลวอย่างไม่คาดคิดในขณะสแกนไฟล์นี้</translation>
 <translation id="4287099557599763816">โปรแกรมอ่านหน้าจอ</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{แสดง}other{แสดงทั้งหมด}}</translation>
 <translation id="4289372044984810120">จัดการบัญชีได้ที่นี่ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="4295072614469448764">แอปพร้อมให้ใช้งานในเทอร์มินัลของคุณ และอาจจะมีไอคอนใน Launcher ด้วย</translation>
@@ -6150,6 +6154,7 @@
 <translation id="820568752112382238">เว็บไซต์ที่เข้าชมบ่อยที่สุด</translation>
 <translation id="8206745257863499010">บลูซี</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{การแจ้งเตือนใหม่}other{การแจ้งเตือนใหม่ # รายการ}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{อยู่ระหว่างการดาวน์โหลด}other{อยู่ระหว่างการดาวน์โหลด}}</translation>
 <translation id="8213449224684199188">เข้าสู่โหมดรูปภาพแล้ว</translation>
 <translation id="8213577208796878755">อุปกรณ์อื่นอีกหนึ่งอุปกรณ์ที่พร้อมใช้งาน</translation>
