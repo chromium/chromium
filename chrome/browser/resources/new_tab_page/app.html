@@ -281,12 +281,12 @@
       theme="[[theme_.searchBox]]" shown$="[[realboxShown_]]"
       hidden$="[[!realboxEnabled_]]">
   </ntp-realbox>
-  <ntp-most-visited id="mostVisited" dark$="[[theme_.isDark]]"
-      use-white-add-icon$="[[theme_.shortcutUseWhiteAddIcon]]"
-      use-title-pill$="[[theme_.shortcutUseTitlePill]]">
-  </ntp-most-visited>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
+      <ntp-most-visited id="mostVisited" dark$="[[theme_.isDark]]"
+          use-white-add-icon$="[[theme_.shortcutUseWhiteAddIcon]]"
+          use-title-pill$="[[theme_.shortcutUseTitlePill]]">
+      </ntp-most-visited>
       <ntp-middle-slot-promo
           on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_" hidden>
       </ntp-middle-slot-promo>

@@ -85,7 +85,7 @@ export class BrowserProxy {
    */
   waitForLazyRender() {
     return new Promise((resolve, reject) => {
-      setTimeout(resolve, 50);
+      requestIdleCallback(resolve);
     });
   }
 

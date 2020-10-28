@@ -5,6 +5,7 @@
 import './strings.m.js';
 import './realbox_button.js';
 import './realbox_match.js';
+import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';

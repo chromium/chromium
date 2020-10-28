@@ -12,9 +12,15 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_JS"
+      <include name="IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_ROLLUP_JS"
           file="${root_gen_dir}/chrome/browser/resources/new_tab_page/new_tab_page.rollup.js"
           use_base_dir="false" type="BINDATA" />
+      <include name="IDR_NEW_TAB_PAGE_LAZY_LOAD_ROLLUP_JS"
+          file="${root_gen_dir}\chrome\browser\resources\new_tab_page\lazy_load.rollup.js"
+          type="BINDATA" use_base_dir="false" />
+      <include name="IDR_NEW_TAB_PAGE_SHARED_ROLLUP_JS"
+          file="${root_gen_dir}\chrome\browser\resources\new_tab_page\shared.rollup.js"
+          type="BINDATA" use_base_dir="false" />
       <part file="new_tab_page_resources_common.grdp" />
     </includes>
   </release>

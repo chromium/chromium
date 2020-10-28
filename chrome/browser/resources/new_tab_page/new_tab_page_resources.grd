@@ -13,7 +13,9 @@
   <release seq="1">
     <includes>
       <include name="IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_JS"
-          file="new_tab_page.js" type="BINDATA" compress="false" preprocess="true"/>
+          file="new_tab_page.js" type="BINDATA" compress="false" />
+      <include name="IDR_NEW_TAB_PAGE_LAZY_LOAD_JS"
+          file="lazy_load.js" type="BINDATA" compress="false" preprocess="true"/>
       <include name="IDR_NEW_TAB_PAGE_APP_JS"
           file="${root_gen_dir}/chrome/browser/resources/new_tab_page/app.js"
           use_base_dir="false" type="BINDATA" compress="false"
@@ -27,6 +29,8 @@
       <include name="IDR_NEW_TAB_PAGE_CUSTOMIZE_DIALOG_JS"
           file="${root_gen_dir}/chrome/browser/resources/new_tab_page/customize_dialog.js"
           use_base_dir="false" type="BINDATA" compress="false" />
+      <include name="IDR_NEW_TAB_PAGE_CUSTOMIZE_DIALOG_TYPES_JS"
+          file="customize_dialog_types.js" type="BINDATA" compress="false" />
       <include name="IDR_NEW_TAB_PAGE_VOICE_SEARCH_OVERLAY_JS"
           file="${root_gen_dir}/chrome/browser/resources/new_tab_page/voice_search_overlay.js"
           use_base_dir="false" type="BINDATA" compress="false" />

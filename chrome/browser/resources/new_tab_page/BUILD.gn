@@ -20,6 +20,7 @@ js_type_check("closure_compile") {
     ":doodle_share_dialog",
     ":fakebox",
     ":iframe",
+    ":lazy_load",
     ":logo",
     ":new_tab_page",
     ":one_google_bar_api",
@@ -43,11 +44,19 @@ js_library("new_tab_page") {
     ":app",
     ":background_manager",
     ":browser_proxy",
-    ":customize_dialog",
     ":promo_browser_command_proxy",
     ":utils",
     "modules:module_descriptor",
     "modules:module_registry",
+  ]
+}
+
+js_library("lazy_load") {
+  deps = [
+    ":customize_dialog",
+    ":middle_slot_promo",
+    ":most_visited",
+    ":voice_search_overlay",
     "modules/dummy:module",
     "modules/kaleidoscope:module",
   ]
@@ -67,8 +76,7 @@ js_library("app") {
   deps = [
     ":background_manager",
     ":browser_proxy",
-    ":middle_slot_promo",
-    ":most_visited",
+    ":customize_dialog_types",
     ":one_google_bar_api",
     ":promo_browser_command_proxy",
     "modules:module_wrapper",
@@ -77,6 +85,7 @@ js_library("app") {
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
   ]
 }
 
@@ -111,6 +120,7 @@ js_library("most_visited") {
 js_library("customize_dialog") {
   deps = [
     ":customize_backgrounds",
+    ":customize_dialog_types",
     ":customize_shortcuts",
     ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -120,8 +130,13 @@ js_library("customize_dialog") {
   ]
 }
 
+js_library("customize_dialog_types") {
+}
+
 js_library("customize_backgrounds") {
   deps = [
+    ":browser_proxy",
+    ":customize_dialog_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -275,13 +290,15 @@ if (optimize_webui) {
     in_folder = "./"
     out_folder = "$target_gen_dir/$preprocess_folder"
     in_files = [
+      "background_manager.js",
+      "browser_proxy.js",
+      "img.js",
+      "lazy_load.js",
+      "customize_dialog_types.js",
       "new_tab_page.js",
       "one_google_bar_api.js",
       "promo_browser_command_proxy.js",
-      "img.js",
-      "browser_proxy.js",
       "utils.js",
-      "background_manager.js",
     ]
   }
 
@@ -322,8 +339,15 @@ if (optimize_webui) {
       "modules:preprocess",
       "modules:preprocess_gen",
     ]
-    js_module_in_files = [ "new_tab_page.js" ]
-    js_out_files = [ "new_tab_page.rollup.js" ]
+    js_module_in_files = [
+      "new_tab_page.js",
+      "lazy_load.js",
+    ]
+    js_out_files = [
+      "new_tab_page.rollup.js",
+      "lazy_load.rollup.js",
+      "shared.rollup.js",
+    ]
     excludes = [
       "chrome://resources/js/cr.m.js",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",

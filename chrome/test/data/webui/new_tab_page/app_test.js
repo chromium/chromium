@@ -382,18 +382,20 @@ suite('NewTabPageAppTest', () => {
     const theme = createTheme();
     theme.shortcutUseWhiteAddIcon = true;
     testProxy.callbackRouterRemote.setTheme(theme);
-    assertFalse(app.$.mostVisited.hasAttribute('use-white-add-icon'));
+    const mostVisited = $$(app, '#mostVisited');
+    assertFalse(mostVisited.hasAttribute('use-white-add-icon'));
     await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(app.$.mostVisited.hasAttribute('use-white-add-icon'));
+    assertTrue(mostVisited.hasAttribute('use-white-add-icon'));
   });
 
   test('theme updates use title pill', async () => {
     const theme = createTheme();
     theme.shortcutUseTitlePill = true;
     testProxy.callbackRouterRemote.setTheme(theme);
-    assertFalse(app.$.mostVisited.hasAttribute('use-title-pill'));
+    const mostVisited = $$(app, '#mostVisited');
+    assertFalse(mostVisited.hasAttribute('use-title-pill'));
     await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(app.$.mostVisited.hasAttribute('use-title-pill'));
+    assertTrue(mostVisited.hasAttribute('use-title-pill'));
   });
 
   test('executes promo browser command', async () => {

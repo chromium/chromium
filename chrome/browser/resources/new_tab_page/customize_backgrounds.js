@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog.js';
+import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog_types.js';
 
 /** Element that lets the user configure the background. */
 class CustomizeBackgroundsElement extends PolymerElement {

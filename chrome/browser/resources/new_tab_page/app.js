@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
-import './middle_slot_promo.js';
-import './most_visited.js';
-import './customize_dialog.js';
-import './voice_search_overlay.js';
 import './iframe.js';
 import './fakebox.js';
 import './realbox.js';
@@ -26,7 +22,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {BackgroundManager} from './background_manager.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog.js';
+import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog_types.js';
 import {ModuleDescriptor} from './modules/module_descriptor.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {oneGoogleBarApi} from './one_google_bar_api.js';
@@ -40,6 +36,14 @@ import {$$} from './utils.js';
  * }}
  */
 let CommandData;
+
+// Adds a <script> tag that holds the lazy loaded code.
+function ensureLazyLoaded() {
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.src = './lazy_load.js';
+  document.body.appendChild(script);
+}
 
 class AppElement extends PolymerElement {
   static get is() {
@@ -349,6 +353,7 @@ class AppElement extends PolymerElement {
     super.ready();
     // Let the browser breath and then render remaining elements.
     BrowserProxy.getInstance().waitForLazyRender().then(() => {
+      ensureLazyLoaded();
       this.lazyRender_ = true;
     });
     this.printPerformance_();
@@ -834,7 +839,8 @@ class AppElement extends PolymerElement {
     }
     const onResize = () => {
       const promoElement = $$(this, 'ntp-middle-slot-promo');
-      const hidePromo = this.$.mostVisited.getBoundingClientRect().bottom >=
+      const hidePromo =
+          $$(this, '#mostVisited').getBoundingClientRect().bottom >=
           promoElement.offsetTop;
       promoElement.style.visibility = hidePromo ? 'hidden' : 'visible';
     };

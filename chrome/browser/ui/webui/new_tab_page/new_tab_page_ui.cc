@@ -261,7 +261,11 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                           IDR_NEW_TAB_PAGE_FOO_MOJO_LITE_JS);
 #endif
 #if BUILDFLAG(OPTIMIZE_WEBUI)
-  source->AddResourcePath("new_tab_page.js", IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_JS);
+  source->AddResourcePath("new_tab_page.js",
+                          IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_ROLLUP_JS);
+  source->AddResourcePath("shared.rollup.js",
+                          IDR_NEW_TAB_PAGE_SHARED_ROLLUP_JS);
+  source->AddResourcePath("lazy_load.js", IDR_NEW_TAB_PAGE_LAZY_LOAD_ROLLUP_JS);
 #endif  // BUILDFLAG(OPTIMIZE_WEBUI)
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),

@@ -14,7 +14,7 @@ import './app.js';
 
 export {BackgroundManager} from './background_manager.js';
 export {BrowserProxy} from './browser_proxy.js';
-export {BackgroundSelectionType} from './customize_dialog.js';
+export {BackgroundSelectionType} from './customize_dialog_types.js';
 export {ImgElement} from './img.js';
 // <if expr="not is_official_build">
 export {FooProxy} from './modules/dummy/foo_proxy.js';
