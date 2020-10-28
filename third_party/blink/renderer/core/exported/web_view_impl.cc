@@ -508,9 +508,12 @@ void WebViewImpl::CloseWindowSoon() {
   // DestroyView IPC. So instead, post a message back to the message loop, which
   // won't run until the JS is complete, and then the
   // RouteCloseEvent/RequestClose request can be sent.
-  Thread::MainThread()->GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&WebViewImpl::DoDeferredCloseWindowSoon,
-                           weak_ptr_factory_.GetWeakPtr()));
+  GetPage()
+      ->GetPageScheduler()
+      ->GetAgentGroupScheduler()
+      .DefaultTaskRunner()
+      ->PostTask(FROM_HERE, WTF::Bind(&WebViewImpl::DoDeferredCloseWindowSoon,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebViewImpl::DoDeferredCloseWindowSoon() {
@@ -541,7 +544,9 @@ WebViewImpl::WebViewImpl(
       maximum_zoom_level_(PageZoomFactorToZoomLevel(kMaximumPageZoomFactor)),
       does_composite_(does_composite),
       fullscreen_controller_(std::make_unique<FullscreenController>(this)),
-      receiver_(this, std::move(page_handle)) {
+      receiver_(this,
+                std::move(page_handle),
+                agent_group_scheduler.DefaultTaskRunner()) {
   if (!web_view_client_)
     DCHECK(!does_composite_);
   Page::PageClients page_clients;
@@ -2638,7 +2643,11 @@ void WebViewImpl::DidAttachLocalMainFrame() {
   local_frame->WasAttachedAsLocalMainFrame();
 
   local_frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-      local_main_frame_host_remote_.BindNewEndpointAndPassReceiver());
+      local_main_frame_host_remote_.BindNewEndpointAndPassReceiver(
+          GetPage()
+              ->GetPageScheduler()
+              ->GetAgentGroupScheduler()
+              .DefaultTaskRunner()));
 
   if (does_composite_) {
     // When attaching a local main frame, set up any state on the compositor.
@@ -2661,7 +2670,11 @@ void WebViewImpl::DidAttachRemoteMainFrame() {
   remote_frame->WasAttachedAsRemoteMainFrame();
 
   remote_frame->GetRemoteAssociatedInterfaces()->GetInterface(
-      remote_main_frame_host_remote_.BindNewEndpointAndPassReceiver());
+      remote_main_frame_host_remote_.BindNewEndpointAndPassReceiver(
+          GetPage()
+              ->GetPageScheduler()
+              ->GetAgentGroupScheduler()
+              .DefaultTaskRunner()));
 }
 
 void WebViewImpl::DidDetachLocalMainFrame() {
