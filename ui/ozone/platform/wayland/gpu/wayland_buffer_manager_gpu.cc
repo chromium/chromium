@@ -63,9 +63,12 @@ void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
                                            gfx::SwapResult swap_result) {
   base::AutoLock scoped_lock(lock_);
   DCHECK(io_thread_runner_->BelongsToCurrentThread());
-  DCHECK_EQ(commit_thread_runners_.count(widget), 1u);
+  DCHECK_LE(commit_thread_runners_.count(widget), 1u);
   // Return back to the same thread where the commit request came from.
-  commit_thread_runners_.find(widget)->second->PostTask(
+  auto it = commit_thread_runners_.find(widget);
+  if (it == commit_thread_runners_.end())
+    return;
+  it->second->PostTask(
       FROM_HERE,
       base::BindOnce(&WaylandBufferManagerGpu::SubmitSwapResultOnOriginThread,
                      base::Unretained(this), widget, buffer_id, swap_result));
@@ -77,9 +80,12 @@ void WaylandBufferManagerGpu::OnPresentation(
     const gfx::PresentationFeedback& feedback) {
   base::AutoLock scoped_lock(lock_);
   DCHECK(io_thread_runner_->BelongsToCurrentThread());
-  DCHECK_EQ(commit_thread_runners_.count(widget), 1u);
+  DCHECK_LE(commit_thread_runners_.count(widget), 1u);
   // Return back to the same thread where the commit request came from.
-  commit_thread_runners_.find(widget)->second->PostTask(
+  auto it = commit_thread_runners_.find(widget);
+  if (it == commit_thread_runners_.end())
+    return;
+  it->second->PostTask(
       FROM_HERE,
       base::BindOnce(&WaylandBufferManagerGpu::SubmitPresentationOnOriginThread,
                      base::Unretained(this), widget, buffer_id, feedback));
