@@ -123,10 +123,29 @@
 #   Note that 'chrome_frame' has been deprecated.
 #
 # Annotations:
-#   Additional information is specified under keys 'features' and
-#   'example_value'. These are used in the generated documentation and example
-#   policy configuration files. Examples must cover the entire schema, i.e. use
-#   every defined property at least once.
+#   'example_value' is used in the generated documentation and example policy
+#   configuration files. Examples must cover the entire schema, i.e. use every
+#   defined property at least once.
+#
+#   'default' is used to provide a machine readable way of indicating the
+#   behavior of the controlled setting/feature when the policy is not set. For
+#   example, if 'default' is set to True, it documents that when the policy is
+#   not set, the feature controlled by the policy will behave in the same way
+#   it would behave if the policy was set to True.
+#   This field is only used for policies of type 'int', 'main', 'string-enum',
+#   or 'int-enum'. Other policy types are assumed to have a default equal to
+#   an empty string or empty list. If the default value can't be expressed with
+#   the given type and is equivalent to unset, it should be represent with None.
+#   For example, this would be used for a boolean policy where unset means the
+#   user can turn the feature on and off, while a set policy will force the
+#   feature to always be on or off.
+#   Note that this is different from 'default_for_enterprise_users', as that
+#   flag sets a policy value for managed users if the policy is not set by some
+#   other policy source (such as cloud policy). It is also different from
+#   'default_for_managed_devices_doc_only', which documents an explicitly
+#   implemented default policy value for managed devices.
+#
+#   Additional information is specified under the 'features' key:
 #   'dynamic_refresh' controls if the generated documentation should state that
 #   the policy supports dynamic refresh or not. Supporting dynamic refresh means
 #   that Chrome respects the changes to the policy immediately, without the need
@@ -7823,6 +7842,7 @@
         'per_profile': False,
       },
       'example_value': 32,
+      'default': 32,
       'id': 92,
       'caption': '''Maximal number of concurrent connections to the proxy server''',
       'tags': [],
@@ -17095,6 +17115,7 @@
         'per_profile': True,
       },
       'example_value': True,
+      'default': True,
       'id': 404,
       'caption': '''Abusive Experience Intervention Enforce''',
       'tags': [],
@@ -19816,6 +19837,7 @@
         'per_profile': True,
       },
       'example_value': 'Default',
+      'default': 'Default',
       'id': 729,
       'caption': '''Mode of the Assistant onboarding experience''',
       'desc':  '''This policy controls the mode of the Assistant onboarding experience.
@@ -20882,6 +20904,7 @@
         'per_profile': True
       },
       'example_value': 1,
+      'default': 0,
       'id': 579,
       'caption': '''Allow users to manage installed CA certificates.''',
       'desc': '''Setting the policy to All (0) or leaving it unset lets users edit trust settings for all CA certificates, remove user-imported certificates, and import certificates using Certificate Manager. Setting the policy to UserOnly (1) lets users manage only user-imported certificates, but not change trust settings of built-in certificates. Setting it to None (2) lets users view (not manage) CA certificates.''',

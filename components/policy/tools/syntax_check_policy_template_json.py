@@ -477,6 +477,48 @@ class PolicyTemplateChecker(object):
                       "Field '%s' not present in device policy proto." %
                       (policy, field))
 
+  def _NeedsDefault(self, policy):
+    return policy.get('type') in ('int', 'main', 'string-enum', 'int-enum')
+
+  def _CheckDefault(self, policy):
+    if not self._NeedsDefault(policy):
+      return
+
+    # Only validate the default when present.
+    # TODO(crbug.com/1139046): Always validate the default for types that
+    # should have it.
+    if 'default' not in policy:
+      return
+
+    policy_type = policy.get('type')
+    default = policy.get('default')
+    if policy_type == 'int':
+      # A default value of None is acceptable when the default case is
+      # equivalent to the policy being unset and there is no numeric equivalent.
+      if default is None:
+        return
+
+      default = self._CheckContains(policy, 'default', int)
+      if default is None or default < 0:
+        self._Error(
+            ('Default for policy %s of type int should be an int >= 0 or None, '
+             'got %s') % (policy.get('name'), default))
+      return
+
+    if policy_type == 'main':
+      # TODO(crbug.com/1139306): Query the acceptable values from items
+      # once that is used for policy type main.
+      acceptable_values = (True, False, None)
+    elif policy_type in ('string-enum', 'int-enum'):
+      acceptable_values = [None] + [x['value'] for x in policy['items']]
+    else:
+      raise NotImplementedError('Unimplemented policy type: %s' % policy_type)
+
+    if default not in acceptable_values:
+      self._Error(
+          ('Default for policy %s of type %s should be one of %s, got %s') %
+          (policy.get('name'), policy_type, acceptable_values, default))
+
   def _CheckPolicy(self, policy, is_in_group, policy_ids, deleted_policy_ids,
                    current_version):
     if not isinstance(policy, dict):
@@ -508,6 +550,7 @@ class PolicyTemplateChecker(object):
           'url_schema',
           'max_size',
           'tags',
+          'default',
           'default_for_enterprise_users',
           'default_for_managed_devices_doc_only',
           'arc_support',
@@ -836,6 +879,8 @@ class PolicyTemplateChecker(object):
               secondary_schema, real_example, enforce_use_entire_schema=True):
             self._Error(('Example for policy %s does not comply to the ' +
                          'policy\'s validation_schema') % policy.get('name'))
+
+      self._CheckDefault(policy)
 
       # Statistics.
       self.num_policies += 1
@@ -1427,6 +1472,12 @@ class PolicyTemplateChecker(object):
                                                   new_rolling_out_platform),
                                         current_version, new_policy_name)
       self._CheckDeprecatedFutureField(None, new_policy, new_policy_name)
+
+      # TODO(crbug.com/1139046): This default check should apply to all
+      # policies instead of just new ones.
+      if self._NeedsDefault(new_policy) and new_policy.get('default',
+                                                           None) == None:
+        self._Error(('Missing default field for policy %s') % (new_policy_name))
 
   def _LeadingWhitespace(self, line):
     match = LEADING_WHITESPACE.match(line)
