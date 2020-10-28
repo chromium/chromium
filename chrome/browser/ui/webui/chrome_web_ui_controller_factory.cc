@@ -200,6 +200,8 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
+#include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
+#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/diagnostics_ui/diagnostics_ui.h"
 #include "chromeos/components/diagnostics_ui/url_constants.h"
 #include "chromeos/components/help_app_ui/help_app_ui.h"
@@ -657,6 +659,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::cellular_setup::CellularSetupDialogUI>;
   if (url.host_piece() == chrome::kChromeUICertificateManagerHost)
     return &NewWebUI<chromeos::CertificateManagerDialogUI>;
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kConnectivityDiagnosticsWebUi) &&
+      url.host_piece() == chromeos::kChromeUIConnectivityDiagnosticsHost) {
+    return &NewWebUI<chromeos::ConnectivityDiagnosticsUI>;
+  }
   if (url.host_piece() == chrome::kChromeUICrostiniInstallerHost)
     return &NewWebUI<chromeos::CrostiniInstallerUI>;
   if (chromeos::CrostiniUpgraderUI::IsEnabled() &&

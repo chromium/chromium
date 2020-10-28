@@ -2602,6 +2602,7 @@ static_library("ui") {
       "//chromeos/components/bloom/public/cpp",
       "//chromeos/components/bloom/public/cpp:bloom_controller_factory",
       "//chromeos/components/camera_app_ui",
+      "//chromeos/components/connectivity_diagnostics",
       "//chromeos/components/diagnostics_ui",
       "//chromeos/components/drivefs/mojom:mojom",
       "//chromeos/components/help_app_ui",

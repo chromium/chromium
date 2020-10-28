@@ -185,6 +185,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chromeos/chromeos_print_management_resources.pak",
         "$root_gen_dir/chromeos/chromeos_resources.pak",
         "$root_gen_dir/chromeos/chromeos_scanning_app_resources.pak",
+        "$root_gen_dir/chromeos/connectivity_diagnostics_resources.pak",
         "$root_gen_dir/third_party/ink/ink_resources.pak",
         "$root_gen_dir/ui/file_manager/file_manager_resources.pak",
       ]
@@ -202,6 +203,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
         "//chromeos/resources",
         "//chromeos/resources:camera_app_resources",
+        "//chromeos/resources:connectivity_diagnostics_resources",
         "//chromeos/resources:diagnostics_app_resources",
         "//chromeos/resources:help_app_bundle_resources",
         "//chromeos/resources:help_app_resources",

@@ -45,6 +45,7 @@ source_set("common") {
     deps += [
       "//ash/public/cpp",
       "//chromeos/components/camera_app_ui",
+      "//chromeos/components/connectivity_diagnostics",
       "//chromeos/components/diagnostics_ui",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/media_app_ui",

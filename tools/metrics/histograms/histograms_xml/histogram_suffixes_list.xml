@@ -19392,6 +19392,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="Camera" label="Camera"/>
+  <suffix name="ConnectivityDiagnostics" label="Connectivity Diagnostics"/>
   <suffix name="Diagnostics" label="Diagnostics"/>
   <suffix name="Discover" label="Discovery">
     <obsolete>

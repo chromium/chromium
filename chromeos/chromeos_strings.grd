@@ -570,6 +570,11 @@ Try tapping the mic to ask me anything.
         <ph name="QUERY_TEXT">$1<ex>prodotto</ex></ph> · <ph name="SOURCE_LANGUAGE_NAME">$2<ex>Italian</ex></ph>
       </message>
 
+      <!-- Network / Connectivity Diagnostics -->
+      <message name="IDS_CONNECTIVITY_DIAGNOSTICS_TITLE" desc="The label for connectivity diagnostics application that shows potential issues with the network connections">
+        Connectivity Diagnostics
+      </message>
+
     </messages>
   </release>
 </grit>

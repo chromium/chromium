@@ -1,0 +1,66 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
+
+#include "chromeos/components/connectivity_diagnostics/url_constants.h"
+#include "chromeos/grit/connectivity_diagnostics_resources.h"
+#include "chromeos/grit/connectivity_diagnostics_resources_map.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_data_source.h"
+
+namespace chromeos {
+
+namespace {
+constexpr char kGeneratedPath[] =
+    "@out_folder@/gen/chromeos/components/connectivity_diagnostics/"
+    "resources/preprocessed/";
+
+// TODO(crbug/1051793): Replace with webui::SetUpWebUIDataSource() once it no
+// longer requires a dependency on //chrome/browser.
+void SetUpWebUIDataSource(content::WebUIDataSource* source,
+                          base::span<const GritResourceMap> resources,
+                          const std::string& generated_path,
+                          int default_resource) {
+  for (const auto& resource : resources) {
+    std::string path = resource.name;
+    if (path.rfind(generated_path, 0) == 0)
+      path = path.substr(generated_path.size());
+
+    source->AddResourcePath(path, resource.value);
+  }
+
+  source->SetDefaultResource(default_resource);
+}
+
+}  // namespace
+
+ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+  content::WebUIDataSource* source =
+      content::WebUIDataSource::Create(kChromeUIConnectivityDiagnosticsHost);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
+
+  source->DisableTrustedTypesCSP();
+  source->UseStringsJs();
+  source->EnableReplaceI18nInJS();
+
+  const auto resources = base::make_span(kConnectivityDiagnosticsResources,
+                                         kConnectivityDiagnosticsResourcesSize);
+  SetUpWebUIDataSource(source, resources, kGeneratedPath,
+                       IDR_CONNECTIVITY_DIAGNOSTICS_INDEX_HTML);
+  source->AddLocalizedString("appTitle", IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
+
+  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
+                                source);
+}
+
+ConnectivityDiagnosticsUI::~ConnectivityDiagnosticsUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ConnectivityDiagnosticsUI)
+
+}  // namespace chromeos

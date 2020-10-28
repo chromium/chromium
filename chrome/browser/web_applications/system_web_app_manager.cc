@@ -46,6 +46,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/chromeos/web_applications/camera_system_web_app_info.h"
+#include "chrome/browser/chromeos/web_applications/connectivity_diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
 #include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/help_app_web_app_info.h"
@@ -56,6 +57,7 @@
 #include "chrome/browser/chromeos/web_applications/terminal_source.h"
 #include "chrome/browser/chromeos/web_applications/terminal_system_web_app_info.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
+#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -188,6 +190,17 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
                   SystemAppInfo("Scanning", GURL("chrome://scanning"),
                                 base::BindRepeating(
                                     &CreateWebAppInfoForScanningSystemWebApp)));
+  }
+
+  if (SystemWebAppManager::IsAppEnabled(
+          SystemAppType::CONNECTIVITY_DIAGNOSTICS)) {
+    infos.emplace(
+        SystemAppType::CONNECTIVITY_DIAGNOSTICS,
+        SystemAppInfo(
+            "ConnectivityDiagnostics",
+            GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl),
+            base::BindRepeating(
+                &CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp)));
   }
 
 #if !defined(OFFICIAL_BUILD)
@@ -338,6 +351,9 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       return base::FeatureList::IsEnabled(chromeos::features::kScanningUI);
     case SystemAppType::DIAGNOSTICS:
       return base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp);
+    case SystemAppType::CONNECTIVITY_DIAGNOSTICS:
+      return base::FeatureList::IsEnabled(
+          chromeos::features::kConnectivityDiagnosticsWebUi);
 #if !defined(OFFICIAL_BUILD)
     case SystemAppType::TELEMETRY:
       return base::FeatureList::IsEnabled(
