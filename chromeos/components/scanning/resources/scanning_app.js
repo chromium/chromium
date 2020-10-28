@@ -154,8 +154,9 @@ Polymer({
         this.capabilities_.sources[0].pageSizes[0].toString();
     this.selectedResolution = this.capabilities_.resolutions[0].toString();
 
-    // PDF is the default file type.
-    this.selectedFileType = chromeos.scanning.mojom.FileType.kPdf.toString();
+    // TODO(jschettler): Change default file type back to PDF when it's
+    // supported.
+    this.selectedFileType = chromeos.scanning.mojom.FileType.kPng.toString();
 
     this.scanButtonDisabled_ = false;
   },
