@@ -4276,6 +4276,38 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
+// This test verifies that even with the blocking feature disabled, an insecure
+// page in the `local` address space cannot fetch a `file:` URL.
+//
+// This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       InsecurePageCannotRequestFile) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  // Check that the page cannot load a `file:` URL.
+  EXPECT_EQ(
+      false,
+      EvalJs(root_frame_host(),
+             FetchSubresourceScript(GetTestUrl("", "empty.html").spec())));
+}
+
+// This test verifies that even with the blocking feature disabled, a secure
+// page in the `local` address space cannot fetch a `file:` URL.
+//
+// This is relevant to CORS-RFC1918, since `file:` URLs are considered `local`.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       SecurePageCannotRequestFile) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  // Check that the page cannot load a `file:` URL.
+  EXPECT_EQ(
+      false,
+      EvalJs(root_frame_host(),
+             FetchSubresourceScript(GetTestUrl("", "empty.html").spec())));
+}
+
 // This test mimics the tests below, with the blocking feature disabled. It
 // verifies that by default requests:
 //  - from an insecure page with the "treat-as-public-address" CSP directive
