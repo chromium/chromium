@@ -36,7 +36,8 @@ class HoldingSpaceItemViewsContainer : public views::View,
   // widget is being closed (which happens asynchronously).
   void Reset();
 
-  virtual void AddHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
+  virtual void AddHoldingSpaceItemView(const HoldingSpaceItem* item,
+                                       bool due_to_finalization) = 0;
   virtual void RemoveAllHoldingSpaceItemViews() = 0;
   virtual void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
 

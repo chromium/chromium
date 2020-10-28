@@ -146,8 +146,8 @@ void RecentFilesContainer::ViewHierarchyChanged(
     OnDownloadsContainerViewHierarchyChanged(details);
 }
 
-void RecentFilesContainer::AddHoldingSpaceItemView(
-    const HoldingSpaceItem* item) {
+void RecentFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
+                                                   bool due_to_finalization) {
   DCHECK(item->IsFinalized());
 
   if (item->type() != HoldingSpaceItem::Type::kScreenshot &&
@@ -156,12 +156,16 @@ void RecentFilesContainer::AddHoldingSpaceItemView(
   }
 
   size_t index = 0;
-  for (const auto& candidate :
-       base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (candidate->id() == item->id())
-      break;
-    if (candidate->IsFinalized() && candidate->type() == item->type())
-      ++index;
+
+  if (due_to_finalization) {
+    // Find the position at which the view should be added.
+    for (const auto& candidate :
+         base::Reversed(HoldingSpaceController::Get()->model()->items())) {
+      if (candidate->id() == item->id())
+        break;
+      if (candidate->IsFinalized() && candidate->type() == item->type())
+        ++index;
+    }
   }
 
   if (item->type() == HoldingSpaceItem::Type::kScreenshot)

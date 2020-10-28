@@ -147,23 +147,26 @@ void PinnedFilesContainer::ViewHierarchyChanged(
   SetVisible(details.is_add);
 }
 
-void PinnedFilesContainer::AddHoldingSpaceItemView(
-    const HoldingSpaceItem* item) {
+void PinnedFilesContainer::AddHoldingSpaceItemView(const HoldingSpaceItem* item,
+                                                   bool due_to_finalization) {
   DCHECK(!base::Contains(views_by_item_id_, item->id()));
   DCHECK(item->IsFinalized());
 
   if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
     return;
 
-  // Find the position to which the view should be added.
   size_t index = 0;
-  for (const auto& candidate :
-       base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (candidate->id() == item->id())
-      break;
-    if (candidate->IsFinalized() &&
-        candidate->type() == HoldingSpaceItem::Type::kPinnedFile) {
-      ++index;
+
+  if (due_to_finalization) {
+    // Find the position at which the view should be added.
+    for (const auto& candidate :
+         base::Reversed(HoldingSpaceController::Get()->model()->items())) {
+      if (candidate->id() == item->id())
+        break;
+      if (candidate->IsFinalized() &&
+          candidate->type() == HoldingSpaceItem::Type::kPinnedFile) {
+        ++index;
+      }
     }
   }
 

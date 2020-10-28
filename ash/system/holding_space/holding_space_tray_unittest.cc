@@ -4,7 +4,11 @@
 
 #include "ash/system/holding_space/holding_space_tray.h"
 
+#include <deque>
+#include <vector>
+
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -310,6 +314,38 @@ TEST_F(HoldingSpaceTrayTest, DownloadsContainer) {
   test_api()->Close();
 }
 
+// Verifies the downloads container is shown and orders items as expected when
+// the model contains a number of finalized items prior to showing UI.
+TEST_F(HoldingSpaceTrayTest, DownloadsContainerWithFinalizedItemsOnly) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // Add a number of finalized download items.
+  std::deque<HoldingSpaceItem*> items;
+  for (size_t i = 0; i < kMaxDownloads; ++i) {
+    items.push_back(
+        AddItem(HoldingSpaceItem::Type::kDownload,
+                base::FilePath("/tmp/fake_" + base::NumberToString(i))));
+  }
+
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+
+  std::vector<views::View*> download_files = test_api()->GetDownloadChips();
+  ASSERT_EQ(items.size(), download_files.size());
+
+  while (!items.empty()) {
+    // View order is expected to be reverse of item order.
+    auto* download_file = HoldingSpaceItemView::Cast(download_files.back());
+    EXPECT_EQ(download_file->item()->id(), items.front()->id());
+
+    items.pop_front();
+    download_files.pop_back();
+  }
+
+  test_api()->Close();
+}
+
 TEST_F(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
   StartSession();
   test_api()->Show();
@@ -502,6 +538,38 @@ TEST_F(HoldingSpaceTrayTest, ScreenCaptureContainer) {
 
   // Pinned container is showing "educational" info, and it should remain shown.
   EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+
+  test_api()->Close();
+}
+
+// Verifies the screen captures container is shown and orders items as expected
+// when the model contains a number of finalized items prior to showing UI.
+TEST_F(HoldingSpaceTrayTest, ScreenCapturesContainerWithFinalizedItemsOnly) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // Add a number of finalized screen capture items.
+  std::deque<HoldingSpaceItem*> items;
+  for (size_t i = 0; i < kMaxScreenCaptures; ++i) {
+    items.push_back(
+        AddItem(HoldingSpaceItem::Type::kScreenshot,
+                base::FilePath("/tmp/fake_" + base::NumberToString(i))));
+  }
+
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+
+  std::vector<views::View*> screenshots = test_api()->GetScreenCaptureViews();
+  ASSERT_EQ(items.size(), screenshots.size());
+
+  while (!items.empty()) {
+    // View order is expected to be reverse of item order.
+    auto* screenshot = HoldingSpaceItemView::Cast(screenshots.back());
+    EXPECT_EQ(screenshot->item()->id(), items.front()->id());
+
+    items.pop_front();
+    screenshots.pop_back();
+  }
 
   test_api()->Close();
 }
@@ -768,6 +836,38 @@ TEST_F(HoldingSpaceTrayTest,
   ASSERT_EQ(1u, pinned_files.size());
   EXPECT_EQ(item_3->id(),
             HoldingSpaceItemView::Cast(pinned_files[0])->item()->id());
+
+  test_api()->Close();
+}
+
+// Verifies the pinned items container is shown and orders items as expected
+// when the model contains a number of finalized items prior to showing UI.
+TEST_F(HoldingSpaceTrayTest, PinnedFilesContainerWithFinalizedItemsOnly) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // Add a number of finalized pinned items.
+  std::deque<HoldingSpaceItem*> items;
+  for (int i = 0; i < 10; ++i) {
+    items.push_back(
+        AddItem(HoldingSpaceItem::Type::kPinnedFile,
+                base::FilePath("/tmp/fake_" + base::NumberToString(i))));
+  }
+
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+
+  std::vector<views::View*> pinned_files = test_api()->GetPinnedFileChips();
+  ASSERT_EQ(items.size(), pinned_files.size());
+
+  while (!items.empty()) {
+    // View order is expected to be reverse of item order.
+    auto* pinned_file = HoldingSpaceItemView::Cast(pinned_files.back());
+    EXPECT_EQ(pinned_file->item()->id(), items.front()->id());
+
+    items.pop_front();
+    pinned_files.pop_back();
+  }
 
   test_api()->Close();
 }

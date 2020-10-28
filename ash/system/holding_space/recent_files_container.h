@@ -29,7 +29,8 @@ class RecentFilesContainer : public HoldingSpaceItemViewsContainer {
   // HoldingSpaceItemViewsContainer:
   void ChildVisibilityChanged(views::View* child) override;
   void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
-  void AddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
+  void AddHoldingSpaceItemView(const HoldingSpaceItem* item,
+                               bool due_to_finalization) override;
   void RemoveAllHoldingSpaceItemViews() override;
   void RemoveHoldingSpaceItemView(const HoldingSpaceItem* item) override;
 
