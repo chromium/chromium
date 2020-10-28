@@ -80,6 +80,7 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
                 NavigateCallback callback) override;
   void Activate(blink::TransferableMessage data,
                 base::TimeTicks activation_time,
+                uint64_t trace_id,
                 ActivateCallback callback) override;
   void PostMessageToGuest(const blink::TransferableMessage message) override;
 
@@ -193,6 +194,7 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   std::pair<bool, blink::mojom::PortalActivateResult> CanActivate();
   void ActivateImpl(blink::TransferableMessage data,
                     base::TimeTicks activation_time,
+                    uint64_t trace_id,
                     ActivateCallback callback);
 
   RenderFrameHostImpl* owner_render_frame_host_;

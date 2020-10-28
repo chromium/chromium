@@ -1216,13 +1216,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Called on the main frame of a page embedded in a Portal when it is
   // activated. The frame has the option to adopt the previous page,
   // |predecessor|, as a portal. The activation can optionally include a message
-  // |data| dispatched with the PortalActivateEvent.
+  // |data| dispatched with the PortalActivateEvent. The |trace_id| is used for
+  // generating flow events.
   void OnPortalActivated(
       std::unique_ptr<Portal> predecessor,
       mojo::PendingAssociatedRemote<blink::mojom::Portal> pending_portal,
       mojo::PendingAssociatedReceiver<blink::mojom::PortalClient>
           client_receiver,
       blink::TransferableMessage data,
+      uint64_t trace_id,
       base::OnceCallback<void(blink::mojom::PortalActivateResult)> callback);
 
   // Called in tests that synthetically create portals but need them to be

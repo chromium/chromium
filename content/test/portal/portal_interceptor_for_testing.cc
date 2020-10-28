@@ -62,13 +62,14 @@ blink::mojom::Portal* PortalInterceptorForTesting::GetForwardingInterface() {
 
 void PortalInterceptorForTesting::Activate(blink::TransferableMessage data,
                                            base::TimeTicks activation_time,
+                                           uint64_t trace_id,
                                            ActivateCallback callback) {
   for (Observer& observer : observers_->data)
     observer.OnPortalActivate();
 
   // |this| can be destroyed after Activate() is called.
   portal_->Activate(
-      std::move(data), activation_time,
+      std::move(data), activation_time, trace_id,
       base::BindOnce(
           [](const scoped_refptr<
                  base::RefCountedData<base::ObserverList<Observer>>>& observers,

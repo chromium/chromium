@@ -681,6 +681,7 @@ class CORE_EXPORT LocalFrame final
       mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,
       mojo::PendingAssociatedReceiver<mojom::blink::PortalClient> portal_client,
       BlinkTransferableMessage data,
+      uint64_t trace_id,
       OnPortalActivatedCallback callback) final;
   void ForwardMessageFromHost(
       BlinkTransferableMessage message,
