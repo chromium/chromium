@@ -151,36 +151,6 @@ void ChromeOsAppsNavigationThrottle::FindPwaForUrlAndShowIntentPickerForApps(
                      ui_auto_display_service, url));
 }
 
-// static
-apps::AppsNavigationThrottle::Platform
-ChromeOsAppsNavigationThrottle::GetDestinationPlatform(
-    const std::string& selected_launch_name,
-    PickerAction picker_action) {
-  switch (picker_action) {
-    case PickerAction::PREFERRED_ACTIVITY_FOUND:
-      return selected_launch_name ==
-                     apps::AppsNavigationThrottle::kUseBrowserForLink
-                 ? Platform::CHROME
-                 : Platform::ARC;
-    case PickerAction::ARC_APP_PRESSED:
-    case PickerAction::ARC_APP_PREFERRED_PRESSED:
-    case PickerAction::PWA_APP_PRESSED:
-    case PickerAction::ERROR_BEFORE_PICKER:
-    case PickerAction::ERROR_AFTER_PICKER:
-    case PickerAction::DIALOG_DEACTIVATED:
-    case PickerAction::CHROME_PRESSED:
-    case PickerAction::CHROME_PREFERRED_PRESSED:
-    case PickerAction::OBSOLETE_ALWAYS_PRESSED:
-    case PickerAction::OBSOLETE_JUST_ONCE_PRESSED:
-    case PickerAction::INVALID:
-    case PickerAction::DEVICE_PRESSED:
-    case PickerAction::MAC_OS_APP_PRESSED:
-      break;
-  }
-  return apps::AppsNavigationThrottle::GetDestinationPlatform(
-      selected_launch_name, picker_action);
-}
-
 // Removes the flag signaling that the current tab was started via
 // ChromeShellDelegate if the current throttle corresponds to a navigation
 // passing thru different domains or schemes, except if |current_url| has a

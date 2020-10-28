@@ -3192,7 +3192,6 @@ source_set("unit_tests") {
     "app_mode/startup_app_launcher_unittest.cc",
     "app_mode/web_app/web_kiosk_app_launcher_unittest.cc",
     "apps/apk_web_app_installer_unittest.cc",
-    "apps/intent_helper/chromeos_apps_navigation_throttle_unittest.cc",
     "apps/metrics/intent_handling_metrics_unittest.cc",
     "arc/accessibility/accessibility_node_info_data_wrapper_unittest.cc",
     "arc/accessibility/arc_accessibility_helper_bridge_unittest.cc",

@@ -276,8 +276,11 @@ AppsNavigationThrottle::Platform AppsNavigationThrottle::GetDestinationPlatform(
   switch (picker_action) {
     case PickerAction::ARC_APP_PRESSED:
     case PickerAction::ARC_APP_PREFERRED_PRESSED:
+    case PickerAction::PREFERRED_ARC_ACTIVITY_FOUND:
       return Platform::ARC;
     case PickerAction::PWA_APP_PRESSED:
+    case PickerAction::PWA_APP_PREFERRED_PRESSED:
+    case PickerAction::PREFERRED_PWA_FOUND:
       return Platform::PWA;
     case PickerAction::MAC_OS_APP_PRESSED:
       return Platform::MAC_OS;
@@ -286,10 +289,10 @@ AppsNavigationThrottle::Platform AppsNavigationThrottle::GetDestinationPlatform(
     case PickerAction::DIALOG_DEACTIVATED:
     case PickerAction::CHROME_PRESSED:
     case PickerAction::CHROME_PREFERRED_PRESSED:
+    case PickerAction::PREFERRED_CHROME_BROWSER_FOUND:
       return Platform::CHROME;
     case PickerAction::DEVICE_PRESSED:
       return Platform::DEVICE;
-    case PickerAction::PREFERRED_ACTIVITY_FOUND:
     case PickerAction::OBSOLETE_ALWAYS_PRESSED:
     case PickerAction::OBSOLETE_JUST_ONCE_PRESSED:
     case PickerAction::INVALID:
@@ -312,7 +315,18 @@ AppsNavigationThrottle::PickerAction AppsNavigationThrottle::GetPickerAction(
     case IntentPickerCloseReason::DIALOG_DEACTIVATED:
       return PickerAction::DIALOG_DEACTIVATED;
     case IntentPickerCloseReason::PREFERRED_APP_FOUND:
-      return PickerAction::PREFERRED_ACTIVITY_FOUND;
+      switch (entry_type) {
+        case PickerEntryType::kUnknown:
+          return PickerAction::PREFERRED_CHROME_BROWSER_FOUND;
+        case PickerEntryType::kArc:
+          return PickerAction::PREFERRED_ARC_ACTIVITY_FOUND;
+        case PickerEntryType::kWeb:
+          return PickerAction::PREFERRED_PWA_FOUND;
+        case PickerEntryType::kDevice:
+        case PickerEntryType::kMacOs:
+          NOTREACHED();
+          return PickerAction::INVALID;
+      }
     case IntentPickerCloseReason::STAY_IN_CHROME:
       return should_persist ? PickerAction::CHROME_PREFERRED_PRESSED
                             : PickerAction::CHROME_PRESSED;
@@ -325,7 +339,8 @@ AppsNavigationThrottle::PickerAction AppsNavigationThrottle::GetPickerAction(
           return should_persist ? PickerAction::ARC_APP_PREFERRED_PRESSED
                                 : PickerAction::ARC_APP_PRESSED;
         case PickerEntryType::kWeb:
-          return PickerAction::PWA_APP_PRESSED;
+          return should_persist ? PickerAction::PWA_APP_PREFERRED_PRESSED
+                                : PickerAction::PWA_APP_PRESSED;
         case PickerEntryType::kDevice:
           return PickerAction::DEVICE_PRESSED;
         case PickerEntryType::kMacOs:

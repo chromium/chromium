@@ -3271,7 +3271,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Dialog deactivated"/>
   <int value="2" label="DEPRECATED: Always"/>
   <int value="3" label="DEPRECATED: Just once"/>
-  <int value="4" label="Preferred activity found"/>
+  <int value="4" label="Preferred ARC activity found"/>
   <int value="5" label="Chrome pressed"/>
   <int value="6" label="Chrome preferred and pressed"/>
   <int value="7" label="ARC app pressed"/>
@@ -3281,6 +3281,9 @@ Unknown properties are collapsed to zero. -->
   <int value="11" label="Invalid"/>
   <int value="12" label="External device pressed"/>
   <int value="13" label="Mac OS app pressed"/>
+  <int value="14" label="Progressive Web App preferred and pressed"/>
+  <int value="15" label="Preferred Progressive Web App found"/>
+  <int value="16" label="Preferred using Chrome Browser"/>
 </enum>
 
 <enum name="ArcIntentHandlerDestinationPlatform">

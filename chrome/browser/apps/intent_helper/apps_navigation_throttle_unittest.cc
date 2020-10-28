@@ -179,31 +179,61 @@ TEST(AppsNavigationThrottleTest, TestGetPickerAction) {
           PickerEntryType::kArc, IntentPickerCloseReason::DIALOG_DEACTIVATED,
           /*should_persist=*/false));
 
-  // Expect PickerAction::PREFERRED_ACTIVITY_FOUND if the close_reason is
+  // Expect PREFERRED FOUND depending on entry type if the close_reason is
   // PREFERRED_APP_FOUND.
-  EXPECT_EQ(AppsNavigationThrottle::PickerAction::PREFERRED_ACTIVITY_FOUND,
-            AppsNavigationThrottle::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::PREFERRED_APP_FOUND,
-                /*should_persist=*/true));
+  EXPECT_EQ(
+      AppsNavigationThrottle::PickerAction::PREFERRED_CHROME_BROWSER_FOUND,
+      AppsNavigationThrottle::GetPickerAction(
+          PickerEntryType::kUnknown,
+          IntentPickerCloseReason::PREFERRED_APP_FOUND,
+          /*should_persist=*/true));
 
   EXPECT_EQ(
-      AppsNavigationThrottle::PickerAction::PREFERRED_ACTIVITY_FOUND,
+      AppsNavigationThrottle::PickerAction::PREFERRED_ARC_ACTIVITY_FOUND,
       AppsNavigationThrottle::GetPickerAction(
           PickerEntryType::kArc, IntentPickerCloseReason::PREFERRED_APP_FOUND,
           /*should_persist=*/true));
 
-  EXPECT_EQ(AppsNavigationThrottle::PickerAction::PREFERRED_ACTIVITY_FOUND,
-            AppsNavigationThrottle::GetPickerAction(
-                PickerEntryType::kUnknown,
-                IntentPickerCloseReason::PREFERRED_APP_FOUND,
-                /*should_persist=*/false));
+  EXPECT_EQ(
+      AppsNavigationThrottle::PickerAction::PREFERRED_PWA_FOUND,
+      AppsNavigationThrottle::GetPickerAction(
+          PickerEntryType::kWeb, IntentPickerCloseReason::PREFERRED_APP_FOUND,
+          /*should_persist=*/true));
+
+  EXPECT_DCHECK_DEATH(AppsNavigationThrottle::GetPickerAction(
+      PickerEntryType::kDevice, IntentPickerCloseReason::PREFERRED_APP_FOUND,
+      /*should_persist=*/true));
+
+  EXPECT_DCHECK_DEATH(AppsNavigationThrottle::GetPickerAction(
+      PickerEntryType::kMacOs, IntentPickerCloseReason::PREFERRED_APP_FOUND,
+      /*should_persist=*/true));
 
   EXPECT_EQ(
-      AppsNavigationThrottle::PickerAction::PREFERRED_ACTIVITY_FOUND,
+      AppsNavigationThrottle::PickerAction::PREFERRED_CHROME_BROWSER_FOUND,
+      AppsNavigationThrottle::GetPickerAction(
+          PickerEntryType::kUnknown,
+          IntentPickerCloseReason::PREFERRED_APP_FOUND,
+          /*should_persist=*/false));
+
+  EXPECT_EQ(
+      AppsNavigationThrottle::PickerAction::PREFERRED_ARC_ACTIVITY_FOUND,
       AppsNavigationThrottle::GetPickerAction(
           PickerEntryType::kArc, IntentPickerCloseReason::PREFERRED_APP_FOUND,
           /*should_persist=*/false));
+
+  EXPECT_EQ(
+      AppsNavigationThrottle::PickerAction::PREFERRED_PWA_FOUND,
+      AppsNavigationThrottle::GetPickerAction(
+          PickerEntryType::kWeb, IntentPickerCloseReason::PREFERRED_APP_FOUND,
+          /*should_persist=*/false));
+
+  EXPECT_DCHECK_DEATH(AppsNavigationThrottle::GetPickerAction(
+      PickerEntryType::kDevice, IntentPickerCloseReason::PREFERRED_APP_FOUND,
+      /*should_persist=*/false));
+
+  EXPECT_DCHECK_DEATH(AppsNavigationThrottle::GetPickerAction(
+      PickerEntryType::kMacOs, IntentPickerCloseReason::PREFERRED_APP_FOUND,
+      /*should_persist=*/false));
 
   // Expect PREFERRED depending on the value of |should_persist|, and
   // |entry_type| to be ignored if reason is STAY_IN_CHROME.
@@ -230,7 +260,7 @@ TEST(AppsNavigationThrottleTest, TestGetPickerAction) {
                 /*should_persist=*/false));
 
   // Expect PREFERRED depending on the value of |should_persist|, and
-  // INVALID/ARC to be chosen if reason is OPEN_APP.
+  // different entry type to be chosen if reason is OPEN_APP.
   EXPECT_DCHECK_DEATH(AppsNavigationThrottle::GetPickerAction(
       PickerEntryType::kUnknown, IntentPickerCloseReason::OPEN_APP,
       /*should_persist=*/true));
@@ -238,6 +268,21 @@ TEST(AppsNavigationThrottleTest, TestGetPickerAction) {
   EXPECT_EQ(AppsNavigationThrottle::PickerAction::ARC_APP_PREFERRED_PRESSED,
             AppsNavigationThrottle::GetPickerAction(
                 PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP,
+                /*should_persist=*/true));
+
+  EXPECT_EQ(AppsNavigationThrottle::PickerAction::PWA_APP_PREFERRED_PRESSED,
+            AppsNavigationThrottle::GetPickerAction(
+                PickerEntryType::kWeb, IntentPickerCloseReason::OPEN_APP,
+                /*should_persist=*/true));
+
+  EXPECT_EQ(AppsNavigationThrottle::PickerAction::DEVICE_PRESSED,
+            AppsNavigationThrottle::GetPickerAction(
+                PickerEntryType::kDevice, IntentPickerCloseReason::OPEN_APP,
+                /*should_persist=*/true));
+
+  EXPECT_EQ(AppsNavigationThrottle::PickerAction::MAC_OS_APP_PRESSED,
+            AppsNavigationThrottle::GetPickerAction(
+                PickerEntryType::kMacOs, IntentPickerCloseReason::OPEN_APP,
                 /*should_persist=*/true));
 
   EXPECT_DCHECK_DEATH(AppsNavigationThrottle::GetPickerAction(
@@ -249,9 +294,19 @@ TEST(AppsNavigationThrottleTest, TestGetPickerAction) {
                 PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP,
                 /*should_persist=*/false));
 
+  EXPECT_EQ(AppsNavigationThrottle::PickerAction::PWA_APP_PRESSED,
+            AppsNavigationThrottle::GetPickerAction(
+                PickerEntryType::kWeb, IntentPickerCloseReason::OPEN_APP,
+                /*should_persist=*/false));
+
   EXPECT_EQ(AppsNavigationThrottle::PickerAction::DEVICE_PRESSED,
             AppsNavigationThrottle::GetPickerAction(
                 PickerEntryType::kDevice, IntentPickerCloseReason::OPEN_APP,
+                /*should_persist=*/false));
+
+  EXPECT_EQ(AppsNavigationThrottle::PickerAction::MAC_OS_APP_PRESSED,
+            AppsNavigationThrottle::GetPickerAction(
+                PickerEntryType::kMacOs, IntentPickerCloseReason::OPEN_APP,
                 /*should_persist=*/false));
 }
 
@@ -267,35 +322,70 @@ TEST(AppsNavigationThrottleTest, TestGetDestinationPlatform) {
   EXPECT_EQ(
       AppsNavigationThrottle::Platform::CHROME,
       AppsNavigationThrottle::GetDestinationPlatform(
-          app_id, AppsNavigationThrottle::PickerAction::ERROR_BEFORE_PICKER));
-  EXPECT_EQ(
-      AppsNavigationThrottle::Platform::CHROME,
-      AppsNavigationThrottle::GetDestinationPlatform(
           app_id, AppsNavigationThrottle::PickerAction::ERROR_AFTER_PICKER));
-  EXPECT_EQ(
-      AppsNavigationThrottle::Platform::CHROME,
-      AppsNavigationThrottle::GetDestinationPlatform(
-          app_id, AppsNavigationThrottle::PickerAction::ERROR_AFTER_PICKER));
-  EXPECT_EQ(
-      AppsNavigationThrottle::Platform::CHROME,
-      AppsNavigationThrottle::GetDestinationPlatform(
-          app_id, AppsNavigationThrottle::PickerAction::DIALOG_DEACTIVATED));
   EXPECT_EQ(
       AppsNavigationThrottle::Platform::CHROME,
       AppsNavigationThrottle::GetDestinationPlatform(
           app_id, AppsNavigationThrottle::PickerAction::DIALOG_DEACTIVATED));
 
-  // When the PickerAction is PWA_APP_PRESSED, always expect the platform to be
+  // When stay in chrome is selected, or when user remember the stay in chrome
+  // selection, always expect the platform to be CHROME.
+  EXPECT_EQ(AppsNavigationThrottle::Platform::CHROME,
+            AppsNavigationThrottle::GetDestinationPlatform(
+                app_id, AppsNavigationThrottle::PickerAction::CHROME_PRESSED));
+  EXPECT_EQ(
+      AppsNavigationThrottle::Platform::CHROME,
+      AppsNavigationThrottle::GetDestinationPlatform(
+          app_id,
+          AppsNavigationThrottle::PickerAction::CHROME_PREFERRED_PRESSED));
+  EXPECT_EQ(AppsNavigationThrottle::Platform::CHROME,
+            AppsNavigationThrottle::GetDestinationPlatform(
+                app_id, AppsNavigationThrottle::PickerAction::
+                            PREFERRED_CHROME_BROWSER_FOUND));
+
+  // When user select PWA or PWA auto launched, always expect the platform to be
   // PWA.
   EXPECT_EQ(AppsNavigationThrottle::Platform::PWA,
             AppsNavigationThrottle::GetDestinationPlatform(
                 app_id, AppsNavigationThrottle::PickerAction::PWA_APP_PRESSED));
 
-  EXPECT_EQ(AppsNavigationThrottle::Platform::PWA,
-            AppsNavigationThrottle::GetDestinationPlatform(
-                app_id, AppsNavigationThrottle::PickerAction::PWA_APP_PRESSED));
+  EXPECT_EQ(
+      AppsNavigationThrottle::Platform::PWA,
+      AppsNavigationThrottle::GetDestinationPlatform(
+          app_id,
+          AppsNavigationThrottle::PickerAction::PWA_APP_PREFERRED_PRESSED));
+  EXPECT_EQ(
+      AppsNavigationThrottle::Platform::PWA,
+      AppsNavigationThrottle::GetDestinationPlatform(
+          app_id, AppsNavigationThrottle::PickerAction::PREFERRED_PWA_FOUND));
 
-  // TODO(crbug.com/939205): restore testing ARC picker redirection
+  // When user select ARC app or ARC app auto launched, always expect the
+  // platform to be ARC.
+  EXPECT_EQ(AppsNavigationThrottle::Platform::ARC,
+            AppsNavigationThrottle::GetDestinationPlatform(
+                app_id, AppsNavigationThrottle::PickerAction::ARC_APP_PRESSED));
+
+  EXPECT_EQ(
+      AppsNavigationThrottle::Platform::ARC,
+      AppsNavigationThrottle::GetDestinationPlatform(
+          app_id,
+          AppsNavigationThrottle::PickerAction::ARC_APP_PREFERRED_PRESSED));
+  EXPECT_EQ(
+      AppsNavigationThrottle::Platform::ARC,
+      AppsNavigationThrottle::GetDestinationPlatform(
+          app_id,
+          AppsNavigationThrottle::PickerAction::PREFERRED_ARC_ACTIVITY_FOUND));
+
+  // When user select Mac OS app, expect the platform to be MAC_OS.
+  EXPECT_EQ(
+      AppsNavigationThrottle::Platform::MAC_OS,
+      AppsNavigationThrottle::GetDestinationPlatform(
+          app_id, AppsNavigationThrottle::PickerAction::MAC_OS_APP_PRESSED));
+
+  // When user select a device, expect the platform to be DEVICE.
+  EXPECT_EQ(AppsNavigationThrottle::Platform::DEVICE,
+            AppsNavigationThrottle::GetDestinationPlatform(
+                app_id, AppsNavigationThrottle::PickerAction::DEVICE_PRESSED));
 }
 
 }  // namespace apps

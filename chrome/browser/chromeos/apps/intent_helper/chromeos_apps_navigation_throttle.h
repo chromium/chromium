@@ -72,15 +72,6 @@ class ChromeOsAppsNavigationThrottle : public apps::AppsNavigationThrottle {
       const GURL& url,
       std::vector<apps::IntentPickerAppInfo> apps);
 
-  // Determines the destination of the current navigation. We know that if the
-  // |picker_action| is either ERROR or DIALOG_DEACTIVATED the navigation MUST
-  // stay in Chrome, and when |picker_action| is PWA_APP_PRESSED the navigation
-  // goes to a PWA. Otherwise we can assume the navigation goes to ARC with the
-  // exception of the |selected_launch_name| being Chrome.
-  static Platform GetDestinationPlatform(
-      const std::string& selected_launch_name,
-      PickerAction picker_action);
-
   void MaybeRemoveComingFromArcFlag(content::WebContents* web_contents,
                                     const GURL& previous_url,
                                     const GURL& current_url) override;
