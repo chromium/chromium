@@ -706,49 +706,22 @@ htmlAttrDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc, xmlAttrPtr cur,
 		 (!xmlStrcasecmp(cur->name, BAD_CAST "src")) ||
 		 ((!xmlStrcasecmp(cur->name, BAD_CAST "name")) &&
 		  (!xmlStrcasecmp(cur->parent->name, BAD_CAST "a"))))) {
+		xmlChar *escaped;
 		xmlChar *tmp = value;
-		/* xmlURIEscapeStr() escapes '"' so it can be safely used. */
-		xmlBufCCat(buf->buffer, "\"");
 
 		while (IS_BLANK_CH(*tmp)) tmp++;
 
-		/* URI Escape everything, except server side includes. */
-		for ( ; ; ) {
-		    xmlChar *escaped;
-		    xmlChar endChar;
-		    xmlChar *end = NULL;
-		    xmlChar *start = (xmlChar *)xmlStrstr(tmp, BAD_CAST "<!--");
-		    if (start != NULL) {
-			end = (xmlChar *)xmlStrstr(tmp, BAD_CAST "-->");
-			if (end != NULL) {
-			    *start = '\0';
-			}
-		    }
-
-		    /* Escape the whole string, or until start (set to '\0'). */
-		    escaped = xmlURIEscapeStr(tmp, BAD_CAST"@/:=?;#%&,+");
-		    if (escaped != NULL) {
-		        xmlBufCat(buf->buffer, escaped);
-		        xmlFree(escaped);
-		    } else {
-		        xmlBufCat(buf->buffer, tmp);
-		    }
-
-		    if (end == NULL) { /* Everything has been written. */
-			break;
-		    }
-
-		    /* Do not escape anything within server side includes. */
-		    *start = '<'; /* Restore the first character of "<!--". */
-		    end += 3; /* strlen("-->") */
-		    endChar = *end;
-		    *end = '\0';
-		    xmlBufCat(buf->buffer, start);
-		    *end = endChar;
-		    tmp = end;
+		/*
+		 * the < and > have already been escaped at the entity level
+		 * And doing so here breaks server side includes
+		 */
+		escaped = xmlURIEscapeStr(tmp, BAD_CAST"@/:=?;#%&,+<>");
+		if (escaped != NULL) {
+		    xmlBufWriteQuotedString(buf->buffer, escaped);
+		    xmlFree(escaped);
+		} else {
+		    xmlBufWriteQuotedString(buf->buffer, value);
 		}
-
-		xmlBufCCat(buf->buffer, "\"");
 	    } else {
 		xmlBufWriteQuotedString(buf->buffer, value);
 	    }
@@ -756,50 +729,6 @@ htmlAttrDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc, xmlAttrPtr cur,
 	} else  {
 	    xmlOutputBufferWriteString(buf, "=\"\"");
 	}
-    }
-}
-
-/**
- * htmlAttrListDumpOutput:
- * @buf:  the HTML buffer output
- * @doc:  the document
- * @cur:  the first attribute pointer
- * @encoding:  the encoding string
- *
- * Dump a list of HTML attributes
- */
-static void
-htmlAttrListDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc, xmlAttrPtr cur, const char *encoding) {
-    if (cur == NULL) {
-	return;
-    }
-    while (cur != NULL) {
-        htmlAttrDumpOutput(buf, doc, cur, encoding);
-	cur = cur->next;
-    }
-}
-
-
-
-/**
- * htmlNodeListDumpOutput:
- * @buf:  the HTML buffer output
- * @doc:  the document
- * @cur:  the first node
- * @encoding:  the encoding string
- * @format:  should formatting spaces been added
- *
- * Dump an HTML node list, recursive behaviour,children are printed too.
- */
-static void
-htmlNodeListDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
-	               xmlNodePtr cur, const char *encoding, int format) {
-    if (cur == NULL) {
-	return;
-    }
-    while (cur != NULL) {
-        htmlNodeDumpFormatOutput(buf, doc, cur, encoding, format);
-	cur = cur->next;
     }
 }
 
@@ -816,6 +745,8 @@ htmlNodeListDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
 void
 htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
 	                 xmlNodePtr cur, const char *encoding, int format) {
+    xmlNodePtr root;
+    xmlAttrPtr attr;
     const htmlElemDesc * info;
 
     xmlInitParser();
@@ -823,172 +754,199 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
     if ((cur == NULL) || (buf == NULL)) {
 	return;
     }
-    /*
-     * Special cases.
-     */
-    if (cur->type == XML_DTD_NODE)
-	return;
-    if ((cur->type == XML_HTML_DOCUMENT_NODE) ||
-        (cur->type == XML_DOCUMENT_NODE)){
-	htmlDocContentDumpOutput(buf, (xmlDocPtr) cur, encoding);
-	return;
-    }
-    if (cur->type == XML_ATTRIBUTE_NODE) {
-        htmlAttrDumpOutput(buf, doc, (xmlAttrPtr) cur, encoding);
-	return;
-    }
-    if (cur->type == HTML_TEXT_NODE) {
-	if (cur->content != NULL) {
-	    if (((cur->name == (const xmlChar *)xmlStringText) ||
-		 (cur->name != (const xmlChar *)xmlStringTextNoenc)) &&
-		((cur->parent == NULL) ||
-		 ((xmlStrcasecmp(cur->parent->name, BAD_CAST "script")) &&
-		  (xmlStrcasecmp(cur->parent->name, BAD_CAST "style"))))) {
-		xmlChar *buffer;
 
-		buffer = xmlEncodeEntitiesReentrant(doc, cur->content);
-		if (buffer != NULL) {
-		    xmlOutputBufferWriteString(buf, (const char *)buffer);
-		    xmlFree(buffer);
-		}
-	    } else {
-		xmlOutputBufferWriteString(buf, (const char *)cur->content);
-	    }
-	}
-	return;
-    }
-    if (cur->type == HTML_COMMENT_NODE) {
-	if (cur->content != NULL) {
-	    xmlOutputBufferWriteString(buf, "<!--");
-	    xmlOutputBufferWriteString(buf, (const char *)cur->content);
-	    xmlOutputBufferWriteString(buf, "-->");
-	}
-	return;
-    }
-    if (cur->type == HTML_PI_NODE) {
-	if (cur->name == NULL)
-	    return;
-	xmlOutputBufferWriteString(buf, "<?");
-	xmlOutputBufferWriteString(buf, (const char *)cur->name);
-	if (cur->content != NULL) {
-	    xmlOutputBufferWriteString(buf, " ");
-	    xmlOutputBufferWriteString(buf, (const char *)cur->content);
-	}
-	xmlOutputBufferWriteString(buf, ">");
-	return;
-    }
-    if (cur->type == HTML_ENTITY_REF_NODE) {
-        xmlOutputBufferWriteString(buf, "&");
-	xmlOutputBufferWriteString(buf, (const char *)cur->name);
-        xmlOutputBufferWriteString(buf, ";");
-	return;
-    }
-    if (cur->type == HTML_PRESERVE_NODE) {
-	if (cur->content != NULL) {
-	    xmlOutputBufferWriteString(buf, (const char *)cur->content);
-	}
-	return;
-    }
+    root = cur;
+    while (1) {
+        switch (cur->type) {
+        case XML_HTML_DOCUMENT_NODE:
+        case XML_DOCUMENT_NODE:
+            if (((xmlDocPtr) cur)->intSubset != NULL) {
+                htmlDtdDumpOutput(buf, (xmlDocPtr) cur, NULL);
+            }
+            if (cur->children != NULL) {
+                cur = cur->children;
+                continue;
+            }
+            break;
 
-    /*
-     * Get specific HTML info for that node.
-     */
-    if (cur->ns == NULL)
-	info = htmlTagLookup(cur->name);
-    else
-	info = NULL;
+        case XML_ELEMENT_NODE:
+            /*
+             * Get specific HTML info for that node.
+             */
+            if (cur->ns == NULL)
+                info = htmlTagLookup(cur->name);
+            else
+                info = NULL;
 
-    xmlOutputBufferWriteString(buf, "<");
-    if ((cur->ns != NULL) && (cur->ns->prefix != NULL)) {
-        xmlOutputBufferWriteString(buf, (const char *)cur->ns->prefix);
-	xmlOutputBufferWriteString(buf, ":");
-    }
-    xmlOutputBufferWriteString(buf, (const char *)cur->name);
-    if (cur->nsDef)
-	xmlNsListDumpOutput(buf, cur->nsDef);
-    if (cur->properties != NULL)
-        htmlAttrListDumpOutput(buf, doc, cur->properties, encoding);
-
-    if ((info != NULL) && (info->empty)) {
-        xmlOutputBufferWriteString(buf, ">");
-	if ((format) && (!info->isinline) && (cur->next != NULL)) {
-	    if ((cur->next->type != HTML_TEXT_NODE) &&
-		(cur->next->type != HTML_ENTITY_REF_NODE) &&
-		(cur->parent != NULL) &&
-		(cur->parent->name != NULL) &&
-		(cur->parent->name[0] != 'p')) /* p, pre, param */
-		xmlOutputBufferWriteString(buf, "\n");
-	}
-	return;
-    }
-    if (((cur->type == XML_ELEMENT_NODE) || (cur->content == NULL)) &&
-	(cur->children == NULL)) {
-        if ((info != NULL) && (info->saveEndTag != 0) &&
-	    (xmlStrcmp(BAD_CAST info->name, BAD_CAST "html")) &&
-	    (xmlStrcmp(BAD_CAST info->name, BAD_CAST "body"))) {
-	    xmlOutputBufferWriteString(buf, ">");
-	} else {
-	    xmlOutputBufferWriteString(buf, "></");
+            xmlOutputBufferWriteString(buf, "<");
             if ((cur->ns != NULL) && (cur->ns->prefix != NULL)) {
                 xmlOutputBufferWriteString(buf, (const char *)cur->ns->prefix);
                 xmlOutputBufferWriteString(buf, ":");
             }
-	    xmlOutputBufferWriteString(buf, (const char *)cur->name);
-	    xmlOutputBufferWriteString(buf, ">");
-	}
-	if ((format) && (cur->next != NULL) &&
-            (info != NULL) && (!info->isinline)) {
-	    if ((cur->next->type != HTML_TEXT_NODE) &&
-		(cur->next->type != HTML_ENTITY_REF_NODE) &&
-		(cur->parent != NULL) &&
-		(cur->parent->name != NULL) &&
-		(cur->parent->name[0] != 'p')) /* p, pre, param */
-		xmlOutputBufferWriteString(buf, "\n");
-	}
-	return;
-    }
-    xmlOutputBufferWriteString(buf, ">");
-    if ((cur->type != XML_ELEMENT_NODE) &&
-	(cur->content != NULL)) {
-	    /*
-	     * Uses the OutputBuffer property to automatically convert
-	     * invalids to charrefs
-	     */
+            xmlOutputBufferWriteString(buf, (const char *)cur->name);
+            if (cur->nsDef)
+                xmlNsListDumpOutput(buf, cur->nsDef);
+            attr = cur->properties;
+            while (attr != NULL) {
+                htmlAttrDumpOutput(buf, doc, attr, encoding);
+                attr = attr->next;
+            }
 
-            xmlOutputBufferWriteString(buf, (const char *) cur->content);
-    }
-    if (cur->children != NULL) {
-        if ((format) && (info != NULL) && (!info->isinline) &&
-	    (cur->children->type != HTML_TEXT_NODE) &&
-	    (cur->children->type != HTML_ENTITY_REF_NODE) &&
-	    (cur->children != cur->last) &&
-	    (cur->name != NULL) &&
-	    (cur->name[0] != 'p')) /* p, pre, param */
-	    xmlOutputBufferWriteString(buf, "\n");
-	htmlNodeListDumpOutput(buf, doc, cur->children, encoding, format);
-        if ((format) && (info != NULL) && (!info->isinline) &&
-	    (cur->last->type != HTML_TEXT_NODE) &&
-	    (cur->last->type != HTML_ENTITY_REF_NODE) &&
-	    (cur->children != cur->last) &&
-	    (cur->name != NULL) &&
-	    (cur->name[0] != 'p')) /* p, pre, param */
-	    xmlOutputBufferWriteString(buf, "\n");
-    }
-    xmlOutputBufferWriteString(buf, "</");
-    if ((cur->ns != NULL) && (cur->ns->prefix != NULL)) {
-        xmlOutputBufferWriteString(buf, (const char *)cur->ns->prefix);
-	xmlOutputBufferWriteString(buf, ":");
-    }
-    xmlOutputBufferWriteString(buf, (const char *)cur->name);
-    xmlOutputBufferWriteString(buf, ">");
-    if ((format) && (info != NULL) && (!info->isinline) &&
-	(cur->next != NULL)) {
-        if ((cur->next->type != HTML_TEXT_NODE) &&
-	    (cur->next->type != HTML_ENTITY_REF_NODE) &&
-	    (cur->parent != NULL) &&
-	    (cur->parent->name != NULL) &&
-	    (cur->parent->name[0] != 'p')) /* p, pre, param */
-	    xmlOutputBufferWriteString(buf, "\n");
+            if ((info != NULL) && (info->empty)) {
+                xmlOutputBufferWriteString(buf, ">");
+            } else if (cur->children == NULL) {
+                if ((info != NULL) && (info->saveEndTag != 0) &&
+                    (xmlStrcmp(BAD_CAST info->name, BAD_CAST "html")) &&
+                    (xmlStrcmp(BAD_CAST info->name, BAD_CAST "body"))) {
+                    xmlOutputBufferWriteString(buf, ">");
+                } else {
+                    xmlOutputBufferWriteString(buf, "></");
+                    if ((cur->ns != NULL) && (cur->ns->prefix != NULL)) {
+                        xmlOutputBufferWriteString(buf,
+                                (const char *)cur->ns->prefix);
+                        xmlOutputBufferWriteString(buf, ":");
+                    }
+                    xmlOutputBufferWriteString(buf, (const char *)cur->name);
+                    xmlOutputBufferWriteString(buf, ">");
+                }
+            } else {
+                xmlOutputBufferWriteString(buf, ">");
+                if ((format) && (info != NULL) && (!info->isinline) &&
+                    (cur->children->type != HTML_TEXT_NODE) &&
+                    (cur->children->type != HTML_ENTITY_REF_NODE) &&
+                    (cur->children != cur->last) &&
+                    (cur->name != NULL) &&
+                    (cur->name[0] != 'p')) /* p, pre, param */
+                    xmlOutputBufferWriteString(buf, "\n");
+                cur = cur->children;
+                continue;
+            }
+
+            if ((format) && (cur->next != NULL) &&
+                (info != NULL) && (!info->isinline)) {
+                if ((cur->next->type != HTML_TEXT_NODE) &&
+                    (cur->next->type != HTML_ENTITY_REF_NODE) &&
+                    (cur->parent != NULL) &&
+                    (cur->parent->name != NULL) &&
+                    (cur->parent->name[0] != 'p')) /* p, pre, param */
+                    xmlOutputBufferWriteString(buf, "\n");
+            }
+
+            break;
+
+        case XML_ATTRIBUTE_NODE:
+            htmlAttrDumpOutput(buf, doc, (xmlAttrPtr) cur, encoding);
+            break;
+
+        case HTML_TEXT_NODE:
+            if (cur->content == NULL)
+                break;
+            if (((cur->name == (const xmlChar *)xmlStringText) ||
+                 (cur->name != (const xmlChar *)xmlStringTextNoenc)) &&
+                ((cur->parent == NULL) ||
+                 ((xmlStrcasecmp(cur->parent->name, BAD_CAST "script")) &&
+                  (xmlStrcasecmp(cur->parent->name, BAD_CAST "style"))))) {
+                xmlChar *buffer;
+
+                buffer = xmlEncodeEntitiesReentrant(doc, cur->content);
+                if (buffer != NULL) {
+                    xmlOutputBufferWriteString(buf, (const char *)buffer);
+                    xmlFree(buffer);
+                }
+            } else {
+                xmlOutputBufferWriteString(buf, (const char *)cur->content);
+            }
+            break;
+
+        case HTML_COMMENT_NODE:
+            if (cur->content != NULL) {
+                xmlOutputBufferWriteString(buf, "<!--");
+                xmlOutputBufferWriteString(buf, (const char *)cur->content);
+                xmlOutputBufferWriteString(buf, "-->");
+            }
+            break;
+
+        case HTML_PI_NODE:
+            if (cur->name != NULL) {
+                xmlOutputBufferWriteString(buf, "<?");
+                xmlOutputBufferWriteString(buf, (const char *)cur->name);
+                if (cur->content != NULL) {
+                    xmlOutputBufferWriteString(buf, " ");
+                    xmlOutputBufferWriteString(buf,
+                            (const char *)cur->content);
+                }
+                xmlOutputBufferWriteString(buf, ">");
+            }
+            break;
+
+        case HTML_ENTITY_REF_NODE:
+            xmlOutputBufferWriteString(buf, "&");
+            xmlOutputBufferWriteString(buf, (const char *)cur->name);
+            xmlOutputBufferWriteString(buf, ";");
+            break;
+
+        case HTML_PRESERVE_NODE:
+            if (cur->content != NULL) {
+                xmlOutputBufferWriteString(buf, (const char *)cur->content);
+            }
+            break;
+
+        default:
+            break;
+        }
+
+        while (1) {
+            if (cur == root)
+                return;
+            if (cur->next != NULL) {
+                cur = cur->next;
+                break;
+            }
+
+            /*
+             * The parent should never be NULL here but we want to handle
+             * corrupted documents gracefully.
+             */
+            if (cur->parent == NULL)
+                return;
+            cur = cur->parent;
+
+            if ((cur->type == XML_HTML_DOCUMENT_NODE) ||
+                (cur->type == XML_DOCUMENT_NODE)) {
+                xmlOutputBufferWriteString(buf, "\n");
+            } else {
+                if ((format) && (cur->ns == NULL))
+                    info = htmlTagLookup(cur->name);
+                else
+                    info = NULL;
+
+                if ((format) && (info != NULL) && (!info->isinline) &&
+                    (cur->last->type != HTML_TEXT_NODE) &&
+                    (cur->last->type != HTML_ENTITY_REF_NODE) &&
+                    (cur->children != cur->last) &&
+                    (cur->name != NULL) &&
+                    (cur->name[0] != 'p')) /* p, pre, param */
+                    xmlOutputBufferWriteString(buf, "\n");
+
+                xmlOutputBufferWriteString(buf, "</");
+                if ((cur->ns != NULL) && (cur->ns->prefix != NULL)) {
+                    xmlOutputBufferWriteString(buf, (const char *)cur->ns->prefix);
+                    xmlOutputBufferWriteString(buf, ":");
+                }
+                xmlOutputBufferWriteString(buf, (const char *)cur->name);
+                xmlOutputBufferWriteString(buf, ">");
+
+                if ((format) && (info != NULL) && (!info->isinline) &&
+                    (cur->next != NULL)) {
+                    if ((cur->next->type != HTML_TEXT_NODE) &&
+                        (cur->next->type != HTML_ENTITY_REF_NODE) &&
+                        (cur->parent != NULL) &&
+                        (cur->parent->name != NULL) &&
+                        (cur->parent->name[0] != 'p')) /* p, pre, param */
+                        xmlOutputBufferWriteString(buf, "\n");
+                }
+            }
+        }
     }
 }
 
@@ -1020,26 +978,7 @@ htmlNodeDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
 void
 htmlDocContentDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr cur,
 	                       const char *encoding, int format) {
-    int type;
-
-    xmlInitParser();
-
-    if ((buf == NULL) || (cur == NULL))
-        return;
-
-    /*
-     * force to output the stuff as HTML, especially for entities
-     */
-    type = cur->type;
-    cur->type = XML_HTML_DOCUMENT_NODE;
-    if (cur->intSubset != NULL) {
-        htmlDtdDumpOutput(buf, cur, NULL);
-    }
-    if (cur->children != NULL) {
-        htmlNodeListDumpOutput(buf, cur, cur->children, encoding, format);
-    }
-    xmlOutputBufferWriteString(buf, "\n");
-    cur->type = (xmlElementType) type;
+    htmlNodeDumpFormatOutput(buf, cur, (xmlNodePtr) cur, encoding, format);
 }
 
 /**
@@ -1053,7 +992,7 @@ htmlDocContentDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr cur,
 void
 htmlDocContentDumpOutput(xmlOutputBufferPtr buf, xmlDocPtr cur,
 	                 const char *encoding) {
-    htmlDocContentDumpFormatOutput(buf, cur, encoding, 1);
+    htmlNodeDumpFormatOutput(buf, cur, (xmlNodePtr) cur, encoding, 1);
 }
 
 /************************************************************************

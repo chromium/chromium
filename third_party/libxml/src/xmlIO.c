@@ -3401,18 +3401,12 @@ xmlOutputBufferWrite(xmlOutputBufferPtr out, int len, const char *buf) {
 		out->error = XML_IO_ENCODER;
 		return(-1);
 	    }
-            if (out->writecallback)
-	        nbchars = xmlBufUse(out->conv);
-            else
-                nbchars = ret;
+            nbchars = ret >= 0 ? ret : 0;
 	} else {
 	    ret = xmlBufAdd(out->buffer, (const xmlChar *) buf, chunk);
 	    if (ret != 0)
 	        return(-1);
-            if (out->writecallback)
-	        nbchars = xmlBufUse(out->buffer);
-            else
-                nbchars = chunk;
+            nbchars = chunk;
 	}
 	buf += chunk;
 	len -= chunk;
@@ -3599,19 +3593,13 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
 		out->error = XML_IO_ENCODER;
 		return(-1);
 	    }
-            if (out->writecallback)
-	        nbchars = xmlBufUse(out->conv);
-            else
-                nbchars = ret;
+            nbchars = ret >= 0 ? ret : 0;
 	} else {
 	    ret = escaping(xmlBufEnd(out->buffer), &chunk, str, &cons);
 	    if ((ret < 0) || (chunk == 0)) /* chunk==0 => nothing done */
 	        return(-1);
             xmlBufAddLen(out->buffer, chunk);
-            if (out->writecallback)
-	        nbchars = xmlBufUse(out->buffer);
-            else
-                nbchars = chunk;
+            nbchars = chunk;
 	}
 	str += cons;
 	len -= cons;

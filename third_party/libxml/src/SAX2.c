@@ -1663,23 +1663,23 @@ xmlSAX2StartElement(void *ctx, const xmlChar *fullname, const xmlChar **atts)
 	}
     }
 
-    /*
-     * Insert all the defaulted attributes from the DTD especially namespaces
-     */
-    if ((!ctxt->html) &&
-	((ctxt->myDoc->intSubset != NULL) ||
-	 (ctxt->myDoc->extSubset != NULL))) {
-	xmlCheckDefaultedAttributes(ctxt, name, prefix, atts);
-    }
+    if (!ctxt->html) {
+        /*
+         * Insert all the defaulted attributes from the DTD especially
+         * namespaces
+         */
+        if ((ctxt->myDoc->intSubset != NULL) ||
+            (ctxt->myDoc->extSubset != NULL)) {
+            xmlCheckDefaultedAttributes(ctxt, name, prefix, atts);
+        }
 
-    /*
-     * process all the attributes whose name start with "xmlns"
-     */
-    if (atts != NULL) {
-        i = 0;
-	att = atts[i++];
-	value = atts[i++];
-	if (!ctxt->html) {
+        /*
+         * process all the attributes whose name start with "xmlns"
+         */
+        if (atts != NULL) {
+            i = 0;
+            att = atts[i++];
+            value = atts[i++];
 	    while ((att != NULL) && (value != NULL)) {
 		if ((att[0] == 'x') && (att[1] == 'm') && (att[2] == 'l') &&
 		    (att[3] == 'n') && (att[4] == 's'))
@@ -1688,30 +1688,30 @@ xmlSAX2StartElement(void *ctx, const xmlChar *fullname, const xmlChar **atts)
 		att = atts[i++];
 		value = atts[i++];
 	    }
-	}
-    }
+        }
 
-    /*
-     * Search the namespace, note that since the attributes have been
-     * processed, the local namespaces are available.
-     */
-    ns = xmlSearchNs(ctxt->myDoc, ret, prefix);
-    if ((ns == NULL) && (parent != NULL))
-	ns = xmlSearchNs(ctxt->myDoc, parent, prefix);
-    if ((prefix != NULL) && (ns == NULL)) {
-	ns = xmlNewNs(ret, NULL, prefix);
-	xmlNsWarnMsg(ctxt, XML_NS_ERR_UNDEFINED_NAMESPACE,
-		     "Namespace prefix %s is not defined\n",
-		     prefix, NULL);
-    }
+        /*
+         * Search the namespace, note that since the attributes have been
+         * processed, the local namespaces are available.
+         */
+        ns = xmlSearchNs(ctxt->myDoc, ret, prefix);
+        if ((ns == NULL) && (parent != NULL))
+            ns = xmlSearchNs(ctxt->myDoc, parent, prefix);
+        if ((prefix != NULL) && (ns == NULL)) {
+            ns = xmlNewNs(ret, NULL, prefix);
+            xmlNsWarnMsg(ctxt, XML_NS_ERR_UNDEFINED_NAMESPACE,
+                         "Namespace prefix %s is not defined\n",
+                         prefix, NULL);
+        }
 
-    /*
-     * set the namespace node, making sure that if the default namespace
-     * is unbound on a parent we simply keep it NULL
-     */
-    if ((ns != NULL) && (ns->href != NULL) &&
-	((ns->href[0] != 0) || (ns->prefix != NULL)))
-	xmlSetNs(ret, ns);
+        /*
+         * set the namespace node, making sure that if the default namespace
+         * is unbound on a parent we simply keep it NULL
+         */
+        if ((ns != NULL) && (ns->href != NULL) &&
+            ((ns->href[0] != 0) || (ns->prefix != NULL)))
+            xmlSetNs(ret, ns);
+    }
 
     /*
      * process all the other attributes

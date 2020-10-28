@@ -1,0 +1,13 @@
+diff --git a/Makefile.am b/Makefile.am
+index 76a834ef..4ef0eb92 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
+ 
+ SUBDIRS = include . doc example fuzz xstc $(PYTHON_SUBDIR)
+ 
+-DIST_SUBDIRS = include . doc example python xstc
++DIST_SUBDIRS = include . doc example python xstc fuzz
+ 
+ AM_CPPFLAGS = -I$(top_builddir)/include -I$(srcdir)/include
+ 

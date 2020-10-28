@@ -1,0 +1,19 @@
+libFuzzer instructions for libxml2
+==================================
+
+Set compiler and options:
+
+    export CC=clang
+    export CFLAGS="-g -fsanitize=fuzzer-no-link,address,undefined \
+        -fno-sanitize-recover=all \
+        -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION"
+
+Build libxml2 with instrumentation:
+
+    ./configure --without-python
+    make
+
+Run fuzzers:
+
+    make -C fuzz fuzz-xml
+
