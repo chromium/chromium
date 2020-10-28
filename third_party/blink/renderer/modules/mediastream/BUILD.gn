@@ -70,6 +70,8 @@ blink_modules_sources("mediastream") {
     "overconstrained_error.h",
     "processed_local_audio_source.cc",
     "processed_local_audio_source.h",
+    "pushable_media_stream_video_source.cc",
+    "pushable_media_stream_video_source.h",
     "remote_media_stream_track_adapter.cc",
     "remote_media_stream_track_adapter.h",
     "track_audio_renderer.cc",

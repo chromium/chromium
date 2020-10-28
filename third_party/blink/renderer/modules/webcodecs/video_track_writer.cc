@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -24,61 +25,12 @@
 
 namespace blink {
 
-// Simplifies the creation of video tracks.  Just do this:
-// auto source = std::make_unique<PushableVideoTrackSource>();
-// auto* track = CreateVideoTrackFromSource(script_state, source);
-// for each frame:
-//   source->PushFrame(video_frame, capture_time);
-// source->Stop();
-class PushableVideoTrackSource : public MediaStreamVideoSource {
- public:
-  void PushFrame(scoped_refptr<media::VideoFrame> video_frame,
-                 base::TimeTicks estimated_capture_time) {
-    if (!running_)
-      return;
-
-    // Note that although use of the IO thread is rare in blink, it's required
-    // by any implementation of MediaStreamVideoSource, which is made clear by
-    // the documentation of MediaStreamVideoSource::StartSourceImpl which reads
-    // "An implementation must call |frame_callback| on the IO thread."
-    // Also see the DCHECK at VideoTrackAdapter::DeliverFrameOnIO
-    // and the other of implementations of MediaStreamVideoSource at
-    // MediaStreamRemoteVideoSource::StartSourceImpl,
-    // CastReceiverSession::StartVideo,
-    // CanvasCaptureHandler::SendFrame,
-    // and HtmlVideoElementCapturerSource::sendNewFrame.
-    PostCrossThreadTask(
-        *io_task_runner(), FROM_HERE,
-        CrossThreadBindOnce(deliver_frame_cb_, std::move(video_frame),
-                            estimated_capture_time));
-  }
-
-  void Stop() {
-    DoStopSource();
-    running_ = false;
-  }
-
-  void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
-                       EncodedVideoFrameCB encoded_frame_callback) override {
-    DCHECK(frame_callback);
-    running_ = true;
-    deliver_frame_cb_ = frame_callback;
-    OnStartDone(mojom::blink::MediaStreamRequestResult::OK);
-  }
-
-  void StopSourceImpl() override { running_ = false; }
-
- private:
-  bool running_ = false;
-  VideoCaptureDeliverFrameCB deliver_frame_cb_;
-};
-
 // Implements a WritableStream's UnderlyingSinkBase by pushing frames into a
-// PushableVideoTrackSource.  Also optionally releases the frames.
+// PushableMediaStreamVideoSource.  Also optionally releases the frames.
 class VideoTrackWritableStreamSink final : public UnderlyingSinkBase {
  public:
   // The source must out live the sink.
-  VideoTrackWritableStreamSink(PushableVideoTrackSource* source,
+  VideoTrackWritableStreamSink(PushableMediaStreamVideoSource* source,
                                bool release_frames)
       : source_(source), release_frames_(release_frames) {}
 
@@ -123,7 +75,7 @@ class VideoTrackWritableStreamSink final : public UnderlyingSinkBase {
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  PushableVideoTrackSource* source_;
+  PushableMediaStreamVideoSource* source_;
   bool release_frames_;
 };
 
@@ -158,8 +110,8 @@ VideoTrackWriter* VideoTrackWriter::Create(
     return nullptr;
   }
 
-  std::unique_ptr<PushableVideoTrackSource> track_source =
-      std::make_unique<PushableVideoTrackSource>();
+  std::unique_ptr<PushableMediaStreamVideoSource> track_source =
+      std::make_unique<PushableMediaStreamVideoSource>();
   VideoTrackWritableStreamSink* writable_sink =
       MakeGarbageCollected<VideoTrackWritableStreamSink>(
           track_source.get(), params->releaseFrames());

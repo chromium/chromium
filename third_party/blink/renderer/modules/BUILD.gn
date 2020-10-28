@@ -353,6 +353,7 @@ source_set("unit_tests") {
     "mediastream/mock_mojo_media_stream_dispatcher_host.cc",
     "mediastream/mock_mojo_media_stream_dispatcher_host.h",
     "mediastream/processed_local_audio_source_test.cc",
+    "mediastream/pushable_media_stream_video_source_test.cc",
     "mediastream/user_media_client_test.cc",
     "mediastream/video_track_adapter_unittest.cc",
     "mediastream/webaudio_media_stream_audio_sink_test.cc",
