@@ -9,7 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -21,10 +20,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
@@ -32,6 +34,8 @@ import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -54,8 +58,6 @@ public class GoogleServicesSettingsTest {
     @Rule
     public final SettingsActivityTestRule<GoogleServicesSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(GoogleServicesSettings.class, true);
-
-    private @Nullable ChromeSwitchPreference mAllowChromeSignin;
 
     @Before
     public void setUp() {
@@ -80,7 +82,11 @@ public class GoogleServicesSettingsTest {
     @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void signOutUserWithoutShowingSignOutDialog() {
         mAccountManagerTestRule.addTestAccountThenSignin();
-        startGoogleServicesSettings();
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+        ChromeSwitchPreference allowChromeSignin =
+                (ChromeSwitchPreference) googleServicesSettings.findPreference(
+                        GoogleServicesSettings.PREF_ALLOW_SIGNIN);
+        Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
 
         onView(withText(R.string.offer_chrome_signin_title)).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -94,7 +100,7 @@ public class GoogleServicesSettingsTest {
                         -> Assert.assertFalse("SIGNIN_ALLOWED pref should be unset",
                                 UserPrefs.get(Profile.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
-        Assert.assertFalse("Chrome Signin should not be allowed", mAllowChromeSignin.isChecked());
+        Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
     }
 
     @Test
@@ -103,7 +109,11 @@ public class GoogleServicesSettingsTest {
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1142481")
     public void showSignOutDialogBeforeSigningUserOut() {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        startGoogleServicesSettings();
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+        ChromeSwitchPreference allowChromeSignin =
+                (ChromeSwitchPreference) googleServicesSettings.findPreference(
+                        GoogleServicesSettings.PREF_ALLOW_SIGNIN);
+        Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
 
         onView(withText(R.string.offer_chrome_signin_title)).perform(click());
         // Accept the sign out Dialog
@@ -114,14 +124,159 @@ public class GoogleServicesSettingsTest {
                                 "Accepting the sign-out dialog should set SIGNIN_ALLOWED to false",
                                 UserPrefs.get(Profile.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
-        Assert.assertFalse("Chrome Signin should not be allowed", mAllowChromeSignin.isChecked());
+        Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
     }
 
-    private void startGoogleServicesSettings() {
+    /**
+     * Test: if the onboarding was never shown, the AA chrome preference should not exist.
+     *
+     * Note: presence of the {@link GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT}
+     * shared preference indicates whether onboarding was shown or not.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    public void testAutofillAssistantNoPreferenceIfOnboardingNeverShown() {
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull(googleServicesSettings.findPreference(
+                    GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT));
+        });
+    }
+
+    /**
+     * Test: if the onboarding was shown at least once, the AA chrome preference should also exist.
+     *
+     * Note: presence of the {@link GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT}
+     * shared preference indicates whether onboarding was shown or not.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    public void testAutofillAssistantPreferenceShownIfOnboardingShown() {
+        setAutofillAssistantSwitchValue(true);
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNotNull(googleServicesSettings.findPreference(
+                    GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT));
+        });
+    }
+
+    /**
+     * Ensure that the "Autofill Assistant" setting is not shown when the feature is disabled.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    public void testAutofillAssistantNoPreferenceIfFeatureDisabled() {
+        setAutofillAssistantSwitchValue(true);
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull(googleServicesSettings.findPreference(
+                    GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT));
+        });
+    }
+
+    /**
+     * Ensure that the "Autofill Assistant" on/off switch works.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    public void testAutofillAssistantSwitchOn() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { setAutofillAssistantSwitchValue(true); });
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeSwitchPreference autofillAssistantSwitch =
+                    (ChromeSwitchPreference) googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT);
+            Assert.assertTrue(autofillAssistantSwitch.isChecked());
+
+            autofillAssistantSwitch.performClick();
+            Assert.assertFalse(googleServicesSettings.isAutofillAssistantSwitchOn());
+            autofillAssistantSwitch.performClick();
+            Assert.assertTrue(googleServicesSettings.isAutofillAssistantSwitchOn());
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    public void testAutofillAssistantSwitchOff() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { setAutofillAssistantSwitchValue(false); });
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeSwitchPreference autofillAssistantSwitch =
+                    (ChromeSwitchPreference) googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT);
+            Assert.assertFalse(autofillAssistantSwitch.isChecked());
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Preference"})
+    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)
+    public void testSafeBrowsingSafeBrowsingSectionUiFlagOn() {
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("Safe Browsing should be null when Safe Browsing section is enabled.",
+                    googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_SAFE_BROWSING));
+            Assert.assertNull(
+                    "Password leak detection should be null when Safe Browsing section is enabled.",
+                    googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_PASSWORD_LEAK_DETECTION));
+            Assert.assertNull(
+                    "Safe Browsing scout should be null when Safe Browsing section is enabled.",
+                    googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_SAFE_BROWSING_SCOUT_REPORTING));
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Preference"})
+    @DisableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
+    public void testMetricsSettingsHiddenFlagOff() {
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("Metrics settings should be null when the flag is off.",
+                    googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_METRICS_SETTINGS));
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Preference"})
+    @EnableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
+    public void testMetricsSettingsShownFlagOn() {
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNotNull("Metrics settings should exist when the flag is on.",
+                    googleServicesSettings.findPreference(
+                            GoogleServicesSettings.PREF_METRICS_SETTINGS));
+        });
+    }
+
+    private void setAutofillAssistantSwitchValue(boolean newValue) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, newValue);
+    }
+
+    private GoogleServicesSettings startGoogleServicesSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
-        GoogleServicesSettings googleServicesSettings = mSettingsActivityTestRule.getFragment();
-        mAllowChromeSignin = (ChromeSwitchPreference) googleServicesSettings.findPreference(
-                GoogleServicesSettings.PREF_ALLOW_SIGNIN);
-        Assert.assertTrue("Chrome Signin should be allowed", mAllowChromeSignin.isChecked());
+        return mSettingsActivityTestRule.getFragment();
     }
 }

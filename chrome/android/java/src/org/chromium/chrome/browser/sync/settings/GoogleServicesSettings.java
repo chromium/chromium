@@ -59,15 +59,19 @@ public class GoogleServicesSettings
     public static final String PREF_ALLOW_SIGNIN = "allow_signin";
     private static final String PREF_SEARCH_SUGGESTIONS = "search_suggestions";
     private static final String PREF_NAVIGATION_ERROR = "navigation_error";
-    private static final String PREF_SAFE_BROWSING = "safe_browsing";
-    private static final String PREF_PASSWORD_LEAK_DETECTION = "password_leak_detection";
-    private static final String PREF_SAFE_BROWSING_SCOUT_REPORTING =
-            "safe_browsing_scout_reporting";
+    @VisibleForTesting
+    public static final String PREF_SAFE_BROWSING = "safe_browsing";
+    @VisibleForTesting
+    public static final String PREF_PASSWORD_LEAK_DETECTION = "password_leak_detection";
+    @VisibleForTesting
+    public static final String PREF_SAFE_BROWSING_SCOUT_REPORTING = "safe_browsing_scout_reporting";
     private static final String PREF_USAGE_AND_CRASH_REPORTING = "usage_and_crash_reports";
     private static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
     private static final String PREF_CONTEXTUAL_SEARCH = "contextual_search";
-    private static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
-    private static final String PREF_METRICS_SETTINGS = "metrics_settings";
+    @VisibleForTesting
+    public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
+    @VisibleForTesting
+    public static final String PREF_METRICS_SETTINGS = "metrics_settings";
 
     private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final PrivacyPreferencesManager mPrivacyPrefManager =
