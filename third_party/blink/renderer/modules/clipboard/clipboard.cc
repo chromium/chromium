@@ -17,9 +17,6 @@ namespace blink {
 const char Clipboard::kSupplementName[] = "Clipboard";
 
 Clipboard* Clipboard::clipboard(Navigator& navigator) {
-  if (!navigator.DomWindow())
-    return nullptr;
-
   Clipboard* clipboard = Supplement<Navigator>::From<Clipboard>(navigator);
   if (!clipboard) {
     clipboard = MakeGarbageCollected<Clipboard>(navigator);
