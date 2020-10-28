@@ -235,7 +235,7 @@ int FprintF(std::FILE* output, const UntypedFormatSpecImpl format,
     errno = sink.error();
     return -1;
   }
-  if (sink.count() > std::numeric_limits<int>::max()) {
+  if (sink.count() > static_cast<size_t>(std::numeric_limits<int>::max())) {
     errno = EFBIG;
     return -1;
   }

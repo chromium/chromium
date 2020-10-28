@@ -78,8 +78,6 @@ def _PatchAbseil(abseil_in_chromium_dir):
 
   os.remove(os.path.join(abseil_in_chromium_dir, 'absl', 'base', 'internal', 'thread_annotations.h'))
   os.remove(os.path.join(abseil_in_chromium_dir, 'absl', 'base', 'internal', 'dynamic_annotations.h'))
-  #Chromium complains when a script file doesn't have execute permission.
-  os.chmod(os.path.join(abseil_in_chromium_dir, 'conanfile.py'), 0o750)
 
 
 def _Commit(chromium_dir, hash_diff):

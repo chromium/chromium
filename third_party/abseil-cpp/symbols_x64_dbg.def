@@ -1341,13 +1341,10 @@ EXPORTS
     ??XDuration@absl@@QEAAAEAV01@_J@Z
     ??Xint128@absl@@QEAAAEAV01@V01@@Z
     ??Xuint128@absl@@QEAAAEAV01@V01@@Z
-    ??Y?$civil_time@Uday_tag@detail@cctz@time_internal@absl@@@detail@cctz@time_internal@absl@@QEAAAEAV01234@_J@Z
-    ??Y?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@cctz@time_internal@absl@@QEAAAEAV01234@_J@Z
     ??YDuration@absl@@QEAAAEAV01@V01@@Z
     ??YTime@absl@@QEAAAEAV01@VDuration@1@@Z
     ??Yint128@absl@@QEAAAEAV01@V01@@Z
     ??Yuint128@absl@@QEAAAEAV01@V01@@Z
-    ??Z?$civil_time@Uday_tag@detail@cctz@time_internal@absl@@@detail@cctz@time_internal@absl@@QEAAAEAV01234@_J@Z
     ??Z?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@cctz@time_internal@absl@@QEAAAEAV01234@_J@Z
     ??ZDuration@absl@@QEAAAEAV01@V01@@Z
     ??Zint128@absl@@QEAAAEAV01@V01@@Z

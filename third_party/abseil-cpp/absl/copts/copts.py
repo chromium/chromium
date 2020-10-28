@@ -41,10 +41,6 @@ LLVM_DISABLE_WARNINGS_FLAGS = [
     "-Wno-packed",
     "-Wno-padded",
     ###
-    # Google style does not use unsigned integers, though STL containers
-    # have unsigned types.
-    "-Wno-sign-compare",
-    ###
     "-Wno-float-conversion",
     "-Wno-float-equal",
     "-Wno-format-nonliteral",
@@ -138,9 +134,6 @@ COPT_VARS = {
         # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36750
         # Remove when gcc-4.x is no longer supported.
         "-Wno-missing-field-initializers",
-        # Google style does not use unsigned integers, though STL containers
-        # have unsigned types.
-        "-Wno-sign-compare",
         # Don't define min and max macros (Build on Windows using gcc)
         "-DNOMINMAX",
     ],

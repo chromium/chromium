@@ -134,7 +134,7 @@ class BinaryToDecimal {
     assert(exp > 0);
     assert(exp <= std::numeric_limits<long double>::max_exponent);
     static_assert(
-        StackArray::kMaxCapacity >=
+        static_cast<int>(StackArray::kMaxCapacity) >=
             ChunksNeeded(std::numeric_limits<long double>::max_exponent),
         "");
 

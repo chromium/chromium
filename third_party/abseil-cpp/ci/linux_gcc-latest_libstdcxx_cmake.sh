@@ -14,17 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO(absl-team): This script isn't fully hermetic because
-# -DABSL_USE_GOOGLETEST_HEAD=ON means that this script isn't pinned to a fixed
-# version of GoogleTest. This means that an upstream change to GoogleTest could
-# break this test. Fix this by allowing this script to pin to a known-good
-# version of GoogleTest.
-
 set -euox pipefail
 
 if [[ -z ${ABSEIL_ROOT:-} ]]; then
   ABSEIL_ROOT="$(realpath $(dirname ${0})/..)"
 fi
+
+source "${ABSEIL_ROOT}/ci/cmake_common.sh"
 
 if [[ -z ${ABSL_CMAKE_CXX_STANDARDS:-} ]]; then
   ABSL_CMAKE_CXX_STANDARDS="11 14 17 20"
@@ -46,17 +42,17 @@ for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
     for build_shared in ${ABSL_CMAKE_BUILD_SHARED}; do
       time docker run \
         --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
-        --workdir=/abseil-cpp \
         --tmpfs=/buildfs:exec \
+        --workdir=/buildfs \
         --cap-add=SYS_PTRACE \
         --rm \
         -e CFLAGS="-Werror" \
         -e CXXFLAGS="-Werror" \
-        ${DOCKER_CONTAINER} \
+        ${DOCKER_EXTRA_ARGS:-} \
+        "${DOCKER_CONTAINER}" \
         /bin/bash -c "
-          cd /buildfs && \
           cmake /abseil-cpp \
-            -DABSL_USE_GOOGLETEST_HEAD=ON \
+            -DABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL} \
             -DABSL_RUN_TESTS=ON \
             -DBUILD_SHARED_LIBS=${build_shared} \
             -DCMAKE_BUILD_TYPE=${compilation_mode} \

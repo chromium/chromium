@@ -153,8 +153,8 @@ EXPORTS
     ??BCord@absl@@QBE?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@XZ
     ??Bint128@absl@@QBENXZ
     ??EChunkIterator@Cord@absl@@QAEAAV012@XZ
-    ??Hdetail@cctz@time_internal@absl@@YA?AV?$civil_time@Uday_tag@detail@cctz@time_internal@absl@@@0123@V40123@_J@Z
-    ??Hdetail@cctz@time_internal@absl@@YA?AV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@0123@V40123@_J@Z
+    ??Gdetail@cctz@time_internal@absl@@YA?AV?$civil_time@Uday_tag@detail@cctz@time_internal@absl@@@0123@V40123@_J@Z
+    ??Gdetail@cctz@time_internal@absl@@YA?AV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@0123@V40123@_J@Z
     ??Kabsl@@YA?AVint128@0@V10@0@Z
     ??Kabsl@@YA?AVuint128@0@V10@0@Z
     ??Labsl@@YA?AVint128@0@V10@0@Z
@@ -163,8 +163,6 @@ EXPORTS
     ??XDuration@absl@@QAEAAV01@N@Z
     ??XDuration@absl@@QAEAAV01@_J@Z
     ??YDuration@absl@@QAEAAV01@V01@@Z
-    ??Z?$civil_time@Uday_tag@detail@cctz@time_internal@absl@@@detail@cctz@time_internal@absl@@QAEAAV01234@_J@Z
-    ??Z?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@cctz@time_internal@absl@@QAEAAV01234@_J@Z
     ??ZDuration@absl@@QAEAAV01@V01@@Z
     ??_0Duration@absl@@QAEAAV01@N@Z
     ??_0Duration@absl@@QAEAAV01@_J@Z

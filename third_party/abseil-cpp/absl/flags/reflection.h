@@ -64,7 +64,7 @@ absl::flat_hash_map<absl::string_view, absl::CommandLineFlag*> GetAllFlags();
 //   void MyFunc() {
 //    absl::FlagSaver fs;
 //    ...
-//    absl::SetFlag(FLAGS_myFlag, otherValue);
+//    absl::SetFlag(&FLAGS_myFlag, otherValue);
 //    ...
 //  } // scope of FlagSaver left, flags return to previous state
 //

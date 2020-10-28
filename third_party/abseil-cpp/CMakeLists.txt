@@ -95,12 +95,13 @@ find_package(Threads REQUIRED)
 option(ABSL_USE_EXTERNAL_GOOGLETEST
   "If ON, Abseil will assume that the targets for GoogleTest are already provided by the including project. This makes sense when Abseil is used with add_subproject." OFF)
 
-
 option(ABSL_USE_GOOGLETEST_HEAD
-  "If ON, abseil will download HEAD from googletest at config time." OFF)
+  "If ON, abseil will download HEAD from GoogleTest at config time." OFF)
+
+set(ABSL_GOOGLETEST_DOWNLOAD_URL "" CACHE STRING "If set, download GoogleTest from this URL")
 
 set(ABSL_LOCAL_GOOGLETEST_DIR "/usr/src/googletest" CACHE PATH
-  "If ABSL_USE_GOOGLETEST_HEAD is OFF, specifies the directory of a local googletest checkout."
+  "If ABSL_USE_GOOGLETEST_HEAD is OFF and ABSL_GOOGLETEST_URL is not set, specifies the directory of a local GoogleTest checkout."
   )
 
 option(ABSL_RUN_TESTS "If ON, Abseil tests will be run." OFF)
@@ -113,7 +114,15 @@ if(${ABSL_RUN_TESTS})
   ## check targets
   if (NOT ABSL_USE_EXTERNAL_GOOGLETEST)
     set(absl_gtest_build_dir ${CMAKE_BINARY_DIR}/googletest-build)
-    if(${ABSL_USE_GOOGLETEST_HEAD})
+    if(ABSL_USE_GOOGLETEST_HEAD AND ABSL_GOOGLETEST_DOWNLOAD_URL)
+      message(FATAL_ERROR "Do not set both ABSL_USE_GOOGLETEST_HEAD and ABSL_GOOGLETEST_DOWNLOAD_URL")
+    endif()
+    if(ABSL_USE_GOOGLETEST_HEAD)
+      set(absl_gtest_download_url "https://github.com/google/googletest/archive/master.zip")
+    elseif(ABSL_GOOGLETEST_DOWNLOAD_URL)
+      set(absl_gtest_download_url ${ABSL_GOOGLETEST_DOWNLOAD_URL})
+    endif()
+    if(absl_gtest_download_url)
       set(absl_gtest_src_dir ${CMAKE_BINARY_DIR}/googletest-src)
     else()
       set(absl_gtest_src_dir ${ABSL_LOCAL_GOOGLETEST_DIR})

@@ -1183,6 +1183,103 @@ TEST(Btree, RangeCtorSanity) {
   EXPECT_EQ(1, tmap.size());
 }
 
+}  // namespace
+
+class BtreeNodePeer {
+ public:
+  // Yields the size of a leaf node with a specific number of values.
+  template <typename ValueType>
+  constexpr static size_t GetTargetNodeSize(size_t target_values_per_node) {
+    return btree_node<
+        set_params<ValueType, std::less<ValueType>, std::allocator<ValueType>,
+                   /*TargetNodeSize=*/256,  // This parameter isn't used here.
+                   /*Multi=*/false>>::SizeWithNValues(target_values_per_node);
+  }
+
+  // Yields the number of values in a (non-root) leaf node for this btree.
+  template <typename Btree>
+  constexpr static size_t GetNumValuesPerNode() {
+    return btree_node<typename Btree::params_type>::kNodeValues;
+  }
+
+  template <typename Btree>
+  constexpr static size_t GetMaxFieldType() {
+    return std::numeric_limits<
+        typename btree_node<typename Btree::params_type>::field_type>::max();
+  }
+
+  template <typename Btree>
+  constexpr static bool UsesLinearNodeSearch() {
+    return btree_node<typename Btree::params_type>::use_linear_search::value;
+  }
+};
+
+namespace {
+
+class BtreeMapTest : public ::testing::Test {
+ public:
+  struct Key {};
+  struct Cmp {
+    template <typename T>
+    bool operator()(T, T) const {
+      return false;
+    }
+  };
+
+  struct KeyLin {
+    using absl_btree_prefer_linear_node_search = std::true_type;
+  };
+  struct CmpLin : Cmp {
+    using absl_btree_prefer_linear_node_search = std::true_type;
+  };
+
+  struct KeyBin {
+    using absl_btree_prefer_linear_node_search = std::false_type;
+  };
+  struct CmpBin : Cmp {
+    using absl_btree_prefer_linear_node_search = std::false_type;
+  };
+
+  template <typename K, typename C>
+  static bool IsLinear() {
+    return BtreeNodePeer::UsesLinearNodeSearch<absl::btree_map<K, int, C>>();
+  }
+};
+
+TEST_F(BtreeMapTest, TestLinearSearchPreferredForKeyLinearViaAlias) {
+  // Test requesting linear search by directly exporting an alias.
+  EXPECT_FALSE((IsLinear<Key, Cmp>()));
+  EXPECT_TRUE((IsLinear<KeyLin, Cmp>()));
+  EXPECT_TRUE((IsLinear<Key, CmpLin>()));
+  EXPECT_TRUE((IsLinear<KeyLin, CmpLin>()));
+}
+
+TEST_F(BtreeMapTest, LinearChoiceTree) {
+  // Cmp has precedence, and is forcing binary
+  EXPECT_FALSE((IsLinear<Key, CmpBin>()));
+  EXPECT_FALSE((IsLinear<KeyLin, CmpBin>()));
+  EXPECT_FALSE((IsLinear<KeyBin, CmpBin>()));
+  EXPECT_FALSE((IsLinear<int, CmpBin>()));
+  EXPECT_FALSE((IsLinear<std::string, CmpBin>()));
+  // Cmp has precedence, and is forcing linear
+  EXPECT_TRUE((IsLinear<Key, CmpLin>()));
+  EXPECT_TRUE((IsLinear<KeyLin, CmpLin>()));
+  EXPECT_TRUE((IsLinear<KeyBin, CmpLin>()));
+  EXPECT_TRUE((IsLinear<int, CmpLin>()));
+  EXPECT_TRUE((IsLinear<std::string, CmpLin>()));
+  // Cmp has no preference, Key determines linear vs binary.
+  EXPECT_FALSE((IsLinear<Key, Cmp>()));
+  EXPECT_TRUE((IsLinear<KeyLin, Cmp>()));
+  EXPECT_FALSE((IsLinear<KeyBin, Cmp>()));
+  // arithmetic key w/ std::less or std::greater: linear
+  EXPECT_TRUE((IsLinear<int, std::less<int>>()));
+  EXPECT_TRUE((IsLinear<double, std::greater<double>>()));
+  // arithmetic key w/ custom compare: binary
+  EXPECT_FALSE((IsLinear<int, Cmp>()));
+  // non-arithmetic key: binary
+  EXPECT_FALSE((IsLinear<std::string, std::less<std::string>>()));
+}
+
 TEST(Btree, BtreeMapCanHoldMoveOnlyTypes) {
   absl::btree_map<std::string, std::unique_ptr<std::string>> m;
 
@@ -1327,34 +1424,6 @@ TEST(Btree, RValueInsert) {
   EXPECT_EQ(tracker.copies(), 0);
   EXPECT_EQ(tracker.swaps(), 0);
 }
-
-}  // namespace
-
-class BtreeNodePeer {
- public:
-  // Yields the size of a leaf node with a specific number of values.
-  template <typename ValueType>
-  constexpr static size_t GetTargetNodeSize(size_t target_values_per_node) {
-    return btree_node<
-        set_params<ValueType, std::less<ValueType>, std::allocator<ValueType>,
-                   /*TargetNodeSize=*/256,  // This parameter isn't used here.
-                   /*Multi=*/false>>::SizeWithNValues(target_values_per_node);
-  }
-
-  // Yields the number of values in a (non-root) leaf node for this set.
-  template <typename Set>
-  constexpr static size_t GetNumValuesPerNode() {
-    return btree_node<typename Set::params_type>::kNodeValues;
-  }
-
-  template <typename Set>
-  constexpr static size_t GetMaxFieldType() {
-    return std::numeric_limits<
-        typename btree_node<typename Set::params_type>::field_type>::max();
-  }
-};
-
-namespace {
 
 // A btree set with a specific number of values per node.
 template <typename Key, int TargetValuesPerNode, typename Cmp = std::less<Key>>
@@ -2611,6 +2680,12 @@ struct MultiKey {
   int i2;
 };
 
+bool operator==(const MultiKey a, const MultiKey b) {
+  return a.i1 == b.i1 && a.i2 == b.i2;
+}
+
+// A heterogeneous comparator that has different equivalence classes for
+// different lookup types.
 struct MultiKeyComp {
   using is_transparent = void;
   bool operator()(const MultiKey a, const MultiKey b) const {
@@ -2621,8 +2696,6 @@ struct MultiKeyComp {
   bool operator()(const MultiKey a, const int b) const { return a.i1 < b; }
 };
 
-// Test that when there's a heterogeneous comparator that behaves differently
-// for some heterogeneous operators, we get equal_range() right.
 TEST(Btree, MultiKeyEqualRange) {
   absl::btree_set<MultiKey, MultiKeyComp> set;
 
@@ -2638,6 +2711,114 @@ TEST(Btree, MultiKeyEqualRange) {
     EXPECT_EQ(equal_range.first->i2, 0);
     EXPECT_EQ(std::distance(equal_range.first, equal_range.second), 100) << i;
   }
+}
+
+TEST(Btree, MultiKeyErase) {
+  absl::btree_set<MultiKey, MultiKeyComp> set = {
+      {1, 1}, {2, 1}, {2, 2}, {3, 1}};
+  EXPECT_EQ(set.erase(2), 2);
+  EXPECT_THAT(set, ElementsAre(MultiKey{1, 1}, MultiKey{3, 1}));
+}
+
+TEST(Btree, MultiKeyCount) {
+  const absl::btree_set<MultiKey, MultiKeyComp> set = {
+      {1, 1}, {2, 1}, {2, 2}, {3, 1}};
+  EXPECT_EQ(set.count(2), 2);
+}
+
+TEST(Btree, AllocConstructor) {
+  using Alloc = CountingAllocator<int>;
+  using Set = absl::btree_set<int, std::less<int>, Alloc>;
+  int64_t bytes_used = 0;
+  Alloc alloc(&bytes_used);
+  Set set(alloc);
+
+  set.insert({1, 2, 3});
+
+  EXPECT_THAT(set, ElementsAre(1, 2, 3));
+  EXPECT_GT(bytes_used, set.size() * sizeof(int));
+}
+
+TEST(Btree, AllocInitializerListConstructor) {
+  using Alloc = CountingAllocator<int>;
+  using Set = absl::btree_set<int, std::less<int>, Alloc>;
+  int64_t bytes_used = 0;
+  Alloc alloc(&bytes_used);
+  Set set({1, 2, 3}, alloc);
+
+  EXPECT_THAT(set, ElementsAre(1, 2, 3));
+  EXPECT_GT(bytes_used, set.size() * sizeof(int));
+}
+
+TEST(Btree, AllocRangeConstructor) {
+  using Alloc = CountingAllocator<int>;
+  using Set = absl::btree_set<int, std::less<int>, Alloc>;
+  int64_t bytes_used = 0;
+  Alloc alloc(&bytes_used);
+  std::vector<int> v = {1, 2, 3};
+  Set set(v.begin(), v.end(), alloc);
+
+  EXPECT_THAT(set, ElementsAre(1, 2, 3));
+  EXPECT_GT(bytes_used, set.size() * sizeof(int));
+}
+
+TEST(Btree, AllocCopyConstructor) {
+  using Alloc = CountingAllocator<int>;
+  using Set = absl::btree_set<int, std::less<int>, Alloc>;
+  int64_t bytes_used1 = 0;
+  Alloc alloc1(&bytes_used1);
+  Set set1(alloc1);
+
+  set1.insert({1, 2, 3});
+
+  int64_t bytes_used2 = 0;
+  Alloc alloc2(&bytes_used2);
+  Set set2(set1, alloc2);
+
+  EXPECT_THAT(set1, ElementsAre(1, 2, 3));
+  EXPECT_THAT(set2, ElementsAre(1, 2, 3));
+  EXPECT_GT(bytes_used1, set1.size() * sizeof(int));
+  EXPECT_EQ(bytes_used1, bytes_used2);
+}
+
+TEST(Btree, AllocMoveConstructor_SameAlloc) {
+  using Alloc = CountingAllocator<int>;
+  using Set = absl::btree_set<int, std::less<int>, Alloc>;
+  int64_t bytes_used = 0;
+  Alloc alloc(&bytes_used);
+  Set set1(alloc);
+
+  set1.insert({1, 2, 3});
+
+  const int64_t original_bytes_used = bytes_used;
+  EXPECT_GT(original_bytes_used, set1.size() * sizeof(int));
+
+  Set set2(std::move(set1), alloc);
+
+  EXPECT_THAT(set2, ElementsAre(1, 2, 3));
+  EXPECT_EQ(bytes_used, original_bytes_used);
+}
+
+TEST(Btree, AllocMoveConstructor_DifferentAlloc) {
+  using Alloc = CountingAllocator<int>;
+  using Set = absl::btree_set<int, std::less<int>, Alloc>;
+  int64_t bytes_used1 = 0;
+  Alloc alloc1(&bytes_used1);
+  Set set1(alloc1);
+
+  set1.insert({1, 2, 3});
+
+  const int64_t original_bytes_used = bytes_used1;
+  EXPECT_GT(original_bytes_used, set1.size() * sizeof(int));
+
+  int64_t bytes_used2 = 0;
+  Alloc alloc2(&bytes_used2);
+  Set set2(std::move(set1), alloc2);
+
+  EXPECT_THAT(set2, ElementsAre(1, 2, 3));
+  // We didn't free these bytes allocated by `set1` yet.
+  EXPECT_EQ(bytes_used1, original_bytes_used);
+  EXPECT_EQ(bytes_used2, original_bytes_used);
 }
 
 }  // namespace

@@ -32,6 +32,7 @@
 
 #include "absl/base/config.h"
 #include "absl/base/internal/per_thread_tls.h"
+#include "absl/base/optimization.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -69,30 +70,28 @@ struct PerThreadSynch {
                          // is using this PerThreadSynch as a terminator.  Its
                          // skip field must not be filled in because the loop
                          // might then skip over the terminator.
-
-  // The wait parameters of the current wait.  waitp is null if the
-  // thread is not waiting. Transitions from null to non-null must
-  // occur before the enqueue commit point (state = kQueued in
-  // Enqueue() and CondVarEnqueue()). Transitions from non-null to
-  // null must occur after the wait is finished (state = kAvailable in
-  // Mutex::Block() and CondVar::WaitCommon()). This field may be
-  // changed only by the thread that describes this PerThreadSynch.  A
-  // special case is Fer(), which calls Enqueue() on another thread,
-  // but with an identical SynchWaitParams pointer, thus leaving the
-  // pointer unchanged.
-  SynchWaitParams *waitp;
-
-  bool suppress_fatal_errors;  // If true, try to proceed even in the face of
-                               // broken invariants.  This is used within fatal
-                               // signal handlers to improve the chances of
-                               // debug logging information being output
-                               // successfully.
-
-  intptr_t readers;     // Number of readers in mutex.
-  int priority;         // Priority of thread (updated every so often).
-
-  // When priority will next be read (cycles).
-  int64_t next_priority_read_cycles;
+  bool wake;             // This thread is to be woken from a Mutex.
+  // If "x" is on a waiter list for a mutex, "x->cond_waiter" is true iff the
+  // waiter is waiting on the mutex as part of a CV Wait or Mutex Await.
+  //
+  // The value of "x->cond_waiter" is meaningless if "x" is not on a
+  // Mutex waiter list.
+  bool cond_waiter;
+  bool maybe_unlocking;  // Valid at head of Mutex waiter queue;
+                         // true if UnlockSlow could be searching
+                         // for a waiter to wake.  Used for an optimization
+                         // in Enqueue().  true is always a valid value.
+                         // Can be reset to false when the unlocker or any
+                         // writer releases the lock, or a reader fully
+                         // releases the lock.  It may not be set to false
+                         // by a reader that decrements the count to
+                         // non-zero. protected by mutex spinlock
+  bool suppress_fatal_errors;  // If true, try to proceed even in the face
+                               // of broken invariants.  This is used within
+                               // fatal signal handlers to improve the
+                               // chances of debug logging information being
+                               // output successfully.
+  int priority;                // Priority of thread (updated every so often).
 
   // State values:
   //   kAvailable: This PerThreadSynch is available.
@@ -111,30 +110,30 @@ struct PerThreadSynch {
   };
   std::atomic<State> state;
 
-  bool maybe_unlocking;  // Valid at head of Mutex waiter queue;
-                         // true if UnlockSlow could be searching
-                         // for a waiter to wake.  Used for an optimization
-                         // in Enqueue().  true is always a valid value.
-                         // Can be reset to false when the unlocker or any
-                         // writer releases the lock, or a reader fully releases
-                         // the lock.  It may not be set to false by a reader
-                         // that decrements the count to non-zero.
-                         // protected by mutex spinlock
+  // The wait parameters of the current wait.  waitp is null if the
+  // thread is not waiting. Transitions from null to non-null must
+  // occur before the enqueue commit point (state = kQueued in
+  // Enqueue() and CondVarEnqueue()). Transitions from non-null to
+  // null must occur after the wait is finished (state = kAvailable in
+  // Mutex::Block() and CondVar::WaitCommon()). This field may be
+  // changed only by the thread that describes this PerThreadSynch.  A
+  // special case is Fer(), which calls Enqueue() on another thread,
+  // but with an identical SynchWaitParams pointer, thus leaving the
+  // pointer unchanged.
+  SynchWaitParams* waitp;
 
-  bool wake;  // This thread is to be woken from a Mutex.
+  intptr_t readers;     // Number of readers in mutex.
 
-  // If "x" is on a waiter list for a mutex, "x->cond_waiter" is true iff the
-  // waiter is waiting on the mutex as part of a CV Wait or Mutex Await.
-  //
-  // The value of "x->cond_waiter" is meaningless if "x" is not on a
-  // Mutex waiter list.
-  bool cond_waiter;
+  // When priority will next be read (cycles).
+  int64_t next_priority_read_cycles;
 
   // Locks held; used during deadlock detection.
   // Allocated in Synch_GetAllLocks() and freed in ReclaimThreadIdentity().
   SynchLocksHeld *all_locks;
 };
 
+// The instances of this class are allocated in NewThreadIdentity() with an
+// alignment of PerThreadSynch::kAlignment.
 struct ThreadIdentity {
   // Must be the first member.  The Mutex implementation requires that
   // the PerThreadSynch object associated with each thread is

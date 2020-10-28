@@ -23,6 +23,7 @@
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/container/internal/btree.h"  // IWYU pragma: export
 #include "absl/container/internal/common.h"
+#include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 
 namespace absl {
@@ -68,8 +69,21 @@ class btree_container {
   explicit btree_container(const key_compare &comp,
                            const allocator_type &alloc = allocator_type())
       : tree_(comp, alloc) {}
-  btree_container(const btree_container &other) = default;
-  btree_container(btree_container &&other) noexcept = default;
+  explicit btree_container(const allocator_type &alloc)
+      : tree_(key_compare(), alloc) {}
+
+  btree_container(const btree_container &other)
+      : btree_container(other, absl::allocator_traits<allocator_type>::
+                                   select_on_container_copy_construction(
+                                       other.get_allocator())) {}
+  btree_container(const btree_container &other, const allocator_type &alloc)
+      : tree_(other.tree_, alloc) {}
+
+  btree_container(btree_container &&other) noexcept(
+      std::is_nothrow_move_constructible<Tree>::value) = default;
+  btree_container(btree_container &&other, const allocator_type &alloc)
+      : tree_(std::move(other.tree_), alloc) {}
+
   btree_container &operator=(const btree_container &other) = default;
   btree_container &operator=(btree_container &&other) noexcept(
       std::is_nothrow_move_assignable<Tree>::value) = default;
@@ -89,6 +103,11 @@ class btree_container {
   const_reverse_iterator crend() const { return tree_.rend(); }
 
   // Lookup routines.
+  template <typename K = key_type>
+  size_type count(const key_arg<K> &key) const {
+    auto equal_range = this->equal_range(key);
+    return std::distance(equal_range.first, equal_range.second);
+  }
   template <typename K = key_type>
   iterator find(const key_arg<K> &key) {
     return tree_.find(key);
@@ -137,6 +156,11 @@ class btree_container {
   iterator erase(iterator iter) { return tree_.erase(iter); }
   iterator erase(const_iterator first, const_iterator last) {
     return tree_.erase_range(iterator(first), iterator(last)).second;
+  }
+  template <typename K = key_type>
+  size_type erase(const key_arg<K> &key) {
+    auto equal_range = this->equal_range(key);
+    return tree_.erase_range(equal_range.first, equal_range.second).first;
   }
 
   // Extract routines.
@@ -234,7 +258,7 @@ class btree_set_container : public btree_container<Tree> {
   using super_type::super_type;
   btree_set_container() {}
 
-  // Range constructor.
+  // Range constructors.
   template <class InputIterator>
   btree_set_container(InputIterator b, InputIterator e,
                       const key_compare &comp = key_compare(),
@@ -242,18 +266,19 @@ class btree_set_container : public btree_container<Tree> {
       : super_type(comp, alloc) {
     insert(b, e);
   }
+  template <class InputIterator>
+  btree_set_container(InputIterator b, InputIterator e,
+                      const allocator_type &alloc)
+      : btree_set_container(b, e, key_compare(), alloc) {}
 
-  // Initializer list constructor.
+  // Initializer list constructors.
   btree_set_container(std::initializer_list<init_type> init,
                       const key_compare &comp = key_compare(),
                       const allocator_type &alloc = allocator_type())
       : btree_set_container(init.begin(), init.end(), comp, alloc) {}
-
-  // Lookup routines.
-  template <typename K = key_type>
-  size_type count(const key_arg<K> &key) const {
-    return this->tree_.count_unique(key);
-  }
+  btree_set_container(std::initializer_list<init_type> init,
+                      const allocator_type &alloc)
+      : btree_set_container(init.begin(), init.end(), alloc) {}
 
   // Insertion routines.
   std::pair<iterator, bool> insert(const value_type &v) {
@@ -312,16 +337,10 @@ class btree_set_container : public btree_container<Tree> {
     return res.first;
   }
 
-  // Deletion routines.
-  // TODO(ezb): we should support heterogeneous comparators that have different
-  // behavior for K!=key_type.
-  template <typename K = key_type>
-  size_type erase(const key_arg<K> &key) {
-    return this->tree_.erase_unique(key);
-  }
-  using super_type::erase;
-
   // Node extraction routines.
+  // TODO(ezb): when the comparator is heterogeneous and has different
+  // equivalence classes for different lookup types, we should extract the first
+  // equivalent value if there are multiple.
   template <typename K = key_type>
   node_type extract(const key_arg<K> &key) {
     auto it = this->find(key);
@@ -370,6 +389,7 @@ template <typename Tree>
 class btree_map_container : public btree_set_container<Tree> {
   using super_type = btree_set_container<Tree>;
   using params_type = typename Tree::params_type;
+  friend class BtreeNodePeer;
 
  private:
   template <class K>
@@ -534,7 +554,7 @@ class btree_multiset_container : public btree_container<Tree> {
   using super_type::super_type;
   btree_multiset_container() {}
 
-  // Range constructor.
+  // Range constructors.
   template <class InputIterator>
   btree_multiset_container(InputIterator b, InputIterator e,
                            const key_compare &comp = key_compare(),
@@ -542,18 +562,19 @@ class btree_multiset_container : public btree_container<Tree> {
       : super_type(comp, alloc) {
     insert(b, e);
   }
+  template <class InputIterator>
+  btree_multiset_container(InputIterator b, InputIterator e,
+                           const allocator_type &alloc)
+      : btree_multiset_container(b, e, key_compare(), alloc) {}
 
-  // Initializer list constructor.
+  // Initializer list constructors.
   btree_multiset_container(std::initializer_list<init_type> init,
                            const key_compare &comp = key_compare(),
                            const allocator_type &alloc = allocator_type())
       : btree_multiset_container(init.begin(), init.end(), comp, alloc) {}
-
-  // Lookup routines.
-  template <typename K = key_type>
-  size_type count(const key_arg<K> &key) const {
-    return this->tree_.count_multi(key);
-  }
+  btree_multiset_container(std::initializer_list<init_type> init,
+                           const allocator_type &alloc)
+      : btree_multiset_container(init.begin(), init.end(), alloc) {}
 
   // Insertion routines.
   iterator insert(const value_type &v) { return this->tree_.insert_multi(v); }
@@ -599,14 +620,9 @@ class btree_multiset_container : public btree_container<Tree> {
     return res;
   }
 
-  // Deletion routines.
-  template <typename K = key_type>
-  size_type erase(const key_arg<K> &key) {
-    return this->tree_.erase_multi(key);
-  }
-  using super_type::erase;
-
   // Node extraction routines.
+  // TODO(ezb): we are supposed to extract the first equivalent key if there are
+  // multiple, but this isn't guaranteed to extract the first one.
   template <typename K = key_type>
   node_type extract(const key_arg<K> &key) {
     auto it = this->find(key);

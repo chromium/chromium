@@ -118,6 +118,24 @@ if ! grep absl::strings "${libdir}/cmake/${absl_subdir}/abslTargets.cmake"; then
   exit 1
 fi
 
+pushd "${HOME}"
+cat > hello-abseil.cc << EOF
+#include <cstdlib>
+
+#include "absl/strings/str_format.h"
+
+int main(int argc, char **argv) {
+  absl::PrintF("Hello Abseil!\n");
+  return EXIT_SUCCESS;
+}
+EOF
+export PKG_CONFIG_PATH="${install_dir}/${libdir}/pkgconfig"
+pc_args=($(pkg-config --cflags --libs --static absl_str_format))
+g++ -static -o hello-abseil hello-abseil.cc "${pc_args[@]}"
+hello="$(./hello-abseil)"
+[[ "${hello}" == "Hello Abseil!" ]]
+popd
+
 uninstall_absl
 popd
 

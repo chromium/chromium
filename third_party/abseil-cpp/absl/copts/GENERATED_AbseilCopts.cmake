@@ -16,7 +16,6 @@ list(APPEND ABSL_CLANG_CL_FLAGS
     "-Wno-extra-semi-stmt"
     "-Wno-packed"
     "-Wno-padded"
-    "-Wno-sign-compare"
     "-Wno-float-conversion"
     "-Wno-float-equal"
     "-Wno-format-nonliteral"
@@ -88,7 +87,6 @@ list(APPEND ABSL_GCC_FLAGS
     "-Wvla"
     "-Wwrite-strings"
     "-Wno-missing-field-initializers"
-    "-Wno-sign-compare"
     "-DNOMINMAX"
 )
 
@@ -117,7 +115,6 @@ list(APPEND ABSL_LLVM_FLAGS
     "-Wno-extra-semi-stmt"
     "-Wno-packed"
     "-Wno-padded"
-    "-Wno-sign-compare"
     "-Wno-float-conversion"
     "-Wno-float-equal"
     "-Wno-format-nonliteral"

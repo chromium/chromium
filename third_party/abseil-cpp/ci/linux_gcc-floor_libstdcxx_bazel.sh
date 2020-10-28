@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2019 The Abseil Authors.
+# Copyright 2020 The Abseil Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,12 +37,12 @@ if [[ -z ${EXCEPTIONS_MODE:-} ]]; then
 fi
 
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
-readonly DOCKER_CONTAINER=${LINUX_GCC_49_CONTAINER}
+readonly DOCKER_CONTAINER=${LINUX_GCC_FLOOR_CONTAINER}
 
 # USE_BAZEL_CACHE=1 only works on Kokoro.
 # Without access to the credentials this won't work.
 if [[ ${USE_BAZEL_CACHE:-0} -ne 0 ]]; then
-  DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_KEYSTORE_DIR},target=/keystore,readonly ${DOCKER_EXTRA_ARGS:-}"
+  DOCKER_EXTRA_ARGS="--volume=${KOKORO_KEYSTORE_DIR}:/keystore:ro ${DOCKER_EXTRA_ARGS:-}"
   # Bazel doesn't track changes to tools outside of the workspace
   # (e.g. /usr/bin/gcc), so by appending the docker container to the
   # remote_http_cache url, we make changes to the container part of
@@ -55,7 +55,7 @@ fi
 # external dependencies first.
 # https://docs.bazel.build/versions/master/guide.html#distdir
 if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -d "${KOKORO_GFILE_DIR}/distdir" ]]; then
-  DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_GFILE_DIR}/distdir,target=/distdir,readonly ${DOCKER_EXTRA_ARGS:-}"
+  DOCKER_EXTRA_ARGS="--volume=${KOKORO_GFILE_DIR}/distdir:/distdir:ro ${DOCKER_EXTRA_ARGS:-}"
   BAZEL_EXTRA_ARGS="--distdir=/distdir ${BAZEL_EXTRA_ARGS:-}"
 fi
 
@@ -64,11 +64,11 @@ for std in ${STD}; do
     for exceptions_mode in ${EXCEPTIONS_MODE}; do
       echo "--------------------------------------------------------------------"
       time docker run \
-        --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
+        --volume="${ABSEIL_ROOT}:/abseil-cpp:ro" \
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \
         --rm \
-        -e CC="/usr/bin/gcc-4.9" \
+        -e CC="/usr/local/bin/gcc" \
         -e BAZEL_CXXOPTS="-std=${std}" \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \

@@ -20,6 +20,8 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
   ABSEIL_ROOT="$(realpath $(dirname ${0})/..)"
 fi
 
+source "${ABSEIL_ROOT}/ci/cmake_common.sh"
+
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
 readonly DOCKER_CONTAINER=${LINUX_GCC_LATEST_CONTAINER}
 
