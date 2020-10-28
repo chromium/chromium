@@ -886,6 +886,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     focus_on_creation_ = focus_on_creation;
   }
 
+  // Returns the parent of this widget. Note that a top-level widget is not
+  // necessarily a root widget and can have a parent.
+  Widget* parent() { return parent_; }
+
   // True if the widget is considered top level widget. Top level widget
   // is a widget of TYPE_WINDOW, TYPE_PANEL, TYPE_WINDOW_FRAMELESS, BUBBLE,
   // POPUP or MENU, and has a focus manager and input method object associated
@@ -1063,6 +1067,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Non-owned pointer to the Widget's delegate. If a NULL delegate is supplied
   // to Init() a default WidgetDelegate is created.
   WidgetDelegate* widget_delegate_ = nullptr;
+
+  // The parent of this widget. This is the widget that associates with the
+  // |params.parent| supplied to Init(). If no parent is given or the native
+  // view parent has no associating Widget, this value will be nullptr.
+  Widget* parent_ = nullptr;
 
   // The root of the View hierarchy attached to this window.
   // WARNING: see warning in tooltip_manager_ for ordering dependencies with

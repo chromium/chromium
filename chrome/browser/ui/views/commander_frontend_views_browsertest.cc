@@ -119,14 +119,7 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
       return false;
     views::Widget* browser_widget =
         BrowserView::GetBrowserViewForBrowser(browser)->GetWidget();
-    views::Widget::Widgets children;
-    views::Widget::GetAllOwnedWidgets(browser_widget->GetNativeView(),
-                                      &children);
-    for (const views::Widget* child : children) {
-      if (child == active_widget_)
-        return true;
-    }
-    return false;
+    return active_widget_->parent() == browser_widget;
   }
 
   std::unique_ptr<views::AnyWidgetObserver> observer_;
