@@ -129,7 +129,16 @@ def create_device_by_platform_and_version(platform, version):
     udid = subprocess.check_output(
         ['xcrun', 'simctl', 'create', name, device_type, runtime],
         stderr=subprocess.STDOUT).rstrip()
-    LOGGER.info('Created simulator with UDID: %s', udid)
+    LOGGER.info('Created simulator in first attempt with UDID: %s', udid)
+    # Sometimes above command fails to create a simulator. Verify it and retry
+    # once if first attempt failed.
+    if not is_device_with_udid_simulator(udid):
+      # Try to delete once to avoid duplicate in case of race condition.
+      delete_simulator_by_udid(udid)
+      udid = subprocess.check_output(
+          ['xcrun', 'simctl', 'create', name, device_type, runtime],
+          stderr=subprocess.STDOUT).rstrip()
+      LOGGER.info('Created simulator in second attempt with UDID: %s', udid)
     return udid
   except subprocess.CalledProcessError as e:
     LOGGER.error('Error when creating simulator "%s": %s' % (name, e.output))
