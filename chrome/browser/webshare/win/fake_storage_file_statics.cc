@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/macros.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/fake_iasync_operation_win.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -61,9 +62,8 @@ class FakeStorageFile final
     // API, so we use a temporary ScopedHString to make a copy we can safely own
     // and release ownership of the original 'back' to the caller.
     base::win::ScopedHString holder(display_name_with_extension);
-    display_name_with_extension_ =
-        base::win::ScopedHString::Create(holder.Get());
-    (void)holder.release();
+    display_name_with_extension_ = holder.GetAsUTF8();
+    ignore_result(holder.release());
   }
   FakeStorageFile(const FakeStorageFile&) = delete;
   FakeStorageFile& operator=(const FakeStorageFile&) = delete;
@@ -198,8 +198,7 @@ class FakeStorageFile final
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Name(HSTRING* value) final {
-    auto copy =
-        base::win::ScopedHString::Create(display_name_with_extension_.Get());
+    auto copy = base::win::ScopedHString::Create(display_name_with_extension_);
     *value = copy.release();
     return S_OK;
   }
@@ -248,8 +247,7 @@ class FakeStorageFile final
         streamed_file_data_requested_handler_->Invoke(output_stream.Get()));
   }
 
-  base::win::ScopedHString display_name_with_extension_ =
-      base::win::ScopedHString::Create("");
+  std::string display_name_with_extension_;
   bool open_async_in_progress_ = false;
   ComPtr<IStreamedFileDataRequestedHandler>
       streamed_file_data_requested_handler_;

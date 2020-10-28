@@ -4552,6 +4552,8 @@ static_library("browser") {
       "upgrade_detector/get_installed_version_win.cc",
       "upgrade_detector/registry_monitor.cc",
       "upgrade_detector/registry_monitor.h",
+      "webshare/win/share_operation.cc",
+      "webshare/win/share_operation.h",
       "webshare/win/show_share_ui_for_window_operation.cc",
       "webshare/win/show_share_ui_for_window_operation.h",
       "win/app_icon.cc",
