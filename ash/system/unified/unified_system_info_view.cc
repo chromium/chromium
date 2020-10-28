@@ -58,9 +58,7 @@ base::string16 FormatDayOfWeek(const base::Time& time) {
 
 // A view that shows current date in short format e.g. "Mon, Mar 12". It updates
 // by observing ClockObserver.
-class DateView : public views::Button,
-                 public views::ButtonListener,
-                 public ClockObserver {
+class DateView : public views::Button, public ClockObserver {
  public:
   explicit DateView(UnifiedSystemTrayController* controller);
   ~DateView() override;
@@ -75,23 +73,21 @@ class DateView : public views::Button,
   // views::Button:
   gfx::Insets GetInsets() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // ClockObserver:
   void OnDateFormatChanged() override;
   void OnSystemClockTimeUpdated() override;
   void OnSystemClockCanSetTimeChanged(bool can_set_time) override;
   void Refresh() override;
 
-  UnifiedSystemTrayController* const controller_;
   views::Label* label_;
 
   DISALLOW_COPY_AND_ASSIGN(DateView);
 };
 
 DateView::DateView(UnifiedSystemTrayController* controller)
-    : Button(this), controller_(controller) {
+    : Button(base::BindRepeating(
+          &UnifiedSystemTrayController::HandleOpenDateTimeSettingsAction,
+          base::Unretained(controller))) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   label_ = AddChildView(std::make_unique<views::Label>());
   label_->SetAutoColorReadabilityEnabled(false);
@@ -115,10 +111,6 @@ void DateView::OnThemeChanged() {
       ContentLayerType::kTextColorPrimary));
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
-}
-
-void DateView::ButtonPressed(views::Button* sender, const ui::Event& event) {
-  controller_->HandleOpenDateTimeSettingsAction();
 }
 
 void DateView::Update() {
@@ -251,7 +243,7 @@ class ManagedStateView : public views::Button {
   void OnThemeChanged() override;
 
  protected:
-  ManagedStateView(views::ButtonListener* listener,
+  ManagedStateView(PressedCallback callback,
                    int label_id,
                    const gfx::VectorIcon& icon);
 
@@ -275,10 +267,10 @@ void ManagedStateView::OnThemeChanged() {
       AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
-ManagedStateView::ManagedStateView(views::ButtonListener* listener,
+ManagedStateView::ManagedStateView(PressedCallback callback,
                                    int label_id,
                                    const gfx::VectorIcon& icon)
-    : Button(listener), icon_(icon) {
+    : Button(std::move(callback)), icon_(icon) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kUnifiedSystemInfoSpacing));
@@ -299,15 +291,11 @@ ManagedStateView::ManagedStateView(views::ButtonListener* listener,
 // A view that shows whether the device is enterprise managed or not. It updates
 // by observing EnterpriseDomainModel.
 class EnterpriseManagedView : public ManagedStateView,
-                              public views::ButtonListener,
                               public EnterpriseDomainObserver,
                               public SessionObserver {
  public:
   explicit EnterpriseManagedView(UnifiedSystemTrayController* controller);
   ~EnterpriseManagedView() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // EnterpriseDomainObserver:
   void OnEnterpriseDomainChanged() override;
@@ -321,17 +309,17 @@ class EnterpriseManagedView : public ManagedStateView,
  private:
   void Update();
 
-  UnifiedSystemTrayController* const controller_;
-
   DISALLOW_COPY_AND_ASSIGN(EnterpriseManagedView);
 };
 
 EnterpriseManagedView::EnterpriseManagedView(
     UnifiedSystemTrayController* controller)
-    : ManagedStateView(this,
-                       IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
-                       kUnifiedMenuManagedIcon),
-      controller_(controller) {
+    : ManagedStateView(
+          base::BindRepeating(
+              &UnifiedSystemTrayController::HandleEnterpriseInfoAction,
+              base::Unretained(controller)),
+          IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
+          kUnifiedMenuManagedIcon) {
   DCHECK(Shell::Get());
   SetID(VIEW_ID_TRAY_ENTERPRISE);
   Shell::Get()->system_tray_model()->enterprise_domain()->AddObserver(this);
@@ -342,11 +330,6 @@ EnterpriseManagedView::EnterpriseManagedView(
 EnterpriseManagedView::~EnterpriseManagedView() {
   Shell::Get()->system_tray_model()->enterprise_domain()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
-}
-
-void EnterpriseManagedView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  controller_->HandleEnterpriseInfoAction();
 }
 
 void EnterpriseManagedView::OnEnterpriseDomainChanged() {
@@ -390,7 +373,7 @@ class SupervisedUserView : public ManagedStateView {
 };
 
 SupervisedUserView::SupervisedUserView()
-    : ManagedStateView(nullptr,
+    : ManagedStateView(PressedCallback(),
                        IDS_ASH_STATUS_TRAY_SUPERVISED_LABEL,
                        GetSupervisedUserIcon()) {
   SetVisible(Shell::Get()->session_controller()->IsUserSupervised());

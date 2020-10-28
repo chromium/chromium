@@ -28,10 +28,11 @@ namespace ash {
 
 UnifiedManagedDeviceView::UnifiedManagedDeviceView(
     UnifiedSystemTrayController* controller)
-    : Button(this),
+    : Button(base::BindRepeating(
+          &UnifiedSystemTrayController::HandleEnterpriseInfoAction,
+          base::Unretained(controller))),
       icon_(new views::ImageView),
-      label_(new views::Label),
-      controller_(controller) {
+      label_(new views::Label) {
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -61,11 +62,6 @@ UnifiedManagedDeviceView::UnifiedManagedDeviceView(
 UnifiedManagedDeviceView::~UnifiedManagedDeviceView() {
   Shell::Get()->system_tray_model()->enterprise_domain()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
-}
-
-void UnifiedManagedDeviceView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  controller_->HandleEnterpriseInfoAction();
 }
 
 void UnifiedManagedDeviceView::OnLoginStatusChanged(LoginStatus status) {

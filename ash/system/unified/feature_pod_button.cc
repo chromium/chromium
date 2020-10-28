@@ -50,9 +50,9 @@ void ConfigureFeaturePodLabel(views::Label* label,
 
 }  // namespace
 
-FeaturePodIconButton::FeaturePodIconButton(views::ButtonListener* listener,
+FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
                                            bool is_togglable)
-    : views::ImageButton(listener), is_togglable_(is_togglable) {
+    : views::ImageButton(std::move(callback)), is_togglable_(is_togglable) {
   SetPreferredSize(kUnifiedFeaturePodIconSize);
   SetBorder(views::CreateEmptyBorder(kUnifiedFeaturePodIconPadding));
   SetImageHorizontalAlignment(ALIGN_CENTER);
@@ -67,6 +67,10 @@ FeaturePodIconButton::FeaturePodIconButton(views::ButtonListener* listener,
   views::InstallCircleHighlightPathGenerator(this,
                                              kUnifiedFeaturePodIconPadding);
 }
+
+FeaturePodIconButton::FeaturePodIconButton(views::ButtonListener* listener,
+                                           bool is_togglable)
+    : FeaturePodIconButton(PressedCallback(listener, this), is_togglable) {}
 
 FeaturePodIconButton::~FeaturePodIconButton() = default;
 
@@ -155,8 +159,8 @@ void FeaturePodIconButton::UpdateVectorIcon() {
                                               kUnifiedFeaturePodVectorIconSize);
 }
 
-FeaturePodLabelButton::FeaturePodLabelButton(views::ButtonListener* listener)
-    : Button(listener),
+FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
+    : Button(std::move(callback)),
       label_(new views::Label),
       sub_label_(new views::Label),
       detailed_view_arrow_(new views::ImageView) {
@@ -322,9 +326,13 @@ void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {
 
 FeaturePodButton::FeaturePodButton(FeaturePodControllerBase* controller,
                                    bool is_togglable)
-    : controller_(controller),
-      icon_button_(new FeaturePodIconButton(this, is_togglable)),
-      label_button_(new FeaturePodLabelButton(this)) {
+    : icon_button_(new FeaturePodIconButton(
+          base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                              base::Unretained(controller)),
+          is_togglable)),
+      label_button_(new FeaturePodLabelButton(
+          base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                              base::Unretained(controller)))) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kUnifiedFeaturePodSpacing));
@@ -430,15 +438,6 @@ const char* FeaturePodButton::GetClassName() const {
 void FeaturePodButton::OnEnabledChanged() {
   icon_button_->SetEnabled(GetEnabled());
   label_button_->SetEnabled(GetEnabled());
-}
-
-void FeaturePodButton::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
-  if (sender == label_button_) {
-    controller_->OnLabelPressed();
-    return;
-  }
-  controller_->OnIconPressed();
 }
 
 }  // namespace ash

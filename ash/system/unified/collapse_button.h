@@ -15,7 +15,7 @@ namespace ash {
 // By pressing the button, the state of the bubble will be toggled.
 class CollapseButton : public CustomShapeButton {
  public:
-  explicit CollapseButton(views::ButtonListener* listener);
+  explicit CollapseButton(PressedCallback callback);
   ~CollapseButton() override;
 
   // Change the expanded state. The icon will change.

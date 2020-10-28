@@ -63,7 +63,8 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
 
 class BackButton : public CustomShapeButton {
  public:
-  BackButton(views::ButtonListener* listener) : CustomShapeButton(listener) {
+  BackButton(views::ButtonListener* listener)
+      : CustomShapeButton(PressedCallback(listener, this)) {
     gfx::ImageSkia image =
         gfx::CreateVectorIcon(kUnifiedMenuArrowBackIcon,
                               AshColorProvider::Get()->GetContentLayerColor(

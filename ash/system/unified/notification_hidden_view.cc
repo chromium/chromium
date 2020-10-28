@@ -63,7 +63,8 @@ NotificationHiddenView::NotificationHiddenView() {
   // prohibited by policy or flag.
   if (AshMessageCenterLockScreenController::IsAllowed()) {
     change_button_ = new RoundedLabelButton(
-        this,
+        base::BindRepeating(&NotificationHiddenView::ChangeButtonPressed,
+                            base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE));
     change_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE_TOOLTIP));
@@ -77,8 +78,11 @@ NotificationHiddenView::NotificationHiddenView() {
   AddChildView(container);
 }
 
-void NotificationHiddenView::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
+const char* NotificationHiddenView::GetClassName() const {
+  return "NotificationHiddenView";
+}
+
+void NotificationHiddenView::ChangeButtonPressed() {
   // TODO(yoshiki): Refactor LockScreenController and remove the static cast.
   // TODO(yoshiki): Show the setting after unlocking.
   static_cast<message_center::MessageCenterImpl*>(
@@ -87,10 +91,6 @@ void NotificationHiddenView::ButtonPressed(views::Button* sender,
       ->DismissLockScreenThenExecute(
           base::BindOnce(&ShowLockScreenNotificationSettings),
           base::DoNothing(), IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_CHANGE_SETTING);
-}
-
-const char* NotificationHiddenView::GetClassName() const {
-  return "NotificationHiddenView";
 }
 
 }  // namespace ash

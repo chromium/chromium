@@ -9,17 +9,12 @@
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"
 
-namespace views {
-class ButtonListener;
-}  // namespace views
-
 namespace ash {
 
 // LabelButton that has a rounded shape with a Material Design ink drop.
 class RoundedLabelButton : public views::LabelButton {
  public:
-  RoundedLabelButton(views::ButtonListener* listener,
-                     const base::string16& text);
+  RoundedLabelButton(PressedCallback callback, const base::string16& text);
   ~RoundedLabelButton() override;
 
   // views::LabelButton:

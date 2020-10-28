@@ -43,71 +43,39 @@ using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
-class CloseButton : public TopShortcutButton, public views::ButtonListener {
- public:
-  explicit CloseButton(UserChooserDetailedViewController* controller);
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
- private:
-  UserChooserDetailedViewController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseButton);
-};
-
-CloseButton::CloseButton(UserChooserDetailedViewController* controller)
-    : TopShortcutButton(this, views::kIcCloseIcon, IDS_APP_ACCNAME_CLOSE),
-      controller_(controller) {}
-
-void CloseButton::ButtonPressed(views::Button* sender, const ui::Event& event) {
-  controller_->TransitionToMainView();
-}
-
 // A button that will transition to multi profile login UI.
-class AddUserButton : public views::Button, public views::ButtonListener {
+class AddUserButton : public views::Button {
  public:
   explicit AddUserButton(UserChooserDetailedViewController* controller);
   ~AddUserButton() override = default;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
-  UserChooserDetailedViewController* const controller_;
-
   DISALLOW_COPY_AND_ASSIGN(AddUserButton);
 };
 
 AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)
-    : Button(this), controller_(controller) {
+    : Button(base::BindRepeating(
+          &UserChooserDetailedViewController::HandleAddUserAction,
+          base::Unretained(controller))) {
   SetID(VIEW_ID_ADD_USER_BUTTON);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(kUnifiedTopShortcutSpacing), kUnifiedTopShortcutSpacing));
+  SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIGN_IN_ANOTHER_ACCOUNT));
+  SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
 
-  auto* icon = new views::ImageView;
+  auto* icon = AddChildView(std::make_unique<views::ImageView>());
   icon->SetImage(gfx::CreateVectorIcon(
       kSystemMenuNewUserIcon, AshColorProvider::Get()->GetContentLayerColor(
                                   ContentLayerType::kIconColorPrimary)));
-  AddChildView(icon);
 
-  auto* label = new views::Label(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIGN_IN_ANOTHER_ACCOUNT));
+  auto* label = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIGN_IN_ANOTHER_ACCOUNT)));
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kTextColorPrimary));
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
-  AddChildView(label);
-
-  SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIGN_IN_ANOTHER_ACCOUNT));
-  SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
-}
-
-void AddUserButton::ButtonPressed(views::Button* sender,
-                                  const ui::Event& event) {
-  controller_->HandleAddUserAction();
 }
 
 class Separator : public views::View {
@@ -155,9 +123,9 @@ views::View* CreateUserAvatarView(int user_index) {
 
   if (user_session->user_info.type == user_manager::USER_TYPE_GUEST) {
     // In guest mode, the user avatar is just a disabled button pod.
-    auto* image_view =
-        new TopShortcutButton(/*listener=*/nullptr, kSystemMenuGuestIcon,
-                              IDS_ASH_STATUS_TRAY_GUEST_LABEL);
+    auto* image_view = new TopShortcutButton(views::Button::PressedCallback(),
+                                             kSystemMenuGuestIcon,
+                                             IDS_ASH_STATUS_TRAY_GUEST_LABEL);
     image_view->SetEnabled(false);
     return image_view;
   }
@@ -195,12 +163,20 @@ base::string16 GetUserItemAccessibleString(int user_index) {
       base::UTF8ToUTF16(user_session->user_info.display_email));
 }
 
-UserItemButton::UserItemButton(int user_index,
+UserItemButton::UserItemButton(PressedCallback callback,
                                UserChooserDetailedViewController* controller,
+                               int user_index,
+                               ax::mojom::Role role,
                                bool has_close_button)
-    : Button(this),
-      user_index_(user_index),
-      controller_(controller),
+    : Button(user_index == 0
+                 ? views::Button::PressedCallback()
+                 : base::BindRepeating(
+                       &UserChooserDetailedViewController::HandleUserSwitch,
+                       base::Unretained(controller),
+                       user_index)),
+      // The button for the currently active user is not clickable.
+      role_(user_index == 0 ? ax::mojom::Role::kLabelText
+                            : ax::mojom::Role::kButton),
       capture_icon_(new views::ImageView),
       name_(new views::Label),
       email_(new views::Label) {
@@ -255,8 +231,13 @@ UserItemButton::UserItemButton(int user_index,
   capture_icon_->SetVisible(false);
   AddChildView(capture_icon_);
 
-  if (has_close_button)
-    AddChildView(new CloseButton(controller_));
+  if (has_close_button) {
+    AddChildView(std::make_unique<TopShortcutButton>(
+        base::BindRepeating(
+            &UserChooserDetailedViewController::TransitionToMainView,
+            base::Unretained(controller)),
+        views::kIcCloseIcon, IDS_APP_ACCNAME_CLOSE));
+  }
 
   SetTooltipText(GetUserItemAccessibleString(user_index));
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
@@ -294,17 +275,7 @@ base::string16 UserItemButton::GetTooltipText(const gfx::Point& p) const {
 }
 
 void UserItemButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // The button for the currently active user is not clickable.
-  if (user_index_ == 0)
-    node_data->role = ax::mojom::Role::kLabelText;
-  else
-    node_data->role = ax::mojom::Role::kButton;
-}
-
-void UserItemButton::ButtonPressed(views::Button* sender,
-                                   const ui::Event& event) {
-  if (user_index_ > 0)
-    controller_->HandleUserSwitch(user_index_);
+  node_data->role = role_;
 }
 
 UserChooserView::UserChooserView(
@@ -314,16 +285,26 @@ UserChooserView::UserChooserView(
   const int num_users =
       Shell::Get()->session_controller()->NumberOfLoggedInUsers();
   for (int i = 0; i < num_users; ++i) {
-    auto* button = new UserItemButton(i, controller, i == 0);
-    user_item_buttons_.push_back(button);
-
-    AddChildView(button);
-    AddChildView(new Separator(i < num_users - 1));
+    std::unique_ptr<UserItemButton> button;
+    if (i == 0) {
+      button = std::make_unique<UserItemButton>(
+          views::Button::PressedCallback(), controller, 0,
+          // The button for the currently active user is not clickable.
+          ax::mojom::Role::kLabelText, true);
+    } else {
+      button = std::make_unique<UserItemButton>(
+          base::BindRepeating(
+              &UserChooserDetailedViewController::HandleUserSwitch,
+              base::Unretained(controller), i),
+          controller, i, ax::mojom::Role::kButton, false);
+    }
+    user_item_buttons_.push_back(AddChildView(std::move(button)));
+    AddChildView(std::make_unique<Separator>(i < num_users - 1));
   }
 
   switch (Shell::Get()->session_controller()->GetAddUserPolicy()) {
     case AddUserSessionPolicy::ALLOWED:
-      AddChildView(new AddUserButton(controller));
+      AddChildView(std::make_unique<AddUserButton>(controller));
       break;
     case AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER:
       AddChildView(CreateAddUserErrorView(l10n_util::GetStringUTF16(

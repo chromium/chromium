@@ -8,10 +8,6 @@
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/macros.h"
 
-namespace views {
-class ButtonListener;
-}  // namespace views
-
 namespace ash {
 
 // Sign out button to be shown in TopShortcutView with TopShortcutButtons.
@@ -19,7 +15,7 @@ namespace ash {
 // status.
 class SignOutButton : public RoundedLabelButton {
  public:
-  explicit SignOutButton(views::ButtonListener* listener);
+  explicit SignOutButton(PressedCallback callback);
   ~SignOutButton() override;
 
   // views::RoundedLabelButton:

@@ -34,8 +34,8 @@ class CustomShapeButtonHighlightPathGenerator
 
 namespace ash {
 
-CustomShapeButton::CustomShapeButton(views::ButtonListener* listener)
-    : ImageButton(listener) {
+CustomShapeButton::CustomShapeButton(PressedCallback callback)
+    : ImageButton(std::move(callback)) {
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<CustomShapeButtonHighlightPathGenerator>());

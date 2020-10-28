@@ -115,7 +115,7 @@ class AutoclickScrollButton : public CustomShapeButton,
                         const gfx::VectorIcon& icon,
                         int accessible_name_id,
                         AutoclickScrollView::ButtonId id)
-      : CustomShapeButton(this), action_(action) {
+      : CustomShapeButton(PressedCallback(this, this)), action_(action) {
     views::View::SetID(static_cast<int>(id));
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
     // Disable canvas flipping, as scroll left should always be left no matter

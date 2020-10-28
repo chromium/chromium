@@ -43,11 +43,13 @@ constexpr int kInkDropRadius = 3 * kUnifiedPageIndicatorButtonRadius;
 
 // Button internally used in PageIndicatorView. Each button
 // stores a page number which it switches to if pressed.
-class PageIndicatorView::PageIndicatorButton : public views::Button,
-                                               public views::ButtonListener {
+class PageIndicatorView::PageIndicatorButton : public views::Button {
  public:
   PageIndicatorButton(UnifiedSystemTrayController* controller, int page)
-      : views::Button(this), controller_(controller), page_number_(page) {
+      : views::Button(base::BindRepeating(
+            &UnifiedSystemTrayController::HandlePageSwitchAction,
+            base::Unretained(controller),
+            page)) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetInkDropMode(InkDropMode::ON);
     views::InstallFixedSizeCircleHighlightPathGenerator(this, kInkDropRadius);
@@ -100,12 +102,6 @@ class PageIndicatorView::PageIndicatorButton : public views::Button,
     SchedulePaint();
   }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    DCHECK(controller_);
-    controller_->HandlePageSwitchAction(page_number_);
-  }
-
   bool selected() { return selected_; }
 
  protected:
@@ -141,8 +137,6 @@ class PageIndicatorView::PageIndicatorButton : public views::Button,
 
  private:
   bool selected_ = false;
-  UnifiedSystemTrayController* const controller_;
-  const int page_number_ = 0;
 
   SkColor ripple_base_color_ = gfx::kPlaceholderColor;
   float highlight_opacity_ = 0.f;

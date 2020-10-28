@@ -23,6 +23,7 @@ class FeaturePodControllerBase;
 // A toggle button with an icon used by feature pods and in other places.
 class FeaturePodIconButton : public views::ImageButton {
  public:
+  FeaturePodIconButton(PressedCallback callback, bool is_togglable);
   FeaturePodIconButton(views::ButtonListener* listener, bool is_togglable);
   ~FeaturePodIconButton() override;
 
@@ -63,7 +64,7 @@ class FeaturePodIconButton : public views::ImageButton {
 // Button internally used in FeaturePodButton. Should not be used directly.
 class FeaturePodLabelButton : public views::Button {
  public:
-  explicit FeaturePodLabelButton(views::ButtonListener* listener);
+  explicit FeaturePodLabelButton(PressedCallback callback);
   ~FeaturePodLabelButton() override;
 
   // Set the text of label shown below the icon. See FeaturePodButton::SetLabel.
@@ -113,8 +114,7 @@ class FeaturePodLabelButton : public views::Button {
 // the current state. Otherwise, the button is not a toggle button and just
 // navigates to the appropriate detailed view.
 // See the comment in FeaturePodsView for detail.
-class ASH_EXPORT FeaturePodButton : public views::View,
-                                    public views::ButtonListener {
+class ASH_EXPORT FeaturePodButton : public views::View {
  public:
   FeaturePodButton(FeaturePodControllerBase* controller,
                    bool is_togglable = true);
@@ -174,18 +174,12 @@ class ASH_EXPORT FeaturePodButton : public views::View,
   void RequestFocus() override;
   const char* GetClassName() const override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   bool visible_preferred() const { return visible_preferred_; }
 
   FeaturePodIconButton* icon_button() const { return icon_button_; }
 
  private:
   void OnEnabledChanged();
-
-  // Unowned.
-  FeaturePodControllerBase* const controller_;
 
   // Owned by views hierarchy.
   FeaturePodIconButton* const icon_button_;

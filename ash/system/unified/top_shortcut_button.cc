@@ -18,10 +18,10 @@
 
 namespace ash {
 
-TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
+TopShortcutButton::TopShortcutButton(PressedCallback callback,
                                      const gfx::VectorIcon& icon,
                                      int accessible_name_id)
-    : views::ImageButton(listener), icon_(icon) {
+    : views::ImageButton(std::move(callback)), icon_(icon) {
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   if (accessible_name_id)
@@ -29,6 +29,13 @@ TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   views::InstallCircleHighlightPathGenerator(this);
 }
+
+TopShortcutButton::TopShortcutButton(views::ButtonListener* listener,
+                                     const gfx::VectorIcon& icon,
+                                     int accessible_name_id)
+    : TopShortcutButton(PressedCallback(listener, this),
+                        icon,
+                        accessible_name_id) {}
 
 TopShortcutButton::~TopShortcutButton() = default;
 

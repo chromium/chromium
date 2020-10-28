@@ -25,10 +25,12 @@ views::View* CreateUserAvatarView(int user_index);
 base::string16 GetUserItemAccessibleString(int user_index);
 
 // A button item of a switchable user.
-class UserItemButton : public views::Button, public views::ButtonListener {
+class UserItemButton : public views::Button {
  public:
-  UserItemButton(int user_index,
+  UserItemButton(PressedCallback callback,
                  UserChooserDetailedViewController* controller,
+                 int user_index,
+                 ax::mojom::Role role,
                  bool has_close_button);
   ~UserItemButton() override = default;
 
@@ -38,12 +40,8 @@ class UserItemButton : public views::Button, public views::ButtonListener {
   base::string16 GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
  private:
-  const int user_index_;
-  UserChooserDetailedViewController* const controller_;
+  const ax::mojom::Role role_;
   views::ImageView* const capture_icon_;
   views::Label* const name_;
   views::Label* const email_;

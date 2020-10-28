@@ -5,21 +5,21 @@
 #ifndef ASH_SYSTEM_UNIFIED_NOTIFICATION_HIDDEN_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_HIDDEN_VIEW_H_
 
-#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
+
+namespace views {
+class Button;
+}
 
 namespace ash {
 
 // A view to show the message that notifications are hidden on the lock screen
 // by the setting or the flag. This may show the button to encourage the user
 // to change the lock screen notification setting if the condition permits.
-class NotificationHiddenView : public views::View, views::ButtonListener {
+class NotificationHiddenView : public views::View {
  public:
   NotificationHiddenView();
   ~NotificationHiddenView() override = default;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::View:
   const char* GetClassName() const override;
@@ -27,6 +27,8 @@ class NotificationHiddenView : public views::View, views::ButtonListener {
   views::Button* change_button_for_testing() { return change_button_; }
 
  private:
+  void ChangeButtonPressed();
+
   views::Button* change_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationHiddenView);

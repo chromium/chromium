@@ -14,8 +14,8 @@
 
 namespace ash {
 
-CollapseButton::CollapseButton(views::ButtonListener* listener)
-    : CustomShapeButton(listener) {}
+CollapseButton::CollapseButton(PressedCallback callback)
+    : CustomShapeButton(std::move(callback)) {}
 
 CollapseButton::~CollapseButton() = default;
 

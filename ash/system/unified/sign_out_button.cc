@@ -10,8 +10,8 @@
 
 namespace ash {
 
-SignOutButton::SignOutButton(views::ButtonListener* listener)
-    : RoundedLabelButton(listener,
+SignOutButton::SignOutButton(PressedCallback callback)
+    : RoundedLabelButton(std::move(callback),
                          user::GetLocalizedSignOutStringForStatus(
                              Shell::Get()->session_controller()->login_status(),
                              false /* multiline */)) {}

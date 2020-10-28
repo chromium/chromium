@@ -13,7 +13,8 @@ namespace ash {
 InterstitialViewButton::InterstitialViewButton(views::ButtonListener* listener,
                                                const base::string16& text,
                                                bool paint_background)
-    : RoundedLabelButton(listener, text), paint_background_(paint_background) {}
+    : RoundedLabelButton(PressedCallback(listener, this), text),
+      paint_background_(paint_background) {}
 
 InterstitialViewButton::~InterstitialViewButton() = default;
 

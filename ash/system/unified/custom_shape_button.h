@@ -13,7 +13,7 @@ namespace ash {
 // ink drop.
 class CustomShapeButton : public views::ImageButton {
  public:
-  explicit CustomShapeButton(views::ButtonListener* listener);
+  explicit CustomShapeButton(PressedCallback callback);
   ~CustomShapeButton() override;
 
   // Return the custom shape for the button in SkPath.
