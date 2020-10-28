@@ -170,7 +170,8 @@ RawClipboardHostImpl::CreateDataEndpoint() {
     return nullptr;
 
   return std::make_unique<ui::ClipboardDataEndpoint>(
-      render_frame_host->GetLastCommittedOrigin());
+      render_frame_host->GetLastCommittedOrigin(),
+      render_frame_host->HasTransientUserActivation());
 }
 
 bool RawClipboardHostImpl::HasTransientUserActivation() const {

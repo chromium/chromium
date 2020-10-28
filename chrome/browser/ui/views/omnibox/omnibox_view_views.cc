@@ -7,6 +7,7 @@
 #include <set>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -794,7 +795,7 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     // These commands don't invoke the popup via OnBefore/AfterPossibleChange().
     case IDC_PASTE_AND_GO:
-      model()->PasteAndGo(GetClipboardText());
+      model()->PasteAndGo(GetClipboardText(/*notify_if_restricted=*/true));
       return;
     case IDC_SHOW_FULL_URLS:
     case IDC_EDIT_SEARCH_ENGINES:
@@ -937,7 +938,7 @@ base::string16 OmniboxViewViews::GetSelectedText() const {
 }
 
 void OmniboxViewViews::OnOmniboxPaste() {
-  const base::string16 text(GetClipboardText());
+  const base::string16 text(GetClipboardText(/*notify_if_restricted=*/true));
 
   if (text.empty() ||
       // When the fakebox is focused, ignore pasted whitespace because if the
@@ -1470,9 +1471,10 @@ base::string16 OmniboxViewViews::GetLabelForCommandId(int command_id) const {
 
   // Don't paste-and-go data that was marked by its originator as confidential.
   constexpr size_t kMaxSelectionTextLength = 50;
-  const base::string16 clipboard_text = IsClipboardDataMarkedAsConfidential()
-                                            ? base::string16()
-                                            : GetClipboardText();
+  const base::string16 clipboard_text =
+      IsClipboardDataMarkedAsConfidential()
+          ? base::string16()
+          : GetClipboardText(/*notify_if_restricted=*/false);
 
   if (clipboard_text.empty())
     return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
@@ -1976,10 +1978,12 @@ void OmniboxViewViews::OnBlur() {
 
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
   if (command_id == Textfield::kPaste)
-    return !GetReadOnly() && !GetClipboardText().empty();
+    return !GetReadOnly() &&
+           !GetClipboardText(/*notify_if_restricted=*/false).empty();
   if (command_id == IDC_PASTE_AND_GO) {
     return !GetReadOnly() && !IsClipboardDataMarkedAsConfidential() &&
-           model()->CanPasteAndGo(GetClipboardText());
+           model()->CanPasteAndGo(
+               GetClipboardText(/*notify_if_restricted=*/false));
   }
 
   // Menu item is only shown when it is valid.
@@ -2109,7 +2113,8 @@ bool OmniboxViewViews::IsTextEditCommandEnabled(
     case ui::TextEditCommand::MOVE_DOWN:
       return !GetReadOnly();
     case ui::TextEditCommand::PASTE:
-      return !GetReadOnly() && !GetClipboardText().empty();
+      return !GetReadOnly() &&
+             !GetClipboardText(show_rejection_ui_if_any_).empty();
     default:
       return Textfield::IsTextEditCommandEnabled(command);
   }
@@ -2120,6 +2125,8 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
   // executed. Since we are not always calling the base class implementation
   // here, we need to deactivate touch text selection here, too.
   DestroyTouchSelection();
+
+  base::AutoReset<bool> show_rejection_ui(&show_rejection_ui_if_any_, true);
 
   if (!IsTextEditCommandEnabled(command))
     return;
@@ -2175,6 +2182,11 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
   // Otherwise, if num-lock is off, the events are handled as [Up], [Down], etc.
   if (event.IsUnicodeKeyCode())
     return false;
+
+  // Show a notification if the clipboard is restricted by the rules of the
+  // data leak prevention policy. This state is used by the
+  // IsTextEditCommandEnabled(ui::TextEditCommand::PASTE) cases below.
+  base::AutoReset<bool> show_rejection_ui(&show_rejection_ui_if_any_, true);
 
   const bool shift = event.IsShiftDown();
   const bool control = event.IsControlDown();
@@ -2339,7 +2351,9 @@ void OmniboxViewViews::OnAfterUserAction(views::Textfield* sender) {
 void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
   ui::Clipboard* cb = ui::Clipboard::GetForCurrentThread();
   base::string16 selected_text;
-  cb->ReadText(clipboard_buffer, /* data_dst = */ nullptr, &selected_text);
+  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+  cb->ReadText(clipboard_buffer, &data_dst, &selected_text);
   GURL url;
   bool write_url = false;
   model()->AdjustTextForCopy(GetSelectedRange().GetMin(), &selected_text, &url,

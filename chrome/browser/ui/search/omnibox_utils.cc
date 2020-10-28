@@ -62,9 +62,9 @@ void PasteIntoOmnibox(const base::string16& text,
   // from the clipboard already sanitized. The second case is needed to handle
   // drag-and-drop value and it has to be sanitazed before setting it into the
   // omnibox.
-  base::string16 text_to_paste = text.empty()
-                                     ? GetClipboardText()
-                                     : omnibox_view->SanitizeTextForPaste(text);
+  base::string16 text_to_paste =
+      text.empty() ? GetClipboardText(/*notify_if_restricted=*/true)
+                   : omnibox_view->SanitizeTextForPaste(text);
 
   if (text_to_paste.empty())
     return;

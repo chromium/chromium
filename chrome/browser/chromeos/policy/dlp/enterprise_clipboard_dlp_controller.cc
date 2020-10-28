@@ -47,7 +47,7 @@ bool EnterpriseClipboardDlpController::IsDataReadAllowed(
 
   DlpRulesManager::Level level = DlpRulesManager::Level::kAllow;
 
-  if (!data_dst) {
+  if (!data_dst || data_dst->type() == ui::EndpointType::kDefault) {
     // Passing empty URL will return restricted if there's a rule restricting
     // the src against any dst (*), otherwise it will return ALLOW.
     level = DlpRulesManager::Get()->IsRestrictedDestination(
@@ -72,7 +72,9 @@ bool EnterpriseClipboardDlpController::IsDataReadAllowed(
     NOTREACHED();
   }
 
-  if (level == DlpRulesManager::Level::kBlock) {
+  bool notify_on_paste = !data_dst || data_dst->notify_if_restricted();
+
+  if (level == DlpRulesManager::Level::kBlock && notify_on_paste) {
     ShowBlockToast(GetToastText(data_src, data_dst));
   }
 

@@ -10,11 +10,17 @@
 
 namespace ui {
 
-ClipboardDataEndpoint::ClipboardDataEndpoint(const url::Origin& origin)
-    : type_(EndpointType::kUrl), origin_(origin) {}
+ClipboardDataEndpoint::ClipboardDataEndpoint(const url::Origin& origin,
+                                             bool notify_if_restricted)
+    : type_(EndpointType::kUrl),
+      origin_(origin),
+      notify_if_restricted_(notify_if_restricted) {}
 
-ClipboardDataEndpoint::ClipboardDataEndpoint(EndpointType type)
-    : type_(type), origin_(base::nullopt) {
+ClipboardDataEndpoint::ClipboardDataEndpoint(EndpointType type,
+                                             bool notify_if_restricted)
+    : type_(type),
+      origin_(base::nullopt),
+      notify_if_restricted_(notify_if_restricted) {
   DCHECK_NE(type, EndpointType::kUrl);
 }
 
@@ -26,7 +32,8 @@ ClipboardDataEndpoint::ClipboardDataEndpoint(ClipboardDataEndpoint&& other) =
 
 bool ClipboardDataEndpoint::operator==(
     const ClipboardDataEndpoint& other) const {
-  return origin_ == other.origin_ && type_ == other.type_;
+  return origin_ == other.origin_ && type_ == other.type_ &&
+         notify_if_restricted_ == other.notify_if_restricted_;
 }
 
 ClipboardDataEndpoint::~ClipboardDataEndpoint() = default;

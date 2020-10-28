@@ -31,6 +31,7 @@
 #include "components/query_parser/query_parser.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
@@ -142,11 +143,13 @@ std::string TruncateUrl(const std::string& url) {
 
 // Returns the URL from the clipboard. If there is no URL an empty URL is
 // returned.
-GURL GetUrlFromClipboard() {
+GURL GetUrlFromClipboard(bool notify_if_restricted) {
   base::string16 url_text;
 #if !defined(OS_IOS)
+  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+      ui::EndpointType::kDefault, notify_if_restricted);
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &url_text);
+      ui::ClipboardBuffer::kCopyPaste, &data_dst, &url_text);
 #endif
   return GURL(url_text);
 }
@@ -290,7 +293,7 @@ void PasteFromClipboard(BookmarkModel* model,
 
   BookmarkNodeData bookmark_data;
   if (!bookmark_data.ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste)) {
-    GURL url = GetUrlFromClipboard();
+    GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
     if (!url.is_valid())
       return;
     BookmarkNode node(/*id=*/0, base::GenerateGUID(), url);
@@ -315,7 +318,7 @@ bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node) {
   if (!node || !model->client()->CanBeEditedByUser(node))
     return false;
   return (BookmarkNodeData::ClipboardContainsBookmarks() ||
-          GetUrlFromClipboard().is_valid());
+          GetUrlFromClipboard(/*notify_if_restricted=*/false).is_valid());
 }
 
 std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(

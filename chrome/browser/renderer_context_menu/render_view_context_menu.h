@@ -201,7 +201,8 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   void AppendSharedClipboardItem();
   void AppendQRCodeGeneratorItem(bool for_image, bool draw_icon);
 
-  std::unique_ptr<ui::ClipboardDataEndpoint> CreateDataEndpoint() const;
+  std::unique_ptr<ui::ClipboardDataEndpoint> CreateDataEndpoint(
+      bool notify_if_restricted) const;
 
   // Command enabled query functions.
   bool IsReloadEnabled() const;

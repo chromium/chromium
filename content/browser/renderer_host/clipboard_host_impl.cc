@@ -422,7 +422,8 @@ ClipboardHostImpl::CreateDataEndpoint() {
       RenderFrameHostImpl::FromID(render_frame_routing_id_);
   if (render_frame_host) {
     return std::make_unique<ui::ClipboardDataEndpoint>(
-        render_frame_host->GetLastCommittedOrigin());
+        render_frame_host->GetLastCommittedOrigin(),
+        render_frame_host->HasTransientUserActivation());
   }
   return nullptr;
 }

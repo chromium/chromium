@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_data_endpoint.h"
 
 namespace {
 // Schemes appropriate for suggestion by ClipboardRecentContent.
@@ -45,8 +46,10 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   // Get and clean up the clipboard before processing.
   std::string gurl_string;
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste,
-                           /* data_dst = */ nullptr, &gurl_string);
+  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+  clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &data_dst,
+                           &gurl_string);
   base::TrimWhitespaceASCII(gurl_string, base::TrimPositions::TRIM_ALL,
                             &gurl_string);
 
@@ -64,8 +67,8 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
     // Fall back to unicode / UTF16, as some URLs may use international domain
     // names, not punycode.
     base::string16 gurl_string16;
-    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
-                        /* data_dst = */ nullptr, &gurl_string16);
+    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst,
+                        &gurl_string16);
     base::TrimWhitespace(gurl_string16, base::TrimPositions::TRIM_ALL,
                          &gurl_string16);
     if (gurl_string16.find_first_of(base::kWhitespaceUTF16) !=
@@ -86,9 +89,10 @@ ClipboardRecentContentGeneric::GetRecentTextFromClipboard() {
     return base::nullopt;
 
   base::string16 text_from_clipboard;
+  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
-      &text_from_clipboard);
+      ui::ClipboardBuffer::kCopyPaste, &data_dst, &text_from_clipboard);
   base::TrimWhitespace(text_from_clipboard, base::TrimPositions::TRIM_ALL,
                        &text_from_clipboard);
   if (text_from_clipboard.empty()) {
@@ -103,9 +107,10 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
   if (GetClipboardContentAge() > MaximumAgeOfClipboard())
     return;
 
+  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   ui::Clipboard::GetForCurrentThread()->ReadImage(
-      ui::ClipboardBuffer::kCopyPaste,
-      /* data_dst = */ nullptr,
+      ui::ClipboardBuffer::kCopyPaste, &data_dst,
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
 }
 
@@ -113,9 +118,11 @@ bool ClipboardRecentContentGeneric::HasRecentImageFromClipboard() {
   if (GetClipboardContentAge() > MaximumAgeOfClipboard())
     return false;
 
+  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
       ui::ClipboardFormatType::GetBitmapType(), ui::ClipboardBuffer::kCopyPaste,
-      /* data_dst = */ nullptr);
+      &data_dst);
 }
 
 void ClipboardRecentContentGeneric::HasRecentContentFromClipboard(

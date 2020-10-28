@@ -53,7 +53,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(kPlainText);
   }
-  EXPECT_EQ(kPlainText, GetClipboardText());
+  EXPECT_EQ(kPlainText, GetClipboardText(/*notify_if_restricted=*/false));
 
   // Can we pull a string consists of white-space?
   const base::string16 kSpace6(ASCIIToUTF16("      "));
@@ -62,11 +62,11 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(kSpace6);
   }
-  EXPECT_EQ(kSpace1, GetClipboardText());
+  EXPECT_EQ(kSpace1, GetClipboardText(/*notify_if_restricted=*/false));
 
   // Does an empty clipboard get empty text?
   clipboard->Clear(ui::ClipboardBuffer::kCopyPaste);
-  EXPECT_EQ(base::string16(), GetClipboardText());
+  EXPECT_EQ(base::string16(), GetClipboardText(/*notify_if_restricted=*/false));
 
 // Bookmark clipboard apparently not supported on Linux.
 // See TODO on ClipboardText.BookmarkTest.
@@ -77,7 +77,8 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteBookmark(kTitle, kURL);
   }
-  EXPECT_EQ(ASCIIToUTF16(kURL), GetClipboardText());
+  EXPECT_EQ(ASCIIToUTF16(kURL),
+            GetClipboardText(/*notify_if_restricted=*/false));
 
   // Do we pull text in preference to a bookmark?
   {
@@ -85,7 +86,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     clipboard_writer.WriteText(kPlainText);
     clipboard_writer.WriteBookmark(kTitle, kURL);
   }
-  EXPECT_EQ(kPlainText, GetClipboardText());
+  EXPECT_EQ(kPlainText, GetClipboardText(/*notify_if_restricted=*/false));
 #endif
 
   // Do we get nothing if there is neither text nor a bookmark?
@@ -94,7 +95,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteHTML(kMarkup, kURL);
   }
-  EXPECT_TRUE(GetClipboardText().empty());
+  EXPECT_TRUE(GetClipboardText(/*notify_if_restricted=*/false).empty());
 }
 
 TEST_F(ClipboardUtilsTest, TruncateLongText) {
@@ -104,7 +105,7 @@ TEST_F(ClipboardUtilsTest, TruncateLongText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(almost_long_text);
   }
-  EXPECT_EQ(almost_long_text, GetClipboardText());
+  EXPECT_EQ(almost_long_text, GetClipboardText(/*notify_if_restricted=*/false));
 
   const base::string16 long_text =
       base::ASCIIToUTF16(std::string(kMaxClipboardTextLength + 1, '.'));
@@ -112,7 +113,7 @@ TEST_F(ClipboardUtilsTest, TruncateLongText) {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(long_text);
   }
-  EXPECT_EQ(almost_long_text, GetClipboardText());
+  EXPECT_EQ(almost_long_text, GetClipboardText(/*notify_if_restricted=*/false));
 }
 
 }  // namespace

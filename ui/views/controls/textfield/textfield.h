@@ -702,6 +702,9 @@ class VIEWS_EXPORT Textfield : public View,
   // True if this textfield should use a focus ring to indicate focus.
   bool use_focus_ring_ = true;
 
+  // Whether the user should be notified if the clipboard is restricted.
+  bool show_rejection_ui_if_any_ = false;
+
   // Whether the text should be used to improve typing suggestions.
   base::Optional<bool> should_do_learning_;
 

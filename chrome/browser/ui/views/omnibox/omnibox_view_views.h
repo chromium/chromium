@@ -648,6 +648,9 @@ class OmniboxViewViews : public OmniboxView,
   // and gets a tap. So we use this variable to remember focus state before tap.
   bool select_all_on_gesture_tap_ = false;
 
+  // Whether the user should be notified if the clipboard is restricted.
+  bool show_rejection_ui_if_any_ = false;
+
   // Keep track of the word that would be selected if URL is unelided between
   // a single and double click. This is an edge case where the elided URL is
   // selected. On the double click, unelision is performed in between the first

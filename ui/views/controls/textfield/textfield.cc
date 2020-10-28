@@ -8,12 +8,14 @@
 #include <set>
 #include <string>
 #include <utility>
+#include "ui/base/clipboard/clipboard_data_endpoint.h"
 #include "ui/events/gesture_event_details.h"
 
 #if defined(OS_WIN)
 #include <vector>
 #endif
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -824,6 +826,8 @@ bool Textfield::OnKeyPressed(const ui::KeyEvent& event) {
     return handled;
   }
 #endif
+
+  base::AutoReset<bool> show_rejection_ui(&show_rejection_ui_if_any_, true);
 
   if (edit_command == ui::TextEditCommand::INVALID_COMMAND)
     edit_command = GetCommandForKeyEvent(event);
@@ -1770,9 +1774,12 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
       return editable && readable && HasSelection();
     case ui::TextEditCommand::COPY:
       return readable && HasSelection();
-    case ui::TextEditCommand::PASTE:
+    case ui::TextEditCommand::PASTE: {
+      ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kDefault,
+                                         show_rejection_ui_if_any_);
       ui::Clipboard::GetForCurrentThread()->ReadText(
-          ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &result);
+          ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
+    }
       return editable && !result.empty();
     case ui::TextEditCommand::SELECT_ALL:
       return !GetText().empty() &&
@@ -1919,6 +1926,8 @@ void Textfield::ExecuteTextEditCommand(ui::TextEditCommand command) {
   DestroyTouchSelection();
 
   bool add_to_kill_buffer = false;
+
+  base::AutoReset<bool> show_rejection_ui(&show_rejection_ui_if_any_, true);
 
   // Some codepaths may bypass GetCommandForKeyEvent, so any selection-dependent
   // modifications of the command should happen here.

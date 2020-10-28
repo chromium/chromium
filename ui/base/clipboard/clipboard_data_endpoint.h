@@ -15,26 +15,36 @@ namespace ui {
 // destination trying to read the clipboard data.
 // Whenever a new format is supported, a new enum should be added.
 enum class EndpointType {
+  kDefault = 0,  // This type shouldn't be used if any of the following types is
+                 // a better match.
 #if defined(OS_CHROMEOS) || (OS_LINUX) || (OS_FUCHSIA)
-  kGuestOs = 0,  // Guest OS: PluginVM, Crostini.
+  kGuestOs = 1,  // Guest OS: PluginVM, Crostini.
 #endif           // defined(OS_CHROMEOS) || (OS_LINUX) || (OS_FUCHSIA)
 #if defined(OS_CHROMEOS)
-  kArc = 1,               // ARC.
+  kArc = 2,               // ARC.
 #endif                    // defined(OS_CHROMEOS)
-  kUrl = 2,               // Website URL e.g. www.example.com.
-  kClipboardHistory = 3,  // Clipboard History UI has privileged access to any
+  kUrl = 3,               // Website URL e.g. www.example.com.
+  kClipboardHistory = 4,  // Clipboard History UI has privileged access to any
                           // clipboard data.
   kMaxValue = kClipboardHistory
 };
 
-// ClipboardDataEndpoint can represent:
+// ClipboardDataEndpoint represents:
 // - The source of the data in the clipboard.
 // - The destination trying to access the clipboard data.
+// - Whether the user should see a notification if the data access is not
+// allowed.
+// Passing ClipboardDataEndpoint as a nullptr is equivalent to
+// ClipboardDataEndpoint(kDefault, true). Both specify the same types of
+// endpoints (not a URL/ARC++/...etc, and should show a notification to the user
+// if the clipboard data read is not allowed.)
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardDataEndpoint {
  public:
-  explicit ClipboardDataEndpoint(const url::Origin& origin);
+  explicit ClipboardDataEndpoint(const url::Origin& origin,
+                                 bool notify_if_restricted = true);
   // This constructor shouldn't be used if |type| == EndpointType::kUrl.
-  explicit ClipboardDataEndpoint(EndpointType type);
+  explicit ClipboardDataEndpoint(EndpointType type,
+                                 bool notify_if_restricted = true);
 
   ClipboardDataEndpoint(const ClipboardDataEndpoint& other);
   ClipboardDataEndpoint(ClipboardDataEndpoint&& other);
@@ -52,12 +62,19 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardDataEndpoint {
 
   EndpointType type() const { return type_; }
 
+  bool notify_if_restricted() const { return notify_if_restricted_; }
+
  private:
   // This variable should always have a value representing the object type.
   const EndpointType type_;
   // The url::Origin of the data endpoint. It always has a value if |type_| ==
   // EndpointType::kUrl, otherwise it's empty.
   const base::Optional<url::Origin> origin_;
+  // This variable should be set to true, if paste is initiated by the user.
+  // Otherwise it should be set to false, so the user won't see a notification
+  // when the clipboard data is restricted by the rules of data leak prevention
+  // policy and something in the background is trying to access it.
+  bool notify_if_restricted_ = true;
 };
 
 }  // namespace ui

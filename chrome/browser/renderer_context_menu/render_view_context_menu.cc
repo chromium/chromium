@@ -785,8 +785,9 @@ void RenderViewContextMenu::WriteURLToClipboard(const GURL& url) {
   if (url.is_empty() || !url.is_valid())
     return;
 
-  ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
-                                CreateDataEndpoint());
+  ui::ScopedClipboardWriter scw(
+      ui::ClipboardBuffer::kCopyPaste,
+      CreateDataEndpoint(/*notify_if_restricted=*/true));
   scw.WriteText(FormatURLForClipboard(url));
 }
 
@@ -2696,7 +2697,8 @@ bool RenderViewContextMenu::IsPasteEnabled() const {
 
   std::vector<base::string16> types;
   ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(
-      ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get(), &types);
+      ui::ClipboardBuffer::kCopyPaste,
+      CreateDataEndpoint(/*notify_if_restricted=*/false).get(), &types);
   return !types.empty();
 }
 
@@ -2706,7 +2708,8 @@ bool RenderViewContextMenu::IsPasteAndMatchStyleEnabled() const {
 
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
       ui::ClipboardFormatType::GetPlainTextType(),
-      ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
+      ui::ClipboardBuffer::kCopyPaste,
+      CreateDataEndpoint(/*notify_if_restricted=*/false).get());
 }
 
 bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
@@ -2753,11 +2756,11 @@ void RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
 }
 
 std::unique_ptr<ui::ClipboardDataEndpoint>
-RenderViewContextMenu::CreateDataEndpoint() const {
+RenderViewContextMenu::CreateDataEndpoint(bool notify_if_restricted) const {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (render_frame_host) {
     return std::make_unique<ui::ClipboardDataEndpoint>(
-        render_frame_host->GetLastCommittedOrigin());
+        render_frame_host->GetLastCommittedOrigin(), notify_if_restricted);
   }
   return nullptr;
 }
@@ -2932,8 +2935,9 @@ void RenderViewContextMenu::ExecExitFullscreen() {
 }
 
 void RenderViewContextMenu::ExecCopyLinkText() {
-  ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
-                                CreateDataEndpoint());
+  ui::ScopedClipboardWriter scw(
+      ui::ClipboardBuffer::kCopyPaste,
+      CreateDataEndpoint(/*notify_if_restricted=*/true));
   scw.WriteText(params_.link_text);
 }
 

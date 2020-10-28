@@ -1919,8 +1919,13 @@ AutotestPrivateGetClipboardTextDataFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateGetClipboardTextDataFunction::Run() {
   base::string16 data;
+  // This clipboard data read is initiated an extension API, then the user
+  // shouldn't see a notification if the clipboard is restricted by the rules of
+  // data leak prevention policy.
+  ui::ClipboardDataEndpoint data_dst = ui::ClipboardDataEndpoint(
+      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &data);
+      ui::ClipboardBuffer::kCopyPaste, &data_dst, &data);
   return RespondNow(OneArgument(base::Value(data)));
 }
 
