@@ -627,13 +627,9 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 // If the user clicks 'leave site', the warning should re-appear when the user
 // re-visits the page.
 // Flaky on Mac: https://crbug.com/1139955
-#if defined(OS_MAC) || defined(OS_WIN)
-#define MAYBE_LeaveSiteStillWarnsAfter DISABLED_LeaveSiteStillWarnsAfter
-#else
-#define MAYBE_LeaveSiteStillWarnsAfter LeaveSiteStillWarnsAfter
-#endif
+// Flaky in general, test depends on subtle timing, https://crbug.com/1142769
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       MAYBE_LeaveSiteStillWarnsAfter) {
+                       DISABLED_LeaveSiteStillWarnsAfter) {
   auto kNavigatedUrl = GetURL("site1.com");
 
   if (!IsSuspiciousSiteWarningEnabled()) {
@@ -1021,13 +1017,9 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 // Tests that the histograms recording how long the Safety Tip is open are
 // recorded properly.
 // Flaky on Mac: https://crbug.com/1139955
-#if defined(OS_MAC)
-#define MAYBE_TimeOpenHistogram DISABLED_TimeOpenHistogram
-#else
-#define MAYBE_TimeOpenHistogram TimeOpenHistogram
-#endif
+// Flaky in general, test depends on subtle timing, https://crbug.com/1142769
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
-                       MAYBE_TimeOpenHistogram) {
+                       DISABLED_TimeOpenHistogram) {
   if (!IsSuspiciousSiteWarningEnabled()) {
     return;
   }
