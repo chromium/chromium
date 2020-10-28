@@ -128,6 +128,19 @@ struct PartitionBucket {
     return static_cast<size_t>(offset_in_slot);
   }
 
+  // Returns a slot number starting from the beginning of the slot span.
+  ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) {
+    // See the static assertion for `kReciprocalShift` above.
+    PA_DCHECK(offset_in_slot_span <= kMaxBucketed);
+    PA_DCHECK(slot_size <= kMaxBucketed);
+
+    const size_t offset_in_slot =
+        ((offset_in_slot_span * slot_size_reciprocal) >> kReciprocalShift);
+    PA_DCHECK(offset_in_slot_span / slot_size == offset_in_slot);
+
+    return offset_in_slot;
+  }
+
  private:
   static NOINLINE void OnFull();
 

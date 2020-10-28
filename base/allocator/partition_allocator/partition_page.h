@@ -254,6 +254,40 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(char* ptr, bool with_pcscan) {
   return ptr >= payload_start && ptr < payload_end;
 }
 
+// Returns the start of a slot or nullptr if |maybe_inner_ptr| is not inside of
+// an existing slot span. The function may return a pointer even inside a
+// decommitted or free slot span, it's the caller responsibility to check if
+// memory is actually allocated.
+// The precondition is that |maybe_inner_ptr| must point to payload of a valid
+// super page.
+template <bool thread_safe>
+ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
+  PA_DCHECK(!IsManagedByPartitionAllocDirectMap(maybe_inner_ptr));
+  char* super_page_ptr = reinterpret_cast<char*>(
+      reinterpret_cast<uintptr_t>(maybe_inner_ptr) & kSuperPageBaseMask);
+  auto* extent = reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
+      PartitionSuperPageToMetadataArea(super_page_ptr));
+  PA_DCHECK(IsWithinSuperPagePayload(maybe_inner_ptr,
+                                     extent->root->pcscan.has_value()));
+  auto* slot_span = SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(
+      maybe_inner_ptr);
+  // Check if the slot span is actually used and valid.
+  if (!slot_span->bucket)
+    return nullptr;
+  PA_DCHECK(PartitionRoot<thread_safe>::IsValidSlotSpan(slot_span));
+  char* const slot_span_begin =
+      static_cast<char*>(SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
+  const ptrdiff_t ptr_offset = maybe_inner_ptr - slot_span_begin;
+  PA_DCHECK(0 <= ptr_offset &&
+            ptr_offset < static_cast<ptrdiff_t>(
+                             slot_span->bucket->get_bytes_per_span()));
+  const size_t slot_size = slot_span->bucket->slot_size;
+  const size_t slot_number = slot_span->bucket->GetSlotNumber(ptr_offset);
+  char* const result = slot_span_begin + (slot_number * slot_size);
+  PA_DCHECK(result <= maybe_inner_ptr && maybe_inner_ptr < result + slot_size);
+  return result;
+}
+
 // See the comment for |FromPointer|.
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*

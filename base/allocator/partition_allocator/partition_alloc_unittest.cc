@@ -2555,6 +2555,18 @@ TEST_F(PartitionAllocTest, OptimizedGetSlotOffset) {
   }
 }
 
+// Test that the optimized `GetSlotNumber` implementation produces valid
+// results.
+TEST_F(PartitionAllocTest, OptimizedGetSlotNumber) {
+  for (auto& bucket : allocator.root()->buckets) {
+    for (size_t slot = 0, offset = bucket.slot_size / 2;
+         slot < bucket.get_slots_per_span();
+         ++slot, offset += bucket.slot_size) {
+      EXPECT_EQ(slot, bucket.GetSlotNumber(offset));
+    }
+  }
+}
+
 TEST_F(PartitionAllocTest, GetUsableSize) {
   size_t delta = SystemPageSize() + 1;
   for (size_t size = 1; size <= kMinDirectMappedDownsize; size += delta) {

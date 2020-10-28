@@ -141,30 +141,5 @@ TEST_F(ObjectBitmapTest, AdjacentObjectsAtEnd) {
   EXPECT_EQ(2u, count);
 }
 
-TEST_F(ObjectBitmapTest, FindElementSentinel) {
-  EXPECT_EQ(TestBitmap::kSentinel,
-            bitmap().FindPotentialObjectBeginning(ObjectAddress(654)));
-}
-
-TEST_F(ObjectBitmapTest, FindElementExact) {
-  SetBitForObject(654);
-  EXPECT_EQ(ObjectAddress(654),
-            bitmap().FindPotentialObjectBeginning(ObjectAddress(654)));
-}
-
-TEST_F(ObjectBitmapTest, FindElementApproximate) {
-  static const size_t kInternalDelta = 37;
-  SetBitForObject(654);
-  EXPECT_EQ(ObjectAddress(654), bitmap().FindPotentialObjectBeginning(
-                                    ObjectAddress(654 + kInternalDelta)));
-}
-
-TEST_F(ObjectBitmapTest, FindElementIteratingWholeBitmap) {
-  SetBitForObject(0);
-  const uintptr_t hint_index = LastIndex();
-  EXPECT_EQ(ObjectAddress(0),
-            bitmap().FindPotentialObjectBeginning(ObjectAddress(hint_index)));
-}
-
 }  // namespace internal
 }  // namespace base

@@ -163,7 +163,6 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReference(PCScanTest& test,
                            SourceList* source,
                            ValueList* value) {
-  CHECK_EQ(value, source->next);
   auto& root = test.root();
   {
     // Free |value| and leave the dangling reference in |source|.
@@ -266,6 +265,39 @@ TEST_F(PCScanTest, DanglingReferenceFromFullPage) {
   auto* value = new (value_addr) ValueList;
   auto* source = new (source_addr) SourceList;
   source->next = value;
+
+  TestDanglingReference(*this, source, value);
+}
+
+namespace {
+
+template <size_t Size>
+struct ListWithInnerReference {
+  char buffer1[Size];
+  char* next = nullptr;
+  char buffer2[Size];
+
+  static ListWithInnerReference* Create(ThreadSafePartitionRoot& root) {
+    auto* list = static_cast<ListWithInnerReference*>(
+        root.Alloc(sizeof(ListWithInnerReference), nullptr));
+    return list;
+  }
+
+  static void Destroy(ThreadSafePartitionRoot& root,
+                      ListWithInnerReference* list) {
+    root.Free(list);
+  }
+};
+
+}  // namespace
+
+TEST_F(PCScanTest, DanglingInnerReference) {
+  using SourceList = ListWithInnerReference<64>;
+  using ValueList = SourceList;
+
+  auto* source = SourceList::Create(root());
+  auto* value = ValueList::Create(root());
+  source->next = value->buffer2;
 
   TestDanglingReference(*this, source, value);
 }

@@ -75,6 +75,18 @@ void ReportStats(size_t swept_bytes, size_t last_size, size_t new_size) {
           << static_cast<double>(new_size) / last_size;
 }
 
+template <bool thread_safe>
+uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr, bool allow_extras) {
+  char* allocation_start =
+      GetSlotStartInSuperPage<thread_safe>(reinterpret_cast<char*>(maybe_ptr));
+  if (!allocation_start) {
+    // |maybe_ptr| refers to a garbage or is outside of the payload region.
+    return 0;
+  }
+  return reinterpret_cast<uintptr_t>(
+      PartitionPointerAdjustAdd(allow_extras, allocation_start));
+}
+
 }  // namespace
 
 // This class is responsible for performing the entire PCScan task.
@@ -171,8 +183,9 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
     return 0;
 
   // Check if pointer was in the quarantine bitmap.
-  const uintptr_t base = bitmap->FindPotentialObjectBeginning(maybe_ptr);
-  if (!base)
+  const uintptr_t base =
+      GetObjectStartInSuperPage<thread_safe>(maybe_ptr, root_.allow_extras);
+  if (!bitmap->CheckBit(base))
     return 0;
 
   PA_DCHECK((maybe_ptr & kSuperPageBaseMask) == (base & kSuperPageBaseMask));
