@@ -114,6 +114,11 @@ static const uint16_t kMDnsClassMask = 0x7FFF;
 // to 255 octets or less.
 static const int kMaxNameLength = 255;
 
+// RFC 1035, section 2.3.4: labels 63 octets or less.
+// Section 3.1: Each label is represented as a one octet length field followed
+// by that number of octets.
+const int kMaxLabelLength = 63;
+
 // RFC 1035, section 4.2.1: Messages carried by UDP are restricted to 512
 // bytes (not counting the IP nor UDP headers).
 static const int kMaxUDPSize = 512;

@@ -28,19 +28,6 @@
 #include "net/third_party/uri_template/uri_template.h"
 #include "url/url_canon.h"
 
-namespace {
-
-// RFC 1035, section 2.3.4: labels 63 octets or less.
-// Section 3.1: Each label is represented as a one octet length field followed
-// by that number of octets.
-const int kMaxLabelLength = 63;
-
-// RFC 1035, section 4.1.4: the first two bits of a 16-bit name pointer are
-// ones.
-const uint16_t kFlagNamePointer = 0xc000;
-
-}  // namespace
-
 #if defined(OS_POSIX)
 #include <netinet/in.h>
 #if !defined(OS_NACL)
@@ -64,7 +51,7 @@ bool DNSDomainFromDot(const base::StringPiece& dotted,
                       std::string* out) {
   const char* buf = dotted.data();
   size_t n = dotted.size();
-  char label[kMaxLabelLength];
+  char label[dns_protocol::kMaxLabelLength];
   size_t labellen = 0; /* <= sizeof label */
   char name[dns_protocol::kMaxNameLength];
   size_t namelen = 0; /* <= sizeof name */
@@ -162,25 +149,50 @@ bool IsValidHostLabelCharacter(char c, bool is_first_char) {
          (c >= '0' && c <= '9') || (!is_first_char && c == '-') || c == '_';
 }
 
-base::Optional<std::string> DnsDomainToString(base::StringPiece domain) {
+base::Optional<std::string> DnsDomainToString(base::StringPiece dns_name,
+                                              bool require_complete) {
+  base::BigEndianReader reader(dns_name.data(), dns_name.length());
+  return DnsDomainToString(reader, require_complete);
+}
+
+base::Optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
+                                              bool require_complete) {
   std::string ret;
-
-  for (unsigned i = 0; i < domain.size() && domain[i]; i += domain[i] + 1) {
-#if CHAR_MIN < 0
-    if (domain[i] < 0)
-      return base::nullopt;
-#endif
-    if (domain[i] > kMaxLabelLength)
-      return base::nullopt;
-
-    if (i)
-      ret += ".";
-
-    if (static_cast<unsigned>(domain[i]) + i + 1 > domain.size())
+  size_t octets_read = 0;
+  while (reader.remaining() > 0) {
+    // DNS name compression not allowed because it does not make sense without
+    // the context of a full DNS message.
+    if ((*reader.ptr() & dns_protocol::kLabelMask) ==
+        dns_protocol::kLabelPointer)
       return base::nullopt;
 
-    ret.append(domain.data() + i + 1, domain[i]);
+    base::StringPiece label;
+    if (!reader.ReadU8LengthPrefixed(&label))
+      return base::nullopt;
+    octets_read += label.size() + 1;
+
+    if (label.size() > dns_protocol::kMaxLabelLength)
+      return base::nullopt;
+    if (octets_read > dns_protocol::kMaxNameLength)
+      return base::nullopt;
+
+    if (label.size() == 0)
+      return ret;
+
+    if (!ret.empty())
+      ret.append(".");
+
+    ret.append(label.data(), label.size());
   }
+
+  if (require_complete)
+    return base::nullopt;
+
+  // If terminating zero-length label was not included in the input, it still
+  // counts against the max name length.
+  if (octets_read + 1 > dns_protocol::kMaxNameLength)
+    return base::nullopt;
+
   return ret;
 }
 
@@ -269,10 +281,10 @@ AddressListDeltaType FindAddressListDeltaType(const AddressList& a,
 }
 
 std::string CreateNamePointer(uint16_t offset) {
-  DCHECK_LE(offset, 0x3fff);
-  offset |= kFlagNamePointer;
+  DCHECK_EQ(offset & ~dns_protocol::kOffsetMask, 0);
   char buf[2];
   base::WriteBigEndian(buf, offset);
+  buf[0] |= dns_protocol::kLabelPointer;
   return std::string(buf, sizeof(buf));
 }
 

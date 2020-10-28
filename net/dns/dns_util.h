@@ -19,6 +19,10 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 
+namespace base {
+class BigEndianReader;
+}  // namespace base
+
 namespace net {
 
 class AddressList;
@@ -65,10 +69,21 @@ NET_EXPORT_PRIVATE bool IsValidUnrestrictedDNSDomain(
 NET_EXPORT_PRIVATE bool IsValidHostLabelCharacter(char c, bool is_first_char);
 
 // Converts a domain in DNS format to a dotted string. Excludes the dot at the
-// end. Assumes the standard terminating zero-length label at the end if not
-// included in the input. Returns nullopt on malformed input.
+// end.  Returns nullopt on malformed input.
+//
+// If `require_complete` is true, input will be considered malformed if it does
+// not contain a terminating zero-length label. If false, assumes the standard
+// terminating zero-length label at the end if not included in the input.
+//
+// DNS name compression (see RFC 1035, section 4.1.4) is disallowed and
+// considered malformed. To handle a potentially compressed name, in a
+// DnsResponse object, use DnsRecordParser::ReadName().
 NET_EXPORT base::Optional<std::string> DnsDomainToString(
-    base::StringPiece dns_name);
+    base::StringPiece dns_name,
+    bool require_complete = false);
+NET_EXPORT base::Optional<std::string> DnsDomainToString(
+    base::BigEndianReader& reader,
+    bool require_complete = false);
 
 // Return the expanded template when no variables have corresponding values.
 NET_EXPORT_PRIVATE std::string GetURLFromTemplateWithoutParameters(
