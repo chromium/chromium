@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * This is a simple framework for a test of an Application. See
- * {@link android.test.ApplicationTestCase ApplicationTestCase} for more
- * information on how to write and extend Application tests.
- */
-
 package org.chromium.chrome.browser.findinpage;
 
 import android.content.ClipData;
@@ -29,10 +23,12 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -41,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.Criteria;
@@ -49,30 +46,36 @@ import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
-import org.chromium.net.test.EmbeddedTestServer;
 
 /**
  * Find in page tests.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class FindTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     private static final String FILEPATH = "/chrome/test/data/android/find/test.html";
 
-    private EmbeddedTestServer mTestServer;
+    @Rule
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        sActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        waitForFindInPageVisibility(false);
     }
 
     @After
     public void tearDown() {
-        if (mTestServer != null) mTestServer.stopAndDestroyServer();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivityTestRule.getActivity().getTabModelSelector().getModel(true).closeAllTabs();
+        });
     }
 
     /**
@@ -80,7 +83,7 @@ public class FindTest {
      */
     private String waitForFindResults(String expectedResult) {
         final TextView findResults =
-                (TextView) mActivityTestRule.getActivity().findViewById(R.id.find_status);
+                (TextView) sActivityTestRule.getActivity().findViewById(R.id.find_status);
         Assert.assertNotNull(expectedResult);
         Assert.assertNotNull(findResults);
         CriteriaHelper.pollUiThread(
@@ -90,11 +93,13 @@ public class FindTest {
 
     /**
      * Find in page by invoking the 'find in page' menu item.
-     *
      */
     private void findInPageFromMenu() {
+        CriteriaHelper.pollUiThread(
+                sActivityTestRule.getActivity().findViewById(R.id.menu_button_wrapper)::isShown);
+
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), R.id.find_in_page_id);
+                sActivityTestRule.getActivity(), R.id.find_in_page_id);
 
         waitForFindInPageVisibility(true);
     }
@@ -102,7 +107,7 @@ public class FindTest {
     private void waitForFindInPageVisibility(final boolean visible) {
         CriteriaHelper.pollUiThread(() -> {
             FindToolbar findToolbar =
-                    (FindToolbar) mActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
+                    (FindToolbar) sActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
             if (visible) {
                 Criteria.checkThat(findToolbar, Matchers.notNullValue());
                 Criteria.checkThat(findToolbar.isShown(), Matchers.is(true));
@@ -135,23 +140,23 @@ public class FindTest {
     }
 
     private void loadTestAndVerifyFindInPage(String query, String expectedResult) {
-        mActivityTestRule.loadUrl(mTestServer.getURL(FILEPATH));
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         String findResults = findStringInPage(query, expectedResult);
         Assert.assertTrue("Expected: " + expectedResult + " Got: " + findResults
-                        + " for: " + mTestServer.getURL(FILEPATH),
+                        + " for: " + sActivityTestRule.getTestServer().getURL(FILEPATH),
                 findResults.contains(expectedResult));
     }
 
     private FindToolbar getFindToolbar() {
         final FindToolbar findToolbar =
-                (FindToolbar) mActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
+                (FindToolbar) sActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
         Assert.assertNotNull("FindToolbar not found", findToolbar);
         return findToolbar;
     }
 
     private EditText getFindQueryText() {
         final EditText findQueryText =
-                (EditText) mActivityTestRule.getActivity().findViewById(R.id.find_query);
+                (EditText) sActivityTestRule.getActivity().findViewById(R.id.find_query);
         Assert.assertNotNull("FindQueryText not found", findQueryText);
         return findQueryText;
     }
@@ -212,11 +217,11 @@ public class FindTest {
         loadTestAndVerifyFindInPage(query, "1/7");
         // TODO(jaydeepmehta): Verify number of results and match against boxes drawn.
         TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
+                sActivityTestRule.getActivity().findViewById(R.id.find_next_button));
         waitForFindResults("2/7");
         for (int i = 2; i <= 7; i++) {
             TouchCommon.singleClickView(
-                    mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
+                    sActivityTestRule.getActivity().findViewById(R.id.find_next_button));
         }
         waitForFindResults("1/7");
     }
@@ -232,10 +237,10 @@ public class FindTest {
         loadTestAndVerifyFindInPage(query, "1/7");
         // TODO(jaydeepmehta): Verify number of results and match against boxes drawn.
         TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
+                sActivityTestRule.getActivity().findViewById(R.id.find_next_button));
         waitForFindResults("2/7");
         TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_prev_button));
+                sActivityTestRule.getActivity().findViewById(R.id.find_prev_button));
         waitForFindResults("1/7");
     }
 
@@ -248,13 +253,13 @@ public class FindTest {
     public void testFullscreen() {
         loadTestAndVerifyFindInPage("pitts", "1/7");
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, mActivityTestRule.getActivity());
+                tab, true, sActivityTestRule.getActivity());
         waitForFindInPageVisibility(false);
 
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, false, mActivityTestRule.getActivity());
+                tab, false, sActivityTestRule.getActivity());
         waitForFindInPageVisibility(false);
     }
 
@@ -262,7 +267,7 @@ public class FindTest {
     @MediumTest
     @Feature({"FindInPage"})
     public void testResultsBarInitiallyVisible() {
-        mActivityTestRule.loadUrl(mTestServer.getURL(FILEPATH));
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         findInPageFromMenu();
         final FindToolbar findToolbar = getFindToolbar();
         final View resultBar = findToolbar.getFindResultBar();
@@ -274,7 +279,7 @@ public class FindTest {
     @MediumTest
     @Feature({"FindInPage"})
     public void testResultsBarVisibleAfterTypingText() {
-        mActivityTestRule.loadUrl(mTestServer.getURL(FILEPATH));
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         findInPageFromMenu();
         final FindToolbar findToolbar = getFindToolbar();
         final View resultBar = findToolbar.getFindResultBar();
@@ -297,7 +302,7 @@ public class FindTest {
     @MediumTest
     @Feature({"FindInPage"})
     public void testFindDismissOnEmptyString() {
-        mActivityTestRule.loadUrl(mTestServer.getURL(FILEPATH));
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         findInPageFromMenu();
 
         final FindToolbar findToolbar = getFindToolbar();
@@ -324,14 +329,14 @@ public class FindTest {
     @Feature({"FindInPage"})
     public void testFindNextPreviousIncognitoTab() {
         String query = "pitts";
-        mActivityTestRule.newIncognitoTabFromMenu();
+        sActivityTestRule.newIncognitoTabFromMenu();
         loadTestAndVerifyFindInPage(query, "1/7");
         // TODO(jaydeepmehta): Verify number of results and match against boxes drawn.
         TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
+                sActivityTestRule.getActivity().findViewById(R.id.find_next_button));
         waitForFindResults("2/7");
         TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_prev_button));
+                sActivityTestRule.getActivity().findViewById(R.id.find_prev_button));
         waitForFindResults("1/7");
     }
 
@@ -342,10 +347,10 @@ public class FindTest {
     @MediumTest
     @Feature({"FindInPage"})
     public void testFipTextNotRestoredIncognitoTab() throws InterruptedException {
-        mActivityTestRule.newIncognitoTabFromMenu();
+        sActivityTestRule.newIncognitoTabFromMenu();
         loadTestAndVerifyFindInPage("pitts", "1/7");
         // close the fip
-        final View v = mActivityTestRule.getActivity().findViewById(R.id.close_find_button);
+        final View v = sActivityTestRule.getActivity().findViewById(R.id.close_find_button);
         TouchCommon.singleClickView(v);
         waitForFindInPageVisibility(false);
 
@@ -365,7 +370,7 @@ public class FindTest {
     @SmallTest
     @Feature({"FindInPage"})
     public void testPastedTextStylingRemoved() throws Throwable {
-        mActivityTestRule.loadUrl(mTestServer.getURL(FILEPATH));
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         findInPageFromMenu();
 
         final FindToolbar findToolbar = getFindToolbar();
@@ -405,7 +410,7 @@ public class FindTest {
     @MediumTest
     @Feature({"FindInPage"})
     public void testBackKeyDoesNotDismissFindWhenImeIsPresent() {
-        mActivityTestRule.loadUrl(mTestServer.getURL(FILEPATH));
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         findInPageFromMenu();
         final TextView findQueryText = getFindQueryText();
         KeyUtils.singleKeyEventView(
@@ -431,7 +436,7 @@ public class FindTest {
         waitForIME(true);
         // Hide IME by clicking next button from find tool bar.
         TouchCommon.singleClickView(
-                mActivityTestRule.getActivity().findViewById(R.id.find_next_button));
+                sActivityTestRule.getActivity().findViewById(R.id.find_next_button));
         waitForIME(false);
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
         waitForFindInPageVisibility(false);
@@ -440,8 +445,8 @@ public class FindTest {
     private void waitForIME(final boolean imePresent) {
         // Wait for IME to appear.
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
-                                       mActivityTestRule.getActivity(), getFindQueryText()),
+            Criteria.checkThat(sActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
+                                       sActivityTestRule.getActivity(), getFindQueryText()),
                     Matchers.is(imePresent));
         });
     }
