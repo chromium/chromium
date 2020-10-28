@@ -67,8 +67,17 @@ declare_args() {
   ios_chrome_cpe_entitlements_additions = []
 }
 
-# ScreenTime is only available in iOS 14.0+ SDK.
-ios_enable_screen_time = xcode_version_int >= 1200
+# ScreenTime is only available in iOS 14.0+ SDK. It is not available either
+# in the iOS support libraries used by "catalyst" environment.
+ios_enable_screen_time =
+    xcode_version_int >= 1200 && target_environment != "catalyst"
+
+# Some extensions uses API that are not available in "catalyst" environment.
+if (target_environment == "catalyst") {
+  ios_enable_content_widget_extension = false
+  ios_enable_search_widget_extension = false
+  ios_enable_credential_provider_extension = false
+}
 
 # Configure whether breakpad support is enabled.
 breakpad_enabled = is_official_build && is_chrome_branded
