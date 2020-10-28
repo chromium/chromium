@@ -414,6 +414,21 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::RegisterSendSurface(
                                         last_outgoing_metadata_->second);
   }
 
+  // Sync down data from Nearby server when the sending flow starts, making our
+  // best effort to have fresh contact and certificate data. There is no need to
+  // wait for these calls to finish. The periodic server requests will typically
+  // be sufficient, but we don't want the user to be blocked for hours waiting
+  // for a periodic sync.
+  if (state == SendSurfaceState::kForeground && !last_outgoing_metadata_) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Downloading local device data, contacts, and certificates from "
+        << "Nearby server at start of sending flow.";
+    local_device_data_manager_->DownloadDeviceData();
+    contact_manager_->DownloadContacts();
+    certificate_manager_->DownloadPublicCertificates();
+  }
+
   // Let newly registered send surface catch up with discovered share targets
   // from current scanning session.
   for (const std::pair<std::string, ShareTarget>& item :
@@ -800,6 +815,20 @@ void NearbySharingServiceImpl::OnIncomingConnection(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection);
   DCHECK(profile_);
+
+  // Sync down data from Nearby server when the receiving flow starts, making
+  // our best effort to have fresh contact and certificate data. There is no
+  // need to wait for these calls to finish. The periodic server requests will
+  // typically be sufficient, but we don't want the user to be blocked for hours
+  // waiting for a periodic sync.
+  NS_LOG(VERBOSE)
+      << __func__
+      << ": Downloading local device data, contacts, and certificates from "
+      << "Nearby server at start of receiving flow.";
+  local_device_data_manager_->DownloadDeviceData();
+  contact_manager_->DownloadContacts();
+  certificate_manager_->DownloadPublicCertificates();
+
   ShareTarget placeholder_share_target;
   placeholder_share_target.is_incoming = true;
   ShareTargetInfo& share_target_info =
