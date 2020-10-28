@@ -40,7 +40,8 @@ class SingleClientSearchEnginesSyncTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(search_engines_helper::ServiceMatchesVerifier(0));
-  search_engines_helper::AddSearchEngine(0, 0);
+  search_engines_helper::AddSearchEngine(/*profile_index=*/0,
+                                         /*keyword=*/"test0");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(search_engines_helper::ServiceMatchesVerifier(0));
 }

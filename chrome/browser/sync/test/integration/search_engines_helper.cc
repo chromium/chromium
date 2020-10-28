@@ -9,6 +9,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/guid.h"
+#include "base/hash/sha1.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,8 +38,8 @@ GUIDToTURLMap CreateGUIDToTURLMap(TemplateURLService* service) {
 }
 
 std::string GetTURLInfoString(const TemplateURL& turl) {
-  return "TemplateURL: shortname: " + base::UTF16ToASCII(turl.short_name()) +
-         " keyword: " + base::UTF16ToASCII(turl.keyword()) +
+  return "TemplateURL: shortname: " + base::UTF16ToUTF8(turl.short_name()) +
+         " keyword: " + base::UTF16ToUTF8(turl.keyword()) +
          " url: " + turl.url();
 }
 
@@ -91,12 +95,6 @@ bool ServicesMatch(int profile_a, int profile_b, std::ostream* os) {
   }
 
   return true;
-}
-
-// Convenience helper for consistently generating the same keyword for a given
-// seed.
-base::string16 CreateKeyword(int seed) {
-  return base::ASCIIToUTF16(base::StringPrintf("test%d", seed));
 }
 
 }  // namespace
@@ -163,110 +161,102 @@ bool AllServicesMatch(std::ostream* os) {
   return true;
 }
 
-std::unique_ptr<TemplateURL> CreateTestTemplateURL(Profile* profile, int seed) {
-  return CreateTestTemplateURL(profile, seed, CreateKeyword(seed),
-                               base::StringPrintf("0000-0000-0000-%04d", seed));
+TemplateURLBuilder::TemplateURLBuilder(const std::string& keyword) {
+  data_.SetShortName(base::UTF8ToUTF16(keyword));
+  data_.SetKeyword(base::UTF8ToUTF16(keyword));
+  data_.SetURL(base::StringPrintf("http://www.test-%s.com/", keyword.c_str()));
+  data_.favicon_url = GURL("http://favicon.url");
+  data_.safe_for_autoreplace = true;
+  data_.date_created = base::Time::FromTimeT(100);
+  data_.last_modified = base::Time::FromTimeT(100);
+  data_.prepopulate_id = 999999;
+
+  // Produce a GUID deterministically from |keyword|.
+  std::string hex_encoded_hash = base::HexEncode(
+      base::SHA1HashSpan(base::as_bytes(base::make_span(keyword))));
+  hex_encoded_hash.resize(12);
+  data_.sync_guid =
+      base::StrCat({"12345678-0000-4000-8000-", hex_encoded_hash});
+  DCHECK(base::IsValidGUID(data_.sync_guid));
 }
 
-std::unique_ptr<TemplateURL> CreateTestTemplateURL(
-    Profile* profile,
-    int seed,
-    const base::string16& keyword,
-    const std::string& sync_guid) {
-  return CreateTestTemplateURL(profile, seed, keyword,
-      base::StringPrintf("http://www.test%d.com/", seed), sync_guid);
+TemplateURLBuilder::~TemplateURLBuilder() = default;
+
+std::unique_ptr<TemplateURL> TemplateURLBuilder::Build() {
+  return std::make_unique<TemplateURL>(data_);
 }
 
-std::unique_ptr<TemplateURL> CreateTestTemplateURL(
-    Profile* profile,
-    int seed,
-    const base::string16& keyword,
-    const std::string& url,
-    const std::string& sync_guid) {
-  TemplateURLData data;
-  data.SetShortName(CreateKeyword(seed));
-  data.SetKeyword(keyword);
-  data.SetURL(url);
-  data.favicon_url = GURL("http://favicon.url");
-  data.safe_for_autoreplace = true;
-  data.date_created = base::Time::FromTimeT(100);
-  data.last_modified = base::Time::FromTimeT(100);
-  data.prepopulate_id = 999999;
-  data.sync_guid = sync_guid;
-  return std::make_unique<TemplateURL>(data);
-}
-
-void AddSearchEngine(int profile_index, int seed) {
+void AddSearchEngine(int profile_index, const std::string& keyword) {
   Profile* profile = test()->GetProfile(profile_index);
-  TemplateURLServiceFactory::GetForProfile(profile)->Add(
-      CreateTestTemplateURL(profile, seed));
+  TemplateURLBuilder builder(keyword);
+  TemplateURLServiceFactory::GetForProfile(profile)->Add(builder.Build());
   if (test()->UseVerifier())
-    GetVerifierService()->Add(CreateTestTemplateURL(profile, seed));
+    GetVerifierService()->Add(builder.Build());
 }
 
 void EditSearchEngine(int profile_index,
-                      const base::string16& keyword,
+                      const std::string& keyword,
                       const base::string16& short_name,
-                      const base::string16& new_keyword,
+                      const std::string& new_keyword,
                       const std::string& url) {
   ASSERT_FALSE(url.empty());
   TemplateURLService* service = GetServiceForBrowserContext(profile_index);
-  TemplateURL* turl = service->GetTemplateURLForKeyword(keyword);
+  TemplateURL* turl =
+      service->GetTemplateURLForKeyword(base::UTF8ToUTF16(keyword));
   EXPECT_TRUE(turl);
   ASSERT_FALSE(new_keyword.empty());
-  service->ResetTemplateURL(turl, short_name, new_keyword, url);
+  service->ResetTemplateURL(turl, short_name, base::UTF8ToUTF16(new_keyword),
+                            url);
   // Make sure we do the same on the verifier.
   if (test()->UseVerifier()) {
-    TemplateURL* verifier_turl =
-        GetVerifierService()->GetTemplateURLForKeyword(keyword);
+    TemplateURL* verifier_turl = GetVerifierService()->GetTemplateURLForKeyword(
+        base::UTF8ToUTF16(keyword));
     EXPECT_TRUE(verifier_turl);
     GetVerifierService()->ResetTemplateURL(verifier_turl, short_name,
-                                           new_keyword, url);
+                                           base::UTF8ToUTF16(new_keyword), url);
   }
 }
 
-void DeleteSearchEngineBySeed(int profile_index, int seed) {
+void DeleteSearchEngine(int profile_index, const std::string& keyword) {
   TemplateURLService* service = GetServiceForBrowserContext(profile_index);
-  base::string16 keyword(CreateKeyword(seed));
-  TemplateURL* turl = service->GetTemplateURLForKeyword(keyword);
+  TemplateURL* turl =
+      service->GetTemplateURLForKeyword(base::UTF8ToUTF16(keyword));
   EXPECT_TRUE(turl);
   service->Remove(turl);
   // Make sure we do the same on the verifier.
   if (test()->UseVerifier()) {
-    TemplateURL* verifier_turl =
-        GetVerifierService()->GetTemplateURLForKeyword(keyword);
+    TemplateURL* verifier_turl = GetVerifierService()->GetTemplateURLForKeyword(
+        base::UTF8ToUTF16(keyword));
     EXPECT_TRUE(verifier_turl);
     GetVerifierService()->Remove(verifier_turl);
   }
 }
 
-void ChangeDefaultSearchProvider(int profile_index, int seed) {
+void ChangeDefaultSearchProvider(int profile_index,
+                                 const std::string& keyword) {
   TemplateURLService* service = GetServiceForBrowserContext(profile_index);
-  TemplateURL* turl = service->GetTemplateURLForKeyword(CreateKeyword(seed));
+  TemplateURL* turl =
+      service->GetTemplateURLForKeyword(base::UTF8ToUTF16(keyword));
   ASSERT_TRUE(turl);
   service->SetUserSelectedDefaultSearchProvider(turl);
   if (test()->UseVerifier()) {
-    TemplateURL* verifier_turl =
-        GetVerifierService()->GetTemplateURLForKeyword(CreateKeyword(seed));
+    TemplateURL* verifier_turl = GetVerifierService()->GetTemplateURLForKeyword(
+        base::UTF8ToUTF16(keyword));
     ASSERT_TRUE(verifier_turl);
     GetVerifierService()->SetUserSelectedDefaultSearchProvider(verifier_turl);
   }
 }
 
-bool HasSearchEngine(int profile_index, int seed) {
-  return HasSearchEngineWithKeyword(profile_index, CreateKeyword(seed));
-}
-
-bool HasSearchEngineWithKeyword(int profile_index,
-                                const base::string16& keyword) {
+bool HasSearchEngine(int profile_index, const std::string& keyword) {
   TemplateURLService* service = GetServiceForBrowserContext(profile_index);
-  TemplateURL* turl = service->GetTemplateURLForKeyword(keyword);
+  TemplateURL* turl =
+      service->GetTemplateURLForKeyword(base::UTF8ToUTF16(keyword));
   return turl != nullptr;
 }
 
-base::string16 GetDefaultSearchEngineKeyword(int profile_index) {
+std::string GetDefaultSearchEngineKeyword(int profile_index) {
   TemplateURLService* service = GetServiceForBrowserContext(profile_index);
-  return service->GetDefaultSearchProvider()->keyword();
+  return base::UTF16ToUTF8(service->GetDefaultSearchProvider()->keyword());
 }
 
 SearchEnginesMatchChecker::SearchEnginesMatchChecker() {
@@ -289,12 +279,10 @@ void SearchEnginesMatchChecker::OnTemplateURLServiceChanged() {
   CheckExitCondition();
 }
 
-HasSearchEngineChecker::HasSearchEngineChecker(int profile_index, int seed)
-    : HasSearchEngineChecker(profile_index, CreateKeyword(seed)) {}
-
 HasSearchEngineChecker::HasSearchEngineChecker(int profile_index,
-                                               const base::string16& keyword)
-    : service_(GetServiceForBrowserContext(profile_index)), keyword_(keyword) {
+                                               const std::string& keyword)
+    : service_(GetServiceForBrowserContext(profile_index)),
+      keyword_(base::UTF8ToUTF16(keyword)) {
   observer_.Add(service_);
 }
 
