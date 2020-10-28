@@ -16,6 +16,7 @@ buildflag_header("blink_heap_buildflags") {
   flags = [
     "BLINK_HEAP_VERIFICATION=$enable_blink_heap_verification",
     "BLINK_HEAP_YOUNG_GENERATION=$enable_blink_heap_young_generation",
+    "BLINK_HEAP_USE_V8_OILPAN=$enable_blink_heap_use_v8_oilpan",
   ]
 }
 
