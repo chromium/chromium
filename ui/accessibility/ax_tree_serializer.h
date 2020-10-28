@@ -366,9 +366,9 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
         // This child is already in the client tree and valid, we won't
         // recursively serialize it so we don't need to check this
         // subtree recursively for reparenting.
-        // However, if the child is ignored, the children may now be
+        // However, if the child is or was ignored, the children may now be
         // considered as reparented, so continue recursion in that case.
-        if (!client_child->ignored)
+        if (!client_child->ignored && !tree_->IsIgnored(child))
           continue;
       }
     }

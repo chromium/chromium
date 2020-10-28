@@ -1,0 +1,10 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored invisible
+++++++++genericContainer ignored invisible name='cats'
+++++++++++comboBoxGrouping ignored invisible
+++++++++++++textField ignored invisible
+++++++++++++listBox ignored invisible
+++++++++++++++listItem ignored invisible
+++++++++genericContainer ignored invisible
