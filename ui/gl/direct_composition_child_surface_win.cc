@@ -205,6 +205,8 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
           event.Wait();
         } else {
           base::debug::Alias(&hr);
+          HRESULT reason = d3d11_device_->GetDeviceRemovedReason();
+          base::debug::Alias(&reason);
           base::debug::DumpWithoutCrashing();
         }
       }
