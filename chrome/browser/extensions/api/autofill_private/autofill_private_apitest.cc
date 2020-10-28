@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -59,7 +60,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, ValidatePhoneNumbers) {
   EXPECT_TRUE(RunAutofillSubtest("ValidatePhoneNumbers")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddress) {
+// TODO(crbug.com/1143312): Disabled on Mac for flakiness.
+#if defined(OS_MAC)
+#define MAYBE_AddAndUpdateAddress DISABLED_AddAndUpdateAddress
+#else
+#define MAYBE_AddAndUpdateAddress AddAndUpdateAddress
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, MAYBE_AddAndUpdateAddress) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateAddress")) << message_;
 }
 
