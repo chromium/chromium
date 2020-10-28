@@ -55,24 +55,24 @@ class SCOPED_LOCKABLE ScopedUnlockGuard {
 
 #if !defined(PA_HAS_SPINNING_MUTEX)
 // Spinlock. Do not use, to be removed. crbug.com/1061437.
-class BASE_EXPORT SpinLock {
+class LOCKABLE BASE_EXPORT SpinLock {
  public:
   constexpr SpinLock() = default;
   ~SpinLock() = default;
 
-  ALWAYS_INLINE void Acquire() {
+  ALWAYS_INLINE void Acquire() EXCLUSIVE_LOCK_FUNCTION() {
     if (LIKELY(!lock_.exchange(true, std::memory_order_acquire)))
       return;
     AcquireSlow();
   }
 
-  ALWAYS_INLINE bool Try() {
+  ALWAYS_INLINE bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true) {
     // Faster than simple CAS.
     return !lock_.load(std::memory_order_relaxed) &&
            !lock_.exchange(true, std::memory_order_acquire);
   }
 
-  ALWAYS_INLINE void Release() {
+  ALWAYS_INLINE void Release() UNLOCK_FUNCTION() {
     lock_.store(false, std::memory_order_release);
   }
 
