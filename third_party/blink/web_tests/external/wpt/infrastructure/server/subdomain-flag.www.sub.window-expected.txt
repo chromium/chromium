@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Use of .www. file name flag implies www subdomain assert_equals: expected "www.web-platform.test" but got "web-platform.test"
+Harness: the test ran to completion.
+
