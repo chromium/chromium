@@ -383,7 +383,7 @@ class ExpandOwnersTest(unittest.TestCase):
     with self.assertRaisesRegexp(
         expand_owners.Error,
         'The histogram Caffeination must have a valid primary owner, i.e. a '
-        'person with an @google.com or @chromium.org email address.'):
+        'Googler with an @google.com or @chromium.org email address.'):
       expand_owners.ExpandHistogramsOWNERS(histograms_without_valid_first_owner)
 
   def testExpandOwnersWithoutValidPrimaryOwner_TeamEmail(self):
@@ -406,7 +406,7 @@ class ExpandOwnersTest(unittest.TestCase):
     with self.assertRaisesRegexp(
         expand_owners.Error,
         'The histogram Caffeination must have a valid primary owner, i.e. a '
-        'person with an @google.com or @chromium.org email address.'):
+        'Googler with an @google.com or @chromium.org email address.'):
       expand_owners.ExpandHistogramsOWNERS(histograms_without_valid_first_owner)
 
   def testExpandOwnersWithoutValidPrimaryOwner_InvalidEmail(self):
@@ -429,7 +429,7 @@ class ExpandOwnersTest(unittest.TestCase):
     with self.assertRaisesRegexp(
         expand_owners.Error,
         'The histogram Caffeination must have a valid primary owner, i.e. a '
-        'person with an @google.com or @chromium.org email address.'):
+        'Googler with an @google.com or @chromium.org email address.'):
       expand_owners.ExpandHistogramsOWNERS(histograms_without_valid_first_owner)
 
   def testExpandOwnersWithFakeFilePath(self):

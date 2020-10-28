@@ -500,7 +500,7 @@ contact for any questions or maintenance tasks, such as extending a histogram's
 expiry or deprecating the metric.
 
 Histograms must have a primary owner and may have secondary owners. A primary
-owner is an individual with an @chromium.org or @google.com email address, e.g.
+owner is a Googler with an @google.com or @chromium.org email address, e.g.
 <owner>lucy@chromium.org</owner>, who is ultimately responsible for maintaining
 the metric. Secondary owners may be other individuals, team mailing lists, e.g.
 <owner>my-team@google.com</owner>, or paths to OWNERS files, e.g.
