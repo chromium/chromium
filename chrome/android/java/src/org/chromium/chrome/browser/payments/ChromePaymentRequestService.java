@@ -58,7 +58,9 @@ import org.chromium.components.payments.Section;
 import org.chromium.components.payments.SkipToGPayHelper;
 import org.chromium.components.payments.UrlUtil;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.payments.mojom.CanMakePaymentQueryResult;
 import org.chromium.payments.mojom.HasEnrolledInstrumentQueryResult;
 import org.chromium.payments.mojom.PayerDetail;
@@ -354,10 +356,22 @@ public class ChromePaymentRequestService
         return true;
     }
 
+    @Nullable
+    private WebContents getLiveWebContents() {
+        WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+        return webContents != null && !webContents.isDestroyed() ? webContents : null;
+    }
+
+    private boolean isWebContentsActive() {
+        WebContents webContents = getLiveWebContents();
+        return webContents != null && webContents.getVisibility() == Visibility.VISIBLE;
+    }
+
     /** @return Whether the UI was built. */
     private boolean buildUI(ChromeActivity activity) {
+        WebContents webContents = getLiveWebContents();
         String error = mPaymentUiService.buildPaymentRequestUI(activity,
-                /*isWebContentsActive=*/mDelegate.isWebContentsActive(),
+                /*isWebContentsActive=*/isWebContentsActive(),
                 /*waitForUpdatedDetails=*/mWaitForUpdatedDetails);
         if (error != null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);

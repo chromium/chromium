@@ -37,9 +37,8 @@ public class PaymentRequestTestBridge {
         private final String mTwaPackageName;
 
         ChromePaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
-                boolean isWebContentsActive, boolean prefsCanMakePayment, String twaPackageName,
-                boolean skipUiForBasicCard) {
-            super(isOffTheRecord, isValidSsl, isWebContentsActive, prefsCanMakePayment);
+                boolean prefsCanMakePayment, String twaPackageName, boolean skipUiForBasicCard) {
+            super(isOffTheRecord, isValidSsl, prefsCanMakePayment);
             mSkipUiForBasicCard = skipUiForBasicCard;
             mTwaPackageName = twaPackageName;
         }
@@ -64,14 +63,12 @@ public class PaymentRequestTestBridge {
     private static class PaymentRequestDelegateForTest implements PaymentRequestService.Delegate {
         private final boolean mIsOffTheRecord;
         private final boolean mIsValidSsl;
-        private final boolean mIsWebContentsActive;
         private final boolean mPrefsCanMakePayment;
 
-        PaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
-                boolean isWebContentsActive, boolean prefsCanMakePayment) {
+        PaymentRequestDelegateForTest(
+                boolean isOffTheRecord, boolean isValidSsl, boolean prefsCanMakePayment) {
             mIsOffTheRecord = isOffTheRecord;
             mIsValidSsl = isValidSsl;
-            mIsWebContentsActive = isWebContentsActive;
             mPrefsCanMakePayment = prefsCanMakePayment;
         }
 
@@ -84,11 +81,6 @@ public class PaymentRequestTestBridge {
         public String getInvalidSslCertificateErrorMessage() {
             if (mIsValidSsl) return null;
             return "Invalid SSL certificate";
-        }
-
-        @Override
-        public boolean isWebContentsActive() {
-            return mIsWebContentsActive;
         }
 
         @Override
@@ -210,12 +202,12 @@ public class PaymentRequestTestBridge {
 
     @CalledByNative
     private static void setUseDelegateForTest(boolean useDelegate, boolean isOffTheRecord,
-            boolean isValidSsl, boolean isWebContentsActive, boolean prefsCanMakePayment,
-            boolean skipUiForBasicCard, String twaPackageName) {
+            boolean isValidSsl, boolean prefsCanMakePayment, boolean skipUiForBasicCard,
+            String twaPackageName) {
         if (useDelegate) {
-            ChromePaymentRequestFactory.sDelegateForTest = new ChromePaymentRequestDelegateForTest(
-                    isOffTheRecord, isValidSsl, isWebContentsActive, prefsCanMakePayment,
-                    twaPackageName, skipUiForBasicCard);
+            ChromePaymentRequestFactory.sDelegateForTest =
+                    new ChromePaymentRequestDelegateForTest(isOffTheRecord, isValidSsl,
+                            prefsCanMakePayment, twaPackageName, skipUiForBasicCard);
         } else {
             ChromePaymentRequestFactory.sDelegateForTest = null;
         }

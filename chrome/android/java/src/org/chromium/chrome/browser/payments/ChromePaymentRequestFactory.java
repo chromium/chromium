@@ -17,7 +17,6 @@ import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.FeaturePolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo.system.MojoException;
@@ -82,14 +81,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
                 return null;
             }
             return SslValidityChecker.getInvalidSslCertificateErrorMessage(liveWebContents);
-        }
-
-        @Override
-        public boolean isWebContentsActive() {
-            // TODO(crbug.com/1128658): Try making the WebContents inactive for instrumentation
-            // tests rather than mocking it with this method.
-            WebContents liveWebContents = getLiveWebContents();
-            return liveWebContents != null && liveWebContents.getVisibility() == Visibility.VISIBLE;
         }
 
         @Override

@@ -24,7 +24,6 @@ void SetUseDelegateOnPaymentRequestForTesting(
     bool use_delegate,
     bool is_incognito,
     bool is_valid_ssl,
-    bool is_web_contents_active,
     bool prefs_can_make_payment,
     bool skip_ui_for_basic_card,
     const std::string& twa_package_name);

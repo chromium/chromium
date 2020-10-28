@@ -115,11 +115,6 @@ public class PaymentRequestService {
         String getInvalidSslCertificateErrorMessage();
 
         /**
-         * @return True if the merchant's web contents that initiated the payment request is active.
-         */
-        boolean isWebContentsActive();
-
-        /**
          * @return Whether the preferences allow CAN_MAKE_PAYMENT.
          */
         boolean prefsCanMakePayment();
