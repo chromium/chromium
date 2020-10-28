@@ -11,7 +11,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/scoped_observer.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_range.h"
@@ -193,6 +192,13 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
 
   Microsoft::WRL::ComPtr<AXPlatformNodeWin> owner_;
 
+  // Why we can't use a ScopedObserver here:
+  // We tried using a ScopedObserver instead of a simple observer in this case,
+  // but there appears to be a problem with the lifetime of the referenced
+  // AXTreeManager in the ScopedObserver. The AXTreeManager can get deleted
+  // before the TextRangeEndpoints does, so when the destructor of the
+  // ScopedObserver calls ScopedObserver::RemoveAll on an already deleted
+  // AXTreeManager, it crashes.
   class TextRangeEndpoints : public AXTreeObserver {
    public:
     TextRangeEndpoints();
@@ -209,8 +215,6 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
    private:
     AXPositionInstance start_;
     AXPositionInstance end_;
-
-    ScopedObserver<AXTreeManager, AXTreeObserver> observer_{this};
   };
   TextRangeEndpoints endpoints_;
 };

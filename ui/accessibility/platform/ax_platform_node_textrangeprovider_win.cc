@@ -1447,7 +1447,10 @@ AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::TextRangeEndpoints() {
   end_ = AXNodePosition::CreateNullPosition();
 }
 
-AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::~TextRangeEndpoints() {}
+AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::~TextRangeEndpoints() {
+  SetStart(AXNodePosition::CreateNullPosition());
+  SetEnd(AXNodePosition::CreateNullPosition());
+}
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetStart(
     AXPositionInstance new_start) {
@@ -1486,15 +1489,15 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::AddObserver(
   AXTreeManager* ax_tree_manager =
       AXTreeManagerMap::GetInstance().GetManager(tree_id);
   DCHECK(ax_tree_manager);
-  observer_.Add(ax_tree_manager);
+  ax_tree_manager->AddObserver(this);
 }
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::RemoveObserver(
     const AXTreeID tree_id) {
   AXTreeManager* ax_tree_manager =
       AXTreeManagerMap::GetInstance().GetManager(tree_id);
-  DCHECK(ax_tree_manager);
-  observer_.Remove(ax_tree_manager);
+  if (ax_tree_manager)
+    ax_tree_manager->RemoveObserver(this);
 }
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
