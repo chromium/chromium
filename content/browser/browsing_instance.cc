@@ -214,8 +214,7 @@ BrowsingInstance::~BrowsingInstance() {
   // Remove any origin isolation opt-ins related to this instance.
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->RemoveOptInIsolatedOriginsForBrowsingInstance(
-      isolation_context_.browsing_instance_id());
+  policy->RemoveOptInIsolatedOriginsForBrowsingInstance(isolation_context_);
 }
 
 SiteInfo BrowsingInstance::ComputeSiteInfoForURL(

@@ -364,9 +364,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                  url::Origin* result);
 
   // Removes any origin isolation opt-in entries associated with the
-  // |browsing_instance_id| of the BrowsingInstance.
+  // |isolation_context| of the BrowsingInstance.
   void RemoveOptInIsolatedOriginsForBrowsingInstance(
-      const BrowsingInstanceId& browsing_instance_id);
+      const IsolationContext& isolation_context);
 
   // Registers |origin|'s isolation status with respect to the BrowsingInstance
   // associated with |isolation_context|. If it has already been registered,
@@ -783,10 +783,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RemoveProcessReference(int child_id);
   void RemoveProcessReferenceLocked(int child_id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // Internal helper for RemoveOptInIsolatedOriginsForBrowsingInstance().
-  void RemoveOptInIsolatedOriginsForBrowsingInstanceInternal(
-      const BrowsingInstanceId browsing_instance_id);
 
   // Creates the value to place in the "killed_process_origin_lock" crash key
   // based on the contents of |security_state|.
