@@ -388,7 +388,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^ios/chrome/',
   '^ios/web/',
   '^ios/web_view/',
-  '^ipc/',
   '^media/blink/',
   '^media/cast/',
   '^media/cdm/',

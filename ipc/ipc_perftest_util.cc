@@ -28,10 +28,10 @@ ChannelReflectorListener::~ChannelReflectorListener() {
 }
 
 void ChannelReflectorListener::Init(Sender* channel,
-                                    const base::Closure& quit_closure) {
+                                    base::OnceClosure quit_closure) {
   DCHECK(!channel_);
   channel_ = channel;
-  quit_closure_ = quit_closure;
+  quit_closure_ = std::move(quit_closure);
 }
 
 bool ChannelReflectorListener::OnMessageReceived(const Message& message) {
@@ -61,7 +61,7 @@ void ChannelReflectorListener::OnSyncPing(const std::string& payload,
 }
 
 void ChannelReflectorListener::OnQuit() {
-  quit_closure_.Run();
+  std::move(quit_closure_).Run();
 }
 
 void ChannelReflectorListener::Send(IPC::Message* message) {
@@ -121,8 +121,8 @@ int MojoPerfTestClient::Run(MojoHandle handle) {
 }
 
 ReflectorImpl::ReflectorImpl(mojo::ScopedMessagePipeHandle handle,
-                             const base::Closure& quit_closure)
-    : quit_closure_(quit_closure),
+                             base::OnceClosure quit_closure)
+    : quit_closure_(std::move(quit_closure)),
       receiver_(
           this,
           mojo::PendingReceiver<IPC::mojom::Reflector>(std::move(handle))) {}
@@ -141,7 +141,7 @@ void ReflectorImpl::SyncPing(const std::string& value, PingCallback callback) {
 
 void ReflectorImpl::Quit() {
   if (quit_closure_)
-    quit_closure_.Run();
+    std::move(quit_closure_).Run();
 }
 
 }  // namespace IPC

@@ -43,7 +43,7 @@ class ChannelReflectorListener : public Listener {
 
   ~ChannelReflectorListener() override;
 
-  void Init(Sender* channel, const base::Closure& quit_closure);
+  void Init(Sender* channel, base::OnceClosure quit_closure);
 
   bool OnMessageReceived(const Message& message) override;
 
@@ -59,7 +59,7 @@ class ChannelReflectorListener : public Listener {
 
  private:
   Sender* channel_;
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 };
 
 // This class locks the current thread to a particular CPU core. This is
@@ -106,7 +106,7 @@ class MojoPerfTestClient {
 class ReflectorImpl : public IPC::mojom::Reflector {
  public:
   explicit ReflectorImpl(mojo::ScopedMessagePipeHandle handle,
-                         const base::Closure& quit_closure);
+                         base::OnceClosure quit_closure);
 
   ~ReflectorImpl() override;
 
@@ -118,7 +118,7 @@ class ReflectorImpl : public IPC::mojom::Reflector {
 
   void Quit() override;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
   mojo::Receiver<IPC::mojom::Reflector> receiver_;
 };
 

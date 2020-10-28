@@ -374,11 +374,11 @@ class InterfacePassingTestDriverImpl : public mojom::InterfacePassingTestDriver,
                                        public mojom::PingReceiver {
  public:
   InterfacePassingTestDriverImpl(mojo::ScopedMessagePipeHandle handle,
-                                 const base::Closure& quit_closure)
+                                 base::OnceClosure quit_closure)
       : receiver_(this,
                   mojo::PendingReceiver<mojom::InterfacePassingTestDriver>(
                       std::move(handle))),
-        quit_closure_(quit_closure) {}
+        quit_closure_(std::move(quit_closure)) {}
   ~InterfacePassingTestDriverImpl() override {
     ignore_result(receiver_.Unbind().PassPipe().release());
   }
@@ -408,7 +408,7 @@ class InterfacePassingTestDriverImpl : public mojom::InterfacePassingTestDriver,
 
   void Quit() override {
     if (quit_closure_)
-      quit_closure_.Run();
+      std::move(quit_closure_).Run();
   }
 
   // mojom::PingReceiver implementation:
@@ -419,7 +419,7 @@ class InterfacePassingTestDriverImpl : public mojom::InterfacePassingTestDriver,
       ping_receiver_associated_receivers_;
   mojo::Receiver<mojom::InterfacePassingTestDriver> receiver_;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 };
 
 class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
@@ -508,7 +508,7 @@ class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
 
     if (count_down_ == 0) {
       perf_logger_.reset();
-      quit_closure_.Run();
+      std::move(quit_closure_).Run();
       return;
     }
 
@@ -540,7 +540,7 @@ class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
 
   mojo::Remote<mojom::InterfacePassingTestDriver> driver_remote_;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoInterfacePassingPerfTest);
 };
@@ -642,7 +642,7 @@ TEST_P(MojoInProcessInterfacePerfTest, SingleThreadPingPong) {
   mojo::MessagePipeHandle mp_handle(client_handle);
   mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
   LockThreadAffinity thread_locker(kSharedCore);
-  ReflectorImpl impl(std::move(scoped_mp), base::Closure());
+  ReflectorImpl impl(std::move(scoped_mp), base::OnceClosure());
 
   RunPingPongServer(server_handle, "SingleProcess");
 }
@@ -691,7 +691,8 @@ TEST_P(MojoInProcessInterfacePassingPerfTest, SingleThreadInterfacePassing) {
   mojo::MessagePipeHandle mp_handle(client_handle);
   mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
   LockThreadAffinity thread_locker(kSharedCore);
-  InterfacePassingTestDriverImpl impl(std::move(scoped_mp), base::Closure());
+  InterfacePassingTestDriverImpl impl(std::move(scoped_mp),
+                                      base::OnceClosure());
 
   RunInterfacePassingServer(server_handle, "SingleProcess",
                             false /* associated */);
@@ -706,7 +707,8 @@ TEST_P(MojoInProcessInterfacePassingPerfTest,
   mojo::MessagePipeHandle mp_handle(client_handle);
   mojo::ScopedMessagePipeHandle scoped_mp(mp_handle);
   LockThreadAffinity thread_locker(kSharedCore);
-  InterfacePassingTestDriverImpl impl(std::move(scoped_mp), base::Closure());
+  InterfacePassingTestDriverImpl impl(std::move(scoped_mp),
+                                      base::OnceClosure());
 
   RunInterfacePassingServer(server_handle, "SingleProcess",
                             true /* associated */);

@@ -59,7 +59,7 @@ class Message;
 //
 //   class MyListener : public IPC::Listener {
 //    public:
-//     MyListener(const base::Closure& closure)
+//     MyListener(const base::RepeatingClosure& closure)
 //       : message_received_closure_(closure) {}
 //     virtual bool OnMessageReceived(const IPC::Message& msg) {
 //       <do something with the message>
@@ -67,7 +67,7 @@ class Message;
 //       return false;  // to store the message in the sink, or true to drop it
 //     }
 //    private:
-//     base::Closure message_received_closure_;
+//     base::RepeatingClosure message_received_closure_;
 //   };
 //
 //   base::RunLoop run_loop;

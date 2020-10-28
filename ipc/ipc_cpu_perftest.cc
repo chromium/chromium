@@ -107,11 +107,11 @@ class ChannelSteadyPingPongListener : public Listener {
   void SetTestParams(const TestParams& params,
                      const std::string& label,
                      bool sync,
-                     const base::Closure& quit_closure) {
+                     base::OnceClosure quit_closure) {
     params_ = params;
     label_ = label;
     sync_ = sync;
-    quit_closure_ = quit_closure;
+    quit_closure_ = std::move(quit_closure);
     payload_ = std::string(params.message_size, 'a');
   }
 
@@ -170,7 +170,7 @@ class ChannelSteadyPingPongListener : public Listener {
   void StopPingPong() {
     cpu_logger_.reset();
     timer_.AbandonAndStop();
-    quit_closure_.Run();
+    std::move(quit_closure_).Run();
   }
 
   void OnPing(const std::string& payload) {
@@ -204,7 +204,7 @@ class ChannelSteadyPingPongListener : public Listener {
   base::RepeatingTimer timer_;
   std::unique_ptr<PerfCpuLogger> cpu_logger_;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 };
 
 class ChannelSteadyPingPongTest : public IPCChannelMojoTestBase {
@@ -342,7 +342,7 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
   void StopPingPong() {
     cpu_logger_.reset();
     timer_.AbandonAndStop();
-    quit_closure_.Run();
+    std::move(quit_closure_).Run();
   }
 
   void OnPong(const std::string& value) {
@@ -392,7 +392,7 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
   base::RepeatingTimer timer_;
   std::unique_ptr<PerfCpuLogger> cpu_logger_;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoSteadyPingPongTest);
 };
