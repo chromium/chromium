@@ -18,6 +18,10 @@
 <script>
 jsTestIsAsync = true;
 
+// Without an event handler, the touch events will be dropped before ever
+// reaching Blink.
+document.getElementById("plugin").addEventListener('touchstart', () => {});
+
 function touchTapAndMove(xPosition, yPosition, xPosition1, yPosition1) {
     if (window.eventSender) {
         eventSender.addTouchPoint(xPosition, yPosition);

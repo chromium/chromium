@@ -139,10 +139,9 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
             base::Unretained(this),
             InitialDeltaToAutoscrollVelocity(scroll_result.scroll_offset),
             scrollbar_part));
-    layer_tree_host_impl_->task_runner_provider()
-        ->ImplThreadTaskRunner()
-        ->PostDelayedTask(FROM_HERE, cancelable_autoscroll_task_->callback(),
-                          kInitialAutoscrollTimerDelay);
+    layer_tree_host_impl_->GetTaskRunner()->PostDelayedTask(
+        FROM_HERE, cancelable_autoscroll_task_->callback(),
+        kInitialAutoscrollTimerDelay);
   }
   return scroll_result;
 }

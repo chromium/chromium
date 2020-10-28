@@ -17,8 +17,8 @@ GestureShowPress: 0+1
 GestureTap: 0+3
 GestureTapCancel: 0+1
 DoubleFingerTouch: 3+0
-TouchScroll: 5+3
-MouseWheelScroll: 0+3
+TouchScroll: 5+2
+MouseWheelScroll: 0+2
 
 Event entirely over one iframe nested in another
 ---------------------
@@ -35,8 +35,8 @@ GestureShowPress: 1+0 1+0 0+1
 GestureTap: 1+0 1+0 0+3
 GestureTapCancel: 1+0 1+0 0+1
 DoubleFingerTouch: 3+0 3+0 3+0
-TouchScroll: 5+2 5+2 4+3
-MouseWheelScroll: 0+3 0+3 0+3
+TouchScroll: 4+2 4+2 4+2
+MouseWheelScroll: 0+2 0+2 0+2
 
 Event near boundary of two iframes
 ---------------------
@@ -53,8 +53,8 @@ GestureShowPress: 1+0 0+1 0+0
 GestureTap: 1+0 0+3 0+0
 GestureTapCancel: 1+0 0+1 0+0
 DoubleFingerTouch: 3+0 3+0 2+0
-TouchScroll: 4+3 3+2 1+0
-MouseWheelScroll: 0+3 0+3 0+0
+TouchScroll: 3+3 3+1 1+0
+MouseWheelScroll: 0+2 0+2 0+0
 
 Event on a simple div (desktop viewport)
 ---------------------
@@ -71,8 +71,8 @@ GestureShowPress: 0+1
 GestureTap: 0+3
 GestureTapCancel: 0+1
 DoubleFingerTouch: 3+0
-TouchScroll: 4+3
-MouseWheelScroll: 0+3
+TouchScroll: 4+2
+MouseWheelScroll: 0+2
 
 PASS successfullyParsed is true
 

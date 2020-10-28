@@ -6001,6 +6001,9 @@ crbug.com/1094436 http/tests/devtools/persistence/automapping-urlencoded-paths.j
 crbug.com/1094436 http/tests/devtools/sources/debugger-ui/snippet-edit-breakpoint.js [ Pass Timeout ]
 crbug.com/1094436 http/tests/devtools/sources/debugger/navigator-view.js [ Pass Failure Crash ]
 
+# This test fails due to the linked bug since input is now routed through the compositor.
+crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
+
 # Sheriff 2020-07-20
 crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Pass Failure ]
 crbug.com/1107572 [ Mac ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Pass Failure ]

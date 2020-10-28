@@ -269,9 +269,8 @@ const cc::InputHandler::ScrollStatus kScrollIgnoredScrollState(
 class TestInputHandlerProxy : public InputHandlerProxy {
  public:
   TestInputHandlerProxy(cc::InputHandler& input_handler,
-                        InputHandlerProxyClient* client,
-                        bool force_input_to_main_thread)
-      : InputHandlerProxy(input_handler, client, force_input_to_main_thread) {}
+                        InputHandlerProxyClient* client)
+      : InputHandlerProxy(input_handler, client) {}
   void RecordMainThreadScrollingReasonsForTest(WebGestureDevice device,
                                                uint32_t reasons) {
     RecordMainThreadScrollingReasons(device, reasons);
@@ -326,8 +325,7 @@ class InputHandlerProxyTest
       scoped_feature_list_.InitAndDisableFeature(features::kScrollUnification);
 
     input_handler_ = std::make_unique<TestInputHandlerProxy>(
-        mock_input_handler_, &mock_client_,
-        /*force_input_to_main_thread=*/false);
+        mock_input_handler_, &mock_client_);
     scroll_result_did_scroll_.did_scroll = true;
     scroll_result_did_not_scroll_.did_scroll = false;
 
@@ -453,9 +451,7 @@ InputHandlerProxy::EventDisposition HandleInputEventAndFlushEventQueue(
 class InputHandlerProxyEventQueueTest : public testing::Test {
  public:
   InputHandlerProxyEventQueueTest()
-      : input_handler_proxy_(mock_input_handler_,
-                             &mock_client_,
-                             /*force_input_to_main_thread=*/false) {
+      : input_handler_proxy_(mock_input_handler_, &mock_client_) {
     SetScrollPredictionEnabled(true);
   }
 
@@ -1951,9 +1947,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
   using ReturnedDisposition = base::Optional<EventDisposition>;
 
   UnifiedScrollingInputHandlerProxyTest()
-      : input_handler_proxy_(mock_input_handler_,
-                             &mock_client_,
-                             /*force_input_to_main_thread=*/false) {}
+      : input_handler_proxy_(mock_input_handler_, &mock_client_) {}
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kScrollUnification);
@@ -2426,7 +2420,7 @@ TEST(SynchronousInputHandlerProxyTest, StartupShutdown) {
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
       mock_synchronous_input_handler;
-  InputHandlerProxy proxy(mock_input_handler, &mock_client, false);
+  InputHandlerProxy proxy(mock_input_handler, &mock_client);
 
   // When adding a SynchronousInputHandler, immediately request an
   // UpdateRootLayerStateForSynchronousInputHandler() call.
@@ -2452,7 +2446,7 @@ TEST(SynchronousInputHandlerProxyTest, UpdateRootLayerState) {
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
       mock_synchronous_input_handler;
-  InputHandlerProxy proxy(mock_input_handler, &mock_client, false);
+  InputHandlerProxy proxy(mock_input_handler, &mock_client);
 
   proxy.SetSynchronousInputHandler(&mock_synchronous_input_handler);
 
@@ -2477,7 +2471,7 @@ TEST(SynchronousInputHandlerProxyTest, SetOffset) {
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
       mock_synchronous_input_handler;
-  InputHandlerProxy proxy(mock_input_handler, &mock_client, false);
+  InputHandlerProxy proxy(mock_input_handler, &mock_client);
 
   proxy.SetSynchronousInputHandler(&mock_synchronous_input_handler);
 
@@ -3835,25 +3829,6 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
                                             gesture_scroll_end_));
 }
 
-// Tests that turning on the force_input_to_main_thread flag causes all events
-// to be return DID_NOT_HANDLE for forwarding to the main thread.
-class InputHandlerProxyForceHandlingOnMainThread : public testing::Test {
- public:
-  InputHandlerProxyForceHandlingOnMainThread()
-      : input_handler_proxy_(mock_input_handler_,
-                             &mock_client_,
-                             /*force_input_to_main_thread=*/true) {
-    input_handler_proxy_.set_event_attribution_enabled(false);
-  }
-
-  ~InputHandlerProxyForceHandlingOnMainThread() = default;
-
- protected:
-  testing::StrictMock<MockInputHandler> mock_input_handler_;
-  testing::StrictMock<MockInputHandlerProxyClient> mock_client_;
-  TestInputHandlerProxy input_handler_proxy_;
-};
-
 class InputHandlerProxyTouchScrollbarTest : public InputHandlerProxyTest {
  public:
   void SetupEvents() {
@@ -3909,84 +3884,10 @@ TEST_P(InputHandlerProxyTouchScrollbarTest,
                 mock_input_handler_, input_handler_.get(), touch_end_));
 }
 
-TEST_F(InputHandlerProxyForceHandlingOnMainThread, MouseWheel) {
-  // We shouldn't be checking the status of event handlers at all.
-  EXPECT_CALL(mock_input_handler_, HasBlockingWheelEventHandlerAt(_)).Times(0);
-  EXPECT_CALL(mock_input_handler_, GetEventListenerProperties(_)).Times(0);
-
-  WebMouseWheelEvent wheel(WebInputEvent::Type::kMouseWheel,
-                           WebInputEvent::kControlKey,
-                           WebInputEvent::GetStaticTimeStampForTests());
-  // The input event must return DID_NOT_HANDLE, indicating it should be
-  // handled on the main thread.
-  EXPECT_EQ(InputHandlerProxy::DID_NOT_HANDLE,
-            HandleInputEventWithLatencyInfo(&input_handler_proxy_, wheel));
-}
-
-TEST_F(InputHandlerProxyForceHandlingOnMainThread, TouchEvents) {
-  // Shouldn't query event listener state at all since we're forcing events to
-  // the main thread.
-  EXPECT_CALL(mock_input_handler_, EventListenerTypeForTouchStartOrMoveAt(_, _))
-      .Times(0);
-
-  WebTouchEvent touch(WebInputEvent::Type::kTouchStart,
-                      WebInputEvent::kNoModifiers,
-                      WebInputEvent::GetStaticTimeStampForTests());
-
-  touch.touches_length = 1;
-  touch.touch_start_or_first_touch_move = true;
-  touch.touches[0] =
-      CreateWebTouchPoint(WebTouchPoint::State::kStatePressed, 0, 0);
-
-  // The input event must return DID_NOT_HANDLE, indicating it should be
-  // handled on the main thread.
-  EXPECT_EQ(InputHandlerProxy::DID_NOT_HANDLE,
-            HandleInputEventWithLatencyInfo(&input_handler_proxy_, touch));
-
-  WebTouchEvent touch_move(WebInputEvent::Type::kTouchMove,
-                           WebInputEvent::kNoModifiers,
-                           WebInputEvent::GetStaticTimeStampForTests());
-
-  touch_move.touches_length = 1;
-  touch_move.touch_start_or_first_touch_move = true;
-  touch_move.touches[0] =
-      CreateWebTouchPoint(WebTouchPoint::State::kStatePressed, 0, 0);
-
-  // The input event must return DID_NOT_HANDLE, indicating it should be
-  // handled on the main thread.
-  EXPECT_EQ(InputHandlerProxy::DID_NOT_HANDLE,
-            HandleInputEventWithLatencyInfo(&input_handler_proxy_, touch_move));
-
-  touch_move.touch_start_or_first_touch_move = false;
-
-  EXPECT_EQ(InputHandlerProxy::DID_NOT_HANDLE,
-            HandleInputEventWithLatencyInfo(&input_handler_proxy_, touch_move));
-}
-
-TEST_F(InputHandlerProxyForceHandlingOnMainThread, GestureEvents) {
-  WebGestureEvent gesture(WebInputEvent::Type::kGestureScrollBegin,
-                          WebInputEvent::kNoModifiers,
-                          WebInputEvent::GetStaticTimeStampForTests(),
-                          WebGestureDevice::kTouchscreen);
-
-  // The input event must return DID_NOT_HANDLE, indicating it should be
-  // handled on the main thread.
-  EXPECT_EQ(InputHandlerProxy::DID_NOT_HANDLE,
-            HandleInputEventWithLatencyInfo(&input_handler_proxy_, gesture));
-  gesture.SetType(WebInputEvent::Type::kGestureScrollUpdate);
-  EXPECT_EQ(InputHandlerProxy::DID_NOT_HANDLE,
-            HandleInputEventWithLatencyInfo(&input_handler_proxy_, gesture));
-  gesture.SetType(WebInputEvent::Type::kGestureScrollEnd);
-  EXPECT_EQ(InputHandlerProxy::DID_NOT_HANDLE,
-            HandleInputEventWithLatencyInfo(&input_handler_proxy_, gesture));
-}
-
 class InputHandlerProxyMomentumScrollJankTest : public testing::Test {
  public:
   InputHandlerProxyMomentumScrollJankTest()
-      : input_handler_proxy_(mock_input_handler_,
-                             &mock_client_,
-                             /*force_input_to_main_thread=*/false) {
+      : input_handler_proxy_(mock_input_handler_, &mock_client_) {
     tick_clock_.SetNowTicks(base::TimeTicks::Now());
     // Disable scroll predictor for this test.
     input_handler_proxy_.scroll_predictor_ = nullptr;

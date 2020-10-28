@@ -66,8 +66,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
       public cc::SnapFlingClient {
  public:
   InputHandlerProxy(cc::InputHandler& input_handler,
-                    InputHandlerProxyClient* client,
-                    bool force_input_to_main_thread);
+                    InputHandlerProxyClient* client);
   ~InputHandlerProxy() override;
 
   ElasticOverscrollController* elastic_overscroll_controller() {
@@ -352,11 +351,6 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   std::unique_ptr<cc::SnapFlingController> snap_fling_controller_;
 
   std::unique_ptr<ScrollPredictor> scroll_predictor_;
-
-  // This flag can be used to force all input to be forwarded to Blink. It's
-  // used in LayoutTests to preserve existing behavior for non-threaded layout
-  // tests and to allow testing both Blink and CC input handling paths.
-  bool force_input_to_main_thread_;
 
   // These flags are set for the SkipTouchEventFilter experiment. The
   // experiment either skips filtering discrete (touch start/end) events to the

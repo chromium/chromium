@@ -207,8 +207,7 @@ bool IsGestureScrollOrPinch(WebInputEvent::Type type) {
 }  // namespace
 
 InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
-                                     InputHandlerProxyClient* client,
-                                     bool force_input_to_main_thread)
+                                     InputHandlerProxyClient* client)
     : client_(client),
       input_handler_(&input_handler),
       synchronous_input_handler_(nullptr),
@@ -218,8 +217,7 @@ InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
       has_seen_first_gesture_scroll_update_after_begin_(false),
       last_injected_gesture_was_begin_(false),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      snap_fling_controller_(std::make_unique<cc::SnapFlingController>(this)),
-      force_input_to_main_thread_(force_input_to_main_thread) {
+      snap_fling_controller_(std::make_unique<cc::SnapFlingController>(this)) {
   DCHECK(client);
   input_handler_->BindToClient(this);
   cc::ScrollElasticityHelper* scroll_elasticity_helper =
@@ -616,9 +614,6 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
     EventWithCallback* event_with_callback,
     const WebInputEventAttribution& original_attribution) {
   DCHECK(input_handler_);
-
-  if (force_input_to_main_thread_)
-    return DID_NOT_HANDLE;
 
   const WebInputEvent& event = event_with_callback->event();
   if (event.IsGestureScroll() &&

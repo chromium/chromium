@@ -610,18 +610,14 @@ void WidgetInputHandlerManager::InitOnInputHandlingThread(
   if (!compositor_delegate)
     return;
 
-  // If there's no compositor thread (i.e. we're in a LayoutTest), force input
-  // to go through the main thread.
-  bool force_input_handling_on_main = !compositor_task_runner_;
-
   // The input handler is created and ownership is passed to the compositor
   // delegate; hence we only receive a WeakPtr back.
   base::WeakPtr<cc::InputHandler> input_handler =
       cc::InputHandler::Create(*compositor_delegate);
   DCHECK(input_handler);
 
-  input_handler_proxy_ = std::make_unique<InputHandlerProxy>(
-      *input_handler.get(), this, force_input_handling_on_main);
+  input_handler_proxy_ =
+      std::make_unique<InputHandlerProxy>(*input_handler.get(), this);
 
 #if defined(OS_ANDROID)
   if (sync_compositing) {
