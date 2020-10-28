@@ -83,7 +83,7 @@ const base::Feature kAppShimRemoteCocoa{"AppShimRemoteCocoa",
 // all windows for an app leaves the app running.
 // https://crbug.com/1080729
 const base::Feature kAppShimNewCloseBehavior{"AppShimNewCloseBehavior",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_MAC)
 
 // Enables the built-in DNS resolver.
