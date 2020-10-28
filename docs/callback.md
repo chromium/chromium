@@ -163,6 +163,34 @@ int i = first.Run(5.5);
 std::string s = second.Run(9);
 ```
 
+If the second callback does not want to receive a value from the first callback,
+you may use `base::IgnoreResult` to drop the return value in between running the
+two.
+
+```cpp
+// Returns an integer.
+base::RepeatingCallback<int()> first = base::BindRepeating([](){ return 5; });
+// Does not want to receive an integer.
+base::RepeatingClosure second = base::BindRepeating([](){});
+
+// This will not compile, because |second| can not receive the return value from
+// |first|.
+//   first.Then(second).Run();
+
+// We can drop the result from |first| before running second.
+base::BindRepeating(base::IgnoreResult(first)).Then(second).Run();
+// This will effectively create a callback that when Run() will call
+// `first(); second();` instead of `second(first());`.
+```
+
+Note that the return value from |first| will be lost in the above example, and
+would be destroyed before |second| is run. If you want the return value from
+|first| to be preserved and ultimately returned after running both |first| and
+|second|, then you would need a primitive such as the  `base::PassThrough<T>()`
+helper in the [base::PassThrough CL](https://chromium-review.googlesource.com/c/chromium/src/+/2493243).
+If this would be helpful for you, please let danakj@chromium.org know or ping
+the CL.
+
 ## Quick reference for basic stuff
 
 ### Binding A Bare Function
@@ -497,8 +525,16 @@ doesn't expect a return value.
 
 ```cpp
 int DoSomething(int arg) { cout << arg << endl; }
-base::Callback<void(int)> cb =
-    base::Bind(IgnoreResult(&DoSomething));
+base::RepeatingCallback<void(int)> cb =
+    base::BindRepeating(IgnoreResult(&DoSomething));
+```
+
+Similarly, you may want to use an existing callback that returns a value in a
+place that expects a void return type.
+
+```cpp
+base::RepeatingCallback<int()> cb = base::BindRepeating([](){ return 5; });
+base::RepeatingClosure void_cb = base::BindRepeating(base::IgnoreResult(cb));
 ```
 
 ## Quick reference for binding parameters to Bind()
