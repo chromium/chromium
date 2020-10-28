@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_LORGNETTE_MANAGER_CLIENT_H_
-#define CHROMEOS_DBUS_LORGNETTE_MANAGER_CLIENT_H_
+#ifndef CHROMEOS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_
+#define CHROMEOS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_
 
 #include <cstdint>
 #include <map>
@@ -20,7 +20,7 @@ namespace chromeos {
 
 // LorgnetteManagerClient is used to communicate with the lorgnette
 // document scanning daemon.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) LorgnetteManagerClient
+class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
     : public DBusClient {
  public:
   // Attributes provided to a scan request.
@@ -68,4 +68,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) LorgnetteManagerClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_LORGNETTE_MANAGER_CLIENT_H_
+#endif  // CHROMEOS_DBUS_LORGNETTE_MANAGER_LORGNETTE_MANAGER_CLIENT_H_

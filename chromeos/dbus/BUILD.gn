@@ -17,6 +17,7 @@ component("dbus") {
     "//chromeos/dbus/arc",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/debug_daemon",
+    "//chromeos/dbus/lorgnette_manager",
     "//chromeos/dbus/shill",
     "//dbus",
   ]
@@ -25,7 +26,6 @@ component("dbus") {
     ":chunneld_proto",
     ":cicerone_proto",
     ":concierge_proto",
-    ":lorgnette_proto",
     ":metrics_event_proto",
     ":oobe_config_proto",
     ":plugin_vm_service_proto",
@@ -83,8 +83,6 @@ component("dbus") {
     "fake_image_burner_client.h",
     "fake_image_loader_client.cc",
     "fake_image_loader_client.h",
-    "fake_lorgnette_manager_client.cc",
-    "fake_lorgnette_manager_client.h",
     "fake_oobe_configuration_client.cc",
     "fake_oobe_configuration_client.h",
     "fake_runtime_probe_client.cc",
@@ -105,8 +103,6 @@ component("dbus") {
     "image_burner_client.h",
     "image_loader_client.cc",
     "image_loader_client.h",
-    "lorgnette_manager_client.cc",
-    "lorgnette_manager_client.h",
     "oobe_configuration_client.cc",
     "oobe_configuration_client.h",
     "runtime_probe_client.cc",
@@ -256,13 +252,6 @@ proto_library("concierge_proto") {
   ]
 
   proto_out_dir = "chromeos/dbus/concierge"
-}
-
-proto_library("lorgnette_proto") {
-  sources =
-      [ "//third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto" ]
-
-  proto_out_dir = "chromeos/dbus/lorgnette"
 }
 
 proto_library("metrics_event_proto") {
