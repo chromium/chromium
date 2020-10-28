@@ -524,7 +524,7 @@ dictionary FileTransferStatus {
   double total;
 
   // Total number of jobs.
-  long num_total_jobs;
+  long numTotalJobs;
 
   // If true, hide when a job is completed when there are zero jobs in
   // progress. Otherwise, hide when one job is in progress.

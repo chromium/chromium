@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* eslint-disable no-var */
+
 /**
  * Slide mode displays a single image and has a set of controls to navigate
  * between the images and to edit an image.
@@ -1095,7 +1097,7 @@ class SlideMode extends cr.EventTarget {
         ImageUtil.getMetricName('FileType'), ext, ImageUtil.FILE_TYPES);
 
     // Enable or disable buttons for editing and printing.
-    let canEditAndPrint = !opt_error && item.isEditable();
+    const canEditAndPrint = !opt_error && item.isEditable();
     this.editButton_.disabled = !canEditAndPrint;
     this.printButton_.disabled = !canEditAndPrint;
 
@@ -1775,8 +1777,7 @@ class SlideMode extends cr.EventTarget {
    * @private
    */
   updateProgressBar_(status) {
-    if (status.fileUrl !== this.loadingItemUrl_ ||
-        status.num_total_jobs !== 1) {
+    if (status.fileUrl !== this.loadingItemUrl_ || status.numTotalJobs !== 1) {
       // If user starts to download another image (or file), we cannot show
       // determinate progress bar anymore since total and processed are for all
       // current downloads.

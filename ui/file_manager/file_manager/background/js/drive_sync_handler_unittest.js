@@ -198,7 +198,7 @@ async function testOffline() {
     transferState: 'in_progress',
     processed: 50.0,
     total: 100.0,
-    num_total_jobs: 1,
+    numTotalJobs: 1,
     hideWhenZeroJobs: true,
   });
 
@@ -229,7 +229,7 @@ async function testTransferUpdate() {
     transferState: 'in_progress',
     processed: 50.0,
     total: 100.0,
-    num_total_jobs: 1,
+    numTotalJobs: 1,
     hideWhenZeroJobs: true,
   });
 
@@ -246,7 +246,7 @@ async function testTransferUpdate() {
     transferState: 'in_progress',
     processed: 25.0,
     total: 100.0,
-    num_total_jobs: 1,
+    numTotalJobs: 1,
     hideWhenZeroJobs: true,
   });
 
@@ -261,7 +261,7 @@ async function testTransferUpdate() {
     transferState: 'completed',
     processed: 100.0,
     total: 100.0,
-    num_total_jobs: 0,
+    numTotalJobs: 0,
     hideWhenZeroJobs: true,
   });
 
@@ -278,7 +278,7 @@ async function testTransferUpdate() {
     transferState: 'failed',
     processed: 40.0,
     total: 100.0,
-    num_total_jobs: 0,
+    numTotalJobs: 0,
     hideWhenZeroJobs: true,
   });
 

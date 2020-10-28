@@ -387,7 +387,7 @@ chrome.fileManagerPrivate.MountCompletedEvent;
  *   transferState: !chrome.fileManagerPrivate.TransferState,
  *   processed: number,
  *   total: number,
- *   num_total_jobs: number,
+ *   numTotalJobs: number,
  *   hideWhenZeroJobs: boolean
  * }}
  */

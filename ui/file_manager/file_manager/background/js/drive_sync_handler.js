@@ -203,8 +203,8 @@ class DriveSyncHandlerImpl extends cr.EventTarget {
         break;
       case 'completed':
       case 'failed':
-        if ((status.hideWhenZeroJobs && status.num_total_jobs === 0) ||
-            (!status.hideWhenZeroJobs && status.num_total_jobs === 1)) {
+        if ((status.hideWhenZeroJobs && status.numTotalJobs === 0) ||
+            (!status.hideWhenZeroJobs && status.numTotalJobs === 1)) {
           await this.removeItem_(item, status);
         }
         break;
@@ -232,9 +232,9 @@ class DriveSyncHandlerImpl extends cr.EventTarget {
       item.type = ProgressItemType.SYNC;
       item.quiet = true;
       this.syncing_ = true;
-      if (status.num_total_jobs > 1) {
+      if (status.numTotalJobs > 1) {
         item.message =
-            strf(this.statusMessages_[item.id].plural, status.num_total_jobs);
+            strf(this.statusMessages_[item.id].plural, status.numTotalJobs);
       } else {
         item.message = strf(this.statusMessages_[item.id].single, entry.name);
       }
