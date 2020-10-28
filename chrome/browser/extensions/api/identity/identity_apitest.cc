@@ -117,12 +117,9 @@ void InitNetwork() {
   auto* portal_detector = new chromeos::NetworkPortalDetectorTestImpl();
   portal_detector->SetDefaultNetworkForTesting(default_network->guid());
 
-  chromeos::NetworkPortalDetector::CaptivePortalState online_state;
-  online_state.status =
-      chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-  online_state.response_code = 204;
-  portal_detector->SetDetectionResultsForTesting(default_network->guid(),
-                                                 online_state);
+  portal_detector->SetDetectionResultsForTesting(
+      default_network->guid(),
+      chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
 
   chromeos::network_portal_detector::InitializeForTesting(portal_detector);
 }

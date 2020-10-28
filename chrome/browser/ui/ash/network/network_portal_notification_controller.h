@@ -65,16 +65,10 @@ class NetworkPortalNotificationController
   std::unique_ptr<message_center::Notification>
   CreateDefaultCaptivePortalNotification(const NetworkState* network);
 
-  // Constructs a notification to inform the user that a captive portal has been
-  // detected.
-  std::unique_ptr<message_center::Notification> GetNotification(
-      const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalState& state);
-
   // NetworkPortalDetector::Observer:
   void OnPortalDetectionCompleted(
       const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalState& state) override;
+      const NetworkPortalDetector::CaptivePortalStatus status) override;
   void OnShutdown() override;
 
   // session_manager::SessionManagerObserver:

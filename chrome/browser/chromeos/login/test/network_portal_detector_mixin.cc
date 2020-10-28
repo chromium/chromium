@@ -36,18 +36,17 @@ void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
       network_portal_detector_->GetDefaultNetworkGuid();
   DCHECK(!default_network_guid.empty());
 
-  NetworkPortalDetector::CaptivePortalState detection_state;
-  detection_state.status = status;
+  int response_code;
   if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
-    detection_state.response_code = 204;
+    response_code = 204;
   } else if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL) {
-    detection_state.response_code = 200;
+    response_code = 200;
   } else {
-    detection_state.response_code = -1;
+    response_code = -1;
   }
 
-  network_portal_detector_->SetDetectionResultsForTesting(default_network_guid,
-                                                          detection_state);
+  network_portal_detector_->SetDetectionResultsForTesting(
+      default_network_guid, status, response_code);
   network_portal_detector_->NotifyObserversForTesting();
 }
 

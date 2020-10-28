@@ -59,8 +59,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   friend class NetworkPortalDetectorImplTest;
   friend class NetworkPortalDetectorImplBrowserTest;
 
-  using CaptivePortalStateMap = std::map<std::string, CaptivePortalState>;
-
   enum State {
     // No portal check is running.
     STATE_IDLE = 0,
@@ -97,7 +95,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   void AddObserver(Observer* observer) override;
   void AddAndFireObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  CaptivePortalState GetCaptivePortalState(const std::string& guid) override;
+  CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable(bool start_detection) override;
   void StartPortalDetection() override;
@@ -117,19 +115,14 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
                const content::NotificationDetails& details) override;
 
   // Called synchronously from OnAttemptCompleted with the current default
-  // network. Stores the captive portal state and notifies observers.
+  // network. Stores the captive portal status and notifies observers.
   void DetectionCompleted(const NetworkState* network,
-                          const CaptivePortalState& results);
-
-  // Notifies observers that portal detection is completed for a |network|.
-  void NotifyDetectionCompleted(const NetworkState* network,
-                                const CaptivePortalState& state);
+                          const CaptivePortalStatus& results,
+                          int response_code);
 
   State state() const { return state_; }
 
-  bool is_idle() const {
-    return state_ == STATE_IDLE;
-  }
+  bool is_idle() const { return state_ == STATE_IDLE; }
   bool is_portal_check_pending() const {
     return state_ == STATE_PORTAL_CHECK_PENDING;
   }
@@ -172,6 +165,11 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
     time_ticks_for_testing_ += delta;
   }
 
+  const std::string& default_network_id_for_testing() const {
+    return default_network_id_;
+  }
+  int response_code_for_testing() const { return response_code_for_testing_; }
+
   // Unique identifier of the default network.
   std::string default_network_id_;
 
@@ -181,8 +179,10 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // Proxy configuration of the default network.
   base::Value default_proxy_config_;
 
+  CaptivePortalStatus default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
+  int response_code_for_testing_ = -1;
+
   State state_ = STATE_IDLE;
-  CaptivePortalStateMap portal_state_map_;
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::CancelableClosure attempt_task_;

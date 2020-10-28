@@ -25,12 +25,7 @@ namespace chromeos {
 namespace {
 
 NetworkPortalDetector::CaptivePortalStatus GetCaptivePortalStatus() {
-  const NetworkState* default_network =
-      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-  return default_network ? network_portal_detector::GetInstance()
-                               ->GetCaptivePortalState(default_network->guid())
-                               .status
-                         : NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN;
+  return network_portal_detector::GetInstance()->GetCaptivePortalStatus();
 }
 
 }  // namespace
@@ -137,7 +132,7 @@ void AutoEnrollmentCheckScreen::OnViewDestroyed(
 
 void AutoEnrollmentCheckScreen::OnPortalDetectionCompleted(
     const NetworkState* /* network */,
-    const NetworkPortalDetector::CaptivePortalState& /* state */) {
+    const NetworkPortalDetector::CaptivePortalStatus /* status */) {
   UpdateState();
 }
 

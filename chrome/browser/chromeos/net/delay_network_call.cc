@@ -37,9 +37,7 @@ void chromeos::DelayNetworkCall(base::TimeDelta retry,
   }
   if (!delay_network_call && network_portal_detector::IsInitialized()) {
     NetworkPortalDetector::CaptivePortalStatus status =
-        network_portal_detector::GetInstance()
-            ->GetCaptivePortalState(default_network->guid())
-            .status;
+        network_portal_detector::GetInstance()->GetCaptivePortalStatus();
     if (status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
       delay_network_call = true;
       DVLOG(1) << "DelayNetworkCall: Captive portal status for "

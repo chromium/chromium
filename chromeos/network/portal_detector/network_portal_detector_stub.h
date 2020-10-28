@@ -21,8 +21,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
   void AddObserver(Observer* observer) override;
   void AddAndFireObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  CaptivePortalState GetCaptivePortalState(
-      const std::string& service_path) override;
+  CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable(bool start_detection) override;
   void StartPortalDetection() override;

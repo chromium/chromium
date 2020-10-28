@@ -128,9 +128,9 @@ NetworkPortalNotificationController::~NetworkPortalNotificationController() {
 
 void NetworkPortalNotificationController::OnPortalDetectionCompleted(
     const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalState& state) {
+    const NetworkPortalDetector::CaptivePortalStatus status) {
   if (!network ||
-      state.status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL) {
+      status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL) {
     last_network_guid_.clear();
 
     // In browser tests we initiate fake network portal detection, but network
@@ -138,7 +138,7 @@ void NetworkPortalNotificationController::OnPortalDetectionCompleted(
     // immediately closed. The testing check below prevents dialog from closing.
     if (dialog_ &&
         (!ignore_no_network_for_testing_ ||
-         state.status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE)) {
+         status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE)) {
       dialog_->Close();
     }
 

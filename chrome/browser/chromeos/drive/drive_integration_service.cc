@@ -395,9 +395,9 @@ class DriveIntegrationService::PreferenceWatcher
   // chromeos::NetworkPortalDetector::Observer
   void OnPortalDetectionCompleted(
       const chromeos::NetworkState* network,
-      const chromeos::NetworkPortalDetector::CaptivePortalState& state)
+      const chromeos::NetworkPortalDetector::CaptivePortalStatus status)
       override {
-    last_portal_status_ = state.status;
+    last_portal_status_ = status;
 
     if (integration_service_->remount_when_online_ &&
         last_portal_status_ ==

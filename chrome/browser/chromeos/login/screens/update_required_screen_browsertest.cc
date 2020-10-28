@@ -183,10 +183,10 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
+  ShowUpdateRequiredScreen();
+
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
-
-  ShowUpdateRequiredScreen();
 
   static_cast<UpdateRequiredScreen*>(
       WizardController::default_controller()->current_screen())

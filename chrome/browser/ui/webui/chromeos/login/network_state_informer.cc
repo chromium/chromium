@@ -36,10 +36,8 @@ NetworkStateInformer::State GetStateForDefaultNetwork() {
     return NetworkStateInformer::OFFLINE;
 
   if (network_portal_detector::GetInstance()->IsEnabled()) {
-    NetworkPortalDetector::CaptivePortalState state =
-        network_portal_detector::GetInstance()->GetCaptivePortalState(
-            network->guid());
-    NetworkPortalDetector::CaptivePortalStatus status = state.status;
+    NetworkPortalDetector::CaptivePortalStatus status =
+        network_portal_detector::GetInstance()->GetCaptivePortalStatus();
     if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN &&
         NetworkState::StateIsConnecting(network->connection_state())) {
       return NetworkStateInformer::CONNECTING;
@@ -119,7 +117,7 @@ void NetworkStateInformer::DefaultNetworkChanged(const NetworkState* network) {
 
 void NetworkStateInformer::OnPortalDetectionCompleted(
     const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalState& state) {
+    const NetworkPortalDetector::CaptivePortalStatus status) {
   UpdateStateAndNotify();
 }
 

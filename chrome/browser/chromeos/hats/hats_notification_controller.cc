@@ -214,13 +214,12 @@ void HatsNotificationController::Close(bool by_user) {
 // NetworkPortalDetector::Observer override:
 void HatsNotificationController::OnPortalDetectionCompleted(
     const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalState& state) {
+    const NetworkPortalDetector::CaptivePortalStatus status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "HatsController::OnPortalDetectionCompleted(): "
           << "network=" << (network ? network->path() : "") << ", "
-          << "state.status=" << state.status << ", "
-          << "state.response_code=" << state.response_code;
-  if (state.status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
+          << "status=" << status;
+  if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
     // Create and display the notification for the user.
     if (!notification_) {
       notification_ = ash::CreateSystemNotification(

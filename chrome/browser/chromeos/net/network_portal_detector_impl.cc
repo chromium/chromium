@@ -129,11 +129,8 @@ void NetworkPortalDetectorImpl::AddAndFireObserver(Observer* observer) {
   if (!observer)
     return;
   AddObserver(observer);
-  CaptivePortalState portal_state;
-  const NetworkState* network = DefaultNetwork();
-  if (network)
-    portal_state = GetCaptivePortalState(network->guid());
-  observer->OnPortalDetectionCompleted(network, portal_state);
+  observer->OnPortalDetectionCompleted(DefaultNetwork(),
+                                       GetCaptivePortalStatus());
 }
 
 void NetworkPortalDetectorImpl::RemoveObserver(Observer* observer) {
@@ -160,17 +157,13 @@ void NetworkPortalDetectorImpl::Enable(bool start_detection) {
   NET_LOG(EVENT) << "Starting detection attempt:"
                  << " id=" << NetworkId(network);
   SetNetworkPortalDetected(network, false /* portal_detected */);
-  portal_state_map_.erase(network->guid());
   StartDetection();
 }
 
-NetworkPortalDetectorImpl::CaptivePortalState
-NetworkPortalDetectorImpl::GetCaptivePortalState(const std::string& guid) {
+NetworkPortalDetector::CaptivePortalStatus
+NetworkPortalDetectorImpl::GetCaptivePortalStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CaptivePortalStateMap::const_iterator it = portal_state_map_.find(guid);
-  if (it == portal_state_map_.end())
-    return CaptivePortalState();
-  return it->second;
+  return default_portal_status_;
 }
 
 void NetworkPortalDetectorImpl::StartPortalDetection() {
@@ -197,13 +190,12 @@ void NetworkPortalDetectorImpl::DefaultNetworkChanged(
   if (!default_network) {
     NET_LOG(EVENT) << "Default network changed: None";
 
+    default_network_id_ = std::string();
     default_proxy_config_ = base::Value();
 
     StopDetection();
 
-    CaptivePortalState state;
-    state.status = CAPTIVE_PORTAL_STATUS_OFFLINE;
-    DetectionCompleted(nullptr, state);
+    DetectionCompleted(nullptr, CAPTIVE_PORTAL_STATUS_OFFLINE, -1);
     return;
   }
 
@@ -251,9 +243,9 @@ void NetworkPortalDetectorImpl::DefaultNetworkChanged(
     // Initiate Captive Portal detection if network's captive
     // portal state is unknown (e.g. for freshly created networks),
     // offline or if network connection state was changed.
-    CaptivePortalState state = GetCaptivePortalState(default_network->guid());
-    if (state.status == CAPTIVE_PORTAL_STATUS_UNKNOWN ||
-        state.status == CAPTIVE_PORTAL_STATUS_OFFLINE ||
+    CaptivePortalStatus status = GetCaptivePortalStatus();
+    if (status == CAPTIVE_PORTAL_STATUS_UNKNOWN ||
+        status == CAPTIVE_PORTAL_STATUS_OFFLINE ||
         (!network_changed && connection_state_changed)) {
       ScheduleAttempt(base::TimeDelta());
     }
@@ -281,6 +273,7 @@ void NetworkPortalDetectorImpl::StartDetection() {
   DCHECK(is_idle());
 
   ResetStrategyAndCounters();
+  default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   detection_start_time_ = NowTicks();
   ScheduleAttempt(base::TimeDelta());
 }
@@ -289,6 +282,7 @@ void NetworkPortalDetectorImpl::StopDetection() {
   attempt_task_.Cancel();
   attempt_timeout_.Cancel();
   captive_portal_detector_->Cancel();
+  default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   state_ = STATE_IDLE;
   ResetStrategyAndCounters();
 }
@@ -366,27 +360,25 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   state_ = STATE_IDLE;
   attempt_timeout_.Cancel();
 
-  CaptivePortalState state;
-  state.response_code = response_code;
-  state.time = NowTicks();
+  CaptivePortalStatus status = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   bool no_response_since_portal = false;
   switch (result) {
     case captive_portal::RESULT_NO_RESPONSE:
-      if (state.response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
-        state.status = CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED;
+      if (response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
+        status = CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED;
       } else if (network && network->IsShillCaptivePortal()) {
         // Take into account shill's detection results.
-        state.status = CAPTIVE_PORTAL_STATUS_PORTAL;
+        status = CAPTIVE_PORTAL_STATUS_PORTAL;
         no_response_since_portal = true;
       } else {
-        state.status = CAPTIVE_PORTAL_STATUS_OFFLINE;
+        status = CAPTIVE_PORTAL_STATUS_OFFLINE;
       }
       break;
     case captive_portal::RESULT_INTERNET_CONNECTED:
-      state.status = CAPTIVE_PORTAL_STATUS_ONLINE;
+      status = CAPTIVE_PORTAL_STATUS_ONLINE;
       break;
     case captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL:
-      state.status = CAPTIVE_PORTAL_STATUS_PORTAL;
+      status = CAPTIVE_PORTAL_STATUS_PORTAL;
       break;
     default:
       break;
@@ -395,24 +387,24 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   NET_LOG(EVENT) << "NetworkPortalDetector completed: id="
                  << NetworkGuidId(default_network_id_) << ", result="
                  << captive_portal::CaptivePortalResultToString(result)
-                 << ", status=" << state.status
+                 << ", status=" << status
                  << ", response_code=" << response_code;
 
   UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkPortalDetectorResult",
-                            state.status);
+                            status);
   NetworkState::NetworkTechnologyType type =
       NetworkState::NetworkTechnologyType::kUnknown;
-  if (state.status == CAPTIVE_PORTAL_STATUS_PORTAL) {
+  if (status == CAPTIVE_PORTAL_STATUS_PORTAL) {
     if (network)
       type = network->GetNetworkTechnologyType();
     UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkPortalDetectorType", type);
   }
 
-  if (last_detection_result_ != state.status) {
-    last_detection_result_ = state.status;
+  if (last_detection_result_ != status) {
+    last_detection_result_ = status;
     same_detection_result_count_ = 1;
     net::BackoffEntry::Policy policy = strategy_->policy();
-    if (state.status == CAPTIVE_PORTAL_STATUS_ONLINE) {
+    if (status == CAPTIVE_PORTAL_STATUS_ONLINE) {
       policy.initial_delay_ms = kLongInitialDelayBetweenAttemptsMs;
       policy.maximum_backoff_ms = kLongMaximumDelayBetweenAttemptsMs;
     } else {
@@ -430,9 +422,9 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   else
     no_response_result_count_ = 0;
 
-  if (state.status != CAPTIVE_PORTAL_STATUS_OFFLINE ||
+  if (status != CAPTIVE_PORTAL_STATUS_OFFLINE ||
       same_detection_result_count_ >= kMaxOfflineResultsBeforeReport) {
-    DetectionCompleted(network, state);
+    DetectionCompleted(network, status, response_code);
   }
 
   // Observers (via DetectionCompleted) may already schedule new attempt.
@@ -455,32 +447,16 @@ void NetworkPortalDetectorImpl::Observe(
 
 void NetworkPortalDetectorImpl::DetectionCompleted(
     const NetworkState* network,
-    const CaptivePortalState& state) {
-  if (!network) {
-    NotifyDetectionCompleted(network, state);
-    return;
-  }
-
-  CaptivePortalStateMap::const_iterator it =
-      portal_state_map_.find(network->guid());
-  if (it == portal_state_map_.end() || it->second.status != state.status ||
-      it->second.response_code != state.response_code) {
-    // Record detection duration iff detection result differs from the
-    // previous one for this network. The reason is to record all stats
-    // only when network changes it's state.
+    const CaptivePortalStatus& status,
+    int response_code) {
+  default_portal_status_ = status;
+  response_code_for_testing_ = response_code;
+  if (network) {
     SetNetworkPortalDetected(
-        network,
-        state.status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
-    portal_state_map_[network->guid()] = state;
+        network, status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
   }
-  NotifyDetectionCompleted(network, state);
-}
-
-void NetworkPortalDetectorImpl::NotifyDetectionCompleted(
-    const NetworkState* network,
-    const CaptivePortalState& state) {
   for (auto& observer : observers_)
-    observer.OnPortalDetectionCompleted(network, state);
+    observer.OnPortalDetectionCompleted(network, status);
 }
 
 bool NetworkPortalDetectorImpl::AttemptTimeoutIsCancelledForTesting() const {

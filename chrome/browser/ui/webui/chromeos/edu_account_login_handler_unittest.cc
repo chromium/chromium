@@ -181,19 +181,18 @@ class EduAccountLoginHandlerTest : public testing::Test {
 
     network_portal_detector::InitializeForTesting(&network_portal_detector_);
     network_portal_detector_.SetDefaultNetworkForTesting(guid);
-    NetworkPortalDetector::CaptivePortalState online_state;
+    NetworkPortalDetector::CaptivePortalStatus status;
+    int response_code = -1;
     if (network_status_online) {
-      online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-      // HTTP 204 No Content.
-      online_state.response_code = 204;
+      status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
+      response_code = 204;  // No content
     } else {
-      online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL;
-      // HTTP 200 OK.
-      online_state.response_code = 200;
+      status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL;
+      response_code = 200;  // OK
     }
     if (!guid.empty()) {
-      network_portal_detector_.SetDetectionResultsForTesting(guid,
-                                                             online_state);
+      network_portal_detector_.SetDetectionResultsForTesting(guid, status,
+                                                             response_code);
     }
 
     mock_image_fetcher_ = std::make_unique<image_fetcher::MockImageFetcher>();

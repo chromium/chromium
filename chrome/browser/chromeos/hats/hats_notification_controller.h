@@ -74,7 +74,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   // NetworkPortalDetector::Observer override:
   void OnPortalDetectionCompleted(
       const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalState& state) override;
+      const NetworkPortalDetector::CaptivePortalStatus status) override;
 
   void UpdateLastInteractionTime();
 

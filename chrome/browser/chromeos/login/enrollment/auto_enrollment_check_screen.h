@@ -58,7 +58,7 @@ class AutoEnrollmentCheckScreen
   // NetworkPortalDetector::Observer implementation:
   void OnPortalDetectionCompleted(
       const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalState& state) override;
+      const NetworkPortalDetector::CaptivePortalStatus status) override;
 
  protected:
   // BaseScreen:

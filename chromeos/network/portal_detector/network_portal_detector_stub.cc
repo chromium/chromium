@@ -14,15 +14,15 @@ void NetworkPortalDetectorStub::AddObserver(Observer* observer) {}
 
 void NetworkPortalDetectorStub::AddAndFireObserver(Observer* observer) {
   if (observer)
-    observer->OnPortalDetectionCompleted(nullptr, CaptivePortalState());
+    observer->OnPortalDetectionCompleted(nullptr,
+                                         CAPTIVE_PORTAL_STATUS_UNKNOWN);
 }
 
 void NetworkPortalDetectorStub::RemoveObserver(Observer* observer) {}
 
-NetworkPortalDetector::CaptivePortalState
-NetworkPortalDetectorStub::GetCaptivePortalState(
-    const std::string& service_path) {
-  return CaptivePortalState();
+NetworkPortalDetector::CaptivePortalStatus
+NetworkPortalDetectorStub::GetCaptivePortalStatus() {
+  return CAPTIVE_PORTAL_STATUS_UNKNOWN;
 }
 
 bool NetworkPortalDetectorStub::IsEnabled() {

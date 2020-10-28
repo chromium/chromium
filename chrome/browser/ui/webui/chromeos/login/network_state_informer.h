@@ -68,7 +68,7 @@ class NetworkStateInformer
   // NetworkPortalDetector::Observer implementation:
   void OnPortalDetectionCompleted(
       const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalState& state) override;
+      const NetworkPortalDetector::CaptivePortalStatus status) override;
 
   // CaptivePortalWindowProxyDelegate implementation:
   void OnPortalDetected() override;

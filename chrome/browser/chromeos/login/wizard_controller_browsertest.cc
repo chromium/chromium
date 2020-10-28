@@ -634,10 +634,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
     network_portal_detector_ = new NetworkPortalDetectorTestImpl();
     network_portal_detector::InitializeForTesting(network_portal_detector_);
 
-    NetworkPortalDetector::CaptivePortalState online_state;
-    online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-    online_state.response_code = 204;
-
     // Default detworks happens to be usually "eth1" in tests.
     const NetworkState* default_network =
         NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
@@ -645,7 +641,8 @@ class WizardControllerFlowTest : public WizardControllerTest {
     network_portal_detector_->SetDefaultNetworkForTesting(
         default_network->guid());
     network_portal_detector_->SetDetectionResultsForTesting(
-        default_network->guid(), online_state);
+        default_network->guid(),
+        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
   }
 
   chromeos::SimpleGeolocationProvider* GetGeolocationProvider() {

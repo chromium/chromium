@@ -154,7 +154,7 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   // NetworkPortalDetector::Observer implementation:
   void OnPortalDetectionCompleted(
       const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalState& state) override;
+      const NetworkPortalDetector::CaptivePortalStatus status) override;
 
   void OnWaitForRebootTimeElapsed();
 

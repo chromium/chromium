@@ -68,7 +68,7 @@ class MockObserver : public NetworkPortalDetector::Observer {
 
   MOCK_METHOD2(OnPortalDetectionCompleted,
                void(const NetworkState* network,
-                    const NetworkPortalDetector::CaptivePortalState& state));
+                    const NetworkPortalDetector::CaptivePortalStatus status));
 };
 
 }  // namespace
@@ -130,11 +130,18 @@ class NetworkPortalDetectorImplTest
   bool CheckPortalState(NetworkPortalDetector::CaptivePortalStatus status,
                         int response_code,
                         const std::string& guid) {
-    NetworkPortalDetector::CaptivePortalState state =
-        network_portal_detector()->GetCaptivePortalState(guid);
-    EXPECT_EQ(status, state.status);
-    EXPECT_EQ(response_code, state.response_code);
-    return status == state.status && response_code == state.response_code;
+    NetworkPortalDetector::CaptivePortalStatus detector_status =
+        network_portal_detector()->GetCaptivePortalStatus();
+    int detector_response_code =
+        network_portal_detector()->response_code_for_testing();
+    std::string default_network_id =
+        network_portal_detector()->default_network_id_for_testing();
+    EXPECT_EQ(status, detector_status);
+    EXPECT_EQ(response_code, detector_response_code);
+    EXPECT_EQ(guid, default_network_id);
+    return status == detector_status &&
+           response_code == detector_response_code &&
+           guid == default_network_id;
   }
 
   void CheckRequestTimeoutAndCompleteAttempt(
@@ -350,22 +357,22 @@ TEST_F(NetworkPortalDetectorImplTest, Online2Offline) {
   MockObserver observer;
   AddObserver(&observer);
 
-  NetworkPortalDetector::CaptivePortalState offline_state;
-  offline_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE;
+  NetworkPortalDetector::CaptivePortalStatus offline_status =
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE;
 
   // WiFi is in online state.
   {
     // When transitioning to a connected state, the network will transition to
     // connecting states which will set the default network to nullptr. This may
     // get triggered multiple times.
-    EXPECT_CALL(observer, OnPortalDetectionCompleted(_, offline_state))
+    EXPECT_CALL(observer, OnPortalDetectionCompleted(_, offline_status))
         .Times(AnyNumber());
 
     // Expect a single transition to an online state.
-    NetworkPortalDetector::CaptivePortalState online_state;
-    online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-    online_state.response_code = 204;
-    EXPECT_CALL(observer, OnPortalDetectionCompleted(_, online_state)).Times(1);
+    EXPECT_CALL(observer,
+                OnPortalDetectionCompleted(
+                    _, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE))
+        .Times(1);
 
     SetConnected(kStubWireless1);
     ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
@@ -379,7 +386,7 @@ TEST_F(NetworkPortalDetectorImplTest, Online2Offline) {
 
   // WiFi is turned off.
   {
-    EXPECT_CALL(observer, OnPortalDetectionCompleted(nullptr, offline_state))
+    EXPECT_CALL(observer, OnPortalDetectionCompleted(nullptr, offline_status))
         .Times(1);
 
     SetDisconnected(kStubWireless1);
@@ -390,29 +397,6 @@ TEST_F(NetworkPortalDetectorImplTest, Online2Offline) {
   }
 
   RemoveObserver(&observer);
-}
-
-TEST_F(NetworkPortalDetectorImplTest, TwoNetworks) {
-  ASSERT_EQ(State::STATE_IDLE, state());
-
-  SetConnected(kStubWireless1);
-  ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-
-  // WiFi is in portal state.
-  CompleteURLFetch(net::OK, 200, nullptr);
-  EXPECT_NE(State::STATE_IDLE, state());
-
-  SetConnected(kStubEthernet);
-  ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-
-  // ethernet is in online state.
-  CompleteURLFetch(net::OK, 204, nullptr);
-  EXPECT_NE(State::STATE_IDLE, state());
-  EXPECT_TRUE(CheckPortalState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204, kStubEthernet));
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
-                       kStubWireless1));
 }
 
 TEST_F(NetworkPortalDetectorImplTest, NetworkChanged) {
@@ -435,15 +419,9 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkChanged) {
   EXPECT_NE(State::STATE_IDLE, state());
   EXPECT_TRUE(CheckPortalState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204, kStubEthernet));
-
-  // As active network was changed during portal detection for wifi
-  // network, it's state must be unknown.
-  EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN, -1,
-                       kStubWireless1));
 }
 
-TEST_F(NetworkPortalDetectorImplTest, NetworkStateNotChanged) {
+TEST_F(NetworkPortalDetectorImplTest, NetworkStateReconnect) {
   ASSERT_EQ(State::STATE_IDLE, state());
 
   SetConnected(kStubWireless1);
@@ -456,8 +434,17 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateNotChanged) {
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
                        kStubWireless1));
 
+  // Triggering a connect to the same network will trigger another portal check
+  // with the same results.
   SetConnected(kStubWireless1);
-  ASSERT_EQ(State::STATE_IDLE, state());
+  ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
+
+  CompleteURLFetch(net::OK, 204, nullptr);
+
+  EXPECT_NE(State::STATE_IDLE, state());
+  EXPECT_TRUE(
+      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
+                       kStubWireless1));
 }
 
 TEST_F(NetworkPortalDetectorImplTest, NetworkStateChanged) {
@@ -760,8 +747,8 @@ TEST_F(NetworkPortalDetectorImplTest, ErrorScreenStrategyForPortalNetwork) {
 
   ASSERT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   EXPECT_TRUE(
-      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
-                       kStubWireless1));
+      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN,
+                       200, kStubWireless1));
 }
 
 TEST_F(NetworkPortalDetectorImplTest, DetectionTimeoutIsCancelled) {

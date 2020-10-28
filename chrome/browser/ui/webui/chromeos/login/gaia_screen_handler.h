@@ -205,7 +205,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // NetworkPortalDetector::Observer implementation.
   void OnPortalDetectionCompleted(
       const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalState& state) override;
+      const NetworkPortalDetector::CaptivePortalStatus status) override;
 
   // WebUI message handlers.
   void HandleWebviewLoadAborted(int error_code);

@@ -750,13 +750,13 @@ void GaiaScreenHandler::RegisterMessages() {
 
 void GaiaScreenHandler::OnPortalDetectionCompleted(
     const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalState& state) {
+    const NetworkPortalDetector::CaptivePortalStatus status) {
   VLOG(1) << "OnPortalDetectionCompleted "
-          << NetworkPortalDetector::CaptivePortalStatusString(state.status);
+          << NetworkPortalDetector::CaptivePortalStatusString(status);
 
   const NetworkPortalDetector::CaptivePortalStatus previous_status =
       captive_portal_status_;
-  captive_portal_status_ = state.status;
+  captive_portal_status_ = status;
   if (IsOfflineLoginActive() ||
       IsOnline(captive_portal_status_) == IsOnline(previous_status) ||
       disable_restrictive_proxy_check_for_test_ ||

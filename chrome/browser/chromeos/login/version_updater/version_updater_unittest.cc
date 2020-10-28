@@ -374,12 +374,9 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalOnline) {
 
   version_updater_->StartNetworkCheck();
 
-  NetworkPortalDetector::CaptivePortalState state;
-  state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-
   EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  fake_network_portal_detector_->SetDetectionResultsForTesting(kNetworkGuid,
-                                                               state);
+  fake_network_portal_detector_->SetDetectionResultsForTesting(
+      kNetworkGuid, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 200);
   fake_network_portal_detector_->NotifyObserversForTesting();
 }
 
@@ -388,18 +385,16 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalError) {
 
   version_updater_->StartNetworkCheck();
 
-  NetworkPortalDetector::CaptivePortalState state;
-  state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL;
-
   // Name of the network is empty because of implementation
   // SetDefaultNetworkForTesting (and it's not easy to fix it).
   EXPECT_CALL(
       *mock_delegate_,
-      UpdateErrorMessage(state.status, NetworkError::ERROR_STATE_PORTAL, ""))
+      UpdateErrorMessage(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL,
+                         NetworkError::ERROR_STATE_PORTAL, ""))
       .Times(1);
   EXPECT_CALL(*mock_delegate_, DelayErrorMessage()).Times(1);
-  fake_network_portal_detector_->SetDetectionResultsForTesting(kNetworkGuid,
-                                                               state);
+  fake_network_portal_detector_->SetDetectionResultsForTesting(
+      kNetworkGuid, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 204);
   fake_network_portal_detector_->NotifyObserversForTesting();
 }
 

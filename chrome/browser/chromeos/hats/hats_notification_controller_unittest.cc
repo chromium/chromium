@@ -70,12 +70,10 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
             AddAndFireObserver(hats_notification_controller.get()))
         .WillByDefault(Invoke(
             [&hats_notification_controller](NetworkPortalDetector::Observer*) {
-              NetworkPortalDetector::CaptivePortalState online_state;
               NetworkState network_state("");
-              online_state.status =
-                  NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
               hats_notification_controller->OnPortalDetectionCompleted(
-                  &network_state, online_state);
+                  &network_state,
+                  NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
             }));
 
     return hats_notification_controller;
@@ -145,22 +143,18 @@ TEST_F(HatsNotificationControllerTest, NoInternet_DoNotShowNotification) {
       .Times(1);
 
   NetworkState network_state("");
-  NetworkPortalDetector::CaptivePortalState online_state;
-  hats_notification_controller->OnPortalDetectionCompleted(&network_state,
-                                                           online_state);
+  hats_notification_controller->OnPortalDetectionCompleted(
+      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
 
-  online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE;
-  hats_notification_controller->OnPortalDetectionCompleted(&network_state,
-                                                           online_state);
+  hats_notification_controller->OnPortalDetectionCompleted(
+      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
 
-  online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL;
-  hats_notification_controller->OnPortalDetectionCompleted(&network_state,
-                                                           online_state);
+  hats_notification_controller->OnPortalDetectionCompleted(
+      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
 
-  online_state.status =
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED;
-  hats_notification_controller->OnPortalDetectionCompleted(&network_state,
-                                                           online_state);
+  hats_notification_controller->OnPortalDetectionCompleted(
+      &network_state,
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
 
   EXPECT_FALSE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
@@ -211,17 +205,14 @@ TEST_F(HatsNotificationControllerTest,
 
   // Notification is removed when Internet connection is lost.
   NetworkState network_state("");
-  NetworkPortalDetector::CaptivePortalState online_state;
-  online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE;
-  hats_notification_controller->OnPortalDetectionCompleted(&network_state,
-                                                           online_state);
+  hats_notification_controller->OnPortalDetectionCompleted(
+      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
   EXPECT_FALSE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
 
   // Notification is launched again when Internet connection is regained.
-  online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-  hats_notification_controller->OnPortalDetectionCompleted(&network_state,
-                                                           online_state);
+  hats_notification_controller->OnPortalDetectionCompleted(
+      &network_state, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   EXPECT_TRUE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
 

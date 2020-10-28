@@ -29,19 +29,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
     kMaxValue = CAPTIVE_PORTAL_STATUS_COUNT  // For UMA_HISTOGRAM_ENUMERATION
   };
 
-  struct CaptivePortalState {
-    CaptivePortalState()
-        : status(CAPTIVE_PORTAL_STATUS_UNKNOWN), response_code(-1) {}
-
-    bool operator==(const CaptivePortalState& o) const {
-      return status == o.status && response_code == o.response_code;
-    }
-
-    CaptivePortalStatus status;
-    int response_code;
-    base::TimeTicks time;
-  };
-
   class Observer {
    public:
     // Called when portal detection is completed for |network|, or
@@ -50,10 +37,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
     // current portal state for the active network, which can be
     // currently in the unknown state, for instance, if portal
     // detection is in process for the active network. Note, that
-    // |network| may be NULL.
+    // |network| may be null.
     virtual void OnPortalDetectionCompleted(
         const NetworkState* network,
-        const CaptivePortalState& state) = 0;
+        const CaptivePortalStatus status) = 0;
 
     // Called on Shutdown, allows removal of observers. Primarly used in tests.
     virtual void OnShutdown() {}
@@ -69,7 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
 
   // Adds |observer| to the observers list and immediately calls
   // OnPortalDetectionCompleted() with the active network (which may
-  // be NULL) and captive portal state for the active network (which
+  // be null) and captive portal state for the active network (which
   // may be unknown, if, for instance, portal detection is in process
   // for the active network).
   //
@@ -82,9 +69,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
   // Removes |observer| from the observers list.
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Returns Captive Portal state for the network specified by |service_path|.
-  virtual CaptivePortalState GetCaptivePortalState(
-      const std::string& service_path) = 0;
+  // Returns CaptivePortalStatus for the the default network or UNKNOWN.
+  virtual CaptivePortalStatus GetCaptivePortalStatus() = 0;
 
   // Returns true if portal detection is enabled.
   virtual bool IsEnabled() = 0;

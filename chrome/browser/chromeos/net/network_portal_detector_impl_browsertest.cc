@@ -173,13 +173,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
   EXPECT_EQ(kProbeUrl, get_probe_url());
   CompleteURLFetch(net::OK, 200, nullptr);
 
-  // Check that wifi is marked as behind the portal and that notification
-  // is displayed.
+  // Check that the default network is detected as behind a portal and that
+  // notification is displayed.
   EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
-  ASSERT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL,
-            network_portal_detector::GetInstance()
-                ->GetCaptivePortalState(kWifiGuid)
-                .status);
+  EXPECT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL,
+            network_portal_detector::GetInstance()->GetCaptivePortalStatus());
 
   // User explicitly closes the notification.
   display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
@@ -219,13 +217,10 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
   RestartDetection();
   CompleteURLFetch(net::OK, 200, nullptr);
 
-  // Check that WiFi is marked as behind a portal and that a notification
-  // is displayed.
-  ASSERT_TRUE(display_service_->GetNotification(kNotificationId));
+  // Check that the network is behind a portal and a notification is displayed.
+  EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
   EXPECT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL,
-            network_portal_detector::GetInstance()
-                ->GetCaptivePortalState(kWifiGuid)
-                .status);
+            network_portal_detector::GetInstance()->GetCaptivePortalStatus());
 
   display_service_->GetNotification(kNotificationId)
       ->delegate()
