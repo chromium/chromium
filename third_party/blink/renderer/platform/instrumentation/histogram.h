@@ -46,18 +46,6 @@ class PLATFORM_EXPORT EnumerationHistogram : public CustomCountHistogram {
                        base::HistogramBase::Sample boundary_value);
 };
 
-class PLATFORM_EXPORT SparseHistogram {
-  USING_FAST_MALLOC(SparseHistogram);
-
- public:
-  explicit SparseHistogram(const char* name);
-
-  void Sample(base::HistogramBase::Sample);
-
- private:
-  base::HistogramBase* histogram_;
-};
-
 class PLATFORM_EXPORT LinearHistogram : public CustomCountHistogram {
  public:
   explicit LinearHistogram(const char* name,
