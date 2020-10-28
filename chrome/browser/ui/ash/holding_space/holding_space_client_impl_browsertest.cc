@@ -13,6 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"

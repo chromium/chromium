@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"

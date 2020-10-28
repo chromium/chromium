@@ -15,7 +15,6 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -112,13 +111,6 @@ class BrowserTestBase : public testing::Test {
   // Sets expected browser exit code, in case it's different than 0 (success).
   void set_expected_exit_code(int code) { expected_exit_code_ = code; }
 
-  const net::SpawnedTestServer* spawned_test_server() const {
-    return spawned_test_server_.get();
-  }
-  net::SpawnedTestServer* spawned_test_server() {
-    return spawned_test_server_.get();
-  }
-
   // Returns the embedded test server. Guaranteed to be non-NULL.
   const net::EmbeddedTestServer* embedded_test_server() const {
     return embedded_test_server_.get();
@@ -181,9 +173,6 @@ class BrowserTestBase : public testing::Test {
   // When using the network process, update the host resolver rules that were
   // added in SetUpOnMainThread.
   void InitializeNetworkProcess();
-
-  // Testing server, started on demand.
-  std::unique_ptr<net::SpawnedTestServer> spawned_test_server_;
 
   // Embedded test server, cheap to create, started on demand.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;

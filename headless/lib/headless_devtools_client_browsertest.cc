@@ -33,6 +33,7 @@
 #include "headless/public/headless_devtools_client.h"
 #include "headless/public/headless_devtools_target.h"
 #include "headless/test/headless_browser_test.h"
+#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

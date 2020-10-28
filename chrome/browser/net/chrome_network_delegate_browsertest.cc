@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/base_paths.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/path_service.h"
