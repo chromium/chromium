@@ -34,6 +34,7 @@ const char kPlatformColorChange[] = "PlatformColorChange";
 const char kPluginChanged[] = "Plugin Changed";
 const char kPropertyRegistration[] = "PropertyRegistration";
 const char kPseudoClass[] = "PseudoClass";
+const char kScrollTimeline[] = "ScrollTimeline";
 const char kSVGContainerSizeChange[] = "SVGContainerSizeChange";
 const char kSettings[] = "Settings";
 const char kShadow[] = "Shadow";

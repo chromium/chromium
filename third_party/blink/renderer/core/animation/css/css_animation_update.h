@@ -71,6 +71,7 @@ class UpdatedCSSAnimation {
                       const InertEffect& effect,
                       Timing specified_timing,
                       StyleRuleKeyframes* style_rule,
+                      AnimationTimeline* timeline,
                       const Vector<EAnimPlayState>& play_state_list)
       : index(index),
         animation(animation),
@@ -78,12 +79,14 @@ class UpdatedCSSAnimation {
         specified_timing(specified_timing),
         style_rule(style_rule),
         style_rule_version(this->style_rule->Version()),
+        timeline(timeline),
         play_state_list(play_state_list) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(animation);
     visitor->Trace(effect);
     visitor->Trace(style_rule);
+    visitor->Trace(timeline);
   }
 
   wtf_size_t index;
@@ -92,6 +95,7 @@ class UpdatedCSSAnimation {
   Timing specified_timing;
   Member<StyleRuleKeyframes> style_rule;
   unsigned style_rule_version;
+  Member<AnimationTimeline> timeline;
   Vector<EAnimPlayState> play_state_list;
 };
 
@@ -139,10 +143,11 @@ class CORE_EXPORT CSSAnimationUpdate final {
                        const InertEffect& effect,
                        const Timing& specified_timing,
                        StyleRuleKeyframes* style_rule,
+                       AnimationTimeline* timeline,
                        const Vector<EAnimPlayState>& play_state_list) {
     animations_with_updates_.push_back(
         UpdatedCSSAnimation(index, animation, effect, specified_timing,
-                            style_rule, play_state_list));
+                            style_rule, timeline, play_state_list));
     suppressed_animations_.insert(animation);
   }
   void UpdateCompositorKeyframes(Animation* animation) {

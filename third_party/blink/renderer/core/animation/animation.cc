@@ -793,7 +793,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
           if (old_current_time) {
             reset_current_time_on_resume_ = true;
             start_time_ = base::nullopt;
-            hold_time_ = old_current_time.value();
+            SetHoldTimeAndPhase(old_current_time, TimelinePhase::kInactive);
           } else if (PendingInternal()) {
             start_time_ = boundary_time;
           }

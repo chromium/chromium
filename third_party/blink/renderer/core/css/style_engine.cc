@@ -1676,6 +1676,9 @@ void StyleEngine::ApplyRuleSetChanges(
         if (RuleSet* rule_set = active_sheet.second)
           AddScrollTimelineRules(*rule_set);
       }
+
+      MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
+          style_change_reason::kScrollTimeline));
     }
   }
 

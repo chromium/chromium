@@ -60,7 +60,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   void ScheduleNextService() override;
 
   // IDL API implementation.
-  Element* scrollSource();
+  Element* scrollSource() const;
   String orientation();
   // TODO(crbug.com/1094014): scrollOffsets will replace start and end
   // offsets once spec decision on multiple scroll offsets is finalized.
@@ -115,6 +115,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
  protected:
   PhaseAndTime CurrentPhaseAndTime() override;
+  double GetTimeRange() const { return time_range_; }
+  bool ScrollOffsetsEqual(
+      const HeapVector<Member<ScrollTimelineOffset>>& other) const;
 
  private:
   // https://wicg.github.io/scroll-animations/#avoiding-cycles

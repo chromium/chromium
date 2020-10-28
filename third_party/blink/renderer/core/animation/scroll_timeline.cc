@@ -186,6 +186,7 @@ ScrollTimeline::ScrollTimeline(
       orientation_(orientation),
       scroll_offsets_(scroll_offsets),
       time_range_(time_range) {
+  DCHECK(scroll_offsets_);
   if (resolved_scroll_source_) {
     ScrollTimelineSet& set = GetScrollTimelineSet();
     if (!set.Contains(resolved_scroll_source_)) {
@@ -277,6 +278,19 @@ bool ScrollTimeline::ResolveScrollOffsets(
 AnimationTimeline::PhaseAndTime ScrollTimeline::CurrentPhaseAndTime() {
   return {timeline_state_snapshotted_.phase,
           timeline_state_snapshotted_.current_time};
+}
+
+bool ScrollTimeline::ScrollOffsetsEqual(
+    const HeapVector<Member<ScrollTimelineOffset>>& other) const {
+  DCHECK(scroll_offsets_);
+  if (scroll_offsets_->size() != other.size())
+    return false;
+  size_t size = scroll_offsets_->size();
+  for (size_t i = 0; i < size; ++i) {
+    if (!DataEquivalent(scroll_offsets_->at(i), other.at(i)))
+      return false;
+  }
+  return true;
 }
 
 ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
@@ -380,7 +394,7 @@ void ScrollTimeline::SnapshotState() {
   timeline_state_snapshotted_ = ComputeTimelineState();
 }
 
-Element* ScrollTimeline::scrollSource() {
+Element* ScrollTimeline::scrollSource() const {
   return scroll_source_.Get();
 }
 

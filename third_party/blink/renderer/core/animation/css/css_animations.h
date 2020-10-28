@@ -129,6 +129,8 @@ class CORE_EXPORT CSSAnimations final {
           style_rule_version(new_animation.style_rule_version),
           play_state_list(new_animation.play_state_list) {}
 
+    AnimationTimeline* Timeline() const { return animation->timeline(); }
+
     void Update(UpdatedCSSAnimation update) {
       DCHECK_EQ(update.animation, animation);
       style_rule = update.style_rule;

@@ -221,6 +221,9 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   // This should only be used for CSS
   void Unpause();
+  bool ResetsCurrentTimeOnResume() const {
+    return reset_current_time_on_resume_;
+  }
 
   void SetOutdated();
   bool Outdated() { return outdated_; }

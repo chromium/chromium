@@ -165,4 +165,12 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, const Options& options)
   DCHECK(options.IsValid());
 }
 
+bool CSSScrollTimeline::Matches(const Options& options) const {
+  DCHECK(options.offsets_);
+  return (scrollSource() == options.source_) &&
+         (GetOrientation() == options.direction_) &&
+         (ScrollOffsetsEqual(*options.offsets_)) &&
+         (GetTimeRange() == options.time_range_);
+}
+
 }  // namespace blink

@@ -35,6 +35,7 @@ extern const char kPlatformColorChange[];
 extern const char kPluginChanged[];
 extern const char kPropertyRegistration[];
 extern const char kPseudoClass[];
+extern const char kScrollTimeline[];
 extern const char kSVGContainerSizeChange[];
 extern const char kSettings[];
 extern const char kShadow[];
