@@ -85,9 +85,11 @@ void LayoutNGTableSection::RemoveChild(LayoutObject* child) {
 
 void LayoutNGTableSection::StyleDidChange(StyleDifference diff,
                                           const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   if (LayoutNGTable* table = Table()) {
-    if (NGTableBorders::HasBorder(old_style) ||
-        NGTableBorders::HasBorder(Style())) {
+    if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
+        (diff.TextDecorationOrColorChanged() &&
+         StyleRef().HasBorderColorReferencingCurrentColor())) {
       table->GridBordersChanged();
     }
   }

@@ -21,6 +21,7 @@ class LayoutView;
 class Document;
 class ComputedStyle;
 class ImageResourceObserver;
+class LayoutNGTableCell;
 
 class BackgroundImageGeometry {
   DISALLOW_NEW();
@@ -38,6 +39,12 @@ class BackgroundImageGeometry {
 
   // Generic constructor for all other elements.
   BackgroundImageGeometry(const LayoutBoxModelObject&);
+
+  // Constructor for TablesNG table parts.
+  BackgroundImageGeometry(const LayoutNGTableCell& cell,
+                          PhysicalOffset cell_offset,
+                          const LayoutBox& table_part,
+                          PhysicalSize table_part_size);
 
   void Calculate(const LayoutBoxModelObject* container,
                  PaintPhase,

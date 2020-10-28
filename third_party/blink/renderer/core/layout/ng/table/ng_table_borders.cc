@@ -390,16 +390,15 @@ NGBoxStrut NGTableBorders::GetCellBorders(wtf_size_t row,
   for (wtf_size_t i = 0; i < rowspan; ++i) {
     wtf_size_t start_edge_index = first_inline_start_edge + i * edges_per_row_;
     border_strut.inline_start =
-        std::max(border_strut.inline_start, HasEdgeAtIndex(start_edge_index)
+        std::max(border_strut.inline_start, CanPaint(start_edge_index)
                                                 ? BorderWidth(start_edge_index)
                                                 : LayoutUnit());
     if (start_edge_index >= edges_.size())
       break;
     wtf_size_t end_edge_index = first_inline_end_edge + i * edges_per_row_;
-    border_strut.inline_end =
-        std::max(border_strut.inline_end, HasEdgeAtIndex(end_edge_index)
-                                              ? BorderWidth(end_edge_index)
-                                              : LayoutUnit());
+    border_strut.inline_end = std::max(
+        border_strut.inline_end,
+        CanPaint(end_edge_index) ? BorderWidth(end_edge_index) : LayoutUnit());
   }
   // Compute block border widths.
   wtf_size_t start_edge_column_index = column * 2 + 1;
@@ -409,14 +408,13 @@ NGBoxStrut NGTableBorders::GetCellBorders(wtf_size_t row,
       break;
     wtf_size_t start_edge_index = row * edges_per_row_ + current_column_index;
     border_strut.block_start =
-        std::max(border_strut.block_start, HasEdgeAtIndex(start_edge_index)
+        std::max(border_strut.block_start, CanPaint(start_edge_index)
                                                ? BorderWidth(start_edge_index)
                                                : LayoutUnit());
     wtf_size_t end_edge_index = start_edge_index + rowspan * edges_per_row_;
-    border_strut.block_end =
-        std::max(border_strut.block_end, HasEdgeAtIndex(end_edge_index)
-                                             ? BorderWidth(end_edge_index)
-                                             : LayoutUnit());
+    border_strut.block_end = std::max(
+        border_strut.block_end,
+        CanPaint(end_edge_index) ? BorderWidth(end_edge_index) : LayoutUnit());
   }
   DCHECK(is_collapsed_);
   // If borders are not divisible by 2, two half borders will not add up
@@ -448,10 +446,10 @@ void NGTableBorders::ComputeCollapsedTableBorderPadding(
   collapsed_visual_inline_end_ = borders.inline_end;
   wtf_size_t inline_start_edge = 0;
   wtf_size_t inline_end_edge = 2 * table_column_count;
-  borders.inline_start = HasEdgeAtIndex(inline_start_edge)
+  borders.inline_start = CanPaint(inline_start_edge)
                              ? BorderWidth(inline_start_edge) / 2
                              : LayoutUnit();
-  borders.inline_end = HasEdgeAtIndex(inline_end_edge)
+  borders.inline_end = CanPaint(inline_end_edge)
                            ? BorderWidth(inline_end_edge) / 2
                            : LayoutUnit();
   cached_table_border_ = borders;

@@ -335,7 +335,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return BorderTop() + BorderBottom();
   }
 
-  LayoutRectOutsets BorderBoxOutsets() const {
+  virtual LayoutRectOutsets BorderBoxOutsets() const {
     NOT_DESTROYED();
     return LayoutRectOutsets(BorderTop(), BorderRight(), BorderBottom(),
                              BorderLeft());

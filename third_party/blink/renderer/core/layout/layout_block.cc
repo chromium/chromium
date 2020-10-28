@@ -2212,7 +2212,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
 
 RecalcLayoutOverflowResult LayoutBlock::RecalcChildLayoutOverflow() {
   NOT_DESTROYED();
-  DCHECK(!IsTable());
+  DCHECK(!IsTable() || IsLayoutNGObject());
   DCHECK(ChildNeedsLayoutOverflowRecalc());
   ClearChildNeedsLayoutOverflowRecalc();
 
@@ -2237,7 +2237,7 @@ RecalcLayoutOverflowResult LayoutBlock::RecalcChildLayoutOverflow() {
 
 void LayoutBlock::RecalcChildVisualOverflow() {
   NOT_DESTROYED();
-  DCHECK(!IsTable());
+  DCHECK(!IsTable() || IsLayoutNGObject());
   // It is an error to call this function on a LayoutBlock that it itself inside
   // a display-locked subtree.
   DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));

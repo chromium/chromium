@@ -17,7 +17,8 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
-#include "third_party/blink/renderer/core/style/border_edge.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_table_painters.h"
 
 namespace blink {
 
@@ -50,9 +51,9 @@ void LayoutNGTable::SetCachedTableBorders(
 }
 
 void LayoutNGTable::InvalidateCachedTableBorders() {
-  // When cached borders are invalidated, we could do a special kind of relayout
-  // where fragments can replace only TableBorders, keep the geometry, and
-  // repaint.
+  // TODO(layout-dev) When cached borders are invalidated, we could do a
+  // special kind of relayout where fragments can replace only TableBorders,
+  // keep the geometry, and repaint.
   cached_table_borders_.reset();
 }
 
@@ -69,7 +70,11 @@ void LayoutNGTable::SetCachedTableColumnConstraints(
 }
 
 void LayoutNGTable::GridBordersChanged() {
+  NOT_DESTROYED();
   InvalidateCachedTableBorders();
+  // If borders change, table fragment must be regenerated.
+  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse)
+    SetNeedsLayout(layout_invalidation_reason::kTableChanged);
 }
 
 void LayoutNGTable::TableGridStructureChanged() {
@@ -144,10 +149,16 @@ void LayoutNGTable::RemoveChild(LayoutObject* child) {
 
 void LayoutNGTable::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
-  // TODO(1115800) Make border invalidation more precise.
-  if (NGTableBorders::HasBorder(old_style) ||
-      NGTableBorders::HasBorder(Style())) {
-    GridBordersChanged();
+  NOT_DESTROYED();
+  // StyleDifference handles changes in table-layout, border-spacing.
+  if (old_style) {
+    bool borders_changed = !old_style->BorderVisuallyEqual(StyleRef()) ||
+                           (diff.TextDecorationOrColorChanged() &&
+                            StyleRef().HasBorderColorReferencingCurrentColor());
+    bool collapse_changed =
+        StyleRef().BorderCollapse() != old_style->BorderCollapse();
+    if (borders_changed || collapse_changed)
+      GridBordersChanged();
   }
   LayoutNGMixin<LayoutBlock>::StyleDidChange(diff, old_style);
 }
@@ -155,6 +166,137 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
 LayoutBox* LayoutNGTable::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   return LayoutObjectFactory::CreateAnonymousTableWithParent(*parent);
+}
+
+PhysicalRect LayoutNGTable::OverflowClipRect(
+    const PhysicalOffset& location,
+    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
+  NOT_DESTROYED();
+  PhysicalRect clip_rect;
+  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
+    clip_rect = PhysicalRect(location, Size());
+    const auto overflow_clip = GetOverflowClipAxes();
+    IntRect infinite_rect = PhysicalRect::InfiniteIntRect();
+    if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
+      clip_rect.offset.left = LayoutUnit(infinite_rect.X());
+      clip_rect.size.width = LayoutUnit(infinite_rect.Width());
+    }
+    if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
+      clip_rect.offset.top = LayoutUnit(infinite_rect.Y());
+      clip_rect.size.height = LayoutUnit(infinite_rect.Height());
+    }
+  } else {
+    clip_rect = LayoutNGMixin<LayoutBlock>::OverflowClipRect(
+        location, overlay_scrollbar_clip_behavior);
+  }
+  // TODO(1142929)
+  // We cannot handle table hidden overflow with captions correctly.
+  // Correct handling would clip table grid content to grid content rect,
+  // but not clip the captions.
+  // Since we are not generating table's grid fragment, this is not
+  // possible.
+  // The current solution is to not clip if we have captions.
+  // Maybe a fix is to do an additional clip in table painter?
+  const LayoutBox* child = FirstChildBox();
+  while (child) {
+    if (child->IsTableCaption()) {
+      // If there are captions, we cannot clip to content box.
+      clip_rect.Unite(PhysicalRect(location, Size()));
+      break;
+    }
+    child = child->NextSiblingBox();
+  }
+  return clip_rect;
+}
+
+void LayoutNGTable::AddVisualEffectOverflow() {
+  NOT_DESTROYED();
+  // TODO(1061423) Fragment painting: need a correct fragment.
+  if (const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0)) {
+    DCHECK_EQ(PhysicalFragmentCount(), 1u);
+    // Table's collapsed borders contribute to visual overflow.
+    // Table border side can be composed of multiple border segments.
+    // Inline visual overflow uses size of the largest border segment.
+    // Block visual overflow uses size of first border segment.
+    if (const NGTableBorders* collapsed_borders =
+            fragment->TableCollapsedBorders()) {
+      PhysicalRect borders_overflow = PhysicalBorderBoxRect();
+      NGBoxStrut table_borders = collapsed_borders->TableBorder();
+      auto visual_inline_strut =
+          collapsed_borders->GetCollapsedBorderVisualInlineStrut();
+      table_borders.inline_start = visual_inline_strut.first;
+      table_borders.inline_end = visual_inline_strut.second;
+      borders_overflow.Expand(
+          table_borders.ConvertToPhysical(StyleRef().GetWritingDirection()));
+      AddSelfVisualOverflow(borders_overflow);
+    }
+  }
+  LayoutNGMixin<LayoutBlock>::AddVisualEffectOverflow();
+}
+
+void LayoutNGTable::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
+  DCHECK_EQ(PhysicalFragmentCount(), 1u);
+  NGBoxFragmentPainter(*LayoutNGMixin<LayoutBlock>::GetPhysicalFragment(0))
+      .Paint(paint_info);
+}
+
+LayoutUnit LayoutNGTable::BorderLeft() const {
+  NOT_DESTROYED();
+  // DCHECK(cached_table_borders_.get())
+  // ScrollAnchoring fails this DCHECK.
+  if (ShouldCollapseBorders() && cached_table_borders_.get()) {
+    return cached_table_borders_->TableBorder()
+        .ConvertToPhysical(Style()->GetWritingDirection())
+        .left;
+  }
+  return LayoutNGMixin<LayoutBlock>::BorderLeft();
+}
+
+LayoutUnit LayoutNGTable::BorderRight() const {
+  NOT_DESTROYED();
+  // DCHECK(cached_table_borders_.get())
+  // ScrollAnchoring fails this DCHECK.
+  if (ShouldCollapseBorders() && cached_table_borders_.get()) {
+    return cached_table_borders_->TableBorder()
+        .ConvertToPhysical(Style()->GetWritingDirection())
+        .right;
+  }
+  return LayoutNGMixin<LayoutBlock>::BorderRight();
+}
+
+LayoutUnit LayoutNGTable::BorderTop() const {
+  NOT_DESTROYED();
+  // DCHECK(cached_table_borders_.get())
+  // ScrollAnchoring fails this DCHECK.
+  if (ShouldCollapseBorders() && cached_table_borders_.get()) {
+    return cached_table_borders_->TableBorder()
+        .ConvertToPhysical(Style()->GetWritingDirection())
+        .top;
+  }
+  return LayoutNGMixin<LayoutBlock>::BorderTop();
+}
+
+LayoutUnit LayoutNGTable::BorderBottom() const {
+  NOT_DESTROYED();
+  // DCHECK(cached_table_borders_.get())
+  // ScrollAnchoring fails this DCHECK.
+  if (ShouldCollapseBorders() && cached_table_borders_.get()) {
+    return cached_table_borders_->TableBorder()
+        .ConvertToPhysical(Style()->GetWritingDirection())
+        .bottom;
+  }
+  return LayoutNGMixin<LayoutBlock>::BorderBottom();
+}
+
+LayoutRectOutsets LayoutNGTable::BorderBoxOutsets() const {
+  // DCHECK(cached_table_borders_.get())
+  // ScrollAnchoring fails this DCHECK.
+  if (PhysicalFragmentCount() > 0) {
+    return GetPhysicalFragment(0)->Borders().ToLayoutRectOutsets();
+  }
+  NOTREACHED();
+  return LayoutRectOutsets();
 }
 
 bool LayoutNGTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {

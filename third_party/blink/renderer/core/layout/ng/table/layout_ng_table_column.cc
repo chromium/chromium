@@ -18,11 +18,24 @@ LayoutNGTableColumn::LayoutNGTableColumn(Element* element)
 void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
                                          const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  if (diff.NeedsPaintInvalidation() && old_style) {
+  if (diff.HasDifference()) {
     if (LayoutNGTable* table = Table()) {
-      if (NGTableBorders::HasBorder(old_style) ||
-          NGTableBorders::HasBorder(Style()))
-        table->GridBordersChanged();
+      if (old_style && diff.NeedsPaintInvalidation()) {
+        // Regenerate table borders if needed
+        if (!old_style->BorderVisuallyEqual(StyleRef()) ||
+            (diff.TextDecorationOrColorChanged() &&
+             StyleRef().HasBorderColorReferencingCurrentColor())) {
+          table->GridBordersChanged();
+        }
+        // Table paints column background. Tell table to repaint.
+        if (StyleRef().HasBackground() || old_style->HasBackground()) {
+          table->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+              PaintInvalidationReason::kBackground);
+        }
+      }
+      if (diff.NeedsLayout()) {
+        table->SetIntrinsicLogicalWidthsDirty();
+      }
     }
   }
   LayoutBoxModelObject::StyleDidChange(diff, old_style);

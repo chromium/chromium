@@ -786,14 +786,14 @@ void PaintLayer::UpdateLayerPosition() {
     // nearest enclosing object with a layer.
     LayoutObject* curr = GetLayoutObject().Container();
     while (curr && !curr->HasLayer()) {
-      if (curr->IsBox() && !curr->IsTableRow()) {
+      if (curr->IsBox() && !curr->IsLegacyTableRow()) {
         // Rows and cells share the same coordinate space (that of the section).
         // Omit them when computing our xpos/ypos.
         local_point += ToLayoutBox(curr)->PhysicalLocation();
       }
       curr = curr->Container();
     }
-    if (curr && curr->IsTableRow()) {
+    if (curr && curr->IsLegacyTableRow()) {
       // Put ourselves into the row coordinate space.
       local_point -= ToLayoutBox(curr)->PhysicalLocation();
     }

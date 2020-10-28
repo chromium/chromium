@@ -84,10 +84,13 @@ void LayoutNGTableRow::RemoveChild(LayoutObject* child) {
 
 void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
                                       const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   if (LayoutNGTable* table = Table()) {
-    if (NGTableBorders::HasBorder(old_style) ||
-        NGTableBorders::HasBorder(Style()))
+    if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
+        (diff.TextDecorationOrColorChanged() &&
+         StyleRef().HasBorderColorReferencingCurrentColor())) {
       table->GridBordersChanged();
+    }
   }
   LayoutNGMixin<LayoutBlock>::StyleDidChange(diff, old_style);
 }
@@ -95,6 +98,23 @@ void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
 LayoutBox* LayoutNGTableRow::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   return LayoutObjectFactory::CreateAnonymousTableRowWithParent(*parent);
+}
+
+// This is necessary because TableRow paints beyond border box if it contains
+// rowspanned cells.
+void LayoutNGTableRow::AddVisualOverflowFromBlockChildren() {
+  NOT_DESTROYED();
+  LayoutBlock::AddVisualOverflowFromBlockChildren();
+  for (LayoutBox* child = FirstChildBox(); child;
+       child = child->NextSiblingBox()) {
+    DCHECK(child->IsTableCell());
+    // Cells that do not span rows do not contribute to excess overflow.
+    if (To<LayoutNGTableCell>(child)->ComputedRowSpan() == 1)
+      continue;
+    LayoutRect child_visual_overflow_rect =
+        child->VisualOverflowRectForPropagation();
+    AddSelfVisualOverflow(child_visual_overflow_rect);
+  }
 }
 
 unsigned LayoutNGTableRow::RowIndex() const {

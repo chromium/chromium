@@ -500,7 +500,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual void SimplifiedNormalFlowLayout();
 
  private:
-  void AddVisualOverflowFromBlockChildren();
   void AddLayoutOverflowFromPositionedObjects();
   void AddLayoutOverflowFromBlockChildren();
 
@@ -512,6 +511,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   virtual void AddLayoutOverflowFromChildren();
   void AddVisualOverflowFromChildren();
+  virtual void AddVisualOverflowFromBlockChildren();
 
   void AddOutlineRects(Vector<PhysicalRect>&,
                        const PhysicalOffset& additional_offset,

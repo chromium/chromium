@@ -57,6 +57,11 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) final;
 
+  bool VisualRectRespectsVisibility() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
  protected:
   // Required by LayoutBox, but not used.
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override {

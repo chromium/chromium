@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_mathml_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_table_painters.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -67,9 +68,17 @@ inline bool HasSelection(const LayoutObject* layout_object) {
 
 inline bool IsVisibleToPaint(const NGPhysicalFragment& fragment,
                              const ComputedStyle& style) {
-  if (fragment.IsHiddenForPaint() ||
-      style.Visibility() != EVisibility::kVisible)
+  if (fragment.IsHiddenForPaint())
     return false;
+  if (style.Visibility() != EVisibility::kVisible) {
+    auto display = style.Display();
+    // Hidden section/row backgrounds still paint into cells.
+    if (display != EDisplay::kTableRowGroup && display != EDisplay::kTableRow &&
+        display != EDisplay::kTableColumn &&
+        display != EDisplay::kTableColumnGroup) {
+      return false;
+    }
+  }
 
   // When |NGLineTruncator| sets |IsHiddenForPaint|, it sets to the fragment in
   // the line. However, when it has self-painting layer, the fragment stored in
@@ -366,6 +375,8 @@ PhysicalRect NGBoxFragmentPainter::SelfInkOverflow() const {
 }
 
 void NGBoxFragmentPainter::Paint(const PaintInfo& paint_info) {
+  if (PhysicalFragment().IsHiddenForPaint())
+    return;
   if (PhysicalFragment().IsPaintedAtomically() &&
       !box_fragment_.HasSelfPaintingLayer())
     PaintAllPhasesAtomically(paint_info);
@@ -494,6 +505,10 @@ bool NGBoxFragmentPainter::ShouldRecordHitTestData(
   if (PhysicalFragment().Style().Visibility() != EVisibility::kVisible)
     return false;
 
+  // Table rows/sections do not participate in hit testing.
+  if (PhysicalFragment().IsTableRow() || PhysicalFragment().IsTableSection())
+    return false;
+
   return true;
 }
 
@@ -505,7 +520,6 @@ void NGBoxFragmentPainter::PaintObject(
   const NGPhysicalBoxFragment& physical_box_fragment = PhysicalFragment();
   const ComputedStyle& style = box_fragment_.Style();
   bool is_visible = IsVisibleToPaint(physical_box_fragment, style);
-
   if (ShouldPaintSelfBlockBackground(paint_phase)) {
     if (is_visible) {
       PaintBoxDecorationBackground(paint_info, paint_offset,
@@ -530,6 +544,7 @@ void NGBoxFragmentPainter::PaintObject(
       NGMathMLPainter(box_fragment_).Paint(paint_info, paint_offset);
   }
 
+  // Paint children.
   if (paint_phase != PaintPhase::kSelfOutlineOnly &&
       (!physical_box_fragment.Children().empty() ||
        physical_box_fragment.HasItems() || inline_box_cursor_) &&
@@ -744,6 +759,11 @@ void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
       // NGBoxFragmentPainter directly for NG objects.
       layout_object->Paint(paint_info_for_descendants);
     }
+  }
+  if (paint_info.phase == PaintPhase::kForeground && box_fragment_.IsTable()) {
+    NGTablePainter(box_fragment_)
+        .PaintCollapsedBorders(paint_info, paint_offset,
+                               VisualRect(paint_offset));
   }
 }
 
@@ -966,6 +986,23 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     if (PhysicalFragment().IsFieldsetContainer()) {
       NGFieldsetPainter(box_fragment_)
           .PaintBoxDecorationBackground(paint_info, paint_offset);
+    } else if (box_fragment_.IsTable()) {
+      NGTablePainter(box_fragment_)
+          .PaintBoxDecorationBackground(paint_info, paint_offset, visual_rect);
+    } else if (box_fragment_.IsTableSection()) {
+      NGTableSectionPainter(box_fragment_)
+          .PaintBoxDecorationBackground(paint_info, paint_offset, visual_rect);
+    } else if (box_fragment_.IsTableRow()) {
+      NGTableRowPainter(box_fragment_)
+          .PaintBoxDecorationBackground(paint_info, paint_offset, visual_rect);
+    } else if (box_fragment_.IsTableNGCell()) {
+      // Just doing this without any collapsed borders makes 2 extra tests pass,
+      // they used to be off by 1 pixel.
+      // external/wpt/css/css-backgrounds/background-image-table-cells-zoomed.html
+      // tables/mozilla/bugs/bug131020_iframe.html
+      // TODO(atotic+pdr) Flagged for followup code review.
+      NGTableCellPainter(box_fragment_)
+          .PaintBoxDecorationBackground(paint_info, paint_offset, visual_rect);
     } else if (box_fragment_.Style().HasBoxDecorationBackground()) {
       PaintBoxDecorationBackgroundWithRect(
           contents_paint_state ? contents_paint_state->GetPaintInfo()
@@ -1810,7 +1847,7 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
 }
 
 LayoutRectOutsets NGBoxFragmentPainter::ComputeBorders() const {
-  if (box_fragment_.GetLayoutObject()->IsTableCell())
+  if (box_fragment_.GetLayoutObject()->IsTableCellLegacy())
     return ToLayoutBox(box_fragment_.GetLayoutObject())->BorderBoxOutsets();
   return BoxStrutToLayoutRectOutsets(PhysicalFragment().BorderWidths());
 }
@@ -1876,6 +1913,12 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     return false;
 
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.action);
+  if (hit_test_self) {
+    // Table row and table section are never a hit target.
+    if (PhysicalFragment().IsTableRow() || PhysicalFragment().IsTableSection())
+      hit_test_self = false;
+  }
+
   if (hit_test_self && box_fragment_.IsScrollContainer() &&
       HitTestOverflowControl(hit_test, physical_offset))
     return true;

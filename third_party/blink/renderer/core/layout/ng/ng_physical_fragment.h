@@ -162,6 +162,15 @@ class CORE_EXPORT NGPhysicalFragment
 
   bool IsTable() const { return layout_object_->IsTable(); }
 
+  bool IsTableRow() const { return layout_object_->IsTableRow(); }
+
+  bool IsTableSection() const { return layout_object_->IsTableSection(); }
+
+  bool IsTableNGCell() const {
+    return layout_object_->IsTableCell() &&
+           !layout_object_->IsTableCellLegacy();
+  }
+
   // Return true if this fragment is a container established by a fieldset
   // element. Such a fragment contains an optional rendered legend fragment and
   // an optional fieldset contents wrapper fragment (which holds everything

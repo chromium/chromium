@@ -53,6 +53,13 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
 
   bool AllowsNonVisibleOverflow() const override { return false; }
 
+  void AddVisualOverflowFromBlockChildren() override;
+
+  bool VisualRectRespectsVisibility() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
   // LayoutBlock methods end.
 
   // LayoutNGTableRowInterface methods start.

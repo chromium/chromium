@@ -21,6 +21,7 @@ class CORE_EXPORT LayoutNGTableCell
  public:
   explicit LayoutNGTableCell(Element*);
 
+  // NOTE: Rowspan might overflow section boundaries.
   unsigned ComputedRowSpan() const {
     if (!has_rowspan_)
       return 1;
@@ -46,6 +47,16 @@ class CORE_EXPORT LayoutNGTableCell
   // fragment would be in the incorrect state).
   void InvalidateLayoutResultCacheAfterMeasure() const;
 
+  LayoutUnit BorderTop() const override;
+
+  LayoutUnit BorderBottom() const override;
+
+  LayoutUnit BorderLeft() const override;
+
+  LayoutUnit BorderRight() const override;
+
+  LayoutRectOutsets BorderBoxOutsets() const override;
+
   LayoutNGTable* Table() const;
 
   // LayoutBlockFlow methods start.
@@ -61,6 +72,8 @@ class CORE_EXPORT LayoutNGTableCell
   const char* GetName() const final { return "LayoutNGTableCellNew"; }
 
   bool CreatesNewFormattingContext() const final { return true; }
+
+  bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override;
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;

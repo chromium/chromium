@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
-#include "third_party/blink/renderer/core/style/border_edge.h"
 
 namespace blink {
 
@@ -33,6 +32,52 @@ void LayoutNGTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
       section->ClearLayoutResults();
     }
   }
+}
+
+LayoutRectOutsets LayoutNGTableCell::BorderBoxOutsets() const {
+  NOT_DESTROYED();
+  DCHECK_GE(PhysicalFragmentCount(), 0u);
+  return GetPhysicalFragment(0)->Borders().ToLayoutRectOutsets();
+}
+
+LayoutUnit LayoutNGTableCell::BorderTop() const {
+  NOT_DESTROYED();
+  // TODO(1061423) Should return cell border, not fragment border.
+  // To compute cell border, cell needs to know its starting row
+  // and column, which are not available here.
+  // PhysicalFragmentCount() > 0 check should not be necessary,
+  // but it is because of TextAutosizer/ScrollAnchoring.
+  if (Table()->ShouldCollapseBorders() && PhysicalFragmentCount() > 0) {
+    return GetPhysicalFragment(0)->Borders().top;
+  }
+  return LayoutNGBlockFlowMixin<LayoutBlockFlow>::BorderTop();
+}
+
+LayoutUnit LayoutNGTableCell::BorderBottom() const {
+  NOT_DESTROYED();
+  // TODO(1061423) Should return cell border, not fragment border.
+  if (Table()->ShouldCollapseBorders() && PhysicalFragmentCount() > 0) {
+    return GetPhysicalFragment(0)->Borders().bottom;
+  }
+  return LayoutNGBlockFlowMixin<LayoutBlockFlow>::BorderBottom();
+}
+
+LayoutUnit LayoutNGTableCell::BorderLeft() const {
+  NOT_DESTROYED();
+  // TODO(1061423) Should return cell border, not fragment border.
+  if (Table()->ShouldCollapseBorders() && PhysicalFragmentCount() > 0) {
+    return GetPhysicalFragment(0)->Borders().left;
+  }
+  return LayoutNGBlockFlowMixin<LayoutBlockFlow>::BorderLeft();
+}
+
+LayoutUnit LayoutNGTableCell::BorderRight() const {
+  NOT_DESTROYED();
+  // TODO(1061423) Should return cell border, not fragment border.
+  if (Table()->ShouldCollapseBorders() && PhysicalFragmentCount() > 0) {
+    return GetPhysicalFragment(0)->Borders().right;
+  }
+  return LayoutNGBlockFlowMixin<LayoutBlockFlow>::BorderRight();
 }
 
 LayoutNGTable* LayoutNGTableCell::Table() const {
@@ -56,10 +101,13 @@ void LayoutNGTableCell::UpdateBlockLayout(bool relayout_children) {
 
 void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   if (LayoutNGTable* table = Table()) {
-    if (NGTableBorders::HasBorder(old_style) ||
-        NGTableBorders::HasBorder(Style()))
+    if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
+        (diff.TextDecorationOrColorChanged() &&
+         StyleRef().HasBorderColorReferencingCurrentColor())) {
       table->GridBordersChanged();
+    }
   }
   LayoutNGBlockFlowMixin<LayoutBlockFlow>::StyleDidChange(diff, old_style);
 }
@@ -74,6 +122,18 @@ void LayoutNGTableCell::ColSpanOrRowSpanChanged() {
 LayoutBox* LayoutNGTableCell::CreateAnonymousBoxWithSameTypeAs(
     const LayoutObject* parent) const {
   return LayoutObjectFactory::CreateAnonymousTableCellWithParent(*parent);
+}
+
+bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
+    const PhysicalRect& local_rect) const {
+  NOT_DESTROYED();
+  // If this object has layer, the area of collapsed borders should be
+  // transparent to expose the collapsed borders painted on the underlying
+  // layer.
+  if (HasLayer() && Table()->ShouldCollapseBorders())
+    return false;
+  return LayoutNGBlockFlowMixin<
+      LayoutBlockFlow>::BackgroundIsKnownToBeOpaqueInRect(local_rect);
 }
 
 Length LayoutNGTableCell::StyleOrColLogicalWidth() const {

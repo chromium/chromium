@@ -47,6 +47,7 @@ class NGBoxFragmentPainter : public BoxPainterBase {
                        const NGPhysicalBoxFragment& fragment);
 
   void Paint(const PaintInfo&);
+  // Routes single PaintPhase to actual painters, and traverses children.
   void PaintObject(const PaintInfo&,
                    const PhysicalOffset&,
                    bool suppress_box_decoration_background = false);

@@ -15,6 +15,22 @@ namespace blink {
 
 class NGTableBorders;
 
+// Invalidation: LayoutNGTable differences from block invalidation:
+//
+// Cached collapsed borders:
+// Table caches collapsed borders as NGTableBorders.
+// NGTableBorders are stored on Table fragment for painting.
+// If NGTableBorders change, table fragment must be regenerated.
+// Any table part that contributes to collapsed borders must invalidate
+// cached borders on border change by calling GridBordersChanged.
+//
+// Cached column constraints:
+// Column constraints are used in layout. They must be regenerated
+// whenever table geometry changes.
+// The validation state is a IsTableColumnsConstraintsDirty flag
+// on LayoutObject. They are invalidated inside
+// LayoutObject::SetNeeds*Layout.
+
 class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
                                   public LayoutNGTableInterface {
  public:
@@ -64,6 +80,28 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
+
+  void Paint(const PaintInfo&) const final;
+
+  LayoutUnit BorderTop() const override;
+
+  LayoutUnit BorderBottom() const override;
+
+  LayoutUnit BorderLeft() const override;
+
+  LayoutUnit BorderRight() const override;
+
+  LayoutRectOutsets BorderBoxOutsets() const override;
+
+  PhysicalRect OverflowClipRect(const PhysicalOffset&,
+                                OverlayScrollbarClipBehavior) const override;
+
+  void AddVisualEffectOverflow() final;
+
+  bool VisualRectRespectsVisibility() const override {
+    NOT_DESTROYED();
+    return false;
+  }
 
   // LayoutBlock methods end.
 

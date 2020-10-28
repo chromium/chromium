@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_table_col.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -292,7 +293,7 @@ PhysicalOffset BackgroundImageGeometry::GetPositioningOffsetForCell(
     return PhysicalOffset(cell.Location().X() - h_border_spacing,
                           cell.Location().Y() - v_border_spacing);
   }
-  if (positioning_box.IsTableRow()) {
+  if (positioning_box.IsLegacyTableRow()) {
     return PhysicalOffset(cell.Location().X() - h_border_spacing, LayoutUnit());
   }
 
@@ -454,6 +455,17 @@ BackgroundImageGeometry::BackgroundImageGeometry(
     positioning_size_override_ =
         GetBackgroundObjectDimensions(cell, ToLayoutBox(*background_object));
   }
+}
+
+// TablesNG background painting.
+BackgroundImageGeometry::BackgroundImageGeometry(const LayoutNGTableCell& cell,
+                                                 PhysicalOffset cell_offset,
+                                                 const LayoutBox& table_part,
+                                                 PhysicalSize table_part_size)
+    : box_(&cell), positioning_box_(&table_part), painting_table_cell_(true) {
+  cell_using_container_background_ = true;
+  element_positioning_area_offset_ = cell_offset;
+  positioning_size_override_ = table_part_size;
 }
 
 void BackgroundImageGeometry::ComputeDestRectAdjustments(

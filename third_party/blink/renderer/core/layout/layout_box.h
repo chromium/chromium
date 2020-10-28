@@ -670,7 +670,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   void AddContentsVisualOverflow(const LayoutRect&);
 
-  void AddVisualEffectOverflow();
+  virtual void AddVisualEffectOverflow();
   LayoutRectOutsets ComputeVisualEffectOverflowOutsets();
   void AddVisualOverflowFromChild(const LayoutBox& child) {
     NOT_DESTROYED();

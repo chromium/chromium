@@ -2557,7 +2557,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
     // This is a weird quirk that table cells paint as children of table rows,
     // but their location have the row's location baked-in.
     // Similar adjustment is done in LayoutTableCell::offsetFromContainer().
-    if (object_.IsTableCell()) {
+    if (object_.IsTableCellLegacy()) {
       LayoutObject* parent_row = object_.Parent();
       DCHECK(parent_row && parent_row->IsTableRow());
       context_.current.paint_offset -=
