@@ -145,13 +145,6 @@
 <translation id="1221359380862872747">Demo girişinde belirtilen URL'leri yükle</translation>
 <translation id="1223789468190631420">Güvenilen kaynaklar için Güvenli Tarama etkinleştirme durumu</translation>
 <translation id="123081309365616809">Cihaza içerik yayınlamayı etkinleştirme</translation>
-<translation id="1231349879329465225">Fast Transition'ın etkinleştirilmesini veya devre dışı bırakılmasını sağlar.
-      Bu, tüm kullanıcılar ve cihazdaki tüm arayüzler için geçerlidir.
-      Fast Transition'ın kullanılabilmesi için hem bu ayarın hem de ağ başına ONC özelliğinin etkinleştirilmesi gerekir.
-      Ayarlandığında, politika bu özelliği devre dışı bırakacak şekilde değiştirilmedikçe Fast Transition devam eder.
-
-      Bu politika ayarlanmazsa veya false (yanlış) değerine ayarlanırsa, Fast Transition kullanılmaz.
-      Doğru (true) değerine ayarlanırsa Fast Transition, kablosuz erişim noktası tarafından desteklendiğinde kullanılır.</translation>
 <translation id="1240722269871366886">Bu politika, kullanıcılar sanal veya fiziksel klavyeleriyle metin yazdıklarında <ph name="PRODUCT_OS_NAME" /> işletim sisteminin emoji önerebilmesini sağlar.
       Bu politika true (doğru) değerine ayarlanırsa özellik etkinleşir ve kullanıcılar bunu değiştirebilir.
       Bu politika varsayılan olarak false (yanlış) değerine ayarlıdır; hiçbir emoji önerisinde bulunulmaz ve kullanıcılar da bunu geçersiz kılamaz.</translation>
@@ -305,18 +298,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Kullanılabilir veri türleri şunlardır: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> ve <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome, <ph name="TIME_TO_LIVE_IN_HOURS" /> saatten daha eski olan belirli türlerdeki verileri düzenli olarak kaldırır. Bu silme işlemi, yalnızca belirli aralıklarla gerçekleştiğinden bazı verilerin geçerlilik süresi biraz daha uzun olabilir, ancak hiçbir zaman <ph name="TIME_TO_LIVE_IN_HOURS" /> olarak beklenen ömrünün iki katından fazla olmaz.
       </translation>
-<translation id="1507382822467487898">
-          Cihaza bir yerleştirme yuvası bağlandığında hangi MAC (medya erişim denetimi) adresinin kullanılacağını yapılandırır.
-
-          Bazı cihaz modellerine bir yerleştirme yuvası bağlandığında, varsayılan olarak cihazı Ethernet ağında tanımlamak için cihazın atanmış yuvasına ait MAC adresi kullanılır. Bu politika, cihaz yuvaya yerleştirilmiş durumdayken MAC adresi kaynağının yönetici tarafından değiştirilmesine izin verir.
-
-          "DeviceDockMacAddress" seçiliyse veya politika ayarlanmamış olarak bırakılırsa, cihazın atanmış yuvasına ait MAC adresi kullanılır.
-
-          "DeviceNicMacAddress" seçiliyse, cihazın NIC (ağ arayüz denetleyicisi) MAC adresi kullanılır.
-
-          "DockNicMacAddress" seçiliyse yuvanın NIC MAC adresi kullanılır.
-
-          Bu ayar kullanıcı tarafından değiştirilemez.</translation>
 <translation id="1509692106376861764">Bu politika, <ph name="PRODUCT_NAME" /> Sürüm 29 itibariyle kullanımdan kaldırılmıştır.</translation>
 <translation id="1512974677514081818">Cihazlara bağlı kurumsal yazıcılar için yapılandırmalar sağlar.
 
@@ -518,13 +499,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Yapılandırılması durumunda, hatalı bir sunucuyla uyumluluğun korunması gerekiyorsa bu politika, "tls1.1" değerine ayarlanabilir. Bu geçici bir tedbirdir ve sunucudaki sorun kısa sürede çözülmelidir.</translation>
 <translation id="1861206724856734193">Veri sızıntısı önleme kuralları listesini ayarlar.</translation>
-<translation id="1864382791685519617"><ph name="PRODUCT_NAME" /> ürününde ağ tahminini etkinleştirir ve kullanıcıların bu ayarı değiştirmesini önler.
-
-      Bu politika, DNS'nin önceden getirilmesini, TCP ve SSL ön bağlantısını ve web sayfalarının önceden oluşturulmasını denetler.
-
-      Bu politikayı ayarladığınızda kullanıcılar <ph name="PRODUCT_NAME" /> ürününde bu ayarı değiştiremez veya geçersiz kılamaz.
-
-      Bu politika ayarlanmadan bırakılırsa ağ tahmini etkinleştirilir, ancak isteyen kullanıcı bu ayarı değiştirebilir.</translation>
 <translation id="1865417998205858223">Temel İzinler</translation>
 <translation id="186719019195685253">Cihaz AC güçle çalışırken boşta kalma süresine ulaşıldığında yapılacak işlem</translation>
 <translation id="1885782360784839335">Tap sekme tanıtım içeriğini göstermeyi etkinleştir</translation>
@@ -683,13 +657,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="2135335181634291106"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> protokolünün ayarlanması, varsayılan arama sağlayıcısının favori simgesi URL'sini belirtir.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> protokolünün ayarlanmadan bırakılması, arama sağlayıcısının simgesi olmadığı anlamına gelir.</translation>
-<translation id="2138449619211358657">Bu politika, <ph name="PRODUCT_OS_NAME" /> ürününün, giriş portalı kimlik doğrulaması için proxy'leri atlamasına olanak tanır.
-
-      Bu politika sadece bir proxy yapılandırıldığında geçerli olur (örneğin, politika aracılığıyla, kullanıcı tarafından chrome://settings bölümünden veya uzantılar tarafından).
-
-      Bu ayarı etkinleştirirseniz, geçerli kullanıcıya yönelik tüm politika ayarları ve kısıtlamalar yoksayılarak, giriş portalı kimlik doğrulama sayfaları (yani giriş portalı oturum açma sayfasından itibaren <ph name="PRODUCT_NAME" /> başarılı bir internet bağlantısı algılayana kadar tüm web sayfaları) ayrı bir pencerede görüntülenir.
-
-      Bu ayarı devre dışı bırakırsanız veya hiç ayarlamazsanız, giriş portalı kimlik doğrulama sayfaları, geçerli kullanıcının proxy ayarları kullanılarak yeni bir (normal) tarayıcı sekmesinde görüntülenir.</translation>
 <translation id="2145735238144543545">Gerekli İstemci Sertifikaları</translation>
 <translation id="214901426630414675">Dupleks yazdırma modunu kısıtla</translation>
 <translation id="2149330464730004005">Renkli yazdırmayı etkinleştir</translation>
@@ -1426,20 +1393,8 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
           Bu politika isteğe bağlıdır. Ayarlanmadan bırakılırsa, hiçbir arama terimi değişikliği yapılmaz.
 
           Bu politika ancak 'DefaultSearchProviderEnabled' politikası etkinleştirilirse dikkate alınır.</translation>
-<translation id="3049248142961638857">DHCP isteklerinde kullanılan cihazın ana makine adını belirler.
-
-      Bu politika boş olmayan bir dizeye ayarlanırsa o dize, DHCP isteği sırasında cihazın ana makine adı olarak kullanılır.
-
-      Dize; <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> değişkenlerini içerebilir. Ana makine adı olarak kullanılmadan önce cihazda bu değişkenlerin yerine değerler getirilir. Bu işlemin sonucunda ortaya çıkan değişikliğin geçerli bir ana makine adı olması gerekir (RFC 1035, bölüm 3.1 uyarınca).
-
-      Bu politika ayarlanmazsa veya değişiklikten sonraki değer, geçerli bir ana makine adı değilse DHCP isteğinde ana makine adı ayarlanmaz. </translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Bu cihazın ilişkili kullanıcılarının ADB başka cihazdan yükleme işlevini kullanmalarına izin verir</translation>
-<translation id="3069958900488014740"><ph name="PRODUCT_NAME" /> ürününde WPAD (Otomatik Web Proxy Keşfi) optimizasyonunu kapatmanıza olanak verir.
-
-      Bu politika yanlış seçeneğine ayarlanırsa WPAD optimizasyonu devre dışı kalır ve <ph name="PRODUCT_NAME" /> ürününün DNS tabanlı WPAD sunucuları için daha uzun süre beklemesine neden olur. Politika ayarlanmazsa veya etkinleştirilirse WPAD optimizasyonu etkinleştirilir.
-
-      Bu politikanın ayarlansa da ayarlanmasa da, WPAD optimizasyonu ayarı kullanıcılar tarafından değiştirilemez.</translation>
 <translation id="3072045631333522102">Perakende modunda oturum açma ekranında kullanılacak ekran koruyucu</translation>
 <translation id="3072788420987305247">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa medya içeriği oynatılırken kullanıcıların cihazı kilitlemesi halinde medya denetimleri kilit ekranında görüntülenir.
 
@@ -2700,7 +2655,6 @@ politikayı geçersiz kılamaz.
           Bu politika ayarlanmadan bırakılırsa engellenebilir karma içerik engellenir ve isteğe bağlı olarak engellenebilir karma içerik yükseltilir, ancak kullanıcıların belirli sitelerde buna izin vermek üzere istisnalar ayarlamasına izin verilir.
 
           Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
-<translation id="5102203758995933166">Kullanıcılara ayrı ayrı uygulanacak ağ yapılandırmasını bir <ph name="PRODUCT_OS_NAME" /> cihazına iletmeye olanak verir. Ağ yapılandırması, Açık Ağ Yapılandırma biçimi tarafından tanımlandığı gibi, JSON biçimli bir dizedir.</translation>
 <translation id="5105313908130842249">Pil gücüyle çalışırken ekran kilidi gecikmesi</translation>
 <translation id="5108031557082757679">Devre dışı bırakılmış kurumsal cihaz yazıcıları</translation>
 <translation id="5109383437323376357">Varyasyonların kullanılabilirliğini belirleme</translation>
@@ -2966,15 +2920,6 @@ politikayı geçersiz kılamaz.
           Bu ayar etkinleştirilirse, uzak bağlantı devam ettiği sürece ana makinelerin fiziksel giriş ve çıkış cihazları devre dışı bırakılır.
 
           Bu ayar devre dışı bırakılırsa veya belirlenmezse, ana makine paylaşıldığı sırada hem yerel, hem de uzak kullanıcılar etkileşimde bulunabilir.</translation>
-<translation id="5396049152026347991">Kullanıcının VPN bağlantılarını yönetmesine izin verir.
-
-      Bu politika yanlış (false) değerine ayarlanırsa, kullanıcının VPN bağlantılarını kesmesini veya değiştirmesini sağlayacak tüm <ph name="PRODUCT_NAME" /> kullanıcı arayüzleri devre dışı bırakılır.
-
-      Bu politika ayarlanmazsa veya doğru (true) değerine ayarlanırsa, kullanıcılar VPN bağlantılarını normal olarak kesebilir veya değiştirebilir.
-
-      VPN bağlantısı VPN uygulaması ile oluşturulduysa, uygulamanın içindeki kullanıcı arayüzü bu politikadan etkilenmez. Dolayısıyla kullanıcı, VPN bağlantısını değiştirmek için uygulamayı kullanmaya devam edebilir.
-
-      Bu politika, yöneticinin başlangıçta VPN bağlantısı kurmaya karar vermesini sağlayan "Her zaman açık VPN" özelliğiyle birlikte kullanılmak üzere tasarlanmıştır.</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> bağlantısını etkinleştir</translation>
 <translation id="5405289061476885481"><ph name="PRODUCT_OS_NAME" /> oturum açma ekranında hangi klavye düzenlerine izin verileceğini yapılandırır.
 
@@ -3064,16 +3009,6 @@ politikayı geçersiz kılamaz.
 <translation id="5475361623548884387">Yazdırmayı etkinleştir</translation>
 <translation id="547601067149622666">Arayan giren reklamların yer aldığı sitelerde reklamlara izin verme</translation>
 <translation id="5483065054530244863">Yerel güven bağlantıları tarafından yayınlanan SHA-1 imzalı sertifikalara izin ver</translation>
-<translation id="5486493714323160905">Bu ayar etkinleştirildiğinde <ph name="PRODUCT_NAME" /> sunucu sertifikalarının doğrulamasını yerleşik sertifika doğrulayıcıyı kullanarak yerine getirir.
-      Bu ayar devre dışı bırakıldığında <ph name="PRODUCT_NAME" /> sunucu sertifikalarının doğrulamasını platform tarafından sağlanan eski sertifika doğrulayıcıyı kullanarak yerine getirir.
-      Bu ayar belirtilmezse yerleşik veya eski sertifika doğrulayıcı kullanılabilir.
-
-      <ph name="PRODUCT_OS_NAME" /> için eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın <ph name="PRODUCT_OS_NAME" /> sürüm 81'de de kaldırılması planlanmıştır.
-
-      Linux'ta eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın Linux sürüm 83 için <ph name="PRODUCT_NAME" /> ürününde de kaldırılması planlanmıştır.
-
-      Mac OS X'te eski sertifika doğrulayıcı desteğinin kaldırılması planlandığından bu politikanın Mac OS X sürüm 87 için<ph name="PRODUCT_NAME" /> ürününde de kaldırılması planlanmıştır.
-      </translation>
 <translation id="5494917047563607689">1 MB'tan daha düşük bir değere ayarlandığında veya ayarlanmamış olarak bırakıldığında, <ph name="PRODUCT_OS_NAME" /> tek bir cihazın birden fazla kullanıcısı tarafından yüklenmek üzere uygulamaları ve uzantıları önbelleğe almak için varsayılan boyutu kullanır. Bu şekilde, uygulamaları ve uzantıları her kullanıcı için yeniden indirme ihtiyacını ortadan kaldırır.</translation>
 <translation id="5499375345075963939">Bu politika yalnızca mağaza modunda etkindir.
 
@@ -3386,11 +3321,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu politika yalnızca zorunlu makine platformu politikası olarak kullanılabilir ve yalnızca makine kapsamı bulut politikalarını etkiler.
       </translation>
 <translation id="5905473632148429217">Online OCSP/CRL denetimlerini etkinleştir</translation>
-<translation id="5906199912611534122">Ağ daraltma işlemini etkinleştirmeye veya devre dışı bırakmaya izin verir.
-      Bu, tüm kullanıcılar ve cihazdaki tüm arayüzler için geçerlidir. Ayarlandığında, politika bu özelliği devre dışı bırakacak şekilde değiştirilmedikçe daraltma devam eder.
-
-      Yanlış (false) değerine ayarlanırsa daraltma olmaz.
-      Doğru (true) değerine ayarlanırsa sunulan yükleme ve indirme hızlarına (kbit/sn.) ulaşmak için sistem daraltılır.</translation>
 <translation id="5907283448020542268"><ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> politikası <ph name="BLOCK_GEOLOCATION_SETTING" /> seçeneğine ayarlanmadığı sürece, <ph name="GLS_ENABLED" /> politikasının ayarlanması Google konum hizmetlerini ilk kurulum sırasında açar. Politikayı <ph name="GLS_DISABLED" /> seçeneğine ayarlamak veya ayarlamadan bırakmak, konum hizmetlerini kurulum sırasında kapalı tutar.
 
       Politikanın <ph name="BR_UNDER_USER_CONTROL" /> seçeneğine ayarlanması, kullanıcılardan Google konum hizmetlerinin kullanılıp kullanılmayacağı bilgisini ister. Kullanıcılar, Google konum hizmetlerini açarsa Android uygulamaları cihaz konumunu aramak için bu hizmetleri kullanıp anonimleştirilmiş konum verilerini Google'a gönderir.
@@ -4135,15 +4065,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev, yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev, yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="6926703471186170050">Uzun kenar dupleks yazdırmayı etkinleştir</translation>
 <translation id="6931242315485576290">Google ile veri senkronizasyonunu devre dışı bırak</translation>
-<translation id="6936894225179401731">Proxy sunucuyla aynı anda yapılabilecek maksimum bağlantı sayısını belirtir.
-
-      Bazı proxy sunucular istemci başına, aynı anda çok sayıda bağlantıyı işleyemez ve bu sorun, bu politikanın daha düşük bir değere ayarlanmasıyla çözülebilir.
-
-      Bu politikanın değeri 100'den az, 6'dan fazla olmalıdır; varsayılan değer ise 32'dir. 
-
-      Bazı Web uygulamalarının askıda kalan GET'lerle çok fazla bağlantı kullandığı bilinmektedir, bu nedenle 32'nin altında bir değer kullanılması, bu tür Web uygulamalarından çok sayıda açık olması halinde, tarayıcı bağlantılarının yavaşlamasına neden olabilir. Varsayılan değerden daha düşük bir değere ayarlamanız sizin açınızdan riskli olacaktır.
-
-      Bu politika ayarlanmadan bırakılırsa, varsayılan değer olan 32 değeri kullanılır.</translation>
 <translation id="6943577887654905793">Mac/Linux tercih adı:</translation>
 <translation id="6944167205014013774">Linux'un kullanımıyla ilgili bilgiler sunucuya geri gönderilir.
 
@@ -4235,7 +4156,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7044883996351280650">Android yedekleme ve geri yükleme hizmetini kontrol etme</translation>
 <translation id="7063895219334505671">Bu sitelerde pop-up'lara izin ver</translation>
 <translation id="706669471845501145">Sitelerin masaüstü bildirimi göstermesine izin ver</translation>
-<translation id="7068108874199666656">Bir <ph name="PRODUCT_OS_NAME" /> cihazın tüm kullanıcıları için uygulanacak ağ yapılandırmasını aktarmaya olanak tanır. Ağ yapılandırması, Açık Ağ Yapılandırması biçimiyle tanımlanmış JSON biçimli bir dizedir.</translation>
 <translation id="7070525176564511548">Her hafta (168 saatte bir) şifre girilmesi gerekiyor</translation>
 <translation id="7072208053150563108">Makine şifresi değişim hızı</translation>
 <translation id="7072567600438630966">Telefon Merkezi'nin etkinleştirilmesine izin ver.</translation>
@@ -4613,8 +4533,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Politika devre dışı bırakılır veya ayarlanmazsa kullanıcılar bu ayarı değiştirebilirler.
 
       Not: Android için bunun yerine <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> politikasını kullanın.</translation>
-<translation id="7511361072385293666">Bu politika doğru seçeneğine ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> ürününde QUIC protokolünün kullanımına izin verilir.
-      Bu politika yanlış seçeneğine ayarlanırsa QUIC protokolünün kullanımına izin verilmez.</translation>
 <translation id="7517845714620372896">Ekran parlaklığı yüzdesini belirler.
           Bu politika ayarlandığında başlangıçtaki ekran parlaklığı, politika değerine ayarlanır, ancak kullanıcı daha sonra bunu değiştirebilir. Otomatik parlaklık özellikleri devre dışı bırakılır.
           Bu politika ayarlanmadığında kullanıcı ekran kontrolleri ve otomatik parlaklık özellikleri etkilenmez.
@@ -4717,7 +4635,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7632724434767231364">GSSAPI kitaplığı adı</translation>
 <translation id="7643883929273267746"><ph name="PRODUCT_NAME" /> içinde görülebilen hesapları kısıtlama</translation>
 <translation id="7648907905084499629">Tüm sitelerde çerezler için <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> davranışını kullan</translation>
-<translation id="7651739109954974365">Veri dolaşımının etkin olup olmayacağını belirler. True olarak ayarlanırsa, veri dolaşımına izin verilir. Hiç ayarlanmazsa veya false değerine ayarlanırsa, veri dolaşımına izin verilmez.</translation>
 <translation id="7657261947024629645">Performans için optimize et.</translation>
 <translation id="7668830462800981702">Politika, Etkin değerine ayarlanırsa kullanıcı adres çubuğuna URL olmayan metin girdiğinde varsayılan arama gerçekleştirilir. Varsayılan arama sağlayıcısını belirtmek için geri kalan arama politikalarını ayarlayın. Bu politikaları boş bırakırsanız kullanıcı varsayılan sağlayıcısını seçebilir. Politika, Devre dışı değerine ayarlanırsa kullanıcı adres çubuğuna URL olmayan metin girdiğinde arama gerçekleşmez.
 
@@ -5118,11 +5035,6 @@ Windows'da politika yapılandırmak için önerilen yol GPO kullanmaktır. Ancak
 <translation id="8259592978873597235">Bu politika True (Doğru) değerine ayarlanırsa veya ayarlanmadan bırakılırsa, video oynatılırken kullanıcı boşta sayılmaz. Böylece hiçbir zaman boşta kalma gecikmesi, ekran karartma gecikmesi, ekran kapatma gecikmesi ve ekran kilitleme gecikmesi süreleri dolmaz ve ilgili işlemler uygulanmaz.
 
           Bu politika False (Yanlış) değerine ayarlanırsa, video etkinliği, kullanıcının boşta olarak algılanmasını önlemez.</translation>
-<translation id="8261272655177284145">Politikayı 1 değerine ayarlamak tüm sitelerin <ph name="FLASH_PLUGIN_NAME" /> eklentisini otomatik olarak çalıştırıp çalıştırmayacağını ayarlamanıza izin verir. Politikayı 2 değerine ayarlamak bu eklentiyi tüm siteler için devre dışı bırakır. Tıkla oynat özelliği <ph name="FLASH_PLUGIN_NAME" /> eklentisinin çalıştırılmasına olanak tanır. Bunu yapmak için kullanıcıların yer tutucuya tıklaması gerekir.
-
-      Politikayı ayarlamadan bırakmak <ph name="BLOCK_PLUGINS_POLICY_NAME" /> politikasını etkin kılar ve kullanıcıların bu ayarı değiştirmesine izin verir.
-
-      Not: Otomatik oynatma özelliği yalnızca <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> politikasında açıkça listelenen alan adlarında kullanılabilir. Otomatik oynatma özelliğini tüm sitelerde etkinleştirmek için bu listeye http://* ve https://* ifadelerini ekleyin.</translation>
 <translation id="8266778278542911985">Politikayı 3 değerine ayarlarsanız web siteleri seri bağlantı noktalarına erişim izni isteyebilir. Politikayı 2 değerine ayarlarsanız seri bağlantı noktalarına erişim izni verilmez.
 
       Politikayı ayarlanmadan bırakırsanız web siteleri erişim izni isteyebilir. Kullanıcılar bu ayarı değiştirebilir.</translation>
@@ -5331,9 +5243,6 @@ Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğin
 <translation id="8544465954173828789">SMS Mesajlarının telefondan Chromebook'a senkronize edilmesine izin ver</translation>
 <translation id="8548832052135586762">Yazdırmayı yalnızca renkli, yalnızca tek renk veya renk modu kısıtlaması yok değerine ayarlar. Ayarlanmayan politika, kısıtlama yokmuş gibi işlenir.</translation>
 <translation id="8566842294717252664">Yeni sekme sayfasında ve uygulama başlatıcıda web mağazasını gizle</translation>
-<translation id="8569734380847633643">
-          Politika false (yanlış) değerine ayarlanırsa, <ph name="PRODUCT_OS_NAME" /> kablosuzu devre dışı bırakır ve kullanıcılar tekrar etkinleştiremezler.
-          Politika true (doğru) olarak ayarlanır veya hiç ayarlanmazsa, kullanıcılar kablosuzu istedikleri gibi etkinleştirebilir veya devre dışı bırakabilirler.</translation>
 <translation id="8571314270766672278">Kanal sürümü değiştiğinde cihazı geri çekip sıfırla, kaydı korumaya çalış</translation>
 <translation id="857369585509260201">Bu politika kullanımdan kaldırılmıştır. Bunun yerine BrowserSignin'i kullanabilirsiniz.
 

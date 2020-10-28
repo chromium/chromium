@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Audio Player</translation>
-<translation id="3984317463833596033">Give Parallels Desktop permission to modify files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="4070370845051020638">Cantonese input method</translation>
 <translation id="4072248638558688893">Tamil keyboard (Phonetic)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">This file type is not supported. Please visit the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> to find an app that can open this type of file.
     <ph name="BEGIN_LINK_HELP" />Learn More<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nothing to see here...</translation>
-<translation id="5857774240076772505">Give Linux apps permission to modify files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="5892290200158927959">French BÉPO keyboard</translation>
 <translation id="5911887972742538906">An error occurred during installation of your Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Copy operation failed, unexpected error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Japanese input (for Japanese keyboard)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Give Linux apps permission to modify files in your Google Drive. Changes will sync to your other devices.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sort options</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google Drive was unable to sync "<ph name="FILENAME" />" right now. Google Drive will try again later.</translation>
 <translation id="8477649328507734757">Spin</translation>
 <translation id="8487700953926739672">Available offline</translation>
-<translation id="8490342535582768689">Give Parallels Desktop permission to modify files in your Google Drive. Changes will sync to your other devices.</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Full screen</translation>
 <translation id="8551494947769799688">Latvian</translation>

@@ -1071,6 +1071,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2220409419896228519">Bæta bókamerkjum við eftirlætis Google forritin þín</translation>
 <translation id="2220529011494928058">Tilkynna vandamál</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
+<translation id="2224337661447660594">Engin nettenging</translation>
 <translation id="2224444042887712269">Þessi stilling tilheyrir <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Breyta heiti möppu</translation>
 <translation id="2225864335125757863">Breyttu þessum aðgangsorðum strax til að halda reikningnum öruggum:</translation>
@@ -6648,7 +6649,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8786697630358316925">Þessi valkostur verður ekki í boði eftir desember. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Leyfa proxy-þjóna fyrir sameiginleg net</translation>
 <translation id="8791534160414513928">Senda beiðnina „Ekki rekja“ með vefumferð</translation>
-<translation id="8794025342371547160">Takmarkaður IP-aðgangur</translation>
 <translation id="879413103056696865">Þegar kveikt er á heitum reit mun <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nýr gluggi</translation>
 <translation id="8797459392481275117">Aldrei þýða þetta vefsvæði</translation>

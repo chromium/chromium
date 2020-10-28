@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Prilepiť</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Prehrávač zvuku</translation>
-<translation id="3984317463833596033">Udeľte aplikácii Parallels Desktop povolenie upravovať súbory v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4070370845051020638">Metóda vstupu kantončiny</translation>
 <translation id="4072248638558688893">Tamilská klávesnica (fonetický prepis)</translation>
@@ -469,14 +468,12 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5850516540536751549">Tento typ súboru nie je podporovaný. Navštívte <ph name="BEGIN_LINK" />Internetový obchod Chrome<ph name="END_LINK" />, kde nájdete aplikáciu, pomocou ktorej môžete otvoriť tento typ súboru.
         <ph name="BEGIN_LINK_HELP" />Ďalšie informácie<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nič tu nie je…</translation>
-<translation id="5857774240076772505">Udeľte aplikáciám pre systém Linux povolenie upravovať súbory v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="5892290200158927959">Francúzska klávesnica BÉPO</translation>
 <translation id="5911887972742538906">Pri inštalácii aplikácie pre Linux sa vyskytla chyba.</translation>
 <translation id="5912396950572065471">Formát</translation>
 <translation id="5913638992615760742">Kopírovanie zlyhalo, neočakávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Zadávanie japončiny (japonská klávesnica)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Udeľte aplikáciám pre systém Linux povolenie meniť súbory na Disku Google. Zmeny sa budú synchronizovať do vašich ďalších zariadení.</translation>
 <translation id="5955954492236143329">Počet položiek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxy</translation>
 <translation id="5982621672636444458">Usporiadať možnosti</translation>
@@ -720,7 +717,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8475647382427415476">Disku Google sa v tejto chvíli nepodarilo synchronizovať súbor <ph name="FILENAME" />. Pokúsi sa o to znova neskôr.</translation>
 <translation id="8477649328507734757">Kruhy</translation>
 <translation id="8487700953926739672">K dispozícii offline</translation>
-<translation id="8490342535582768689">Udeľte aplikácii Parallels Desktop povolenie upravovať súbory na Disku Google. Zmeny sa budú synchronizovať do vašich ďalších zariadení.</translation>
 <translation id="8521441079177373948">Anglická klávesnica</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8551494947769799688">Lotyština</translation>

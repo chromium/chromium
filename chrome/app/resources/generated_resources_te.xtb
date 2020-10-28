@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">చాలా ఎక్కువ సార్లు తప్పు పిన్‌ను నమోదు చేసినందున సెక్యూరిటీ కీ లాక్ చేయబడింది. అన్‌లాక్ చేయడానికి, దానిని తీసివేసి, మళ్లీ ఇన్‌సర్ట్ చేయండి.</translation>
 <translation id="1137589305610962734">తాత్కాలిక డేటా</translation>
 <translation id="1137673463384776352">లింక్‌ను <ph name="APP" />లో తెరువు</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{కొత్త నోటిఫికేషన్}other{# కొత్త నోటిఫికేషన్‌లు}}</translation>
 <translation id="1139343347646843679">Linuxను కాన్ఫిగర్ చేస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="1140351953533677694">మీ బ్లూటూత్‌ను, క్రమానుసార పరికరాలను యాక్సెస్‌ చేయడం</translation>
 <translation id="114036956334641753">ఆడియో మరియు శీర్షికలు</translation>
@@ -1070,6 +1071,7 @@
 <translation id="2220409419896228519">మీకు ఇష్టమైన Google యాప్‌లకు బుక్‌మార్క్‌లను జోడించండి</translation>
 <translation id="2220529011494928058">సమస్యను రిపోర్ట్ చేయండి</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
+<translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="2224444042887712269">ఈ సెట్టింగ్ <ph name="OWNER_EMAIL" />కి సంబంధించినది.</translation>
 <translation id="2224551243087462610">ఫోల్డర్ పేరును సవరించు</translation>
 <translation id="2225864335125757863">మీ ఖాతాను సురక్షితంగా ఉంచడానికి వెంటనే ఈ పాస్‌వర్డ్‌లను మార్చండి:</translation>
@@ -1672,6 +1674,7 @@
 <translation id="291056154577034373">చదవనివి</translation>
 <translation id="2910718431259223434">ఏదో తప్పు జరిగింది. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">కుక్కీ డేటాను సేవ్ చేయడానికి, చదవడానికి సైట్‌లను అనుమతిస్తుంది (సిఫార్సు చేయబడింది)</translation>
+<translation id="2915016304249900997">మీరు స్క్రీన్‌ను షేర్ చేస్తున్నప్పుడు వివరాలు దాచబడతాయి</translation>
 <translation id="2915102088417824677">కార్యకలాపం లాగ్‌ని చూడండి</translation>
 <translation id="2915873080513663243">ఆటోమేటిక్ స్కాన్</translation>
 <translation id="2916073183900451334">ఫారమ్ ఫీల్డ్‌ల లాగా వెబ్‌పేజీ హైలైట్‌ల లింక్‌లపై ట్యాబ్‌ను నొక్కడం</translation>
@@ -2442,6 +2445,7 @@
 <translation id="3819257035322786455">బ్యాకప్</translation>
 <translation id="3819261658055281761">ఈ పరికరానికి దీర్ఘకాల API యాక్సెస్ టోకెన్‌ను నిల్వ చేయడంలో సిస్టమ్ విఫలమైంది.</translation>
 <translation id="3819800052061700452">&amp;పూర్తి స్క్రీన్</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{చూపించు}other{అన్నీ చూపించు}}</translation>
 <translation id="3820749202859700794">SECG దీర్ఘవృత్తాకార వక్రం secp521r1 (NIST P-521గా కూడా పిలువబడుతుంది)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ఒక ఎక్స్‌టెన్షన్ ఆమోదించబడింది}other{# ఎక్స్‌టెన్షన్‌లు ఆమోదించబడ్డాయి}}</translation>
 <translation id="3822559385185038546">ఈ ప్రాక్సీని మీ నిర్వాహకులు అమలు చేసారు</translation>
@@ -2832,6 +2836,7 @@
 <translation id="4285498937028063278">అన్‌పిన్ చేయి</translation>
 <translation id="428565720843367874">ఈ ఫైల్‌ను స్కాన్ చేస్తున్నప్పుడు ఊహించని విధంగా యాంటీ-వైరస్ సాఫ్ట్‌వేర్ విఫలమైంది.</translation>
 <translation id="4287099557599763816">స్క్రీన్ రీడర్</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{చూపించు}other{అన్నీ చూపించు}}</translation>
 <translation id="4289372044984810120">మీ ఖాతాలను ఇక్కడ మేనేజ్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">స్థూలదృష్టి</translation>
 <translation id="4295072614469448764">మీ టెర్మినల్‌లో యాప్ అందుబాటులో ఉంది. మీ లాంచర్‌లో కూడా ఒక చిహ్నం ఉండవచ్చు.</translation>
@@ -3093,6 +3098,7 @@
 <translation id="4590324241397107707">డేటాబేస్ నిల్వ</translation>
 <translation id="4592891116925567110">స్టైలస్ డ్రాయింగ్ యాప్</translation>
 <translation id="4593021220803146968"><ph name="URL" />కు &amp;వెళ్ళండి</translation>
+<translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4595560905247879544">అనువర్తనాలు మరియు పొడిగింపులను నిర్వాహకుడు (<ph name="CUSTODIAN_NAME" />) మాత్రమే సవరించగలరు.</translation>
 <translation id="4596295440756783523">మీకు ఫైల్‌లో ఈ సర్వర్‌లను గుర్తించే ప్రమాణపత్రాలు ఉన్నాయి</translation>
 <translation id="4598556348158889687">నిల్వ నిర్వహణ</translation>
@@ -6146,6 +6152,7 @@
 <translation id="820568752112382238">అత్యంత ఎక్కువగా సందర్శించిన సైట్‌లు</translation>
 <translation id="8206745257863499010">బ్లూసై</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{కొత్త నోటిఫికేషన్}other{# కొత్త నోటిఫికేషన్‌లు}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{డౌన్‌లోడ్ ప్రోగ్రెస్‌లో ఉంది}other{డౌన్‌లోడ్‌లు ప్రోగ్రెస్‌లో ఉన్నాయి}}</translation>
 <translation id="8213449224684199188">ఫోటో మోడ్‌లోకి ప్రవేశించింది</translation>
 <translation id="8213577208796878755">ఇతర పరికరం ఒక‌టి అందుబాటులో ఉంది.</translation>
@@ -6640,7 +6647,6 @@
 <translation id="8786697630358316925">డిసెంబర్ తర్వాత ఈ ఆప్షన్‌కి సపోర్ట్ ఉండదు. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">భాగస్వామ్య నెట్‌వర్క్‌లకు ప్రాక్సీలను అనుమతించండి</translation>
 <translation id="8791534160414513928">మీ బ్రౌజింగ్ రద్దీతో ‘ట్రాక్ చేయవద్దు’ అభ్యర్థనను పంపండి</translation>
-<translation id="8794025342371547160">పరిమితం చేయబడిన IP</translation>
 <translation id="879413103056696865">హాట్‌స్పాట్ ఆన్‌లో ఉన్నప్పుడు, మీ <ph name="PHONE_NAME" /> ఇలా చేస్తుంది:</translation>
 <translation id="8795916974678578410">కొత్త విండో</translation>
 <translation id="8797459392481275117">ఈ సైట్‌ను ఎన్నడూ అనువదించవద్దు</translation>

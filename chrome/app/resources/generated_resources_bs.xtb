@@ -1071,6 +1071,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2220409419896228519">Dodavanje oznaka u vaše omiljene Googleove aplikacije</translation>
 <translation id="2220529011494928058">Prijavite problem</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
+<translation id="2224337661447660594">Nema internetske veze</translation>
 <translation id="2224444042887712269">Vlasnik ove postavke je <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Uređivanje naziva foldera</translation>
 <translation id="2225864335125757863">Odmah promijenite ove lozinke da zaštitite račun:</translation>
@@ -3097,6 +3098,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4590324241397107707">Pohrana baze podataka</translation>
 <translation id="4592891116925567110">Aplikacija za crtanje olovkom</translation>
 <translation id="4593021220803146968">&amp;Idi na <ph name="URL" /></translation>
+<translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4595560905247879544">Aplikacije i ekstenzije može promijeniti samo upravitelj (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">U fajlu imate potvrde koje identificiraju ove servere</translation>
 <translation id="4598556348158889687">Upravljanje pohranom</translation>
@@ -6649,7 +6651,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8786697630358316925">Ova opcija neće biti podržana nakon decembra. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Dozvoli proksi servere za dijeljene mreže</translation>
 <translation id="8791534160414513928">Pošalji zahtjev "Bez praćenja" uz saobraćaj pregledanja</translation>
-<translation id="8794025342371547160">Ograničeni IP</translation>
 <translation id="879413103056696865">Dok je pristupna tačka uključena, telefon <ph name="PHONE_NAME" /> će:</translation>
 <translation id="8795916974678578410">Novi prozor</translation>
 <translation id="8797459392481275117">Nikada ne prevodi ovu web lokaciju</translation>

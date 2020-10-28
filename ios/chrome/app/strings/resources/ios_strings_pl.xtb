@@ -339,6 +339,7 @@ Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, 
 <translation id="4751645464639803239">Nowa karta incognito</translation>
 <translation id="4758977202923349869">Umieść kartę kredytową w tej ramce</translation>
 <translation id="4775879719735953715">Domyślna przeglądarka</translation>
+<translation id="4778644898150334464">Użyj innego hasła</translation>
 <translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>

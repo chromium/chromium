@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3966388904776714213">Lexuesi i audios</translation>
-<translation id="3984317463833596033">Jepi leje Parallels Desktop që të modifikojë skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4070370845051020638">Metoda e hyrjes kantoneze</translation>
 <translation id="4072248638558688893">Tastierë në tamilisht (fonetike)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">Ky lloj skedari nuk mbështetet. Vizito <ph name="BEGIN_LINK" />Dyqanin e uebit të Chrome<ph name="END_LINK" /> për të gjetur një aplikacion që mund ta hapë këtë lloj skedari.
     <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nuk ka asgjë për të parë këtu...</translation>
-<translation id="5857774240076772505">Jepu aplikacioneve të Linux autorizim për të modifikuar skedarë në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="5892290200158927959">Tastiera franceze BÉPO</translation>
 <translation id="5911887972742538906">Ndodhi një gabim gjatë instalimit të aplikacionit tënd për Linux.</translation>
 <translation id="5912396950572065471">Formati</translation>
 <translation id="5913638992615760742">Operacioni i kopjimit dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Hyrje japonisht (për tastierë japoneze)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Jepu aplikacioneve të Linux autorizim për të modifikuar skedarë në "Diskun e Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> artikuj</translation>
 <translation id="5957366693331451795">Pajisjet Chromebox</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">"Disku i Google" nuk mund ta sinkronizonte "<ph name="FILENAME" />" për momentin. "Disku i Google" do të provojë përsëri më vonë.</translation>
 <translation id="8477649328507734757">Rrotullim</translation>
 <translation id="8487700953926739672">Mundësohet jashtë linje</translation>
-<translation id="8490342535582768689">Jepi leje Parallels Desktop që të modifikojë skedarët në "Diskun tënd të Google". Ndryshimet do të sinkronizohen në pajisjet e tua të tjera.</translation>
 <translation id="8521441079177373948">Britanike</translation>
 <translation id="8525306231823319788">Ekrani i plotë</translation>
 <translation id="8551494947769799688">Letonisht</translation>

@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3958548648197196644">কিউই</translation>
 <translation id="3966388904776714213">অডিও প্লেয়ার</translation>
-<translation id="3984317463833596033">Parallels Desktop-কে <ph name="FOLDER_NAME" /> ফোল্ডারে ফাইল পরিবর্তন করার অনুমতি দিন</translation>
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4070370845051020638">ক্যান্টনীজ ইনপুট পদ্ধতি</translation>
 <translation id="4072248638558688893">তামিল কীবোর্ড (ফোনেটিক)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">এই ফাইল প্রকারটি সমর্থিত নয়৷ এই ধরণের ফাইল খুলতে পারে এমন অ্যাপ খুঁজতে অনুগ্রহ করে <ph name="BEGIN_LINK" />Chrome ওয়েব স্টোর<ph name="END_LINK" /> দেখুন৷
         <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">এখানে দেখার মতো কিছু নেই...</translation>
-<translation id="5857774240076772505">Linux অ্যাপকে <ph name="FOLDER_NAME" /> ফোল্ডারের ফাইলগুলি পরিবর্তন করার অনুমতি দিন</translation>
 <translation id="5892290200158927959">ফরাসি BÉPO কীবোর্ড</translation>
 <translation id="5911887972742538906">Linux অ্যাপ্লিকেশন ইনস্টল করার সময়ে সমস্যা হয়েছে।</translation>
 <translation id="5912396950572065471">ফর্ম্যাট</translation>
 <translation id="5913638992615760742">কপি করা যায়নি, অপ্রত্যাশিত সমস্যা হয়েছে: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">জাপানি ইনপুট (জাপানি কীবোর্ডের ক্ষেত্রে)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Linux অ্যাপকে আপনার Google ড্রাইভ-এর ফাইলগুলি পরিবর্তন করার অনুমতি দিন। পরিবর্তনগুলি আপনার অন্যান্য ডিভাইসের সাথে সিঙ্ক হয়ে যাবে।</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টি আইটেম</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">বাছাই বিকল্পগুলি</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">Google ড্রাইভ এই মুহূর্তে "<ph name="FILENAME" />" সিঙ্ক করতে পারেনি। Google ড্রাইভ পরে আবার চেষ্টা করবে।</translation>
 <translation id="8477649328507734757">ঘোরানো</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
-<translation id="8490342535582768689">Parallels Desktop-কে আপনার Google Drive-এ ফাইল পরিবর্তন করার অনুমতি দিন। পরিবর্তনগুলি আপনার অন্যান্য ডিভাইসের সাথে সিঙ্ক হয়ে যাবে।</translation>
 <translation id="8521441079177373948">যুক্তরাজ্য</translation>
 <translation id="8525306231823319788">পূর্ণ স্ক্রীণ</translation>
 <translation id="8551494947769799688">লাটভিও</translation>

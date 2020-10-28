@@ -1071,6 +1071,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2220409419896228519">Gehitu laster-markak gogokoen dituzun Google aplikazioetan</translation>
 <translation id="2220529011494928058">Eman arazo baten berri</translation>
 <translation id="2220572644011485463">PIN kodea edo pasahitza</translation>
+<translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
 <translation id="2224444042887712269">Ezarpen hau <ph name="OWNER_EMAIL" /> erabiltzailearena da.</translation>
 <translation id="2224551243087462610">Editatu karpetaren izena</translation>
 <translation id="2225864335125757863">Aldatu honako pasahitz hauek ahal bezain laster kontua babestuta mantentzeko:</translation>
@@ -6648,7 +6649,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8786697630358316925">Abenduaren ondoren ezingo da erabili aukera hori. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Baimendu proxyak sare partekatuetan</translation>
 <translation id="8791534160414513928">Arakatze-trafikoari buruzko informazioarekin batera, bidali "Ez egin jarraipena" eskaera</translation>
-<translation id="8794025342371547160">IP murriztua</translation>
 <translation id="879413103056696865">Wifi-gunea aktibatuta dagoen bitartean, <ph name="PHONE_NAME" /> telefonoak hau egingo du:</translation>
 <translation id="8795916974678578410">Leiho berria</translation>
 <translation id="8797459392481275117">Ez itzuli inoiz webgune hau</translation>

@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Pemain Audio</translation>
-<translation id="3984317463833596033">Berikan Parallels Desktop kebenaran untuk mengubah fail dalam folder <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="4070370845051020638">Kaedah input Kantonis</translation>
 <translation id="4072248638558688893">Papan kekunci bahasa Tamil (Fonetik)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">Jenis fail ini tidak disokong. Sila lawati<ph name="BEGIN_LINK" />Gedung Web Chrome<ph name="END_LINK" /> untuk mendapatkan apl yang boleh membuka jenis fail ini.
     <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Tiada apa-apa untuk dilihat di sini...</translation>
-<translation id="5857774240076772505">Beri Linux kebenaran apl untuk mengubah fail dalam folder <ph name="FOLDER_NAME" /></translation>
 <translation id="5892290200158927959">Papan kekunci BEPO Perancis</translation>
 <translation id="5911887972742538906">Ralat telah berlaku semasa pemasangan aplikasi Linux anda.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Operasi salin gagal, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Input Jepun (untuk papan kekunci Jepun)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Beri Linux kebenaran apl untuk mengubah fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Pilihan isihan</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google Drive tidak dapat menyegerakkan "<ph name="FILENAME" />" pada masa ini. Google Drive akan mencuba lagi nanti.</translation>
 <translation id="8477649328507734757">Putar</translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
-<translation id="8490342535582768689">Berikan Parallels Desktop kebenaran untuk mengubah fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Skrin penuh</translation>
 <translation id="8551494947769799688">Bahasa Latvia</translation>

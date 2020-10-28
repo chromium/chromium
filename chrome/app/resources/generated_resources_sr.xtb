@@ -1068,6 +1068,7 @@
 <translation id="2220409419896228519">Додајте обележиваче у омиљене Google апликације</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
+<translation id="2224337661447660594">Нема интернета</translation>
 <translation id="2224444042887712269">Власник овог подешавања је <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Измена имена директоријума</translation>
 <translation id="2225864335125757863">Промените ове лозинке одмах да бисте заштитили налог:</translation>
@@ -3094,6 +3095,7 @@
 <translation id="4590324241397107707">Складиштење базе података</translation>
 <translation id="4592891116925567110">Апликација за цртање помоћу писаљке</translation>
 <translation id="4593021220803146968">&amp;Иди на <ph name="URL" /></translation>
+<translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4595560905247879544">Апликације и додатке може да мења само менаџер (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Имате сачуване сертификате који идентификују ове сервере</translation>
 <translation id="4598556348158889687">Управљање меморијским простором</translation>
@@ -6647,7 +6649,6 @@
 <translation id="8786697630358316925">Ова опција више неће бити подржана од децембра. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Дозволи проксије за дељене мреже</translation>
 <translation id="8791534160414513928">Шаљи захтев „Не прати“ уз саобраћај прегледања</translation>
-<translation id="8794025342371547160">Ограничени IP</translation>
 <translation id="879413103056696865">Када је хотспот укључен, <ph name="PHONE_NAME" /> ће:</translation>
 <translation id="8795916974678578410">Нови прозор</translation>
 <translation id="8797459392481275117">Никад не преводи овај сајт</translation>

@@ -1070,6 +1070,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2220409419896228519">Ajouter des favoris à vos applications Google préférées</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2220572644011485463">Code ou mot de passe</translation>
+<translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Modifier le nom du dossier</translation>
 <translation id="2225864335125757863">Modifiez ces mots de passe immédiatement pour protéger votre compte :</translation>
@@ -3093,6 +3094,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4590324241397107707">Stockage des bases de données</translation>
 <translation id="4592891116925567110">Application de dessin avec le stylet</translation>
 <translation id="4593021220803146968">&amp;Accéder à <ph name="URL" /></translation>
+<translation id="4593212453765072419">L'authentification du proxy est requise.</translation>
 <translation id="4595560905247879544">Seul l'administrateur (<ph name="CUSTODIAN_NAME" />) est autorisé à modifier les applications et les extensions.</translation>
 <translation id="4596295440756783523">Certains de vos certificats enregistrés identifient ces serveurs.</translation>
 <translation id="4598556348158889687">Gestion du stockage</translation>
@@ -6645,7 +6647,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8786697630358316925">Cette option ne sera plus disponible après décembre. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Autoriser les proxys pour les réseaux partagés</translation>
 <translation id="8791534160414513928">Envoyer une demande "Interdire le suivi" pendant la navigation</translation>
-<translation id="8794025342371547160">IP limitée</translation>
 <translation id="879413103056696865">Lors de l'utilisation du point d'accès, votre <ph name="PHONE_NAME" /> :</translation>
 <translation id="8795916974678578410">Nouvelle fenêtre</translation>
 <translation id="8797459392481275117">Ne jamais traduire ce site</translation>

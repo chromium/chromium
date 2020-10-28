@@ -1070,6 +1070,7 @@
 <translation id="2220409419896228519">Добавляйте закладки в любимые приложения Google.</translation>
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
+<translation id="2224337661447660594">Нет подключения к Интернету</translation>
 <translation id="2224444042887712269">Этот параметр установлен пользователем <ph name="OWNER_EMAIL" /></translation>
 <translation id="2224551243087462610">Изменить имя папки</translation>
 <translation id="2225864335125757863">Чтобы защитить свой аккаунт, немедленно смените следующие пароли:</translation>
@@ -3095,6 +3096,7 @@
 <translation id="4590324241397107707">Хранилище для базы данных</translation>
 <translation id="4592891116925567110">Приложение для рисования с помощью стилуса</translation>
 <translation id="4593021220803146968">&amp;Перейти по адресу <ph name="URL" /></translation>
+<translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4595560905247879544">Изменять приложения и расширения может только менеджер (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">У вас есть сертификаты, идентифицирующие эти серверы</translation>
 <translation id="4598556348158889687">Управление хранилищем</translation>
@@ -6646,7 +6648,6 @@
 <translation id="8786697630358316925">В конце декабря поддержка этой функции будет прекращена. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Использовать прокси-серверы для общих сетей</translation>
 <translation id="8791534160414513928">Отправлять запрет на отслеживание для исходящего трафика</translation>
-<translation id="8794025342371547160">Ограниченный IP</translation>
 <translation id="879413103056696865">Когда вы включите точку доступа, устройство "<ph name="PHONE_NAME" />":</translation>
 <translation id="8795916974678578410">Новое окно</translation>
 <translation id="8797459392481275117">Никогда не переводить этот сайт</translation>

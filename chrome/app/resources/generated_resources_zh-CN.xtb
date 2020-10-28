@@ -1067,6 +1067,7 @@
 <translation id="2220409419896228519">为您最喜爱的 Google 应用添加书签</translation>
 <translation id="2220529011494928058">报告问题</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
+<translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2224444042887712269">此设置属于<ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">修改文件夹名</translation>
 <translation id="2225864335125757863">为确保您的帐号安全无虞，请立即更改这些密码：</translation>
@@ -2073,6 +2074,7 @@
 <translation id="3428419049384081277">您已登录！</translation>
 <translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3428800329481094896">正在提取 Linux 容器 SSH 密钥</translation>
+<translation id="3429271624041785769">网页内容语言</translation>
 <translation id="3429275422858276529">为此网页添加书签，以便日后查找</translation>
 <translation id="3432227430032737297">移除显示的所有 Cookie</translation>
 <translation id="3432757130254800023">向本地网络上的显示屏发送音频和视频</translation>
@@ -2498,6 +2500,7 @@
 <translation id="3879748587602334249">下载管理器</translation>
 <translation id="3881478300875776315">隐藏部分行</translation>
 <translation id="3882165008614329320">来自摄像头或文件的现有视频</translation>
+<translation id="3884152383786131369">能以多种语言显示的网页内容将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">系统已将您想访问此网站的请求发送给<ph name="NAME" /></translation>
 <translation id="3888550877729210209">使用“<ph name="LOCK_SCREEN_APP_NAME" />”创建记事</translation>
 <translation id="3890064827463908288">您需要开启 Chrome 同步才能使用 Wi-Fi 同步功能</translation>
@@ -3086,6 +3089,7 @@
 <translation id="4590324241397107707">数据库存储</translation>
 <translation id="4592891116925567110">触控笔绘图应用</translation>
 <translation id="4593021220803146968">转到 <ph name="URL" />(&amp;G)</translation>
+<translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4595560905247879544">只有管理员（<ph name="CUSTODIAN_NAME" />）可以修改应用和扩展程序。</translation>
 <translation id="4596295440756783523">您有证书可标识以下服务器</translation>
 <translation id="4598556348158889687">存储空间管理</translation>
@@ -4350,6 +4354,7 @@
 <translation id="6112727384379533756">添加票据</translation>
 <translation id="6112931163620622315">请查看您的手机</translation>
 <translation id="6112952769866305444">修改用户，<ph name="PROFILE_NAME" />，<ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">为 Chrome 浏览器和 <ph name="DEVICE_TYPE" /> 启动器设置默认搜索引擎</translation>
 <translation id="6113942107547980621">要使用 Smart Lock，请切换到您手机上的主要用户个人资料</translation>
 <translation id="6116921718742659598">更改语言和输入设置</translation>
 <translation id="6120205520491252677">将此网页固定到“开始”屏幕...</translation>
@@ -5216,6 +5221,7 @@
 <translation id="7140928199327930795">没有其他可用的设备。</translation>
 <translation id="7141105143012495934">由于无法获取您的帐号详情，因此登录失败了。请与管理员联系或重试。</translation>
 <translation id="7143207342074048698">正在连接</translation>
+<translation id="7143358760238281735">无可用应用</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
@@ -5687,6 +5693,7 @@
 <translation id="7707922173985738739">使用移动数据</translation>
 <translation id="7709152031285164251">失败 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">投射(&amp;C)…</translation>
+<translation id="7712739869553853093">“打印预览”对话框</translation>
 <translation id="7712836429117959503">不明扩展程序（ID：<ph name="EXTENSION_ID" />）</translation>
 <translation id="7714307061282548371">已允许来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="7714464543167945231">证书</translation>
@@ -6633,7 +6640,6 @@
 <translation id="8786697630358316925">12 月之后，此选项将不再受支持。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">允许共享网络使用代理</translation>
 <translation id="8791534160414513928">随浏览流量一起发送“不跟踪”请求</translation>
-<translation id="8794025342371547160">受限 IP</translation>
 <translation id="879413103056696865">开启热点后，您的 <ph name="PHONE_NAME" /> 将会：</translation>
 <translation id="8795916974678578410">打开新的窗口</translation>
 <translation id="8797459392481275117">一律不翻译此网站</translation>

@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">A chave de seguranza bloqueouse porque se introduciu o PIN demasiadas veces. Para desbloqueala, quítaa e introdúcea de novo.</translation>
 <translation id="1137589305610962734">datos temporais</translation>
 <translation id="1137673463384776352">Abrir ligazón na aplicación <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{1 notificación nova}other{# notificacións novas}}</translation>
 <translation id="1139343347646843679">Produciuse un erro ao configurar Linux. Ponte en contacto co teu administrador.</translation>
 <translation id="1140351953533677694">Acceder aos teus dispositivos Bluetooth e en serie</translation>
 <translation id="114036956334641753">Audio e subtítulos</translation>
@@ -1069,6 +1070,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2220409419896228519">Engade marcadores ás túas aplicacións de Google favoritas</translation>
 <translation id="2220529011494928058">Informar dun problema</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
+<translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2224444042887712269">Esta configuración pertence a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar o nome do cartafol</translation>
 <translation id="2225864335125757863">Cambia estes contrasinais de inmediato para protexer a túa conta:</translation>
@@ -1671,6 +1673,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="291056154577034373">SEN LER</translation>
 <translation id="2910718431259223434">Produciuse un erro. Téntao de novo ou ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Permitir que os sitios garden e lean datos de cookies (recomendado)</translation>
+<translation id="2915016304249900997">Os detalles ocúltanse mentres compartes a pantalla</translation>
 <translation id="2915102088417824677">Consultar rexistro de actividade</translation>
 <translation id="2915873080513663243">Exploración automática</translation>
 <translation id="2916073183900451334">Se premes a tecla de tabulación nunha páxina web, destácanse ligazóns e campos de formularios</translation>
@@ -2441,6 +2444,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3819257035322786455">Facer copia de seguranza</translation>
 <translation id="3819261658055281761">O sistema non puido almacenar o token de acceso á API de longo prazo para este dispositivo.</translation>
 <translation id="3819800052061700452">&amp;Pantalla completa</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar todas}}</translation>
 <translation id="3820749202859700794">SECG Elliptic Curve secp521r1 (tamén se denomina NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Aprobouse 1 extensión}other{Aprobáronse # extensións}}</translation>
 <translation id="3822559385185038546">A configuración deste proxy aplícaa o teu administrador</translation>
@@ -2831,6 +2835,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="428565720843367874">O software antivirus fallou inesperadamente durante a exploración deste ficheiro.</translation>
 <translation id="4287099557599763816">Lector de pantalla</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar todas}}</translation>
 <translation id="4289372044984810120">Xestiona as túas contas aquí. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Visión xeral</translation>
 <translation id="4295072614469448764">A aplicación está dispoñible no terminal. Tamén pode haber unha icona no menú de aplicacións.</translation>
@@ -6148,6 +6153,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="820568752112382238">Sitios máis visitados</translation>
 <translation id="8206745257863499010">Tipo blues</translation>
 <translation id="8206859287963243715">Móbil</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{1 notificación nova}other{# notificacións novas}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{A descarga está en curso}other{As descargas están en curso}}</translation>
 <translation id="8213449224684199188">Iniciouse o modo de foto</translation>
 <translation id="8213577208796878755">Noutro dispositivo dispoñible.</translation>
@@ -6642,7 +6648,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8786697630358316925">Esta opción deixará de admitirse a partir de decembro. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Permitir servidores proxy para redes compartidas</translation>
 <translation id="8791534160414513928">Enviar unha solicitude de "Non realizar seguimento" co teu tráfico de navegación</translation>
-<translation id="8794025342371547160">IP restrinxida</translation>
 <translation id="879413103056696865">Mentres a zona wifi estea activada, o teu teléfono <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nova ventá</translation>
 <translation id="8797459392481275117">Non traducir nunca este sitio</translation>

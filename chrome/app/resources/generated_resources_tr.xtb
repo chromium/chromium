@@ -1071,6 +1071,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2220409419896228519">Favori Google Uygulamalarınıza yer işaretleri ekleyin</translation>
 <translation id="2220529011494928058">Sorun bildir</translation>
 <translation id="2220572644011485463">PIN veya şifre</translation>
+<translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="2224444042887712269">Bu ayar <ph name="OWNER_EMAIL" /> kullanıcısına aittir.</translation>
 <translation id="2224551243087462610">Klasör adını düzenle</translation>
 <translation id="2225864335125757863">Hesabınızı güvende tutmak için şu şifreleri hemen değiştirin:</translation>
@@ -3097,6 +3098,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4590324241397107707">Veritabanı depolama</translation>
 <translation id="4592891116925567110">Ekran kalemiyle çizim uygulaması</translation>
 <translation id="4593021220803146968"><ph name="URL" /> adresine &amp;git</translation>
+<translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4595560905247879544">Uygulamalar ve uzantılar sadece yönetici (<ph name="CUSTODIAN_NAME" />) tarafından değiştirilebilir.</translation>
 <translation id="4596295440756783523">Dosyada şu sunucuları tanımlayan sertifikalarınız var</translation>
 <translation id="4598556348158889687">Depolama alanı yönetimi</translation>
@@ -6649,7 +6651,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8786697630358316925">Bu seçenek, Aralık ayından sonra desteklenmeyecektir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Paylaşılan ağlar için proxy'lere izin ver</translation>
 <translation id="8791534160414513928">Göz atma trafiğimle birlikte bir "Do Not Track" isteği gönder</translation>
-<translation id="8794025342371547160">Kısıtlı IP</translation>
 <translation id="879413103056696865">Hotspot açıkken <ph name="PHONE_NAME" /> telefonunuz:</translation>
 <translation id="8795916974678578410">Yeni Pencere</translation>
 <translation id="8797459392481275117">Bu Siteyi Hiçbir Zaman Çevirme</translation>

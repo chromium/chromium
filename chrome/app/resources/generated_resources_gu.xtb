@@ -1066,6 +1066,7 @@
 <translation id="2220409419896228519">તમારી મનપસંદ Google ઍપ પર બુકમાર્ક ઉમેરો</translation>
 <translation id="2220529011494928058">સમસ્યાની જાણ કરો</translation>
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
+<translation id="2224337661447660594">ઇન્ટરનેટ ઍક્સેસ નથી</translation>
 <translation id="2224444042887712269">આ સેટિંગ <ph name="OWNER_EMAIL" /> ની છે.</translation>
 <translation id="2224551243087462610">ફોલ્ડરના નામમાં ફેરફાર કરો</translation>
 <translation id="2225864335125757863">તમારા એકાઉન્ટને સુરક્ષિત રાખવા માટે, આ પાસવર્ડ તાત્કાલિક બદલો:</translation>
@@ -2073,6 +2074,7 @@
 <translation id="3428419049384081277">તમે સાઇન ઇન છો!</translation>
 <translation id="3428747202529429621">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે</translation>
 <translation id="3428800329481094896">Linux કન્ટેનર ssh કી મેળવી રહ્યાં છીએ</translation>
+<translation id="3429271624041785769">વેબના કન્ટેન્ટની ભાષાઓ</translation>
 <translation id="3429275422858276529">થોડા સમય પછી આ પેજને સરળતાથી શોધવા માટે તેને બુકમાર્ક કરો</translation>
 <translation id="3432227430032737297">બતાવેલ તમામ દૂર કરો</translation>
 <translation id="3432757130254800023">સ્થાનિક નેટવર્ક પર બતાવવા માટે ઑડિયો અને વીડિયો મોકલો</translation>
@@ -2498,6 +2500,7 @@
 <translation id="3879748587602334249">ડાઉનલોડ મેનેજર</translation>
 <translation id="3881478300875776315">ઓછી પંક્તિઓ બતાવો</translation>
 <translation id="3882165008614329320">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાં છે તે વીડિયો</translation>
+<translation id="3884152383786131369">એકથી વધારે ભાષાઓમાં ઉપલબ્ધ વેબ કન્ટેન્ટ આ સૂચિમાંની પહેલી સપોર્ટેડ ભાષાનો ઉપયોગ કરશે. આ પસંદગીઓને તમારા બ્રાઉઝર સેટિંગ સાથે સિંક કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">આ સાઇટને ઍક્સેસ કરવાની તમારી વિનંતી <ph name="NAME" /> ને મોકલવામાં આવી છે</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> વડે નોંધ લેવી</translation>
 <translation id="3890064827463908288">વાઇ-ફાઇ સિંકનો ઉપયોગ કરવા માટે 'Chrome સિંક' ચાલુ કરો</translation>
@@ -3087,6 +3090,7 @@
 <translation id="4590324241397107707">ડેટાબેઝ સ્ટોરેજ</translation>
 <translation id="4592891116925567110">સ્ટાઇલસ વડે ડ્રોઇંગ ઍપના સેટિંગ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> &amp;ના પર જાઓ</translation>
+<translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4595560905247879544">ઍપ્લિકેશન્સ અને એક્સટેન્શન્સને માત્ર સંચાલક (<ph name="CUSTODIAN_NAME" />) દ્વારા જ સંશોધિત કરી શકાય છે.</translation>
 <translation id="4596295440756783523">તમારી પાસે ફાઇલ પર પ્રમાણપત્રો છે જે આ સર્વર્સને ઓળખે છે</translation>
 <translation id="4598556348158889687">સ્ટોરેજ સંચાલન</translation>
@@ -4353,6 +4357,7 @@ USB ડિવાઇસ</translation>
 <translation id="6112727384379533756">ટિકિટ ઉમેરો</translation>
 <translation id="6112931163620622315">તમારો ફોન તપાસો</translation>
 <translation id="6112952769866305444">વ્યક્તિના <ph name="PROFILE_NAME" />, <ph name="USERNAME" />માં ફેરફાર કરો</translation>
+<translation id="6113434369102685411">Chrome બ્રાઉઝર અને <ph name="DEVICE_TYPE" /> લૉન્ચર માટે તમારું ડિફૉલ્ટ શોધ એન્જિન સેટ કરો</translation>
 <translation id="6113942107547980621">Smart Lockનો ઉપયોગ કરવા માટે, તમારા ફોન પર પ્રાથમિક વપરાશકર્તા પ્રોફાઇલ પર સ્વિચ કરો</translation>
 <translation id="6116921718742659598">ભાષા અને ઇનપુટ સેટિંગ્સ બદલો</translation>
 <translation id="6120205520491252677">પ્રારંભ સ્ક્રીન પર આ પૃષ્ઠ પિન કરો...</translation>
@@ -5219,6 +5224,7 @@ USB ડિવાઇસ</translation>
 <translation id="7140928199327930795">કોઈ અન્ય ઉપલબ્ધ ઉપકરણો નથી.</translation>
 <translation id="7141105143012495934">સાઇન ઇન નિષ્ફળ થયું કારણ કે તમારી એકાઉન્ટ વિગતો પાછી મેળવી શકાઈ નથી. કૃપા કરીને તમારા એડમિનનો સંપર્ક કરો અથવા ફરી પ્રયાસ કરો.</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
+<translation id="7143358760238281735">કોઈ ઍપ ઉપલબ્ધ નથી</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
 <translation id="7149893636342594995">છેલ્લા 24 કલાક</translation>
@@ -5690,6 +5696,7 @@ USB ડિવાઇસ</translation>
 <translation id="7707922173985738739">મોબાઇલ ડેટાનો ઉપયોગ કરો</translation>
 <translation id="7709152031285164251">નિષ્ફળ થયું - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;કાસ્ટ કરો...</translation>
+<translation id="7712739869553853093">પ્રિન્ટ પ્રીવ્યૂ માટેનો સંવાદ</translation>
 <translation id="7712836429117959503"><ph name="EXTENSION_ID" /> ID ધરાવતું અજાણ્યું એક્સ્ટેંશન</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> તરફથી કુકીને મંજૂરી છે</translation>
 <translation id="7714464543167945231">પ્રમાણપત્ર</translation>
@@ -6631,7 +6638,6 @@ USB ડિવાઇસ</translation>
 <translation id="8786697630358316925">આ વિકલ્પને ડિસેમ્બર પછી સપોર્ટ આપવામાં આવશે નહીં. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">શેર કરેલા નેટવર્ક્સ માટે પ્રોક્સીસને મંજૂરી આપો</translation>
 <translation id="8791534160414513928">તમારા બ્રાઉઝિંગ ટ્રાફિક સાથે એક ‘ટ્રૅક કરશો નહીં’ વિનંતી મોકલો</translation>
-<translation id="8794025342371547160">પ્રતિબંધિત IP</translation>
 <translation id="879413103056696865">હોટસ્પોટ ચાલુ હોય તે વખતે, તમારો <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">નવી વિંડો</translation>
 <translation id="8797459392481275117">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>

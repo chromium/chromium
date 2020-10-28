@@ -145,13 +145,6 @@
 <translation id="1221359380862872747">Bei Demo-Anmeldung angegebene URLs laden</translation>
 <translation id="1223789468190631420">Safe Browsing-Aktivierungsstatus für vertrauenswürdige Quellen</translation>
 <translation id="123081309365616809">Streamen von Inhalten an das Gerät aktivieren</translation>
-<translation id="1231349879329465225">Ermöglicht die Aktivierung oder Deaktivierung von "Fast Transition".
-      Diese Richtlinie gilt für alle Nutzer und alle Oberflächen auf diesem Gerät.
-      Damit "Fast Transition" verwendet werden kann, müssen sowohl diese Einstellung als auch die netzwerkeigene ONC-Eigenschaft aktiviert sein.
-      Nach dem Festlegen bleibt "Fast Transition" so lange bestehen, bis die Richtlinie wieder deaktiviert wird.
-
-      Ist diese Richtlinie nicht festgelegt oder auf "false" gesetzt, wird "Fast Transition" nicht verwendet.
-      Ist die Richtlinie auf "true" gesetzt, wird "Fast Transition" verwendet, wenn dies vom WLAN-Zugangspunkt unterstützt wird.</translation>
 <translation id="1240722269871366886">Diese Richtlinie ermöglicht <ph name="PRODUCT_OS_NAME" />, Emojis vorzuschlagen, wenn Nutzer Text mit ihrer Bildschirmtastatur oder physischen Tastatur eingeben.
       Wenn diese Richtlinie auf "true" gesetzt ist, wird die Funktion aktiviert und kann vom Nutzer geändert werden.
       Standardmäßig ist diese Richtlinie auf "false" gesetzt. Es werden keine Emojis vorgeschlagen und Nutzer können diese Einstellung nicht ändern.</translation>
@@ -306,18 +299,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
       Die folgenden Datentypen sind verfügbar: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> und <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome entfernt regelmäßig Daten ausgewählter Typen, die älter sind als <ph name="TIME_TO_LIVE_IN_HOURS" />. Da Daten nur in bestimmten Intervallen gelöscht werden, können bestimmte Daten etwas länger bestehen bleiben, aber nie mehr als doppelt so lang wie die erwartete(n) <ph name="TIME_TO_LIVE_IN_HOURS" />.
       </translation>
-<translation id="1507382822467487898">
-          Hiermit wird konfiguriert, welche MAC-Adresse (Media Access Control) verwendet wird, wenn das Gerät angedockt wird.
-
-          Beim Verbinden bestimmter Gerätemodelle mit einem Dock wird standardmäßig die eingetragene Dock-MAC-Adresse zur Identifikation des Geräts im Ethernet-Netzwerk verwendet. Mithilfe dieser Richtlinie kann der Administrator bei angedocktem Gerät die Quelle der MAC-Adresse ändern.
-
-          Wenn "DeviceDockMacAddress" ausgewählt ist oder die Richtlinie nicht festgelegt wurde, wird die eingetragene Dock-MAC-Adresse des Geräts verwendet.
-
-          Ist "DeviceNicMacAddress" festgelegt, dann wird die MAC-Adresse der NIC (Netzwerkkarte) des Geräts verwendet.
-
-          Ist "DockNicMacAddress" ausgewählt, dann wird die MAC-Adresse der Dock-NIC verwendet.
-
-          Diese Einstellung kann vom Nutzer nicht geändert werden.</translation>
 <translation id="1509692106376861764">Diese Richtlinie wird ab <ph name="PRODUCT_NAME" />-Version 29 nicht mehr verwendet.</translation>
 <translation id="1512974677514081818">Stellt Konfigurationen für gerätegebundene Unternehmensdrucker bereit.
 
@@ -515,13 +496,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
       Wenn die Kompatibilität mit einem fehlerträchtigen Server aufrechterhalten werden muss, kann "tls1.1" eingestellt werden. Hierbei handelt es sich um einen provisorischen Wert und der Server sollte schnell repariert werden.</translation>
 <translation id="1861206724856734193">Legt eine Liste mit Regeln zur Vermeidung von Datenlecks fest.</translation>
-<translation id="1864382791685519617">Durch diese Richtlinie wird die Netzwerkvorhersage in <ph name="PRODUCT_NAME" /> aktiviert und es wird verhindert, dass die Einstellung von Nutzern geändert wird.
-
-      Hiermit werden DNS-Vorabruf, TCP- und SSL-Vorverbindung sowie das Pre-Rendering von Webseiten gesteuert.
-
-      Wenn Sie diese Richtlinie festlegen, können Nutzer diese Einstellung in <ph name="PRODUCT_NAME" /> nicht ändern oder überschreiben.
-
-      Ist die Richtlinie nicht konfiguriert, wird die Netzwerkvorhersage aktiviert, kann jedoch vom Nutzer geändert werden.</translation>
 <translation id="1865417998205858223">Hauptberechtigungen</translation>
 <translation id="186719019195685253">Auszuführende Aktion beim Erreichen der Leerlaufverzögerung während des Wechselstrombetriebs</translation>
 <translation id="1885782360784839335">Einblendung von Werbung auf dem gesamten Tab aktivieren</translation>
@@ -679,13 +653,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="2135335181634291106">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />" die URL des Favicons des Standardsuchanbieters an.
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />" nicht konfiguriert, wird kein Symbol für den Suchanbieter angezeigt.</translation>
-<translation id="2138449619211358657">Anhand dieser Richtlinie können Proxys zu Zwecken der Captive Portal-Authentifizierung von <ph name="PRODUCT_OS_NAME" /> umgangen werden.
-
-      Diese Richtlinie ist nur wirksam, wenn ein Proxy konfiguriert ist, z. B. über eine Richtlinie, vom Nutzer unter "chrome://settings" oder durch Erweiterungen.
-
-      Wenn Sie diese Einstellung aktivieren, werden alle Captive Portal-Authentifizierungsseiten – also alle Webseiten ab der Anmeldeseite, bis <ph name="PRODUCT_NAME" /> eine funktionierende Internetverbindung erkennt – in einem separaten Fenster angezeigt und alle Richtlinieneinstellungen und -beschränkungen für den aktuellen Nutzer ignoriert.
-
-      Wenn Sie diese Einstellung deaktivieren oder nicht konfigurieren, werden alle Captive Portal-Authentifizierungsseiten auf einem regulären neuen Browsertab angezeigt und es kommen die Proxyeinstellungen des aktuellen Nutzers zum Einsatz.</translation>
 <translation id="2145735238144543545">Erforderliche Clientzertifikate</translation>
 <translation id="214901426630414675">Duplexdruck einschränken</translation>
 <translation id="2149330464730004005">Farbdruck einschränken</translation>
@@ -1411,20 +1378,8 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
           Diese Richtlinie ist optional. Wenn sie nicht konfiguriert wird, erfolgt keine Ersetzung der Suchbegriffe.
 
           Diese Richtlinie wird nur angewendet, wenn die Richtlinie "DefaultSearchProviderEnabled" aktiviert ist.</translation>
-<translation id="3049248142961638857">Damit kann der Hostname des in DHCP-Anfragen verwendeten Geräts festgelegt werden.
-
-      Wird für diese Richtlinie ein String definiert, der nicht leer ist, dann wird er während der DHCP-Anfrage als Gerätehostname verwendet.
-
-      Der String kann die Variablen <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" /> und <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> enthalten, die im Gerät durch Werte ersetzt werden, bevor sie als Hostname zum Einsatz kommen. Das Ergebnis muss ein gültiger Hostname gemäß RFC 1035, Abschnitt 3.1 sein.
-
-      Wenn diese Richtlinie nicht konfiguriert oder der Wert nach dem Ersetzen kein gültiger Hostname ist, wird in der DHCP-Anfrage kein Hostname festgelegt. </translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Nutzern dieses Geräts erlauben, ADB-Sideloading zu verwenden</translation>
-<translation id="3069958900488014740">Erlaubt die Deaktivierung der WPAD-Optimierung (Web Proxy Auto-Discovery) in <ph name="PRODUCT_NAME" />.
-
-      Ist diese Richtlinie auf "false" gesetzt, ist die WPAD-Optimierung deaktiviert, sodass <ph name="PRODUCT_NAME" /> länger auf DNS-basierte WPAD-Server warten muss. Wenn die Richtlinie aktiviert oder nicht festgelegt ist, ist die WPAD-Optimierung aktiviert.
-
-      Unabhängig davon, ob und wie die Richtlinie festgelegt ist, kann die WPAD-Optimierung nicht von Nutzern verändert werden.</translation>
 <translation id="3072045631333522102">Bildschirmschoner für die Anmeldeseite im Händlermodus</translation>
 <translation id="3072788420987305247">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die Mediensteuerung auf dem Sperrbildschirm angezeigt, wenn Nutzer das Gerät sperren, während Medien wiedergegeben werden.
 
@@ -2663,7 +2618,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
           Wenn Sie diese Richtlinie nicht konfigurieren, werden blockierbare gemischte Inhalte gesperrt und optional blockierbare gemischte Inhalte auf HTTPS umgestellt. Nutzer können jedoch Ausnahmen für bestimmte Websites festlegen.
 
           Genaue Informationen zu gültigen URL-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="5102203758995933166">Diese Richtlinie ermöglicht, Netzwerkkonfigurationen auf <ph name="PRODUCT_OS_NAME" />-Geräten für einzelne Nutzer zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des Open Network Configuration-Formats entspricht.</translation>
 <translation id="5105313908130842249">Verzögerung für die Bildschirmsperre im Akkubetrieb</translation>
 <translation id="5108031557082757679">Deaktivierte, an Geräte gebundene Unternehmensdrucker</translation>
 <translation id="5109383437323376357">Die Verfügbarkeit von Variationen bestimmen</translation>
@@ -2920,15 +2874,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
           Wenn diese Einstellung aktiviert ist, werden die physischen Ein- und Ausgabegeräte des Hosts bei bestehender Remote-Verbindung deaktiviert.
 
           Wenn diese Einstellung deaktiviert oder nicht festgelegt ist, können lokale und Remote-Nutzer mit dem Host interagieren, sofern dieser freigegeben ist.</translation>
-<translation id="5396049152026347991">Zulassen, dass der Nutzer VPN-Verbindungen verwaltet.
-
-      Wenn diese Richtlinie auf "false" festgelegt ist, werden alle <ph name="PRODUCT_NAME" />-Benutzeroberflächen deaktiviert, über die der Nutzer die VPN-Verbindungen trennen oder modifizieren könnte.
-
-      Wenn diese Richtlinie nicht oder auf "true" festgelegt ist, kann der Nutzer VPN-Verbindungen wie gewöhnlich trennen oder modifizieren.
-
-      Wenn die VPN-Verbindung innerhalb einer VPN-App erstellt wird, hat diese Richtlinie keine Auswirkungen auf die Benutzeroberfläche der App. So könnte der Nutzer die App auch weiterhin zum Modifizieren der VPN-Verbindung verwenden.
-
-      Diese Richtlinie soll gemeinsam mit der Funktion "Durchgehend aktives VPN" verwendet werden, mit der der Administrator festlegen kann, ob beim Start eine VPN-Verbindung hergestellt werden soll.</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> aktivieren</translation>
 <translation id="5405289061476885481">Konfiguriert, welche Tastaturlayouts auf der <ph name="PRODUCT_OS_NAME" />-Anmeldeseite erlaubt sind.
 
@@ -3011,16 +2956,6 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 <translation id="5475361623548884387">Drucken aktivieren</translation>
 <translation id="547601067149622666">Werbung auf Websites mit aufdringlichen Werbeanzeigen nicht zulassen</translation>
 <translation id="5483065054530244863">SHA-1-signierte Zertifikate zulassen, die von lokalen Vertrauensankern ausgestellt werden</translation>
-<translation id="5486493714323160905">Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
-      Ist sie deaktiviert, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mit der von der Plattform stammenden Legacy-Zertifikatsprüfung.
-      Wenn diese Einstellung nicht konfiguriert ist, wird die integrierte oder die Legacy-Zertifikatsprüfung verwendet.
-
-      Diese Richtlinie wird voraussichtlich in Version 81 von <ph name="PRODUCT_OS_NAME" /> entfernt, wenn auch die Legacy-Zertifikatsprüfung in <ph name="PRODUCT_OS_NAME" /> voraussichtlich nicht mehr unterstützt wird.
-
-      Außerdem wird sie voraussichtlich in Version 83 von <ph name="PRODUCT_NAME" /> für Linux entfernt, wenn auch die Legacy-Zertifikatsprüfung unter Linux voraussichtlich nicht mehr unterstützt wird.
-
-      Voraussichtlich wird sie auch in Version 87 von <ph name="PRODUCT_NAME" /> für Mac OS X entfernt, wenn die Legacy-Zertifikatsprüfung unter Mac OS X voraussichtlich nicht mehr unterstützt wird.
-      </translation>
 <translation id="5494917047563607689">Wenn Sie einen Wert unter 1 MB oder gar keinen Wert festlegen, verwendet <ph name="PRODUCT_OS_NAME" /> beim Installieren durch mehrere Nutzer auf demselben Gerät die Standardgröße zum Speichern von Apps und Erweiterungen im Cache. Hierdurch wird ein erneutes Herunterladen für jeden Nutzer vermieden.</translation>
 <translation id="5499375345075963939">Diese Richtlinie ist nur im Händlermodus aktiv.
 
@@ -3334,12 +3269,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Diese Richtlinie ist nur als erforderliche Computer-Plattformrichtlinie verfügbar und wirkt sich lediglich auf Cloudrichtlinien auf Computern aus.
       </translation>
 <translation id="5905473632148429217">OCSP/CRL-Online-Prüfungen aktivieren</translation>
-<translation id="5906199912611534122">Ermöglicht die Aktivierung oder Deaktivierung der Netzwerkbegrenzung.
-      Diese Richtlinie gilt für alle Nutzer und alle Oberflächen auf diesem Gerät.
-      Nachdem die Richtlinie festgelegt wurde, kann die Begrenzung nur durch Deaktivierung der Richtlinie aufgehoben werden.
-
-      Wird die Richtlinie auf "false" gesetzt, wird keine Begrenzung festgelegt.
-      Wenn sie auf "true" gesetzt wird, wird das System begrenzt, damit die angegebenen Upload- und Downloadwerte in kbit/s eingehalten werden.</translation>
 <translation id="5907283448020542268">Wenn die Einstellung "<ph name="GLS_ENABLED" />" gewählt und die Richtlinie "<ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" />" nicht auf "<ph name="BLOCK_GEOLOCATION_SETTING" />" gesetzt ist, sind die Standortdienste von Google während der Ersteinrichtung aktiviert. Wenn die Richtlinie auf "<ph name="GLS_DISABLED" />" gesetzt ist oder keine Einstellung gewählt wird, sind die Standortdienste während der Einrichtung deaktiviert.
 
       Ist die Richtlinie auf "<ph name="BR_UNDER_USER_CONTROL" />" festgelegt, werden Nutzer dazu aufgefordert anzugeben, ob sie die Standortdienste von Google verwenden möchten oder nicht. Wenn sie die Standortdienste aktivieren, ermitteln Android-Apps den Standort des Geräts und senden Google anonyme Standortdaten.
@@ -4074,15 +4003,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="6926703471186170050">Duplexdruck (lange Kante) aktivieren</translation>
 <translation id="6931242315485576290">Synchronisierung der Daten mit Google deaktivieren</translation>
-<translation id="6936894225179401731">Legt die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver fest.
-
-      Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird.
-
-      Der Wert sollte kleiner als 100 und größer als 6 sein. Der Standardwert beträgt 32.
-
-      Einige Web-Apps nutzen viele Verbindungen mit hängenden GETs. Daher kann ein Wert unter 32 dazu führen, dass der Browser hängt, wenn zu viele solcher Web-Apps geöffnet sind. Wenn Sie einen Wert unter dem Standardwert festlegen, geschieht dies auf eigenes Risiko.
-
-      Ist diese Richtlinie nicht konfiguriert, so kommt der Standardwert von 32 zum Einsatz.</translation>
 <translation id="6943577887654905793">Bevorzugter Mac-/Linux-Name:</translation>
 <translation id="6944167205014013774">Durch diese Richtlinie werden Informationen zur Nutzung von Linux-Apps an den Server
       zurückgesendet.
@@ -4174,7 +4094,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7063895219334505671">Pop-ups auf diesen Websites zulassen</translation>
 <translation id="706669471845501145">Anzeige von Desktop-Benachrichtigungen durch Websites zulassen</translation>
-<translation id="7068108874199666656">Diese Richtlinie ermöglicht, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des Open Network Configuration-Formats entspricht.</translation>
 <translation id="7070525176564511548">Passworteingabe wöchentlich erforderlich (alle 168 Stunden)</translation>
 <translation id="7072208053150563108">Änderungsrate des Computerpassworts</translation>
 <translation id="7072567600438630966">Aktivieren von Phone Hub zulassen.</translation>
@@ -4547,8 +4466,6 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
       Ist sie deaktiviert oder nicht konfiguriert, können Nutzer diese Einstellung ändern.
 
       Hinweis: Verwenden Sie für Android stattdessen die Richtlinie "<ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />".</translation>
-<translation id="7511361072385293666">Wenn diese Richtlinie auf "true" eingestellt oder nicht konfiguriert ist, ist die Verwendung des QUIC-Protokolls in <ph name="PRODUCT_NAME" /> zulässig.
-      Ist die Richtlinie auf "false" eingestellt, ist die Verwendung des QUIC-Protokolls nicht zulässig.</translation>
 <translation id="7517845714620372896">Gibt die Displayhelligkeit in % an.
 Wird diese Richtlinie festgelegt, wird die ursprüngliche Displayhelligkeit an den Richtlinienwert angepasst. Der Nutzer kann dies später wieder ändern. Funktionen zur automatischen Anpassung der Displayhelligkeit sind deaktiviert.
 Wird diese Richtlinie nicht festgelegt, hat dies keine Auswirkungen auf die Steuerung des Displays durch den Nutzer und auf die Funktionen zur automatischen Anpassung der Displayhelligkeit.
@@ -4650,7 +4567,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 <translation id="7632724434767231364">Name der GSSAPI-Bibliothek</translation>
 <translation id="7643883929273267746">Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> einschränken</translation>
 <translation id="7648907905084499629">Verhalten "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />" für alle Cookies auf allen Websites verwenden</translation>
-<translation id="7651739109954974365">Legt fest, ob Daten-Roaming für das Gerät aktiviert werden soll. Bei Einstellung auf "true" ist das Roaming erlaubt. Ist die Richtlinie nicht konfiguriert oder auf "false" gesetzt, ist kein Roaming verfügbar.</translation>
 <translation id="7657261947024629645">Für eine optimale Leistung.</translation>
 <translation id="7668830462800981702">Ist diese Richtlinie aktiviert, wird eine Standardsuche durchgeführt, wenn der Nutzer Text in die Adressleiste eingibt, bei dem es sich nicht um eine URL handelt. Wenn Sie den Standardsuchanbieter angeben möchten, legen Sie die restlichen Richtlinien für die Standardsuche fest. Tun Sie das nicht, kann der Nutzer den Standardanbieter selbst auswählen. Ist diese Richtlinie deaktiviert, wird keine Suche durchgeführt, wenn der Nutzer Text in die Adressleiste eingibt, bei dem es sich nicht um eine URL handelt.
 
@@ -5039,11 +4955,6 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8259592978873597235">Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird der Nutzer während der Wiedergabe von Videos als aktiv angesehen. Dadurch wird verhindert, dass der Countdown für Inaktivität sowie zum Dimmen, Abschalten oder Sperren des Bildschirms eingeleitet wird und nach Ablauf der Zeit entsprechende Maßnahmen ergriffen werden.
 
           Ist diese Richtlinie auf "false" gesetzt, gilt der Nutzer trotz Videowiedergabe als inaktiv.</translation>
-<translation id="8261272655177284145">Wenn die Richtlinie auf "1" gesetzt ist, können Sie festlegen, ob das Plugin-in <ph name="FLASH_PLUGIN_NAME" /> auf allen Websites automatisch ausgeführt werden soll. Ist die Richtlinie auf "2" gesetzt, wird dieses Plug-in auf allen Websites blockiert. Mit "Click-to-Play" wird erlaubt, dass das Plug-in <ph name="FLASH_PLUGIN_NAME" /> ausgeführt wird, der Nutzer muss jedoch den Platzhalter anklicken, um die Ausführung zu starten.
-
-      Ist diese Richtlinie nicht konfiguriert, wird <ph name="BLOCK_PLUGINS_POLICY_NAME" /> verwendet und Nutzer können diese Einstellung ändern.
-
-      Hinweis: Die automatische Wiedergabe ist nur für Domains aktiviert, die in der Richtlinie <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> angegeben sind. Wenn Sie die automatische Wiedergabe für alle Websites aktivieren möchten, fügen Sie "http://*" und "https://*" zu dieser Liste hinzu.</translation>
 <translation id="8266778278542911985">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Zugriff auf serielle Ports bitten. Ist die Richtlinie auf "2" gesetzt, wird der Zugriff auf serielle Ports blockiert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
@@ -5258,9 +5169,6 @@ Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
 <translation id="8548832052135586762">Damit wird festgelegt, ob nur in Farbe, nur in Schwarz-Weiß oder ohne Farbmodusbeschränkung gedruckt wird. Ist die Richtlinie nicht konfiguriert, wird keine Einschränkung angewendet.</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
-<translation id="8569734380847633643">
-          Wenn diese Richtlinie auf "false" gesetzt ist, wird WLAN unter <ph name="PRODUCT_OS_NAME" /> deaktiviert und Nutzer können die Funktion nicht wieder aktivieren.
-          Ist sie auf "true" festgelegt oder nicht konfiguriert, haben Nutzer die Möglichkeit, WLAN nach Bedarf zu aktivieren oder zu deaktivieren.</translation>
 <translation id="8571314270766672278">Bei Versionsdowngrade ein Rollback durchführen und das Gerät zurücksetzen; dabei die Registrierung möglichst erhalten</translation>
 <translation id="857369585509260201">Diese Richtlinie wird nicht mehr angeboten. Sie können stattdessen "BrowserSignin" verwenden.
 

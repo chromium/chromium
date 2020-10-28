@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
 <translation id="3958548648197196644">NOTHING</translation>
 <translation id="3966388904776714213">အသံဖွင့် ကိရိယာ</translation>
-<translation id="3984317463833596033"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Parallels Desktop အား ပြုပြင်ခွင့်ပေးပါ</translation>
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4070370845051020638">ကွမ်တုံးထည့်သွင်းမှုနည်းလမ်း</translation>
 <translation id="4072248638558688893">တမီးလ် ကီးဘုတ် (Phonetic)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">ဒီဖိုင် ပုံစံကို မပံု့ပိုးပါ။ ကျေးဇူးပြုပြီး <ph name="BEGIN_LINK" />Chrome ဝဘ် စတိုး<ph name="END_LINK" />ကို ဝင်ကြည့်လျက် ဒီဖိုင် ပုံစံကို ဖွင့်ပေးနိုင်သည့် အက်ပ်ကို ရှာယူပါ။
     <ph name="BEGIN_LINK_HELP" />ပိုမို လေ့လာရန်<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ဤတွင် ကြည့်စရာ မရှိပါ...</translation>
-<translation id="5857774240076772505"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Linux အား ပြုပြင်ခွင့်ပေးပါ</translation>
 <translation id="5892290200158927959">ပြင်သစ် BÉPO ကီးဘုတ်</translation>
 <translation id="5911887972742538906">သင်၏ Linux အပလီကေးရှင်းကို ထည့်သွင်းရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="5912396950572065471">ဖော်မက်</translation>
 <translation id="5913638992615760742">မိတ္တူကူးယူ၍ မရပါ၊ မျှော်လင့်မထားသော အမှား- <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">ဂျပန်စာ ထည့်သွင်းမှု (ဂျပန်ကီးဘုတ်အတွက်)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">သင်၏ Google Drive ရှိ ဖိုင်များကို Linux အက်ပ်များအား ပြုပြင်ခွင့်ပြုပါ။ ပြောင်းလဲမှုများကို သင်၏ အခြားစက်ပစ္စည်းများနှင့် စင့်ခ်လုပ်သွားပါမည်။</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ခု</translation>
 <translation id="5957366693331451795">Chromebox များ</translation>
 <translation id="5982621672636444458">ရွေးချယ်စရာများ စီရန်</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">Google Drive က "<ph name="FILENAME" />" ကို ယခုချက်ချင်း စင့်က် မလုပ်နိုင်ခဲ့ပါ။ Google Drive သည် နောက်မှာ ထပ်စမ်းကြည့်မည်။</translation>
 <translation id="8477649328507734757">လှည့်ခြင်း</translation>
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
-<translation id="8490342535582768689">သင်၏ Google Drive ရှိ ဖိုင်များကို Parallels Desktop အား ပြုပြင်ခွင့်ပေးပါ။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားပါမည်။</translation>
 <translation id="8521441079177373948">ယူကေ</translation>
 <translation id="8525306231823319788">မျက်နှာပြင် အပြည့်</translation>
 <translation id="8551494947769799688">လာတ်ဗီယန်း</translation>

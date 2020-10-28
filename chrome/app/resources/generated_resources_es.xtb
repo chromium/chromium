@@ -1071,6 +1071,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2220409419896228519">Añade marcadores a tus aplicaciones de Google favoritas</translation>
 <translation id="2220529011494928058">Notificar un problema</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
+<translation id="2224337661447660594">Sin conexión a Internet</translation>
 <translation id="2224444042887712269">Esta opción pertenece a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar nombre de carpeta</translation>
 <translation id="2225864335125757863">Cambia inmediatamente estas contraseñas para proteger tu cuenta:</translation>
@@ -3096,6 +3097,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4590324241397107707">Almacenamiento en bases de datos</translation>
 <translation id="4592891116925567110">Aplicación de dibujo con lápiz óptico</translation>
 <translation id="4593021220803146968">&amp;Ir a <ph name="URL" /></translation>
+<translation id="4593212453765072419">Autenticación de proxy necesaria</translation>
 <translation id="4595560905247879544">Únicamente el administrador (<ph name="CUSTODIAN_NAME" />) puede modificar las aplicaciones y las extensiones.</translation>
 <translation id="4596295440756783523">Tienes certificados registrados que identifican a estos servidores</translation>
 <translation id="4598556348158889687">Gestión del almacenamiento</translation>
@@ -6648,7 +6650,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8786697630358316925">Esta opción no será compatible después de diciembre. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Permitir servidores proxy en redes compartidas</translation>
 <translation id="8791534160414513928">Enviar una solicitud de no seguimiento con tu tráfico de navegación</translation>
-<translation id="8794025342371547160">IP restringida</translation>
 <translation id="879413103056696865">Mientras el punto de acceso esté activo, tu <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nueva ventana</translation>
 <translation id="8797459392481275117">No traducir nunca este sitio web</translation>

@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Inserează</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Player audio</translation>
-<translation id="3984317463833596033">Acordă Parallels Desktop permisiunea de a modifica fișiere în dosarul <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="4070370845051020638">Metoda de introducere a textului în cantoneză</translation>
 <translation id="4072248638558688893">Tastatură tamilă (Fonetică)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">Acest tip de fișier nu este acceptat. Accesați <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" /> pentru a găsi o aplicație care poate deschide acest tip de fișier.
     <ph name="BEGIN_LINK_HELP" />Aflați mai multe<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nimic de văzut aici...</translation>
-<translation id="5857774240076772505">Acordă aplicațiilor Linux permisiunea să modifice fișiere în dosarul <ph name="FOLDER_NAME" /></translation>
 <translation id="5892290200158927959">Tastatură franceză BÉPO</translation>
 <translation id="5911887972742538906">A apărut o eroare în timpul instalării aplicației Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Nu s-a putut copia, eroare neprevăzută: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Tastare în japoneză (pentru tastatură japoneză)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Acordă aplicațiilor Linux permisiunea de a modifica fișiere în Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elemente</translation>
 <translation id="5957366693331451795">Chromeboxurile</translation>
 <translation id="5982621672636444458">Opțiuni de sortare</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Momentan, Google Drive nu a putut sincroniza „<ph name="FILENAME" />”. Google Drive va încerca din nou mai târziu.</translation>
 <translation id="8477649328507734757">Cercuri</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
-<translation id="8490342535582768689">Acordă Parallels Desktop permisiunea de a modifica fișiere în Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="8551494947769799688">Letonă</translation>

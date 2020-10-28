@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Чаптоо</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3966388904776714213">Аудио ойноткуч</translation>
-<translation id="3984317463833596033">Parallels Desktop кызматына <ph name="FOLDER_NAME" /> папкасындагы файлдарды түзөтүүгө уруксат бериңиз</translation>
 <translation id="4002066346123236978">Аталышы</translation>
 <translation id="4070370845051020638">Кантон киргизүү ыкмасы</translation>
 <translation id="4072248638558688893">Тамил баскычтобу (Фонетикалык)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">Мындай файл түрү колдоого алынбайт. Аны ача алган колдонмону табуу үчүн <ph name="BEGIN_LINK" />Chrome Желе дүкөнүнө<ph name="END_LINK" /> кириңиз.
     <ph name="BEGIN_LINK_HELP" />Көбүрөөк билүү<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Бул жерде көрө турган эч нерсе жок…</translation>
-<translation id="5857774240076772505">Linux колдонмолоруна <ph name="FOLDER_NAME" /> папкасындагы файлдарды түзөтүүгө уруксат бериңиз</translation>
 <translation id="5892290200158927959">Французча BÉPO баскычтобу</translation>
 <translation id="5911887972742538906">Linux колдонмосун орнотуу учурунда ката кетти.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Көчүрүлбөй калды, күтүүсүз ката кетти: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Жапончо киргизүү (Жапон баскычтобу үчүн)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Linux колдонмолоруна Google Drive'дагы файлдарды түзөтүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> элемент</translation>
 <translation id="5957366693331451795">Chromebox түзмөктөрү</translation>
 <translation id="5982621672636444458">Иреттөө опциясы</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">Google Drive жаңы эле "<ph name="FILENAME" />" шайкештире албай койду. Google Drive кийинчерээк дагы аракет кылып көрөт.</translation>
 <translation id="8477649328507734757">Тегеретүү</translation>
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
-<translation id="8490342535582768689">Parallels Desktop кызматына Google Drive'дагы файлдарды түзөтүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Толук экран</translation>
 <translation id="8551494947769799688">Латвияча</translation>

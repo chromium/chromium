@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3966388904776714213">Zvočni predvajalnik</translation>
-<translation id="3984317463833596033">Programu Parallels Desktop dovolite spreminjanje datotek v mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4070370845051020638">Način vnosa za kantonščino</translation>
 <translation id="4072248638558688893">Tipkovnica za tamilščino (fonetična)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">Ta vrsta datoteke ni podprta. V <ph name="BEGIN_LINK" />Spletni trgovini Chrome<ph name="END_LINK" /> poiščite aplikacijo, s katero lahko odprete to vrsto datoteke.
         <ph name="BEGIN_LINK_HELP" />Več o tem<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Tu ni kaj videti ...</translation>
-<translation id="5857774240076772505">Aplikacijam za Linux dovolite spreminjanje datotek v mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="5892290200158927959">Francoska tipkovnica – BÉPO</translation>
 <translation id="5911887972742538906">Med nameščanjem aplikacije za Linux je prišlo do napake.</translation>
 <translation id="5912396950572065471">Oblika</translation>
 <translation id="5913638992615760742">Operacija kopiranja ni uspela, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Vnos besedila za japonščino (za japonsko tipkovnico)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Aplikacijam za Linux dovolite spreminjanje datotek v Googlu Drive. Spremembe bodo sinhronizirane z drugimi napravami.</translation>
 <translation id="5955954492236143329">Št. datotek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxi</translation>
 <translation id="5982621672636444458">Možnosti razvrščanja</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google Drive trenutno ne more sinhronizirati datoteke »<ph name="FILENAME" />«. Google Drive bo poskusil znova pozneje.</translation>
 <translation id="8477649328507734757">Krogci</translation>
 <translation id="8487700953926739672">Na voljo brez povezave</translation>
-<translation id="8490342535582768689">Programu Parallels Desktop dovolite spreminjanje datotek v Googlu Drive. Spremembe bodo sinhronizirane z drugimi napravami.</translation>
 <translation id="8521441079177373948">Združeno kraljestvo</translation>
 <translation id="8525306231823319788">Celozaslonsko</translation>
 <translation id="8551494947769799688">latvijščina</translation>

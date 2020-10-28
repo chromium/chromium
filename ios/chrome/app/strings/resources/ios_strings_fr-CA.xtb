@@ -341,6 +341,7 @@ Vos données sont chiffrées avec votre phrase de passe. Veuillez l'entrer pour 
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
 <translation id="4758977202923349869">Placer la carte de crédit dans ce cadre</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
+<translation id="4778644898150334464">Utiliser un autre mot de passe</translation>
 <translation id="4802417911091824046">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>

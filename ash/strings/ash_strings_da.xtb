@@ -672,6 +672,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7654687942625752712">Tryk på begge lydstyrketaster, og hold dem nede i fem sekunder for at deaktivere oplæsning.</translation>
 <translation id="7658239707568436148">Annuller</translation>
+<translation id="7662283695561029522">Tryk for at konfigurere</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7705822912736783206">Godkend med fingeraftryk</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikation}one{# notifikation}other{# notifikationer}}</translation>

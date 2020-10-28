@@ -1071,6 +1071,7 @@
 <translation id="2220409419896228519">將書籤新增至您喜愛的 Google 應用程式</translation>
 <translation id="2220529011494928058">報告問題</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
+<translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">編輯資料夾名稱</translation>
 <translation id="2225864335125757863">請立即變更這些密碼，確保帳戶安全：</translation>
@@ -3096,6 +3097,7 @@
 <translation id="4590324241397107707">數據庫儲存空間</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" /> (&amp;G)</translation>
+<translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4595560905247879544">只有管理員 (<ph name="CUSTODIAN_NAME" />) 才能修改應用程式和擴充程式。</translation>
 <translation id="4596295440756783523">您的檔案具備可以識別這些伺服器的憑證</translation>
 <translation id="4598556348158889687">管理儲存空間</translation>
@@ -6647,7 +6649,6 @@
 <translation id="8786697630358316925">系統由 12 月起將不再支援此選項。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">允許共用網絡使用 Proxy</translation>
 <translation id="8791534160414513928">將「不追蹤」要求與瀏覽流量一併傳送</translation>
-<translation id="8794025342371547160">受限制的 IP</translation>
 <translation id="879413103056696865">開啟熱點時，您的 <ph name="PHONE_NAME" /> 將會：</translation>
 <translation id="8795916974678578410">開啟新視窗</translation>
 <translation id="8797459392481275117">永不翻譯此網站的內容</translation>

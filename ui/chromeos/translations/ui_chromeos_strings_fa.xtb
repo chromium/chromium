@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3958548648197196644">کیوی</translation>
 <translation id="3966388904776714213">پخش‌کننده صوتی</translation>
-<translation id="3984317463833596033">‏به Parallels Desktop اجازه دهید فایل‌های موجود در پوشه <ph name="FOLDER_NAME" /> را تغییر دهد</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4070370845051020638">روش ورودی کانتونی</translation>
 <translation id="4072248638558688893">صفحه‌‌کلید تامیل (آوایی)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">‏این نوع فایل پشتیبانی نمی‌شود. لطفاً از <ph name="BEGIN_LINK" />فروشگاه وب<ph name="END_LINK" /> Chrome بازدید کنید تا برنامه‌ای پیدا کنید که بتواند این نوع فایل را باز کند.
  <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">موردی برای مشاهده موجود نیست...</translation>
-<translation id="5857774240076772505">‏به برنامه‌های Linux اجازه دهید فایل‌های پوشه <ph name="FOLDER_NAME" /> را تغییر دهند</translation>
 <translation id="5892290200158927959">‏صفحه‌کلید BÉPO فرانسوی</translation>
 <translation id="5911887972742538906">‏هنگام نصب برنامه Linux خطایی روی داد.</translation>
 <translation id="5912396950572065471">قالب</translation>
 <translation id="5913638992615760742">عملیات کپی انجام نشد، خطای غیرمنتظره: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">ورودی ژاپنی (برای صفحه کلید ژاپنی)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">‏به برنامه‌های Linux اجازه دهید فایل‌های موجود در Google Drive را تغییر دهند. تغییرات در سایر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> مورد</translation>
 <translation id="5957366693331451795">‏دستگاه‌های Chromebox</translation>
 <translation id="5982621672636444458">گزینه‌های مرتب‌سازی</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">‏Google Drive نتوانست در این لحظه «<ph name="FILENAME" />» را همگام‌سازی کند. Google Drive بعداً دوباره امتحان می‌کند.</translation>
 <translation id="8477649328507734757">اسپینینگ</translation>
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
-<translation id="8490342535582768689">‏به Parallels Desktop اجازه دهید فایل‌های موجود در Google Drive را تغییر دهد. تغییرات در دیگر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
 <translation id="8521441079177373948">بریتانیایی</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
 <translation id="8551494947769799688">لتونیایی</translation>

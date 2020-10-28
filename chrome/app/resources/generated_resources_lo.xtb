@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">ກະແຈຄວາມປອດໄພຖືກລັອກໄວ້ ເພາະວ່າມີການປ້ອນ PIN ບໍ່ຖືກຕ້ອງຫຼາຍຄັ້ງເກີນໄປ. ເພື່ອປົດລັອກມັນ, ກະລຸນາຖອດມັນອອກ ແລ້ວສຽບເຂົ້າໃໝ່.</translation>
 <translation id="1137589305610962734">ຂໍ້ມູນຊົ່ວຄາວ</translation>
 <translation id="1137673463384776352">ເປີດລິ້ງໃນ <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ການແຈ້ງເຕືອນໃໝ່}other{ການແຈ້ງເຕືອນໃໝ່ # ລາຍການ}}</translation>
 <translation id="1139343347646843679">ເກີດຄວາມຜິດພາດໃນຂະນະທີ່ຕັ້ງຄ່າ Linux. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="1140351953533677694">​ເຂົ້າຫາ​ອຸ​ປະ​ກອນ Bluetooth ແລະ Serial ຂອງ​ທ່ານ</translation>
 <translation id="114036956334641753">ສຽງ ແລະ ຄຳບັນຍາຍ</translation>
@@ -1068,6 +1069,7 @@
 <translation id="2220409419896228519">ເພີ່ມບຸກມາກໃສ່ແອັບ Google Apps ທີ່ທ່ານມັກ</translation>
 <translation id="2220529011494928058">ລາຍ​ງານ​ບັນ​ຫາ</translation>
 <translation id="2220572644011485463">PIN ຫຼື ລະຫັດຜ່ານ</translation>
+<translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="2224444042887712269">ການຕັ້ງຄ່ານີ້ເປັນຂອງ <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">ແກ້ໄຂຊື່ໂຟລເດີ</translation>
 <translation id="2225864335125757863">ປ່ຽນລະຫັດຜ່ານເຫຼົ່ານີ້ໃນທັນທີເພື່ອຮັກສາໃຫ້ບັນຊີຂອງທ່ານປອດໄພ:</translation>
@@ -1670,6 +1672,7 @@
 <translation id="291056154577034373">ຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="2910718431259223434">ມີບາງອັນຜິດພາດ. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ເຈົ້າຂອງ ຫຼື ຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">ອະ​ນຸ​ຍາດ​ໃຫ້​ເວັບ​ໄຊ​ທ໌​ບັນ​ທຶກ ແລະ​ອ່ານ​ຂໍ້​ມູນ​ຄຸກ​ກີ້ (ແນະ​ນຳ​ໃຫ້)</translation>
+<translation id="2915016304249900997">ເຊື່ອງລາຍລະອຽດໃນຂະນະທີ່ທ່ານແບ່ງປັນໜ້າຈໍ</translation>
 <translation id="2915102088417824677">ເບິ່ງບັນທຶກການເຄື່ອນໄຫວ</translation>
 <translation id="2915873080513663243">ສະແກນອັດຕະໂນມັດ</translation>
 <translation id="2916073183900451334">ກົດແຖບຢູ່ໃນລິ້ງໄຮໄລ້ໜ້າເວັບ, ເຊັ່ນດຽວກັບປ່ອງໃສ່ຂໍ້ມູນແບບຟອມ</translation>
@@ -2440,6 +2443,7 @@
 <translation id="3819257035322786455">ສຳຮອງຂໍ້ມູນ</translation>
 <translation id="3819261658055281761">ລະບົບເກັບຮັກສາໂທເຄັນການເຂົ້າເຖິງ API ໄລຍະຍາວສຳລັບອຸປະກອນນີ້ບໍ່ສຳເລັດ.</translation>
 <translation id="3819800052061700452">ເຕັມຫນ້າ​ຈໍ​</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ສະແດງ}other{ສະແດງທັງໝົດ}}</translation>
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ອະນຸມັດສ່ວນຂະຫຍາຍໜຶ່ງລາຍການແລ້ວ}other{ອະນຸມັດສ່ວນຂະຫຍາຍ # ລາຍການແລ້ວ}}</translation>
 <translation id="3822559385185038546">ພຣັອກຊີນີ້ຖືກບັງຄັບໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
@@ -2830,6 +2834,7 @@
 <translation id="4285498937028063278">ຖອນໝຸດ</translation>
 <translation id="428565720843367874">ຊອບແວແອນຕິໄວຣັສລົ້ມເຫຼວໂດຍບໍ່ຄາດຄິດ ໃນຂະນະທີ່ກໍາລັງສະແກນໄຟລ໌ນີ້.</translation>
 <translation id="4287099557599763816">ໂປຣແກຣມອ່ານໜ້າຈໍ</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ສະແດງ}other{ສະແດງທັງໝົດ}}</translation>
 <translation id="4289372044984810120">ຈັດການໂດຍບັນຊີຂອງທ່ານຢູ່ບ່ອນນີ້. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
 <translation id="4295072614469448764">ແອັບສາມາດໃຊ້ໄດ້ໃນອຸປະກອນປາຍທາງຂອງທ່ານ, ອາດຈະຍັງມີໄອຄອນໃນຕົວເປີດໃຊ້ຂອງທ່ານນຳອີກ.</translation>
@@ -6146,6 +6151,7 @@
 <translation id="820568752112382238">ເວັບໄຊທີ່ເຂົ້າເບິ່ງຫຼາຍທີ່ສຸດ</translation>
 <translation id="8206745257863499010">ບລູຊີ</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ການແຈ້ງເຕືອນໃໝ່}other{ການແຈ້ງເຕືອນໃໝ່ # ລາຍການ}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ການດາວໂຫຼດພວມດຳເນີນຢູ່}other{ການດາວໂຫຼດພວມດຳເນີນຢູ່}}</translation>
 <translation id="8213449224684199188">ເຂົ້າໂໝດຮູບພາບແລ້ວ</translation>
 <translation id="8213577208796878755">ອຸປະກອນທີ່ມີຢູ່ອັນອື່ນອັນໜຶ່ງ.</translation>
@@ -6640,7 +6646,6 @@
 <translation id="8786697630358316925">ລະບົບຈະບໍ່ຮອງຮັບຕົວເລືອກນີ້ຫຼັງຈາກເດືອນທັນວາ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">ອະນຸຍາດໃຫ້ພຣັອກຊີສໍາລັບເຄືອຂ່າຍແຊຣ໌ແລ້ວ</translation>
 <translation id="8791534160414513928">ສົ່ງຄໍາຂໍ "ຢ່າຕິດຕາມ" ກັບການຈາລະຈອນທ່ອງເວັບຂອງທ່ານ</translation>
-<translation id="8794025342371547160">IP ທີ່ຖືກຈໍາກັດ</translation>
 <translation id="879413103056696865">ໃນຂະນະທີ່ຮັອດສະປອດເປີດຢູ່, <ph name="PHONE_NAME" /> ຂອງທ່ານຈະ:</translation>
 <translation id="8795916974678578410">ໜ້າ​ຕ່າງໃຫມ່</translation>
 <translation id="8797459392481275117">ຢ່າແປເວັບໄຊນີ້</translation>

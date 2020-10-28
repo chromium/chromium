@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Хуулан буулгах</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3966388904776714213">Аудио тоглуулагч</translation>
-<translation id="3984317463833596033">Parallels Desktop-д <ph name="FOLDER_NAME" /> фолдерын файлуудыг өөрчлөх зөвшөөрөл өгнө үү</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4070370845051020638">Кантон хэлний оролтын арга</translation>
 <translation id="4072248638558688893">Тамил хэлний гар (дуудлагын)</translation>
@@ -466,14 +465,12 @@
 <translation id="5850516540536751549">Энэ файлын төрлийг дэмждэггүй. Ийм төрөлтэй файлыг нээхийн тулд тохирохыг программыг <ph name="BEGIN_LINK" />Chrome Веб Дэлгүүр<ph name="END_LINK" />-ээс олно уу.
      <ph name="BEGIN_LINK_HELP" />Дэлгэрэнгүй мэдээллийг эндээс<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Энд харах зүйл алга..</translation>
-<translation id="5857774240076772505">Linux-д <ph name="FOLDER_NAME" /> фолдерт файл өөрчлөх аппын зөвшөөрлийг олгоно уу</translation>
 <translation id="5892290200158927959">Франц хэлний BÉPO гар</translation>
 <translation id="5911887972742538906">Таны Linux аппыг суулгах явцад алдаа гарлаа.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Дараах санамсаргүй алдаа гарсан тул хуулж чадсангүй: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Япон хэлний оролт (Япон хэлний гар)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Linux-н аппуудад таны Google Драйвын файлуудыг өөрчлөх зөвшөөрөл өгнө үү. Өөрчлөлтүүдийг таны бусад төхөөрөмжид синк хийнэ.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> зүйл</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Эрэмбийн сонголт</translation>
@@ -717,7 +714,6 @@
 <translation id="8475647382427415476">Google Drive нь "<ph name="FILENAME" />"-г синк хийх боломжгүй байна. Google Drive дараа дахин оролдох болно.</translation>
 <translation id="8477649328507734757">Тойрог</translation>
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
-<translation id="8490342535582768689">Parallels Desktop-д Google Драйвынхаа файлуудыг өөрчлөх зөвшөөрөл өгнө үү. Өөрчлөлтүүдийг таны бусад төхөөрөмжид синк хийнэ.</translation>
 <translation id="8521441079177373948">Их Британи</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
 <translation id="8551494947769799688">Латви хэл</translation>

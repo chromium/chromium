@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">चिपकाएं</translation>
 <translation id="3958548648197196644">कीवी</translation>
 <translation id="3966388904776714213">ऑडियो प्लेयर</translation>
-<translation id="3984317463833596033">Parallels Desktop को <ph name="FOLDER_NAME" /> फ़ोल्डर की फ़ाइलों में बदलाव करने की अनुमति दें</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4070370845051020638">कैंटोनीज़ इनपुट पद्धति</translation>
 <translation id="4072248638558688893">तमिल कीबोर्ड (फ़ोनेटिक)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">इस तरह की फ़ाइल नहीं खुल सकती है. इस तरह के फ़ाइल को खोल सकने वाले ऐप्लिकेशन खोजने के लिए कृपया <ph name="BEGIN_LINK" />Chrome वेब स्टोर<ph name="END_LINK" /> पर जाएं.
     <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">यहां देखने के लिए कुछ नहीं है...</translation>
-<translation id="5857774240076772505">Linux ऐप्लिकेशन को <ph name="FOLDER_NAME" /> फ़ोल्डर की फ़ाइलों में बदलाव करने दें</translation>
 <translation id="5892290200158927959">फ़्रेंच बेपो कीबोर्ड</translation>
 <translation id="5911887972742538906">आपका Linux ऐप्लिकेशन इंस्टॉल करते समय कोई गड़बड़ी हुई.</translation>
 <translation id="5912396950572065471">फ़ॉर्मैट</translation>
 <translation id="5913638992615760742">कॉपी बनाने में अनचाही गड़बड़ी : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">जापानी इनपुट (जापानी कीबोर्ड के लिए)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Linux ऐप्लिकेशन को अपनी 'Google डिस्क' में रखी फ़ाइलों में बदलाव करने की अनुमति दें. बदलावों को आपके दूसरे डिवाइस में सिंक किया जाएगा.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> आइटम</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">क्रम से लगाने के विकल्प</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google डिस्क अभी "<ph name="FILENAME" />" को समन्वयित करने में असमर्थ थी. Google डिस्क द्वारा बाद में पुनः प्रयास किया जाएगा.</translation>
 <translation id="8477649328507734757">स्पिन</translation>
 <translation id="8487700953926739672">ऑफ़लाइन उपलब्ध है</translation>
-<translation id="8490342535582768689">Parallels Desktop को Google Drive में रखी फ़ाइलों में बदलाव करने की अनुमति दें. बदलावों को आपके दूसरे डिवाइस में सिंक किया जाएगा.</translation>
 <translation id="8521441079177373948">यूके</translation>
 <translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
 <translation id="8551494947769799688">लातवियाई</translation>

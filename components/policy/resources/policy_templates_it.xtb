@@ -145,13 +145,6 @@
 <translation id="1221359380862872747">Carica gli URL specificati all'accesso demo</translation>
 <translation id="1223789468190631420">Stato attivazione Navigazione sicura per origini attendibili</translation>
 <translation id="123081309365616809">Attiva la trasmissione di contenuti al dispositivo</translation>
-<translation id="1231349879329465225">Consente di attivare o disattivare Fast Transition.
-      La scelta è valida per tutti gli utenti e per tutte le interfacce sul dispositivo.
-      Per poter usare Fast Transition è necessario attivare sia questa impostazione, sia la proprietà ONC per ogni rete.
-      Una volta impostato, Fast Transition rimane valido fino alla modifica della norma per disattivarlo.
-
-      Se la norma non è impostata o è impostata su false, Fast Transition non viene utilizzato.
-      Se è impostata su true, Fast Transition viene utilizzato quando il punto di accesso wireless lo supporta.</translation>
 <translation id="1240722269871366886">Questo criterio consente a <ph name="PRODUCT_OS_NAME" /> di suggerire le emoji quando gli utenti digitano il testo sulle tastiere fisiche o virtuali.
       Se questo criterio viene impostato su vero, la funzionalità verrà attivata e gli utenti potranno modificarla.
       Per impostazione predefinita questo criterio è impostato su falso, il che significa che non vengono suggerite emoji e gli utenti non possono ignorarlo.</translation>
@@ -305,18 +298,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       I tipi di dati disponibili sono i seguenti: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome rimuove regolarmente i dati dei tipi selezionati che sono antecedenti al periodo indicato (<ph name="TIME_TO_LIVE_IN_HOURS" />). Poiché l'eliminazione avviene solo in determinati intervalli di tempo, alcuni dati potrebbero durare più a lungo, ma mai oltre il doppio del periodo previsto (<ph name="TIME_TO_LIVE_IN_HOURS" />).
       </translation>
-<translation id="1507382822467487898">
-          Consente di configurare quale indirizzo MAC (media access control) verrà utilizzato quando il dispositivo è inserito in un dock.
-
-          Quando alcuni modelli di dispositivi vengono inseriti in un dock, per impostazione predefinita l'indirizzo MAC designato per il dispositivo viene utilizzato per identificare il dispositivo su Ethernet. Questo criterio consente all'amministratore di modificare l'origine dell'indirizzo MAC mentre il dispositivo è inserito nel dock.
-
-          Se "DeviceDockMacAddress" è selezionato o se il criterio non è impostato, verrà utilizzato l'indirizzo MAC designato del dock.
-
-          Se "DeviceNicMacAddress" è selezionato, verrà utilizzato l'indirizzo MAC NIC (network interface controller) del dispositivo.
-
-          Se "DockNicMacAddress" è selezionato, verrà utilizzato l'indirizzo MAC NIC del dock.
-
-          Questa impostazione non può essere modificata dall'utente.</translation>
 <translation id="1509692106376861764">Questa norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi.
 
@@ -510,13 +491,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       In caso contrario, se è necessario mantenere la compatibilità con un server con errori, è possibile impostare la norma su "tls1.1". Si tratta di una misura temporanea ed è necessario correggere rapidamente il server.</translation>
 <translation id="1861206724856734193">Consente di configurare un elenco di regole per la prevenzione della fuga di dati.</translation>
-<translation id="1864382791685519617">Consente la previsione della rete in <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare questa impostazione.
-
-      Controlla il precaricamento DNS, la preconnessione TCP ed SSL e il prerendering delle pagine web.
-
-      Se imposti questa norma, gli utenti non potranno modificare né sostituire questa impostazione in <ph name="PRODUCT_NAME" />.
-
-      Se questa norma non viene impostata, la previsione di rete verrà attivata ma l'utente potrà modificarla.</translation>
 <translation id="1865417998205858223">Autorizzazioni chiave</translation>
 <translation id="186719019195685253">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della corrente CA</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
@@ -684,13 +658,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2135335181634291106">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> consente di specificare l'URL dell'icona preferita del provider di ricerca predefinito.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> non viene configurato, non è presente alcuna icona per il provider di ricerca.</translation>
-<translation id="2138449619211358657">Questa norma consente a <ph name="PRODUCT_OS_NAME" /> di aggirare qualsiasi proxy per l'autenticazione tramite captive portal.
-
-      Questa norma viene applicata soltanto se viene configurato un proxy (ad esempio tramite la norma, dall'utente in chrome://settings o dalle estensioni).
-
-      Se attivi questa impostazione, qualsiasi pagina di autenticazione tramite captive portal (ossia tutte le pagine web per cui viene inizialmente visualizzata una pagina di accesso tramite captive portal finché <ph name="PRODUCT_NAME" /> rileva una connessione Internet attiva) verrà visualizzata in una finestra separata e vengono ignorate tutte le impostazioni delle norme e le restrizioni relative all'utente corrente.
-
-      Se disattivi questa impostazione o non la configuri, qualsiasi pagina di autenticazione tramite captive portal verrà visualizzata in una scheda del browser nuova (e normale) utilizzando le impostazioni proxy dell'utente corrente.</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
 <translation id="214901426630414675">Limita la modalità di stampa fronte/retro</translation>
 <translation id="2149330464730004005">Attiva la stampa a colori</translation>
@@ -1429,20 +1396,8 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 Questa norma è facoltativa. Se non viene impostata, non verrà effettuata alcuna sostituzione dei termini di ricerca.
 
 Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearchProviderEnabled".</translation>
-<translation id="3049248142961638857">Consente di determinare il nome host del dispositivo usato nelle richieste DHCP.
-
-      Se questo criterio è impostato su una stringa non vuota, tale stringa verrà usata come nome host del dispositivo durante la richiesta DHCP.
-
-      La stringa può contenere variabili <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" />, <ph name="LOCATION_PLACEHOLDER" /> che verrebbero sostituite con valori sul dispositivo prima di usare la stringa come nome host. La sostituzione finale dovrebbe essere eseguita con un nome host valido (come da RFC 1035, sezione 3.1).
-
-      Se questo criterio non è impostato o se il valore ottenuto in seguito alla sostituzione non è un nome host valido, non verrà impostato alcun nome host nella richiesta DHCP. </translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Consenti agli utenti affiliati di questo dispositivo di utilizzare il processo sideload ADB</translation>
-<translation id="3069958900488014740">Consente di disattivare l'ottimizzazione WPAD (Web Proxy Auto-Discovery) in <ph name="PRODUCT_NAME" />.
-
-      Se questa norma è impostata su false, l'ottimizzazione WPAD viene disattivata, aumentando così i tempi di attesa da parte di <ph name="PRODUCT_NAME" /> dei server WPAD basati su DNS. Se questa norma non è impostata oppure se è attiva, l'ottimizzazione WPAD è abilitata.
-
-      Indipendentemente da se o come questa norma è impostata, l'utente non può modificare l'impostazione di ottimizzazione di WPAD.</translation>
 <translation id="3072045631333522102">Salvaschermo da utilizzare nella schermata di accesso in modalità retail</translation>
 <translation id="3072788420987305247">Se il criterio viene impostato su Attivato o se non viene configurato, i controlli multimediali vengono visualizzati nella schermata di blocco se gli utenti bloccano il dispositivo durante la riproduzione dei contenuti.
 
@@ -2706,7 +2661,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
           Se questo criterio non viene impostato, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati, ma gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.
 
           Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="5102203758995933166">Consente di forzare l'applicazione della configurazione di rete per utente su un dispositivo <ph name="PRODUCT_OS_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
 <translation id="5105313908130842249">Ritardo blocco schermo in caso di utilizzo della batteria</translation>
 <translation id="5108031557082757679">Stampanti aziendali associate ai dispositivi disattivate</translation>
 <translation id="5109383437323376357">Determina la disponibilità delle varianti</translation>
@@ -2972,15 +2926,6 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 Se questa impostazione viene attivata, i dispositivi di input e output fisici degli host verranno disattivati durante una connessione remota.
 
 Se questa impostazione viene disattivata o non viene impostata, sia gli utenti locali che remoti potranno interagire con l'host quando viene condiviso.</translation>
-<translation id="5396049152026347991">Consente all'utente di gestire le connessioni VPN.
-
-      Se questa norma viene impostata su false, le interfacce di <ph name="PRODUCT_NAME" /> che consentono all'utente di disconnettere o modificare le connessioni VPN vengono tutte disattivate.
-
-      Se questa norma viene impostata su true o non viene impostata, l'utente può disconnettere o modificare le connessioni VPN come di consueto.
-
-      Se la connessione VPN viene creata tramite un'app VPN, l'interfaccia all'interno dell'app non è interessata da questa norma. L'utente potrebbe quindi essere ancora in grado di utilizzare l'app per modificare la connessione VPN.
-
-      Questa norma deve essere utilizzata assieme alla funzionalità "VPN sempre attiva", che permette all'amministratore di decidere se creare una connessione VPN all'avvio.</translation>
 <translation id="5401696449591951427">Attiva <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">Consente di configurare i layout da tastiera consentiti nella schermata di accesso di <ph name="PRODUCT_OS_NAME" />.
 
@@ -3070,16 +3015,6 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
 <translation id="5475361623548884387">Attiva la stampa</translation>
 <translation id="547601067149622666">Non consentire gli annunci su siti con annunci invasivi</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
-<translation id="5486493714323160905">Quando questa impostazione è attiva, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati integrato.
-      Quando questa impostazione non è attiva, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati precedente fornito dalla piattaforma.
-      Quando questa impostazione non è definita, potrebbe essere utilizzato lo strumento di verifica dei certificati integrato o quello precedente.
-
-      È prevista la rimozione di questo criterio nella versione 81 di <ph name="PRODUCT_OS_NAME" />, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente da <ph name="PRODUCT_OS_NAME" />.
-
-      È prevista la rimozione di questo criterio nella versione 83 di <ph name="PRODUCT_NAME" /> per Linux, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente da Linux.
-
-      È prevista la rimozione di questo criterio nella versione 87 di <ph name="PRODUCT_NAME" /> per Mac OS X, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente da Mac OS X.
-      </translation>
 <translation id="5494917047563607689">L'impostazione del criterio su valori inferiori a 1 MB o la sua mancata impostazione implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non sarà necessario scaricare nuovamente ogni app o estensione per ciascun utente.</translation>
 <translation id="5499375345075963939">Questa norma è attiva soltanto in modalità retail.
 
@@ -3395,11 +3330,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Questo criterio è disponibile soltanto come criterio obbligatorio relativo alla piattaforma del computer e interessa unicamente i criteri relativi al cloud in ambito computer.
       </translation>
 <translation id="5905473632148429217">Attiva controlli OCSP/CRL online</translation>
-<translation id="5906199912611534122">Consente di attivare o disattivare la limitazione della larghezza di banda.
-      La scelta è valida per tutti gli utenti e per tutte le interfacce sul dispositivo. Una volta impostata, la limitazione rimane valida fino alla modifica della norma per disattivarla.
-
-      Se la norma viene impostata su false, non viene applicata alcuna limitazione.
-      Se viene impostata su true, il sistema viene limitato per raggiungere le velocità di caricamento e download indicate (in kbit/s).</translation>
 <translation id="5907283448020542268">A meno che il criterio <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> sia impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, l'impostazione <ph name="GLS_ENABLED" /> attiva i Servizi di geolocalizzazione di Google durante la configurazione iniziale. Se il criterio è impostato su <ph name="GLS_DISABLED" /> o se non è configurato, i Servizi di geolocalizzazione rimangono disattivati durante la configurazione.
 
       Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti viene chiesto se utilizzare o meno i Servizi di geolocalizzazione di Google. Se vengono attivati, le app Android utilizzano i servizi per cercare la posizione del dispositivo e inviare dati anonimi sulla posizione a Google.
@@ -4146,15 +4076,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="6926703471186170050">Attiva la stampa fronte/retro su lato lungo</translation>
 <translation id="6931242315485576290">Disattiva la sincronizzazione dei dati con Google</translation>
-<translation id="6936894225179401731">Consente di specificare il numero massimo di connessioni simultanee al server proxy.
-
-      Alcuni server proxy non sono in grado di gestire un numero elevato di connessioni simultanee per client e questo problema può essere risolto impostando un valore inferiore per questa norma.
-
-      Il valore di questa norma dovrebbe essere inferiore a 100 e superiore a 6, mentre il valore predefinito è 32.
-
-      Alcune applicazioni web utilizzano notoriamente molte connessioni con Hanging-GET, pertanto utilizzare un valore minore di 32 potrebbe comportare interruzioni di rete del browser se sono aperte troppe applicazioni web di questo tipo. Se imposti un valore inferiore al valore predefinito, lo fai a tuo rischio.
-
-      Se questa norma non viene impostata viene utilizzato il valore predefinito 32.</translation>
 <translation id="6943577887654905793">Nome di preferenza per Mac/Linux:</translation>
 <translation id="6944167205014013774">Le informazioni sull'utilizzo delle app Linux vengono rimandate al
       server.
@@ -4247,7 +4168,6 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7063895219334505671">Consenti popup su questi siti</translation>
 <translation id="706669471845501145">Consenti la visualizzazione di notifiche desktop da parte dei siti</translation>
-<translation id="7068108874199666656">Consente di forzare l'applicazione della configurazione di rete per tutti gli utenti di un dispositivo <ph name="PRODUCT_OS_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
 <translation id="7070525176564511548">Richiedi l'inserimento della password ogni settimana (168 ore)</translation>
 <translation id="7072208053150563108">Frequenza di modifica della password del computer</translation>
 <translation id="7072567600438630966">Consenti l'attivazione di Phone Hub</translation>
@@ -4622,8 +4542,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
       La disattivazione o la mancata configurazione del criterio consente agli utenti di modificare questa impostazione.
 
       Nota: per Android, utilizza invece il criterio <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
-<translation id="7511361072385293666">Se questa norma viene impostata su true o non viene impostata, l'utilizzo del protocollo QUIC in <ph name="PRODUCT_NAME" /> è consentito.
-     Se questa norma viene impostata su false, l'utilizzo del protocollo QUIC non è consentito.</translation>
 <translation id="7517845714620372896">Consente di specificare la percentuale di luminosità dello schermo.
           Se questa norma viene impostata, la luminosità dello schermo iniziale viene regolata in base al valore della norma, ma l'utente potrà cambiare tale valore in un secondo momento. Le funzionalità relative alla luminosità automatica vengono disattivate.
           Se questa norma non viene impostata, i controlli dello schermo dell'utente e le funzionalità di luminosità automatica rimangono invariati.
@@ -4726,7 +4644,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 <translation id="7632724434767231364">Nome della libreria GSSAPI</translation>
 <translation id="7643883929273267746">Limita gli account visibili in <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
-<translation id="7651739109954974365">È possibile stabilire se attivare o meno il roaming dei dati per il dispositivo. Se la norma viene impostata su true, il roaming dei dati sarà consentito. Se non viene configurata o viene impostata su false, il roaming dei dati non sarà disponibile.</translation>
 <translation id="7657261947024629645">Ottimizza per ottenere il massimo rendimento.</translation>
 <translation id="7668830462800981702">Se il criterio viene impostato su Attivato, viene eseguita una ricerca predefinita quando un utente inserisce nella barra degli indirizzi un testo che non è un URL. Per specificare il provider di ricerca predefinito, imposta gli altri criteri relativi alla ricerca predefinita. Se non configuri questi criteri, l'utente può scegliere il provider predefinito. Se il criterio viene impostato su Disattivato, non viene eseguita alcuna ricerca quando l'utente inserisce nella barra degli indirizzi un testo che non è un URL.
 
@@ -5126,11 +5043,6 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
 <translation id="8259592978873597235">Se questa norma è impostata su True o non viene impostata, l'utente non verrà considerato inattivo durante la riproduzione del video. In questo modo si impedisce il ritardo di inattività, il ritardo nell'attenuazione dello schermo, il ritardo nello spegnimento dello schermo e il ritardo nel blocco dello schermo e l'esecuzione delle azioni corrispondenti.
 
           Se questa norma è impostata su False, l'attività del video non impedisce all'utente di essere considerato inattivo.</translation>
-<translation id="8261272655177284145">Se il criterio è impostato su 1, puoi decidere se tutti i siti web possono eseguire automaticamente il plug-in <ph name="FLASH_PLUGIN_NAME" />. Se il criterio è impostato su 2, il plug-in viene negato per tutti i siti web. Click-to-play consente di eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />, ma gli utenti fanno clic sul segnaposto per avviare l'esecuzione.
-
-      Se il criterio non viene configurato, viene usato <ph name="BLOCK_PLUGINS_POLICY_NAME" /> e gli utenti possono cambiare l'impostazione.
-
-      Nota: la riproduzione automatica è consentita soltanto per i domini espressamente elencati nel criterio <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />. Per attivare la riproduzione automatica per tutti i siti, aggiungi http://* e https://* a questo elenco.</translation>
 <translation id="8266778278542911985">Se il criterio viene impostato su 3, i siti web possono chiedere l'accesso alle porte seriali. Se il criterio viene impostato su 2, l'accesso alle porte seriali viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
@@ -5345,9 +5257,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8544465954173828789">Consente la sincronizzazione di messaggi SMS dal telefono al Chromebook</translation>
 <translation id="8548832052135586762">Consente di impostare solo la stampa a colori, solo la stampa monocromatica oppure nessuna limitazione per la modalità a colori. Se la norma non viene impostata non vengono applicate limitazioni.</translation>
 <translation id="8566842294717252664">Nascondi il Web Store nella pagina Nuova scheda e in Avvio applicazioni</translation>
-<translation id="8569734380847633643">
-          Se la norma è impostata su false, <ph name="PRODUCT_OS_NAME" /> disattiverà la connessione Wi-Fi e gli utenti non potranno riattivarla.
-          Se la norma è impostata su true o non è impostata, gli utenti potranno attivare o disattivare la connessione Wi-Fi a loro piacimento.</translation>
 <translation id="8571314270766672278">Esegui il rollback e il ripristino del dispositivo con un downgrade del canale, prova a mantenere la registrazione</translation>
 <translation id="857369585509260201">Questa norma è stata ritirata; usa la norma BrowserSignin.
 

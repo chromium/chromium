@@ -1071,6 +1071,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2220409419896228519">Pridajte si záložky na obľúbené aplikácie Google</translation>
 <translation id="2220529011494928058">Nahlásiť problém</translation>
 <translation id="2220572644011485463">PIN alebo heslo</translation>
+<translation id="2224337661447660594">Bez internetu</translation>
 <translation id="2224444042887712269">Nastavenie patrí používateľovi <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Upraviť názov priečinka</translation>
 <translation id="2225864335125757863">Ak chcete zabezpečiť svoj účet, okamžite zmeňte tieto heslá:</translation>
@@ -3096,6 +3097,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4590324241397107707">Ukladací priestor databázy</translation>
 <translation id="4592891116925567110">Aplikácia na kreslenie dotykovým perom</translation>
 <translation id="4593021220803146968">&amp;Prejsť na adresu <ph name="URL" /></translation>
+<translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4595560905247879544">Aplikácie a rozšírenia môže upraviť iba správca (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">V súbore máte certifikáty, ktoré identifikujú tieto servery</translation>
 <translation id="4598556348158889687">Správa úložiska</translation>
@@ -6647,7 +6649,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8786697630358316925">Táto možnosť bude podporovaná iba do konca decembra. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Povoliť servery proxy pre zdieľané siete</translation>
 <translation id="8791534160414513928">Posielať pri prehliadaní webov požiadavku Do Not Track</translation>
-<translation id="8794025342371547160">Obmedzená adresa IP</translation>
 <translation id="879413103056696865">Keď je hotspot zapnutý, telefón <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nové okno</translation>
 <translation id="8797459392481275117">Tento web nikdy neprekladať</translation>

@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">തെറ്റായ പിൻ നിരവധി തവണ നൽകിയതിനാൽ സുരക്ഷാ കീ ലോക്ക് ചെയ്‌തിരിക്കുന്നു. ഇത് അൺലോക്ക് ചെയ്യാൻ, നീക്കം ചെയ്‌ത് വീണ്ടും ബന്ധിപ്പിക്കുക.</translation>
 <translation id="1137589305610962734">താൽക്കാലിക ഡാറ്റ</translation>
 <translation id="1137673463384776352"><ph name="APP" /> ആപ്പില്‍ ലിങ്ക് തുറക്കുക</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{പുതിയ അറിയിപ്പ്}other{# പുതിയ അറിയിപ്പുകൾ}}</translation>
 <translation id="1139343347646843679">Linux കോൺഫിഗർ ചെയ്യുന്നതിനിടെ പിശകുണ്ടായി. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="1140351953533677694">നിങ്ങളുടെ Bluetooth, സീരിയൽ ഉപകരണങ്ങൾ ആക്‌‌സസ് ചെയ്യുക</translation>
 <translation id="114036956334641753">ഓഡിയോയും അടിക്കുറിപ്പുകളും</translation>
@@ -1067,6 +1068,7 @@
 <translation id="2220409419896228519">പ്രിയപ്പെട്ട Google ആപ്പുകളിലേക്ക് ബുക്ക്‌മാർക്കുകൾ ചേർക്കുക</translation>
 <translation id="2220529011494928058">ഒരു പ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="2220572644011485463">പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ്</translation>
+<translation id="2224337661447660594">ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="2224444042887712269">ഈ ക്രമീകരണം <ph name="OWNER_EMAIL" />-ന്റേതാണ്.</translation>
 <translation id="2224551243087462610">ഫോള്‍ഡര്‍ നാമം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2225864335125757863">നിങ്ങളുടെ അക്കൗണ്ട് സുരക്ഷിതമായി നിലനിർത്തുന്നതിന് ഈ പാസ്‌വേഡുകൾ ഉടൻ മാറ്റുക:</translation>
@@ -1669,6 +1671,7 @@
 <translation id="291056154577034373">വായിക്കാത്തവ</translation>
 <translation id="2910718431259223434">എന്തോ കുഴപ്പം സംഭവിച്ചു. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉടമയെയോ അഡ്‍മിനെയോ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">കുക്കി ഡാറ്റ സംരക്ഷിക്കുന്നതിനും വായിക്കുന്നതിനും സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശചെയ്‌തത്)</translation>
+<translation id="2915016304249900997">നിങ്ങളുടെ സ്ക്രീൻ പങ്കിടുമ്പോൾ വിശദാംശങ്ങൾ മറച്ചിരിക്കുന്നു</translation>
 <translation id="2915102088417824677">ആക്റ്റിവിറ്റി ലോഗ് കാണുക</translation>
 <translation id="2915873080513663243">സ്വയമേവയുള്ള സ്‌കാൻ</translation>
 <translation id="2916073183900451334">വെബ്‌പേജിലെ ടാബില്‍‌ അമര്‍‌ത്തുന്നത് ലിങ്കുകളെയും ഫോം ഫീല്‍‌ഡുകളെയും ഹൈലൈറ്റ് ചെയ്ത് കാണിക്കുന്നു</translation>
@@ -2439,6 +2442,7 @@
 <translation id="3819257035322786455">ബാക്കപ്പ്</translation>
 <translation id="3819261658055281761">ഈ ഉപകരണത്തിനായി ദീർഘ‌കാല API ആക്‌സസ് ടോക്കൺ സംഭരിക്കാൻ സിസ്‌റ്റത്തിന് കഴിഞ്ഞില്ല.</translation>
 <translation id="3819800052061700452">&amp;പൂര്‍ണ്ണ സ്‌ക്രീന്‍</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{കാണിക്കുക}other{എല്ലാം കാണിക്കുക}}</translation>
 <translation id="3820749202859700794">SECG എലി‌പ്‌റ്റിക് കർവ്‌ secp521r1 (NIST P-521 എന്നും അറിയപ്പെടുന്നു)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ഒരു വിപുലീകരണത്തിന് അംഗീകാരം ലഭിച്ചു}other{# വിപുലീകരണങ്ങൾക്ക് അംഗീകാരം ലഭിച്ചു}}</translation>
 <translation id="3822559385185038546">ഈ പ്രോക്‌സി നിങ്ങളുടെ അഡ്‌മിനി‌സ്‌ട്രേറ്റർ നടപ്പിലാക്കിയതാണ്</translation>
@@ -2828,6 +2832,7 @@
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="428565720843367874">ഈ ഫയൽ സ്‌കാൻ ചെയ്യുന്നതിൽ ആന്റി വൈറസ് സോഫ്റ്റ്‌വെയർ അപ്രതീക്ഷിതമായി പരാജയപ്പെട്ടു.</translation>
 <translation id="4287099557599763816">സ്‌ക്രീൻ റീഡർ</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{കാണിക്കുക}other{എല്ലാം കാണിക്കുക}}</translation>
 <translation id="4289372044984810120">നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇവിടെ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">അവലോകനം</translation>
 <translation id="4295072614469448764">നിങ്ങളുടെ ടെർമിനലിൽ ആപ്പ് ലഭ്യമാണ്. നിങ്ങളുടെ ലോഞ്ചറിൽ ഒരു ഐക്കൺ ഉണ്ടായേക്കാം.</translation>
@@ -3089,6 +3094,7 @@
 <translation id="4590324241397107707">ഡാറ്റാബേസ് സംഭരണം</translation>
 <translation id="4592891116925567110">സ്റ്റൈലസ് ഡ്രോയിംഗ് ആപ്പ്</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> ലേക്ക് പോകുക</translation>
+<translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4595560905247879544">മാനേജർക്ക് (<ph name="CUSTODIAN_NAME" />) മാത്രമേ ആപ്‌സും വിപുലീകരണങ്ങളും പരിഷ്‌ക്കരിക്കാനാകൂ.</translation>
 <translation id="4596295440756783523">ഈ സെര്‍‌വറുകളെ തിരിച്ചറിയുന്ന സര്‍‌ട്ടിഫിക്കറ്റുകള്‍‌ നിങ്ങളുടെ ഫയലിലുണ്ട്</translation>
 <translation id="4598556348158889687">സ്‌റ്റോറേജ് മാനേജ്‌മെന്റ്</translation>
@@ -6148,6 +6154,7 @@
 <translation id="820568752112382238">ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച സൈറ്റുകൾ</translation>
 <translation id="8206745257863499010">ബ്ലൂസി</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{പുതിയ അറിയിപ്പ്}other{# പുതിയ അറിയിപ്പുകൾ}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ഡൗൺലോഡ് പുരോഗമിക്കുന്നു}other{ഡൗൺലോഡുകൾ പുരോഗമിക്കുന്നു}}</translation>
 <translation id="8213449224684199188">ഫോട്ടോ മോഡിലേക്ക് പ്രവേശിച്ചു</translation>
 <translation id="8213577208796878755">ലഭ്യമായ മറ്റൊരു ഉപകരണം.</translation>
@@ -6641,7 +6648,6 @@
 <translation id="8786697630358316925">ഡിസംബറിന് ശേഷം ഈ ഓപ്ഷൻ പിന്തുണയ്ക്കില്ല. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">പങ്കിട്ട നെറ്റ്‌വർക്കുകൾക്കായി പ്രോക്സികൾ അനുവദിക്കുക</translation>
 <translation id="8791534160414513928">നിങ്ങളുടെ ബ്രൗസിംഗ് ട്രാഫിക്കിനൊപ്പം ഒരു "ട്രാക്ക് ചെയ്യരുത്" അഭ്യർത്ഥന അയയ്‌ക്കുക</translation>
-<translation id="8794025342371547160">നിയന്ത്രിത IP</translation>
 <translation id="879413103056696865">ഹോട്ട്‌സ്‌പോട്ട് ഓണായിരിക്കുമ്പോൾ, നിങ്ങളുടെ <ph name="PHONE_NAME" /> ഇനിപ്പറയുന്നവ ചെയ്യും:</translation>
 <translation id="8795916974678578410">പുതിയ വിന്‍ഡോ</translation>
 <translation id="8797459392481275117">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>

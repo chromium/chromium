@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">தவறான பின் பல முறை உள்ளிடப்பட்டதால் பாதுகாப்பு விசை பூட்டப்பட்டது. திறப்பதற்கு அதை அகற்றி மீண்டும் செருகவும்.</translation>
 <translation id="1137589305610962734">தற்காலிகத் தரவு</translation>
 <translation id="1137673463384776352"><ph name="APP" /> இல் இணைப்பைத் திற</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{புதிய அறிவிப்பு}other{# புதிய அறிவிப்புகள்}}</translation>
 <translation id="1139343347646843679">Linuxஸை உள்ளமைக்கும்போது பிழை ஏற்பட்டது. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="1140351953533677694">உங்கள் புளூடூத் மற்றும் தொடர் சாதனங்களை அணுகலாம்</translation>
 <translation id="114036956334641753">ஆடியோவும் வசனங்களும்</translation>
@@ -1070,6 +1071,7 @@
 <translation id="2220409419896228519">உங்களுக்குப் பிடித்த Google ஆப்ஸில் புக்மார்க்குகளைச் சேர்க்கலாம்</translation>
 <translation id="2220529011494928058">சிக்கல் குறித்துப் புகார் செய்</translation>
 <translation id="2220572644011485463">பின் அல்லது கடவுச்சொல்</translation>
+<translation id="2224337661447660594">இணைய இணைப்பு இல்லை</translation>
 <translation id="2224444042887712269">இந்த அமைப்பானது <ph name="OWNER_EMAIL" /> க்கு உரியதாகும்.</translation>
 <translation id="2224551243087462610">கோப்புறை பெயரை மாற்று</translation>
 <translation id="2225864335125757863">உங்கள் கணக்கைப் பாதுகாப்பாக வைத்துக்கொள்ள இந்தக் கடவுச்சொற்களை உடனடியாக மாற்றவும்:</translation>
@@ -1672,6 +1674,7 @@
 <translation id="291056154577034373">படிக்காதவை</translation>
 <translation id="2910718431259223434">ஏதோ தவறாகிவிட்டது. மீண்டும் முயலவும் அல்லது உங்கள் சாதன உரிமையாளரையோ நிர்வாகியையோ தொடர்புகொள்ளவும். பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">குக்கீத் தரவை, தளங்கள் சேமிக்கவும் படிக்கவும் அனுமதி (பரிந்துரைக்கப்பட்டது)</translation>
+<translation id="2915016304249900997">திரையைப் பகிரும்போது விவரங்கள் மறைக்கப்படும்</translation>
 <translation id="2915102088417824677">செயல்பாட்டுப் பதிவைக் காட்டு</translation>
 <translation id="2915873080513663243">தானியங்கு ஸ்கேன்</translation>
 <translation id="2916073183900451334">ஒரு வலைப்பக்கத்தில் Tab விசையை அழுத்துவதால், இணைப்புகளும், படிவப்புலங்களும் தனிப்படுத்தி காண்பிக்கப்படுகின்றன</translation>
@@ -2442,6 +2445,7 @@
 <translation id="3819257035322786455">மறுபிரதி</translation>
 <translation id="3819261658055281761">இந்தச் சாதனத்திற்கான நீண்டகால API அணுகல் டோக்கனை சிஸ்டத்தால் சேமிக்க முடியவில்லை.</translation>
 <translation id="3819800052061700452">&amp;முழுத்திரை</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{காட்டு}other{எல்லாம் காட்டு}}</translation>
 <translation id="3820749202859700794">SECG நீள்வட்ட வளைவான secp521r1 (NIST P-521 எனவும் அறியப்படும்)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{நீட்டிப்பு ஒன்று அங்கீகரிக்கப்பட்டுள்ளது}other{# நீட்டிப்புகள் அங்கீகரிக்கப்பட்டுள்ளன}}</translation>
 <translation id="3822559385185038546">உங்கள் நிர்வாகி இந்த ப்ராக்ஸியைச் செயல்படுத்தியுள்ளார்</translation>
@@ -2832,6 +2836,7 @@
 <translation id="4285498937028063278">பிரித்தெடு</translation>
 <translation id="428565720843367874">இந்தக் கோப்பை ஸ்கேன் செய்யும்போது எதிர்பாராதவிதமாக வைரஸ் தடுப்பு மென்பொருள் தோல்வியடைந்தது.</translation>
 <translation id="4287099557599763816">ஸ்க்ரீன் ரீடர்</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{காட்டு}other{எல்லாம் காட்டு}}</translation>
 <translation id="4289372044984810120">உங்கள் கணக்குகளை இங்கே நிர்வகிக்கலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
 <translation id="4295072614469448764">ஆப்ஸ் உங்கள் முனையத்தில் உள்ளது. உங்கள் தொடக்கியிலும் ஒரு ஐகான் இருக்கக்கூடும்.</translation>
@@ -3093,6 +3098,7 @@
 <translation id="4590324241397107707">தரவுத்தளச் சேகரிப்பு</translation>
 <translation id="4592891116925567110">ஸ்டைலஸ் கொண்டு வரையும் ஆப்ஸ்</translation>
 <translation id="4593021220803146968"><ph name="URL" /> க்குச் &amp;செல்க</translation>
+<translation id="4593212453765072419">பிராக்ஸி அங்கீகரிப்பு தேவை</translation>
 <translation id="4595560905247879544">பயன்பாடுகளையும் நீட்டிப்புகளையும் நிர்வாகியால் (<ph name="CUSTODIAN_NAME" />) மட்டுமே மாற்ற முடியும்.</translation>
 <translation id="4596295440756783523">இந்தச் சேவையகங்களை அடையாளங்காணும் சான்றிதழ்கள் கோப்பில் உள்ளன</translation>
 <translation id="4598556348158889687">சேமிப்பிட மேலாண்மை</translation>
@@ -6151,6 +6157,7 @@
 <translation id="820568752112382238">அதிகம் பார்த்த தளங்கள்</translation>
 <translation id="8206745257863499010">ப்ளூஸி</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{புதிய அறிவிப்பு}other{# புதிய அறிவிப்புகள்}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{பதிவிறக்கம் செயலில் உள்ளது}other{பதிவிறக்கங்கள் செயலில் உள்ளன}}</translation>
 <translation id="8213449224684199188">படப் பயன்முறைக்குச் சென்றது</translation>
 <translation id="8213577208796878755">கிடைக்கும் இன்னொரு சாதனம்.</translation>
@@ -6645,7 +6652,6 @@
 <translation id="8786697630358316925">டிசம்பருக்குப் பிறகு இந்த விருப்பம் ஆதரிக்கப்படாது. <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">பகிர்ந்த பிணையங்களில் புராக்ஸிகளை அனுமதி</translation>
 <translation id="8791534160414513928">"கண்காணிக்க வேண்டாம்" என்ற கோரிக்கையுடன் எனது உலாவல் ட்ராஃபிக்கை அனுப்பு</translation>
-<translation id="8794025342371547160">வரையறுக்கப்பட்ட IP</translation>
 <translation id="879413103056696865">ஹாட்ஸ்பாட் இயக்கத்தில் இருக்கும் போது, உங்கள் <ph name="PHONE_NAME" /> இல்:</translation>
 <translation id="8795916974678578410">புதிய சாளரம்</translation>
 <translation id="8797459392481275117">ஒருபோதும் இந்தத் தளத்தை மொழிபெயர்க்காதே</translation>

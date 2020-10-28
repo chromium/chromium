@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">پیسٹ کریں</translation>
 <translation id="3958548648197196644">کیوی</translation>
 <translation id="3966388904776714213">آڈیو پلیئر</translation>
-<translation id="3984317463833596033">‏<ph name="FOLDER_NAME" /> فولڈر میں فائلز ترمیم کرنے کیلئے Parallels ڈیسک ٹاپ کی اجازت دیں</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4070370845051020638">کینٹونیز کا اندراج کا طریقہ</translation>
 <translation id="4072248638558688893">تامل کی بورڈ (فونیٹک)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">‏فائل کی یہ قسم تعاون یافتہ نہیں ہے۔ اس قسم کی فائل کو کھول سکنے والی ایپ تلاش کرنے کیلئے براہ کرم <ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> ملاحظہ کریں۔
     <ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">یہاں دیکھنے کیلئے کچھ بھی نہیں ہے…</translation>
-<translation id="5857774240076772505">‏Linux ایپس کو <ph name="FOLDER_NAME" /> فولڈر میں فائلز میں ترمیم کرنے کی اجازت دیں</translation>
 <translation id="5892290200158927959">‏فرانسیسی BÉPO کی بورڈ</translation>
 <translation id="5911887972742538906">‏آپ کی Linux ایپلیکیشن انسٹال کرنے کے دوران ایک خرابی پیش آ گئی۔</translation>
 <translation id="5912396950572065471">فارمیٹ</translation>
 <translation id="5913638992615760742">کاپی کرنے کی کارروائی ناکام ہو گئی، غیر متوقع خرابی: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">جاپانی ان پٹ (جاپانی کی بورڈ کے لیے)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">‏Linux ایپس کو اپنے Google Drive میں فائلز میں ترمیم کرنے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> آئٹمز</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ترتیب دینے کے اختیارات</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">‏Google Drive اس وقت "<ph name="FILENAME" />" کی مطابقت پذیری نہیں کر سکا۔ Google Drive بعد میں دوبارہ کوشش کرے گا۔</translation>
 <translation id="8477649328507734757">گردش</translation>
 <translation id="8487700953926739672">آف لائن دستیاب ہے</translation>
-<translation id="8490342535582768689">‏اپنے Google Drive میں فائلز ترمیم کرنے کیلئے Parallels ڈیسک ٹاپ کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="8551494947769799688">ليٹوين</translation>

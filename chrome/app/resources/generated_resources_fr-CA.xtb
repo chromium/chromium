@@ -1071,6 +1071,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2220409419896228519">Ajoutez des favoris à vos applications Google préférées</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
+<translation id="2224337661447660594">Aucune connexion Internet</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Modifier le nom du dossier</translation>
 <translation id="2225864335125757863">Veuillez changer ces mots de passe immédiatement pour protéger votre compte :</translation>
@@ -6649,7 +6650,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8786697630358316925">Cette option ne sera plus prise en charge après le 31 décembre. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Autoriser les mandataires pour les réseaux partagés</translation>
 <translation id="8791534160414513928">Envoyer une demande d'interdiction de suivi avec les transferts liés à votre navigation</translation>
-<translation id="8794025342371547160">IP restreinte</translation>
 <translation id="879413103056696865">Lors de l'utilisation du point d'accès, votre <ph name="PHONE_NAME" /> :</translation>
 <translation id="8795916974678578410">Nouvelle fenêtre</translation>
 <translation id="8797459392481275117">Ne jamais traduire ce site</translation>

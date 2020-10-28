@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="3958548648197196644">Կիվի</translation>
 <translation id="3966388904776714213">Ձայնային նվագարկիչ</translation>
-<translation id="3984317463833596033">Թույլ տվեք Parallels Desktop-ին փոփոխել «<ph name="FOLDER_NAME" />» պանակի ֆայլերը</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4070370845051020638">Կանտոներեն ներածման եղանակ</translation>
 <translation id="4072248638558688893">Թամիլերենի ստեղնաշար (հնչյունաբանական)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">Ֆայլի այս տեսակը չի աջակցվում: Ֆայլի այս տեսակը բացող հավելված գտնելու համար այցելեք <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />:
     <ph name="BEGIN_LINK_HELP" />Իմանալ ավելին<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Այստեղ ոչինչ չկա...</translation>
-<translation id="5857774240076772505">Թույլ տվեք Լինուքսին փոփոխել «<ph name="FOLDER_NAME" />» պանակի ֆայլերը։</translation>
 <translation id="5892290200158927959">Ֆրանսիական BÉPO ստեղնաշար</translation>
 <translation id="5911887972742538906">Լինուքսի հավելվածը տեղադրելիս սխալ առաջացավ:</translation>
 <translation id="5912396950572065471">Ձևաչափ</translation>
 <translation id="5913638992615760742">Չհաջողվեց պատճենել։ Անսպասելի սխալ առաջացավ՝ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Ճապոներեն ներածում (ճապոներենի ստեղնաշարի համար)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Թույլ տվեք Լինուքսին օգտագործել հավելվածները՝ ձեր Google Drive-ի ֆայլերը փոփոխելու համար: Փոփոխությունները կհամաժամացվեն ձեր մյուս սարքերի հետ:</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> տարր</translation>
 <translation id="5957366693331451795">Chromebox սարքեր</translation>
 <translation id="5982621672636444458">Տեսակավորման ընտրանքներ</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">Google Drive-ը չկարողացավ համաժամացնել «<ph name="FILENAME" />» ֆայլը: Ավելի ուշ այն նորից կփորձի:</translation>
 <translation id="8477649328507734757">Պտույտ</translation>
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
-<translation id="8490342535582768689">Թույլ տվեք Parallels Desktop-ին փոփոխել տվյալները ձեր Google Drive-ում Փոփոխությունները կհամաժամացվեն ձեր մյուս սարքերի հետ։</translation>
 <translation id="8521441079177373948">ՄԹ</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="8551494947769799688">Լատվիական</translation>

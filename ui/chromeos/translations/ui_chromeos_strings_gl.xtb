@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Reprodutor de audio</translation>
-<translation id="3984317463833596033">Concede permiso a Parallels Desktop para modificar ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4070370845051020638">Método de introdución de cantonés</translation>
 <translation id="4072248638558688893">Teclado támil (fonético)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">Este tipo de ficheiro non é compatible. Visita a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para encontrar unha aplicación que poida abrir este tipo de ficheiro.
     <ph name="BEGIN_LINK_HELP" />Máis información<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Non hai contido para mostrar...</translation>
-<translation id="5857774240076772505">Concede permisos ás aplicacións de Linux para modificar ficheiros no cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="5892290200158927959">Teclado BÉPO francés</translation>
 <translation id="5911887972742538906">Produciuse un erro durante a instalación da aplicación Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">Non se puido efectuar a copia porque se produciu un erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Introdución de xaponés (para o teclado xaponés)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Concede permisos ás aplicacións de Linux para modificar ficheiros en Google Drive. Os cambios sincronizaranse cos demais dispositivos.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementos</translation>
 <translation id="5957366693331451795">Dispositivos Chromebox</translation>
 <translation id="5982621672636444458">Opcións de ordenación</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">Google Drive non puido sincronizar <ph name="FILENAME" /> neste momento. Google Drive tentarao de novo máis tarde.</translation>
 <translation id="8477649328507734757">Círculos</translation>
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
-<translation id="8490342535582768689">Concede permiso a Parallels Desktop para modificar ficheiros en Google Drive. Os cambios sincronizaranse cos demais dispositivos.</translation>
 <translation id="8521441079177373948">RU</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8551494947769799688">Letón</translation>

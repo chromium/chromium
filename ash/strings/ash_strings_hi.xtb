@@ -495,7 +495,7 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5876666360658629066">अभिभावक वाला कोड डालें</translation>
-<translation id="5881540930187678962">'फ़ोन हब' को बाद में सेट अप करें</translation>
+<translation id="5881540930187678962">फ़ोन हब को बाद में सेट अप करें</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="589817443623831496">पॉइंट स्कैनिंग</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -550,7 +550,7 @@
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">सभी सूचनाएं हटाएं</translation>
 <translation id="643147933154517414">सभी पूरे हो गए</translation>
-<translation id="6431865393913628856">स्क्रीन रिकॉर्डर</translation>
+<translation id="6431865393913628856">स्क्रीन रिकॉर्ड</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /></translation>
 <translation id="6452181791372256707">अस्‍वीकार करें</translation>
 <translation id="6453179446719226835">भाषा बदल दी गई है</translation>
@@ -672,6 +672,7 @@
 <translation id="7649070708921625228">सहायता</translation>
 <translation id="7654687942625752712">कंप्यूटर का बोलकर दिया गया जवाब बंद करने के लिए दोनों वॉल्यूम की पांच सेकंड तक दबाकर रखें.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
+<translation id="7662283695561029522">कॉन्फ़िगर करने के लिए टैप करें</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
 <translation id="7705822912736783206">फ़िंगरप्रिंट से पुष्टि करें</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 सूचना}one{# सूचना}other{# सूचनाएं}}</translation>
@@ -825,7 +826,7 @@
 <translation id="9084606467167974638">टॉगल मेन्यू की जगह</translation>
 <translation id="9089416786594320554">इनपुट के तरीके</translation>
 <translation id="9091626656156419976">डिसप्ले <ph name="DISPLAY_NAME" /> हटा दिया गया</translation>
-<translation id="9092749890156285613">हाल ही के स्क्रीन कैप्चर और डाउनलोड की गई फ़ाइलें</translation>
+<translation id="9092749890156285613">हाल ही के स्क्रीन कैप्चर और डाउनलोड किए गए वीडियो</translation>
 <translation id="9151726767154816831">अपडेट करने के लिए रीस्टार्ट और पावरवॉश करें</translation>
 <translation id="9166331175924255663">आस-पास शेयर करने की सुविधा को ज़्यादा लोगों को दिखाने वाला मोड टॉगल करें.</translation>
 <translation id="9168436347345867845">बाद में करें</translation>

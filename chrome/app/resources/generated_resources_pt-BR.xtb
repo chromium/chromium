@@ -1071,6 +1071,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2220409419896228519">Adicione favoritos aos apps do Google que você mais usa</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
+<translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2224444042887712269">Esta configuração pertence a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar nome da pasta</translation>
 <translation id="2225864335125757863">Mude estas senhas imediatamente para manter a conta protegida:</translation>
@@ -3098,6 +3099,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4590324241397107707">Armazenamento de banco de dados</translation>
 <translation id="4592891116925567110">App de desenho com a stylus</translation>
 <translation id="4593021220803146968">&amp;Ir até <ph name="URL" /></translation>
+<translation id="4593212453765072419">Autenticação de proxy necessária</translation>
 <translation id="4595560905247879544">Apps e extensões só podem ser modificadas pelo gerente (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Você tem certificados no arquivo que identificam estes servidores</translation>
 <translation id="4598556348158889687">Gestão de armazenamento</translation>
@@ -6652,7 +6654,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8786697630358316925">Essa opção não estará disponível depois de dezembro. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Permitir proxies para redes compartilhadas</translation>
 <translation id="8791534160414513928">Enviar a observação "Não rastrear" em seu tráfego de navegação</translation>
-<translation id="8794025342371547160">IP restrito</translation>
 <translation id="879413103056696865">Enquanto o ponto de acesso estiver ativado, seu <ph name="PHONE_NAME" /> vai:</translation>
 <translation id="8795916974678578410">Nova janela</translation>
 <translation id="8797459392481275117">Nunca traduzir este site</translation>

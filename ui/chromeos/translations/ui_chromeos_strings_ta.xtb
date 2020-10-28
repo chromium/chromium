@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">ஒட்டு</translation>
 <translation id="3958548648197196644">கிவி</translation>
 <translation id="3966388904776714213">ஆடியோ பிளேயர்</translation>
-<translation id="3984317463833596033"><ph name="FOLDER_NAME" /> கோப்புறையில் உள்ள கோப்புகளை மாற்றுவதற்கான அனுமதியை Parallels Desktopபிற்கு வழங்கவும்</translation>
 <translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4070370845051020638">கான்டனீஸ் உள்ளீட்டு முறை</translation>
 <translation id="4072248638558688893">தமிழ் விசைப்பலகை (ஒலிப்புமுறை)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">இந்தக் கோப்பு வகை ஆதரிக்கப்படவில்லை. இந்த வகையான கோப்பைத் திறக்கக்கூடிய பயன்பாட்டைக் கண்டறிய <ph name="BEGIN_LINK" />Chrome இணைய அங்காடியைப்<ph name="END_LINK" /> பார்வையிடவும்.
     <ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">காண்பதற்கு இங்கே ஒன்றுமில்லை...</translation>
-<translation id="5857774240076772505"><ph name="FOLDER_NAME" /> கோப்புறையிலுள்ள கோப்புகளைத் திருத்துவதற்கு Linux ஆப்ஸுக்கு அனுமதி வழங்கவும்</translation>
 <translation id="5892290200158927959">ஃபிரஞ்சு பீபோ விசைப்பலகை</translation>
 <translation id="5911887972742538906">உங்கள் Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது.</translation>
 <translation id="5912396950572065471">ஃபார்மேட்</translation>
 <translation id="5913638992615760742">நகலெடுக்க முடியவில்லை, எதிர்பாராத பிழை: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">ஜாப்பனீஸ் உள்ளீடு (ஜாப்பனீஸ் கீபோர்டிற்கானது)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">உங்கள் Google இயக்ககத்தில் உள்ள கோப்புகளைத் திருத்த Linux ஆப்ஸுக்கு அனுமதி வழங்கவும். மாற்றங்கள் உங்கள் பிற சாதனங்களுடன் ஒத்திசைக்கப்படும்.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> கோப்புகள்</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">வரிசைப்படுத்தல் விருப்பங்கள்</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google இயக்ககத்தால் "<ph name="FILENAME" />"ஐ இப்போது ஒத்திசைக்க முடியவில்லை. Google இயக்ககம் பிறகு முயற்சிக்கும்.</translation>
 <translation id="8477649328507734757">சுழல்</translation>
 <translation id="8487700953926739672">ஆஃப்லைனில் இருக்கிறது</translation>
-<translation id="8490342535582768689">உங்கள் Google Driveவில் உள்ள கோப்புகளை மாற்றுவதற்கான அனுமதியை Parallels Desktopபிற்கு வழங்கவும். மாற்றங்கள் உங்கள் பிற சாதனங்களுடன் ஒத்திசைக்கப்படும்.</translation>
 <translation id="8521441079177373948">யு.கே.</translation>
 <translation id="8525306231823319788">முழுத்திரை</translation>
 <translation id="8551494947769799688">லத்வியன்</translation>

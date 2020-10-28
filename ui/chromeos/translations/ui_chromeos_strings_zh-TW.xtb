@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3958548648197196644">奇異果</translation>
 <translation id="3966388904776714213">音訊播放器</translation>
-<translation id="3984317463833596033">授權 Parallels Desktop 修改「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4070370845051020638">粵語輸入法</translation>
 <translation id="4072248638558688893">坦米爾文鍵盤 (拼音)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">系統不支援這個檔案類型。請造訪 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />，尋找是否有可開啟這類檔案的應用程式。
     <ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">這裡沒有任何內容...</translation>
-<translation id="5857774240076772505">授權 Linux 應用程式修改「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="5892290200158927959">法文 BÉPO 鍵盤</translation>
 <translation id="5911887972742538906">安裝 Linux 應用程式的過程中發生錯誤。</translation>
 <translation id="5912396950572065471">格式</translation>
 <translation id="5913638992615760742">複製作業失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">日文輸入法 (適用於日文鍵盤)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">授權 Linux 應用程式修改你的 Google 雲端硬碟檔案。系統會將變更內容同步至你的其他裝置。</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序選項</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google 雲端硬碟目前無法同步處理「<ph name="FILENAME" />」，將於稍後再試。</translation>
 <translation id="8477649328507734757">同心圓</translation>
 <translation id="8487700953926739672">可離線使用</translation>
-<translation id="8490342535582768689">授權 Parallels Desktop 修改 Google 雲端硬碟中的檔案。系統會將變更內容同步至你的其他裝置。</translation>
 <translation id="8521441079177373948">英式配置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8551494947769799688">拉脫維亞文</translation>

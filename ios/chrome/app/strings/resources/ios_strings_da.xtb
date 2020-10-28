@@ -341,6 +341,7 @@ Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for
 <translation id="4751645464639803239">Ny inkognitofane</translation>
 <translation id="4758977202923349869">Placer betalingskortet i dette felt</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
+<translation id="4778644898150334464">Brug en anden adgangskode</translation>
 <translation id="4802417911091824046">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
 
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>

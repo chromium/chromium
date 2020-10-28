@@ -1071,6 +1071,7 @@
 <translation id="2220409419896228519">დაამატეთ სანიშნეები თქვენს რჩეულ Google აპებს</translation>
 <translation id="2220529011494928058">შეტყობინება პრობლემის შესახებ</translation>
 <translation id="2220572644011485463">PIN-კოდი ან პაროლი</translation>
+<translation id="2224337661447660594">ინტერნეტ-კავშირი არ არის</translation>
 <translation id="2224444042887712269">ამ პარამეტრის მფლობელია <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">საქაღალდის სახელის რედაქტირება</translation>
 <translation id="2225864335125757863">ანგარიშის უსაფრთხოებისთვის გირჩევთ, დაუყოვნებლივ შეცვალოთ შემდეგი პაროლები:</translation>
@@ -6646,7 +6647,6 @@
 <translation id="8786697630358316925">ეს ვარიანტი აღარ იქნება მხარდაჭერილი დეკემბრის შემდეგ. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">პროქსების გამოყენება გაზიარებული ქსელებისთვის</translation>
 <translation id="8791534160414513928">თქვენი ბრაუზერის საშუალებით „არ მიაკვლიო“ მოთხოვნის გაგზავნა</translation>
-<translation id="8794025342371547160">შეზღუდული IP</translation>
 <translation id="879413103056696865">უსადენო ქსელის ჩართვისას თქვენს <ph name="PHONE_NAME" />-ში მოხდება:</translation>
 <translation id="8795916974678578410">ახალი ფანჯარა</translation>
 <translation id="8797459392481275117">არასოდეს ითარგმნოს ეს საიტი</translation>

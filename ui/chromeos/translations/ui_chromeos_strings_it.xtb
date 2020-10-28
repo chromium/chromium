@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Lettore audio</translation>
-<translation id="3984317463833596033">Concedi a Parallels Desktop l'autorizzazione per modificare i file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4070370845051020638">Metodo di immissione Cantonese</translation>
 <translation id="4072248638558688893">Tastiera Tamil (fonetica)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">Questo tipo di file non è supportato. Visita il <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> per trovare un'app in grado di aprire questo tipo di file.
     <ph name="BEGIN_LINK_HELP" />Ulteriori informazioni<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nessun dato presente...</translation>
-<translation id="5857774240076772505">Concedi a Linux l'autorizzazione di modificare i file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="5892290200158927959">Tastiera francese BÉPO</translation>
 <translation id="5911887972742538906">Si è verificato un errore durante l'installazione dell'applicazione Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">Operazione di copia non riuscita, errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Japanese Input (per tastiera giapponese)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Concedi a Linux l'autorizzazione per modificare i file nel tuo Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementi</translation>
 <translation id="5957366693331451795">I Chromebox</translation>
 <translation id="5982621672636444458">Opzioni ordinamento</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">Al momento non è possibile sincronizzare il file "<ph name="FILENAME" />" con Google Drive. Google Drive riproverà più tardi.</translation>
 <translation id="8477649328507734757">Rotazione</translation>
 <translation id="8487700953926739672">Disponibile offline</translation>
-<translation id="8490342535582768689">Concedi a Parallels Desktop l'autorizzazione per modificare i file nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="8521441079177373948">Regno Unito</translation>
 <translation id="8525306231823319788">Schermo intero</translation>
 <translation id="8551494947769799688">Lettone</translation>

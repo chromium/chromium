@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">PIN の入力間違いが許容回数を超えたため、セキュリティ キーがロックされています。ロックを解除するには、セキュリティ キーをいったん取り外し、もう一度挿入してください。</translation>
 <translation id="1137589305610962734">一時データ</translation>
 <translation id="1137673463384776352"><ph name="APP" /> でリンクを開く</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新しい通知}other{# 件の新しい通知}}</translation>
 <translation id="1139343347646843679">Linux の設定中にエラーが発生しました。管理者にお問い合わせください。</translation>
 <translation id="1140351953533677694">Bluetooth デバイスとシリアル デバイスへのアクセス</translation>
 <translation id="114036956334641753">音声、字幕</translation>
@@ -1070,6 +1071,7 @@
 <translation id="2220409419896228519">お気に入りの Google アプリへのブックマークを追加します</translation>
 <translation id="2220529011494928058">問題を報告</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
+<translation id="2224337661447660594">インターネットに接続されていません</translation>
 <translation id="2224444042887712269">この設定は <ph name="OWNER_EMAIL" /> に帰属します。</translation>
 <translation id="2224551243087462610">フォルダ名の編集</translation>
 <translation id="2225864335125757863">アカウントのセキュリティ保護のため、今すぐ次のパスワードを変更してください。</translation>
@@ -1672,6 +1674,7 @@
 <translation id="291056154577034373">未読</translation>
 <translation id="2910718431259223434">エラーが発生しました。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2913331724188855103">サイトに Cookie データの保存と読み取りを許可する（推奨）</translation>
+<translation id="2915016304249900997">画面の共有中は詳細を表示しません</translation>
 <translation id="2915102088417824677">アクティビティ ログを表示</translation>
 <translation id="2915873080513663243">自動スキャン</translation>
 <translation id="2916073183900451334">ウェブページで Tab キーを押すと、リンクやフォーム欄がハイライト表示されます</translation>
@@ -2442,6 +2445,7 @@
 <translation id="3819257035322786455">バックアップ</translation>
 <translation id="3819261658055281761">このデバイスの長期 API アクセス トークンを保存できませんでした。</translation>
 <translation id="3819800052061700452">全画面表示(&amp;F)</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{表示}other{すべて表示}}</translation>
 <translation id="3820749202859700794">SECG 楕円曲線 secp521r1（別名 NIST P-521）</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が承認されました}other{# 個の拡張機能が承認されました}}</translation>
 <translation id="3822559385185038546">このプロキシは管理者によって制御されています</translation>
@@ -2832,6 +2836,7 @@
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="428565720843367874">このファイルのスキャン中にウイルス対策ソフトウェアで予期しないエラーが発生しました。</translation>
 <translation id="4287099557599763816">スクリーン リーダー</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{表示}other{すべて表示}}</translation>
 <translation id="4289372044984810120">ここでアカウントを管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">概要</translation>
 <translation id="4295072614469448764">アプリはお使いのデバイスでご利用いただけます。ランチャーにアイコンが追加されている可能性もあります。</translation>
@@ -3093,6 +3098,7 @@
 <translation id="4590324241397107707">データベース ストレージ</translation>
 <translation id="4592891116925567110">タッチペンの描画アプリ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> に移動(&amp;G)</translation>
+<translation id="4593212453765072419">プロキシ認証が必要です</translation>
 <translation id="4595560905247879544">アプリと拡張機能は管理者（<ph name="CUSTODIAN_NAME" />）だけが変更できます。</translation>
 <translation id="4596295440756783523">これらのサーバーを識別する証明書がファイルに格納されています</translation>
 <translation id="4598556348158889687">ストレージ管理</translation>
@@ -6150,6 +6156,7 @@
 <translation id="820568752112382238">よくアクセスするサイト</translation>
 <translation id="8206745257863499010">ブルース</translation>
 <translation id="8206859287963243715">携帯電話</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新しい通知}other{# 件の新しい通知}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ダウンロードが進行中です}other{ダウンロードが進行中です}}</translation>
 <translation id="8213449224684199188">写真モードに切り替えました</translation>
 <translation id="8213577208796878755">利用可能なデバイスが 1 つあります。</translation>
@@ -6644,7 +6651,6 @@
 <translation id="8786697630358316925">このオプションは 12 月以降サポートされません。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">共有ネットワークのプロキシを許可する</translation>
 <translation id="8791534160414513928">閲覧トラフィックと一緒に「トラッキング拒否」リクエストを送信する</translation>
-<translation id="8794025342371547160">制限付き IP</translation>
 <translation id="879413103056696865">アクセス ポイントが有効な場合、<ph name="PHONE_NAME" /> は次のように動作します。</translation>
 <translation id="8795916974678578410">新規ウインドウ</translation>
 <translation id="8797459392481275117">このサイトは翻訳しない</translation>

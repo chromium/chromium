@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Ljudspelare</translation>
-<translation id="3984317463833596033">Ge Parallels Desktop behörighet att ändra filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4070370845051020638">Inmatningsmetod för kantonesiska</translation>
 <translation id="4072248638558688893">Tangentbord för tamil (fonetiskt)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">Filtypen stöds inte. Besök <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> om du vill hitta en app som kan öppna den här filen.
     <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Det finns ingenting att se här ...</translation>
-<translation id="5857774240076772505">Ge Linux-appar behörighet att ändra filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="5892290200158927959">Franskt BÉPO-tangentbord</translation>
 <translation id="5911887972742538906">Ett fel uppstod under installationen av Linux-programmet.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopieringen misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Inmatning på japanska (för japanskt tangentbord)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Ge Linux-appar behörighet att ändra filer på din Google Drive. Ändringarna synkas till dina andra enheter.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> objekt</translation>
 <translation id="5957366693331451795">Chromebox-modeller</translation>
 <translation id="5982621672636444458">Sorteringsalternativ</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Det gick inte att synkronisera <ph name="FILENAME" /> med Google Drive just nu. Ett nytt försök görs senare.</translation>
 <translation id="8477649328507734757">Snurra</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>
-<translation id="8490342535582768689">Ge Parallels Desktop behörighet att ändra filer på Google Drive. Ändringarna synkas med dina andra enheter.</translation>
 <translation id="8521441079177373948">Storbritannien</translation>
 <translation id="8525306231823319788">Helskärm</translation>
 <translation id="8551494947769799688">lettiska</translation>

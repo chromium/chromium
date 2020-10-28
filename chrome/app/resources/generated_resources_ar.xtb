@@ -1071,6 +1071,7 @@
 <translation id="2220409419896228519">‏إضافة الإشارات المرجعية إلى تطبيقات Google المفضَّلة لديك</translation>
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
 <translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
+<translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="2224444042887712269">ينتمي هذا الإعداد إلى <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">تعديل اسم المجلد</translation>
 <translation id="2225864335125757863">عليك تغيير كلمات المرور هذه فورًا للحفاظ على أمان حسابك:</translation>
@@ -1535,7 +1536,8 @@
 <translation id="2751131328353405138">‏جارٍ تثبيت نظام ملفات ssh لحاوية نظام التشغيل Linux</translation>
 <translation id="2751739896257479635">‏مصادقة المرحلة الثانية عبر EAP</translation>
 <translation id="2753677631968972007">التحكّم اليدوي بأذونات المواقع الإلكترونية</translation>
-<translation id="2755367719610958252">إدارة ميزات إمكانية الوصول</translation>
+<translation id="2755367719610958252">إدارة ميزات تسهيل الاستخدام
+</translation>
 <translation id="275662540872599901">الشاشة متوقفة</translation>
 <translation id="2757338480560142065">يُرجى التأكد من أن كلمة المرور التي تحتفظ بها تُطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">تم حظر استخدام الكاميرا</translation>
@@ -3094,6 +3096,7 @@
 <translation id="4590324241397107707">تخزين قاعدة البيانات</translation>
 <translation id="4592891116925567110">تطبيق الرسم باستخدام قلم الشاشة</translation>
 <translation id="4593021220803146968">&amp;انتقال إلى <ph name="URL" /></translation>
+<translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4595560905247879544">لا يمكن تعديل التطبيقات والإضافات إلا من قِبل المدير (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">لديك شهادات في الملف تحدد هذه الخوادم</translation>
 <translation id="4598556348158889687">إدارة مساحة التخزين</translation>
@@ -6648,7 +6651,6 @@
 <translation id="8786697630358316925">لن يتوفّر هذا الخيار بعد كانون الأول (ديسمبر). <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">السماح بالخوادم الوكيلة للشبكات المشتركة</translation>
 <translation id="8791534160414513928">إرسال طلب "عدم التعقب" مع زيارات التصفح</translation>
-<translation id="8794025342371547160">‏عنوان IP مقيد</translation>
 <translation id="879413103056696865">أثناء تشغيل نقطة الاتصال، سينفّذ جهاز <ph name="PHONE_NAME" /> ما يلي:</translation>
 <translation id="8795916974678578410">نافذة جديدة</translation>
 <translation id="8797459392481275117">عدم ترجمة هذا الموقع مطلقًا</translation>

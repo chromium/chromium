@@ -341,6 +341,7 @@ Vaše data jsou šifrována pomocí heslové fráze pro synchronizaci. Chcete-li
 <translation id="4751645464639803239">Nová anonymní karta</translation>
 <translation id="4758977202923349869">Umístěte kreditní kartu do tohoto rámečku</translation>
 <translation id="4775879719735953715">Výchozí prohlížeč</translation>
+<translation id="4778644898150334464">Použít jiné heslo</translation>
 <translation id="4802417911091824046">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy ze služby Google Pay.
 
 Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<ph name="END_LINK" />.</translation>

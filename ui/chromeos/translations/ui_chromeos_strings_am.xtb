@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">ለጥፍ</translation>
 <translation id="3958548648197196644">ኪዊ</translation>
 <translation id="3966388904776714213">የድምጽ አጫዋች</translation>
-<translation id="3984317463833596033">Parallels ዴስክቶፕ በ<ph name="FOLDER_NAME" /> አቃፊው ውስጥ ያሉ ፋይሎችን እንዲቀይር ፈቃድ ይስጡት</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4070370845051020638">የካንቶኒዝ ግቤት ስልት</translation>
 <translation id="4072248638558688893">የታሚል ቁልፍ ሰሌዳ (ፎነቲክ)</translation>
@@ -468,14 +467,12 @@
 <translation id="5838825566232597749">አሜሪካ ዎርክማን ዓለምአቀፍ</translation>
 <translation id="5850516540536751549">ይህ የፋይል ዓይነት አይደገፍም። እባክዎ የዚህ አይነት ፋይል መክፈት የሚችል መተግበሪያ ለማግኘት <ph name="BEGIN_LINK" />Chrome የድር መደብር<ph name="END_LINK" />ን ይጎብኙ። <ph name="BEGIN_LINK_HELP" />ተጨማሪ ለመረዳት<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">እዚህ ላይ ምንም የሚታይ ነገር የለም...</translation>
-<translation id="5857774240076772505">የLinux መተግበሪያዎች በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲቀይሩ ይፍቀዱ</translation>
 <translation id="5892290200158927959">የፈረንሳይኛ BÉPO ቁልፍ ሰሌዳ</translation>
 <translation id="5911887972742538906">የእርስዎን የLinux መተግበሪያ በመጫን ወቅት ስህተት አጋጥሟል።</translation>
 <translation id="5912396950572065471">ቅርጸት</translation>
 <translation id="5913638992615760742">የመቅዳት ክወና አልተሳካም፣ ያልተጠበቀ ስህተት፦ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">የጃፓንኛ ግቤት (ለጃፓንኛ ቁልፍ ሰሌዳ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">የLinux መተግበሪያዎች በእርስዎ Google Drive ውስጥ ፋይሎችን የመቀየር ፈቃድ ይስጧቸው። ለውጦች ከሌሎች መሣሪያዎችዎ ጋር ይሳመራሉ።</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">የድርደራ አማራጮች</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">Google Drive አሁን «<ph name="FILENAME" />» ማስመር አልቻለም። Google Drive ቆይቶ እንደገና ይሞክራል።</translation>
 <translation id="8477649328507734757">አሹር</translation>
 <translation id="8487700953926739672">ከመስመር ውጪ ይገኛል</translation>
-<translation id="8490342535582768689">Parallels ዴስክቶፕ በእርስዎ Google Drive ውስጥ ፋይሎችን የመቀየር ፈቃድ ይስጧቸው። ለውጦች ከሌሎች መሣሪያዎችዎ ጋር ይሳመራሉ።</translation>
 <translation id="8521441079177373948">ዩኬ</translation>
 <translation id="8525306231823319788">ሙሉ ማያ ገጽ</translation>
 <translation id="8551494947769799688">ላትቪያን</translation>

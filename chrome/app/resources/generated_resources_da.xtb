@@ -1071,6 +1071,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2220409419896228519">Føj bogmærker til dine foretrukne Google-apps</translation>
 <translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
+<translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2224444042887712269">Denne indstilling tilhører <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Rediger mappenavn</translation>
 <translation id="2225864335125757863">Skift disse adgangskoder med det samme for at beskytte din konto:</translation>
@@ -3097,6 +3098,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4590324241397107707">Lagring i database</translation>
 <translation id="4592891116925567110">App til tegning med styluspen</translation>
 <translation id="4593021220803146968">&amp;Gå til <ph name="URL" /></translation>
+<translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4595560905247879544">Apps og udvidelser kan kun ændres af administratoren (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Du har lagrede certifikater, som identificerer følgende servere:</translation>
 <translation id="4598556348158889687">Administration af lagerplads</translation>
@@ -6650,7 +6652,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8786697630358316925">Denne valgmulighed understøttes ikke efter december. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Tillad proxyer til delte netværk</translation>
 <translation id="8791534160414513928">Send en anmodning om "Do Not Track" sammen med din browsertrafik</translation>
-<translation id="8794025342371547160">Adgangsbeskyttet IP-adresse</translation>
 <translation id="879413103056696865">Mens hotspottet er aktivt, vil din <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Nyt vindue</translation>
 <translation id="8797459392481275117">Oversæt aldrig dette website</translation>

@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">අලවන්න</translation>
 <translation id="3958548648197196644">කිවි</translation>
 <translation id="3966388904776714213">ශ්‍රව්‍ය වාදකය</translation>
-<translation id="3984317463833596033">Parallels Desktop හට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ඇති ගොනු වෙනස් කිරීමට අවසර දෙන්න</translation>
 <translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4070370845051020638">කැන්ටොනීස් ආදාන ක්‍රමය</translation>
 <translation id="4072248638558688893">දෙමළ යතුරු පුවරුව (ශබ්දිම)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">මෙම ගොනු වර්ගය සහය නොදක්වයි. සමාන යෙදුමක් සොයාගැනීමට කරුණාකර  <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> වෙත පිවිසෙන්න.
     <ph name="BEGIN_LINK_HELP" />තවත් දැනගන්න<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">මෙහි දැකීමට කිසිවක් නැත ...</translation>
-<translation id="5857774240076772505">ලිනක්ස් යෙදුම්වලට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ගොනු වෙනස් කිරීමට අවසර දෙන්න</translation>
 <translation id="5892290200158927959">ප්‍රංශ BÉPO යතුරු පුවරුව</translation>
 <translation id="5911887972742538906">ඔබගේ Linux යෙදුම ස්ථාපනය අතරතුරේදී දෝෂයක් ඇති විය.</translation>
 <translation id="5912396950572065471">ආකෘතිය</translation>
 <translation id="5913638992615760742">පිටපත් කිරීමේ ක්‍රියාව අසාර්ථක විය, අනපේක්‍ෂිත දෝෂයයි: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">ජපන් ආදානය (ජපන් යතුරු පුවරුව සඳහා)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">ඔබේ Google Drive තුළ ඇති ගොනු වෙනස් කිරීමට ලිනක්ස් යෙදුම්වලට අවසර දෙන්න. වෙනස්කම් ඔබේ අනෙකුත් උපාංගවලට සමමුහූර්ත කෙරේ.</translation>
 <translation id="5955954492236143329">අයිතම <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">අනුපිළිවෙලට සකසන්න විකල්ප</translation>
@@ -719,7 +716,6 @@
 <translation id="8475647382427415476">Google Drive හට මේ අවස්ථාවේදී "<ph name="FILENAME" />" සමමුහුර්ත කළ නොහැකි විය. Google Drive පසුව නැවත උත්සාහ කරනු ඇත.</translation>
 <translation id="8477649328507734757">කරකැවීම</translation>
 <translation id="8487700953926739672">නොබැඳිව ලද  හැක</translation>
-<translation id="8490342535582768689">Parallels Desktop හට ඔබගේ Google Drive තුළ ඇති ගොනු වෙනස් කිරීමට අවසර දෙන්න වෙනස් කිරීම් ඔබේ අනෙකුත් උපාංගවලට සමමුහුර්ත කෙරේ.</translation>
 <translation id="8521441079177373948">එක්සත් රාජධානිය</translation>
 <translation id="8525306231823319788">සම්පුර්ණ තිරය</translation>
 <translation id="8551494947769799688">ලැට්වියානු</translation>

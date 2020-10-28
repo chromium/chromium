@@ -1068,6 +1068,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2220409419896228519">Shto faqeshënuesit në "Aplikacionet e Google" që preferon</translation>
 <translation id="2220529011494928058">Raporto një problem</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
+<translation id="2224337661447660594">Nuk ka internet</translation>
 <translation id="2224444042887712269">Ky cilësim i përket <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Redakto emrin e dosjes</translation>
 <translation id="2225864335125757863">Ndryshoji këto fjalëkalime menjëherë për ta mbajtur llogarinë tënde të sigurt:</translation>
@@ -6644,7 +6645,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8786697630358316925">Ky opsion nuk do të mbështetet pas dhjetorit. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Lejo përfaqësues për rrjete të ndara</translation>
 <translation id="8791534160414513928">Dërgo një kërkesë "Mos gjurmo" me trafikun e shfletimit</translation>
-<translation id="8794025342371547160">Adresa IP e kufizuar</translation>
 <translation id="879413103056696865">Kur zona e qasjes për internet është aktive, telefoni yt <ph name="PHONE_NAME" /> do të:</translation>
 <translation id="8795916974678578410">Dritare e re</translation>
 <translation id="8797459392481275117">Asnjëherë mos e përkthe këtë sajt</translation>

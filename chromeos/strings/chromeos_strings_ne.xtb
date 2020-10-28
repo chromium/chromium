@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1018656279737460067">रद्द गरियो</translation>
+<translation id="1075811647922107217">पेजको आकार</translation>
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
@@ -18,10 +19,12 @@
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
 <translation id="1979103255016296513">पासवर्ड परिवर्तन गर्न ढिला भइसकेको छ</translation>
 <translation id="2049639323467105390">यो यन्त्र <ph name="DOMAIN" /> द्वारा व्यवस्थित गरिएको छ।</translation>
+<translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">प्रिन्ट गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">नजिकैका यन्त्रहरू पत्ता लगाउन ब्लुटुथ सक्रिय गर्नुहोस्</translation>
 <translation id="2375079107209812402">अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}other{<ph name="ERROR_MESSAGE" /> अब {0} पटक प्रयास गर्न मिल्छ}}</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
@@ -59,6 +62,7 @@
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
 <translation id="4917889632206600977">रोकियो - प्रिन्टरमा कागज सकियो</translation>
 <translation id="4932733599132424254">मिति</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> ले यो यन्त्रको व्यवस्थापन गर्छ र यसले दूरवर्ती रूपमा सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="520299634122159966">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
 <translation id="5212543919916444558">मैले तपाईंको स्क्रिनमा आफूले मद्दत गर्न मिल्ने कुनै पनि कुरा फेला पार्न सकिन। मलाई केही कुरा सोध्न माइकमा ट्याप गरी हेर्नुहोस्।</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>

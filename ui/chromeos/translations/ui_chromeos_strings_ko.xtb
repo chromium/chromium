@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3958548648197196644">키위</translation>
 <translation id="3966388904776714213">오디오 플레이어</translation>
-<translation id="3984317463833596033">Parallels Desktop에 <ph name="FOLDER_NAME" /> 폴더의 파일을 변경할 권한을 부여합니다.</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4070370845051020638">광둥어 입력 방법</translation>
 <translation id="4072248638558688893">타밀어 키보드(음역)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">이 파일 형식은 지원되지 않습니다. 이 파일 형식을 열 수 있는 앱을 찾으려면 <ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />를 방문하세요.
     <ph name="BEGIN_LINK_HELP" />자세히 알아보기<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">표시할 내용 없음...</translation>
-<translation id="5857774240076772505">Linux 앱에 <ph name="FOLDER_NAME" /> 폴더의 파일을 변경할 수 있는 권한을 부여합니다.</translation>
 <translation id="5892290200158927959">프랑스어 BÉPO 키보드</translation>
 <translation id="5911887972742538906">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
 <translation id="5912396950572065471">포맷</translation>
 <translation id="5913638992615760742">복사 작업에 실패했습니다. 예상치 않은 오류: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">일본어 입력(일본어 키보드용)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Linux 앱에 Google 드라이브의 파일을 수정할 수 있는 권한을 부여합니다. 변경사항이 다른 기기에 동기화됩니다.</translation>
 <translation id="5955954492236143329">항목 <ph name="NUMBER_OF_ITEMS" />개</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">정렬 옵션</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google 드라이브에서 '<ph name="FILENAME" />'을(를) 동기화하지 못했습니다. Google 드라이브에서 나중에 다시 시도합니다.</translation>
 <translation id="8477649328507734757">회전</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
-<translation id="8490342535582768689">Parallels Desktop에 Google 드라이브의 파일을 변경할 권한을 부여합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="8521441079177373948">영어(영국)</translation>
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="8551494947769799688">라트비아어</translation>

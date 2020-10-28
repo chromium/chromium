@@ -1069,6 +1069,7 @@
 <translation id="2220409419896228519">तुमच्या आवडत्या Google Apps वर बुकमार्क जोडा</translation>
 <translation id="2220529011494928058">समस्येची तक्रार करा</translation>
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
+<translation id="2224337661447660594">इंटरनेट नाही</translation>
 <translation id="2224444042887712269">ही सेटिंग <ph name="OWNER_EMAIL" /> च्या मालकीची आहे.</translation>
 <translation id="2224551243087462610">फोल्डर नाव संपादित करा</translation>
 <translation id="2225864335125757863">तुमचे खाते सुरक्षित ठेवण्यासाठी हे पासवर्ड तात्काळ बदला:</translation>
@@ -2076,6 +2077,7 @@
 <translation id="3428419049384081277">तुम्ही साइन इन केलेले आहे!</translation>
 <translation id="3428747202529429621">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षिततेत सुधारणा करण्यासाठी वापरले जाऊ शकते</translation>
 <translation id="3428800329481094896">Linux कंटेनर ssh की मिळवत आहे</translation>
+<translation id="3429271624041785769">वेब आशयाच्या भाषा</translation>
 <translation id="3429275422858276529">हे पेज नंतर सहजपणे शोधण्यासाठी ते बुकमार्क करा</translation>
 <translation id="3432227430032737297">सर्व दाखवलेले काढून टाका</translation>
 <translation id="3432757130254800023">स्थानिक नेटवर्कच्या प्रदर्शनांवर ऑडिओ आणि व्हिडिओ पाठवा</translation>
@@ -2501,6 +2503,7 @@
 <translation id="3879748587602334249">डाउनलोड व्यवस्थापक</translation>
 <translation id="3881478300875776315">कमी रेषा दाखवा</translation>
 <translation id="3882165008614329320">कॅमेरा किंवा फाइलवरून सद्य व्हिडिओ</translation>
+<translation id="3884152383786131369">एकाहून अधिक भाषांमध्ये उपलब्ध असणारा वेब आशय सूचीमधील सपोर्ट असलेली पहिली भाषा वापरेल. ही प्राधान्ये तुमच्या ब्राउझर सेटिंग्जसह सिंक केली आहेत. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">या साइट ॲक्सेस करण्याची तुमची विनंती <ph name="NAME" /> कडे पाठवली गेली आहे</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> सोबत टिपा घेणे</translation>
 <translation id="3890064827463908288">वाय-फाय सिंक वापरणासाठी Chrome सिंक सुरू करा</translation>
@@ -3088,6 +3091,7 @@
 <translation id="4590324241397107707">डेटाबेस स्टोरेज</translation>
 <translation id="4592891116925567110">स्टायलस ड्रॉइंग अ‍ॅप</translation>
 <translation id="4593021220803146968"><ph name="URL" /> &amp;येथे जा</translation>
+<translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4595560905247879544">ॲप्स आणि विस्तार केवळ (<ph name="CUSTODIAN_NAME" />) व्यवस्थापकाद्वारे सुधारित केले जाऊ शकतात.</translation>
 <translation id="4596295440756783523">आपल्‍याकडे फाईलवर अशी प्रमाणपत्रे आहेत जी या सर्व्हरला ओळखतात</translation>
 <translation id="4598556348158889687">स्टोरेज व्यवस्थापन</translation>
@@ -4353,6 +4357,7 @@
 <translation id="6112727384379533756">तिकीट जोडा</translation>
 <translation id="6112931163620622315">तुमचा फोन तपासा</translation>
 <translation id="6112952769866305444">व्यक्ती संपादित करा, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
+<translation id="6113434369102685411">Chrome ब्राउझर आणि <ph name="DEVICE_TYPE" /> लाँचरसाठी तुमचे डीफॉल्ट शोध इंजीन सेट करा</translation>
 <translation id="6113942107547980621">स्मार्ट लॉक वापरण्यासाठी, तुमच्या फोनवर प्राथमिक वापरकर्ता प्रोफाइलवर स्विच करा</translation>
 <translation id="6116921718742659598">भाषा आणि इनपुट सेटिंग्ज बदला</translation>
 <translation id="6120205520491252677">या पृष्‍ठास प्रारंभ स्‍क्रीनवर पिन करा...</translation>
@@ -5219,6 +5224,7 @@
 <translation id="7140928199327930795">कोणतीही अन्य उपलब्ध डिव्हाइसेस नाहीत.</translation>
 <translation id="7141105143012495934">तुमचे खाते तपशील प्राप्त करणे शक्य झाले नसल्याने साइन-इन अयशस्वी झाले. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा पुन्हा प्रयत्न करा.</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
+<translation id="7143358760238281735">अ‍ॅप्स उपलब्ध नाहीत</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="714876143603641390">LAN कनेक्टिव्हिटी</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
@@ -5690,6 +5696,7 @@
 <translation id="7707922173985738739">मोबाइल डेटा वापरा</translation>
 <translation id="7709152031285164251">अयशस्वी - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">कास्ट करा...</translation>
+<translation id="7712739869553853093">प्रिंट पूर्वावलोकन डायलॉग</translation>
 <translation id="7712836429117959503"><ph name="EXTENSION_ID" /> आयडीसह अज्ञात एक्स्टेंशन</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> वरील कुकीजना अनुमती आहे</translation>
 <translation id="7714464543167945231">सर्टिफिकेट</translation>
@@ -6635,7 +6642,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8786697630358316925">डिसेंबरनंतर या पर्यायाला सपोर्ट केला जाणार नाही. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">शेअर नेटवर्कसाठी प्रॉक्सीला अनुमती द्या</translation>
 <translation id="8791534160414513928">तुमच्या ब्राउझिंग ट्रॅफिकसह "Do Not Track" विनंती पाठवा</translation>
-<translation id="8794025342371547160">प्रतिबंधित IP</translation>
 <translation id="879413103056696865">हॉटस्पॉट सुरू असताना, तुमचा <ph name="PHONE_NAME" /> हे करेल:</translation>
 <translation id="8795916974678578410">नवीन विंडो</translation>
 <translation id="8797459392481275117">कधीही या साइटचे भाषांतर करू नका</translation>

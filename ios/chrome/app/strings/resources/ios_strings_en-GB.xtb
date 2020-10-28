@@ -341,6 +341,7 @@ Your data is encrypted with your sync passphrase. Enter it to start sync.</trans
 <translation id="4751645464639803239">New Incognito Tab</translation>
 <translation id="4758977202923349869">Position Credit Card in this frame</translation>
 <translation id="4775879719735953715">Default Browser</translation>
+<translation id="4778644898150334464">Use other password</translation>
 <translation id="4802417911091824046">Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
 
 To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>

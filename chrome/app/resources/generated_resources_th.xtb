@@ -1071,6 +1071,7 @@
 <translation id="2220409419896228519">เพิ่มบุ๊กมาร์กไปยังแอป Google ที่คุณชอบ</translation>
 <translation id="2220529011494928058">รายงานปัญหา</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
+<translation id="2224337661447660594">ไม่มีอินเทอร์เน็ต</translation>
 <translation id="2224444042887712269">การตั้งค่านี้เป็นของ <ph name="OWNER_EMAIL" /></translation>
 <translation id="2224551243087462610">แก้ไขชื่อโฟลเดอร์</translation>
 <translation id="2225864335125757863">เปลี่ยนรหัสผ่านเหล่านี้ทันทีเพื่อรักษาความปลอดภัยของบัญชี</translation>
@@ -3097,6 +3098,7 @@
 <translation id="4590324241397107707">พื้นที่จัดเก็บฐานข้อมูล</translation>
 <translation id="4592891116925567110">แอปการวาดด้วยสไตลัส</translation>
 <translation id="4593021220803146968">&amp;ไปที่ <ph name="URL" /></translation>
+<translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4595560905247879544">แอปและส่วนขยายสามารถแก้ไขได้โดยผู้จัดการ (<ph name="CUSTODIAN_NAME" />) เท่านั้น</translation>
 <translation id="4596295440756783523">คุณมีใบรับรองของไฟล์ซึ่งระบุตัวตนของเซิร์ฟเวอร์เหล่านี้:</translation>
 <translation id="4598556348158889687">การจัดการพื้นที่เก็บข้อมูล</translation>
@@ -6649,7 +6651,6 @@
 <translation id="8786697630358316925">ระบบจะไม่รองรับตัวเลือกนี้อีกต่อไปหลังจากเดือนธันวาคม <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">อนุญาตให้ใช้พร็อกซีสำหรับเครือข่ายที่แชร์ไว้</translation>
 <translation id="8791534160414513928">ส่งคำขอ "ไม่ติดตาม" พร้อมกับการเข้าชมของคุณ</translation>
-<translation id="8794025342371547160">IP แบบจำกัด</translation>
 <translation id="879413103056696865">ขณะที่ฮอตสปอตเปิดอยู่ <ph name="PHONE_NAME" /> ของคุณจะ:</translation>
 <translation id="8795916974678578410">หน้าต่างใหม่</translation>
 <translation id="8797459392481275117">ไม่ต้องแปลเว็บไซต์นี้</translation>

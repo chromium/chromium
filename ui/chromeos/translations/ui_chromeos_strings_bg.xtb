@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3966388904776714213">Аудиоплейър</translation>
-<translation id="3984317463833596033">Разрешете на Parallels Desktop да променя файловете в папката <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Заглавие</translation>
 <translation id="4070370845051020638">Метод на въвеждане за кантонски</translation>
 <translation id="4072248638558688893">Тамилска клавиатура (фонетична)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">Този файлов тип не се поддържа. Моля, посетете <ph name="BEGIN_LINK" />уеб магазина на Chrome<ph name="END_LINK" />, за да намерите приложение, което може да го отвори.
    <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Тук няма нищо...</translation>
-<translation id="5857774240076772505">Разрешете на приложенията под Linux да променят файловете в папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="5892290200158927959">Френска (BÉPO) клавиатура</translation>
 <translation id="5911887972742538906">Възникна грешка при инсталирането на приложението за Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Копирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Въвеждане на японски (за японска клавиатура)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Разрешете на приложенията под Linux да променят файловете в профила ви в Google Диск. Промените ще се синхронизират с другите ви устройства.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="5957366693331451795">Устройствата Chromebox</translation>
 <translation id="5982621672636444458">Опции за сортиране</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google Диск не можа да синхронизира „<ph name="FILENAME" />“. По-късно ще се извърши повторен опит.</translation>
 <translation id="8477649328507734757">Кръгове</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>
-<translation id="8490342535582768689">Разрешете на Parallels Desktop да променя файловете в профила ви в Google Диск. Промените ще се синхронизират с другите ви устройства.</translation>
 <translation id="8521441079177373948">Британска клавиатура</translation>
 <translation id="8525306231823319788">На цял екран</translation>
 <translation id="8551494947769799688">латвийски</translation>

@@ -145,13 +145,6 @@
 <translation id="1221359380862872747">Charger les URL spécifiées lors de la connexion à la démonstration</translation>
 <translation id="1223789468190631420">Navigation sécurisée activée pour les sources fiables</translation>
 <translation id="123081309365616809">Activer la diffusion de contenus sur l'appareil</translation>
-<translation id="1231349879329465225">Permet d'activer ou de désactiver la transition rapide.
-      Cette règle s'applique à l'ensemble des utilisateurs et des interfaces de l'appareil.
-      Pour utiliser la transition rapide, ce paramètre et la propriété ONC par réseau doivent être activés.
-      La transition rapide reste active jusqu'à ce que vous la désactiviez en modifiant la règle.
-
-      Si cette règle n'est pas configurée, la transition rapide n'est pas utilisée.
-      Si elle est définie sur "True", la transition rapide est utilisée lorsque le point d'accès sans fil accepte cette fonctionnalité.</translation>
 <translation id="1240722269871366886">Cette règle permet à <ph name="PRODUCT_OS_NAME" /> de suggérer des emoji lorsque l'utilisateur saisit du texte sur un clavier virtuel ou physique.
       Si cette règle est définie sur "True", la fonctionnalité est activée, et l'utilisateur peut la modifier.
       Cette règle est définie par défaut sur "False". Aucun emoji n'est alors suggéré, et l'utilisateur ne peut pas ignorer ce paramètre.</translation>
@@ -316,18 +309,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Les types de données disponibles sont les suivants : <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> et <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome supprimera régulièrement les données des types sélectionnés qui datent de plus de <ph name="TIME_TO_LIVE_IN_HOURS" />. Cette suppression n'intervenant qu'à certains intervalles, des données peuvent être conservées un peu plus longtemps, mais jamais plus du double des <ph name="TIME_TO_LIVE_IN_HOURS" /> prévues.
       </translation>
-<translation id="1507382822467487898">
-          Permet de définir quelle l'adresse MAC (Media Access Control, contrôle d'accès au support) est utilisée lorsqu'une station d'accueil est connectée à l'appareil.
-
-          Quand une station d'accueil est connectée à certains modèles d'appareils, l'adresse MAC de la station d'accueil désignée de l'appareil est utilisée pour identifier ce dernier sur Ethernet par défaut. Cette règle permet à l'administrateur de modifier la source de l'adresse MAC lorsque l'appareil est inséré dans la station d'accueil.
-
-          Si l'option "DeviceDockMacAddress" est sélectionnée ou si la règle n'est pas définie, l'adresse MAC de la station d'accueil définie pour l'appareil est utilisée.
-
-          Si l'option "DeviceNicMacAddress" est sélectionnée, l'adresse MAC de la carte d'interface réseau de l'appareil est utilisée.
-
-          Si l'option "DockNicMacAddress" est sélectionnée, l'adresse MAC de la carte d'interface réseau de la station d'accueil est utilisée.
-
-          Ce paramètre ne peut pas être modifié par l'utilisateur.</translation>
 <translation id="1509692106376861764">Cette règle a été supprimée à partir de la version 29 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Fournit les configurations des imprimantes d'entreprise associées à des appareils.
 
@@ -530,13 +511,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Sinon, si la compatibilité avec un serveur comportant des bugs doit être maintenue, cette règle peut être définie sur "tls1.1". Il s'agit là d'une solution provisoire qui exige parallèlement de dépanner le serveur rapidement.</translation>
 <translation id="1861206724856734193">Définit la liste des règles de prévention des fuites de données.</translation>
-<translation id="1864382791685519617">Active la prédiction réseau dans <ph name="PRODUCT_NAME" /> et empêche les utilisateurs de modifier ce paramètre.
-
-      Cela contrôle la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web.
-
-      Si vous configurez cette règle, les utilisateurs ne peuvent pas modifier ni ignorer ce paramètre dans <ph name="PRODUCT_NAME" />.
-
-      Si vous ne configurez pas cette règle, la prédiction réseau est activée, mais les utilisateurs peuvent la modifier.</translation>
 <translation id="1865417998205858223">Autorisations de clés</translation>
 <translation id="186719019195685253">Indique l'action à effectuer lorsque le délai d'inactivité est atteint en cas de fonctionnement sur une source d'alimentation CA.</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
@@ -705,13 +679,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2135335181634291106">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> vous permet de spécifier l'URL de l'icône favorite du moteur de recherche par défaut.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> n'est pas configurée, aucune icône n'est affichée pour le moteur de recherche.</translation>
-<translation id="2138449619211358657">Cette règle permet à <ph name="PRODUCT_OS_NAME" /> d'ignorer les proxy pour l'authentification du portail captif.
-
-      Cette règle n'est active que si un proxy est configuré (par exemple, par une règle définie par l'utilisateur dans chrome://settings ou par des extensions).
-
-      Si vous activez cette règle, toutes les pages d'authentification du portail captif (c'est-à-dire toutes les pages Web à partir de la page de connexion jusqu'à ce que <ph name="PRODUCT_NAME" /> détecte une connexion Internet réussie) s'afficheront dans une fenêtre distincte, sans tenir compte des règles et des restrictions en place pour l'utilisateur actuel.
-
-      Si vous désactivez cette règle ou si elle n'est pas configurée, toutes les pages d'authentification du portail captif s'afficheront sous un nouvel onglet normal, conformément aux paramètres de proxy de l'utilisateur actuel.</translation>
 <translation id="2145735238144543545">Certificats client requis</translation>
 <translation id="214901426630414675">Limiter l'impression en mode recto verso</translation>
 <translation id="2149330464730004005">Activer l'impression couleur</translation>
@@ -1441,20 +1408,8 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           Cette règle est facultative. Si vous ne la définissez pas, aucun remplacement des termes de recherche n'est effectué.
 
           Cette règle ne s'applique que si la règle 'DefaultSearchProviderEnabled' est activée.</translation>
-<translation id="3049248142961638857">Détermine le nom d'hôte de l'appareil utilisé pour les requêtes DHCP.
-
-      Si cette règle est définie sur une chaîne non vide, celle-ci servira de nom d'hôte de l'appareil lors de la requête DHCP.
-
-      La chaîne peut contenir les variables <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> et <ph name="LOCATION_PLACEHOLDER" />, qui seront remplacées par les valeurs trouvées sur l'appareil avant qu'elle soit utilisée comme nom d'hôte. Le résultat de cette substitution doit former un nom d'hôte valide (conformément à la RFC 1035, section 3.1).
-
-      Si cette règle n'est pas définie ou si la valeur après substitution ne constitue pas un nom d'hôte valide, aucun nom d'hôte ne sera défini dans la requête DHCP. </translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Permet aux utilisateurs affiliés de cet appareil d'utiliser le téléchargement indépendant adb</translation>
-<translation id="3069958900488014740">Permet la désactivation de l'optimisation WPAD (Web Proxy Auto-Discovery) dans <ph name="PRODUCT_NAME" />.
-
-      Si cette règle est définie sur "False", l'optimisation WPAD est désactivée. Par conséquent, l'attente est plus longue dans <ph name="PRODUCT_NAME" /> pour obtenir une réponse des serveurs WPAD basés sur le DNS. Si la règle n'est pas configurée ou si elle est activée, l'optimisation WPAD est activée.
-
-      Quelle que soit la définition de cette règle, les utilisateurs n'ont pas la possibilité de modifier le paramètre d'optimisation WPAD.</translation>
 <translation id="3072045631333522102">Economiseur d'écran à utiliser sur l'écran de connexion en mode Point de vente</translation>
 <translation id="3072788420987305247">Si cette règle est activée ou qu'elle n'est pas configurée, les commandes multimédias s'affichent à l'écran si les utilisateurs verrouillent l'appareil en cours de lecture.
 
@@ -2687,7 +2642,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si cette règle n'est pas configurée, le contenu mixte blocable est bloqué, et le contenu mixte blocable de manière facultative est mis à niveau. Les utilisateurs peuvent définir des exceptions autorisant l'affichage de ce contenu sur des sites spécifiques.
 
           Pour en savoir plus sur les formats d'URL valides, consultez cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="5102203758995933166">Permet de transférer l'application de la configuration réseau par utilisateur vers un appareil utilisant <ph name="PRODUCT_OS_NAME" />. La configuration réseau correspond à une chaîne formatée par JSON conformément au format de configuration de réseau ouvert.</translation>
 <translation id="5105313908130842249">Délai de verrouillage de l'écran (batterie)</translation>
 <translation id="5108031557082757679">Imprimantes d'appareils d'entreprise désactivées</translation>
 <translation id="5109383437323376357">Déterminer la disponibilité des variantes</translation>
@@ -2944,15 +2898,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
           En cas d'activation de ce paramètre, les appareils d'entrée et de sortie physiques des hôtes sont désactivés tant qu'une connexion est en cours.
 
           En cas de désactivation ou de non-configuration de ce paramètre, l'utilisateur local ainsi que l'utilisateur à distance peuvent interagir avec l'hôte tant que ce celui-ci est partagé.</translation>
-<translation id="5396049152026347991">Autorise l'utilisateur à gérer les connexions VPN.
-
-      Si cette règle est définie sur "False", toutes les interfaces utilisateur de <ph name="PRODUCT_NAME" /> autorisant l'utilisateur à couper ou à modifier des connexions VPN sont désactivées.
-
-      Si cette règle n'est pas définie, ou si elle est définie sur "True", les utilisateurs peuvent couper ou modifier des connexions VPN comme d'habitude.
-
-      Si la connexion VPN est créée par le biais d'une application VPN, l'interface utilisateur de l'application n'est pas affectée par cette règle. De ce fait, il se peut que l'utilisateur puisse continuer à utiliser l'application pour modifier la connexion VPN.
-
-      Cette règle doit être utilisée avec la fonctionnalité "VPN permanent", qui permet à l'administrateur d'établir une connexion VPN au démarrage.</translation>
 <translation id="5401696449591951427">Activer <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">Détermine les dispositions de clavier autorisées sur l'écran de connexion <ph name="PRODUCT_OS_NAME" />.
 
@@ -3038,16 +2983,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5475361623548884387">Activer l'impression</translation>
 <translation id="547601067149622666">Ne pas autoriser les annonces sur les sites présentant des annonces intrusives</translation>
 <translation id="5483065054530244863">Autoriser les certificats signés SHA-1 émis par les ancres d'approbation locales</translation>
-<translation id="5486493714323160905">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
-      Lorsque ce paramètre est désactivé, <ph name="PRODUCT_NAME" /> vérifi les certificats des serveurs à l'aide de l'ancien outil de vérification fourni par la plate-forme.
-      Lorsque ce paramètre n'est pas défini, l'outil intégré de vérification des certificats ou l'ancien outil peuvent être utilisés.
-
-      Il est prévu que cette règle soit supprimée dans la version 81 de <ph name="PRODUCT_OS_NAME" />, car l'ancien outil de vérification des certificats sur <ph name="PRODUCT_OS_NAME" /> le sera également.
-
-      Il est prévu que cette règle soit supprimée dans la version 83 de <ph name="PRODUCT_NAME" /> pour Linux, car l'ancien outil de vérification des certificats sur Linux le sera également.
-
-      Il est prévu que cette règle soit supprimée dans la version 87 de <ph name="PRODUCT_NAME" /> pour Mac OS X, car l'ancien outil de vérification des certificats sur Mac OS X le sera également.
-      </translation>
 <translation id="5494917047563607689">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
 <translation id="5499375345075963939">Cette règle n'est active qu'en mode "point de vente".
 
@@ -3360,14 +3295,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Cette règle est uniquement disponible en tant que règle obligatoire de plate-forme de machines et n'affecte que les règles relatives au cloud s’appliquant aux machines.
       </translation>
 <translation id="5905473632148429217">Activer les contrôles OCSP/CRL en ligne</translation>
-<translation id="5906199912611534122">Permet d'activer ou de désactiver la limitation du débit réseau.
-      Cette règle s'applique à l'ensemble des utilisateurs et des interfaces de
-      l'appareil. Une fois la règle définie, la limitation reste active jusqu'à ce
-      que la règle soit modifiée.
-
-      Si cette règle est définie sur "False", aucune limitation n'est définie.
-      Si cette règle est définie sur "True", la bande passante est limitée aux taux
-      de téléchargement et de transfert fournis (en kbit/s).</translation>
 <translation id="5907283448020542268">Configurer <ph name="GLS_ENABLED" /> active les services de localisation Google lors de la configuration initiale, sauf si la règle <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />. Si la règle est définie sur <ph name="GLS_DISABLED" /> ou n'est pas configurée, les services de localisation restent désactivés pendant la configuration.
 
       Si elle est définie sur <ph name="BR_UNDER_USER_CONTROL" />, les utilisateurs sont invités à préciser s'ils souhaitent ou non utiliser ces services. S'ils les activent, les applications Android utilisent ces services pour rechercher la position de l'appareil et envoyer des données de localisation anonymes à Google.
@@ -4097,15 +4024,6 @@ Si vous sélectionnez les options suivantes :
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="6926703471186170050">Activer l'impression recto verso bord long</translation>
 <translation id="6931242315485576290">Désactiver la synchronisation des données avec Google</translation>
-<translation id="6936894225179401731">Indique le nombre maximal de connexions simultanées au serveur proxy.
-
-      Certains serveurs proxy ne peuvent pas gérer un grand nombre de connexions simultanées par client. La définition d'une valeur inférieure pour cette règle peut résoudre ce problème.
-
-      La valeur de cette règle doit être inférieure à 100 et supérieure à 6. La valeur par défaut est 32.
-
-      Certaines applications Web consomment de nombreuses connexions avec blocage des opérations GET. Par conséquent, le fait de définir une valeur inférieure à 32 peut entraîner des blocages de l'accès réseau du navigateur si un trop grand nombre d'applications Web de ce type sont ouvertes. Il est déconseillé de définir une valeur inférieure à la valeur par défaut.
-
-      En cas de non-configuration de cette règle, la valeur par défaut de 32 est utilisée.</translation>
 <translation id="6943577887654905793">Nom de préférence Mac/Linux :</translation>
 <translation id="6944167205014013774">Cette règle renvoie au serveur des informations sur l'utilisation des applications Linux. Si cette règle est définie sur "False" ou si elle n'est pas configurée, les informations sur l'utilisation ne sont pas transmises. Si cette règle est définie sur "True", les informations sur l'utilisation sont transmises. Cette règle ne s'applique que si la compatibilité avec les applications Linux est activée.</translation>
 <translation id="6946652757373377924">
@@ -4191,7 +4109,6 @@ Si vous sélectionnez les options suivantes :
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>
 <translation id="7063895219334505671">Autoriser les fenêtres pop-up sur ces sites</translation>
 <translation id="706669471845501145">Autoriser les sites à afficher des notifications sur le bureau</translation>
-<translation id="7068108874199666656">Permet de transférer l'application de la configuration réseau à tous les utilisateurs d'un appareil fonctionnant avec <ph name="PRODUCT_OS_NAME" />. La configuration réseau correspond à une chaîne formatée par JSON conformément au format de configuration de réseau ouvert.</translation>
 <translation id="7070525176564511548">La saisie du mot de passe est requise toutes les semaines (toutes les 168 heures)</translation>
 <translation id="7072208053150563108">Fréquence de modification du mot de passe machine</translation>
 <translation id="7072567600438630966">Autorisez l'activation de Phone Hub.</translation>
@@ -4569,8 +4486,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
 
       Remarque : Sous Android, utilisez la règle <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> à la place.</translation>
-<translation id="7511361072385293666">Si cette règle est définie sur "True" ou n'est pas paramétrée, l'utilisation du protocole QUIC est autorisée dans <ph name="PRODUCT_NAME" />.
-      Si cette règle est définie sur "False", l'utilisation du protocole QUIC n'est pas autorisée.</translation>
 <translation id="7517845714620372896">Indique le niveau de luminosité de l'écran (en pourcentage).
           Lorsque cette règle est définie, la luminosité initiale de l'écran est ajustée pour correspondre à la valeur indiquée. Les fonctionnalités de réglage automatique de la luminosité sont désactivées, mais l'utilisateur peut modifier le réglage par la suite.
           Si cette règle n'est pas définie, les réglages de l'utilisateur et les réglages automatiques ne sont pas affectés.
@@ -4672,7 +4587,6 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 <translation id="7632724434767231364">Nom de la bibliothèque GSSAPI</translation>
 <translation id="7643883929273267746">Limiter les comptes visibles dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Utiliser le comportement <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> pour les cookies sur tous les sites</translation>
-<translation id="7651739109954974365">Détermine si l'itinérance des données doit être activée pour l'appareil. Si cette règle est définie sur "true", l'itinérance des données est autorisée. Si cette règle n'est pas configurée ou si elle est définie sur "false", l'itinérance des données n'est pas possible.</translation>
 <translation id="7657261947024629645">Privilégier les performances.</translation>
 <translation id="7668830462800981702">Si cette règle est activée et que l'utilisateur saisit autre chose qu'une URL dans la barre d'adresse, une recherche est alors lancée par défaut. Pour spécifier le moteur de recherche par défaut, définissez le reste des règles de recherche par défaut. Si vous ne configurez pas ces règles, l'utilisateur peut choisir le moteur par défaut. Si cette règle est désactivée et que l'utilisateur saisit autre chose qu'une URL dans la barre d'adresse, aucune recherche n'est lancée.
 
@@ -5070,11 +4984,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8259592978873597235">Lorsque cette règle est définie sur "True" ou si elle n'est pas définie, l'utilisateur n'est pas considéré comme inactif pendant la lecture de la vidéo. Les délais d'inactivité, d'assombrissement, d'arrêt ou de verrouillage de l'écran ne peuvent donc pas être atteints, et aucune des actions correspondantes n'est effectuée.
 
           Si cette règle est définie sur "False", l'activité vidéo n'empêche pas l'utilisateur d'être considéré comme inactif.</translation>
-<translation id="8261272655177284145">Si cette règle est définie sur "1", vous pouvez déterminer si tous les sites Web peuvent ou non exécuter automatiquement le plug-in <ph name="FLASH_PLUGIN_NAME" />. Si cette règle est définie sur "2", ce plug-in est refusé pour tous les sites Web. Vous pouvez autoriser l'exécution du plug-in <ph name="FLASH_PLUGIN_NAME" />, mais pour le lancer, l'utilisateur doit cliquer sur l'espace réservé.
-
-      Si cette règle n'est pas configurée, la règle <ph name="BLOCK_PLUGINS_POLICY_NAME" /> est utilisée. Toutefois, les utilisateurs peuvent modifier ce paramètre.
-
-      Remarque : La lecture automatique ne concerne que les domaines clairement indiqués dans la règle <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />. Pour l'activer pour tous les sites, ajoutez http://* et https://* à cette liste.</translation>
 <translation id="8266778278542911985">Si cette règle est définie sur "3", les sites Web peuvent demander à accéder aux ports série. Si elle est définie sur "2", l'accès aux ports série est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -5289,9 +5198,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8544465954173828789">Autoriser la synchronisation des SMS entre le téléphone et le Chromebook</translation>
 <translation id="8548832052135586762">Définit l'impression couleur seulement, monochrome seulement ou sans restriction de couleur. Si aucune règle n'est définie, on considère qu'il n'y a aucune restriction.</translation>
 <translation id="8566842294717252664">Masquer le Chrome Web Store sur la page Nouvel onglet et dans le lanceur d'applications</translation>
-<translation id="8569734380847633643">
-          Si la règle est définie sur "False", <ph name="PRODUCT_OS_NAME" /> désactive le Wi-Fi, et les utilisateurs ne peuvent pas le réactiver.
-          Si la règle est définie sur "True" ou n'est pas configurée, les utilisateurs peuvent activer ou désactiver le Wi-Fi à leur convenance.</translation>
 <translation id="8571314270766672278">Effectuer un rollback et réinitialiser l'appareil lors du retour à une version antérieure, en conservant l'enregistrement si possible</translation>
 <translation id="857369585509260201">Cette règle est obsolète. Veuillez utiliser "BrowserSignin" à la place.
 

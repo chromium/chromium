@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="3958548648197196644">କିୱି</translation>
 <translation id="3966388904776714213">ଅଡିଓ ପ୍ଲେୟାର୍</translation>
-<translation id="3984317463833596033">Parallels Desktopକୁ<ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକରେ ପରିବର୍ତ୍ତନ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4070370845051020638">କାଣ୍ଟୋନିଜ୍‍ ଇନ୍‌ପୁଟ୍‌ ପଦ୍ଧତି</translation>
 <translation id="4072248638558688893">ତାମିଲ୍ କୀ'ବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>
@@ -463,14 +462,12 @@
 <translation id="5850516540536751549">ଏହି ଫାଇଲ୍ ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ଏହି ପ୍ରକାରର ଫାଇଲ୍ ଖୋଜିପାରୁଥିବା ଗୋଟିଏ ଆପ୍ ଖୋଜିବାକୁ ଦୟାକରି <ph name="BEGIN_LINK" />Chrome ୱେବ୍ ଷ୍ଟୋର୍‌<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।
     <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ଏଠାରେ ଦେଖିବା ପାଇଁ କିଛି ନାହିଁ...</translation>
-<translation id="5857774240076772505">Linux ଆପ୍ସକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡର୍‌ରେ ଫାଇଲ୍‌ଗୁଡ଼ିକ ସଂଶୋଧନ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="5892290200158927959">ଫ୍ରେଞ୍ଚ BÉPO କୀବୋର୍ଡ</translation>
 <translation id="5911887972742538906">ଆପଣଙ୍କର Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲେସନ୍‌ ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
 <translation id="5912396950572065471">ଫର୍ମାଟ୍</translation>
 <translation id="5913638992615760742">କପି କାର୍ଯ୍ୟ ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">ଜାପାନୀଜ୍ ଇନ୍‌ପୁଟ୍ (ଜାପାନୀଜ୍ କୀ'ବୋର୍ଡ ପାଇଁ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">ଆପଣଙ୍କର Google Driveରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ସଂଶୋଧନ କରିବାକୁ Linux ଆପ୍ସକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‌ରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସେଭ୍‍ ହେବ।</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ସଜାଇବା ବିକଳ୍ପଗୁଡ଼ିକ</translation>
@@ -714,7 +711,6 @@
 <translation id="8475647382427415476">Google ଡ୍ରାଇଭ୍ ଏହିକ୍ଷଣି "<ph name="FILENAME" />"କୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ। Google ଡ୍ରାଇଭ୍ ପୁଣି ପରେ ଚେଷ୍ଟା କରିବ।</translation>
 <translation id="8477649328507734757">ସ୍ପିନ୍‌</translation>
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
-<translation id="8490342535582768689">Parallels Desktopକୁ ଆପଣଙ୍କ Google Driveରେ ଥିବା ଫାଇଲଗୁଡ଼ିକରେ ପରିବର୍ତ୍ତନ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସିଙ୍କ୍ ହୋଇଯିବ।</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
 <translation id="8551494947769799688">ଲାଟଭିଆନ୍</translation>

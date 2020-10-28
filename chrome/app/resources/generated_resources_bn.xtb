@@ -1070,6 +1070,7 @@
 <translation id="2220409419896228519">আপনার পছন্দের Google অ্যাপে বুকমার্ক যোগ করুন</translation>
 <translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
+<translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
 <translation id="2224444042887712269">এই সেটিংটি <ph name="OWNER_EMAIL" /> এর৷</translation>
 <translation id="2224551243087462610">ফোল্ডার নাম সম্পাদনা করুন</translation>
 <translation id="2225864335125757863">আপনার অ্যাকাউন্ট নিরাপদে রাখতে এই পাসওয়ার্ডগুলি পরিবর্তন করুন:</translation>
@@ -3089,6 +3090,7 @@
 <translation id="4590324241397107707">ডেটাবেস সঞ্চয়স্থান</translation>
 <translation id="4592891116925567110">স্টাইলাস ব্যবহার করে আঁকার অ্যাপ</translation>
 <translation id="4593021220803146968">&amp;এখানে যান <ph name="URL" /></translation>
+<translation id="4593212453765072419">প্রক্সি প্রমাণীকরণের প্রয়োজন</translation>
 <translation id="4595560905247879544">অ্যাপ্লিকেশান এবং এক্সটেনশানগুলি শুধুমাত্র পরিচালক (<ph name="CUSTODIAN_NAME" />) দ্বারা পরিবর্তন করা যাবে।</translation>
 <translation id="4596295440756783523">আপনার ফাইলে এমন শংসাপত্রগুলি রয়েছে যা এই সার্ভারগুলিকে শনাক্ত করে</translation>
 <translation id="4598556348158889687">সঞ্চয়স্থান ব্যবস্থাপনা</translation>
@@ -6637,7 +6639,6 @@
 <translation id="8786697630358316925">ডিসেম্বরের পরে এই বিকল্প আর কাজ করবে না। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">শেয়ার করে নেওয়া নেটওয়ার্কগুলির জন্য প্রক্সিগুলির অনুমতি দিন</translation>
 <translation id="8791534160414513928">আপনার ব্রাউজিং ট্র্যাফিকের মাধ্যমে একটি 'ট্র্যাক করবেন না' অনুরোধ পাঠান</translation>
-<translation id="8794025342371547160">বিধিনিষেধযুক্ত IP</translation>
 <translation id="879413103056696865">হটস্পট চালু থাকা অবস্থায়, আপনার <ph name="PHONE_NAME" /> যা করবে:</translation>
 <translation id="8795916974678578410">নতুন উইন্ডো</translation>
 <translation id="8797459392481275117">কখনও এই সাইটটিকে অনুবাদ করবেন না</translation>

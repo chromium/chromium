@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3966388904776714213">Audio atskaņotājs</translation>
-<translation id="3984317463833596033">Parallels Desktop saņems atļauju modificēt failus mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4070370845051020638">Kantonas dialekta ievades metode</translation>
 <translation id="4072248638558688893">Tamilu valodas tastatūra (fonētiskā)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">Šis faila tips netiek atbalstīts. Lūdzu, apmeklējiet <ph name="BEGIN_LINK" />Chrome interneta veikalu<ph name="END_LINK" />, lai atrastu lietotni, ar kuru var atvērt šo failu.
     <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Šeit nekā nav...</translation>
-<translation id="5857774240076772505">Piešķiriet Linux lietotnēm atļauju pārveidot failus mapē <ph name="FOLDER_NAME" />.</translation>
 <translation id="5892290200158927959">Franču valodas BÉPO tastatūra</translation>
 <translation id="5911887972742538906">Linux lietojumprogrammas instalēšanas laikā radās kļūda.</translation>
 <translation id="5912396950572065471">Formāts</translation>
 <translation id="5913638992615760742">Kopēšana neizdevās; radās neparedzēta kļūda: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Japāņu valodas ievade (japāņu valodas tastatūrai)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Piešķiriet Linux lietotnēm atļauju pārveidot failus jūsu Google diskā. Izmaiņas tiks sinhronizētas ar citām jūsu ierīcēm.</translation>
 <translation id="5955954492236143329">Vienumu skaits: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Kārtošanas iespējas</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">Google diskā pašlaik nevar sinhronizēt failu “<ph name="FILENAME" />”. Google diskā vēlāk tiks veikts atkārtots mēģinājums.</translation>
 <translation id="8477649328507734757">Aplis</translation>
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>
-<translation id="8490342535582768689">Parallels Desktop saņems atļauju modificēt failus jūsu Google diskā. Izmaiņas tiks sinhronizētas ar citām jūsu ierīcēm.</translation>
 <translation id="8521441079177373948">Lielbritānijas</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
 <translation id="8551494947769799688">Latviešu valoda</translation>

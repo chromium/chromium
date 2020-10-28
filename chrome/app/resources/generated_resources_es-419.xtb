@@ -125,6 +125,7 @@
 <translation id="1136712381129578788">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Para desbloquearla, quítala y vuelve a insertarla.</translation>
 <translation id="1137589305610962734">datos temporales</translation>
 <translation id="1137673463384776352">Abrir vínculo en <ph name="APP" /></translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="1139343347646843679">Se produjo un error al configurar Linux. Comunícate con el administrador.</translation>
 <translation id="1140351953533677694">Acceder a los dispositivos en serie y Bluetooth</translation>
 <translation id="114036956334641753">Audio y subtítulos</translation>
@@ -1067,6 +1068,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2220409419896228519">Agrega tus apps de Google preferidas como favoritos</translation>
 <translation id="2220529011494928058">Informar un problema</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
+<translation id="2224337661447660594">Sin Internet</translation>
 <translation id="2224444042887712269">Esta configuración pertenece a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar nombre de carpeta</translation>
 <translation id="2225864335125757863">Para mantener tu cuenta segura, cambia estas contraseñas de inmediato:</translation>
@@ -1669,6 +1671,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="291056154577034373">NO LEÍDAS</translation>
 <translation id="2910718431259223434">Se produjo un error. Vuelve a intentarlo o comunícate con el administrador o propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2913331724188855103">Permitir que todos los sitios guarden y lean datos de cookies (recomendado)</translation>
+<translation id="2915016304249900997">Cuando compartes la pantalla, se ocultan los detalles</translation>
 <translation id="2915102088417824677">Ver el registro de actividad</translation>
 <translation id="2915873080513663243">Búsqueda automática</translation>
 <translation id="2916073183900451334">Si presionas el tabulador en una página web, se resaltan los vínculos y los campos de formularios</translation>
@@ -2439,6 +2442,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3819257035322786455">Copia de seguridad</translation>
 <translation id="3819261658055281761">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
 <translation id="3819800052061700452">&amp;Pantalla completa</translation>
+<translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar todo}}</translation>
 <translation id="3820749202859700794">Curva elíptica SECG secp521r1 (también conocido como NIST P-521)</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Se aprobó una extensión}other{Se aprobaron # extensiones}}</translation>
 <translation id="3822559385185038546">El administrador controla este proxy</translation>
@@ -2829,6 +2833,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4285498937028063278">No fijar</translation>
 <translation id="428565720843367874">Se produjo un error inesperado con el software antivirus al examinar este archivo.</translation>
 <translation id="4287099557599763816">Lector de pantalla</translation>
+<translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar todo}}</translation>
 <translation id="4289372044984810120">Administra tus cuentas aquí. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4295072614469448764">La app está disponible en tu terminal. Es posible que haya un ícono en el Selector.</translation>
@@ -3090,6 +3095,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4590324241397107707">Almacenamiento en bases de datos</translation>
 <translation id="4592891116925567110">App de dibujo con la pluma stylus</translation>
 <translation id="4593021220803146968">&amp;Ir a <ph name="URL" /></translation>
+<translation id="4593212453765072419">Se requiere autenticación proxy.</translation>
 <translation id="4595560905247879544">Solo el administrador (<ph name="CUSTODIAN_NAME" />) puede modificar las apps y extensiones.</translation>
 <translation id="4596295440756783523">Tienes certificados archivados que identifican estos servidores</translation>
 <translation id="4598556348158889687">Administración de almacenamiento</translation>
@@ -4354,7 +4360,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6112727384379533756">Agregar un ticket</translation>
 <translation id="6112931163620622315">Revisa el teléfono</translation>
 <translation id="6112952769866305444">Editar persona, <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
-<translation id="6113434369102685411">Configura tu motor de búsqueda predeterminado para el navegador Chrome y el Selector de <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6113434369102685411">Configura tu motor de búsqueda predeterminado para el navegador Chrome y el Selector de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Para usar Smart Lock, cambia al perfil del usuario principal en tu teléfono</translation>
 <translation id="6116921718742659598">Cambiar la configuración de idioma y de entrada de texto</translation>
 <translation id="6120205520491252677">Fijar esta página a la Pantalla de inicio...</translation>
@@ -6147,6 +6153,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="820568752112382238">Sitios más visitados</translation>
 <translation id="8206745257863499010">Musical</translation>
 <translation id="8206859287963243715">Celular</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
 <translation id="8213449224684199188">Ingresaste al modo de foto</translation>
 <translation id="8213577208796878755">Hay otro dispositivo disponible.</translation>
@@ -6641,7 +6648,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8786697630358316925">Esta opción dejará de ser compatible después de diciembre. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Permitir proxies para redes compartidas</translation>
 <translation id="8791534160414513928">Enviar solicitud de "No realizar seguimiento" con el tráfico de navegación</translation>
-<translation id="8794025342371547160">IP restringido</translation>
 <translation id="879413103056696865">Mientras el hotspot esté activado, tu número <ph name="PHONE_NAME" /> podrá:</translation>
 <translation id="8795916974678578410">Nueva ventana</translation>
 <translation id="8797459392481275117">Nunca traducir este sitio</translation>

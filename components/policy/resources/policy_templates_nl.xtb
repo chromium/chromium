@@ -145,13 +145,6 @@
 <translation id="1221359380862872747">Gespecificeerde URL's laden in demo-aanmeldvenster</translation>
 <translation id="1223789468190631420">Inschakelstatus van Safe Browsing voor vertrouwde bronnen</translation>
 <translation id="123081309365616809">Casten van content naar het apparaat inschakelen</translation>
-<translation id="1231349879329465225">Hiermee kan Fast Transition worden in- of uitgeschakeld.
-      Dit is van toepassing op alle gebruikers en op alle interfaces op het apparaat.
-      Als je Fast Transition wilt gebruiken, moeten deze instelling en de ONC-property van het netwerk zijn ingeschakeld.
-      Zodra Fast Transition is ingesteld, wordt deze instelling gehandhaafd totdat het beleid wordt gewijzigd en de instelling wordt uitgeschakeld.
-
-      Als er geen beleid is ingesteld of het beleid is ingesteld op 'False', wordt Fast Transition niet gebruikt.
-      Als het beleid is ingesteld op 'True', wordt Fast Transition gebruikt wanneer dit wordt ondersteund door het draadloze toegangspunt.</translation>
 <translation id="1240722269871366886">Met dit beleid kan <ph name="PRODUCT_OS_NAME" /> emoji's voorstellen als gebruikers tekst typen met hun virtuele of fysieke toetsenborden.
       Als dit beleid is ingesteld op 'waar', is de functie ingeschakeld en kunnen gebruikers het wijzigen.
       Dit beleid is standaard ingesteld op 'onwaar'. Er worden geen suggesties voor emoji's weergegeven en gebruikers kunnen dit niet overschrijven.</translation>
@@ -306,17 +299,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome verwijdert regelmatig gegevens van geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. Aangezien deze verwijdering alleen met bepaalde intervallen plaatsvindt, kan de levensduur van bepaalde gegevens iets langer zijn, maar nooit langer dan twee keer de verwachte <ph name="TIME_TO_LIVE_IN_HOURS" />.
       </translation>
-<translation id="1507382822467487898">Hiermee kun je instellen welk MAC-adres (Media Access Control) wordt gebruikt als het apparaat is aangesloten op een dock.
-
-          Bij sommige apparaatmodellen die op een dock zijn aangesloten, wordt standaard het toegewezen dock-MAC-adres van het apparaat gebruikt om het apparaat te identificeren op ethernet. Met dit beleid kan de beheerder de bron van het MAC-adres wijzigen terwijl het apparaat is gedockt.
-
-          Als 'DeviceDockMacAddress' wordt geselecteerd of het beleid niet wordt ingesteld, wordt het toegewezen dock-MAC-adres van het apparaat gebruikt.
-
-          Als 'DeviceNicMacAddress' wordt geselecteerd, wordt het MAC-adres van de NIC (Network Interface Controller) van het apparaat gebruikt.
-
-          Als 'DockNicMacAddress' wordt geselecteerd, wordt het MAC-adres van de NIC van het dock gebruikt.
-
-          Deze instelling kan niet worden gewijzigd door de gebruiker.</translation>
 <translation id="1509692106376861764">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_NAME" /> versie 29.</translation>
 <translation id="1512974677514081818">Biedt configuraties voor bedrijfsprinters die aan apparaten zijn gekoppeld.
 
@@ -515,13 +497,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
       Als de compatibiliteit met een server met bugs moet worden behouden, kan dit beleid worden ingesteld op 'tls1.1'. Dit is slechts een noodoplossing. De server moet snel worden gerepareerd.</translation>
 <translation id="1861206724856734193">Hiermee stel je een lijst in met regels ter voorkoming van datalekken.</translation>
-<translation id="1864382791685519617">Hiermee wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> ingeschakeld en wordt voorkomen dat gebruikers deze instelling kunnen wijzigen.
-
-      Hiermee wordt DNS-prefetching, vooraf verbinden met TCP en SSL en het vooraf weergeven van webpagina's beheerd.
-
-      Als je dit beleid instelt, kunnen gebruikers deze instelling niet wijzigen of overschrijven in <ph name="PRODUCT_NAME" />.
-
-      Als dit beleid niet wordt ingesteld, wordt netwerkvoorspelling ingeschakeld, maar kan de gebruiker dit wijzigen.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
 <translation id="186719019195685253">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op netspanning</translation>
 <translation id="1885782360784839335">Weergave van promotiecontent op volledig tabblad inschakelen</translation>
@@ -680,13 +655,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 <translation id="2135335181634291106">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is ingeschakeld en je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> instelt, wordt de URL voor het favoriete icoon van de standaard zoekprovider gespecificeerd.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> niet instelt, is er geen icoon voor de zoekprovider.</translation>
-<translation id="2138449619211358657">Met dit beleid kan <ph name="PRODUCT_OS_NAME" /> elke proxy voor captive portal-verificatie omzeilen.
-
-      Dit beleid wordt alleen geactiveerd als een proxy wordt geconfigureerd (bijvoorbeeld via een beleid, door de gebruiker in chrome://settings of met extensies).
-
-      Als je deze instelling inschakelt, worden captive portal-verificatiepagina's (alle webpagina's vanaf de captive portal-inlogpagina totdat <ph name="PRODUCT_NAME" /> een internetverbinding detecteert) in een afzonderlijk venster weergegeven, waarbij alle beleidsinstellingen en beperkingen voor de huidige gebruiker worden genegeerd.
-
-      Als je deze instelling uitschakelt of niet instelt, worden captive portal-verificatiepagina's weergegeven in een (normaal) nieuw browsertabblad, waarbij de proxy-instellingen van de huidige gebruiker worden gebruikt.</translation>
 <translation id="2145735238144543545">Vereiste clientcertificaten</translation>
 <translation id="214901426630414675">Afdrukken in duplexmodus beperken</translation>
 <translation id="2149330464730004005">Afdrukken in kleur inschakelen</translation>
@@ -1419,20 +1387,8 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
           Dit beleid is optioneel. Als het niet wordt ingesteld, wordt er geen vervanging van zoektermen uitgevoerd.
 
           Dit beleid wordt alleen gerespecteerd als het beleid 'DefaultSearchProviderEnabled' is ingeschakeld.</translation>
-<translation id="3049248142961638857">Hiermee bepaal je de hostnaam van het apparaat die wordt gebruikt in DHCP-verzoeken.
-
-      Als dit beleid is ingesteld op een niet-lege tekenreeks, wordt deze tekenreeks tijdens het DHCP-verzoek gebruikt als hostnaam van het apparaat.
-
-      De tekenreeks kan de variabelen <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> en <ph name="LOCATION_PLACEHOLDER" /> bevatten, die worden vervangen door waarden op het apparaat voordat deze hostnaam wordt gebruikt. Deze vervanging moet een geldige hostnaam opleveren (volgens RFC 1035, artikel 3.1).
-
-      Als dit beleid niet is ingesteld of als de vervanging geen geldige hostnaam oplevert, wordt er geen hostnaam ingesteld in het DHCP-verzoek. </translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">Toestaan dat gekoppelde gebruikers van dit apparaat ADB-sideloading gebruiken</translation>
-<translation id="3069958900488014740">Hiermee kan WPAD-optimalisatie (Web Proxy Auto-Discovery) worden uitgeschakeld in <ph name="PRODUCT_NAME" />.
-
-      Als dit beleid is ingesteld op 'false', wordt WPAD-optimalisatie uitgeschakeld, waardoor <ph name="PRODUCT_NAME" /> langer moet wachten op DNS-gebaseerde WPAD-servers. Als het beleid niet is ingesteld of is ingeschakeld, is WPAD-optimalisatie ingeschakeld.
-
-      Onafhankelijk van of en hoe dit beleid is ingesteld, kan de instelling voor WPAD-optimalisatie niet worden gewijzigd door gebruikers.</translation>
 <translation id="3072045631333522102">Screensaver voor gebruik in het inlogvenster in de winkelmodus</translation>
 <translation id="3072788420987305247">Als je het beleid inschakelt of niet instelt, worden mediabedieningsopties op het vergrendelscherm weergegeven als gebruikers het apparaat vergrendelen terwijl er media wordt afgespeeld.
 
@@ -2690,7 +2646,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
           Als dit beleid niet is ingesteld, wordt blokkeerbare gecombineerde content geblokkeerd en wordt optioneel blokkeerbare gecombineerde content geüpgraded. Gebruikers kunnen wel uitzonderingen instellen om dergelijke content toe te staan voor specifieke sites.
 
           Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
-<translation id="5102203758995933166">Hiermee kan de netwerkconfiguratie per gebruiker worden toegepast op een <ph name="PRODUCT_OS_NAME" />-apparaat. De netwerkconfiguratie is een json-tekenreeks zoals gedefinieerd in de Open Network Configuration-indeling.</translation>
 <translation id="5105313908130842249">Vertraging van schermvergrendeling wanneer op de batterij wordt gewerkt</translation>
 <translation id="5108031557082757679">Zakelijke apparaatprinters uitgeschakeld</translation>
 <translation id="5109383437323376357">De beschikbaarheid van varianten bepalen</translation>
@@ -2957,15 +2912,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
           Als deze instelling is ingeschakeld, worden de fysieke invoer- en uitvoerapparaten van hosts uitgeschakeld terwijl een externe verbinding tot stand wordt gebracht.
 
           Als deze instelling is uitgeschakeld of niet is ingesteld, kunnen zowel lokale als externe gebruikers met de host communiceren terwijl deze wordt gedeeld.</translation>
-<translation id="5396049152026347991">De gebruiker toestaan VPN-verbindingen te beheren.
-
-      Als dit beleid is ingesteld op 'false', worden alle gebruikersinterfaces van <ph name="PRODUCT_NAME" /> uitgeschakeld die de gebruiker zouden toestaan VPN-verbindingen te verbreken of bewerken.
-
-      Als dit beleid niet is ingesteld of is ingesteld op 'true', kunnen gebruikers zoals gebruikelijk VPN-verbindingen verbreken of bewerken.
-
-      Als de VPN-verbinding via een VPN-app wordt gemaakt, heeft dit beleid geen gevolgen voor de gebruikersinterface binnen de app. Daarom kan de gebruiker nog steeds de app gebruiken om de VPN-verbinding te bewerken.
-
-      Dit beleid is bedoeld voor gebruik in combinatie met de functie 'Always-on VPN', waarmee de beheerder kan bepalen of er tijdens het opstarten een VPN-verbinding tot stand moet worden gebracht.</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> inschakelen</translation>
 <translation id="5405289061476885481">Hiermee configureer je welke toetsenbordindelingen zijn toegestaan voor het inlogscherm van <ph name="PRODUCT_OS_NAME" />.
 
@@ -3057,16 +3003,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5475361623548884387">Afdrukken inschakelen</translation>
 <translation id="547601067149622666">Geen advertenties toestaan op sites met opdringerige advertenties</translation>
 <translation id="5483065054530244863">Door lokale vertrouwensinstanties verstrekte, met SHA-1 ondertekende certificaten toestaan</translation>
-<translation id="5486493714323160905">Als deze instelling is ingeschakeld, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
-      Als deze instelling is uitgeschakeld, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd.
-      Als deze instelling niet is ingesteld, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
-
-      Dit beleid zal worden verwijderd in <ph name="PRODUCT_OS_NAME" /> versie 81, wanneer de support voor de verouderde certificaatverificatie in <ph name="PRODUCT_OS_NAME" /> ook zal worden verwijderd.
-
-      Dit beleid zal worden verwijderd in <ph name="PRODUCT_NAME" /> voor Linux-versie 83, wanneer de support voor de verouderde certificaatverificatie in Linux ook zal worden verwijderd.
-
-      Dit beleid zal worden verwijderd in <ph name="PRODUCT_NAME" /> voor Mac OS X-versie 87, als de support voor de verouderde certificaatverificatie in Mac OS X ook zal worden verwijderd.
-      </translation>
 <translation id="5494917047563607689">Als je het beleid instelt op een waarde lager dan 1 MB of als dit beleid niet wordt ingesteld, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardgrootte voor het opslaan van apps en extensies in het cachegeheugen voor installaties door meerdere gebruikers van één apparaat. Hierdoor is het niet nodig om elke app of extensie voor elke gebruiker opnieuw te downloaden.</translation>
 <translation id="5499375345075963939">Dit beleid is alleen actief in de commerciële modus.
 
@@ -3380,12 +3316,6 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgeschakeld (door het b
       Dit beleid is uitsluitend beschikbaar als verplichte beleidsregel voor machineplatforms en is alleen van toepassing op cloudbeleid voor het machinebereik.
       </translation>
 <translation id="5905473632148429217">Online OCSP/CRL-controles inschakelen</translation>
-<translation id="5906199912611534122">Hiermee kan netwerkbeperking worden in- of uitgeschakeld.
-      Dit is van toepassing op alle gebruikers en op alle interfaces op het apparaat. Zodra de beperking is ingesteld,
-      wordt deze gehandhaafd totdat het beleid wordt gewijzigd en de instelling wordt uitgeschakeld.
-
-      Als het beleid is ingesteld op 'False', geldt er geen beperking.
-      Als het beleid is ingesteld op 'True', wordt het systeem beperkt om de opgegeven upload- en downloadsnelheid (in kbits/s) te bereiken.</translation>
 <translation id="5907283448020542268">Tenzij het beleid <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, zorgt het instellen van <ph name="GLS_ENABLED" /> bij de eerste configuratie ervoor dat Google-locatieservices wordt ingeschakeld. Locatieservices blijft uitgeschakeld tijdens de configuratie als het beleid wordt ingesteld op <ph name="GLS_DISABLED" /> of niet wordt ingesteld.
 
       Als het beleid wordt ingesteld op <ph name="BR_UNDER_USER_CONTROL" />, worden gebruikers gevraagd of ze Google-locatieservices willen gebruiken. Als een gebruiker Google-locatieservices inschakelt, gebruiken Android-apps de services om de apparaatlocatie te zoeken en anonieme locatiegegevens naar Google te sturen.
@@ -4129,15 +4059,6 @@ Als je ervoor kiest het volgende te gebruiken:
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="6926703471186170050">Dubbelzijdig afdrukken over lange zijde inschakelen</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitschakelen</translation>
-<translation id="6936894225179401731">Hiermee kun je het maximum aantal gelijktijdige verbindingen met de proxyserver opgeven.
-
-      Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen.
-
-      De waarde van dit beleid moet tussen 6 en 100 liggen en de standaardwaarde is 32.
-
-      Het is bekend dat bepaalde webapps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je deze waarde lager instelt dan 32, lopen netwerkprocessen van de browser daarom mogelijk vast als je te veel van dergelijke webapps heeft geopend. Het tot onder de standaardwaarde verlagen van deze waarde is daarom op eigen risico.
-
-      Als dit beleid niet is ingesteld, wordt de standaardwaarde 32 gebruikt.</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
 <translation id="6944167205014013774">Informatie over het gebruik van Linux-apps wordt teruggestuurd naar de server.
 
@@ -4228,7 +4149,6 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
 <translation id="7063895219334505671">Pop-ups toestaan ​​op deze sites</translation>
 <translation id="706669471845501145">Sites toestaan bureaubladmeldingen weer te geven</translation>
-<translation id="7068108874199666656">Hiermee kun je een netwerkconfiguratie toepassen voor alle gebruikers van een <ph name="PRODUCT_OS_NAME" />-apparaat. De netwerkconfiguratie is een tekenreeks met json-indeling, zoals gedefinieerd in de Open Network Configuration-indeling.</translation>
 <translation id="7070525176564511548">Het wachtwoord moet elke week (168 uur) worden opgegeven</translation>
 <translation id="7072208053150563108">Wijzigingsfrequentie van computerwachtwoord</translation>
 <translation id="7072567600438630966">Toestaan dat Phone Hub wordt aangezet.</translation>
@@ -4607,8 +4527,6 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je het beleid uitschakelt of niet instelt, kunnen gebruikers deze instelling wijzigen.
 
       Opmerking: Gebruik voor Android het beleid <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
-<translation id="7511361072385293666">Als dit beleid wordt ingesteld op 'True' of niet wordt ingesteld, wordt het gebruik van het QUIC-protocol in <ph name="PRODUCT_NAME" /> toegestaan.
-      Als dit beleid wordt ingesteld op 'False', wordt het gebruik van het QUIC-protocol niet toegestaan.</translation>
 <translation id="7517845714620372896">Geeft het percentage voor de helderheid van het scherm aan.
           Wanneer dit beleid wordt ingesteld, wordt de helderheid van het scherm in eerste instantie ingesteld op de beleidswaarde. De gebruiker kan dit later wijzigen. Functies voor automatische helderheid worden uitgeschakeld.
           Wanneer dit beleid niet is ingesteld, bepaalt de gebruiker de helderheid en heeft dit geen invloed op de functies voor automatische helderheid.
@@ -4710,7 +4628,6 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="7632724434767231364">Naam van GSSAPI-bibliotheek</translation>
 <translation id="7643883929273267746">Accounts die zichtbaar zijn in <ph name="PRODUCT_NAME" /> beperken</translation>
 <translation id="7648907905084499629">Gedrag van <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> voor cookies op alle sites gebruiken</translation>
-<translation id="7651739109954974365">Bepaalt of dataroaming moet worden ingeschakeld voor het apparaat. Als dit is ingesteld op 'true', wordt dataroaming toegestaan. Als de instelling niet wordt geconfigureerd of op 'false' is ingesteld, is dataroaming niet beschikbaar.</translation>
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
 <translation id="7668830462800981702">Als je het beleid inschakelt, wordt er een standaard zoekopdracht uitgevoerd als de gebruiker in de adresbalk tekst invoert die geen URL is. Als je de standaard zoekprovider wilt opgeven, stel je alle andere standaard zoekbeleidsregels in. Als je die zoekbeleidsregels leeg laat, kan de gebruiker zelf de standaardprovider kiezen. Als je het beleid uitschakelt, wordt er geen zoekopdracht uitgevoerd als de gebruiker in de adresbalk tekst invoert die geen URL is.
 
@@ -5111,11 +5028,6 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 <translation id="8259592978873597235">Als dit beleid is ingesteld op 'true' of niet is ingesteld, wordt de gebruiker niet beschouwd als inactief terwijl de video wordt afgespeeld. Hiermee wordt voorkomen dat de inactieve vertraging, vertraging van dimmen van het scherm, vertraging van scherm uitschakelen en vertraging van schermvergrendeling worden bereikt en dat de bijbehorende acties worden ondernomen.
 
           Als dit beleid is ingesteld op 'false', voorkomt videoactiviteit niet dat de gebruiker als inactief wordt beschouwd.</translation>
-<translation id="8261272655177284145">Als je het beleid instelt op 1, kun je instellen of alle websites automatisch de <ph name="FLASH_PLUGIN_NAME" />-plug-in mogen uitvoeren. Als je het beleid instelt op 2, wordt deze plug-in geblokkeerd voor alle websites. Via click-to-play kan de <ph name="FLASH_PLUGIN_NAME" />-plug-in worden uitgevoerd maar moeten gebruikers op de tijdelijke aanduiding klikken om deze te starten.
-
-      Als je het beleid niet instelt, wordt <ph name="BLOCK_PLUGINS_POLICY_NAME" /> gebruikt en kunnen gebruikers deze instelling wijzigen.
-
-      Opmerking: Automatisch afspelen werkt alleen voor domeinen die expliciet in het beleid <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> worden vermeld. Als je automatisch afspelen wilt inschakelen voor alle sites, voeg je http://* en https://* toe aan deze lijst.</translation>
 <translation id="8266778278542911985">Als je het beleid instelt op 3, kunnen websites toegang vragen tot seriële poorten. Als je het beleid instelt op 2, wordt de toegang tot seriële poorten geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
@@ -5330,9 +5242,6 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8544465954173828789">Toestaan dat sms-berichten worden gesynchroniseerd tussen telefoon en Chromebook.</translation>
 <translation id="8548832052135586762">Hiermee bepaal je of je alleen in kleur, alleen in monochroom of zonder kleurbeperking wilt afdrukken. Als er geen beleid is ingesteld, gelden er geen beperkingen.</translation>
 <translation id="8566842294717252664">De Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher</translation>
-<translation id="8569734380847633643">
-          Als het beleid is ingesteld op 'false', schakelt <ph name="PRODUCT_OS_NAME" /> wifi uit en kunnen gebruikers wifi niet opnieuw inschakelen.
-          Als het beleid is ingesteld op 'true' of niet is ingesteld, kunnen gebruikers zelf bepalen of ze wifi willen in- of uitschakelen.</translation>
 <translation id="8571314270766672278">Een rollback uitvoeren en het apparaat resetten bij een kanaaldowngrade en de inschrijving proberen te behouden</translation>
 <translation id="857369585509260201">Dit beleid is verouderd. Je kunt in plaats daarvan BrowserSignin gebruiken.
 

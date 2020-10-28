@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Įklijuoti</translation>
 <translation id="3958548648197196644">Kivis</translation>
 <translation id="3966388904776714213">Garso įrašų grotuvas</translation>
-<translation id="3984317463833596033">Suteikite „Parallels Desktop“ leidimą keisti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4070370845051020638">Įvesties kantoniečių dialektu metodas</translation>
 <translation id="4072248638558688893">Tamiliška klaviatūra (fonetinė)</translation>
@@ -469,14 +468,12 @@
 <translation id="5850516540536751549">Šio tipo failas nepalaikomas. Apsilankykite <ph name="BEGIN_LINK" />„Chrome“ internetinėje parduotuvėje<ph name="END_LINK" /> ir raskite programą, kuria galima atidaryti šio tipo failą.
     <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Čia nieko nėra...</translation>
-<translation id="5857774240076772505">Suteikite „Linux“ programoms leidimą keisti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="5892290200158927959">Prancūziška BÉPO klaviatūra</translation>
 <translation id="5911887972742538906">Diegiant „Linux“ programą įvyko klaida.</translation>
 <translation id="5912396950572065471">Formatas</translation>
 <translation id="5913638992615760742">Nepavyko įvykdyti kopijavimo operacijos; nenumatyta klaida: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Įvestis japonų k. (japonų k. klaviatūrai)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Suteikite „Linux“ programoms leidimą keisti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="5955954492236143329">Elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Rūšiuoti parinktis</translation>
@@ -720,7 +717,6 @@
 <translation id="8475647382427415476">„Google“ diskui dabar nepavyko sinchronizuoti failo „<ph name="FILENAME" />“. „Google“ diskas vėliau bandys dar kartą.</translation>
 <translation id="8477649328507734757">Sukimasis</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
-<translation id="8490342535582768689">Suteikti „Parallels Desktop“ leidimą keisti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="8521441079177373948">JK</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
 <translation id="8551494947769799688">Latvių</translation>

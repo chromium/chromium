@@ -144,13 +144,6 @@
 <translation id="1221359380862872747">在演示登录时加载指定网址</translation>
 <translation id="1223789468190631420">针对可信来源的安全浏览功能启用状态</translation>
 <translation id="123081309365616809">允许向设备投射内容</translation>
-<translation id="1231349879329465225">允许启用或停用快速切换功能。
-      这适用于所有用户以及相应设备上的所有界面。
-      若想使用快速切换功能，您不仅需启用此设置，还需启用网络级别的 ONC 属性。
-      快速切换功能一经启用便会一直有效，除非通过更改此政策停用该功能。
-
-      如果此政策未设置或设为 false，系统便不会使用快速切换功能。
-      如果设为 true，系统会使用快速切换功能（如果无线接入点支持该功能的话）。</translation>
 <translation id="1240722269871366886">通过设置此政策，您可让 <ph name="PRODUCT_OS_NAME" />在用户使用虚拟键盘或实体键盘输入文字时建议表情符号。
       如果此政策设为 true，该功能便会处于开启状态，但用户可以自行更改此设置。
       此政策默认设为 false，在这种情况下，系统不会建议任何表情符号，而且用户无法覆盖此设置。</translation>
@@ -187,6 +180,7 @@
       如果您启用此设置，则 Google 搜索中的安全搜索功能和 YouTube 中的“适中”受限模式将始终处于启用状态。
 
       如果您停用此设置或未设置值，则系统不会在 Google 搜索中强制启用安全搜索功能，也不会在 YouTube 中强制启用受限模式。</translation>
+<translation id="134745581157553029">如果您设置了“DeviceArcDataSnapshotHours”政策，系统会开启 ARC 数据快照机制，并可在指定的时间间隔内自动启动 ARC 数据快照更新。当某个时间间隔已开始且 ARC 数据快照需要更新时，如果任何用户均未登录，系统会直接启动 ARC 数据快照更新过程，而不通知用户；如果用户会话正在进行中，系统会显示界面通知，且会等到用户接受通知后才重启设备并启动 ARC 数据快照更新过程。注意：在 ARC 数据快照更新过程中，用户无法使用设备。</translation>
 <translation id="1353416417709895349">停用 DNS 拦截检查功能和“您是不是要前往 http://intranetsite/？”信息栏。</translation>
 <translation id="1353985065430729216">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以使用传感器（例如动作传感器和光传感器）。
 
@@ -302,18 +296,6 @@
       可用的数据类型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
       Chrome 会定期移除留存时长已超过 <ph name="TIME_TO_LIVE_IN_HOURS" /> 的所选类型数据。由于系统只会按特定的时间间隔执行这种删除操作，某些数据的留存时长可能会略久一点，但绝不会超过预期留存时长（<ph name="TIME_TO_LIVE_IN_HOURS" />）的 2 倍。
       </translation>
-<translation id="1507382822467487898">
-          配置当基座连接到设备时使用哪个 MAC（媒体访问控制）地址。
-
-          当基座连接到某些型号的设备时，系统会默认使用设备的指定基座 MAC 地址在以太网上标识相应设备。此政策允许管理员在设备插入基座时更改 MAC 地址的来源。
-
-          如果选择了“DeviceDockMacAddress”或未设置此政策，则系统会使用设备的指定基座 MAC 地址。
-
-          如果选择了“DeviceNicMacAddress”，则系统会使用设备的 NIC（网络接口控制器）MAC 地址。
-
-          如果选择了“DockNicMacAddress”，则系统会使用基座的 NIC MAC 地址。
-
-          此设置无法由用户更改。</translation>
 <translation id="1509692106376861764">此政策从 <ph name="PRODUCT_NAME" /> 版本 29 起开始弃用。</translation>
 <translation id="1512974677514081818">为绑定到设备的企业打印机提供配置。
 
@@ -458,6 +440,7 @@
 
       通过设置此政策，您可以指定哪些扩展程序会从遭禁止的扩展程序列表中排除。使用 <ph name="EXTENSION_INSTALL_BLACKLIST_POLICY_NAME" /> 值“<ph name="ALL_EXTENSIONS" />”可禁止所有扩展程序，而且用户只能安装明确允许的扩展程序。默认情况下，所有扩展程序都是允许安装的，但如果您依照相关政策禁止了扩展程序，请使用扩展程序许可列表更改该政策。</translation>
 <translation id="1781356041596378058">此政策亦用于控制对 Android 开发者选项的访问。如果此政策设为 true，用户将无法访问开发者选项。如果此政策设为 false 或未设置，用户只需在 Android 的“设置”应用中连续点按 7 次版本号即可访问开发者选项。</translation>
+<translation id="1787790976045065845">仅当 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> 政策设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> 或 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />，并且通过智能卡验证身份的用户移除该卡时，此政策才会生效。通过设置此政策，您可指定旨在让用户知道系统即将执行的操作的通知应持续显示多少秒。此通知会遮住屏幕上的其他内容。仅当此通知显示完毕后，系统才会执行相应操作。用户只需在此通知显示完毕前重新插入智能卡，便能阻止系统执行该操作。如果此政策设为零，系统将不会显示任何通知，并且会立即执行该操作。</translation>
 <translation id="1793346220873697538">默认停用 PIN 码打印</translation>
 <translation id="179694024208061102">如果此政策已启用，<ph name="PRODUCT_NAME" /> 将会尝试在备用浏览器（例如 <ph name="IE_PRODUCT_NAME" />）中打开某些网址。此功能是使用<ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />组中的政策设置的。
 
@@ -506,13 +489,6 @@
 
       在其他情况下，如果必须与存在错误的服务器保持兼容，则可将此政策设为“tls1.1”。这是一种权宜之计，服务器中的错误应该很快会得到解决。</translation>
 <translation id="1861206724856734193">设置一系列规则，防止数据泄露。</translation>
-<translation id="1864382791685519617">在 <ph name="PRODUCT_NAME" /> 中启用网络联想查询功能，并禁止用户更改此设置。
-
-      此政策用于控制 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。
-
-      如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改或替换此设置。
-
-      如果未设置此政策，系统将会启用网络联想查询功能，但用户将能够自行更改此设置。</translation>
 <translation id="1865417998205858223">密钥使用权限</translation>
 <translation id="186719019195685253">当闲置延迟时间已过且使用交流电源供电时执行的操作</translation>
 <translation id="1885782360784839335">允许使用整个标签页显示宣传内容</translation>
@@ -671,13 +647,6 @@
 <translation id="2135335181634291106">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> 来指定默认搜索服务提供商的网站图标网址。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />，搜索服务提供商便不会有任何图标。</translation>
-<translation id="2138449619211358657">此政策允许 <ph name="PRODUCT_OS_NAME" />在进行强制门户身份验证时跳过任何代理。
-
-      只有在配置了代理时（例如，通过政策配置、由用户在 chrome://settings 中配置，或通过扩展程序配置），此政策才会生效。
-
-      如果您启用了此设置，所有强制门户身份验证页面（即 <ph name="PRODUCT_NAME" /> 检测到成功的互联网连接之前，从强制门户登录页面开始的所有网页）都将在单独的窗口中显示，并忽略针对当前用户的所有政策设置和限制。
-
-      如果您停用了此设置或未对其进行设置，所有强制门户身份验证页面都将在新的常规浏览器标签页中显示，并使用当前用户的代理设置。</translation>
 <translation id="2145735238144543545">必需的客户端证书</translation>
 <translation id="214901426630414675">限制双面打印模式</translation>
 <translation id="2149330464730004005">启用彩色打印</translation>
@@ -973,6 +942,10 @@
       如果您未设置此政策，系统将不会显示《服务条款》。
 
       此政策的值应设为一个可供 <ph name="PRODUCT_OS_NAME" />用来下载《服务条款》的网址。《服务条款》必须是纯文本，提供形式为 MIME 类型 text/plain，且不得使用任何标记。</translation>
+<translation id="2500699707048942472">PIN 码自动提交功能会更改 PIN 码在 Chrome 操作系统中的输入方式。
+          该功能会显示一个特殊界面以清楚地指明用户的 PIN 码需要包含的位数，而不会显示用于输入密码的相同文本字段。因此，用户的 PIN 码长度会存储在用户加密数据之外。仅支持长度介于 6-12 位数字的 PIN 码。
+
+          如果此政策设为 false，用户将无法在“设置”页面上选择启用该功能。</translation>
 <translation id="2502467045153796624">版本降级行为</translation>
 <translation id="250670737672448119">启用“插入符号突出显示”无障碍功能。
 
@@ -1399,20 +1372,8 @@
           此为可选政策。如果未设置此政策，系统将不会替换搜索字词。
 
           此政策只在启用了“DefaultSearchProviderEnabled”政策的前提下才会生效。</translation>
-<translation id="3049248142961638857">确定要在 DHCP 请求中使用的设备主机名。
-
-      如果此政策设为一个非空字符串，该字符串将会用作 DHCP 请求中的设备主机名。
-
-      该字符串可以包含变量 <ph name="ASSET_ID_PLACEHOLDER" />、<ph name="SERIAL_NUM_PLACEHOLDER" />、<ph name="MAC_ADDR_PLACEHOLDER" />、<ph name="MACHINE_NAME_PLACEHOLDER" />、<ph name="LOCATION_PLACEHOLDER" />。系统会先将这些变量替换为设备上的相应值，然后再将该字符串用作主机名。替换后的字符串应是有效的主机名（符合 RFC 1035 第 3.1 节中的规定）。
-
-      如果此政策未设置，或替换后的值不是有效的主机名，系统将不会在 DHCP 请求中设置任何主机名。 </translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3066446511111537292">允许此设备的关联用户使用 ADB 旁加载</translation>
-<translation id="3069958900488014740">允许停用 <ph name="PRODUCT_NAME" /> 中的 WPAD（网络代理自动发现）优化设置。
-
-      如果此政策设置为 false，那么 WPAD 优化将处于停用状态，这会延长 <ph name="PRODUCT_NAME" /> 等待基于 DNS 的 WPAD 服务器响应的时间。如果未设置或已启用此政策，那么 WPAD 优化设置将处于启用状态。
-
-      无论是否设置此政策或如何设置此政策，用户都无法更改 WPAD 优化设置。</translation>
 <translation id="3072045631333522102">用于零售模式登录屏幕的屏幕保护程序</translation>
 <translation id="3072788420987305247">如果此政策已启用或未设置，当用户在媒体播放期间锁定设备时，系统会在锁定屏幕上显示媒体控件。
 
@@ -2639,7 +2600,6 @@
           如果未设置此政策，可屏蔽的混合内容将被屏蔽，同时可选的可屏蔽混合内容将被升级，但用户将能设置例外情况以允许在特定网站上显示此类内容。
 
           要详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
-<translation id="5102203758995933166">允许将要按用户应用的网络配置推送到 <ph name="PRODUCT_OS_NAME" />设备。网络配置是 JSON 格式的字符串，由开放网络配置格式定义。</translation>
 <translation id="5105313908130842249">使用电池供电时的屏幕锁定延迟时间</translation>
 <translation id="5108031557082757679">已停用企业设备打印机</translation>
 <translation id="5109383437323376357">确定变体的可用情况</translation>
@@ -2896,15 +2856,6 @@
           如果启用了此设置，那么在进行远程连接时，就会禁用主机的物理输入和输出设备。
 
           如果停用或未设定此设置，那么当主机处于共享状态时，本地和远程用户都可以与主机互动。</translation>
-<translation id="5396049152026347991">允许用户管理 VPN 连接。
-
-      如果此政策设为 false，所有允许用户断开/修改 VPN 连接的 <ph name="PRODUCT_NAME" /> 界面都会被停用。
-
-      如果此政策设为 true 或未设置，用户可照常断开/修改 VPN 连接。
-
-      如果 VPN 连接是通过 VPN 应用创建的，则相应应用内的界面不会受到此政策的影响。因此，用户或许仍能使用相应应用修改 VPN 连接。
-
-      此政策旨在与“始终开启的 VPN”功能结合使用，以便管理员决定是否要在启动时建立 VPN 连接。</translation>
 <translation id="5401696449591951427">启用 <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5405289061476885481">配置允许在 <ph name="PRODUCT_OS_NAME" />登录屏幕上使用哪些键盘布局。
 
@@ -2986,16 +2937,6 @@
 <translation id="5475361623548884387">启用打印功能</translation>
 <translation id="547601067149622666">不允许含侵扰性广告的网站展示广告</translation>
 <translation id="5483065054530244863">允许使用由本地信任锚颁发的 SHA-1 签名证书</translation>
-<translation id="5486493714323160905">如果启用了此政策，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
-      如果停用了此政策，<ph name="PRODUCT_NAME" /> 将会使用由平台提供的旧版证书验证程序来验证服务器证书。
-      如果未设置此政策，则既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。
-
-      按照我们的计划，此政策将会从 <ph name="PRODUCT_OS_NAME" />版本 81 中移除，该版本将不再支持在 <ph name="PRODUCT_OS_NAME" />上使用旧版证书验证程序。
-
-      按照我们的计划，此政策将会从 Linux 上的 <ph name="PRODUCT_NAME" /> 版本 83 中移除 ，该版本将不再支持在 Linux 上使用旧版证书验证程序。
-
-      按照我们的计划，此政策将会从 Mac OS X 上的 <ph name="PRODUCT_NAME" /> 版本 87 中移除，该版本将不再支持在 Mac OS X 上使用旧版证书验证程序。
-      </translation>
 <translation id="5494917047563607689">如果此政策设为小于 1 MB 或不设置，<ph name="PRODUCT_OS_NAME" />会使用默认大小缓存应用和扩展程序，以供同一台设备上的多位用户安装，从而避免重新为每位用户下载。</translation>
 <translation id="5499375345075963939">此策略仅在零售模式下有效。
 
@@ -3308,11 +3249,6 @@
       此政策仅可作为强制性机器平台政策使用，并且仅会影响机器范围云政策。
       </translation>
 <translation id="5905473632148429217">启用在线 OCSP/CRL 检查</translation>
-<translation id="5906199912611534122">允许启用或停用网络节流功能。
-      这适用于所有用户以及设备上的所有界面。节流功能一经启用便会一直有效，除非通过更改此政策停用该功能。
-
-      如果设为 false，系统将不会启用节流功能。
-      如果设为 true，系统则会启用节流功能，以实现所提供的上传速率和下载速率（以 kb/s 为单位）。</translation>
 <translation id="5907283448020542268">除非 <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> 政策已设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，否则将此政策设为 <ph name="GLS_ENABLED" /> 会在初始设置期间开启 Google 位置信息服务。将此政策设为 <ph name="GLS_DISABLED" /> 或不设置，位置信息服务会在设置期间保持关闭状态。
 
       如果您将此政策设为 <ph name="BR_UNDER_USER_CONTROL" />，系统会提示用户是否要使用 Google 位置信息服务。如果用户开启了该服务，Android 应用会利用该服务搜索设备位置信息，并向 Google 发送匿名位置数据。
@@ -4044,15 +3980,6 @@
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="6926703471186170050">启用长边双面打印</translation>
 <translation id="6931242315485576290">停用与 Google 同步数据的功能</translation>
-<translation id="6936894225179401731">指定可同时连接到代理服务器的连接数上限。
-
-      某些代理服务器无法处理同一客户端同时发出的大量连接，在这种情况下，您只需将此策略设为较低的值即可。
-
-      此策略值应大于 6，小于 100，默认值为 32。
-
-      某些网络应用采用了挂起 GET 的方式，这样会消耗大量连接，因此如果打开的此类网络应用过多，将该值设为小于 32 就可能会导致浏览器网络连接挂起。对于设置值小于默认值所产生的风险，您需要自行承担。
-
-      如果未设置此策略，系统将使用默认值 32。</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好设置名称：</translation>
 <translation id="6944167205014013774">系统会将有关 Linux 应用使用情况的信息发送回服务器。
 
@@ -4142,7 +4069,6 @@
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>
 <translation id="7063895219334505671">在这些网站上允许弹出式窗口</translation>
 <translation id="706669471845501145">允许网站显示桌面通知</translation>
-<translation id="7068108874199666656">允许将要对所有用户应用的网络配置推送到 <ph name="PRODUCT_OS_NAME" />设备。网络配置是 JSON 格式的字符串，由开放网络配置格式定义。</translation>
 <translation id="7070525176564511548">每周（168 小时）必须输入一次密码</translation>
 <translation id="7072208053150563108">设备密码更改率</translation>
 <translation id="7072567600438630966">允许启用 Phone Hub。</translation>
@@ -4516,8 +4442,6 @@
       如果此政策已停用或未设置，用户便可更改此设置。
 
       请注意：对于 Android 设备，请改用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 政策。</translation>
-<translation id="7511361072385293666">如果此政策设为 true 或未设置，则允许在 <ph name="PRODUCT_NAME" /> 中使用 QUIC 协议。
-      如果此政策设为 false，则禁止使用 QUIC 协议。</translation>
 <translation id="7517845714620372896">指定屏幕亮度百分比。
           如果设置了此政策，系统会根据政策值调整初始屏幕亮度，但用户稍后可以更改亮度。自动调节亮度功能在这种情况下会停用。
           如果未设置此政策，用户屏幕控制和自动调节亮度功能不受影响。
@@ -4619,7 +4543,6 @@
 <translation id="7632724434767231364">GSSAPI 库名称</translation>
 <translation id="7643883929273267746">限制可在<ph name="PRODUCT_NAME" />中显示的帐号</translation>
 <translation id="7648907905084499629">让所有网站上的 Cookie 都采用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行为</translation>
-<translation id="7651739109954974365">确定是否应为设备启用数据漫游。如果将此政策设置为 true，数据漫游就可以使用。如果未配置此政策或将其设置为 false，数据漫游就无法使用。</translation>
 <translation id="7657261947024629645">针对性能进行优化。</translation>
 <translation id="7668830462800981702">如果此政策已启用，当用户在地址栏中输入非网址的文字时，系统将会执行默认搜索。若要指定默认搜索服务提供商，请设置其余的默认搜索政策。如果您将这些政策留空，用户可自行选择默认提供商。如果此政策已停用，当用户在地址栏中输入非网址的文字时，系统将不会执行任何搜索。
 
@@ -5008,11 +4931,6 @@
 <translation id="8259592978873597235">如果将此政策设置为 true 或未设置此政策，则播放视频时计算机不会被视为闲置。这样，系统就不会开始计算闲置延迟、屏幕变暗、屏幕关闭和锁定的延迟时间，也不会执行相应的操作。
 
           如果将此政策设置为 false，则视频活动不会影响系统将计算机视为闲置状态。</translation>
-<translation id="8261272655177284145">如果此政策设为 1，系统会允许您设置是否所有网站都能自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件。如果此政策设为 2，系统会禁止所有网站使用此插件。选中“点击运行”选项会允许 <ph name="FLASH_PLUGIN_NAME" /> 插件运行，但用户必须点击该插件才能启动它。
-
-      如果此政策未设置，系统会使用 <ph name="BLOCK_PLUGINS_POLICY_NAME" />，但用户可以更改此设置。
-
-      请注意：“自动播放”仅适用于 <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> 政策中明确列出的网域。若要为所有网站启用“自动播放”，请将 http://* 和 https://* 添加到这个列表中。</translation>
 <translation id="8266778278542911985">如果此政策设为 3，系统会允许网站请求访问串行端口。如果此政策设为 2，系统会禁止访问串行端口。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
@@ -5227,9 +5145,6 @@
 <translation id="8544465954173828789">允许将短信从手机同步到 Chromebook。</translation>
 <translation id="8548832052135586762">将打印模式设置为仅限彩色打印、仅限单色打印或无颜色模式限制。如果未设置此政策，则会被视为无限制。</translation>
 <translation id="8566842294717252664">在“打开新的标签页”页面和应用启动器中不显示网上应用店</translation>
-<translation id="8569734380847633643">
-          如果此政策设为 false，<ph name="PRODUCT_OS_NAME" />将停用 Wi-Fi，并且用户无法重新启用 Wi-Fi。
-          如果此政策设为 true 或未设置，用户将能够随意启用或停用 Wi-Fi。</translation>
 <translation id="8571314270766672278">版本降级过程中，回滚并重置设备，在这一过程中让设备保留已注册状态</translation>
 <translation id="857369585509260201">此政策已弃用，请考虑改用 BrowserSignin。
 

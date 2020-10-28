@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1075811647922107217">Tamaño de la página</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1413240736185167732">Error: Problema en el filtro</translation>
@@ -23,7 +24,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Activar Bluetooth para buscar los dispositivos cercanos</translation>
 <translation id="2375079107209812402">Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
-<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento restante.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos restantes.}}</translation>
+<translation id="2463748424736466148">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
@@ -61,7 +62,7 @@
 <translation id="4890353053343094602">Elige una nueva de inmediato</translation>
 <translation id="4917889632206600977">Se detuvo: no hay papel</translation>
 <translation id="4932733599132424254">Fecha</translation>
-<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> administra a este usuario. También puede administrar la actividad del usuario y cambiar la configuración de forma remota.</translation>
+<translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> administra a este usuario y puede administrar la configuración y supervisar la actividad del usuario de forma remota.</translation>
 <translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No hay nada en la pantalla con lo que pueda ayudarte.
 Intenta presionar el micrófono para hacerme una pregunta.</translation>

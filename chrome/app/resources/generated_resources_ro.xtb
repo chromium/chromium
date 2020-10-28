@@ -1071,6 +1071,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2220409419896228519">Adaugă marcaje la aplicațiile Google preferate</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2220572644011485463">PIN sau parolă</translation>
+<translation id="2224337661447660594">Nu există conexiune la internet</translation>
 <translation id="2224444042887712269">Setarea aparține utilizatorului <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editați numele dosarului</translation>
 <translation id="2225864335125757863">Schimbă imediat următoarele parole pentru a-ți proteja contul:</translation>
@@ -3097,6 +3098,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4590324241397107707">Spațiu de stocare a bazei de date</translation>
 <translation id="4592891116925567110">Aplicație de desenare cu creionul</translation>
 <translation id="4593021220803146968">&amp;Accesează <ph name="URL" /></translation>
+<translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4595560905247879544">Aplicațiile și extensiile pot fi modificate numai de administrator (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Ai certificate stocate care identifică aceste servere</translation>
 <translation id="4598556348158889687">Gestionarea stocării</translation>
@@ -6649,7 +6651,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8786697630358316925">Această opțiune nu va mai fi acceptată după luna decembrie. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">Permiteți proxy-uri pentru rețelele utilizate în comun</translation>
 <translation id="8791534160414513928">Trimite o solicitare „Nu urmări” odată cu traficul de navigare</translation>
-<translation id="8794025342371547160">Adresă IP restricționată</translation>
 <translation id="879413103056696865">Cât timp hotspotul este activat, <ph name="PHONE_NAME" />:</translation>
 <translation id="8795916974678578410">Fereastră nouă</translation>
 <translation id="8797459392481275117">Nu traduce niciodată acest site</translation>

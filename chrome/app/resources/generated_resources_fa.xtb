@@ -1068,6 +1068,7 @@
 <translation id="2220409419896228519">‏اضافه کردن نشانک‌ها به برنامه‌های Google دلخواه</translation>
 <translation id="2220529011494928058">گزارش یک مشکل</translation>
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
+<translation id="2224337661447660594">اتصال اینترنت وجود ندارد</translation>
 <translation id="2224444042887712269">این تنظیم به <ph name="OWNER_EMAIL" /> متعلق است.</translation>
 <translation id="2224551243087462610">ویرایش نام پوشه</translation>
 <translation id="2225864335125757863">برای حفظ ایمنی حسابتان، این گذرواژه‌ها را فوراً تغییر دهید:</translation>
@@ -3094,6 +3095,7 @@
 <translation id="4590324241397107707">فضای ذخیره‌سازی پایگاه داده</translation>
 <translation id="4592891116925567110">برنامه طراحی قلم</translation>
 <translation id="4593021220803146968">&amp;رفتن به <ph name="URL" /></translation>
+<translation id="4593212453765072419">راستی‌آزمایی پروکسی مورد نیاز است</translation>
 <translation id="4595560905247879544">برنامه‌ها و افزونه‌ها فقط توسط مدیر (<ph name="CUSTODIAN_NAME" />) قابل تغییر هستند.</translation>
 <translation id="4596295440756783523">گواهی‌هایی در فایل دارید که این سرورها را شناسایی می‌کنند</translation>
 <translation id="4598556348158889687">مدیریت فضای ذخیره‌سازی</translation>
@@ -6646,7 +6648,6 @@
 <translation id="8786697630358316925">این گزینه پس از ماه دسامبر دیگر پشتیبانی نمی‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">پراکسی‌های شبکه‌های مشترک مجاز باشند</translation>
 <translation id="8791534160414513928">ارسال درخواست «ردیابی نشود» با ترافیک مرور</translation>
-<translation id="8794025342371547160">‏IP محدود</translation>
 <translation id="879413103056696865">وقتی نقطه اتصال روشن است، <ph name="PHONE_NAME" /> شما:</translation>
 <translation id="8795916974678578410">پنجرهٔ جدید</translation>
 <translation id="8797459392481275117">این سایت هرگز ترجمه نشود</translation>

@@ -1071,6 +1071,7 @@
 <translation id="2220409419896228519">즐겨찾는 Google 앱에 책갈피를 추가합니다.</translation>
 <translation id="2220529011494928058">문제 신고</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
+<translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2224444042887712269"><ph name="OWNER_EMAIL" />의 설정입니다.</translation>
 <translation id="2224551243087462610">폴더 이름 수정</translation>
 <translation id="2225864335125757863">계정 보호를 위해 다음 비밀번호를 즉시 변경하세요.</translation>
@@ -3095,6 +3096,7 @@
 <translation id="4590324241397107707">데이터베이스 저장소</translation>
 <translation id="4592891116925567110">스타일러스 그리기 앱</translation>
 <translation id="4593021220803146968"><ph name="URL" />(으)로 이동(&amp;G)</translation>
+<translation id="4593212453765072419">프록시 인증이 필요합니다.</translation>
 <translation id="4595560905247879544">앱 및 확장 프로그램은 관리자(<ph name="CUSTODIAN_NAME" />)만 수정할 수 있습니다.</translation>
 <translation id="4596295440756783523">다음 서버를 식별하는 인증서가 등록되어 있습니다.</translation>
 <translation id="4598556348158889687">저장용량 관리</translation>
@@ -6647,7 +6649,6 @@
 <translation id="8786697630358316925">12월 이후에는 이 옵션이 지원되지 않습니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">공유 네트워크에서 프록시 허용</translation>
 <translation id="8791534160414513928">탐색 트래픽과 함께 ‘추적 안함’ 요청 전송</translation>
-<translation id="8794025342371547160">제한된 IP</translation>
 <translation id="879413103056696865">핫스팟이 사용 설정되어 있는 동안 <ph name="PHONE_NAME" />이(가) 다음과 같이 작동함</translation>
 <translation id="8795916974678578410">새 창</translation>
 <translation id="8797459392481275117">이 사이트 번역 안함</translation>

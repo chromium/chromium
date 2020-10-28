@@ -1065,6 +1065,7 @@
 <translation id="2220409419896228519">ଆପଣଙ୍କ Google ଆପ୍ସରେ ବୁକମାର୍କ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2220529011494928058">କୌଣସି ଏକ ତ୍ରୁଟିର ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2220572644011485463">ପିନ୍‌ କିମ୍ବା ପାସ୍‌ୱର୍ଡ</translation>
+<translation id="2224337661447660594">କୌଣସି ଇଣ୍ଟର୍ନେଟ୍‍ ନାହିଁ</translation>
 <translation id="2224444042887712269">ଏହି ସେଟିଂ <ph name="OWNER_EMAIL" />ର ଅନ୍ତର୍ଗତ ଅଟେ।</translation>
 <translation id="2224551243087462610">ଫୋଲ୍ଡର ନାମ ସଂପାଦନ କରନ୍ତୁ</translation>
 <translation id="2225864335125757863">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ ସୁରକ୍ଷିତ ରଖିବାକୁ ଏହି ପାସୱାର୍ଡଗୁଡ଼ିକ ତୁରନ୍ତ ପରିବର୍ତ୍ତନ କରନ୍ତୁ:</translation>
@@ -2072,7 +2073,7 @@
 <translation id="3428419049384081277">ଆପଣ ସାଇନ୍‌ ଇନ୍ କରିଛନ୍ତି!</translation>
 <translation id="3428747202529429621">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଇନ୍ କରନ୍ତି ଏହା ଆପଣଙ୍କୁ Chromeରେ ସୁରକ୍ଷିତ ରଖେ ଏବଂ ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରେ ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ</translation>
 <translation id="3428800329481094896">Linux କଣ୍ଟେନରର ssh କୀଗୁଡ଼ିକ ଫେଚ୍ କରାଯାଉଛି</translation>
-<translation id="3429271624041785769">ୱେବ୍ ବିଷୟବସ୍ତୁ ଉପଲବ୍ଧ ଥିବା ଭାଷାଗୁଡ଼ିକ</translation>
+<translation id="3429271624041785769">ୱେବ୍ ବିଷୟବସ୍ତୁ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="3429275422858276529">ଏହାକୁ ପରେ ସହଜରେ ଖୋଜିବା ପାଇଁ ଏହି ପୃଷ୍ଠାକୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
 <translation id="3432227430032737297">ସମସ୍ତ ପ୍ରଦର୍ଶନକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="3432757130254800023">ସ୍ଥାନୀୟ ନେଟ୍‍ୱର୍କରେ ପ୍ରଦର୍ଶନ କରିବା ପାଇଁ ଅଡିଓ ଏବଂ ଭିଡିଓ ପଠାନ୍ତୁ</translation>
@@ -6640,7 +6641,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8786697630358316925">ଡିସେମ୍ବର ପରେ ଏହି ବିକଳ୍ପ ସମର୍ଥିତ ହେବ ନାହିଁ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8787254343425541995">ସେୟାର୍ ହୋଇଥିବା ନେଟ୍‌ୱାର୍କ ପାଇଁ ପ୍ରୋକ୍ସିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8791534160414513928">ନିଜର ବ୍ରାଉଜିଂ ଟ୍ରାଫିକ୍ ସହିତ ଏକ ’ଟ୍ରାକ୍ କରନ୍ତୁ ନାହିଁ’ ଅନୁରୋଧ ପଠାନ୍ତୁ</translation>
-<translation id="8794025342371547160">ପ୍ରତିବନ୍ଧିତ IP</translation>
 <translation id="879413103056696865">ହଟ୍‌ସ୍ପଟ୍ ଚାଲୁ ଥିଲେ, ଆପଣଙ୍କର <ph name="PHONE_NAME" /> ରହିବ:</translation>
 <translation id="8795916974678578410">ନୂତନ ୱିଣ୍ଡୋ</translation>
 <translation id="8797459392481275117">ଏହି ସାଇଟ୍‍କୁ କଦାପି ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>

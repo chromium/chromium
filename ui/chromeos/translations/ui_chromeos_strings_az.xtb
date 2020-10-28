@@ -279,7 +279,6 @@
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3966388904776714213">Audio Oxuducu</translation>
-<translation id="3984317463833596033">Parallels Desktop'a <ph name="FOLDER_NAME" /> qovluğunda faylları dəyişdirmə icazəsi verin</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4070370845051020638">Cənubi Çin dili daxil etmə üsulu</translation>
 <translation id="4072248638558688893">Tamil klaviaturası (fonetik)</translation>
@@ -468,14 +467,12 @@
 <translation id="5850516540536751549">Bu fayl dəstəklənmir. Bu fayl növünü aça bilən tətbiqi tapmaq üçün <ph name="BEGIN_LINK" />Chrome Veb Marketə<ph name="END_LINK" /> daxil olun.
     <ph name="BEGIN_LINK_HELP" />Ətraflı məlumat<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Burada baxmalı heç nə yoxdur...</translation>
-<translation id="5857774240076772505">Linux tətbiqlərinə <ph name="FOLDER_NAME" /> qovluğundakı faylları dəyişməsi üçün icazə verin</translation>
 <translation id="5892290200158927959">Fransız BEPO klaviaturası</translation>
 <translation id="5911887972742538906">Linux tətbiqi quraşdırılan zaman xəta baş verdi.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopyalamaq alınmadı, gözlənilməz xəta:<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">Yapon dili üçün daxiletmə (Yapon dili klaviaturası üçün)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">Linux tətbiqlərinə faylları Google Diskdə düzəliş etmək icazəsi verin. Dəyişikliklər digər cihazlara sinxronizasiya ediləcək.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> element</translation>
 <translation id="5957366693331451795">Chromebox cihazları</translation>
 <translation id="5982621672636444458">Çeşidləmə variantları</translation>
@@ -717,7 +714,6 @@
 <translation id="8475647382427415476">Google Disk indi "<ph name="FILENAME" />" adlı faylı sinxronizasiya edə bilmədi. Google Disk daha sonra cəhd edəcək.</translation>
 <translation id="8477649328507734757">Dairə</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
-<translation id="8490342535582768689">Parallels Desktop'a Google Diskinizdə faylları dəyişdirmə icazəsi verin. Dəyişikliklər digər cihazlara sinxronizasiya ediləcək.</translation>
 <translation id="8521441079177373948">Böyük Britaniya</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8551494947769799688">Latış</translation>

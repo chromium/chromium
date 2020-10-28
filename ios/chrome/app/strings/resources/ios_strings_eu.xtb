@@ -341,6 +341,7 @@ Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sink
 <translation id="4751645464639803239">Ezkutuko moduko fitxa berria</translation>
 <translation id="4758977202923349869">Ezarri kreditu-txartela markoaren barnean</translation>
 <translation id="4775879719735953715">Arakatzaile lehenetsia</translation>
+<translation id="4778644898150334464">Erabili beste pasahitz bat</translation>
 <translation id="4802417911091824046">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak.
 
 Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="END_LINK" />.</translation>

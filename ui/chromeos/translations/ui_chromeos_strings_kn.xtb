@@ -275,7 +275,6 @@
 <translation id="3943857333388298514">ಅಂಟಿಸು</translation>
 <translation id="3958548648197196644">ಕಿವಿ</translation>
 <translation id="3966388904776714213">ಆಡಿಯೊ ಪ್ಲೇಯರ್</translation>
-<translation id="3984317463833596033"><ph name="FOLDER_NAME" /> ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಲು Parallels Desktop ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4070370845051020638">ಕ್ಯಾಂಟೋನೀಸ್ ಇನ್‌ಪುಟ್ ವಿಧಾನ</translation>
 <translation id="4072248638558688893">ತಮಿಳು ಕೀಬೋರ್ಡ್ (ಫೋನೆಟಿಕ್)</translation>
@@ -465,14 +464,12 @@
 <translation id="5850516540536751549">ಈ ಫೈಲ್ ಪ್ರಕಾರವು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು ಈ ಪ್ರಕಾರದ ಫೈಲ್ ಅನ್ನು ತೆರೆಯಬಹುದಾದ ಅಪ್ಲಿಕೇಶನ್ ಹುಡುಕಲು <ph name="BEGIN_LINK" />Chrome ವೆಬ್ ಸ್ಟೋರ್‌‌ಗೆ<ph name="END_LINK" /> ಭೇಟಿ ನೀಡಿ.
 	      <ph name="BEGIN_LINK_HELP" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ಇಲ್ಲಿ ನೋಡಲು ಏನೂ ಇಲ್ಲ...</translation>
-<translation id="5857774240076772505"><ph name="FOLDER_NAME" /> ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಲು Linux ಆ್ಯಪ್‍ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ</translation>
 <translation id="5892290200158927959">ಫ್ರೆಂಚ್ BÉPO ಕೀಬೋರ್ಡ್</translation>
 <translation id="5911887972742538906">ನಿಮ್ಮ Linux ಅಪ್ಲಿಕೇಶನ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಾಗ ಒಂದು ದೋಷ ಸಂಭವಿಸಿದೆ.</translation>
 <translation id="5912396950572065471">ಫಾರ್ಮ್ಯಾಟ್‌</translation>
 <translation id="5913638992615760742">ನಕಲಿಸುವಿಕೆ ಕಾರ್ಯಾಚರಣೆ ವಿಫಲವಾಗಿದೆ, ಅನಿರೀಕ್ಷಿತ ದೋಷ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5923484009666796948">ಜಪಾನೀಸ್ ಇನ್‌ಪುಟ್ (ಜಪಾನಿ ಕೀಬೋರ್ಡ್‌ಗಾಗಿ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5949281959820712067">ನಿಮ್ಮ Google ಡ್ರೈವ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಲು Linux ಆ್ಯಪ್‌ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ. ಈ ಬದಲಾವಣೆಗಳು, ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳೊಂದಿಗೆ ಸಿಂಕ್ ಆಗುತ್ತವೆ.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳು</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ಆಯ್ಕೆಗಳನ್ನು ವಿಂಗಡಿಸು</translation>
@@ -708,7 +705,6 @@
 <translation id="8475647382427415476">Google ಡ್ರೈವ್‌ಗೆ ಇದೀಗ "<ph name="FILENAME" />" ಅನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ. Google ಡ್ರೈವ್ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸುತ್ತದೆ.</translation>
 <translation id="8477649328507734757">ಸ್ಪಿನ್</translation>
 <translation id="8487700953926739672">ಆಫ್‌ಲೈನ್ ಲಭ್ಯವಿದೆ</translation>
-<translation id="8490342535582768689">ನಿಮ್ಮ Google Drive ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಲು, Parallels Desktop ಗೆ ಅನುಮತಿ ನೀಡಿ. ಈ ಬದಲಾವಣೆಗಳು, ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳೊಂದಿಗೆ ಸಿಂಕ್ ಆಗುತ್ತವೆ.</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">ಪೂರ್ಣ ಪರದೆ</translation>
 <translation id="8551494947769799688">ಲ್ಯಾಟ್ವಿಯನ್</translation>
