@@ -24,10 +24,10 @@ struct AllowlistEntry {
   const char* const* arg_name_filter;
 };
 
-const char* const kScopedBlockingCallAllowedArgs[] = {"file_name",
-                                                      "function_name", nullptr};
+const char* const kScopedBlockingCallAllowedArgs[] = {
+    "file_name", "function_name", "source_location", nullptr};
 const char* const kPeekMessageAllowedArgs[] = {"sent_messages_in_queue",
-                                               nullptr};
+                                               "chrome_message_pump", nullptr};
 const char* const kFallbackFontAllowedArgs[] = {"font_name",
                                                 "primary_font_name", nullptr};
 const char* const kGetFallbackFontsAllowedArgs[] = {"script", nullptr};
@@ -38,6 +38,8 @@ const char* const kMemoryDumpAllowedArgs[] = {
 const char* const kRendererHostAllowedArgs[] = {
     "class",           "line", "should_background", "has_pending_views",
     "bytes_allocated", nullptr};
+const char* const kUIAllowedArgs[] = {
+    "dpi", "message_id", "chrome_window_handle_event_info", nullptr};
 const char* const kV8GCAllowedArgs[] = {"num_items", "num_tasks", nullptr};
 const char* const kTopLevelFlowAllowedArgs[] = {"task_queue_name", nullptr};
 const char* const kTopLevelIpcRunTaskAllowedArgs[] = {"ipc_hash", nullptr};
@@ -95,6 +97,8 @@ const AllowlistEntry kEventArgsAllowlist[] = {
     {TRACE_DISABLED_BY_DEFAULT("memory-infra"), "*", kMemoryDumpAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("system_stats"), "*", nullptr},
     {TRACE_DISABLED_BY_DEFAULT("v8.gc"), "*", kV8GCAllowedArgs},
+    {"ui", "HWNDMessageHandler::OnWndProc", kUIAllowedArgs},
+    {"ui", "HWNDMessageHandler::OnDwmCompositionChanged", kUIAllowedArgs},
     {"ui", "RenderTextHarfBuzz::FallbackFont", kFallbackFontAllowedArgs},
     {"ui", "RenderTextHarfBuzz::GetFallbackFonts",
      kGetFallbackFontsAllowedArgs},
