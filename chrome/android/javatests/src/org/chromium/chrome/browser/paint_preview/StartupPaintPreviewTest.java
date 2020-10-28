@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
@@ -175,6 +176,7 @@ public class StartupPaintPreviewTest {
     /**
      * Tests that the paint preview is removed when certain conditions are met.
      */
+    @DisabledTest(message = "crbug.com/1143219")
     @Test
     @MediumTest
     public void testRemoveOnActionbarClick() throws ExecutionException, UiObjectNotFoundException {
