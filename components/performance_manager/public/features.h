@@ -36,6 +36,10 @@ struct TabLoadingFrameNavigationThrottlesParams {
   double fcp_multiple;
 };
 
+// A feature that gates the inclusion of service worker relationships in the
+// graph. This is a temporary feature, see https://crbug.com/1143281.
+extern const base::Feature kServiceWorkerRelationshipsInGraph;
+
 }  // namespace features
 }  // namespace performance_manager
 
