@@ -53,6 +53,7 @@ class MergeXmlTest(unittest.TestCase):
 <histogram name="Foo.Bar" units="xxxxxxxxxxxxxxxxxxyyyyyyyyyyyyyyyyyyyyyyzzzz"
     expires_after="M85">
   <owner>person@chromium.org</owner>
+  <component>Component</component>
   <summary>Foo</summary>
 </histogram>
 
@@ -152,6 +153,7 @@ class MergeXmlTest(unittest.TestCase):
 <histogram name="Foo.Bar" units="xxxxxxxxxxxxxxxxxxyyyyyyyyyyyyyyyyyyyyyyzzzz"
     expires_after="M85">
   <owner>person@chromium.org</owner>
+  <component>Component</component>
   <summary>Foo</summary>
 </histogram>
 

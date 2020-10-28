@@ -42,6 +42,7 @@ def GetEnumsNodes(doc, trees):
   Args:
     doc: The document to create the node in.
     trees: A list of DOM trees.
+
   Returns:
     A list of enums DOM nodes.
   """
@@ -123,22 +124,23 @@ def MakeNodeWithChildren(doc, tag, children):
     doc: The document to create the node in.
     tag: The tag to create the node with.
     children: A list of DOM nodes to add as children.
+
   Returns:
     A DOM node.
   """
   node = doc.createElement(tag)
   for child in children:
-    if child.tagName == 'histograms':
-      expand_owners.ExpandHistogramsOWNERS(child)
     node.appendChild(child)
   return node
 
 
-def MergeTrees(trees):
+def MergeTrees(trees, should_expand_owners):
   """Merges a list of histograms.xml DOM trees.
 
   Args:
     trees: A list of histograms.xml DOM trees.
+    should_expand_owners: Whether we want to expand owners for histograms.
+
   Returns:
     A merged DOM tree.
   """
@@ -158,26 +160,36 @@ def MergeTrees(trees):
   # doesn't build indexes for later lookup. And thus, we need to convert the
   # merged |doc| to a xml string and convert it back to force it to build
   # indexes for the merged |doc|.
-  return xml.dom.minidom.parseString(doc.toxml())
+  doc = xml.dom.minidom.parseString(doc.toxml())
+  # Only perform fancy operations after |doc| becomes stable. This helps improve
+  # the runtime perforamnce.
+  if should_expand_owners:
+    for histograms in doc.getElementsByTagName('histograms'):
+      expand_owners.ExpandHistogramsOWNERS(histograms)
+  return doc
 
 
-def MergeFiles(filenames=[], files=[]):
+def MergeFiles(filenames=[], files=[], should_expand_owners=False):
   """Merges a list of histograms.xml files.
 
   Args:
     filenames: A list of histograms.xml filenames.
     files: A list of histograms.xml file-like objects.
+    should_expand_owners: Whether we want to expand owners. By default, it's
+      false because most of the callers don't care about the owners for each
+      metadata.
+
   Returns:
     A merged DOM tree.
   """
   all_files = files + [open(f) for f in filenames]
   trees = [xml.dom.minidom.parse(f) for f in all_files]
-  return MergeTrees(trees)
+  return MergeTrees(trees, should_expand_owners)
 
 
 def PrettyPrintMergedFiles(filenames=[], files=[]):
   return histogram_configuration_model.PrettifyTree(
-      MergeFiles(filenames=filenames, files=files))
+      MergeFiles(filenames=filenames, files=files, should_expand_owners=True))
 
 
 def main():
