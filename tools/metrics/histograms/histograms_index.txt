@@ -8,7 +8,6 @@ tools/metrics/histograms/histograms_xml/assistant/histograms.xml
 tools/metrics/histograms/histograms_xml/auth/histograms.xml
 tools/metrics/histograms/histograms_xml/auto/histograms.xml
 tools/metrics/histograms/histograms_xml/autofill/histograms.xml
-tools/metrics/histograms/histograms_xml/back_forward_cache/histograms.xml
 tools/metrics/histograms/histograms_xml/background/histograms.xml
 tools/metrics/histograms/histograms_xml/blink/histograms.xml
 tools/metrics/histograms/histograms_xml/bluetooth/histograms.xml
@@ -87,6 +86,7 @@ tools/metrics/histograms/histograms_xml/renderer/histograms.xml
 tools/metrics/histograms/histograms_xml/renderer4/histograms.xml
 tools/metrics/histograms/histograms_xml/safe_browsing/histograms.xml
 tools/metrics/histograms/histograms_xml/sb_client/histograms.xml
+tools/metrics/histograms/histograms_xml/scheduler/histograms.xml
 tools/metrics/histograms/histograms_xml/search/histograms.xml
 tools/metrics/histograms/histograms_xml/security/histograms.xml
 tools/metrics/histograms/histograms_xml/service/histograms.xml
