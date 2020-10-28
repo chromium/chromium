@@ -2955,11 +2955,17 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_FAILURE_TITLE" desc="The title of the notification when capture mode fails.">
         An error occurred
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_STOPPED_TITLE" desc="The title of the notification when video capture is stopped.">
+        Screen recording stopped
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_DISABLED_MESSAGE" desc="The text of the notification when capture mode is disabled.">
         The ability to screen capture has been disabled by your administrator.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_FAILURE_MESSAGE" desc="The text of the notification when capture mode fails.">
         Failed to capture screen
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_STOPPED_MESSAGE" desc="The text of the notification when video capture is stopped.">
+        Screen recording stopped due to confidential content on your screen.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE" desc="The name that is the display source of the screen capture notification.">
         Screen capture

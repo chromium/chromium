@@ -154,6 +154,10 @@ class ASH_EXPORT CaptureModeController {
   // Called when the video record 3-seconds count down finishes.
   void OnVideoRecordCountDownFinished();
 
+  // Called to interrupt the ongoing video recording because it's not anymore
+  // allowed to be captured.
+  void InterruptVideoRecording();
+
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
   CaptureModeType type_ = CaptureModeType::kImage;

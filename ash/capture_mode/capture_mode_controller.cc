@@ -33,6 +33,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,6 +49,8 @@ namespace {
 CaptureModeController* g_instance = nullptr;
 
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
+constexpr char kScreenCaptureStoppedNotificationId[] =
+    "capture_mode_stopped_notification";
 constexpr char kScreenCaptureNotifierId[] = "ash.capture_mode_controller";
 
 // The format strings of the file names of captured images.
@@ -180,6 +183,25 @@ void ShowFailureNotification() {
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_FAILURE_TITLE),
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_FAILURE_MESSAGE),
       /*optional_fields=*/{}, /*delegate=*/nullptr);
+}
+
+// Shows a notification informing the user that video recording was stopped.
+void ShowVideoRecordingStoppedNotification() {
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kScreenCaptureStoppedNotificationId,
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_STOPPED_TITLE),
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_STOPPED_MESSAGE),
+          /*display_source=*/base::string16(), GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kScreenCaptureNotifierId),
+          /*optional_fields=*/{}, /*delegate=*/nullptr,
+          vector_icons::kBusinessIcon,
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 // Copies the bitmap representation of the given |image| to the clipboard.
@@ -586,10 +608,15 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 
   delegate_->StartObservingRestrictedContent(
       capture_params->window, capture_params->bounds,
-      base::BindOnce(&CaptureModeController::EndVideoRecording,
+      base::BindOnce(&CaptureModeController::InterruptVideoRecording,
                      weak_ptr_factory_.GetWeakPtr()));
 
   ShowStopRecordingButton(capture_params->window->GetRootWindow());
+}
+
+void CaptureModeController::InterruptVideoRecording() {
+  ShowVideoRecordingStoppedNotification();
+  EndVideoRecording();
 }
 
 }  // namespace ash
