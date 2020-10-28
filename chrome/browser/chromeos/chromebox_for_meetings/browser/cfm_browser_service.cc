@@ -14,7 +14,7 @@ namespace cfm {
 CfmBrowserService::CfmBrowserService()
     : service_adaptor_(mojom::CfmBrowser::Name_, this) {
   receivers_.set_disconnect_handler(base::BindRepeating(
-      &CfmBrowserService::OnServiceDisconnect, base::Unretained(this)));
+      &CfmBrowserService::OnMojoDisconnect, base::Unretained(this)));
 }
 
 CfmBrowserService::~CfmBrowserService() = default;
@@ -25,10 +25,6 @@ bool CfmBrowserService::ServiceRequestReceived(const std::string& service_id) {
   }
   service_adaptor_.BindServiceAdaptor();
   return true;
-}
-
-void CfmBrowserService::OnAdaptorConnect(bool success) {
-  VLOG_IF(3, success) << "mojom::CfmBrowser Service Adaptor is connected";
 }
 
 void CfmBrowserService::OnAdaptorDisconnect() {
@@ -43,7 +39,7 @@ void CfmBrowserService::OnBindService(
       this, mojo::PendingReceiver<mojom::CfmBrowser>(std::move(receiver_pipe)));
 }
 
-void CfmBrowserService::OnServiceDisconnect() {
+void CfmBrowserService::OnMojoDisconnect() {
   VLOG(3) << "mojom::CfmBrowser disconnected";
 }
 

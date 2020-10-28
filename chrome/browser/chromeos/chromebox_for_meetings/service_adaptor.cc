@@ -9,6 +9,10 @@
 namespace chromeos {
 namespace cfm {
 
+void ServiceAdaptor::Delegate::OnAdaptorConnect(bool success) {}
+
+void ServiceAdaptor::Delegate::OnAdaptorDisconnect() {}
+
 ServiceAdaptor::ServiceAdaptor(std::string interface_name, Delegate* delegate)
     : interface_name_(std::move(interface_name)), delegate_(delegate) {
   DCHECK(delegate_);
@@ -24,6 +28,13 @@ mojom::CfmServiceContext* ServiceAdaptor::GetContext() {
   }
 
   return context_.get();
+}
+
+void ServiceAdaptor::GetService(std::string interface_name,
+                                mojo::ScopedMessagePipeHandle receiver_pipe,
+                                GetServiceCallback callback) {
+  GetContext()->RequestBindService(
+      std::move(interface_name), std::move(receiver_pipe), std::move(callback));
 }
 
 void ServiceAdaptor::BindServiceAdaptor() {
@@ -58,6 +69,7 @@ void ServiceAdaptor::OnAdaptorConnect(bool success) {
 
 void ServiceAdaptor::OnAdaptorDisconnect() {
   adaptor_.reset();
+
   delegate_->OnAdaptorDisconnect();
 }
 

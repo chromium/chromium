@@ -36,12 +36,14 @@ class CfmBrowserService : public CfmObserver,
   // Forward |CfmObserver| implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
-  // Forward |ServiceAdaptorDelegate| implementation
-  void OnAdaptorConnect(bool success) override;
+  // Disconnect handler for |mojom::CfmServiceAdaptor|
   void OnAdaptorDisconnect() override;
+
+  // Forward |ServiceAdaptorDelegate| implementation
   void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
 
-  virtual void OnServiceDisconnect();
+  // Disconnect handler for |mojom::CfmBrowser|
+  virtual void OnMojoDisconnect();
 
  private:
   ServiceAdaptor service_adaptor_;

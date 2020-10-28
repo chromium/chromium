@@ -12,10 +12,13 @@
 namespace chromeos {
 namespace cfm {
 
-// Abstract class that provides convience methods, allowing new CfM Services to
-// register with the |CfmServiceContext|.
+// Abstract class that provides convenience methods, allowing new CfM Services
+// to register with the |CfmServiceContext| through its mojo |Interface|
 class ServiceAdaptor : public mojom::CfmServiceAdaptor {
  public:
+  using GetServiceCallback =
+      mojom::CfmServiceContext::RequestBindServiceCallback;
+
   class Delegate {
    public:
     Delegate(const Delegate&) = delete;
@@ -24,11 +27,11 @@ class ServiceAdaptor : public mojom::CfmServiceAdaptor {
 
     // Called when the Service Adaptor has successfully connected to the
     // |mojom::CfmServiceContext|
-    virtual void OnAdaptorConnect(bool success) = 0;
+    virtual void OnAdaptorConnect(bool success);
 
     // Called if the mojom connection to the primary |mojom::CfmServiceContext|
     // is disrupted.
-    virtual void OnAdaptorDisconnect() = 0;
+    virtual void OnAdaptorDisconnect();
 
     // Called when attempting to Bind a mojom using using a message pipe of the
     // given types PendingReceiver.
@@ -48,6 +51,18 @@ class ServiceAdaptor : public mojom::CfmServiceAdaptor {
 
   // Binds a |mojo::Remote| to the primary |mojom::CfmServiceContext|
   virtual void BindServiceAdaptor();
+
+  template <typename Interface>
+  void GetService(mojo::Remote<Interface>& remote,
+                  GetServiceCallback callback) {
+    GetService(Interface::Name_,
+               std::move(remote.BindNewPipeAndPassReceiver()).PassPipe(),
+               std::move(callback));
+  }
+
+  virtual void GetService(std::string interface_name,
+                          mojo::ScopedMessagePipeHandle receiver_pipe,
+                          GetServiceCallback callback);
 
  protected:
   // Forward |mojom::CfmServiceAdaptor| implementation
