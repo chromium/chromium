@@ -53,12 +53,12 @@ void FakeRuntimeProbeClient::ProbeCategories(
       storage_fields->set_sectors(123456789);
       storage_fields->set_type("MMC");
       // Manufacturer ID
-      storage_fields->set_manfid(123);
-      storage_fields->set_name("aB1cD>");
+      storage_fields->set_mmc_manfid(123);
+      storage_fields->set_mmc_name("aB1cD>");
       // Product revision
-      storage_fields->set_prv(1);
-      storage_fields->set_serial(12345678);
-      storage_fields->set_oemid(123);
+      storage_fields->set_mmc_prv(1);
+      storage_fields->set_mmc_serial(12345678);
+      storage_fields->set_mmc_oemid(123);
     }
   }
 
