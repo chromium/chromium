@@ -407,12 +407,6 @@ void ManagedDisplayInfo::SetBounds(const gfx::Rect& new_bounds_in_native) {
   UpdateDisplaySize();
 }
 
-float ManagedDisplayInfo::GetDensityRatio() const {
-  if (Display::IsInternalDisplayId(id_) && device_scale_factor_ == 1.25f)
-    return 1.0f;
-  return device_scale_factor_;
-}
-
 float ManagedDisplayInfo::GetEffectiveDeviceScaleFactor() const {
   return device_scale_factor_ * zoom_factor_;
 }

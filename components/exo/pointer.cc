@@ -114,7 +114,6 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
       seat_(seat),
       cursor_(ui::mojom::CursorType::kNull),
       capture_scale_(GetCaptureDisplayInfo().device_scale_factor()),
-      capture_ratio_(GetCaptureDisplayInfo().GetDensityRatio()),
       cursor_capture_source_id_(base::UnguessableToken::Create()) {
   WMHelper* helper = WMHelper::GetInstance();
   helper->AddPreTargetHandler(this);
@@ -598,7 +597,6 @@ void Pointer::OnCursorDisplayChanged(const display::Display& display) {
   UpdatePointerSurface(root_surface());
   auto info = GetCaptureDisplayInfo();
   capture_scale_ = info.device_scale_factor();
-  capture_ratio_ = info.GetDensityRatio();
 
   auto* cursor_client = WMHelper::GetInstance()->GetCursorClient();
   // TODO(crbug.com/631103): CursorClient does not exist in mash yet.
@@ -747,7 +745,7 @@ void Pointer::UpdateCursor() {
   if (cursor_ == ui::mojom::CursorType::kCustom) {
     SkBitmap bitmap = cursor_bitmap_;
     gfx::Point hotspot =
-        gfx::ScaleToFlooredPoint(cursor_hotspot_, capture_ratio_);
+        gfx::ScaleToFlooredPoint(cursor_hotspot_, capture_scale_);
 
     // TODO(oshima|weidongg): Add cutsom cursor API to handle size/display
     // change without explicit management like this. https://crbug.com/721601.

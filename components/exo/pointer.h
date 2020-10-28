@@ -211,10 +211,6 @@ class Pointer : public SurfaceTreeHost,
   // Scale at which cursor snapshot is captured.
   float capture_scale_;
 
-  // Density ratio of the cursor snapshot. The bitmap is scaled on displays with
-  // a different ratio.
-  float capture_ratio_;
-
   // Source used for cursor capture copy output requests.
   const base::UnguessableToken cursor_capture_source_id_;
 
