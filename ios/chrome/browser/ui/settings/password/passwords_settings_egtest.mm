@@ -134,19 +134,26 @@ GREYLayoutConstraint* Below() {
                            constant:0.0];
 }
 
-// Matcher for the Copy site button in Password Details view.
+// Matcher for the website in Password Details view.
 id<GREYMatcher> PasswordDetailWebsite() {
   return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
 }
 
-// Matcher for the Copy username button in Password Details view.
+// Matcher for the username in Password Details view.
 id<GREYMatcher> PasswordDetailUsername() {
   return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
 }
 
-// Matcher for the Copy password button in Password Details view.
+// Matcher for the password in Password Details view.
 id<GREYMatcher> PasswordDetailPassword() {
   return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
+}
+
+// Matcher for the federation details in Password Details view.
+id<GREYMatcher> PasswordDetailFederation() {
+  return grey_allOf(grey_accessibilityID(GetTextFieldForID(
+                        IDS_IOS_SHOW_PASSWORD_VIEW_FEDERATION)),
+                    grey_kindOfClassName(@"UITextField"), nil);
 }
 
 // Matcher for the Show password button in Password Details view.
@@ -815,6 +822,8 @@ void CopyPasswordDetailWithID(int detail_id) {
       assertWithMatcher:grey_textFieldValue(@"https://example.com/")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"federated username")];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
+      assertWithMatcher:grey_textFieldValue(@"famous.provider.net")];
 
   // Check that the password is not present.
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
@@ -855,6 +864,10 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_textFieldValue(kMaskedPassword)];
 
+  // Check that the federation origin is not present.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
+      assertWithMatcher:grey_nil()];
+
   [GetInteractionForPasswordDetailItem(PasswordDetailPassword())
       assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailUsername())];
   [GetInteractionForPasswordDetailItem(PasswordDetailUsername())
@@ -885,6 +898,8 @@ void CopyPasswordDetailWithID(int detail_id) {
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
+      assertWithMatcher:grey_nil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -912,11 +927,15 @@ void CopyPasswordDetailWithID(int detail_id) {
       assertWithMatcher:grey_textFieldValue(@"https://example.com/")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"federated username")];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
+      assertWithMatcher:grey_textFieldValue(@"famous.provider.net")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_nil()];
 
   [GetInteractionForPasswordDetailItem(PasswordDetailUsername())
       assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailWebsite())];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
+      assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailUsername())];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];

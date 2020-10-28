@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeWebsite = kItemTypeEnumZero,
   ItemTypeUsername,
   ItemTypePassword,
+  ItemTypeFederation,
   ItemTypeChangePasswordButton,
   ItemTypeChangePasswordRecommendation,
 };
@@ -178,6 +179,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       [model addItem:[self changePasswordRecommendationItem]
           toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
     }
+  } else if ([self.password.federation length]) {
+    [model addItem:[self federationItem]
+        toSectionWithIdentifier:SectionIdentifierPassword];
   }
 }
 
@@ -243,6 +247,17 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   return item;
 }
 
+- (TableViewTextEditItem*)federationItem {
+  TableViewTextEditItem* item =
+      [[TableViewTextEditItem alloc] initWithType:ItemTypeFederation];
+  item.textFieldName =
+      l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_FEDERATION);
+  item.textFieldValue = self.password.federation;
+  item.textFieldEnabled = NO;
+  item.hideIcon = YES;
+  return item;
+}
+
 - (TableViewTextItem*)changePasswordItem {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeChangePasswordButton];
@@ -270,6 +285,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypeWebsite:
+    case ItemTypeFederation:
       [self ensureContextMenuShownForItemType:itemType
                                     tableView:tableView
                                   atIndexPath:indexPath];
@@ -388,6 +404,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       cell.selectionStyle = UITableViewCellSelectionStyleDefault;
       break;
     case ItemTypeWebsite:
+    case ItemTypeFederation:
     case ItemTypeChangePasswordRecommendation:
       break;
   }
@@ -399,6 +416,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypeWebsite:
+    case ItemTypeFederation:
       return NO;
     case ItemTypeUsername:
       return base::FeatureList::IsEnabled(
@@ -596,6 +614,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypePassword:
       return YES;
     case ItemTypeWebsite:
+    case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
     case ItemTypeChangePasswordRecommendation:
       return NO;
@@ -704,6 +723,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       message =
           l10n_util::GetNSString(IDS_IOS_SETTINGS_USERNAME_WAS_COPIED_MESSAGE);
       break;
+    case ItemTypeFederation:
+      generalPasteboard.string = self.password.federation;
+      return;
     case ItemTypePassword:
       [self attemptToShowPasswordFor:ReauthenticationReasonCopy];
       return;

@@ -406,10 +406,11 @@ TEST_F(PasswordDetailsTableViewControllerTest,
 TEST_F(PasswordDetailsTableViewControllerTest, TestFederatedCredential) {
   SetFederatedPassword();
   EXPECT_EQ(1, NumberOfSections());
-  EXPECT_EQ(2, NumberOfItemsInSection(0));
+  EXPECT_EQ(3, NumberOfItemsInSection(0));
 
   CheckEditCellText(@"http://www.example.com/", 0, 0);
   CheckEditCellText(@"test@egmail.com", 0, 1);
+  CheckEditCellText(@"www.example.com", 0, 2);
 
   reauth().expectedResult = ReauthenticationResult::kFailure;
   PasswordDetailsTableViewController* passwordDetails =

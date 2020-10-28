@@ -23,6 +23,9 @@
 // Associated username.
 @property(nonatomic, copy) NSString* username;
 
+// The federation providing this credential, if any.
+@property(nonatomic, copy, readonly) NSString* federation;
+
 // Associated password.
 @property(nonatomic, copy) NSString* password;
 

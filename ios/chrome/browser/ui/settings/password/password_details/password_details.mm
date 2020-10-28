@@ -39,7 +39,12 @@
       _changePasswordURL = password_manager::CreateChangePasswordUrl(form.url);
     }
     _username = base::SysUTF16ToNSString(form.username_value);
-    _password = base::SysUTF16ToNSString(form.password_value);
+
+    if (form.federation_origin.opaque()) {
+      _password = base::SysUTF16ToNSString(form.password_value);
+    } else {
+      _federation = base::SysUTF8ToNSString(form.federation_origin.host());
+    }
   }
   return self;
 }
