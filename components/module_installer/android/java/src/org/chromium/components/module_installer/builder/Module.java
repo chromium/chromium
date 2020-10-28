@@ -4,6 +4,8 @@
 
 package org.chromium.components.module_installer.builder;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BundleUtils;
@@ -107,7 +109,7 @@ public class Module<T> {
                 ensureNativeLoaded();
             }
 
-            mImpl = mInterfaceClass.cast(instantiateReflectively(mImplClassName));
+            mImpl = mInterfaceClass.cast(instantiateReflectively(mName, mImplClassName));
             return mImpl;
         }
     }
@@ -160,7 +162,7 @@ public class Module<T> {
         }
 
         return (ModuleDescriptor) instantiateReflectively(
-                "org.chromium.components.module_installer.builder.ModuleDescriptor_" + name);
+                name, "org.chromium.components.module_installer.builder.ModuleDescriptor_" + name);
     }
 
     /**
@@ -169,15 +171,17 @@ public class Module<T> {
      * Ignores strict mode violations since accessing code in a module may cause its DEX file to be
      * loaded and on some devices that can cause such a violation.
      *
+     * @param moduleName The module's name.
      * @param className The object's class name.
      * @return The object.
      */
-    private static Object instantiateReflectively(String className) {
+    private static Object instantiateReflectively(String moduleName, String className) {
+        Context context = ContextUtils.getApplicationContext();
+        if (BundleUtils.isIsolatedSplitInstalled(context, moduleName)) {
+            context = BundleUtils.createIsolatedSplitContext(context, moduleName);
+        }
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getApplicationContext()
-                    .getClassLoader()
-                    .loadClass(className)
-                    .newInstance();
+            return context.getClassLoader().loadClass(className).newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

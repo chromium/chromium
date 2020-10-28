@@ -295,7 +295,6 @@ android_library("chrome_java") {
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//chrome/android/modules/image_editor/provider:java",
     "//chrome/android/modules/image_editor/public:java",
-    "//chrome/android/modules/stack_unwinder/provider:java",
     "//chrome/android/third_party/compositor_animator:compositor_animator_java",
     "//chrome/android/webapk/libs/client:client_java",
     "//chrome/android/webapk/libs/common:common_java",
@@ -2142,6 +2141,9 @@ android_library("base_module_java") {
     "//components/viz/common:common_java",
     "//components/viz/service:service_java",
     "//content/public/android:content_java",
+
+    # Deps for DFMs.
+    "//chrome/android/modules/stack_unwinder/provider:java",
 
     # Deps to pull services into base module.
     # TODO(crbug.com/1126301): Consider moving these to the chrome module to

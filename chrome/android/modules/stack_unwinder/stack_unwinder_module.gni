@@ -10,4 +10,5 @@ stack_unwinder_module_desc = {
   java_deps = [ "//chrome/android/modules/stack_unwinder/internal:java" ]
   native_deps = [ "//chrome/android/modules/stack_unwinder/internal:native" ]
   load_native_on_get_impl = false
+  supports_isolated_split = true
 }
