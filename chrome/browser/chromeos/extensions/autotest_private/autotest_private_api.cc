@@ -449,7 +449,8 @@ std::string SetWhitelistedPref(Profile* profile,
   }
 
   if (pref_name == chromeos::assistant::prefs::kAssistantEnabled) {
-    DCHECK(value.is_bool());
+    if (!value.is_bool())
+      return "Invalid value type.";
     // Validate the Assistant service allowed state.
     chromeos::assistant::AssistantAllowedState allowed_state =
         assistant::IsAssistantAllowedForProfile(profile);
@@ -458,7 +459,8 @@ std::string SetWhitelistedPref(Profile* profile,
                                 allowed_state);
     }
   } else if (pref_name == chromeos::assistant::prefs::kAssistantConsentStatus) {
-    DCHECK(value.is_int());
+    if (!value.is_int())
+      return "Invalid value type.";
     if (!profile->GetPrefs()->GetBoolean(
             chromeos::assistant::prefs::kAssistantEnabled)) {
       return "Unable to set the pref because Assistant has not been enabled.";
@@ -467,13 +469,18 @@ std::string SetWhitelistedPref(Profile* profile,
                  chromeos::assistant::prefs::kAssistantContextEnabled ||
              pref_name ==
                  chromeos::assistant::prefs::kAssistantHotwordEnabled) {
-    DCHECK(value.is_bool());
+    if (!value.is_bool())
+      return "Invalid value type.";
     // Assistant service must be enabled first for those prefs to take effect.
     if (!profile->GetPrefs()->GetBoolean(
             chromeos::assistant::prefs::kAssistantEnabled)) {
       return std::string(
           "Unable to set the pref because Assistant has not been enabled.");
     }
+  } else if (pref_name ==
+             ash::prefs::kAssistantNumSessionsWhereOnboardingShown) {
+    if (!value.is_int())
+      return "Invalid value type.";
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
     DCHECK(value.is_bool());
   } else if (pref_name == prefs::kLanguagePreloadEngines) {

@@ -306,6 +306,11 @@ var defaultTests = [
         true /* value */,
         chrome.test.callbackFail(
             'Unable to set the pref because Assistant has not been enabled.'));
+    // Note that onboarding pref is a counter that can be set without
+    // enabling Assistant at the same time.
+    chrome.autotestPrivate.setWhitelistedPref(
+        'ash.assistant.num_sessions_where_onboarding_shown' /* pref_name */,
+        3 /* value */, chrome.test.callbackPass());
   },
   // This test verifies that getArcState returns provisioned False in case ARC
   // is not provisioned by default.
