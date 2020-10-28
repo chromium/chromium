@@ -4,8 +4,12 @@ per-file BUILD.gn=*
 
 # Page Load Histogram files.
 per-file loadtimes_extension_bindings*=file://components/page_load_metrics/OWNERS
+
 # Instant/Search files.
 per-file instant_restricted_id_cache*=file://chrome/browser/search/OWNERS
+
+# V8 unwinder files.
+per-file v8_unwinder*=file://base/profiler/OWNERS
 
 # For security review.
 per-file browser_exposed_renderer_interfaces.cc=set noparent
