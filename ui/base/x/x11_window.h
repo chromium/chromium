@@ -23,7 +23,6 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/sync.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xproto.h"
 

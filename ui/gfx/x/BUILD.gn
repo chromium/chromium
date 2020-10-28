@@ -120,8 +120,6 @@ component("x") {
     "x11_atom_cache.h",
     "x11_path.cc",
     "x11_path.h",
-    "x11_types.cc",
-    "x11_types.h",
   ]
 
   defines = [ "GFX_IMPLEMENTATION" ]

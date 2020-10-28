@@ -19,7 +19,7 @@ namespace gl {
 inline EGLDisplay FromXDisplay() {
 #if defined(USE_X11)
   if (!features::IsUsingOzonePlatform()) {
-    if (auto* x_display = gfx::GetXDisplay()) {
+    if (auto* x_display = x11::Connection::Get()->display()) {
       return eglGetDisplay(reinterpret_cast<EGLNativeDisplayType>(x_display));
     }
   }

@@ -17,7 +17,6 @@
 #include "ui/events/devices/x11/events_devices_x11_export.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/sequential_id_generator.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xinput.h"
 
 namespace base {

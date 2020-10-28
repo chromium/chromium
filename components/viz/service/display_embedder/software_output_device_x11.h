@@ -12,7 +12,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "ui/base/x/x11_software_bitmap_presenter.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace viz {
 

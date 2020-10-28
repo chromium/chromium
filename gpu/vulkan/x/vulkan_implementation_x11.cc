@@ -20,7 +20,6 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace gpu {
 
@@ -39,7 +38,7 @@ bool InitializeVulkanFunctionPointers(
 
 VulkanImplementationX11::VulkanImplementationX11(bool use_swiftshader)
     : VulkanImplementation(use_swiftshader) {
-  gfx::GetXDisplay();
+  x11::Connection::Get();
 }
 
 VulkanImplementationX11::~VulkanImplementationX11() = default;

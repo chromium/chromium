@@ -26,7 +26,6 @@
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"

@@ -10,7 +10,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "ui/gfx/switches.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_egl_api_implementation.h"
@@ -154,8 +154,9 @@ bool InitializeGLOneOffPlatformX11() {
     case kGLImplementationEGLANGLE:
       // Set utility class that helps to initialize egl platform.
       gl::GLDisplayEglUtil::SetInstance(gl::GLDisplayEglUtilX11::GetInstance());
-      if (!GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform(
-              reinterpret_cast<EGLNativeDisplayType>(gfx::GetXDisplay())))) {
+      if (!GLSurfaceEGL::InitializeOneOff(
+              EGLDisplayPlatform(reinterpret_cast<EGLNativeDisplayType>(
+                  x11::Connection::Get()->display())))) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
         return false;
       }

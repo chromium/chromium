@@ -6,7 +6,6 @@
 
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/screensaver.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace ui {
 

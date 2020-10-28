@@ -7,7 +7,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_glx_x11.h"

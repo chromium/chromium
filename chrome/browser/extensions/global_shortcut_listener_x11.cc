@@ -13,7 +13,6 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/platform/platform_event_source.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 
 using content::BrowserThread;

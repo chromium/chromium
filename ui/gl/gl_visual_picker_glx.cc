@@ -12,7 +12,6 @@
 
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_glx.h"

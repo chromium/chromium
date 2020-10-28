@@ -7,7 +7,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

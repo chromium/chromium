@@ -14,7 +14,6 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace ui {
 

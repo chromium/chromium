@@ -150,10 +150,6 @@ GLXContext CreateHighestVersionContext(x11::Connection* connection,
 GLContextGLX::GLContextGLX(GLShareGroup* share_group)
     : GLContextReal(share_group) {}
 
-XDisplay* GLContextGLX::display() {
-  return connection_->display();
-}
-
 bool GLContextGLX::Initialize(GLSurface* compatible_surface,
                               const GLContextAttribs& attribs) {
   // webgl_compatibility_context and disabling bind_generates_resource are not
@@ -179,7 +175,8 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
   } else {
     DVLOG(1) << "GLX_ARB_create_context not supported.";
     context_ = glXCreateNewContext(
-        display(), static_cast<GLXFBConfig>(compatible_surface->GetConfig()),
+        connection_->display(),
+        static_cast<GLXFBConfig>(compatible_surface->GetConfig()),
         GLX_RGBA_TYPE, share_handle, true);
     if (!context_) {
       LOG(ERROR) << "Failed to create GL context with glXCreateNewContext.";
@@ -193,7 +190,8 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
 
   DVLOG(1) << (compatible_surface->IsOffscreen() ? "Offscreen" : "Onscreen")
            << " context was "
-           << (glXIsDirect(display(), static_cast<GLXContext>(context_))
+           << (glXIsDirect(connection_->display(),
+                           static_cast<GLXContext>(context_))
                    ? "direct"
                    : "indirect")
            << ".";
@@ -203,7 +201,8 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
 
 void GLContextGLX::Destroy() {
   if (context_) {
-    glXDestroyContext(display(), static_cast<GLXContext>(context_));
+    glXDestroyContext(connection_->display(),
+                      static_cast<GLXContext>(context_));
     context_ = nullptr;
   }
 }
@@ -216,7 +215,8 @@ bool GLContextGLX::MakeCurrentImpl(GLSurface* surface) {
   ScopedReleaseCurrent release_current;
   TRACE_EVENT0("gpu", "GLContextGLX::MakeCurrent");
   if (!glXMakeContextCurrent(
-          display(), reinterpret_cast<GLXDrawable>(surface->GetHandle()),
+          connection_->display(),
+          reinterpret_cast<GLXDrawable>(surface->GetHandle()),
           reinterpret_cast<GLXDrawable>(surface->GetHandle()),
           static_cast<GLXContext>(context_))) {
     LOG(ERROR) << "Couldn't make context current with X drawable.";
@@ -243,7 +243,7 @@ void GLContextGLX::ReleaseCurrent(GLSurface* surface) {
     return;
 
   SetCurrent(nullptr);
-  if (!glXMakeContextCurrent(display(), 0, 0, 0))
+  if (!glXMakeContextCurrent(connection_->display(), 0, 0, 0))
     LOG(ERROR) << "glXMakeCurrent failed in ReleaseCurrent";
 }
 

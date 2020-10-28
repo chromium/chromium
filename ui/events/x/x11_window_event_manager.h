@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/x/events_x_export.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/connection.h"
 
 namespace base {
 template <typename T>

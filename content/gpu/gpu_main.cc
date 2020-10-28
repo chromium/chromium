@@ -82,7 +82,6 @@
 #include "ui/base/x/x11_util.h"                          // nogncheck
 #include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"  // nogncheck
 #include "ui/gfx/x/x11_switches.h"                       // nogncheck
-#include "ui/gfx/x/x11_types.h"                          // nogncheck
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -285,7 +284,7 @@ int GpuMain(const MainFunctionParams& parameters) {
     if (!features::IsUsingOzonePlatform()) {
       // We need a UI loop so that we can grab the Expose events. See
       // GLSurfaceGLX and https://crbug.com/326995.
-      if (!gfx::GetXDisplay())
+      if (!x11::Connection::Get()->Ready())
         return RESULT_CODE_GPU_DEAD_ON_ARRIVAL;
       main_thread_task_executor =
           std::make_unique<base::SingleThreadTaskExecutor>(

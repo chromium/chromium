@@ -17,7 +17,6 @@
 #include "base/timer/timer.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace ui {
 

@@ -6,7 +6,6 @@
 #define UI_BASE_X_X11_POINTER_GRAB_H_
 
 #include "base/component_export.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

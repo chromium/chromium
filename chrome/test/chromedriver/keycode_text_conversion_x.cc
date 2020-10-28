@@ -186,8 +186,7 @@ bool ConvertCharToKeyCode(base::char16 key,
                           ui::KeyboardCode* key_code,
                           int* necessary_modifiers,
                           std::string* error_msg) {
-  XDisplay* display = gfx::GetXDisplay();
-  if (!display) {
+  if (!x11::Connection::Get()->Ready()) {
     return ConvertCharToKeyCodeOzone(key, key_code, necessary_modifiers,
                                      error_msg);
   }

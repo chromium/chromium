@@ -12,7 +12,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/test_compositor_host.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace ui {
 

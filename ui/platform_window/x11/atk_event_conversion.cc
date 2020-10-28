@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "ui/events/x/events_x_utils.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"
 

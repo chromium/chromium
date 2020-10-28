@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "ui/events/devices/x11/events_devices_x11_export.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xinput.h"
 
 namespace base {

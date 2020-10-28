@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/xproto.h"
 
 // A process wide singleton cache for X menus.
 namespace base {

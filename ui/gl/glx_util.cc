@@ -9,7 +9,6 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "ui/gfx/x/glx.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gl {
@@ -74,7 +73,12 @@ void XlibFree(void* data) {
 
 GLXFBConfig GetFbConfigForWindow(x11::Connection* connection,
                                  x11::Window window) {
-  auto xproto_config = GetConfigForWindow(connection, window);
+  return GetGlxFbConfigForXProtoFbConfig(
+      connection, GetConfigForWindow(connection, window));
+}
+
+GLXFBConfig GetGlxFbConfigForXProtoFbConfig(x11::Connection* connection,
+                                            x11::Glx::FbConfig xproto_config) {
   if (xproto_config == x11::Glx::FbConfig{})
     return nullptr;
   int attrib_list[] = {GLX_FBCONFIG_ID, static_cast<int>(xproto_config), 0};

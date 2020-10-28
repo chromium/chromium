@@ -16,8 +16,8 @@
 #include "base/optional.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace gfx {
 class Point;

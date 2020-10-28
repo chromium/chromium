@@ -30,7 +30,6 @@
 #include "ui/gfx/x/dri2.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/present.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xf86vidmode.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -467,13 +466,13 @@ bool GLSurfaceGLX::InitializeOneOff() {
   // http://crbug.com/245466
   setenv("force_s3tc_enable", "true", 1);
 
-  if (!gfx::GetXDisplay()) {
-    LOG(ERROR) << "XOpenDisplay failed.";
+  if (!x11::Connection::Get()->Ready()) {
+    LOG(ERROR) << "Could not open X11 connection.";
     return false;
   }
 
   int major = 0, minor = 0;
-  if (!glXQueryVersion(gfx::GetXDisplay(), &major, &minor)) {
+  if (!glXQueryVersion(x11::Connection::Get()->display(), &major, &minor)) {
     LOG(ERROR) << "glxQueryVersion failed";
     return false;
   }
@@ -631,7 +630,7 @@ bool GLSurfaceGLX::IsOMLSyncControlSupported() {
 }
 
 void* GLSurfaceGLX::GetDisplay() {
-  return gfx::GetXDisplay();
+  return x11::Connection::Get()->display();
 }
 
 GLSurfaceGLX::~GLSurfaceGLX() = default;
@@ -695,8 +694,9 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
     LOG(ERROR) << "Failed to get GLXConfig";
     return false;
   }
-  glx_window_ = static_cast<x11::Glx::Window>(glXCreateWindow(
-      gfx::GetXDisplay(), config_, static_cast<uint32_t>(window_), nullptr));
+  glx_window_ = static_cast<x11::Glx::Window>(
+      glXCreateWindow(x11::Connection::Get()->display(), config_,
+                      static_cast<uint32_t>(window_), nullptr));
   if (!GetDrawableHandle()) {
     LOG(ERROR) << "glXCreateWindow failed";
     return false;
@@ -734,7 +734,7 @@ void NativeViewGLSurfaceGLX::Destroy() {
   presentation_helper_ = nullptr;
   vsync_provider_ = nullptr;
   if (GetDrawableHandle()) {
-    glXDestroyWindow(gfx::GetXDisplay(), GetDrawableHandle());
+    glXDestroyWindow(x11::Connection::Get()->display(), GetDrawableHandle());
     glx_window_ = {};
   }
   if (window_ != x11::Window::None) {
@@ -818,8 +818,8 @@ gfx::SwapResult NativeViewGLSurfaceGLX::PostSubBuffer(
 
   GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
       presentation_helper_.get(), std::move(callback));
-  glXCopySubBufferMESA(gfx::GetXDisplay(), GetDrawableHandle(), x, y, width,
-                       height);
+  glXCopySubBufferMESA(x11::Connection::Get()->display(), GetDrawableHandle(),
+                       x, y, width, height);
   return scoped_swap_buffers.result();
 }
 
@@ -836,7 +836,8 @@ void NativeViewGLSurfaceGLX::SetVSyncEnabled(bool enabled) {
   DCHECK(GLContext::GetCurrent() && GLContext::GetCurrent()->IsCurrent(this));
   int interval = enabled ? 1 : 0;
   if (GLSurfaceGLX::IsEXTSwapControlSupported()) {
-    glXSwapIntervalEXT(gfx::GetXDisplay(), GetDrawableHandle(), interval);
+    glXSwapIntervalEXT(x11::Connection::Get()->display(), GetDrawableHandle(),
+                       interval);
   } else if (GLSurfaceGLX::IsMESASwapControlSupported()) {
     glXSwapIntervalMESA(interval);
   } else if (interval == 0) {
@@ -898,8 +899,9 @@ bool UnmappedNativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
     LOG(ERROR) << "Failed to get GLXConfig";
     return false;
   }
-  glx_window_ = static_cast<x11::Glx::Window>(glXCreateWindow(
-      gfx::GetXDisplay(), config_, static_cast<uint32_t>(window_), nullptr));
+  glx_window_ = static_cast<x11::Glx::Window>(
+      glXCreateWindow(x11::Connection::Get()->display(), config_,
+                      static_cast<uint32_t>(window_), nullptr));
   if (glx_window_ == x11::Glx::Window{}) {
     LOG(ERROR) << "glXCreateWindow failed";
     return false;
@@ -910,7 +912,8 @@ bool UnmappedNativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
 void UnmappedNativeViewGLSurfaceGLX::Destroy() {
   config_ = nullptr;
   if (glx_window_ != x11::Glx::Window{}) {
-    glXDestroyWindow(gfx::GetXDisplay(), static_cast<uint32_t>(glx_window_));
+    glXDestroyWindow(x11::Connection::Get()->display(),
+                     static_cast<uint32_t>(glx_window_));
     glx_window_ = {};
   }
   if (window_ != x11::Window::None) {

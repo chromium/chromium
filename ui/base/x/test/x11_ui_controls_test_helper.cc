@@ -12,7 +12,6 @@
 #include "ui/events/test/x11_event_waiter.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 

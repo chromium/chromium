@@ -226,7 +226,6 @@
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/x/x11_util.h"           // nogncheck
-#include "ui/gfx/x/x11_types.h"           // nogncheck
 #endif
 
 #if defined(USE_NSS_CERTS)
@@ -581,7 +580,7 @@ int BrowserMainLoop::EarlyInitialization() {
 
 #if defined(USE_X11)
   if (!features::IsUsingOzonePlatform() && UsingInProcessGpu() &&
-      !gfx::GetXDisplay()) {
+      !x11::Connection::Get()->Ready()) {
     LOG(ERROR) << "Failed to open an X11 connection.";
   }
 #endif
@@ -1434,7 +1433,7 @@ bool BrowserMainLoop::InitializeToolkit() {
 #if defined(USE_X11)
   if (!features::IsUsingOzonePlatform() &&
       !parsed_command_line_.HasSwitch(switches::kHeadless) &&
-      !gfx::GetXDisplay()) {
+      !x11::Connection::Get()->Ready()) {
     LOG(ERROR) << "Unable to open X display.";
     return false;
   }

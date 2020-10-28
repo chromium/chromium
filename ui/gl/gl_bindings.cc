@@ -11,7 +11,7 @@
 #include "ui/gl/gl_bindings.h"
 
 #if defined(USE_GLX)
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/connection.h"
 #endif
 
 #if defined(USE_EGL)

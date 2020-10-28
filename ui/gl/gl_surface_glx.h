@@ -16,7 +16,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/glx.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface.h"
 

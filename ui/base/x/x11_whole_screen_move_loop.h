@@ -20,7 +20,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/connection.h"
 
 namespace ui {
 class MouseEvent;

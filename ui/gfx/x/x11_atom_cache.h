@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "ui/gfx/gfx_export.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace base {
 template <typename T>

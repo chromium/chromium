@@ -33,7 +33,6 @@
 #include "ui/base/x/x11_util.h"        // nogncheck
 #include "ui/gfx/x/connection.h"       // nogncheck
 #include "ui/gfx/x/screensaver.h"      // nogncheck
-#include "ui/gfx/x/x11_types.h"        // nogncheck
 #endif
 
 #if defined(USE_OZONE)

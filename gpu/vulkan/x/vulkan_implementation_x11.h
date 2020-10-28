@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace gpu {
 

@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/glx.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 

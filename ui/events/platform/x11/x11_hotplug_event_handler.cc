@@ -30,9 +30,9 @@
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/touchscreen_device.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace ui {
 

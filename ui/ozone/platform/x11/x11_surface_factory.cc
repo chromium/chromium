@@ -9,7 +9,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_x11_gles2.h"
 #include "ui/ozone/common/egl_util.h"
@@ -58,8 +57,8 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
  protected:
   // GLOzoneEGL:
   gl::EGLDisplayPlatform GetNativeDisplay() override {
-    return gl::EGLDisplayPlatform(
-        reinterpret_cast<EGLNativeDisplayType>(gfx::GetXDisplay()));
+    return gl::EGLDisplayPlatform(reinterpret_cast<EGLNativeDisplayType>(
+        x11::Connection::Get()->display()));
   }
 
   bool LoadGLES2Bindings(gl::GLImplementation implementation) override {

@@ -14,7 +14,6 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 

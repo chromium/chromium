@@ -11,7 +11,6 @@
 #include "components/viz/service/display_embedder/skia_output_device_offscreen.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace viz {

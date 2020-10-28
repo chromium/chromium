@@ -24,7 +24,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/x11/xinput_util.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xinput.h"
 
 namespace media {

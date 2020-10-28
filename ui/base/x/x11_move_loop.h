@@ -6,7 +6,6 @@
 #define UI_BASE_X_X11_MOVE_LOOP_H_
 
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace ui {
 

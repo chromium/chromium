@@ -59,13 +59,14 @@
 #include "ui/gl/gl_implementation.h"
 
 #if defined(USE_X11)
-#include "ui/gfx/x/x11_types.h"  // nogncheck
 
 typedef XID Drawable;
 
 extern "C" {
 #include "media/gpu/vaapi/va_x11.sigs"
 }
+
+#include "ui/gfx/x/connection.h"  // nogncheck
 #endif
 
 #if defined(USE_OZONE)
@@ -504,7 +505,7 @@ bool VADisplayState::InitializeVaDisplay_Locked() {
     case gl::kGLImplementationDesktopGL:
 #if defined(USE_X11)
       if (!features::IsUsingOzonePlatform()) {
-        va_display_ = vaGetDisplay(gfx::GetXDisplay());
+        va_display_ = vaGetDisplay(x11::Connection::Get()->display());
         if (!vaDisplayIsValid(va_display_))
           va_display_ = vaGetDisplayDRM(drm_fd_.get());
       }
@@ -513,14 +514,14 @@ bool VADisplayState::InitializeVaDisplay_Locked() {
     case gl::kGLImplementationEGLANGLE:
 #if defined(USE_X11)
       if (!features::IsUsingOzonePlatform())
-        va_display_ = vaGetDisplay(gfx::GetXDisplay());
+        va_display_ = vaGetDisplay(x11::Connection::Get()->display());
 #endif  // USE_X11
       break;
     // Cannot infer platform from GL, try all available displays
     case gl::kGLImplementationNone:
 #if defined(USE_X11)
       if (!features::IsUsingOzonePlatform()) {
-        va_display_ = vaGetDisplay(gfx::GetXDisplay());
+        va_display_ = vaGetDisplay(x11::Connection::Get()->display());
         if (vaDisplayIsValid(va_display_))
           break;
       }

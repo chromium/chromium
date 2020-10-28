@@ -7,7 +7,6 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "remoting/host/linux/unicode_to_keysym.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xtest.h"

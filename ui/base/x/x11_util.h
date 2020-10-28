@@ -31,8 +31,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/icc_profile.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto_types.h"
 
 typedef unsigned long Cursor;
