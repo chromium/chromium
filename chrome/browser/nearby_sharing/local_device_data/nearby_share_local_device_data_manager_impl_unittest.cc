@@ -227,7 +227,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
             scheduler_factory_.pref_name_to_periodic_instance().at(
                 prefs::kNearbySharingSchedulerDownloadDeviceDataPrefName);
     EXPECT_TRUE(device_data_scheduler_instance.fake_scheduler);
-    EXPECT_EQ(base::TimeDelta::FromHours(1),
+    EXPECT_EQ(base::TimeDelta::FromHours(12),
               device_data_scheduler_instance.request_period);
     EXPECT_TRUE(device_data_scheduler_instance.retry_failures);
     EXPECT_TRUE(device_data_scheduler_instance.require_connectivity);

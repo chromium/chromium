@@ -36,7 +36,7 @@ constexpr std::array<char, 36> kAlphaNumericChars = {
 constexpr base::TimeDelta kUpdateDeviceDataTimeout =
     base::TimeDelta::FromSeconds(30);
 constexpr base::TimeDelta kDeviceDataDownloadPeriod =
-    base::TimeDelta::FromHours(1);
+    base::TimeDelta::FromHours(12);
 
 }  // namespace
 
