@@ -386,7 +386,8 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
     const bool screen_capture_allowed =
         screen_capture_allowed_for_testing_.has_value()
             ? *screen_capture_allowed_for_testing_
-            : ui::IsScreenCaptureAllowed();
+            : (ui::IsScreenCaptureAllowed() ||
+               ui::TryPromptUserForScreenCapture());
     if (!screen_capture_allowed) {
       SendIssueForScreenPermission(sink_id);
       return false;

@@ -16,6 +16,15 @@ namespace ui {
 // has been granted.
 COMPONENT_EXPORT(UI_BASE) bool IsScreenCaptureAllowed();
 
+// Heuristic to prompt the user if they have never been prompted for permission.
+// Starting on macOS 10.15, not only can we not tell if we have has permission
+// granted, we also can't tell if we have requested the permission before. We
+// must try capture a stream and the OS will show a modal dialog asking the user
+// for permission if Chrome is not in the permission app list, then return
+// a stream based on whether permission is granted.
+// Returns whether or not permission was granted.
+COMPONENT_EXPORT(UI_BASE) bool TryPromptUserForScreenCapture();
+
 }  // namespace ui
 
 #endif  // UI_BASE_COCOA_PERMISSIONS_UTILS_H_

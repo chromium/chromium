@@ -8,6 +8,7 @@
 #include <Foundation/Foundation.h>
 
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 
 namespace ui {
@@ -16,7 +17,7 @@ namespace ui {
 // or dock window running on another process is visible.
 // See https://crbug.com/993692.
 bool IsScreenCaptureAllowed() {
-  if (@available(macOS 10.15, *)) {
+  if (base::mac::IsAtLeastOS10_15()) {
     base::ScopedCFTypeRef<CFArrayRef> window_list(
         CGWindowListCopyWindowInfo(kCGWindowListOptionAll, kCGNullWindowID));
     int current_pid = [[NSProcessInfo processInfo] processIdentifier];
@@ -47,6 +48,24 @@ bool IsScreenCaptureAllowed() {
 
   // Screen capture is always allowed in older macOS versions.
   return true;
+}
+
+bool TryPromptUserForScreenCapture() {
+  if (base::mac::IsAtLeastOS10_15()) {
+    // On 10.15+, macOS will show the permissions prompt for Screen Recording
+    // if we request to create a display stream and our application is not
+    // in the applications list in System permissions. Stream creation will
+    // fail if the user denies permission, or if our application is already
+    // in the system permssion and is unchecked.
+    base::ScopedCFTypeRef<CGDisplayStreamRef> stream(CGDisplayStreamCreate(
+        CGMainDisplayID(), 1, 1, 'BGRA', nullptr,
+        ^(CGDisplayStreamFrameStatus status, uint64_t displayTime,
+          IOSurfaceRef frameSurface, CGDisplayStreamUpdateRef updateRef){
+        }));
+    return stream != nullptr;
+  } else {
+    return true;
+  }
 }
 
 }  // namespace ui
