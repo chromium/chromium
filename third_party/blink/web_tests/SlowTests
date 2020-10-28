@@ -543,3 +543,12 @@ crbug.com/1093478 external/wpt/quirks/unitless-length/limited-quirks.html [ Slow
 crbug.com/1133836 external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
 
 crbug.com/1134580 virtual/eye-dropper/color-picker-show-eye-dropper.html [ Slow ]
+
+# These began to hit timeouts when moving from Windows-10-15063 to Windows-10-18363
+crbug.com/1142023 [ Win10 ] external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-002.html [ Slow ]
+crbug.com/1142023 [ Win10 ] external/wpt/web-animations/animation-model/animation-types/addition-per-property-002.html [ Slow ]
+crbug.com/1142023 [ Win10 ] external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-002.html [ Slow ]
+crbug.com/1142023 [ Win10 ] fast/dom/HTMLScriptElement/script-sync-load-failure.html [ Slow ]
+crbug.com/1142023 [ Win10 ] http/tests/eventsource/eventsource-cors-no-server.html [ Slow ]
+crbug.com/1142023 [ Win10 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Slow ]
+crbug.com/1142023 [ Win10 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Slow ]
