@@ -157,7 +157,6 @@ source_set("common") {
     "view_messages.h",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
-    "widget_messages.h",
   ]
 
   configs += [
@@ -585,7 +584,6 @@ mojom("mojo_bindings") {
         "//content/common/frame_messages.h",
         "//content/common/input_messages.h",
         "//content/common/view_messages.h",
-        "//content/common/widget_messages.h",
         "//content/public/common/common_param_traits.h",
         "//services/network/public/cpp/p2p_param_traits.h",
       ]

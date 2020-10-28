@@ -78,7 +78,6 @@
 #include "content/common/frame_messages.h"
 #include "content/common/input_messages.h"
 #include "content/common/view_messages.h"
-#include "content/common/widget_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -660,17 +659,7 @@ void RenderWidgetHostImpl::ShutdownAndDestroyWidget(bool also_delete) {
 }
 
 bool RenderWidgetHostImpl::OnMessageReceived(const IPC::Message &msg) {
-  // Only process most messages if the RenderWidget is alive.
-  if (!renderer_initialized())
-    return false;
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(RenderWidgetHostImpl, msg)
-    IPC_MESSAGE_HANDLER(WidgetHostMsg_RequestSetBounds, OnRequestSetBounds)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  return handled;
+  return false;
 }
 
 bool RenderWidgetHostImpl::Send(IPC::Message* msg) {
@@ -2257,6 +2246,13 @@ void RenderWidgetHostImpl::RequestClosePopup() {
   ShutdownAndDestroyWidget(true);
 }
 
+void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
+                                          SetPopupBoundsCallback callback) {
+  if (view_)
+    view_->SetBounds(bounds);
+  std::move(callback).Run();
+}
+
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_rect,
                                      ShowPopupCallback callback) {
   delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
@@ -2309,15 +2305,6 @@ void RenderWidgetHostImpl::OnUpdateScreenRectsAck() {
   }
 
   SendScreenRects();
-}
-
-void RenderWidgetHostImpl::OnRequestSetBounds(const gfx::Rect& bounds) {
-  if (owner_delegate_) {
-    owner_delegate_->RequestSetBounds(bounds);
-  } else if (view_) {
-    view_->SetBounds(bounds);
-  }
-  Send(new WidgetMsg_SetBounds_ACK(routing_id_));
 }
 
 void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(

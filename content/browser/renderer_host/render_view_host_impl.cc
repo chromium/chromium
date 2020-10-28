@@ -60,7 +60,6 @@
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/view_messages.h"
-#include "content/common/widget_messages.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
@@ -809,11 +808,6 @@ bool RenderViewHostImpl::MayRenderWidgetForwardKeyboardEvent(
 
 bool RenderViewHostImpl::ShouldContributePriorityToProcess() {
   return is_active();
-}
-
-void RenderViewHostImpl::RequestSetBounds(const gfx::Rect& bounds) {
-  if (is_active())
-    delegate_->RequestSetBounds(bounds);
 }
 
 void RenderViewHostImpl::SendWebPreferencesToRenderer() {

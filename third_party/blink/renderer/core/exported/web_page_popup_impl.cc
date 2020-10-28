@@ -406,6 +406,10 @@ void WebPagePopupImpl::DidShowPopup() {
   widget_base_->AckPendingWindowRect();
 }
 
+void WebPagePopupImpl::DidSetBounds() {
+  widget_base_->AckPendingWindowRect();
+}
+
 cc::LayerTreeHost* WebPagePopupImpl::InitializeCompositing(
     scheduler::WebThreadScheduler* main_thread_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
@@ -499,15 +503,6 @@ gfx::Size WebPagePopupImpl::VisibleViewportSizeInDIPs() {
   return widget_base_->VisibleViewportSizeInDIPs();
 }
 
-void WebPagePopupImpl::SetPendingWindowRect(
-    const gfx::Rect& window_screen_rect) {
-  widget_base_->SetPendingWindowRect(window_screen_rect);
-}
-
-void WebPagePopupImpl::AckPendingWindowRect() {
-  widget_base_->AckPendingWindowRect();
-}
-
 bool WebPagePopupImpl::IsHidden() const {
   return widget_base_->is_hidden();
 }
@@ -581,7 +576,10 @@ void WebPagePopupImpl::SetWindowRect(const IntRect& rect_in_screen) {
     EmulatedToScreenRect(window_rect);
 
   if (!should_defer_setting_window_rect_) {
-    WidgetClient()->SetWindowRect(window_rect);
+    widget_base_->SetPendingWindowRect(window_rect);
+    popup_widget_host_->SetPopupBounds(
+        window_rect,
+        WTF::Bind(&WebPagePopupImpl::DidSetBounds, WTF::Unretained(this)));
   } else {
     initial_rect_ = window_rect;
   }

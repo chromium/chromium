@@ -3539,6 +3539,12 @@ void RenderFrameHostImpl::ShowCreatedWindow(
   std::move(callback).Run();
 }
 
+void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
+                                        SetWindowRectCallback callback) {
+  delegate_->SetWindowRect(bounds);
+  std::move(callback).Run();
+}
+
 void RenderFrameHostImpl::UpdateFaviconURL(
     std::vector<blink::mojom::FaviconURLPtr> favicon_urls) {
   delegate_->UpdateFaviconURL(this, std::move(favicon_urls));

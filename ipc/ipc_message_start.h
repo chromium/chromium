@@ -16,7 +16,6 @@ enum IPCMessageStart {
   FrameMsgStart,
   PageMsgStart,
   ViewMsgStart,
-  WidgetMsgStart,
   TestMsgStart,
   WorkerMsgStart,
   NaClMsgStart,

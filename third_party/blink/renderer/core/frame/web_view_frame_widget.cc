@@ -208,7 +208,7 @@ void WebViewFrameWidget::SetWindowRect(const gfx::Rect& window_rect) {
     SetWindowRectSynchronously(window_rect);
     return;
   }
-  Client()->SetWindowRect(window_rect);
+  View()->SetWindowRect(window_rect);
 }
 
 float WebViewFrameWidget::GetEmulatorScale() {

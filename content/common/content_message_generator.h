@@ -41,11 +41,6 @@
 #ifndef CONTENT_COMMON_VIEW_MESSAGES_H_
 #error "Failed to include content/common/view_messages.h"
 #endif
-#undef CONTENT_COMMON_WIDGET_MESSAGES_H_
-#include "content/common/widget_messages.h"
-#ifndef CONTENT_COMMON_WIDGET_MESSAGES_H_
-#error "Failed to include content/common/widget_messages.h"
-#endif
 #include "media/media_buildflags.h"
 
 #if defined(OS_ANDROID)

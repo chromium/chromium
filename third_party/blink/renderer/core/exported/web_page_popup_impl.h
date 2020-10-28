@@ -192,8 +192,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect) override;
   gfx::Size VisibleViewportSizeInDIPs() override;
-  void SetPendingWindowRect(const gfx::Rect& window_screen_rect) override;
-  void AckPendingWindowRect() override;
   bool IsHidden() const override;
 
   // This may only be called if page_ is non-null.
@@ -233,6 +231,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   void WidgetHostDisconnected();
   void DidShowPopup();
+  void DidSetBounds();
 
   WebPagePopupClient* web_page_popup_client_;
   WebViewImpl* web_view_ = nullptr;

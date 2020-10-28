@@ -291,6 +291,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void RequestClosePopup() override;
   void ShowPopup(const gfx::Rect& initial_rect,
                  ShowPopupCallback callback) override;
+  void SetPopupBounds(const gfx::Rect& bounds,
+                      SetPopupBoundsCallback callback) override;
 
   // Notification that the screen info has changed.
   void NotifyScreenInfoChanged();
@@ -918,7 +920,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // IPC message handlers
   void OnClose();
   void OnUpdateScreenRectsAck();
-  void OnRequestSetBounds(const gfx::Rect& bounds);
   void OnUpdateDragCursor(blink::DragOperation current_op);
 
   // blink::mojom::FrameWidgetHost overrides.

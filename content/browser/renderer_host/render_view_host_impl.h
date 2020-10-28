@@ -327,7 +327,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   bool MayRenderWidgetForwardKeyboardEvent(
       const NativeWebKeyboardEvent& key_event) override;
   bool ShouldContributePriorityToProcess() override;
-  void RequestSetBounds(const gfx::Rect& bounds) override;
   void SetBackgroundOpaque(bool opaque) override;
   bool IsMainFrameActive() override;
   bool IsNeverComposited() override;

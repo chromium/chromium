@@ -1720,6 +1720,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                          const gfx::Rect& initial_rect,
                          bool user_gesture,
                          ShowCreatedWindowCallback callback) override;
+  void SetWindowRect(const gfx::Rect& bounds,
+                     SetWindowRectCallback callback) override;
 
   void ReportNoBinderForInterface(const std::string& error);
 

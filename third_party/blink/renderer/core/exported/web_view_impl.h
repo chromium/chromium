@@ -505,6 +505,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
             const gfx::Rect& rect,
             bool opened_by_user_gesture);
 
+  void SetWindowRect(const gfx::Rect& bounds);
+
   // This method is used for testing.
   // Resizes the unscaled (page scale = 1.0) visual viewport. Normally the
   // unscaled visual viewport is the same size as the main frame. The passed
@@ -668,6 +670,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Callback when this widget window has been displayed by the browser.
   // Corresponds to a Show method call.
   void DidShowCreatedWindow();
+
+  // Callback when the window rect has been adjusted by the browser.
+  // Corresponds to a SetWindowRect method call.
+  void DidSetWindowRect();
 
   // Can be null (e.g. unittests, shared workers, etc).
   WebViewClient* web_view_client_;

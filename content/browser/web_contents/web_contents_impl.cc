@@ -106,7 +106,6 @@
 #include "content/common/page_messages.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/view_messages.h"
-#include "content/common/widget_messages.h"
 #include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_context.h"
@@ -7002,8 +7001,8 @@ void WebContentsImpl::Close(RenderViewHost* rvh) {
     delegate_->CloseContents(this);
 }
 
-void WebContentsImpl::RequestSetBounds(const gfx::Rect& new_bounds) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::RequestSetBounds");
+void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetWindowRect");
   if (!delegate_)
     return;
 

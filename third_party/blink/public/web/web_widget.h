@@ -237,18 +237,6 @@ class WebWidget {
   // Returns the emulator scale.
   virtual float GetEmulatorScale() { return 1.0f; }
 
-  // Sets the pending window rects (in screen coordinates). This is used because
-  // the window rect is delivered asynchronously to the browser. Pass in nullptr
-  // to clear the pending window rect once the browser has acknowledged the
-  // request.
-  virtual void SetPendingWindowRect(const gfx::Rect& window_screen_rect) = 0;
-
-  // Acknowledge a pending window rect, must correspond to a prior
-  // SetPendingWindowRect call. This method is temporary and will be removed
-  // when WidgetMsg_SetBounds_ACK/WidgetHostMsg_RequestSetBounds are moved to
-  // mojo.
-  virtual void AckPendingWindowRect() = 0;
-
   virtual bool IsHidden() const = 0;
 
  protected:

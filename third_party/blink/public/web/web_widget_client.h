@@ -85,11 +85,6 @@ class WebWidgetClient {
   // Called when the cursor for the widget changes.
   virtual void DidChangeCursor(const ui::Cursor&) {}
 
-  // Called to set the position of the widget's window in screen
-  // coordinates. Note, the window includes any decorations such as borders,
-  // scrollbars, URL bar, tab strip, etc. if they exist.
-  virtual void SetWindowRect(const gfx::Rect&) {}
-
   // Allocates a LayerTreeFrameSink to submit CompositorFrames to. Only
   // override this method if you wish to provide your own implementation
   // of LayerTreeFrameSinks (usually for tests). If this method returns null

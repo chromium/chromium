@@ -76,6 +76,9 @@ void FakeRenderWidgetHost::RegisterRenderFrameMetadataObserver(
 
 void FakeRenderWidgetHost::RequestClosePopup() {}
 
+void FakeRenderWidgetHost::SetPopupBounds(const gfx::Rect& bounds,
+                                          SetPopupBoundsCallback callback) {}
+
 void FakeRenderWidgetHost::ShowPopup(const gfx::Rect& initial_rect,
                                      ShowPopupCallback callback) {}
 

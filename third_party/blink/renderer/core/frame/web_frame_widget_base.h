@@ -326,8 +326,6 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
                       const gfx::Rect& window_screen_rect) override;
   gfx::Size VisibleViewportSizeInDIPs() override;
-  void SetPendingWindowRect(const gfx::Rect& window_screen_rect) override;
-  void AckPendingWindowRect() override;
   bool IsHidden() const override;
 
   // WidgetBaseClient methods.
@@ -580,6 +578,14 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetWindowSegments(const std::vector<gfx::Rect>& window_segments);
   viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
                                          gfx::PointF* local_point);
+
+  // Set the pending window rect. For every SetPendingWindowRect
+  // call there must be an AckPendingWindowRect call.
+  void SetPendingWindowRect(const gfx::Rect& window_screen_rect);
+
+  // Clear a previously set pending window rect. For every SetPendingWindowRect
+  // call there must be an AckPendingWindowRect call.
+  void AckPendingWindowRect();
 
   // Constrains the viewport intersection for use by IntersectionObserver,
   // and indicates whether the frame may be painted over or obscured in the

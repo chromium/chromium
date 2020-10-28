@@ -636,6 +636,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       int64_t& item_sequence_number,
       int64_t& document_sequence_number) {}
 
+  // The page is trying to move the main frame's representation in the client.
+  virtual void SetWindowRect(const gfx::Rect& new_bounds) {}
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

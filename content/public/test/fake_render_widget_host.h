@@ -77,6 +77,8 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
   void RequestClosePopup() override;
   void ShowPopup(const gfx::Rect& initial_rect,
                  ShowPopupCallback callback) override;
+  void SetPopupBounds(const gfx::Rect& bounds,
+                      SetPopupBoundsCallback callback) override;
 
   // blink::mojom::WidgetInputHandlerHost overrides.
   void SetTouchActionFromMain(cc::TouchAction touch_action) override;

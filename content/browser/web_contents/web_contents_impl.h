@@ -771,6 +771,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* render_frame_host,
       int64_t& item_sequence_number,
       int64_t& document_sequence_number) override;
+  void SetWindowRect(const gfx::Rect& new_bounds) override;
 
   // RenderViewHostDelegate ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
@@ -786,7 +787,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                             int error_code) override;
   void RenderViewDeleted(RenderViewHost* render_view_host) override;
   void Close(RenderViewHost* render_view_host) override;
-  void RequestSetBounds(const gfx::Rect& new_bounds) override;
   bool DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel log_level,
                               const base::string16& message,
                               int32_t line_no,

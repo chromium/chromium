@@ -31,9 +31,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case ViewMsgStart:
       message_class = ChromeLegacyIpc::CLASS_VIEW;
       break;
-    case WidgetMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_WIDGET;
-      break;
     case TestMsgStart:
       message_class = ChromeLegacyIpc::CLASS_TEST;
       break;

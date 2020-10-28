@@ -185,7 +185,6 @@ class CONTENT_EXPORT RenderWidget
   // blink::WebWidgetClient
   void ScheduleAnimation() override;
   void BrowserClosedIpcChannelForPopupWidget() override;
-  void SetWindowRect(const gfx::Rect&) override;
   viz::FrameSinkId GetFrameSinkId() override;
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
 
@@ -225,17 +224,6 @@ class CONTENT_EXPORT RenderWidget
   // Initializes the compositor and dependent systems, as part of the
   // Initialize() process.
   void InitCompositing(const blink::ScreenInfo& screen_info);
-
-  // RenderWidget IPC message handlers.
-  void OnRequestSetBoundsAck();
-
-  // Set the pending window rect.
-  // Because the real render_widget is hosted in another process, there is
-  // a time period where we may have set a new window rect which has not yet
-  // been processed by the browser.  So we maintain a pending window rect
-  // size.  If JS code sets the WindowRect, and then immediately calls
-  // GetWindowRect() we'll use this pending window rect as the size.
-  void SetPendingWindowRect(const gfx::Rect& r);
 
   // Returns the WebFrameWidget associated with this RenderWidget if any.
   // Returns nullptr if GetWebWidget() returns nullptr or returns a WebWidget

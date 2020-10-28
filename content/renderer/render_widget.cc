@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/ukm_manager.h"
-#include "content/common/widget_messages.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/render_frame_impl.h"
@@ -142,19 +141,7 @@ void RenderWidget::Initialize(blink::WebWidget* web_widget,
 }
 
 bool RenderWidget::OnMessageReceived(const IPC::Message& message) {
-  // We shouldn't receive IPC messages on provisional frames. It's possible the
-  // message was destined for a RenderWidget that was destroyed and then
-  // recreated since it keeps the same routing id. Just drop it here if that
-  // happened.
-  if (IsForProvisionalFrame())
-    return false;
-
-  bool handled = false;
-  IPC_BEGIN_MESSAGE_MAP(RenderWidget, message)
-    IPC_MESSAGE_HANDLER(WidgetMsg_SetBounds_ACK, OnRequestSetBoundsAck)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+  return false;
 }
 
 bool RenderWidget::Send(IPC::Message* message) {
@@ -174,14 +161,6 @@ void RenderWidget::BrowserClosedIpcChannelForPopupWidget() {
   DCHECK(for_popup_);
 
   Close(base::WrapUnique(this));
-}
-
-void RenderWidget::OnRequestSetBoundsAck() {
-  GetWebWidget()->AckPendingWindowRect();
-}
-
-void RenderWidget::SetPendingWindowRect(const gfx::Rect& rect) {
-  GetWebWidget()->SetPendingWindowRect(rect);
 }
 
 void RenderWidget::ScheduleAnimation() {
@@ -270,11 +249,6 @@ bool RenderWidget::IsForProvisionalFrame() const {
     return false;
   auto* frame_widget = static_cast<blink::WebFrameWidget*>(webwidget_);
   return frame_widget->LocalRoot()->IsProvisional();
-}
-
-void RenderWidget::SetWindowRect(const gfx::Rect& window_rect) {
-  Send(new WidgetHostMsg_RequestSetBounds(routing_id_, window_rect));
-  SetPendingWindowRect(window_rect);
 }
 
 void RenderWidget::ConvertViewportToWindow(blink::WebRect* rect) {

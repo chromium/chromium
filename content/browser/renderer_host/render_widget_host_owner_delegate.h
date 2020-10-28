@@ -16,10 +16,6 @@ struct WebPreferences;
 class WebMouseEvent;
 }
 
-namespace gfx {
-class Rect;
-}
-
 namespace content {
 struct NativeWebKeyboardEvent;
 
@@ -56,10 +52,6 @@ class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
   // Allow OwnerDelegate to control whether its RenderWidgetHost contributes
   // priority to the RenderProcessHost.
   virtual bool ShouldContributePriorityToProcess() = 0;
-
-  // Notify the OwnerDelegate that the renderer has requested a change in
-  // the bounds of the content area.
-  virtual void RequestSetBounds(const gfx::Rect& bounds) = 0;
 
   // When false, this allows the renderer's output to be transparent. By default
   // the renderer's background is forced to be opaque.

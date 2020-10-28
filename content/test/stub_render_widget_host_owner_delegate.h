@@ -20,7 +20,6 @@ class StubRenderWidgetHostOwnerDelegate : public RenderWidgetHostOwnerDelegate {
   bool MayRenderWidgetForwardKeyboardEvent(
       const NativeWebKeyboardEvent& key_event) override;
   bool ShouldContributePriorityToProcess() override;
-  void RequestSetBounds(const gfx::Rect& bounds) override {}
   void SetBackgroundOpaque(bool opaque) override {}
   bool IsMainFrameActive() override;
   bool IsNeverComposited() override;

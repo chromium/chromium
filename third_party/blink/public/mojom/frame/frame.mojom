@@ -1010,6 +1010,11 @@ interface LocalMainFrameHost {
   ShowCreatedWindow(mojo_base.mojom.UnguessableToken opener_frame_token,
                     ui.mojom.WindowOpenDisposition disposition,
                     gfx.mojom.Rect rect, bool opened_by_user_gesture) => ();
+
+  // Request that the browser change the bounds of the window.
+  // This corresponds to the window.resizeTo() and window.moveTo() APIs, and the browser
+  // may ignore this message.
+  SetWindowRect(gfx.mojom.Rect bounds) => ();
 };
 
 // Implemented in Browser, this interface defines remote-main-frame-specific
