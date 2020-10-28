@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/chromebox_for_meetings/cfm_browser_service.h"
+#include "chrome/browser/chromeos/chromebox_for_meetings/browser/cfm_browser_service.h"
 
 #include "base/bind.h"
 #include "base/macros.h"

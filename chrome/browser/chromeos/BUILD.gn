@@ -388,12 +388,6 @@ source_set("chromeos") {
     "//ui/wm/public",
     "//url",
   ]
-  if (is_cfm) {
-    deps += [
-      "//chrome/browser/chromeos/chromebox_for_meetings",
-      "//chromeos/dbus/chromebox_for_meetings",
-    ]
-  }
   data_deps = [ ":dbus_service_files" ]
 
   allow_circular_includes_from = [
@@ -2997,6 +2991,22 @@ source_set("chromeos") {
   if (use_cras) {
     defines += [ "USE_CRAS" ]
   }
+
+  if (is_cfm) {
+    sources += [
+      "chromebox_for_meetings/browser/cfm_browser_service.cc",
+      "chromebox_for_meetings/browser/cfm_browser_service.h",
+      "chromebox_for_meetings/cfm_chrome_services.cc",
+      "chromebox_for_meetings/cfm_chrome_services.h",
+      "chromebox_for_meetings/service_adaptor.cc",
+      "chromebox_for_meetings/service_adaptor.h",
+    ]
+    deps += [
+      "//chromeos/components/chromebox_for_meetings/features",
+      "//chromeos/dbus/chromebox_for_meetings",
+      "//chromeos/services/chromebox_for_meetings/public/mojom",
+    ]
+  }
 }
 
 action("dbus_service_files") {
@@ -3951,9 +3961,17 @@ source_set("unit_tests") {
   if (use_udev) {
     deps += [ "//device/udev_linux:test_support" ]
   }
+
   if (is_cfm) {
-    deps += [ "//chrome/browser/chromeos/chromebox_for_meetings:unit_tests" ]
+    sources += [
+      "chromebox_for_meetings/fake_service_context.cc",
+      "chromebox_for_meetings/fake_service_context.h",
+      "chromebox_for_meetings/service_adaptor_unittest.cc",
+    ]
+    deps +=
+        [ "//chromeos/services/chromebox_for_meetings/public/cpp:test_support" ]
   }
+
   data = [ "//chromeos/test/data/" ]
 }
 

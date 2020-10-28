@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_CFM_BROWSER_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_CFM_BROWSER_SERVICE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_BROWSER_CFM_BROWSER_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_BROWSER_CFM_BROWSER_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -51,4 +51,4 @@ class CfmBrowserService : public CfmObserver,
 }  // namespace cfm
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_CFM_BROWSER_SERVICE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_BROWSER_CFM_BROWSER_SERVICE_H_
