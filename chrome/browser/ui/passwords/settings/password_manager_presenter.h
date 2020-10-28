@@ -100,7 +100,7 @@ class PasswordManagerPresenter
   // |sort_key| is invalid, |sort_key| corresponds to a password already in the
   // account store, or the user is not using the account-scoped password
   // storage.
-  void MovePasswordToAccountStore(
+  void MovePasswordsToAccountStore(
       const std::vector<std::string>& sort_keys,
       password_manager::PasswordManagerClient* client);
 

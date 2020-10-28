@@ -95,8 +95,8 @@ class PasswordsPrivateDelegate : public KeyedService {
   // no-op if any of these is true: |id| is invalid; |id| corresponds to a
   // password already stored in the account; or the user is not using the
   // account-scoped password storage.
-  virtual void MovePasswordToAccount(const std::vector<int>& ids,
-                                     content::WebContents* web_contents) = 0;
+  virtual void MovePasswordsToAccount(const std::vector<int>& ids,
+                                      content::WebContents* web_contents) = 0;
 
   // Trigger the password import procedure, allowing the user to select a file
   // containing passwords to import.

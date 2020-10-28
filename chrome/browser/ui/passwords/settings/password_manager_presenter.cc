@@ -376,7 +376,7 @@ void PasswordManagerPresenter::UndoRemoveSavedPasswordOrException() {
   undo_manager_.Undo();
 }
 
-void PasswordManagerPresenter::MovePasswordToAccountStore(
+void PasswordManagerPresenter::MovePasswordsToAccountStore(
     const std::vector<std::string>& sort_keys,
     password_manager::PasswordManagerClient* client) {
   if (!client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() ||

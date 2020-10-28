@@ -431,7 +431,7 @@ void PasswordsPrivateDelegateImpl::SetPasswordExceptionList(
   get_password_exception_list_callbacks_.clear();
 }
 
-void PasswordsPrivateDelegateImpl::MovePasswordToAccount(
+void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
     const std::vector<int>& ids,
     content::WebContents* web_contents) {
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
@@ -441,7 +441,7 @@ void PasswordsPrivateDelegateImpl::MovePasswordToAccount(
     if (const std::string* sort_key = password_id_generator_.TryGetKey(id))
       sort_keys.push_back(*sort_key);
   }
-  password_manager_presenter_->MovePasswordToAccountStore(sort_keys, client);
+  password_manager_presenter_->MovePasswordsToAccountStore(sort_keys, client);
 }
 
 void PasswordsPrivateDelegateImpl::ImportPasswords(

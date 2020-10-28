@@ -538,8 +538,8 @@ var availableTests = [
     });
   },
 
-  function movePasswordToAccount() {
-    chrome.passwordsPrivate.movePasswordToAccount([42]);
+  function movePasswordsToAccount() {
+    chrome.passwordsPrivate.movePasswordsToAccount([42]);
     chrome.test.succeed();
   }
 ];

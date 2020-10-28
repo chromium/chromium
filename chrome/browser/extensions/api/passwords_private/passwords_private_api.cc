@@ -189,12 +189,12 @@ void PasswordsPrivateGetPasswordExceptionListFunction::GotList(
 }
 
 // PasswordsPrivateMovePasswordToAccountFunction
-ResponseAction PasswordsPrivateMovePasswordToAccountFunction::Run() {
+ResponseAction PasswordsPrivateMovePasswordsToAccountFunction::Run() {
   auto parameters =
-      api::passwords_private::MovePasswordToAccount::Params::Create(*args_);
+      api::passwords_private::MovePasswordsToAccount::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())
-      ->MovePasswordToAccount(parameters->ids, GetSenderWebContents());
+      ->MovePasswordsToAccount(parameters->ids, GetSenderWebContents());
   return RespondNow(NoArguments());
 }
 

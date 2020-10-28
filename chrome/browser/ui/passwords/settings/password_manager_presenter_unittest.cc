@@ -500,7 +500,7 @@ class PasswordManagerPresenterTestWithAccountStore
 };
 
 TEST_F(PasswordManagerPresenterTestWithAccountStore,
-       TestMovePasswordToAccountStore) {
+       TestMovePasswordsToAccountStore) {
   base::HistogramTester histogram_tester;
 
   // Fill the profile store with 3 entries of which 2 are in the same
@@ -527,7 +527,7 @@ TEST_F(PasswordManagerPresenterTestWithAccountStore,
   testing::Mock::VerifyAndClearExpectations(&GetUIController());
 
   // Move |password| to account and wait for stores to be updated.
-  GetUIController().GetPasswordManagerPresenter()->MovePasswordToAccountStore(
+  GetUIController().GetPasswordManagerPresenter()->MovePasswordsToAccountStore(
       {password_manager::CreateSortKey(password),
        password_manager::CreateSortKey(password2)},
       client());

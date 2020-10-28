@@ -37,8 +37,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                                 api::passwords_private::PlaintextReason reason,
                                 PlaintextPasswordCallback callback,
                                 content::WebContents* web_contents) override;
-  void MovePasswordToAccount(const std::vector<int>& ids,
-                             content::WebContents* web_contents) override;
+  void MovePasswordsToAccount(const std::vector<int>& ids,
+                              content::WebContents* web_contents) override;
   void ImportPasswords(content::WebContents* web_contents) override;
   void ExportPasswords(base::OnceCallback<void(const std::string&)> callback,
                        content::WebContents* web_contents) override;
@@ -94,8 +94,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
     start_password_check_state_ = state;
   }
 
-  const std::vector<int>& last_moved_password() const {
-    return last_moved_password_;
+  const std::vector<int>& last_moved_passwords() const {
+    return last_moved_passwords_;
   }
 
  private:
@@ -136,8 +136,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   password_manager::BulkLeakCheckService::State start_password_check_state_ =
       password_manager::BulkLeakCheckService::State::kRunning;
 
-  // Records the id of the last password that was moved.
-  std::vector<int> last_moved_password_;
+  // Records the ids of the passwords that were last moved.
+  std::vector<int> last_moved_passwords_;
 };
 }  // namespace extensions
 

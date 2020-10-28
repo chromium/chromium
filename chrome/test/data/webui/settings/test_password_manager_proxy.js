@@ -57,7 +57,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
       'isOptedInForAccountStorage',
       'removeSavedPassword',
       'removeSavedPasswords',
-      'movePasswordToAccount',
+      'movePasswordsToAccount',
       'removeException',
       'removeExceptions',
       'changeSavedPassword',
@@ -120,8 +120,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  movePasswordToAccount(ids) {
-    this.methodCalled('movePasswordToAccount', ids);
+  movePasswordsToAccount(ids) {
+    this.methodCalled('movePasswordsToAccount', ids);
   }
 
   /** @override */

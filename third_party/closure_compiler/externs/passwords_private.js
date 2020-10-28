@@ -222,7 +222,7 @@ chrome.passwordsPrivate.getPasswordExceptionList = function(callback) {};
  * the account; or the user is not using the account-scoped password storage.
  * @param {!Array<number>} ids The ids of the password entries being moved.
  */
-chrome.passwordsPrivate.movePasswordToAccount = function(ids) {};
+chrome.passwordsPrivate.movePasswordsToAccount = function(ids) {};
 
 /**
  * Triggers the Password Manager password import functionality.
