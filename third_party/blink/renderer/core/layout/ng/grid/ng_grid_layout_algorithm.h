@@ -194,6 +194,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   GridLayoutAlgorithmState state_;
   LogicalSize border_box_size_;
   LogicalSize child_percentage_size_;
+  LayoutUnit intrinsic_block_size_;
 
   Vector<GridItemData> grid_items_;
   Vector<GridItemData> out_of_flow_items_;

@@ -89,17 +89,16 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
     }
   }
 
-  // TODO(ansollan): Calculate the intrinsic-block-size from the tracks.
-  LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
-  intrinsic_block_size =
+  intrinsic_block_size_ =
       ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
-                              BorderScrollbarPadding(), intrinsic_block_size);
-  LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
-      border_box_size_.inline_size);
+                              BorderScrollbarPadding(), intrinsic_block_size_);
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
 
-  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
+  LayoutUnit block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size_,
+      border_box_size_.inline_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
+
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
   return container_builder_.ToBoxFragment();
 }
@@ -1128,6 +1127,11 @@ void NGGridLayoutAlgorithm::PlaceGridItems() {
     row_set_offset += set.BaseSize() + set.TrackCount() * row_grid_gap;
     row_set_offsets.push_back(row_set_offset);
   }
+
+  // Store the total size of row definitions (summed with
+  // BorderScrollbarPadding) as the intrinsic block size.
+  intrinsic_block_size_ = BorderScrollbarPadding().BlockSum() +
+                          (row_set_offsets.back() - row_grid_gap);
 
   for (GridItemData& grid_item : grid_items_) {
     wtf_size_t column_start_index = grid_item.columns_begin_set_index;

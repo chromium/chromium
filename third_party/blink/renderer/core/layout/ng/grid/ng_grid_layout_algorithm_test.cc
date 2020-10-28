@@ -1517,8 +1517,8 @@ TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithGap) {
   String dump = DumpFragmentTree(GetElementById("wrapper"));
 
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x0
-    offset:0,0 size:1000x0
+  offset:unplaced size:1000x275
+    offset:0,0 size:1000x275
       offset:0,0 size:100x100
         offset:0,0 size:10x10
       offset:150,0 size:200x100
