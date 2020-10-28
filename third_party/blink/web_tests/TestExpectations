@@ -1146,7 +1146,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/widows.html [ Failur
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/abspos-after-forced-break.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/auto-scrollbar-shrink-to-fit.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/content-preceding-first-fragmentainer.html [ Crash Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/float-after-forced-break.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/relayout-abspos.html [ Failure ]
 
 ### With LayoutNGFragmentTraversal (and LayoutNGFragmentItem) enabled:

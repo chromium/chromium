@@ -1086,10 +1086,14 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   } else {
     DCHECK_EQ(box_->LogicalWidth(), fragment_logical_size.inline_size)
         << "Variable fragment inline size not supported";
-    LayoutUnit logical_height = fragment_logical_size.block_size;
-    if (previous_break_token)
-      logical_height += previous_break_token->ConsumedBlockSize();
-    box_->SetLogicalHeight(logical_height);
+    // Update logical height, unless this fragment is past the block-end of the
+    // generating node (happens with overflow).
+    if (previous_break_token && !previous_break_token->IsAtBlockEnd()) {
+      box_->SetLogicalHeight(fragment_logical_size.block_size +
+                             previous_break_token->ConsumedBlockSize());
+    } else {
+      DCHECK_EQ(fragment_logical_size.block_size, LayoutUnit());
+    }
   }
 
   // TODO(mstensho): This should always be done by the parent algorithm, since
