@@ -23,6 +23,8 @@ bool EmptyWifiDataProvider::GetData(WifiData* data) {
   return true;
 }
 
+void EmptyWifiDataProvider::ForceRescan() {}
+
 // static
 WifiDataProvider* WifiDataProviderManager::DefaultFactoryFunction() {
   return new EmptyWifiDataProvider();
