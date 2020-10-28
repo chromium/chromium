@@ -235,8 +235,7 @@ std::unique_ptr<AgentSchedulingGroup> CreateAgentSchedulingGroup(
       agent_scheduling_group_mojo;
   return std::make_unique<AgentSchedulingGroup>(
       render_thread, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group_mojo),
-      base::OnceCallback<void(const AgentSchedulingGroup*)>());
+      std::move(agent_scheduling_group_mojo));
 }
 
 }  // namespace
@@ -284,8 +283,7 @@ RenderViewTest::RendererBlinkPlatformImplTestOverride::
 }
 
 RenderViewTest::RendererBlinkPlatformImplTestOverride::
-    ~RendererBlinkPlatformImplTestOverride() {
-}
+    ~RendererBlinkPlatformImplTestOverride() = default;
 
 RendererBlinkPlatformImpl*
 RenderViewTest::RendererBlinkPlatformImplTestOverride::Get() const {
@@ -698,7 +696,6 @@ void RenderViewTest::SimulatePointClick(const gfx::Point& point) {
       blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
       base::DoNothing());
 }
-
 
 bool RenderViewTest::SimulateElementRightClick(const std::string& element_id) {
   gfx::Rect bounds = GetElementBounds(element_id);

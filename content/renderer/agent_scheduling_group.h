@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 #define CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 
-#include "base/callback.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
@@ -35,21 +34,15 @@ class CONTENT_EXPORT AgentSchedulingGroup
       public mojom::RouteProvider,
       public blink::mojom::AssociatedInterfaceProvider {
  public:
-  // |mojo_disconnect_handler| is an optional callback that will be called with
-  // |this| when |receiver| is disconnected.
   AgentSchedulingGroup(
       RenderThread& render_thread,
       mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
-      mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
-      base::OnceCallback<void(const AgentSchedulingGroup*)>
-          mojo_disconnect_handler);
+      mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver);
   AgentSchedulingGroup(
       RenderThread& render_thread,
       mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
           host_remote,
-      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
-      base::OnceCallback<void(const AgentSchedulingGroup*)>
-          mojo_disconnect_handler);
+      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
   ~AgentSchedulingGroup() override;
 
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;
@@ -77,12 +70,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
    public:
     MaybeAssociatedReceiver(
         AgentSchedulingGroup& impl,
-        mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
-        base::OnceClosure disconnect_handler);
+        mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver);
     MaybeAssociatedReceiver(
         AgentSchedulingGroup& impl,
-        mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
-        base::OnceClosure disconnect_handler);
+        mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
     ~MaybeAssociatedReceiver();
 
    private:

@@ -537,11 +537,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnRendererInterfaceReceiver(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
 
-  void RemoveAgentSchedulingGroup(
-      const AgentSchedulingGroup* agent_scheduling_group);
-  base::RepeatingCallback<void(const AgentSchedulingGroup*)>
-      remove_agent_scheduling_group_callback_;
-
   std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_memory_allocator_;
 

@@ -156,8 +156,7 @@ std::unique_ptr<AgentSchedulingGroup> CreateAgentSchedulingGroup(
       agent_scheduling_group_mojo;
   return std::make_unique<AgentSchedulingGroup>(
       render_thread, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group_mojo),
-      base::OnceCallback<void(const AgentSchedulingGroup*)>());
+      std::move(agent_scheduling_group_mojo));
 }
 
 }  // namespace
