@@ -60,6 +60,25 @@ typedef int32_t UChar32;
  */
 #define CBU_SENTINEL (-1)
 
+/**
+ * \def UPRV_BLOCK_MACRO_BEGIN
+ * Defined as the "do" keyword by default.
+ * @internal
+ */
+#ifndef CBUPRV_BLOCK_MACRO_BEGIN
+#define CBUPRV_BLOCK_MACRO_BEGIN do
+#endif
+
+/**
+ * \def UPRV_BLOCK_MACRO_END
+ * Defined as "while (FALSE)" by default.
+ * @internal
+ */
+#ifndef CBUPRV_BLOCK_MACRO_END
+#define CBUPRV_BLOCK_MACRO_END while (0)
+#endif
+
+
 // source/common/unicode/utf.h
 
 /**
@@ -147,21 +166,6 @@ typedef int32_t UChar32;
 #define CBU8_IS_VALID_LEAD4_AND_T1(lead, t1) (CBU8_LEAD4_T1_BITS[(uint8_t)(t1)>>4]&(1<<((lead)&7)))
 
 /**
- * Function for handling "next code point" with error-checking.
- *
- * This is internal since it is not meant to be called directly by external clie
-nts;
- * however it is U_STABLE (not U_INTERNAL) since it is called by public macros i
-n this
- * file and thus must remain stable, and should not be hidden when other interna
-l
- * functions are hidden (otherwise public macros would fail to compile).
- * @internal
- */
-UChar32
-utf8_nextCharSafeBody(const uint8_t *s, int32_t *pi, int32_t length, ::base_icu::UChar32 c, ::base_icu::UBool strict);
-
-/**
  * Does this code unit (byte) encode a code point by itself (US-ASCII 0..0x7f)?
  * @param c 8-bit code unit (byte)
  * @return TRUE or FALSE
@@ -230,29 +234,36 @@ utf8_nextCharSafeBody(const uint8_t *s, int32_t *pi, int32_t length, ::base_icu:
  * @see U8_NEXT_UNSAFE
  * @stable ICU 2.4
  */
-#define CBU8_NEXT(s, i, length, c) { \
+#define CBU8_NEXT(s, i, length, c) CBU8_INTERNAL_NEXT_OR_SUB(s, i, length, c, CBU_SENTINEL)
+
+/** @internal */
+#define CBU8_INTERNAL_NEXT_OR_SUB(s, i, length, c, sub) CBUPRV_BLOCK_MACRO_BEGIN { \
     (c)=(uint8_t)(s)[(i)++]; \
     if(!CBU8_IS_SINGLE(c)) { \
-        uint8_t __t1, __t2; \
-        if( /* handle U+0800..U+FFFF inline */ \
-                (0xe0<=(c) && (c)<0xf0) && \
-                (((i)+1)<(length) || (length)<0) && \
-                CBU8_IS_VALID_LEAD3_AND_T1((c), __t1=(s)[i]) && \
-                (__t2=(s)[(i)+1]-0x80)<=0x3f) { \
-            (c)=(((c)&0xf)<<12)|((__t1&0x3f)<<6)|__t2; \
-            (i)+=2; \
-        } else if( /* handle U+0080..U+07FF inline */ \
-                ((c)<0xe0 && (c)>=0xc2) && \
-                ((i)!=(length)) && \
-                (__t1=(s)[i]-0x80)<=0x3f) { \
-            (c)=(((c)&0x1f)<<6)|__t1; \
-            ++(i); \
+        uint8_t __t = 0; \
+        if((i)!=(length) && \
+            /* fetch/validate/assemble all but last trail byte */ \
+            ((c)>=0xe0 ? \
+                ((c)<0xf0 ?  /* U+0800..U+FFFF except surrogates */ \
+                    CBU8_LEAD3_T1_BITS[(c)&=0xf]&(1<<((__t=(s)[i])>>5)) && \
+                    (__t&=0x3f, 1) \
+                :  /* U+10000..U+10FFFF */ \
+                    ((c)-=0xf0)<=4 && \
+                    CBU8_LEAD4_T1_BITS[(__t=(s)[i])>>4]&(1<<(c)) && \
+                    ((c)=((c)<<6)|(__t&0x3f), ++(i)!=(length)) && \
+                    (__t=(s)[i]-0x80)<=0x3f) && \
+                /* valid second-to-last trail byte */ \
+                ((c)=((c)<<6)|__t, ++(i)!=(length)) \
+            :  /* U+0080..U+07FF */ \
+                (c)>=0xc2 && ((c)&=0x1f, 1)) && \
+            /* last trail byte */ \
+            (__t=(s)[i]-0x80)<=0x3f && \
+            ((c)=((c)<<6)|__t, ++(i), 1)) { \
         } else { \
-            /* function call for "complicated" and error cases */ \
-            (c)=::base_icu::utf8_nextCharSafeBody((const uint8_t *)s, &(i), (length), c, -1); \
+            (c)=(sub);  /* ill-formed*/ \
         } \
     } \
-}
+} CBUPRV_BLOCK_MACRO_END
 
 /**
  * Append a code point to a string, overwriting 1 to 4 bytes.
@@ -267,24 +278,25 @@ utf8_nextCharSafeBody(const uint8_t *s, int32_t *pi, int32_t length, ::base_icu:
  * @see U8_APPEND
  * @stable ICU 2.4
  */
-#define CBU8_APPEND_UNSAFE(s, i, c) { \
-    if((uint32_t)(c)<=0x7f) { \
-        (s)[(i)++]=(uint8_t)(c); \
+#define CBU8_APPEND_UNSAFE(s, i, c) CBUPRV_BLOCK_MACRO_BEGIN { \
+    uint32_t __uc=(c); \
+    if(__uc<=0x7f) { \
+        (s)[(i)++]=(uint8_t)__uc; \
     } else { \
-        if((uint32_t)(c)<=0x7ff) { \
-            (s)[(i)++]=(uint8_t)(((c)>>6)|0xc0); \
+        if(__uc<=0x7ff) { \
+            (s)[(i)++]=(uint8_t)((__uc>>6)|0xc0); \
         } else { \
-            if((uint32_t)(c)<=0xffff) { \
-                (s)[(i)++]=(uint8_t)(((c)>>12)|0xe0); \
+            if(__uc<=0xffff) { \
+                (s)[(i)++]=(uint8_t)((__uc>>12)|0xe0); \
             } else { \
-                (s)[(i)++]=(uint8_t)(((c)>>18)|0xf0); \
-                (s)[(i)++]=(uint8_t)((((c)>>12)&0x3f)|0x80); \
+                (s)[(i)++]=(uint8_t)((__uc>>18)|0xf0); \
+                (s)[(i)++]=(uint8_t)(((__uc>>12)&0x3f)|0x80); \
             } \
-            (s)[(i)++]=(uint8_t)((((c)>>6)&0x3f)|0x80); \
+            (s)[(i)++]=(uint8_t)(((__uc>>6)&0x3f)|0x80); \
         } \
-        (s)[(i)++]=(uint8_t)(((c)&0x3f)|0x80); \
+        (s)[(i)++]=(uint8_t)((__uc&0x3f)|0x80); \
     } \
-}
+} CBUPRV_BLOCK_MACRO_END
 
 // source/common/unicode/utf16.h
 
@@ -384,6 +396,45 @@ utf8_nextCharSafeBody(const uint8_t *s, int32_t *pi, int32_t length, ::base_icu:
 #define CBU16_MAX_LENGTH 2
 
 /**
+ * Get a code point from a string at a random-access offset,
+ * without changing the offset.
+ * "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+ *
+ * The offset may point to either the lead or trail surrogate unit
+ * for a supplementary code point, in which case the macro will read
+ * the adjacent matching surrogate as well.
+ *
+ * The length can be negative for a NUL-terminated string.
+ *
+ * If the offset points to a single, unpaired surrogate, then
+ * c is set to that unpaired surrogate.
+ * Iteration through a string is more efficient with U16_NEXT_UNSAFE or U16_NEXT.
+ *
+ * @param s const UChar * string
+ * @param start starting string offset (usually 0)
+ * @param i string offset, must be start<=i<length
+ * @param length string length
+ * @param c output UChar32 variable
+ * @see U16_GET_UNSAFE
+ * @stable ICU 2.4
+ */
+#define CBU16_GET(s, start, i, length, c) CBUPRV_BLOCK_MACRO_BEGIN { \
+    (c)=(s)[i]; \
+    if(CBU16_IS_SURROGATE(c)) { \
+        uint16_t __c2; \
+        if(CBU16_IS_SURROGATE_LEAD(c)) { \
+            if((i)+1!=(length) && CBU16_IS_TRAIL(__c2=(s)[(i)+1])) { \
+                (c)=CBU16_GET_SUPPLEMENTARY((c), __c2); \
+            } \
+        } else { \
+            if((i)>(start) && CBU16_IS_LEAD(__c2=(s)[(i)-1])) { \
+                (c)=CBU16_GET_SUPPLEMENTARY(__c2, (c)); \
+            } \
+        } \
+    } \
+} CBUPRV_BLOCK_MACRO_END
+
+/**
  * Get a code point from a string at a code point boundary offset,
  * and advance the offset to the next code point boundary.
  * (Post-incrementing forward iteration.)
@@ -404,7 +455,7 @@ utf8_nextCharSafeBody(const uint8_t *s, int32_t *pi, int32_t length, ::base_icu:
  * @see U16_NEXT_UNSAFE
  * @stable ICU 2.4
  */
-#define CBU16_NEXT(s, i, length, c) { \
+#define CBU16_NEXT(s, i, length, c) CBUPRV_BLOCK_MACRO_BEGIN { \
     (c)=(s)[(i)++]; \
     if(CBU16_IS_LEAD(c)) { \
         uint16_t __c2; \
@@ -413,7 +464,7 @@ utf8_nextCharSafeBody(const uint8_t *s, int32_t *pi, int32_t length, ::base_icu:
             (c)=CBU16_GET_SUPPLEMENTARY((c), __c2); \
         } \
     } \
-}
+} CBUPRV_BLOCK_MACRO_END
 
 /**
  * Append a code point to a string, overwriting 1 or 2 code units.
@@ -428,14 +479,88 @@ utf8_nextCharSafeBody(const uint8_t *s, int32_t *pi, int32_t length, ::base_icu:
  * @see U16_APPEND
  * @stable ICU 2.4
  */
-#define CBU16_APPEND_UNSAFE(s, i, c) { \
+#define CBU16_APPEND_UNSAFE(s, i, c) CBUPRV_BLOCK_MACRO_BEGIN { \
     if((uint32_t)(c)<=0xffff) { \
         (s)[(i)++]=(uint16_t)(c); \
     } else { \
         (s)[(i)++]=(uint16_t)(((c)>>10)+0xd7c0); \
         (s)[(i)++]=(uint16_t)(((c)&0x3ff)|0xdc00); \
     } \
-}
+} CBUPRV_BLOCK_MACRO_END
+
+/**
+ * Adjust a random-access offset to a code point boundary
+ * at the start of a code point.
+ * If the offset points to the trail surrogate of a surrogate pair,
+ * then the offset is decremented.
+ * Otherwise, it is not modified.
+ * "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+ *
+ * @param s const UChar * string
+ * @param start starting string offset (usually 0)
+ * @param i string offset, must be start<=i
+ * @see U16_SET_CP_START_UNSAFE
+ * @stable ICU 2.4
+ */
+#define CBU16_SET_CP_START(s, start, i) CBUPRV_BLOCK_MACRO_BEGIN { \
+    if(CBU16_IS_TRAIL((s)[i]) && (i)>(start) && CBU16_IS_LEAD((s)[(i)-1])) { \
+        --(i); \
+    } \
+} CBUPRV_BLOCK_MACRO_END
+
+/**
+ * Move the string offset from one code point boundary to the previous one
+ * and get the code point between them.
+ * (Pre-decrementing backward iteration.)
+ * "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+ *
+ * The input offset may be the same as the string length.
+ * If the offset is behind a trail surrogate unit
+ * for a supplementary code point, then the macro will read
+ * the preceding lead surrogate as well.
+ * If the offset is behind a lead surrogate or behind a single, unpaired
+ * trail surrogate, then c is set to that unpaired surrogate.
+ *
+ * @param s const UChar * string
+ * @param start starting string offset (usually 0)
+ * @param i string offset, must be start<i
+ * @param c output UChar32 variable
+ * @see U16_PREV_UNSAFE
+ * @stable ICU 2.4
+ */
+#define CBU16_PREV(s, start, i, c) CBUPRV_BLOCK_MACRO_BEGIN { \
+    (c)=(s)[--(i)]; \
+    if(CBU16_IS_TRAIL(c)) { \
+        uint16_t __c2; \
+        if((i)>(start) && CBU16_IS_LEAD(__c2=(s)[(i)-1])) { \
+            --(i); \
+            (c)=CBU16_GET_SUPPLEMENTARY(__c2, (c)); \
+        } \
+    } \
+} CBUPRV_BLOCK_MACRO_END
+
+/**
+ * Adjust a random-access offset to a code point boundary after a code point.
+ * If the offset is behind the lead surrogate of a surrogate pair,
+ * then the offset is incremented.
+ * Otherwise, it is not modified.
+ * The input offset may be the same as the string length.
+ * "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+ *
+ * The length can be negative for a NUL-terminated string.
+ *
+ * @param s const UChar * string
+ * @param start int32_t starting string offset (usually 0)
+ * @param i int32_t string offset, start<=i<=length
+ * @param length int32_t string length
+ * @see U16_SET_CP_LIMIT_UNSAFE
+ * @stable ICU 2.4
+ */
+#define CBU16_SET_CP_LIMIT(s, start, i, length) CBUPRV_BLOCK_MACRO_BEGIN { \
+    if((start)<(i) && ((i)<(length) || (length)<0) && CBU16_IS_LEAD((s)[(i)-1]) && CBU16_IS_TRAIL((s)[i])) { \
+        ++(i); \
+    } \
+} CBUPRV_BLOCK_MACRO_END
 
 }  // namesapce base_icu
 

@@ -5,8 +5,7 @@
 #include "base/i18n/char_iterator.h"
 
 #include "base/check_op.h"
-#include "third_party/icu/source/common/unicode/utf16.h"
-#include "third_party/icu/source/common/unicode/utf8.h"
+#include "base/third_party/icu/icu_utf.h"
 
 namespace base {
 namespace i18n {
@@ -16,7 +15,7 @@ namespace i18n {
 UTF8CharIterator::UTF8CharIterator(base::StringPiece str)
     : str_(str), array_pos_(0), next_pos_(0), char_pos_(0), char_(0) {
   if (!str_.empty())
-    U8_NEXT(str_.data(), next_pos_, str_.length(), char_);
+    CBU8_NEXT(str_.data(), next_pos_, str_.length(), char_);
 }
 
 UTF8CharIterator::~UTF8CharIterator() = default;
@@ -28,7 +27,7 @@ bool UTF8CharIterator::Advance() {
   array_pos_ = next_pos_;
   char_pos_++;
   if (next_pos_ < str_.length())
-    U8_NEXT(str_.data(), next_pos_, str_.length(), char_);
+    CBU8_NEXT(str_.data(), next_pos_, str_.length(), char_);
 
   return true;
 }
@@ -49,7 +48,7 @@ UTF16CharIterator& UTF16CharIterator::operator=(UTF16CharIterator&& to_move) =
 UTF16CharIterator UTF16CharIterator::LowerBound(StringPiece16 str,
                                                 size_t array_index) {
   DCHECK_LE(array_index, str.length());
-  U16_SET_CP_START(str.data(), 0, array_index);
+  CBU16_SET_CP_START(str.data(), 0, array_index);
   return UTF16CharIterator(str, array_index);
 }
 
@@ -57,7 +56,7 @@ UTF16CharIterator UTF16CharIterator::LowerBound(StringPiece16 str,
 UTF16CharIterator UTF16CharIterator::UpperBound(StringPiece16 str,
                                                 size_t array_index) {
   DCHECK_LE(array_index, str.length());
-  U16_SET_CP_LIMIT(str.data(), 0, array_index, str.length());
+  CBU16_SET_CP_LIMIT(str.data(), 0, array_index, str.length());
   return UTF16CharIterator(str, array_index);
 }
 
@@ -65,8 +64,8 @@ int32_t UTF16CharIterator::NextCodePoint() const {
   if (next_pos_ >= str_.length())
     return 0;
 
-  UChar32 c;
-  U16_GET(str_.data(), 0, next_pos_, str_.length(), c);
+  base_icu::UChar32 c;
+  CBU16_GET(str_.data(), 0, next_pos_, str_.length(), c);
   return c;
 }
 
@@ -75,8 +74,8 @@ int32_t UTF16CharIterator::PreviousCodePoint() const {
     return 0;
 
   uint32_t pos = array_pos_;
-  UChar32 c;
-  U16_PREV(str_.data(), 0, pos, c);
+  base_icu::UChar32 c;
+  CBU16_PREV(str_.data(), 0, pos, c);
   return c;
 }
 
@@ -98,7 +97,7 @@ bool UTF16CharIterator::Rewind() {
 
   next_pos_ = array_pos_;
   char_offset_--;
-  U16_PREV(str_.data(), 0, array_pos_, char_);
+  CBU16_PREV(str_.data(), 0, array_pos_, char_);
   return true;
 }
 
@@ -115,7 +114,7 @@ UTF16CharIterator::UTF16CharIterator(StringPiece16 str, size_t initial_pos)
 
 void UTF16CharIterator::ReadChar() {
   // This is actually a huge macro, so is worth having in a separate function.
-  U16_NEXT(str_.data(), next_pos_, str_.length(), char_);
+  CBU16_NEXT(str_.data(), next_pos_, str_.length(), char_);
 }
 
 }  // namespace i18n

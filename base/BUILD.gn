@@ -702,7 +702,6 @@ component("base") {
     "third_party/cityhash/city.h",
     "third_party/cityhash_v103/src/city_v103.cc",
     "third_party/cityhash_v103/src/city_v103.h",
-    "third_party/icu/icu_utf.cc",
     "third_party/icu/icu_utf.h",
     "third_party/nspr/prtime.cc",
     "third_party/nspr/prtime.h",
