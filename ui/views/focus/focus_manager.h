@@ -137,7 +137,7 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   };
 
   // TODO(dmazzoni): use Direction in place of bool reverse throughout.
-  enum Direction { kForward, kBackward };
+  enum class Direction { kForward, kBackward };
 
   enum class FocusCycleWrapping { kEnabled, kDisabled };
 

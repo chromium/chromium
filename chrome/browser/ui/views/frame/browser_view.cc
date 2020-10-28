@@ -1570,7 +1570,8 @@ void BrowserView::RotatePaneFocus(bool forwards) {
     return;
 
   GetFocusManager()->RotatePaneFocus(
-      forwards ? views::FocusManager::kForward : views::FocusManager::kBackward,
+      forwards ? views::FocusManager::Direction::kForward
+               : views::FocusManager::Direction::kBackward,
       views::FocusManager::FocusCycleWrapping::kEnabled);
 }
 

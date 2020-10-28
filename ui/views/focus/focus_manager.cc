@@ -169,7 +169,7 @@ bool FocusManager::RotatePaneFocus(Direction direction,
 
   // Initialize |index| to an appropriate starting index if nothing is
   // focused initially.
-  int index = direction == kBackward ? 0 : count - 1;
+  int index = direction == Direction::kBackward ? 0 : count - 1;
 
   // Check to see if a pane already has focus and update the index accordingly.
   const views::View* focused_view = GetFocusedView();
@@ -185,7 +185,7 @@ bool FocusManager::RotatePaneFocus(Direction direction,
   // Rotate focus.
   int start_index = index;
   for (;;) {
-    if (direction == kBackward)
+    if (direction == Direction::kBackward)
       index--;
     else
       index++;

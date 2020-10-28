@@ -509,44 +509,46 @@ TEST_F(FocusManagerTest, RotatePaneFocus) {
   FocusManager* focus_manager = GetWidget()->GetFocusManager();
 
   // Advance forwards. Focus should stay trapped within each pane.
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(
-      FocusManager::kForward, FocusManager::FocusCycleWrapping::kEnabled));
+  using Direction = FocusManager::Direction;
+  using FocusCycleWrapping = FocusManager::FocusCycleWrapping;
+  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kForward,
+                                             FocusCycleWrapping::kEnabled));
   EXPECT_EQ(v1, focus_manager->GetFocusedView());
   focus_manager->AdvanceFocus(false);
   EXPECT_EQ(v2, focus_manager->GetFocusedView());
   focus_manager->AdvanceFocus(false);
   EXPECT_EQ(v1, focus_manager->GetFocusedView());
 
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(
-      FocusManager::kForward, FocusManager::FocusCycleWrapping::kEnabled));
+  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kForward,
+                                             FocusCycleWrapping::kEnabled));
   EXPECT_EQ(v3, focus_manager->GetFocusedView());
   focus_manager->AdvanceFocus(false);
   EXPECT_EQ(v4, focus_manager->GetFocusedView());
   focus_manager->AdvanceFocus(false);
   EXPECT_EQ(v3, focus_manager->GetFocusedView());
 
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(
-      FocusManager::kForward, FocusManager::FocusCycleWrapping::kEnabled));
+  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kForward,
+                                             FocusCycleWrapping::kEnabled));
   EXPECT_EQ(v1, focus_manager->GetFocusedView());
 
   // Advance backwards.
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(
-      FocusManager::kBackward, FocusManager::FocusCycleWrapping::kEnabled));
+  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kBackward,
+                                             FocusCycleWrapping::kEnabled));
   EXPECT_EQ(v3, focus_manager->GetFocusedView());
 
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(
-      FocusManager::kBackward, FocusManager::FocusCycleWrapping::kEnabled));
+  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kBackward,
+                                             FocusCycleWrapping::kEnabled));
   EXPECT_EQ(v1, focus_manager->GetFocusedView());
 
   // Advance without wrap. When it gets to the end of the list of
   // panes, RotatePaneFocus should return false but the current
   // focused view shouldn't change.
-  EXPECT_TRUE(focus_manager->RotatePaneFocus(
-      FocusManager::kForward, FocusManager::FocusCycleWrapping::kDisabled));
+  EXPECT_TRUE(focus_manager->RotatePaneFocus(Direction::kForward,
+                                             FocusCycleWrapping::kDisabled));
   EXPECT_EQ(v3, focus_manager->GetFocusedView());
 
-  EXPECT_FALSE(focus_manager->RotatePaneFocus(
-      FocusManager::kForward, FocusManager::FocusCycleWrapping::kDisabled));
+  EXPECT_FALSE(focus_manager->RotatePaneFocus(Direction::kForward,
+                                              FocusCycleWrapping::kDisabled));
   EXPECT_EQ(v3, focus_manager->GetFocusedView());
 }
 
