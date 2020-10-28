@@ -11,6 +11,11 @@
 #include "ash/ash_export.h"
 #include "base/callback.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_delegate.h"
+
+namespace gfx {
+class Canvas;
+}  // namespace gfx
 
 namespace ui {
 class Layer;
@@ -25,7 +30,8 @@ class HoldingSpaceTrayIcon;
 // space tray icon in the shelf. While determined to be within the icon's
 // viewport, each instance will manage a layer for the holding space tray icon.
 class ASH_EXPORT HoldingSpaceTrayIconItem
-    : public ui::ImplicitAnimationObserver {
+    : public ui::LayerDelegate,
+      public ui::ImplicitAnimationObserver {
  public:
   HoldingSpaceTrayIconItem(HoldingSpaceTrayIcon*, const HoldingSpaceItem*);
   HoldingSpaceTrayIconItem(const HoldingSpaceTrayIconItem&) = delete;
@@ -48,6 +54,11 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
   const HoldingSpaceItem* item() const { return item_; }
 
  private:
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override;
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override;
+
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
@@ -60,6 +71,10 @@ class ASH_EXPORT HoldingSpaceTrayIconItem
   // we only maintain `layer_` while it appears in the viewport for the holding
   // space tray `icon_`, this is used to gate creation/deletion of `layer_`.
   bool NeedsLayer() const;
+
+  // Invoked to paint the background/contents to the given `canvas`.
+  void PaintBackground(gfx::Canvas* canvas, const gfx::Rect& contents_bounds);
+  void PaintContents(gfx::Canvas* canvas, const gfx::Rect& contents_bounds);
 
   HoldingSpaceTrayIcon* const icon_;
   const HoldingSpaceItem* item_;
