@@ -8916,7 +8916,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   // Send the crash report to the Reporting API.
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(
       "crash" /* type */, "default" /* group */, last_committed_url_,
-      base::nullopt, std::move(body));
+      isolation_info_.network_isolation_key(), base::nullopt, std::move(body));
 }
 
 void RenderFrameHostImpl::SendCommitNavigation(

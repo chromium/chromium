@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/reporting/reporting_policy.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -35,17 +36,27 @@
 
 namespace {
 
+const char kReportingHost[] = "example.com";
+
 class ReportingBrowserTest : public CertVerifierBrowserTest {
  public:
   ReportingBrowserTest()
-      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
+    scoped_feature_list_.InitWithFeatures(
+        // enabled_features
+        {network::features::kReporting, network::features::kNetworkErrorLogging,
+         features::kCrashReporting,
+         net::features::kPartitionNelAndReportingByNetworkIsolationKey},
+        // disabled_features
+        {});
+  }
+
   ~ReportingBrowserTest() override = default;
 
   void SetUp() override;
   void SetUpOnMainThread() override;
 
   net::EmbeddedTestServer* server() { return &https_server_; }
-  int port() const { return https_server_.port(); }
 
   net::test_server::ControllableHttpResponse* original_response() {
     return original_response_.get();
@@ -56,11 +67,11 @@ class ReportingBrowserTest : public CertVerifierBrowserTest {
   }
 
   GURL GetReportingEnabledURL() const {
-    return GURL(base::StringPrintf("https://example.com:%d/original", port()));
+    return https_server_.GetURL(kReportingHost, "/original");
   }
 
   GURL GetCollectorURL() const {
-    return GURL(base::StringPrintf("https://example.com:%d/upload", port()));
+    return https_server_.GetURL(kReportingHost, "/upload");
   }
 
   std::string GetReportToHeader() const {
@@ -85,10 +96,6 @@ class ReportingBrowserTest : public CertVerifierBrowserTest {
 };
 
 void ReportingBrowserTest::SetUp() {
-  scoped_feature_list_.InitWithFeatures(
-      {network::features::kReporting, network::features::kNetworkErrorLogging,
-       features::kCrashReporting},
-      {});
   CertVerifierBrowserTest::SetUp();
 
   // Make report delivery happen instantly.
@@ -114,6 +121,7 @@ void ReportingBrowserTest::SetUpOnMainThread() {
   // invalid.  Our test certs are valid, so we need a mock certificate verifier
   // to trick the Reporting stack into paying attention to our test headers.
   mock_cert_verifier()->set_default_result(net::OK);
+  server()->AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(server()->Start());
 }
 
@@ -146,15 +154,17 @@ IN_PROC_BROWSER_TEST_F(ReportingBrowserTest, TestReportingHeadersProcessed) {
   original_response()->Done();
 
   upload_response()->WaitForRequest();
-  auto actual = ParseReportUpload(upload_response()->http_request()->content);
+  std::unique_ptr<base::Value> actual =
+      ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 204 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  EXPECT_TRUE(actual != nullptr);
-  auto expected = base::test::ParseJsonDeprecated(base::StringPrintf(
-      R"json(
+  ASSERT_TRUE(actual);
+  std::unique_ptr<base::Value> expected =
+      base::test::ParseJsonDeprecated(base::StringPrintf(
+          R"json(
         [
           {
             "body": {
@@ -168,12 +178,75 @@ IN_PROC_BROWSER_TEST_F(ReportingBrowserTest, TestReportingHeadersProcessed) {
               "type": "ok",
             },
             "type": "network-error",
-            "url": "https://example.com:%d/original",
+            "url": "%s",
             "user_agent": "Mozilla/1.0",
           },
         ]
       )json",
-      port()));
+          GetReportingEnabledURL().spec().c_str()));
+  EXPECT_EQ(*expected, *actual);
+}
+
+IN_PROC_BROWSER_TEST_F(ReportingBrowserTest,
+                       ReportingRespectsNetworkIsolationKeys) {
+  // Navigate main frame to a kReportingHost URL and learn NEL and Reporting
+  // information for that host.
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 204 OK\r\n");
+  original_response()->Send(GetReportToHeader());
+  original_response()->Send(
+      "NEL: {"
+      "  \"report_to\":\"default\","
+      "  \"max_age\":86400,"
+      "  \"failure_fraction\":1.0"
+      "}\r\n\r\n");
+  original_response()->Done();
+
+  // Open a cross-origin kReportingHost iframe that fails to load. No report
+  // should be uploaded, since the NetworkIsolationKey does not match.
+  ui_test_utils::NavigateToURL(browser(),
+                               server()->GetURL("/iframe_blank.html"));
+  content::NavigateIframeToURL(
+      browser()->tab_strip_model()->GetActiveWebContents(), "test",
+      server()->GetURL(kReportingHost, "/close-socket?should-not-be-reported"));
+
+  // Navigate the main frame to a kReportingHost URL that fails to load. A
+  // report should be uploaded, since the NetworkIsolationKey matches that of
+  // the original request where reporting information was learned.
+  GURL expect_reported_url =
+      server()->GetURL(kReportingHost, "/close-socket?should-be-reported");
+  ui_test_utils::NavigateToURL(browser(), expect_reported_url);
+  upload_response()->WaitForRequest();
+  std::unique_ptr<base::Value> actual =
+      ParseReportUpload(upload_response()->http_request()->content);
+
+  // Verify the contents of the received report.
+  ASSERT_TRUE(actual);
+  std::unique_ptr<base::Value> expected =
+      base::test::ParseJsonDeprecated(base::StringPrintf(
+          R"json(
+        [
+          {
+            "body": {
+              "protocol": "http/1.1",
+              "referrer": "",
+              "sampling_fraction": 1.0,
+              "server_ip": "127.0.0.1",
+              "method": "GET",
+              "status_code": 0,
+              "phase": "application",
+              "type": "http.response.invalid.empty",
+            },
+            "type": "network-error",
+            "url": "%s",
+            "user_agent": "Mozilla/1.0",
+          },
+        ]
+      )json",
+          expect_reported_url.spec().c_str()));
   EXPECT_EQ(*expected, *actual);
 }
 
@@ -223,8 +296,7 @@ IN_PROC_BROWSER_TEST_F(ReportingBrowserTest, MAYBE_CrashReport) {
   auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
 
   EXPECT_EQ("crash", type->GetString());
-  EXPECT_EQ(base::StringPrintf("https://example.com:%d/original", port()),
-            url->GetString());
+  EXPECT_EQ(GetReportingEnabledURL().spec(), url->GetString());
 }
 
 IN_PROC_BROWSER_TEST_F(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
@@ -263,7 +335,6 @@ IN_PROC_BROWSER_TEST_F(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   auto* reason = body->FindKeyOfType("reason", base::Value::Type::STRING);
 
   EXPECT_EQ("crash", type->GetString());
-  EXPECT_EQ(base::StringPrintf("https://example.com:%d/original", port()),
-            url->GetString());
+  EXPECT_EQ(GetReportingEnabledURL().spec(), url->GetString());
   EXPECT_EQ("unresponsive", reason->GetString());
 }

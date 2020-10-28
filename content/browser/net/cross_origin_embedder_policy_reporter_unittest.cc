@@ -36,13 +36,15 @@ class TestNetworkContext : public network::TestNetworkContext {
     GURL url;
     base::Value body;
   };
+
   void QueueReport(const std::string& type,
                    const std::string& group,
                    const GURL& url,
+                   const net::NetworkIsolationKey& network_isolation_key,
                    const base::Optional<std::string>& user_agent,
                    base::Value body) override {
     DCHECK(!user_agent);
-    reports_.push_back(Report(type, group, url, std::move(body)));
+    reports_.emplace_back(Report(type, group, url, std::move(body)));
   }
 
   const std::vector<Report>& reports() const { return reports_; }

@@ -842,11 +842,16 @@ void NetworkContext::ClearNetworkErrorLogging(
   std::move(callback).Run();
 }
 
-void NetworkContext::QueueReport(const std::string& type,
-                                 const std::string& group,
-                                 const GURL& url,
-                                 const base::Optional<std::string>& user_agent,
-                                 base::Value body) {
+void NetworkContext::QueueReport(
+    const std::string& type,
+    const std::string& group,
+    const GURL& url,
+    const net::NetworkIsolationKey& network_isolation_key,
+    const base::Optional<std::string>& user_agent,
+    base::Value body) {
+  // TODO(mmenke): Once all callers have been updated to send a
+  // NetworkIsolationKey, DCHECK network_isolation_key() is not null, when
+  // require_network_isolation_key() is set on the URLRequestContext.
   DCHECK(body.is_dict());
   if (!body.is_dict())
     return;
@@ -868,10 +873,8 @@ void NetworkContext::QueueReport(const std::string& type,
         request_context->http_user_agent_settings()->GetUserAgent();
   }
 
-  // Send the crash report to the Reporting API.
-  // TODO(mmenke): Get a NetworkIsolationKey from the caller.
   reporting_service->QueueReport(
-      url, net::NetworkIsolationKey::Todo(), reported_user_agent, group, type,
+      url, network_isolation_key, reported_user_agent, group, type,
       base::Value::ToUniquePtrValue(std::move(body)), 0 /* depth */);
 }
 
@@ -923,11 +926,13 @@ void NetworkContext::ClearNetworkErrorLogging(
   NOTREACHED();
 }
 
-void NetworkContext::QueueReport(const std::string& type,
-                                 const std::string& group,
-                                 const GURL& url,
-                                 const base::Optional<std::string>& user_agent,
-                                 base::Value body) {
+void NetworkContext::QueueReport(
+    const std::string& type,
+    const std::string& group,
+    const GURL& url,
+    const net::NetworkIsolationKey& network_isolation_key,
+    const base::Optional<std::string>& user_agent,
+    base::Value body) {
   NOTREACHED();
 }
 

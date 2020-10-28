@@ -103,9 +103,12 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
       body_to_pass.SetString(pair.first, pair.second);
     }
     body_to_pass.SetString("disposition", disposition);
+
+    // TODO(https://crbug.com/993805): Pass in the appropriate
+    // NetworkIsolationKey.
     storage_partition_->GetNetworkContext()->QueueReport(
-        kType, *endpoint, context_url_, /*user_agent=*/base::nullopt,
-        std::move(body_to_pass));
+        kType, *endpoint, context_url_, net::NetworkIsolationKey::Todo(),
+        /*user_agent=*/base::nullopt, std::move(body_to_pass));
   }
 }
 

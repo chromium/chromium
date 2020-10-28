@@ -161,8 +161,11 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     if (!rph)
       return;
 
+    // TODO(https://crbug.com/993805): Pass in the appropriate
+    // NetworkIsolationKey.
     rph->GetStoragePartition()->GetNetworkContext()->QueueReport(
-        type, group, url, /*user_agent=*/base::nullopt,
+        type, group, url, net::NetworkIsolationKey::Todo(),
+        /*user_agent=*/base::nullopt,
         base::Value::FromUniquePtrValue(std::move(body)));
   }
 

@@ -382,6 +382,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void QueueReport(const std::string& type,
                    const std::string& group,
                    const GURL& url,
+                   const net::NetworkIsolationKey& network_isolation_key,
                    const base::Optional<std::string>& user_agent,
                    base::Value body) override;
   void QueueSignedExchangeReport(

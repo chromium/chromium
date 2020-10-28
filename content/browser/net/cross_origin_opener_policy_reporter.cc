@@ -11,6 +11,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/network_isolation_key.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/source_location.mojom.h"
@@ -240,8 +241,11 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
       break;
   }
 
+  // TODO(https://crbug.com/993805): Pass in the appropriate
+  // NetworkIsolationKey.
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, base::nullopt, std::move(body));
+      "coop", endpoint, context_url_, net::NetworkIsolationKey::Todo(),
+      base::nullopt, std::move(body));
 }
 
 // static
@@ -390,9 +394,11 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
   body.SetString(
       kEffectivePolicy,
       ToString(is_report_only ? coop_.report_only_value : coop_.value));
+  // TODO(https://crbug.com/993805): Pass in the appropriate
+  // NetworkIsolationKey.
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, /*user_agent=*/base::nullopt,
-      std::move(body));
+      "coop", endpoint, context_url_, net::NetworkIsolationKey::Todo(),
+      /*user_agent=*/base::nullopt, std::move(body));
 }
 
 }  // namespace content

@@ -1017,17 +1017,22 @@ interface NetworkContext {
   // Queues a report via the Reporting API. |type| describes the type of report
   // (as well as what data will contained in |body|). |group| specifies the
   // endpoint group that the report will be delivered to. |url| indicates the
-  // URL of the resource that the report describes; |user_agent| may be
-  // provided, or will be automatically generated if omitted; |body| holds the
-  // contents of the report.
+  // URL of the resource that the report describes; |network_isolation_key|
+  // indicates the NetworkIsolationKey associated with the request, and is
+  // used for both looking up the appropriately scoped reporting information
+  // and for sending the report. |user_agent| may be provided, or will be
+  // automatically generated if omitted; |body| holds the contents of the
+  // report.
   //
   // Note that this queued report will never be delivered if no reporting
-  // endpoint is registered for this |url|.
+  // endpoint is registered for this |url| with the provided
+  // |network_isolation_key|.
   //
   // Spec: https://w3c.github.io/reporting/#concept-reports
   QueueReport(string type,
               string group,
               url.mojom.Url url,
+              NetworkIsolationKey network_isolation_key,
               string? user_agent,
               mojo_base.mojom.DictionaryValue body);
 
