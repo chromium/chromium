@@ -9721,6 +9721,17 @@ void RenderFrameHostImpl::CheckSandboxFlags() {
     return;
 
   DCHECK(false);
+
+  base::debug::ScopedCrashKeyString scoped_url(
+      base::debug::AllocateCrashKeyString("url",
+                                          base::debug::CrashKeySize::Size256),
+      GetLastCommittedURL().possibly_invalid_spec());
+  base::debug::ScopedCrashKeyString scoped_sandbox(
+      base::debug::AllocateCrashKeyString("sandbox",
+                                          base::debug::CrashKeySize::Size256),
+      base::StringPrintf("%u, %u", uint32_t(active_sandbox_flags_),
+                         uint32_t(*active_sandbox_flags_control_)));
+  base::debug::DumpWithoutCrashing();
 }
 
 void RenderFrameHostImpl::SetEmbeddingToken(
