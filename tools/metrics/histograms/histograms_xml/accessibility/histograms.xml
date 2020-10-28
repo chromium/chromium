@@ -23,6 +23,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.Android.AnimationsEnabled2"
     enum="AccessibilityAndroidAnimationsEnabled" expires_after="M85">
+  <obsolete>
+    Removed 10/2020, having expired in M85.
+  </obsolete>
   <owner>dmazzoni@chromium.org</owner>
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>

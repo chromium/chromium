@@ -68,6 +68,9 @@ uploading your change for review.  These are checked by presubmit scripts.
 </enum>
 
 <enum name="AccessibilityAndroidAnimationsEnabled">
+  <obsolete>
+    Removed from code 2020/10.
+  </obsolete>
   <int value="0"
       label="ANIMATOR_DURATION_SCALE flag not defined or not a float"/>
   <int value="1" label="Animations disabled"/>

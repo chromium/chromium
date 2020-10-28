@@ -32,9 +32,6 @@ void BrowserAccessibilityStateImpl::
   // not to add any code that isn't safe to run from a non-main thread!
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  JNIEnv* env = AttachCurrentThread();
-  Java_BrowserAccessibilityState_recordAccessibilityHistograms(env);
-
   // Screen reader metric.
   ui::AXMode mode =
       BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
