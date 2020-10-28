@@ -10,12 +10,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *  @CalledByNativeUnchecked is used to generate JNI bindings that do not check for exceptions.
- *  It only makes sense to use this annotation on methods that declare a throws... spec.
- *  However, note that the exception received native side maybe an 'unchecked' (RuntimeExpception)
- *  such as NullPointerException, so the native code should differentiate these cases.
- *  Usage of this should be very rare; where possible handle exceptions in the Java side and use a
- *  return value to indicate success / failure.
+ * Similar to {@link CalledByNative}, this also exposes JNI bindings to native code. The main
+ * difference is this <b>will not</b> crash the browser process if the Java method throws an
+ * exception. However, the C++ caller <b>must</b> handle and clear the exception before calling into
+ * any other Java code, otherwise the next Java method call will crash (with the previous call's
+ * exception, which leads to a very confusing debugging experience).
+ *
+ * <p>Usage of this annotation should be very rare; due to the complexity of correctly handling
+ * exceptions in C++, prefer using {@link CalledByNative}.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
