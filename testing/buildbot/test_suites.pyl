@@ -706,6 +706,7 @@
       'jingle_unittests': {},
       'latency_unittests': {},
       'libjingle_xmpp_unittests': {},
+      'liburlpattern_unittests': {},
       'media_blink_unittests': {},
       'media_unittests': {},
       'midi_unittests': {},

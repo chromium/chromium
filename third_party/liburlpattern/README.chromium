@@ -11,4 +11,8 @@ API proposal being discussed in https://github.com/wicg/urlpattern.  It uses
 a pattern syntax derived from the path-to-regexp library developed at
 https://github.com/pillarjs/path-to-regexp.  It is developed by the chromium
 project, but licensed as a derivative work of path-to-regexp using an MIT
-license.  No code from path-to-regexp is directly used here.
+license.  No code from path-to-regexp is directly used here.  Note, since this
+is the authoritative source of this library the "local modifications" of this
+README does not apply.
+
+Local Modifications:

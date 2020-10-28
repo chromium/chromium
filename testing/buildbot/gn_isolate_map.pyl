@@ -1092,6 +1092,10 @@
     "label": "//third_party/libjingle_xmpp:libjingle_xmpp_unittests",
     "type": "console_test_launcher",
   },
+  "liburlpattern_unittests": {
+    "label": "//third_party/liburlpattern:liburlpattern_unittests",
+    "type": "console_test_launcher",
+  },
   "linux_symbols": {
     "label": "//chrome:linux_symbols",
     "type": "additional_compile_target",

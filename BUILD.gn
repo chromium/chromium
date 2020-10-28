@@ -83,6 +83,7 @@ group("gn_all") {
     "//skia:skia_unittests",
     "//sql:sql_unittests",
     "//third_party/flatbuffers:flatbuffers_unittests",
+    "//third_party/liburlpattern:liburlpattern_unittests",
     "//tools/binary_size:binary_size_trybot_py",
     "//tools/ipc_fuzzer:ipc_fuzzer_all",
     "//tools/metrics:metrics_metadata",
