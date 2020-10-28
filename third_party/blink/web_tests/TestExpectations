@@ -1193,6 +1193,7 @@ crbug.com/1040826 [ Win ] fast/forms/text/text-font-height-mismatch.html [ Failu
 crbug.com/1040826 [ Linux ] fast/selectors/input-with-selection-pseudo-element.html [ Failure ]
 crbug.com/1040826 [ Win ] fast/selectors/input-with-selection-pseudo-element.html [ Failure ]
 crbug.com/1040826 fast/table/cell-change-baseline-then-border.html [ Failure ]
+crbug.com/1040826 fast/forms/text/input-implicit-length-limit.html [ Timeout Pass ]
 
 # ====== LayoutNG-only failures until here ======
 
