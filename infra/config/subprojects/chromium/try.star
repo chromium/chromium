@@ -1499,6 +1499,11 @@ try_.chromium_win_builder(
 )
 
 try_.chromium_win_builder(
+    name = "win10-inverse-fieldtrials-fyi-rel",
+    os = os.WINDOWS_10,
+)
+
+try_.chromium_win_builder(
     name = "win7-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     execution_timeout = 4 * time.hour + 30 * time.minute,

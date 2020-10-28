@@ -263,7 +263,6 @@
       'Linux remote_run Tester': 'release_bot',
       'Linux Viz': 'release_trybot',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
-      'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_bot_minimal_symbols_invert_fieldtrials',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
@@ -332,6 +331,10 @@
       'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-rel-goma-rbe-latest': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-arm64-rel': 'win32_arm64_release_bot',
+
+      # Builders to test inversed fieldtrials
+      'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_bot_minimal_symbols_invert_fieldtrials',
+      'win10-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_bot_minimal_symbols_invert_fieldtrials',
     },
 
     'chromium.goma.fyi': {
@@ -1082,6 +1085,7 @@
       'win10_chromium_x64_rel_ng': 'gpu_tests_release_trybot_resource_whitelisting_code_coverage',
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
       'win10_chromium_x64_1909_fyi_rel_ng': 'gpu_tests_release_trybot',
+      'win10-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'win-annotator-rel': 'release_trybot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
       'win-celab-try-rel': 'release_bot_minimal_symbols',
@@ -1985,6 +1989,10 @@
     'gpu_tests_release_trybot_deterministic_mac_code_coverage': [
       'gpu_tests', 'release_trybot', 'mac_deterministic_build',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'gpu_tests_release_trybot_invert_fieldtrials': [
+      'gpu_tests', 'release_trybot', 'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_resource_whitelisting': [

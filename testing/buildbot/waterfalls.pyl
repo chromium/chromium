@@ -2857,6 +2857,14 @@
           'gtest_tests': 'chromium_win_gtests',
         },
       },
+      'win10-inverse-fieldtrials-fyi-rel': {
+        'mixins': [
+          'win10',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win_gtests',
+        },
+      },
       'win10-omaha-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',

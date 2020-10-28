@@ -3140,6 +3140,15 @@ ci.fyi_windows_builder(
     notifies = ["annotator-rel"],
 )
 
+ci.fyi_windows_builder(
+    name = "win10-inverse-fieldtrials-fyi-rel",
+    console_view_entry = ci.console_view_entry(
+        category = "win10",
+        short_name = "IFT",
+    ),
+    os = os.WINDOWS_10,
+)
+
 ci.gpu_linux_builder(
     name = "Android Release (Nexus 5X)",
     branch_selector = branches.STANDARD_MILESTONE,

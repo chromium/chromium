@@ -843,6 +843,17 @@
       "use_goma": true
     }
   },
+  "win10-inverse-fieldtrials-fyi-rel": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "invert_fieldtrials": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
   "win32-archive-rel-goma-rbe-canary": {
     "gn_args": {
       "is_component_build": false,
