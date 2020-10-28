@@ -4446,10 +4446,6 @@ const char kSplitSettingsSyncDescription[] =
     "OS settings UI to provide controls for OS data types. Requires "
     "#split-settings to be enabled.";
 
-const char kSyncWifiConfigurationsName[] = "Sync Wi-Fi network configurations";
-const char kSyncWifiConfigurationsDescription[] =
-    "Enables the option to sync Wi-Fi network configurations with Chrome Sync.";
-
 const char kSystemLatinPhysicalTypingName[] =
     "Use system IME for latin-script typing";
 const char kSystemLatinPhysicalTypingDescription[] =

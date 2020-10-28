@@ -4448,11 +4448,6 @@
     "expiry_milestone": 84
   },
   {
-    "name": "sync-wifi-configurations",
-    "owners": [ "jonmann", "cros-system-services@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "system-keyboard-lock",
     "owners": [ "joedow", "garykac", "jamiewalch" ],
     "expiry_milestone": 95
