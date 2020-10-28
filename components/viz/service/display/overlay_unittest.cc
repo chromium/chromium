@@ -30,6 +30,7 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
+#include "components/viz/service/display/overlay_candidate_temporal_tracker.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
@@ -2040,6 +2041,136 @@ TEST_F(UnderlayTest, UpdateDamageWhenChangingUnderlays) {
   }
 
   EXPECT_EQ(kOverlayRect, damage_rect_);
+}
+
+TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
+  unsigned id_counter = 0;
+  // Function to fake unique resource ids so the system sees them as changing.
+  auto get_id = [&] { return ++id_counter; };
+
+  // Test the default configuration.
+  OverlayCandidateTemporalTracker::Config config;
+  constexpr float kEpsilon = 0.01f;
+  float kBelowLowDamage = config.damage_low_threshold - kEpsilon;
+  float kAboveHighDamage = config.damage_high_threshold + kEpsilon;
+
+  base::TimeTicks tick_start = base::TimeTicks::Now();
+  // This is a helper function to simulate framerates.
+  auto wait_17ms = [&]() {
+    while ((base::TimeTicks::Now() - tick_start).InMilliseconds() < 17) {
+    }
+    tick_start = base::TimeTicks::Now();
+  };
+
+  auto wait_66ms = [&]() {
+    while ((base::TimeTicks::Now() - tick_start).InMilliseconds() < 66) {
+    }
+    tick_start = base::TimeTicks::Now();
+  };
+  OverlayCandidateTemporalTracker tracker;
+
+  // We test internal hysteresis state by running this test twice.
+  for (int j = 0; j < 2; j++) {
+    // First setup a 60fps high damage candidate.
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+      tracker.AddRecord(base::TimeTicks::Now(), kAboveHighDamage, get_id(),
+                        config);
+      wait_17ms();
+    }
+
+    OverlayCandidateTemporalTracker tracker_not_active_changing = tracker;
+
+    EXPECT_TRUE(tracker.HasSignificantDamage());
+    ASSERT_EQ(tracker.GetFPSCategory(),
+              OverlayCandidateTemporalTracker::kFrameRate60fps);
+
+    // Test the hysteresis by checking that a few 30fps low damage updates do
+    // not change the categorization state.
+    wait_17ms();
+    wait_17ms();
+    tracker.AddRecord(base::TimeTicks::Now(), kBelowLowDamage, get_id(),
+                      config);
+    wait_17ms();
+    wait_17ms();
+    tracker.AddRecord(base::TimeTicks::Now(), kBelowLowDamage, get_id(),
+                      config);
+    EXPECT_TRUE(tracker.HasSignificantDamage());
+    ASSERT_EQ(tracker.GetFPSCategory(),
+              OverlayCandidateTemporalTracker::kFrameRate60fps);
+
+    // Now simulate a overaly candidate with 30fps and low damage.
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+      wait_17ms();
+      wait_17ms();
+      tracker.AddRecord(base::TimeTicks::Now(), kBelowLowDamage, get_id(),
+                        config);
+    }
+    // Check that it has reached the applied state.
+    EXPECT_FALSE(tracker.HasSignificantDamage());
+    ASSERT_EQ(tracker.GetFPSCategory(),
+              OverlayCandidateTemporalTracker::kFrameRate30fps);
+
+    OverlayCandidateTemporalTracker tracker_saved_30fps = tracker;
+
+    // Test hysteresis for this new state by adding in a few high damage 60fps
+    // frames.
+    wait_17ms();
+    tracker.AddRecord(base::TimeTicks::Now(), kAboveHighDamage, get_id(),
+                      config);
+    wait_17ms();
+    tracker.AddRecord(base::TimeTicks::Now(), kAboveHighDamage, get_id(),
+                      config);
+    EXPECT_FALSE(tracker.HasSignificantDamage());
+    ASSERT_EQ(tracker.GetFPSCategory(),
+              OverlayCandidateTemporalTracker::kFrameRate30fps);
+
+    EXPECT_TRUE(tracker.IsActivelyChanging(base::TimeTicks::Now(), config));
+
+    // Test hysteresis for 30fps to lowfps state by inserting lowfps frames and
+    // asserting that the tracker is still in the 30fps state.
+    wait_66ms();
+    tracker_saved_30fps.AddRecord(base::TimeTicks::Now(), kAboveHighDamage,
+                                  get_id(), config);
+    wait_66ms();
+    tracker_saved_30fps.AddRecord(base::TimeTicks::Now(), kAboveHighDamage,
+                                  get_id(), config);
+    ASSERT_EQ(tracker.GetFPSCategory(),
+              OverlayCandidateTemporalTracker::kFrameRate30fps);
+
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+      wait_66ms();
+      tracker_saved_30fps.AddRecord(base::TimeTicks::Now(), kBelowLowDamage,
+                                    get_id(), config);
+    }
+    // make sure our we have moved into the |kFrameRateLow| category.
+    ASSERT_EQ(tracker_saved_30fps.GetFPSCategory(),
+              OverlayCandidateTemporalTracker::kFrameRateLow);
+
+    // The current design only updates frame rate categorization on record
+    // insertion ('AddRecord()'). We test this assumption by asserting that a
+    // tracker that is not actively changing still has its original 60fps
+    // category.
+    EXPECT_FALSE(tracker_not_active_changing.IsActivelyChanging(
+        base::TimeTicks::Now(), config));
+
+    ASSERT_EQ(tracker_not_active_changing.GetFPSCategory(),
+              OverlayCandidateTemporalTracker::kFrameRate60fps);
+    // Finally we test that the categorization changes on the addition of a new
+    // record of very large time interval.
+    tracker_not_active_changing.AddRecord(base::TimeTicks::Now(),
+                                          kAboveHighDamage, get_id(), config);
+    ASSERT_EQ(tracker_not_active_changing.GetFPSCategory(),
+              OverlayCandidateTemporalTracker::kFrameRateLow);
+  }
+
+  EXPECT_FALSE(tracker.IsAbsent());
+  // After a many absent calls the 'IncAbsent()' function should eventually
+  // return true; indicating this tracker is no longer active.
+  EXPECT_TRUE(tracker.IsAbsent());
+
+  wait_17ms();
+  tracker.AddRecord(base::TimeTicks::Now(), 0.0f, get_id(), config);
+  EXPECT_FALSE(tracker.IsAbsent());
 }
 
 TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
