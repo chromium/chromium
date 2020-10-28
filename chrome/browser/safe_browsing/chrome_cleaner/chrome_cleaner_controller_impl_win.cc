@@ -667,8 +667,11 @@ void ChromeCleanerControllerImpl::OnPromptUser(
     // timestamp also to a pref. This ensures that the timestamp is preserved
     // in case Chrome is still opened when the scan completes. Remove this
     // workaround once the timestamp is written to the registry in all cases.
-    g_browser_process->local_state()->SetTime(
-        prefs::kChromeCleanerScanCompletionTime, base::Time::Now());
+    PrefService* pref_service = g_browser_process->local_state();
+    if (pref_service) {
+      pref_service->SetTime(prefs::kChromeCleanerScanCompletionTime,
+                            base::Time::Now());
+    }
 
     return;
   }
