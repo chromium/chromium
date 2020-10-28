@@ -142,10 +142,10 @@ def _GetOwnersFilePath(path):
 
     return os.path.abspath(
         os.path.join(*(_DIR_ABOVE_TOOLS + path_without_src.split(os.sep))))
-  else:
-    raise Error('The given path {} is not well-formatted.'
-                'Well-formatted paths begin with "src/" and end with "OWNERS"'
-                .format(path))
+
+  raise Error(
+      'The given path {} is not well-formatted. Well-formatted paths begin '
+      'with "src/" and end with "OWNERS"'.format(path))
 
 
 def _ExtractEmailAddressesFromOWNERS(path, depth=0):

@@ -13,6 +13,19 @@ import xml.dom.minidom
 _DEFAULT_COMPONENT = '# COMPONENT: Default>Component'
 
 
+def _DirnameN(path, n):
+  """Calls os.path.dirname() on the argument n times."""
+  path = os.path.abspath(path)
+  for _ in range(n):
+    path = os.path.dirname(path)
+  return path
+
+
+assert __file__.endswith('tools/metrics/histograms/expand_owners_unittest.py')
+
+_PATH_TO_CHROMIUM_DIR = _DirnameN(__file__, 5)
+
+
 def _GetFileDirective(path):
   """Returns a file directive line.
 
@@ -31,9 +44,12 @@ def _GetSrcRelativePath(path):
 
   Args:
     path: An absolute path, e.g. '/some/directory/chromium/src/tools/OWNERS'.
+
+  Returns:
+    A src-relative path, e.g.'src/tools/OWNERS'.
   """
-  # TODO(crbug/1126653): This fails if chromium is not in the path.
-  return path.split('chromium/')[1]
+  assert path.startswith(_PATH_TO_CHROMIUM_DIR)
+  return path[len(_PATH_TO_CHROMIUM_DIR) + 1:]
 
 
 def _MakeOwnersFile(filename, directory):
