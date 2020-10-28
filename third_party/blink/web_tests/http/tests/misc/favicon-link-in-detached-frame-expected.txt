@@ -1,0 +1,2 @@
+CONSOLE MESSAGE: line 8: PASS if no crash.
+

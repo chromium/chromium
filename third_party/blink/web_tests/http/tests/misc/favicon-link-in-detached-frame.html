@@ -1,0 +1,9 @@
+<body>
+<link rel="icon stylesheet" href="foo"></link>
+<iframe id="i"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+i.contentDocument.documentElement.appendChild(document.body);
+console.log("PASS if no crash.");
+</script>

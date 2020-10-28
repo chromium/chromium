@@ -335,6 +335,8 @@ void LinkStyle::Process() {
       params.href.IsValid() && !params.href.IsEmpty()) {
     if (!owner_->ShouldLoadLink())
       return;
+    if (!GetExecutionContext())
+      return;
     if (!GetExecutionContext()->GetSecurityOrigin()->CanDisplay(params.href))
       return;
     if (!GetExecutionContext()
