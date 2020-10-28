@@ -281,6 +281,16 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False):
   # all the time on Linux.
   env[CHROME_SANDBOX_ENV] = CHROME_SANDBOX_PATH
   env['CHROME_HEADLESS'] = '1'
+  #TODO(crbug/1138988): Some gtests do not implements the unit_test_launcher.cc.
+  # As a result, they will not respect the arguments added by
+  # _generate_shard_args() and will still use the values of GTEST_SHARD_INDEX
+  # and GTEST_TOTAL_SHARDS to run part of the tests.
+  # Removing those environment variables as a workaround.
+  if command_generator._ignore_shard_env_vars:
+    if 'GTEST_TOTAL_SHARDS' in env:
+      env.pop('GTEST_TOTAL_SHARDS')
+    if 'GTEST_SHARD_INDEX' in env:
+      env.pop('GTEST_SHARD_INDEX')
 
   return_code = 0
   try:
