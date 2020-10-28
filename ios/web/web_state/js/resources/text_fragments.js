@@ -33,35 +33,6 @@ const utils = goog.require(
     }
   }
 
-  __gCrWeb.textFragments.getLinkToText = function() {
-    const selection = window.getSelection();
-    const selectedText = `"${selection.toString()}"`;
-    const selectionRect = {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0
-    };
-
-    if (selection.rangeCount) {
-      const domRect = selection.getRangeAt(0).getClientRects()[0];
-      selectionRect.x = domRect.x;
-      selectionRect.y = domRect.y;
-      selectionRect.width = domRect.width;
-      selectionRect.height = domRect.height;
-    }
-
-    // TODO(crbug.com/1091918): Call into the JavaScript text-fragments-polyfill
-    // library to generate the actual URL.
-    const link = 'http://example.com/#:~:text=You%20may%20use%20this%20domain';
-
-    return {
-      link: link,
-      selectedText: selectedText,
-      selectionRect: selectionRect
-    };
-  }
-
   /**
    * Does the actual work for handleTextFragments.
    */

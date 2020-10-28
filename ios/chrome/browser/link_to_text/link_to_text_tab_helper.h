@@ -7,7 +7,7 @@
 
 #import "base/macros.h"
 #import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_response.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -21,7 +21,7 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   ~LinkToTextTabHelper() override;
 
   // Callback for GetLinkToText.
-  typedef void (^LinkToTextCallback)(LinkToTextPayload* payload);
+  typedef void (^LinkToTextCallback)(LinkToTextResponse* response);
 
   static void CreateForWebState(web::WebState* web_state);
 
@@ -30,8 +30,9 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   bool ShouldOffer();
 
   // Calls the JavaScript to generate a URL linking to the current
-  // selected text. Will invoke |callback| with the returned generated URL,
-  // selected text and selected text's position on the page.
+  // selected text. If successful, will invoke |callback| with the returned
+  // generated payload and nil error. If unsuccessful, will invoke |callback|
+  // with a nil payload and defined error.
   void GetLinkToText(LinkToTextCallback callback);
 
  private:
@@ -44,9 +45,6 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   void OnJavaScriptResponseReceived(LinkToTextCallback callback,
                                     const base::Value* response);
 
-  // Converts the given |response| value into a LinkToTextPayload instance.
-  LinkToTextPayload* ParseResponse(const base::Value* response);
-
   // Not copyable or moveable.
   LinkToTextTabHelper(const LinkToTextTabHelper&) = delete;
   LinkToTextTabHelper& operator=(const LinkToTextTabHelper&) = delete;
@@ -54,16 +52,9 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   // WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // Converts |web_view_rect| into the right coordinates from the browser UI's
-  // point of view.
-  CGRect ConvertToBrowserRect(CGRect web_view_rect);
-
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   web::WebState* web_state_ = nullptr;
-
-  // Access to the web view from |web_state_|.
-  id<CRWWebViewProxy> web_view_proxy_;
 
   base::WeakPtrFactory<LinkToTextTabHelper> weak_ptr_factory_;
 

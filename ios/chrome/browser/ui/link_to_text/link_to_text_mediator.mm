@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
+#import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 
+#import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_response.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
-#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
-#import "ios/chrome/browser/ui/commands/share_highlight_command.h"
+#import "ios/chrome/browser/ui/link_to_text/link_to_text_consumer.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
@@ -16,25 +17,27 @@
 #error "This file requires ARC support."
 #endif
 
+using shared_highlighting::LinkGenerationError;
+
 @interface LinkToTextMediator ()
 
 // The Browser's WebStateList.
 @property(nonatomic, readonly) WebStateList* webStateList;
 
-// Instance in charge of handling Activity Service's related commands.
-@property(nonatomic, readonly, weak) id<ActivityServiceCommands> handler;
+// Instance in charge of handling link-to-text updates.
+@property(nonatomic, readonly, weak) id<LinkToTextConsumer> consumer;
 
 @end
 
 @implementation LinkToTextMediator
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                             handler:(id<ActivityServiceCommands>)handler {
+                            consumer:(id<LinkToTextConsumer>)consumer {
   if (self = [super init]) {
     DCHECK(webStateList);
-    DCHECK(handler);
+    DCHECK(consumer);
     _webStateList = webStateList;
-    _handler = handler;
+    _consumer = consumer;
   }
   return self;
 }
@@ -55,19 +58,28 @@
   LinkToTextTabHelper* tabHelper = [self getLinkToTextTabHelper];
 
   __weak __typeof(self) weakSelf = self;
-  tabHelper->GetLinkToText(^(LinkToTextPayload* payload) {
-    [weakSelf shareLinkToText:payload];
+  tabHelper->GetLinkToText(^(LinkToTextResponse* response) {
+    [weakSelf receivedLinkToTextResponse:response];
   });
 }
 
+- (void)receivedLinkToTextResponse:(LinkToTextResponse*)response {
+  DCHECK(response);
+  if (response.error.has_value()) {
+    [self linkGenerationFailedWithError:response.error.value()];
+  } else {
+    [self shareLinkToText:response.payload];
+  }
+}
+
 - (void)shareLinkToText:(LinkToTextPayload*)payload {
-  ShareHighlightCommand* command =
-      [[ShareHighlightCommand alloc] initWithURL:payload.URL
-                                           title:payload.title
-                                    selectedText:payload.selectedText
-                                      sourceView:payload.sourceView
-                                      sourceRect:payload.sourceRect];
-  [self.handler shareHighlight:command];
+  DCHECK(payload);
+  [self.consumer generatedPayload:payload];
+}
+
+- (void)linkGenerationFailedWithError:(LinkGenerationError)error {
+  // TODO(crbug.com/1136043): Log appropriate failure metric.
+  [self.consumer linkGenerationFailed];
 }
 
 - (LinkToTextTabHelper*)getLinkToTextTabHelper {

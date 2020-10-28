@@ -17,6 +17,7 @@ source_set("browser_container") {
   deps = [
     ":ui",
     "//base",
+    "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",

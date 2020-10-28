@@ -30,6 +30,14 @@ std::string Unescape(const std::string& str) {
   return base::UnescapeBinaryURLComponent(str);
 }
 
+bool HasValue(const std::string* str) {
+  return str && !str->empty();
+}
+
+const std::string ValueOrDefault(const std::string* str) {
+  return HasValue(str) ? *str : "";
+}
+
 }  // namespace
 
 namespace shared_highlighting {
@@ -54,6 +62,7 @@ TextFragment::TextFragment(const TextFragment& other)
 
 TextFragment::~TextFragment() = default;
 
+// static
 base::Optional<TextFragment> TextFragment::FromEscapedString(
     std::string escaped_string) {
   // Text fragments have the format: [prefix-,]textStart[,textEnd][,-suffix]
@@ -103,7 +112,27 @@ base::Optional<TextFragment> TextFragment::FromEscapedString(
                       Unescape(prefix), Unescape(suffix));
 }
 
-std::string TextFragment::ToEscapedString() {
+// static
+base::Optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
+  if (!value || !value->is_dict()) {
+    return base::nullopt;
+  }
+
+  const std::string* text_start = value->FindStringKey(kFragmentTextStartKey);
+  const std::string* text_end = value->FindStringKey(kFragmentTextEndKey);
+  const std::string* prefix = value->FindStringKey(kFragmentPrefixKey);
+  const std::string* suffix = value->FindStringKey(kFragmentSuffixKey);
+
+  if (!HasValue(text_start)) {
+    // Text Start is the only required parameter.
+    return base::nullopt;
+  }
+
+  return TextFragment(*text_start, ValueOrDefault(text_end),
+                      ValueOrDefault(prefix), ValueOrDefault(suffix));
+}
+
+std::string TextFragment::ToEscapedString() const {
   if (text_start_.empty()) {
     return std::string();
   }
@@ -127,7 +156,7 @@ std::string TextFragment::ToEscapedString() {
   return ss.str();
 }
 
-base::Value TextFragment::ToValue() {
+base::Value TextFragment::ToValue() const {
   base::Value dict(base::Value::Type::DICTIONARY);
 
   if (prefix_.size())

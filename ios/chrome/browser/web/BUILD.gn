@@ -183,7 +183,10 @@ js_compile_bundle("chrome_bundle_main_frame") {
   closure_entry_point = "__crWeb.chromeBundleMainFrame"
   sources = [
     "//components/password_manager/ios/resources/password_controller.js",
+    "//ios/chrome/browser/link_to_text/resources/link_to_text.js",
     "//ios/chrome/browser/search_engines/resources/search_engine.js",
+    "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
+    "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
     "resources/chrome_bundle_main_frame.js",
     "resources/image_fetch.js",
   ]
