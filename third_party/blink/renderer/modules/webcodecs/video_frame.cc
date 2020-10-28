@@ -413,10 +413,13 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
       ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
       auto release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
-          [](gpu::SharedImageInterface* sii, gpu::Mailbox mailbox,
-             const gpu::SyncToken& sync_token,
-             bool is_lost) { sii->DestroySharedImage(sync_token, mailbox); },
-          base::Unretained(shared_image_interface), dest_holder.mailbox));
+          [](scoped_refptr<viz::RasterContextProvider> provider,
+             gpu::Mailbox mailbox, const gpu::SyncToken& sync_token,
+             bool is_lost) {
+            provider->SharedImageInterface()->DestroySharedImage(sync_token,
+                                                                 mailbox);
+          },
+          raster_context_provider, dest_holder.mailbox));
 
       const SkImageInfo sk_image_info =
           SkImageInfo::Make(codedWidth(), codedHeight(), kN32_SkColorType,
