@@ -22,7 +22,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -169,7 +168,7 @@ public class BookmarkUtils {
      * Shows bookmark main UI.
      * @param activity An activity to start the manager with.
      */
-    public static void showBookmarkManager(ChromeActivity activity) {
+    public static void showBookmarkManager(Activity activity) {
         ThreadUtils.assertOnUiThread();
         String url = getFirstUrlToLoad(activity);
 
@@ -186,8 +185,8 @@ public class BookmarkUtils {
     /**
      * The initial url the bookmark manager shows depends some experiments we run.
      */
-    private static String getFirstUrlToLoad(Activity activity) {
-        String lastUsedUrl = getLastUsedUrl(activity);
+    private static String getFirstUrlToLoad(Context context) {
+        String lastUsedUrl = getLastUsedUrl(context);
         return TextUtils.isEmpty(lastUsedUrl) ? UrlConstants.BOOKMARKS_URL : lastUsedUrl;
     }
 
