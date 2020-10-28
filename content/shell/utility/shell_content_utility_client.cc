@@ -172,11 +172,9 @@ bool ShellContentUtilityClient::HandleServiceRequest(
   return false;
 }
 
-mojo::ServiceFactory* ShellContentUtilityClient::GetIOThreadServiceFactory() {
-  static base::NoDestructor<mojo::ServiceFactory> factory{
-      RunEchoService,
-  };
-  return factory.get();
+void ShellContentUtilityClient::RegisterIOThreadServices(
+    mojo::ServiceFactory& services) {
+  services.Add(RunEchoService);
 }
 
 void ShellContentUtilityClient::RegisterNetworkBinders(

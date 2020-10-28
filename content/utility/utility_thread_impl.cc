@@ -13,6 +13,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
@@ -27,7 +28,7 @@
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/system/simple_watcher.h"
+#include "mojo/public/cpp/bindings/service_factory.h"
 
 namespace content {
 
@@ -53,18 +54,34 @@ class ServiceBinderImpl {
     if (trace_log->IsProcessNameEmpty())
       trace_log->set_process_name("Service: " + service_name);
 
-    // We watch for and terminate on PEER_CLOSED, but we also terminate if the
-    // watcher is cancelled (meaning the local endpoint was closed rather than
-    // the peer). Hence any breakage of the service pipe leads to termination.
-    auto watcher = std::make_unique<mojo::SimpleWatcher>(
-        FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC);
-    watcher->Watch(receiver->pipe(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-                   MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                   base::BindRepeating(&ServiceBinderImpl::OnServicePipeClosed,
-                                       base::Unretained(this), watcher.get()));
-    service_pipe_watchers_.insert(std::move(watcher));
-    HandleServiceRequestOnIOThread(std::move(*receiver),
-                                   main_thread_task_runner_.get());
+    // Ensure the ServiceFactory is (lazily) initialized.
+    if (!io_thread_services_) {
+      io_thread_services_ = std::make_unique<mojo::ServiceFactory>();
+      RegisterIOThreadServices(*io_thread_services_);
+    }
+
+    // Note that this is balanced by `termination_callback` below, which is
+    // always eventually run as long as the process does not begin shutting
+    // down beforehand.
+    ++num_service_instances_;
+
+    auto termination_callback =
+        base::BindOnce(&ServiceBinderImpl::OnServiceTerminated,
+                       weak_ptr_factory_.GetWeakPtr());
+    if (io_thread_services_->CanRunService(*receiver)) {
+      io_thread_services_->RunService(std::move(*receiver),
+                                      std::move(termination_callback));
+      return;
+    }
+
+    termination_callback =
+        base::BindOnce(base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
+                       base::ThreadTaskRunnerHandle::Get(), FROM_HERE,
+                       std::move(termination_callback));
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceBinderImpl::TryRunMainThreadService,
+                       std::move(*receiver), std::move(termination_callback)));
   }
 
   static base::Optional<ServiceBinderImpl>& GetInstanceStorage() {
@@ -73,21 +90,22 @@ class ServiceBinderImpl {
   }
 
  private:
-  void OnServicePipeClosed(mojo::SimpleWatcher* which,
-                           MojoResult result,
-                           const mojo::HandleSignalsState& state) {
-    // NOTE: It doesn't matter whether this was peer closure or local closure,
-    // and those are the only two ways this method can be invoked.
+  static void TryRunMainThreadService(mojo::GenericPendingReceiver receiver,
+                                      base::OnceClosure termination_callback) {
+    // NOTE: UtilityThreadImpl is the only defined subclass of UtilityThread, so
+    // this cast is safe.
+    auto* thread = static_cast<UtilityThreadImpl*>(UtilityThread::Get());
+    thread->HandleServiceRequest(std::move(receiver),
+                                 std::move(termination_callback));
+  }
 
-    auto it = service_pipe_watchers_.find(which);
-    DCHECK(it != service_pipe_watchers_.end());
-    service_pipe_watchers_.erase(it);
+  void OnServiceTerminated() {
+    if (--num_service_instances_ > 0)
+      return;
 
-    // No more services running in this process.
-    if (service_pipe_watchers_.empty()) {
-      main_thread_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&ServiceBinderImpl::ShutDownProcess));
-    }
+    // There are no more services running in this process. Time to terminate.
+    main_thread_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ServiceBinderImpl::ShutDownProcess));
   }
 
   static void ShutDownProcess() {
@@ -100,12 +118,15 @@ class ServiceBinderImpl {
 
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
-  // These trap signals on any (unowned) primordial service pipes. We don't
-  // actually care about the signals so these never get armed. We only watch for
-  // cancellation, because that means the service's primordial pipe handle was
-  // closed locally and we treat that as the service calling it quits.
-  std::set<std::unique_ptr<mojo::SimpleWatcher>, base::UniquePtrComparator>
-      service_pipe_watchers_;
+  // Tracks the number of service instances currently running (or pending
+  // creation) in this process. When the number transitions from non-zero to
+  // zero, the process will self-terminate.
+  int num_service_instances_ = 0;
+
+  // Handles service requests for services that must run on the IO thread.
+  std::unique_ptr<mojo::ServiceFactory> io_thread_services_;
+
+  base::WeakPtrFactory<ServiceBinderImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceBinderImpl);
 };
@@ -169,6 +190,24 @@ void UtilityThreadImpl::EnsureBlinkInitializedWithSandboxSupport() {
   EnsureBlinkInitializedInternal(/*sandbox_support=*/true);
 }
 #endif
+
+void UtilityThreadImpl::HandleServiceRequest(
+    mojo::GenericPendingReceiver receiver,
+    base::OnceClosure termination_callback) {
+  if (!main_thread_services_) {
+    main_thread_services_ = std::make_unique<mojo::ServiceFactory>();
+    RegisterMainThreadServices(*main_thread_services_);
+  }
+
+  if (main_thread_services_->CanRunService(receiver)) {
+    main_thread_services_->RunService(std::move(receiver),
+                                      std::move(termination_callback));
+    return;
+  }
+
+  DLOG(ERROR) << "Cannot run unknown service: " << *receiver.interface_name();
+  std::move(termination_callback).Run();
+}
 
 void UtilityThreadImpl::EnsureBlinkInitializedInternal(bool sandbox_support) {
   if (blink_platform_impl_)

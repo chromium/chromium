@@ -26,7 +26,7 @@ class HEADLESS_EXPORT HeadlessContentUtilityClient
   ~HeadlessContentUtilityClient() override;
 
   // content::ContentUtilityClient:
-  mojo::ServiceFactory* GetMainThreadServiceFactory() override;
+  void RegisterMainThreadServices(mojo::ServiceFactory& services) override;
   void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) override;
 

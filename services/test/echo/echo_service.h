@@ -21,6 +21,8 @@ class EchoService : public mojom::EchoService {
   // mojom::EchoService:
   void EchoString(const std::string& input,
                   EchoStringCallback callback) override;
+  void EchoStringToSharedMemory(const std::string& input,
+                                base::UnsafeSharedMemoryRegion region) override;
   void Quit() override;
   void Crash() override;
 

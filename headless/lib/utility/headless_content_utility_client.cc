@@ -48,14 +48,11 @@ HeadlessContentUtilityClient::HeadlessContentUtilityClient(
 
 HeadlessContentUtilityClient::~HeadlessContentUtilityClient() = default;
 
-mojo::ServiceFactory*
-HeadlessContentUtilityClient::GetMainThreadServiceFactory() {
-  static base::NoDestructor<mojo::ServiceFactory> factory {
+void HeadlessContentUtilityClient::RegisterMainThreadServices(
+    mojo::ServiceFactory& services) {
 #if BUILDFLAG(ENABLE_PRINTING)
-    RunPrintCompositor,
+  services.Add(RunPrintCompositor);
 #endif
-  };
-  return factory.get();
 }
 
 void HeadlessContentUtilityClient::RegisterNetworkBinders(

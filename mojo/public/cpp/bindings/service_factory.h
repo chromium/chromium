@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_SERVICE_FACTORY_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_SERVICE_FACTORY_H_
 
+#include <map>
 #include <memory>
 
 #include "base/bind.h"
@@ -35,11 +36,11 @@ struct ServiceFactoryTraits;
 // where |T| is any type (generally an implementation of |Interface|), and
 // |Interface| is a mojom interface.
 //
-// Any time |MaybeRunService()| is called on the ServiceFactory, it will match
-// the GenericPendingReceiver argument's interface type against the list of
-// factories it has available, and if it finds a match it will run that function
-// and retain ownership of the returned object until the corresponding receiver
-// is disconnected.
+// Any time |RunService()| is called on the ServiceFactory, it will match the
+// GenericPendingReceiver argument's interface type against the list of
+// factories it has available and run the corresponding function, retaining
+// ownership of the returned object until the corresponding receiver is
+// disconnected.
 //
 // Typical usage might look something like:
 //
@@ -51,31 +52,54 @@ struct ServiceFactoryTraits;
 //       return std::make_unique<bar::BarImpl>(std::move(receiver));
 //     }
 //
-//     void HandleServiceRequest(mojo::GenericPendingReceiver receiver) {
-//       static base::NoDestructor<mojo::ServiceFactory> factory{
-//         RunFooService,
-//         RunBarService,
-//       };
+//     void RegisterServices(mojo::ServiceFactory& services) {
+//       services.Add(RunFooService);
+//       services.Add(RunBarService);
+//     }
 //
-//       if (!factory->MaybeRunService(&receiver)) {
-//         // The receiver was for neither the Foo nor Bar service. Sad!
-//         LOG(ERROR) << "Unknown service: " << *receiver.interface_name();
+//     void HandleServiceRequest(const mojo::ServiceFactory& factory,
+//                               mojo::GenericPendingReceiver receiver) {
+//       if (factory.CanRunService(receiver)) {
+//         factory.RunService(std::move(receiver), base::NullCallback());
+//         return;
 //       }
+//
+//       // The receiver was for neither the Foo nor Bar service. Sad!
+//       LOG(ERROR) << "Unknown service: " << *receiver.interface_name();
 //     }
 //
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
  public:
-  template <typename... Funcs>
-  explicit ServiceFactory(Funcs... fns)
-      : callbacks_({base::BindRepeating(&RunFunction<Funcs>, fns)...}) {}
+  ServiceFactory();
   ~ServiceFactory();
 
-  // Attempts to run a service supported by this factory.
+  // Adds a new service to the factory. The argument may be any function that
+  // accepts a single PendingReceiver<T> and returns a unique_ptr<T>, where T is
+  // a service interface (that is, a generated mojom interface class
+  // corresponding to some service's main interface.)
+  template <typename Func>
+  void Add(Func func) {
+    using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
+    constructors_[Interface::Name_] =
+        base::BindRepeating(&RunConstructor<Func>, func);
+  }
+
+  // If `receiver` is references an interface matching a service known to this
+  // factory, this returns true. Otherwise it returns false. `receiver` MUST be
+  // valid.
+  bool CanRunService(const GenericPendingReceiver& receiver) const;
+
+  // Consumes `receiver` and binds it to a new instance of the corresponding
+  // service, constructed using the service's registered function within this
+  // factory.
   //
-  // Returns |true| and consumes |*receiver| if it is a suitable match for some
-  // function known by the factory; otherwise returns |false| and leaves
-  // |*receiver| intact.
-  bool MaybeRunService(GenericPendingReceiver* receiver);
+  // `termination_callback`, if not null, will be invoked on the calling
+  // TaskRunner whenever the new service instance is eventually destroyed.
+  //
+  // If the service represented by `receiver` is not known to this factory, it
+  // is discarded and `termination_callback` is never run.
+  bool RunService(GenericPendingReceiver receiver,
+                  base::OnceClosure termination_callback);
 
  private:
   class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InstanceHolderBase {
@@ -87,7 +111,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
                    base::OnceClosure disconnect_callback);
 
    private:
-    void OnDisconnect(MojoResult result, const HandleSignalsState& state);
+    void OnPipeSignaled(MojoResult result, const HandleSignalsState& state);
 
     SimpleWatcher watcher_;
     base::OnceClosure disconnect_callback_;
@@ -109,23 +133,20 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
   };
 
   template <typename Func>
-  static std::unique_ptr<InstanceHolderBase> RunFunction(
+  static std::unique_ptr<InstanceHolderBase> RunConstructor(
       Func fn,
-      GenericPendingReceiver* receiver) {
+      GenericPendingReceiver receiver) {
     using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
-    if (auto typed_receiver = receiver->As<Interface>()) {
-      return std::make_unique<InstanceHolder<Interface>>(
-          fn(std::move(typed_receiver)));
-    }
-    return nullptr;
+    return std::make_unique<InstanceHolder<Interface>>(
+        fn(receiver.As<Interface>()));
   }
 
   void OnInstanceDisconnected(InstanceHolderBase* instance);
 
-  using GenericCallback =
+  using Constructor =
       base::RepeatingCallback<std::unique_ptr<InstanceHolderBase>(
-          GenericPendingReceiver*)>;
-  const std::vector<GenericCallback> callbacks_;
+          GenericPendingReceiver)>;
+  std::map<std::string, Constructor> constructors_;
 
   base::flat_set<std::unique_ptr<InstanceHolderBase>, base::UniquePtrComparator>
       instances_;

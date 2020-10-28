@@ -252,91 +252,76 @@ auto RunAssistantAudioDecoder(
 
 }  // namespace
 
-mojo::ServiceFactory* GetElevatedMainThreadServiceFactory() {
+void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
   // NOTE: This ServiceFactory is only used in utility processes which are run
   // with elevated system privileges.
-  // clang-format off
-  static base::NoDestructor<mojo::ServiceFactory> factory {
 #if BUILDFLAG(ENABLE_EXTENSIONS) && defined(OS_WIN)
-    // On non-Windows, this service runs in a regular utility process.
-    RunRemovableStorageWriter,
+  // On non-Windows, this service runs in a regular utility process.
+  services.Add(RunRemovableStorageWriter);
 #endif
-  };
-  // clang-format on
-  return factory.get();
 }
 
-mojo::ServiceFactory* GetMainThreadServiceFactory() {
-  // clang-format off
-  static base::NoDestructor<mojo::ServiceFactory> factory {
-    RunFilePatcher,
-    RunUnzipper,
-    RunLanguageDetectionService,
-    RunQRCodeGeneratorService,
-    RunMachineLearningService,
+void RegisterMainThreadServices(mojo::ServiceFactory& services) {
+  services.Add(RunFilePatcher);
+  services.Add(RunUnzipper);
+  services.Add(RunLanguageDetectionService);
+  services.Add(RunQRCodeGeneratorService);
+  services.Add(RunMachineLearningService);
 
 #if !defined(OS_ANDROID)
-    RunProfileImporter,
-    RunMirroringService,
-    RunSpeechRecognitionService,
+  services.Add(RunProfileImporter);
+  services.Add(RunMirroringService);
+  services.Add(RunSpeechRecognitionService);
 #endif
 
 #if defined(OS_WIN)
-    RunQuarantineService,
-    RunWindowsUtility,
-    RunWindowsIconReader,
+  services.Add(RunQuarantineService);
+  services.Add(RunWindowsUtility);
+  services.Add(RunWindowsIconReader);
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINTING) && defined(OS_CHROMEOS)
-    RunCupsIppParser,
+  services.Add(RunCupsIppParser);
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING) || defined(OS_CHROMEOS)
-    RunFileUtil,
+  services.Add(RunFileUtil);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && !defined(OS_WIN)
-    // On Windows, this service runs in an elevated utility process.
-    RunRemovableStorageWriter,
+  // On Windows, this service runs in an elevated utility process.
+  services.Add(RunRemovableStorageWriter);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) || defined(OS_ANDROID)
-    RunMediaParserFactory,
+  services.Add(RunMediaParserFactory);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
     (BUILDFLAG(ENABLE_PRINTING) && defined(OS_WIN))
-    RunPrintingService,
+  services.Add(RunPrintingService);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
-    RunPrintCompositor,
+  services.Add(RunPrintCompositor);
 #endif
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
-    RunPaintPreviewCompositor,
+  services.Add(RunPaintPreviewCompositor);
 #endif
 
 #if defined(OS_CHROMEOS)
-    RunImeService,
-    RunSharing,
-    RunTtsService,
+  services.Add(RunImeService);
+  services.Add(RunSharing);
+  services.Add(RunTtsService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    RunAssistantAudioDecoder,
+  services.Add(RunAssistantAudioDecoder);
 #endif
 #endif
-  };
-  // clang-format on
-  return factory.get();
 }
 
-mojo::ServiceFactory* GetIOThreadServiceFactory() {
-  // clang-format off
-  static base::NoDestructor<mojo::ServiceFactory> factory {
+void RegisterIOThreadServices(mojo::ServiceFactory& services) {
 #if !defined(OS_ANDROID)
-    RunProxyResolver,
-#endif  // !defined(OS_ANDROID)
-  };
-  // clang-format on
-  return factory.get();
+  services.Add(RunProxyResolver);
+#endif
 }

@@ -224,7 +224,11 @@ void SimpleWatcher::ArmOrNotify() {
   MojoResult ready_result;
   HandleSignalsState ready_state;
   MojoResult rv = Arm(&ready_result, &ready_state);
-  if (rv == MOJO_RESULT_OK)
+
+  // NOTE: If the watched handle has been closed, the above call will result in
+  // MOJO_RESULT_NOT_FOUND. A MOJO_RESULT_CANCELLED notification will already
+  // have been posted to this object as a result, so there's nothing else to do.
+  if (rv == MOJO_RESULT_OK || rv == MOJO_RESULT_NOT_FOUND)
     return;
 
   DCHECK_EQ(MOJO_RESULT_FAILED_PRECONDITION, rv);

@@ -33,8 +33,8 @@ class ChromeContentUtilityClient : public content::ContentUtilityClient {
   void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) override;
   void UtilityThreadStarted() override;
-  mojo::ServiceFactory* GetMainThreadServiceFactory() override;
-  mojo::ServiceFactory* GetIOThreadServiceFactory() override;
+  void RegisterMainThreadServices(mojo::ServiceFactory& services) override;
+  void RegisterIOThreadServices(mojo::ServiceFactory& services) override;
 
   // See NetworkBinderProvider above.
   static void SetNetworkBinderCreationCallback(

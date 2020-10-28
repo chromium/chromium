@@ -23,7 +23,7 @@ class ShellContentUtilityClient : public ContentUtilityClient {
   bool HandleServiceRequest(
       const std::string& service_name,
       mojo::PendingReceiver<service_manager::mojom::Service> receiver) override;
-  mojo::ServiceFactory* GetIOThreadServiceFactory() override;
+  void RegisterIOThreadServices(mojo::ServiceFactory& services) override;
   void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) override;
 

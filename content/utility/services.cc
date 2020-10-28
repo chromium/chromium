@@ -206,69 +206,35 @@ auto RunXrDeviceService(
 }
 #endif
 
-mojo::ServiceFactory& GetIOThreadServiceFactory() {
-  static base::NoDestructor<mojo::ServiceFactory> factory{
-      // The network service runs on the IO thread because it needs a message
-      // loop of type IO that can get notified when pipes have data.
-      RunNetworkService,
-  };
-  return *factory;
-}
-
-mojo::ServiceFactory& GetMainThreadServiceFactory() {
-  // clang-format off
-  static base::NoDestructor<mojo::ServiceFactory> factory{
-    RunAudio,
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-    RunCdmService,
-#endif
-    RunDataDecoder,
-    RunStorageService,
-    RunTracing,
-    RunVideoCapture,
-#if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)
-    RunXrDeviceService,
-#endif
-  };
-  // clang-format on
-  return *factory;
-}
-
 }  // namespace
 
-void HandleServiceRequestOnIOThread(
-    mojo::GenericPendingReceiver receiver,
-    base::SequencedTaskRunner* main_thread_task_runner) {
-  if (GetIOThreadServiceFactory().MaybeRunService(&receiver))
-    return;
+void RegisterIOThreadServices(mojo::ServiceFactory& services) {
+  // The network service runs on the IO thread because it needs a message
+  // loop of type IO that can get notified when pipes have data.
+  services.Add(RunNetworkService);
 
-  // If the request was handled already, we should not reach this point.
-  DCHECK(receiver.is_valid());
-  auto* embedder_factory =
-      GetContentClient()->utility()->GetIOThreadServiceFactory();
-  if (embedder_factory && embedder_factory->MaybeRunService(&receiver))
-    return;
-
-  DCHECK(receiver.is_valid());
-  main_thread_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HandleServiceRequestOnMainThread, std::move(receiver)));
+  // Add new IO-thread services above this line.
+  GetContentClient()->utility()->RegisterIOThreadServices(services);
 }
 
-void HandleServiceRequestOnMainThread(mojo::GenericPendingReceiver receiver) {
-  if (GetMainThreadServiceFactory().MaybeRunService(&receiver))
-    return;
+void RegisterMainThreadServices(mojo::ServiceFactory& services) {
+  services.Add(RunAudio);
 
-  // If the request was handled already, we should not reach this point.
-  DCHECK(receiver.is_valid());
-  auto* embedder_factory =
-      GetContentClient()->utility()->GetMainThreadServiceFactory();
-  if (embedder_factory && embedder_factory->MaybeRunService(&receiver))
-    return;
+  services.Add(RunDataDecoder);
+  services.Add(RunStorageService);
+  services.Add(RunTracing);
+  services.Add(RunVideoCapture);
 
-  DCHECK(receiver.is_valid());
-  DLOG(ERROR) << "Unhandled out-of-process service request for "
-              << receiver.interface_name().value();
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  services.Add(RunCdmService);
+#endif
+
+#if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)
+  services.Add(RunXrDeviceService);
+#endif
+
+  // Add new main-thread services above this line.
+  GetContentClient()->utility()->RegisterMainThreadServices(services);
 }
 
 }  // namespace content

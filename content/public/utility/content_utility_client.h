@@ -63,18 +63,16 @@ class CONTENT_EXPORT ContentUtilityClient {
       mojo::PendingReceiver<service_manager::mojom::Service> receiver);
 
   // Allows the embedder to handle an incoming service interface request to run
-  // a service on the IO thread. Should return a ServiceFactory instance which
-  // lives at least as long as the IO thread, or nullptr.
+  // a service on the IO thread.
   //
   // Only called from the IO thread.
-  virtual mojo::ServiceFactory* GetIOThreadServiceFactory();
+  virtual void RegisterIOThreadServices(mojo::ServiceFactory& services) {}
 
   // Allows the embedder to handle an incoming service interface request to run
-  // a service on the main thread. Should return a ServiceFactory instance which
-  // which effectively lives forever, or nullptr.
+  // a service on the main thread.
   //
   // Only called from the main thread.
-  virtual mojo::ServiceFactory* GetMainThreadServiceFactory();
+  virtual void RegisterMainThreadServices(mojo::ServiceFactory& services) {}
 
   virtual void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) {}

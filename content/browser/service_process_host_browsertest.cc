@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string.h>
+
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/test/bind_test_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -86,6 +91,36 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, RemoteDisconnectQuits) {
   observer.WaitForLaunch();
   echo_service->Quit();
   observer.WaitForDeath();
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, AllMessagesReceived) {
+  // Verifies that messages sent right before disconnection are always received
+  // and dispatched by the service before it self-terminates.
+  EchoServiceProcessObserver observer;
+  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>();
+
+  const size_t kBufferSize = 256;
+  const std::string kMessages[] = {
+      "I thought we were having steamed clams.",
+      "D'oh, no! I said steamed hams. That's what I call hamburgers.",
+      "You call hamburgers, \"steamed hams?\"",
+      "Yes. It's a regional dialect."};
+  auto region = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  base::WritableSharedMemoryMapping mapping = region.Map();
+  memset(mapping.memory(), 0, kBufferSize);
+
+  // Send several messages, since it helps to verify a lack of raciness between
+  // service-side message dispatch and service termination.
+  for (const auto& message : kMessages) {
+    ASSERT_LE(message.size(), kBufferSize);
+    echo_service->EchoStringToSharedMemory(message, region.Duplicate());
+  }
+  echo_service.reset();
+  observer.WaitForDeath();
+
+  const std::string& kLastMessage = kMessages[base::size(kMessages) - 1];
+  EXPECT_EQ(0,
+            memcmp(mapping.memory(), kLastMessage.data(), kLastMessage.size()));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, ObserveCrash) {

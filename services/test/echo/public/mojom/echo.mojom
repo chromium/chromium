@@ -4,10 +4,16 @@
 
 module echo.mojom;
 
+import "mojo/public/mojom/base/shared_memory.mojom";
+
 // Echos its input.
 interface EchoService {
   // Echos the passed-in string.
   EchoString(string input) => (string echoed_input);
+
+  // Echos the passed-in string into the provided shared memory buffer.
+  EchoStringToSharedMemory(string input,
+                           mojo_base.mojom.UnsafeSharedMemoryRegion region);
 
   // Causes the service to disconnect itself.
   Quit();
