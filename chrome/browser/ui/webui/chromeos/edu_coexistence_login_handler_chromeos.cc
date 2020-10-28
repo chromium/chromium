@@ -18,13 +18,17 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence_consent_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/constants/chromeos_pref_names.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -80,6 +84,30 @@ std::string GetOrCreateEduCoexistenceUserId() {
     pref_service->SetString(chromeos::prefs::kEduCoexistenceId, id);
   }
   return id;
+}
+
+// Tries to get the policy device id for the family link user profile if
+// available. The policy device id is used to identify the device login
+// timestamp to skip parental reauth for secondary edu account login during
+// onboarding. If the id is not available, then the parental reauth will be
+// required.
+std::string GetDeviceIdForActiveUserProfile() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  const policy::UserCloudPolicyManagerChromeOS* policy_manager =
+      profile->GetUserCloudPolicyManagerChromeOS();
+  if (!policy_manager)
+    return std::string();
+
+  const policy::CloudPolicyCore* core = policy_manager->core();
+  const policy::CloudPolicyStore* store = core->store();
+  if (!store)
+    return std::string();
+
+  const enterprise_management::PolicyData* policy = store->policy();
+  if (!policy)
+    return std::string();
+
+  return policy->device_id();
 }
 
 }  // namespace
@@ -214,6 +242,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   params.SetStringKey("platformVersion",
                       base::SysInfo::OperatingSystemVersion());
   params.SetStringKey("releaseChannel", chrome::GetChannelName());
+  params.SetStringKey("deviceId", GetDeviceIdForActiveUserProfile());
 
   // If the secondary edu account is being reauthenticated, the email address
   // will be provided via the url of the webcontent. Example

@@ -26,6 +26,7 @@ const METHOD_LIST = [
  *   eduCoexistenceId: (string),
  *   platformVersion: (string),
  *   releaseChannel: (string),
+ *   deviceId: (string),
  *   email: (string|undefined),
  *   readOnlyEmail: (string|undefined),
  * }}
@@ -47,6 +48,7 @@ function constructEduCoexistenceUrl(params) {
   url.searchParams.set('edu_coexistence_id', params.eduCoexistenceId);
   url.searchParams.set('platform_version', params.platformVersion);
   url.searchParams.set('release_channel', params.releaseChannel);
+  url.searchParams.set('device_id', params.deviceId);
   if (params.email) {
     url.searchParams.set('email', params.email);
     if (params.readOnlyEmail) {
