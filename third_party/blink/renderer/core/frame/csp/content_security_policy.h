@@ -184,7 +184,7 @@ class CORE_EXPORT ContentSecurityPolicy final
     kPrefetchSrc,
     kReportTo,
     kReportURI,
-    kTrustedTypes,
+    kRequireTrustedTypesFor,
     kSandbox,
     kScriptSrc,
     kScriptSrcAttr,
@@ -192,10 +192,11 @@ class CORE_EXPORT ContentSecurityPolicy final
     kStyleSrc,
     kStyleSrcAttr,
     kStyleSrcElem,
+    kTreatAsPublicAddress,
+    kTrustedTypes,
     kUndefined,
     kUpgradeInsecureRequests,
     kWorkerSrc,
-    kRequireTrustedTypesFor,
   };
 
   // CheckHeaderType can be passed to Allow*FromSource methods to control which

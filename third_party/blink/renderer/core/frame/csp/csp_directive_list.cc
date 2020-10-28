@@ -1092,6 +1092,25 @@ void CSPDirectiveList::ApplySandboxPolicy(const String& name,
   }
 }
 
+void CSPDirectiveList::ApplyTreatAsPublicAddress() {
+  // Remove treat-as-public-address directives in meta policies, per
+  // https://wicg.github.io/cors-rfc1918/#csp
+  if (header_source_ == ContentSecurityPolicySource::kMeta) {
+    policy_->ReportInvalidDirectiveInMeta("treat-as-public-address");
+    return;
+  }
+
+  // Remove treat-as-public-address directives in report-only, per
+  // https://wicg.github.io/cors-rfc1918/#csp
+  if (IsReportOnly()) {
+    policy_->ReportInvalidInReportOnly("treat-as-public-address");
+    return;
+  }
+
+  // Nothing to do, since treat-as-public-address directive is handled by the
+  // browser process.
+}
+
 void CSPDirectiveList::AddTrustedTypes(const String& name,
                                        const String& value) {
   if (trusted_types_) {
@@ -1152,85 +1171,115 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
 
   ContentSecurityPolicy::DirectiveType type =
       ContentSecurityPolicy::GetDirectiveType(name);
-  if (type == ContentSecurityPolicy::DirectiveType::kDefaultSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, default_src_);
-    // TODO(mkwst) It seems unlikely that developers would use different
-    // algorithms for scripts and styles. We may want to combine the
-    // usesScriptHashAlgorithms() and usesStyleHashAlgorithms.
-    policy_->UsesScriptHashAlgorithms(default_src_->HashAlgorithmsUsed());
-    policy_->UsesStyleHashAlgorithms(default_src_->HashAlgorithmsUsed());
-  } else if (type == ContentSecurityPolicy::DirectiveType::kScriptSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, script_src_);
-    policy_->UsesScriptHashAlgorithms(script_src_->HashAlgorithmsUsed());
-  } else if (type == ContentSecurityPolicy::DirectiveType::kScriptSrcAttr) {
-    SetCSPDirective<SourceListDirective>(name, value, script_src_attr_);
-    policy_->UsesScriptHashAlgorithms(script_src_attr_->HashAlgorithmsUsed());
-  } else if (type == ContentSecurityPolicy::DirectiveType::kScriptSrcElem) {
-    SetCSPDirective<SourceListDirective>(name, value, script_src_elem_);
-    policy_->UsesScriptHashAlgorithms(script_src_elem_->HashAlgorithmsUsed());
-  } else if (type == ContentSecurityPolicy::DirectiveType::kObjectSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, object_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kFrameAncestors) {
-    SetCSPDirective<SourceListDirective>(name, value, frame_ancestors_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kFrameSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, frame_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kImgSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, img_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kStyleSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, style_src_);
-    policy_->UsesStyleHashAlgorithms(style_src_->HashAlgorithmsUsed());
-  } else if (type == ContentSecurityPolicy::DirectiveType::kStyleSrcAttr) {
-    SetCSPDirective<SourceListDirective>(name, value, style_src_attr_);
-    policy_->UsesStyleHashAlgorithms(style_src_attr_->HashAlgorithmsUsed());
-  } else if (type == ContentSecurityPolicy::DirectiveType::kStyleSrcElem) {
-    SetCSPDirective<SourceListDirective>(name, value, style_src_elem_);
-    policy_->UsesStyleHashAlgorithms(style_src_elem_->HashAlgorithmsUsed());
-  } else if (type == ContentSecurityPolicy::DirectiveType::kFontSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, font_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kMediaSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, media_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kConnectSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, connect_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kSandbox) {
-    ApplySandboxPolicy(name, value);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kReportURI) {
-    ParseReportURI(name, value);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kBaseURI) {
-    SetCSPDirective<SourceListDirective>(name, value, base_uri_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kChildSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, child_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kWorkerSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, worker_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kFormAction) {
-    SetCSPDirective<SourceListDirective>(name, value, form_action_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kPluginTypes) {
-    SetCSPDirective<MediaListDirective>(name, value, plugin_types_);
-  } else if (type ==
-             ContentSecurityPolicy::DirectiveType::kUpgradeInsecureRequests) {
-    EnableInsecureRequestsUpgrade(name, value);
-  } else if (type ==
-             ContentSecurityPolicy::DirectiveType::kBlockAllMixedContent) {
-    EnforceStrictMixedContentChecking(name, value);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kManifestSrc) {
-    SetCSPDirective<SourceListDirective>(name, value, manifest_src_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kNavigateTo) {
-    SetCSPDirective<SourceListDirective>(name, value, navigate_to_);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kReportTo &&
-             base::FeatureList::IsEnabled(network::features::kReporting)) {
-    ParseReportTo(name, value);
-  } else if (type == ContentSecurityPolicy::DirectiveType::kTrustedTypes) {
-    AddTrustedTypes(name, value);
-  } else if (type ==
-             ContentSecurityPolicy::DirectiveType::kRequireTrustedTypesFor) {
-    RequireTrustedTypesFor(name, value);
-  } else if (policy_->ExperimentalFeaturesEnabled()) {
-    if (type == ContentSecurityPolicy::DirectiveType::kPrefetchSrc) {
-      SetCSPDirective<SourceListDirective>(name, value, prefetch_src_);
-    } else {
+  switch (type) {
+    case ContentSecurityPolicy::DirectiveType::kBaseURI:
+      SetCSPDirective<SourceListDirective>(name, value, base_uri_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kBlockAllMixedContent:
+      EnforceStrictMixedContentChecking(name, value);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kChildSrc:
+      SetCSPDirective<SourceListDirective>(name, value, child_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kConnectSrc:
+      SetCSPDirective<SourceListDirective>(name, value, connect_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kDefaultSrc:
+      SetCSPDirective<SourceListDirective>(name, value, default_src_);
+      // TODO(mkwst) It seems unlikely that developers would use different
+      // algorithms for scripts and styles. We may want to combine the
+      // usesScriptHashAlgorithms() and usesStyleHashAlgorithms.
+      policy_->UsesScriptHashAlgorithms(default_src_->HashAlgorithmsUsed());
+      policy_->UsesStyleHashAlgorithms(default_src_->HashAlgorithmsUsed());
+      return;
+    case ContentSecurityPolicy::DirectiveType::kFontSrc:
+      SetCSPDirective<SourceListDirective>(name, value, font_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kFormAction:
+      SetCSPDirective<SourceListDirective>(name, value, form_action_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kFrameAncestors:
+      SetCSPDirective<SourceListDirective>(name, value, frame_ancestors_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kFrameSrc:
+      SetCSPDirective<SourceListDirective>(name, value, frame_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kImgSrc:
+      SetCSPDirective<SourceListDirective>(name, value, img_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kManifestSrc:
+      SetCSPDirective<SourceListDirective>(name, value, manifest_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kMediaSrc:
+      SetCSPDirective<SourceListDirective>(name, value, media_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kNavigateTo:
+      SetCSPDirective<SourceListDirective>(name, value, navigate_to_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kObjectSrc:
+      SetCSPDirective<SourceListDirective>(name, value, object_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kPluginTypes:
+      SetCSPDirective<MediaListDirective>(name, value, plugin_types_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kPrefetchSrc:
+      if (!policy_->ExperimentalFeaturesEnabled())
+        policy_->ReportUnsupportedDirective(name);
+      else
+        SetCSPDirective<SourceListDirective>(name, value, prefetch_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kReportTo:
+      if (base::FeatureList::IsEnabled(network::features::kReporting))
+        ParseReportTo(name, value);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kReportURI:
+      ParseReportURI(name, value);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kRequireTrustedTypesFor:
+      RequireTrustedTypesFor(name, value);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kSandbox:
+      ApplySandboxPolicy(name, value);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kScriptSrc:
+      SetCSPDirective<SourceListDirective>(name, value, script_src_);
+      policy_->UsesScriptHashAlgorithms(script_src_->HashAlgorithmsUsed());
+      return;
+    case ContentSecurityPolicy::DirectiveType::kScriptSrcAttr:
+      SetCSPDirective<SourceListDirective>(name, value, script_src_attr_);
+      policy_->UsesScriptHashAlgorithms(script_src_attr_->HashAlgorithmsUsed());
+      return;
+    case ContentSecurityPolicy::DirectiveType::kScriptSrcElem:
+      SetCSPDirective<SourceListDirective>(name, value, script_src_elem_);
+      policy_->UsesScriptHashAlgorithms(script_src_elem_->HashAlgorithmsUsed());
+      return;
+    case ContentSecurityPolicy::DirectiveType::kStyleSrc:
+      SetCSPDirective<SourceListDirective>(name, value, style_src_);
+      policy_->UsesStyleHashAlgorithms(style_src_->HashAlgorithmsUsed());
+      return;
+    case ContentSecurityPolicy::DirectiveType::kStyleSrcAttr:
+      SetCSPDirective<SourceListDirective>(name, value, style_src_attr_);
+      policy_->UsesStyleHashAlgorithms(style_src_attr_->HashAlgorithmsUsed());
+      return;
+    case ContentSecurityPolicy::DirectiveType::kStyleSrcElem:
+      SetCSPDirective<SourceListDirective>(name, value, style_src_elem_);
+      policy_->UsesStyleHashAlgorithms(style_src_elem_->HashAlgorithmsUsed());
+      return;
+    case ContentSecurityPolicy::DirectiveType::kTreatAsPublicAddress:
+      SetCSPDirective<SourceListDirective>(name, value, worker_src_);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kTrustedTypes:
+      AddTrustedTypes(name, value);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kUpgradeInsecureRequests:
+      EnableInsecureRequestsUpgrade(name, value);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kUndefined:
       policy_->ReportUnsupportedDirective(name);
-    }
-  } else {
-    policy_->ReportUnsupportedDirective(name);
+      return;
+    case ContentSecurityPolicy::DirectiveType::kWorkerSrc:
+      SetCSPDirective<SourceListDirective>(name, value, worker_src_);
+      return;
   }
 }
 

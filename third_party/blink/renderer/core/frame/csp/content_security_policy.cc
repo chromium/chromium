@@ -1539,30 +1539,34 @@ const char* ContentSecurityPolicy::GetDirectiveName(const DirectiveType& type) {
       return "connect-src";
     case DirectiveType::kDefaultSrc:
       return "default-src";
-    case DirectiveType::kFrameAncestors:
-      return "frame-ancestors";
-    case DirectiveType::kFrameSrc:
-      return "frame-src";
     case DirectiveType::kFontSrc:
       return "font-src";
     case DirectiveType::kFormAction:
       return "form-action";
+    case DirectiveType::kFrameAncestors:
+      return "frame-ancestors";
+    case DirectiveType::kFrameSrc:
+      return "frame-src";
     case DirectiveType::kImgSrc:
       return "img-src";
     case DirectiveType::kManifestSrc:
       return "manifest-src";
     case DirectiveType::kMediaSrc:
       return "media-src";
+    case DirectiveType::kNavigateTo:
+      return "navigate-to";
     case DirectiveType::kObjectSrc:
       return "object-src";
-    case DirectiveType::kPrefetchSrc:
-      return "prefetch-src";
     case DirectiveType::kPluginTypes:
       return "plugin-types";
+    case DirectiveType::kPrefetchSrc:
+      return "prefetch-src";
+    case DirectiveType::kReportTo:
+      return "report-to";
     case DirectiveType::kReportURI:
       return "report-uri";
-    case DirectiveType::kTrustedTypes:
-      return "trusted-types";
+    case DirectiveType::kRequireTrustedTypesFor:
+      return "require-trusted-types-for";
     case DirectiveType::kSandbox:
       return "sandbox";
     case DirectiveType::kScriptSrc:
@@ -1577,16 +1581,15 @@ const char* ContentSecurityPolicy::GetDirectiveName(const DirectiveType& type) {
       return "style-src-attr";
     case DirectiveType::kStyleSrcElem:
       return "style-src-elem";
+    case DirectiveType::kTreatAsPublicAddress:
+      return "treat-as-public-address";
+    case DirectiveType::kTrustedTypes:
+      return "trusted-types";
     case DirectiveType::kUpgradeInsecureRequests:
       return "upgrade-insecure-requests";
     case DirectiveType::kWorkerSrc:
       return "worker-src";
-    case DirectiveType::kReportTo:
-      return "report-to";
-    case DirectiveType::kNavigateTo:
-      return "navigate-to";
-    case DirectiveType::kRequireTrustedTypesFor:
-      return "require-trusted-types-for";
+
     case DirectiveType::kUndefined:
       NOTREACHED();
       return "";
@@ -1608,32 +1611,34 @@ ContentSecurityPolicy::DirectiveType ContentSecurityPolicy::GetDirectiveType(
     return DirectiveType::kConnectSrc;
   if (name == "default-src")
     return DirectiveType::kDefaultSrc;
-  if (name == "frame-ancestors")
-    return DirectiveType::kFrameAncestors;
-  if (name == "frame-src")
-    return DirectiveType::kFrameSrc;
   if (name == "font-src")
     return DirectiveType::kFontSrc;
   if (name == "form-action")
     return DirectiveType::kFormAction;
+  if (name == "frame-ancestors")
+    return DirectiveType::kFrameAncestors;
+  if (name == "frame-src")
+    return DirectiveType::kFrameSrc;
   if (name == "img-src")
     return DirectiveType::kImgSrc;
   if (name == "manifest-src")
     return DirectiveType::kManifestSrc;
   if (name == "media-src")
     return DirectiveType::kMediaSrc;
+  if (name == "navigate-to")
+    return DirectiveType::kNavigateTo;
   if (name == "object-src")
     return DirectiveType::kObjectSrc;
   if (name == "plugin-types")
     return DirectiveType::kPluginTypes;
   if (name == "prefetch-src")
     return DirectiveType::kPrefetchSrc;
+  if (name == "report-to")
+    return DirectiveType::kReportTo;
   if (name == "report-uri")
     return DirectiveType::kReportURI;
   if (name == "require-trusted-types-for")
     return DirectiveType::kRequireTrustedTypesFor;
-  if (name == "trusted-types")
-    return DirectiveType::kTrustedTypes;
   if (name == "sandbox")
     return DirectiveType::kSandbox;
   if (name == "script-src")
@@ -1648,14 +1653,14 @@ ContentSecurityPolicy::DirectiveType ContentSecurityPolicy::GetDirectiveType(
     return DirectiveType::kStyleSrcAttr;
   if (name == "style-src-elem")
     return DirectiveType::kStyleSrcElem;
+  if (name == "treat-as-public-address")
+    return DirectiveType::kTreatAsPublicAddress;
+  if (name == "trusted-types")
+    return DirectiveType::kTrustedTypes;
   if (name == "upgrade-insecure-requests")
     return DirectiveType::kUpgradeInsecureRequests;
   if (name == "worker-src")
     return DirectiveType::kWorkerSrc;
-  if (name == "report-to")
-    return DirectiveType::kReportTo;
-  if (name == "navigate-to")
-    return DirectiveType::kNavigateTo;
 
   return DirectiveType::kUndefined;
 }

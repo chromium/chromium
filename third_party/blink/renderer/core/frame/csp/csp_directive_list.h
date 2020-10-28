@@ -188,6 +188,7 @@ class CORE_EXPORT CSPDirectiveList final
   void ParsePluginTypes(const String& name, const String& value);
   void AddDirective(const String& name, const String& value);
   void ApplySandboxPolicy(const String& name, const String& sandbox_policy);
+  void ApplyTreatAsPublicAddress();
   void EnforceStrictMixedContentChecking(const String& name,
                                          const String& value);
   void EnableInsecureRequestsUpgrade(const String& name, const String& value);

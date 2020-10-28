@@ -4131,6 +4131,32 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GURL(), child_frame->last_successful_url());
 }
 
+// Similar to IframeFromInsecureTreatAsPublicToLocalIsBlocked, but in
+// report-only mode. As a result "treat-as-public-address" must be ignored.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    CspReportOnlyTreatAsPublicAddressIgnored) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), InsecureURL(*embedded_test_server(),
+                           "/set-header?Content-Security-Policy-Report-Only: "
+                           "treat-as-public-address")));
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "empty.html";
+    document.body.appendChild(iframe);
+  )"));
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Check that the child iframe wasn't blocked.
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(200, child_frame->last_http_status_code());
+  EXPECT_EQ(InsecureURL(*embedded_test_server(), "/empty.html"),
+            child_frame->last_successful_url());
+}
+
 // TODO(https://crbug.com/1134601): `about:` URLs are all treated as `kUnknown`
 // today. This is ~incorrect, but safe, as their web-facing behavior will be
 // equivalent to "public".
