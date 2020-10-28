@@ -11,6 +11,7 @@
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -27,14 +28,15 @@
 
 namespace {
 
-// The opacity of the disabled item view.
-constexpr float kDisabledAlpha = 0.38f;
-
 // The insets within the contents view.
 constexpr gfx::Insets kContentsInsets(/*vertical=*/4, /*horizontal=*/16);
 
 // The size of the `DeleteButton`.
 constexpr int kDeleteButtonSizeDip = 16;
+
+// The menu background's color type.
+constexpr ash::AshColorProvider::BaseLayerType kMenuBackgroundColorType =
+    ash::AshColorProvider::BaseLayerType::kOpaque;
 
 }  // namespace
 
@@ -80,20 +82,32 @@ class ash::ClipboardHistoryItemView::MainButton : public views::Button {
 
  private:
   // views::Button:
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+    SchedulePaint();
+  }
   const char* GetClassName() const override { return "MainButton"; }
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
     if (!container_->ShouldHighlight())
       return;
 
+    // Use the light mode as default because the light mode is the default mode
+    // of the native theme which decides the context menu's background color.
+    // TODO(andrewxu): remove this line after https://crbug.com/1143009 is
+    // fixed.
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+
     // Highlight the background when the menu item is selected or pressed.
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
 
-    const ui::NativeTheme::ColorId color_id =
-        ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor;
-    flags.setColor(GetNativeTheme()->GetSystemColor(color_id));
-
+    const auto* color_provider = AshColorProvider::Get();
+    const AshColorProvider::RippleAttributes ripple_attributes =
+        color_provider->GetRippleAttributes(
+            color_provider->GetBaseLayerColor(kMenuBackgroundColorType));
+    flags.setColor(SkColorSetA(ripple_attributes.base_color,
+                               ripple_attributes.highlight_opacity * 0xFF));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawRect(GetLocalBounds(), flags);
   }
@@ -113,15 +127,23 @@ ClipboardHistoryItemView::DeleteButton::DeleteButton(
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetPreferredSize(gfx::Size(kDeleteButtonSizeDip, kDeleteButtonSizeDip));
-
-  AshColorProvider::Get()->DecorateCloseButton(this, kDeleteButtonSizeDip,
-                                               kCloseButtonIcon);
 }
 
 ClipboardHistoryItemView::DeleteButton::~DeleteButton() = default;
 
 const char* ClipboardHistoryItemView::DeleteButton::GetClassName() const {
   return "DeleteButton";
+}
+
+void ClipboardHistoryItemView::DeleteButton::OnThemeChanged() {
+  // Use the light mode as default because the light mode is the default mode of
+  // the native theme which decides the context menu's background color.
+  // TODO(andrewxu): remove this line after https://crbug.com/1143009 is fixed.
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+
+  views::ImageButton::OnThemeChanged();
+  AshColorProvider::Get()->DecorateCloseButton(this, kDeleteButtonSizeDip,
+                                               kCloseButtonIcon);
 }
 
 // static
@@ -230,8 +252,8 @@ void ClipboardHistoryItemView::RecordButtonPressedHistogram(
       *clipboard_history_item_);
 }
 
-float ClipboardHistoryItemView::GetContentsOpacity() const {
-  return container_->GetEnabled() ? 1.f : kDisabledAlpha;
+bool ClipboardHistoryItemView::IsItemEnabled() const {
+  return container_->GetEnabled();
 }
 
 gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
@@ -263,7 +285,7 @@ int ClipboardHistoryItemView::CalculateCommandId() const {
 }
 
 bool ClipboardHistoryItemView::ShouldHighlight() const {
-  return pseudo_focus_ == PseudoFocus::kMainButton && container_->GetEnabled();
+  return pseudo_focus_ == PseudoFocus::kMainButton && IsItemEnabled();
 }
 
 bool ClipboardHistoryItemView::ShouldShowDeleteButton() const {

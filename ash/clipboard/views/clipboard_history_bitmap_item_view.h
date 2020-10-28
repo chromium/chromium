@@ -36,6 +36,7 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
   const char* GetClassName() const override;
   std::unique_ptr<ContentsView> CreateContentsView() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnThemeChanged() override;
 
   // Builds `image_view_`.
   std::unique_ptr<RoundedImageView> BuildImageView();

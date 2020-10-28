@@ -58,6 +58,7 @@ class ClipboardHistoryItemView : public views::View {
    private:
     // views::ImageButton:
     const char* GetClassName() const override;
+    void OnThemeChanged() override;
   };
 
   // Used by subclasses to draw contents, such as text or bitmaps.
@@ -98,9 +99,9 @@ class ClipboardHistoryItemView : public views::View {
   // Creates the contents view.
   virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
 
-  // Returns the opacity of the menu item view's contents depending on the
-  // enabled state.
-  float GetContentsOpacity() const;
+  // Returns whether the item view is enabled. The item view is disabled when
+  // it is not allowed to read clipboard data.
+  bool IsItemEnabled() const;
 
   const ClipboardHistoryItem* clipboard_history_item() {
     return clipboard_history_item_;

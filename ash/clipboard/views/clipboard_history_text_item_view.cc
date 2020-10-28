@@ -8,6 +8,8 @@
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -79,19 +81,37 @@ ClipboardHistoryTextItemView::CreateContentsView() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  auto* label =
-      contents_view->AddChildView(std::make_unique<views::Label>(text_));
-  label->SetPreferredSize(gfx::Size(INT_MAX, kLabelPreferredHeight));
-  label->SetFontList(views::MenuConfig::instance().font_list);
-  label->SetMultiLine(false);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColor(
-      SkColorSetA(SK_ColorBLACK, 0xFF * GetContentsOpacity()));
-  layout->SetFlexForView(label, /*flex_weights=*/1);
+  label_ = contents_view->AddChildView(std::make_unique<views::Label>(text_));
+  label_->SetPreferredSize(gfx::Size(INT_MAX, kLabelPreferredHeight));
+  label_->SetFontList(views::style::GetFont(views::style::CONTEXT_TOUCH_MENU,
+                                            views::style::STYLE_PRIMARY));
+  label_->SetMultiLine(false);
+  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label_->SetAutoColorReadabilityEnabled(/*enabled=*/false);
+  layout->SetFlexForView(label_, /*flex_weight=*/1);
 
   contents_view->InstallDeleteButton();
 
   return contents_view;
+}
+
+void ClipboardHistoryTextItemView::OnThemeChanged() {
+  // Use the light mode as default because the light mode is the default mode of
+  // the native theme which decides the context menu's background color.
+  // TODO(andrewxu): remove this line after https://crbug.com/1143009 is fixed.
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+
+  ClipboardHistoryItemView::OnThemeChanged();
+
+  // Calculate the text color.
+  const auto color_type =
+      IsItemEnabled() ? AshColorProvider::ContentLayerType::kTextColorPrimary
+                      : AshColorProvider::ContentLayerType::kTextColorSecondary;
+  const SkColor text_color =
+      AshColorProvider::Get()->GetContentLayerColor(color_type);
+
+  label_->SetEnabledColor(text_color);
+  label_->SchedulePaint();
 }
 
 }  // namespace ash

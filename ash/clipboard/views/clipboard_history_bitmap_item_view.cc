@@ -9,6 +9,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/compositor/layer.h"
@@ -47,6 +48,9 @@ constexpr int kRoundedCornerRadius = 4;
 
 // The thickness of the image border.
 constexpr int kBorderThickness = 1;
+
+// The opacity of the image shown in a disabled item view.
+constexpr float kDisabledAlpha = 0.38f;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FadeImageView
@@ -241,9 +245,7 @@ ClipboardHistoryBitmapItemView::CreateContentsView() {
   image_view->SetPreferredSize(gfx::Size(INT_MAX, kBitmapHeight));
   image_view_ = contents_view->AddChildView(std::move(image_view));
   image_view_->SetBorder(views::CreateRoundedRectBorder(
-      kBorderThickness, kRoundedCornerRadius,
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHairlineBorderColor)));
+      kBorderThickness, kRoundedCornerRadius, gfx::kPlaceholderColor));
   contents_view->InstallDeleteButton();
   return contents_view;
 }
@@ -251,6 +253,18 @@ ClipboardHistoryBitmapItemView::CreateContentsView() {
 void ClipboardHistoryBitmapItemView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   UpdateChildImageViewSize();
+}
+
+void ClipboardHistoryBitmapItemView::OnThemeChanged() {
+  // Use the light mode as default because the light mode is the default mode of
+  // the native theme which decides the context menu's background color.
+  // TODO(andrewxu): remove this line after https://crbug.com/1143009 is fixed.
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+
+  ClipboardHistoryItemView::OnThemeChanged();
+  image_view_->border()->set_color(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kHairlineBorderColor));
 }
 
 std::unique_ptr<RoundedImageView>
@@ -261,21 +275,21 @@ ClipboardHistoryBitmapItemView::BuildImageView() {
   // if menu items have their own layers, the part beyond the container's bounds
   // is still visible when the context menu is in overflow.
 
+  const float image_opacity = IsItemEnabled() ? 1.f : kDisabledAlpha;
   switch (ClipboardHistoryUtil::CalculateMainFormat(
               clipboard_history_item()->data())
               .value()) {
     case ui::ClipboardInternalFormat::kHtml:
       return std::make_unique<FadeImageView>(this, clipboard_history_item(),
-                                             resource_manager_,
-                                             GetContentsOpacity());
+                                             resource_manager_, image_opacity);
     case ui::ClipboardInternalFormat::kBitmap: {
       auto image_view = std::make_unique<RoundedImageView>(
           kRoundedCornerRadius, RoundedImageView::Alignment::kCenter);
       gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
           clipboard_history_item()->data().bitmap());
-      if (GetContentsOpacity() != 1.f) {
+      if (image_opacity != 1.f) {
         bitmap_image = gfx::ImageSkiaOperations::CreateTransparentImage(
-            bitmap_image, GetContentsOpacity());
+            bitmap_image, image_opacity);
       }
       image_view->SetImage(bitmap_image);
       return image_view;
