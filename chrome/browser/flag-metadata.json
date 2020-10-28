@@ -1207,7 +1207,7 @@
   {
     "name": "enable-autofill-credit-card-authentication",
     "owners": [ "jsaul@google.com", "manasverma@google.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 94
   },
   {
     "name": "enable-autofill-credit-card-cvc-prompt-google-logo",
