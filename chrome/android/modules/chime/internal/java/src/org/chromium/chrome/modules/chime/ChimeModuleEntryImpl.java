@@ -11,7 +11,4 @@ import org.chromium.base.annotations.UsedByReflection;
  * implementation lives in downstream.
  */
 @UsedByReflection("ChimeModule")
-public class ChimeModuleEntryImpl implements ChimeModuleEntry {
-    @Override
-    public void register() {}
-}
+public class ChimeModuleEntryImpl extends ChimeModuleBase {}

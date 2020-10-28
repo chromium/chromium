@@ -5,8 +5,10 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources =
-      [ "java/src/org/chromium/chrome/modules/chime/ChimeModuleEntry.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/modules/chime/ChimeModuleBase.java",
+    "java/src/org/chromium/chrome/modules/chime/ChimeModuleEntry.java",
+  ]
 
   deps = [
     "//base:base_java",
