@@ -53,8 +53,12 @@ bool ChromeAppIconLoader::CanLoadImageForApp(const std::string& id) {
 }
 
 void ChromeAppIconLoader::FetchImage(const std::string& id) {
-  if (map_.find(id) != map_.end())
-    return;  // Already loading the image.
+  auto it = map_.find(id);
+  if (it != map_.end()) {
+    if (it->second && !it->second->image_skia().isNull())
+      OnIconUpdated(it->second.get());
+    return;  // Already loaded the image.
+  }
 
   const Extension* extension = GetExtensionByID(profile(), id);
   if (!extension)
