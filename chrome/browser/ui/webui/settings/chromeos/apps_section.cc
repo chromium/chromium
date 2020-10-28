@@ -181,18 +181,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
-  html_source->AddResourcePath("app-management/app_management.mojom-lite.js",
-                               IDR_OS_SETTINGS_APP_MANAGEMENT_MOJO_LITE_JS);
-  html_source->AddResourcePath(
-      "app-management/types.mojom-lite.js",
-      IDR_OS_SETTINGS_APP_MANAGEMENT_TYPES_MOJO_LITE_JS);
-  html_source->AddResourcePath(
-      "app-management/file_path.mojom-lite.js",
-      IDR_OS_SETTINGS_APP_MANAGEMENT_FILE_PATH_MOJO_LITE_JS);
-  html_source->AddResourcePath(
-      "app-management/image.mojom-lite.js",
-      IDR_OS_SETTINGS_APP_MANAGEMENT_IMAGE_MOJO_LITE_JS);
-
   // We have 2 variants of Android apps settings. Default case, when the Play
   // Store app exists we show expandable section that allows as to
   // enable/disable the Play Store and link to Android settings which is
