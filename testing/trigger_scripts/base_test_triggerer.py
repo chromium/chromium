@@ -304,7 +304,10 @@ class BaseTestTriggerer(object):
                                         suffix='.json')
         args_to_pass = self.modify_args(filtered_remaining_args, bot_index,
                                         shard_index, args.shards, json_temp)
-        ret = self.run_swarming(args_to_pass, verbose)
+        if args.use_swarming_go:
+          ret = self.run_swarming_go(args_to_pass, verbose)
+        else:
+          ret = self.run_swarming(args_to_pass, verbose)
         if ret:
           sys.stderr.write('Failed to trigger a task, aborting\n')
           return ret
@@ -345,5 +348,12 @@ class BaseTestTriggerer(object):
     parser.add_argument('--shard-index', type=int, default=None,
                         help='Which shard to trigger. Duplicated from the '
                              '`swarming.py trigger` command.')
+    BaseTestTriggerer.add_use_swarming_go_arg(parser)
     return parser
+
+  @staticmethod
+  def add_use_swarming_go_arg(parser):
+    parser.add_argument('--use-swarming-go', type=bool, default=False,
+                        action='store_true',
+                        help='Uses swarming Go CLI to trigger tasks.')
 
