@@ -188,6 +188,7 @@ chrome.fileManagerPrivate = {
   onDriveConnectionStatusChanged: new test.Event(),
   onDriveSyncError: new test.Event(),
   onFileTransfersUpdated: new test.Event(),
+  onPinTransfersUpdated: new test.Event(),
   onMountCompleted: new test.Event(),
   onPreferencesChanged: new test.Event(),
   openInspector: (type) => {},

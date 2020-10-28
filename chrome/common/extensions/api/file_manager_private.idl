@@ -1394,6 +1394,8 @@ interface Events {
 
   static void onFileTransfersUpdated(FileTransferStatus event);
 
+  static void onPinTransfersUpdated(FileTransferStatus event);
+
   static void onCopyProgress(long copyId, CopyProgressStatus status);
 
   static void onDirectoryChanged(FileWatchEvent event);

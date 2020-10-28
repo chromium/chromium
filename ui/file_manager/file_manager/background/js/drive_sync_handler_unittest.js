@@ -29,6 +29,15 @@ mockChrome.fileManagerPrivate = {
     },
     listener_: null
   },
+  onPinTransfersUpdated: {
+    addListener: function(callback) {
+      mockChrome.fileManagerPrivate.onPinTransfersUpdated.listener_ = callback;
+    },
+    removeListener: function() {
+      mockChrome.fileManagerPrivate.onPinTransfersUpdated.listener_ = null;
+    },
+    listener_: null
+  },
   onDriveSyncError: {
     addListener: function(callback) {
       mockChrome.fileManagerPrivate.onDriveSyncError.listener_ = callback;
@@ -182,19 +191,20 @@ function testErrorWithoutPath() {
 }
 
 // Test offline.
-function testOffline() {
+async function testOffline() {
   // Start a transfer.
-  mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
+  await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
     fileUrl: 'name',
     transferState: 'in_progress',
     processed: 50.0,
     total: 100.0,
-    numTotalJobs: 1,
+    num_total_jobs: 1,
     hideWhenZeroJobs: true,
   });
 
-  // Check that this created one item.
-  assertEquals(1, progressCenter.getItemCount());
+  // Check that this created one progressing item.
+  assertEquals(
+      1, progressCenter.getItemsByState(ProgressItemState.PROGRESSING).length);
   let item = progressCenter.items['drive-sync'];
   assertEquals(ProgressItemState.PROGRESSING, item.state);
   assertTrue(driveSyncHandler.syncing);
@@ -203,8 +213,79 @@ function testOffline() {
   mockChrome.fileManagerPrivate.onDriveConnectionStatusChanged.listener_();
 
   // Check that this item was cancelled.
-  assertEquals(1, progressCenter.getItemCount());
+  // There are two items cancelled including the pin item.
+  assertEquals(
+      2, progressCenter.getItemsByState(ProgressItemState.CANCELED).length);
   item = progressCenter.items['drive-sync'];
   assertEquals(ProgressItemState.CANCELED, item.state);
   assertFalse(driveSyncHandler.syncing);
+}
+
+// Test transfer status updates.
+async function testTransferUpdate() {
+  // Start a pin transfer.
+  await mockChrome.fileManagerPrivate.onPinTransfersUpdated.listener_({
+    fileUrl: 'name',
+    transferState: 'in_progress',
+    processed: 50.0,
+    total: 100.0,
+    num_total_jobs: 1,
+    hideWhenZeroJobs: true,
+  });
+
+  // There should be one progressing pin item and one canceled sync item.
+  assertEquals(2, progressCenter.getItemCount());
+  let syncItem = progressCenter.items['drive-sync'];
+  assertEquals(ProgressItemState.CANCELED, syncItem.state);
+  let pinItem = progressCenter.items['drive-pin'];
+  assertEquals(ProgressItemState.PROGRESSING, pinItem.state);
+
+  // Start a sync transfer.
+  await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
+    fileUrl: 'name',
+    transferState: 'in_progress',
+    processed: 25.0,
+    total: 100.0,
+    num_total_jobs: 1,
+    hideWhenZeroJobs: true,
+  });
+
+  // There should be two progressing items.
+  assertEquals(2, progressCenter.getItemCount());
+  assertEquals(
+      2, progressCenter.getItemsByState(ProgressItemState.PROGRESSING).length);
+
+  // Finish the pin transfer.
+  await mockChrome.fileManagerPrivate.onPinTransfersUpdated.listener_({
+    fileUrl: 'name',
+    transferState: 'completed',
+    processed: 100.0,
+    total: 100.0,
+    num_total_jobs: 0,
+    hideWhenZeroJobs: true,
+  });
+
+  // There should be one completed pin item and one progressing sync item.
+  assertEquals(2, progressCenter.getItemCount());
+  syncItem = progressCenter.items['drive-sync'];
+  assertEquals(ProgressItemState.PROGRESSING, syncItem.state);
+  pinItem = progressCenter.items['drive-pin'];
+  assertEquals(ProgressItemState.COMPLETED, pinItem.state);
+
+  // Fail the sync transfer.
+  await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
+    fileUrl: 'name',
+    transferState: 'failed',
+    processed: 40.0,
+    total: 100.0,
+    num_total_jobs: 0,
+    hideWhenZeroJobs: true,
+  });
+
+  // There should be one completed pin item and one canceled sync item.
+  assertEquals(2, progressCenter.getItemCount());
+  syncItem = progressCenter.items['drive-sync'];
+  assertEquals(ProgressItemState.CANCELED, syncItem.state);
+  pinItem = progressCenter.items['drive-pin'];
+  assertEquals(ProgressItemState.COMPLETED, pinItem.state);
 }

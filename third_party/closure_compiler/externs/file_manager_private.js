@@ -1204,6 +1204,9 @@ chrome.fileManagerPrivate.onMountCompleted;
 chrome.fileManagerPrivate.onFileTransfersUpdated;
 
 /** @type {!ChromeEvent} */
+chrome.fileManagerPrivate.onPinTransfersUpdated;
+
+/** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onCopyProgress;
 
 /** @type {!ChromeEvent} */

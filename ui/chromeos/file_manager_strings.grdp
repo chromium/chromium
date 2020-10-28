@@ -1188,6 +1188,12 @@
   <message name="IDS_FILE_BROWSER_OFFLINE_BANNER_MESSAGE" desc="Message informing the user that they can make files available offline.">
     You can make files available offline for access when you don't have internet connection.
   </message>
+  <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE" desc="Message informing the user a Google Drive file is being downloaded for offline use.">
+    Making <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
+  </message>
+  <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL" desc="Message informing the user multiple Google Drive files are being downloaded for offline use.">
+    Making <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> files available offline
+  </message>
   <message name="IDS_FILE_BROWSER_QUICK_VIEW_NO_PLAYBACK_AVAILABLE" desc="Massage for user to notify no playback is available.">
     No playback available
   </message>

@@ -47,4 +47,13 @@ class MockProgressCenter {
         /** @type {!Object} */ (this.items));
     return array.length;
   }
+
+  /**
+   * Returns the items that have a given state.
+   * @param {ProgressItemState} state State to filter by.
+   * @returns {!Array<ProgressCenterItem>}
+   */
+  getItemsByState(state) {
+    return Object.values(this.items).filter(item => item.state == state);
+  }
 }
