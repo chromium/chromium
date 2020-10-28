@@ -277,7 +277,7 @@ QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_bbr2_flip_bbq2, true)
 QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_use_fast_huffman_encoder, true)
 
 // When true, QUIC+TLS versions will support key updates.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_key_update_supported, false)
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_key_update_supported, true)
 
 // If true, address is validated by successfully processing a HANDSHAKE or 1-RTT
 // packet.
@@ -306,7 +306,7 @@ QUIC_FLAG(
 
 // Honor the AEAD confidentiality and integrity limits by initiating key update
 // (if enabled) and/or closing the connection, as necessary.
-QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_enable_aead_limits, false)
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_enable_aead_limits, true)
 
 // If true, try to process undecryptable packets at the end of
 // TlsServerHandshaker::DecryptCallback, if it is callback is run
@@ -339,3 +339,7 @@ QUIC_FLAG(FLAGS_quic_restart_flag_quic_session_tickets_always_enabled, false)
 QUIC_FLAG(
     FLAGS_quic_reloadable_flag_quic_bbr2_startup_loss_exit_use_max_delivered,
     false)
+
+// If true, fix QuicSession::WillingAndAbleToWrite to check write keys when
+// using CRYPTO frames.
+QUIC_FLAG(FLAGS_quic_reloadable_flag_quic_fix_willing_and_able_to_write2, true)
