@@ -3076,6 +3076,56 @@ message ExtensionInstallReportLogEvent {
     CACHE_HIT_ON_MANIFEST_FETCH_FAILURE = 5;
   }
 
+  // All the ways SandboxedUnpacker can fail. See
+  // extensions::SandboxedUnpackerFailureReason for more details.
+  // extensions::SandboxedUnpackerFailureReason is the main enum and this is a
+  // copy used for reporting purposes.
+  enum SandboxedUnpackerFailureReason {
+    SANDBOXED_UNPACKER_FAILURE_REASON_UNKNOWN = 0;
+    COULD_NOT_GET_TEMP_DIRECTORY = 1;
+    COULD_NOT_CREATE_TEMP_DIRECTORY = 2;
+    FAILED_TO_COPY_EXTENSION_FILE_TO_TEMP_DIRECTORY = 3;
+    COULD_NOT_GET_SANDBOX_FRIENDLY_PATH = 4;
+    COULD_NOT_LOCALIZE_EXTENSION = 5;
+    INVALID_MANIFEST = 6;
+    UNPACKER_CLIENT_FAILED = 7;
+    UTILITY_PROCESS_CRASHED_WHILE_TRYING_TO_INSTALL = 8;
+    CRX_FILE_NOT_READABLE = 9;
+    CRX_HEADER_INVALID = 10;
+    CRX_MAGIC_NUMBER_INVALID = 11;
+    CRX_VERSION_NUMBER_INVALID = 12;
+    CRX_EXCESSIVELY_LARGE_KEY_OR_SIGNATURE = 13;
+    CRX_ZERO_KEY_LENGTH = 14;
+    CRX_ZERO_SIGNATURE_LENGTH = 15;
+    CRX_PUBLIC_KEY_INVALID = 16;
+    CRX_SIGNATURE_INVALID = 17;
+    CRX_SIGNATURE_VERIFICATION_INITIALIZATION_FAILED = 18;
+    CRX_SIGNATURE_VERIFICATION_FAILED = 19;
+    ERROR_SERIALIZING_MANIFEST_JSON = 20;
+    ERROR_SAVING_MANIFEST_JSON = 21;
+    COULD_NOT_READ_IMAGE_DATA_FROM_DISK_UNUSED = 22;
+    DECODED_IMAGES_DO_NOT_MATCH_THE_MANIFEST_UNUSED = 23;
+    INVALID_PATH_FOR_BROWSER_IMAGE = 24;
+    ERROR_REMOVING_OLD_IMAGE_FILE = 25;
+    INVALID_PATH_FOR_BITMAP_IMAGE = 26;
+    ERROR_RE_ENCODING_THEME_IMAGE = 27;
+    ERROR_SAVING_THEME_IMAGE = 28;
+    DEPRECATED_ABORTED_DUE_TO_SHUTDOWN = 29;
+    COULD_NOT_READ_CATALOG_DATA_FROM_DISK_UNUSED = 30;
+    INVALID_CATALOG_DATA = 31;
+    INVALID_PATH_FOR_CATALOG_UNUSED = 32;
+    ERROR_SERIALIZING_CATALOG = 33;
+    ERROR_SAVING_CATALOG = 34;
+    CRX_HASH_VERIFICATION_FAILED = 35;
+    UNZIP_FAILED = 36;
+    DIRECTORY_MOVE_FAILED = 37;
+    CRX_FILE_IS_DELTA_UPDATE = 38;
+    CRX_EXPECTED_HASH_INVALID = 39;
+    DEPRECATED_ERROR_PARSING_DNR_RULESET = 40;
+    ERROR_INDEXING_DNR_RULESET = 41;
+    CRX_REQUIRED_PROOF_MISSING = 42;
+  }
+
   // Timestamp, in microseconds since epoch. Set for all log
   // events.
   optional int64 timestamp = 1;
@@ -3123,6 +3173,9 @@ message ExtensionInstallReportLogEvent {
 
   // Status of cache during downloading process.
   optional DownloadCacheStatus download_cache_status = 15;
+
+  // Detailed reason why unpacking of extension failed.
+  optional SandboxedUnpackerFailureReason unpacker_failure_reason = 16;
 }
 
 // A single entry in the push-install log for an app.

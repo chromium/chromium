@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 
 namespace em = enterprise_management;
 
@@ -266,6 +267,118 @@ ConvertDownloadCacheStatusToProto(
   }
 }
 
+// Helper function to convert extensions::SandboxedUnpackerFailureReason to the
+// ExtensionInstallReportLogEvent::SandboxedUnpackerFailureReason proto.
+em::ExtensionInstallReportLogEvent_SandboxedUnpackerFailureReason
+ConvertUnpackerFailureReasonToProto(
+    extensions::SandboxedUnpackerFailureReason reason) {
+  using FailureReason = extensions::SandboxedUnpackerFailureReason;
+  switch (reason) {
+    case FailureReason::COULD_NOT_GET_TEMP_DIRECTORY:
+      return em::ExtensionInstallReportLogEvent::COULD_NOT_GET_TEMP_DIRECTORY;
+    case FailureReason::COULD_NOT_CREATE_TEMP_DIRECTORY:
+      return em::ExtensionInstallReportLogEvent::
+          COULD_NOT_CREATE_TEMP_DIRECTORY;
+    case FailureReason::FAILED_TO_COPY_EXTENSION_FILE_TO_TEMP_DIRECTORY:
+      return em::ExtensionInstallReportLogEvent::
+          FAILED_TO_COPY_EXTENSION_FILE_TO_TEMP_DIRECTORY;
+    case FailureReason::COULD_NOT_GET_SANDBOX_FRIENDLY_PATH:
+      return em::ExtensionInstallReportLogEvent::
+          COULD_NOT_GET_SANDBOX_FRIENDLY_PATH;
+    case FailureReason::COULD_NOT_LOCALIZE_EXTENSION:
+      return em::ExtensionInstallReportLogEvent::COULD_NOT_LOCALIZE_EXTENSION;
+    case FailureReason::INVALID_MANIFEST:
+      return em::ExtensionInstallReportLogEvent::INVALID_MANIFEST;
+    case FailureReason::UNPACKER_CLIENT_FAILED:
+      return em::ExtensionInstallReportLogEvent::UNPACKER_CLIENT_FAILED;
+    case FailureReason::UTILITY_PROCESS_CRASHED_WHILE_TRYING_TO_INSTALL:
+      return em::ExtensionInstallReportLogEvent::
+          UTILITY_PROCESS_CRASHED_WHILE_TRYING_TO_INSTALL;
+    case FailureReason::CRX_FILE_NOT_READABLE:
+      return em::ExtensionInstallReportLogEvent::CRX_FILE_NOT_READABLE;
+    case FailureReason::CRX_HEADER_INVALID:
+      return em::ExtensionInstallReportLogEvent::CRX_HEADER_INVALID;
+    case FailureReason::CRX_MAGIC_NUMBER_INVALID:
+      return em::ExtensionInstallReportLogEvent::CRX_MAGIC_NUMBER_INVALID;
+    case FailureReason::CRX_VERSION_NUMBER_INVALID:
+      return em::ExtensionInstallReportLogEvent::CRX_VERSION_NUMBER_INVALID;
+    case FailureReason::CRX_EXCESSIVELY_LARGE_KEY_OR_SIGNATURE:
+      return em::ExtensionInstallReportLogEvent::
+          CRX_EXCESSIVELY_LARGE_KEY_OR_SIGNATURE;
+    case FailureReason::CRX_ZERO_KEY_LENGTH:
+      return em::ExtensionInstallReportLogEvent::CRX_ZERO_KEY_LENGTH;
+    case FailureReason::CRX_ZERO_SIGNATURE_LENGTH:
+      return em::ExtensionInstallReportLogEvent::CRX_ZERO_SIGNATURE_LENGTH;
+    case FailureReason::CRX_PUBLIC_KEY_INVALID:
+      return em::ExtensionInstallReportLogEvent::CRX_PUBLIC_KEY_INVALID;
+    case FailureReason::CRX_SIGNATURE_INVALID:
+      return em::ExtensionInstallReportLogEvent::CRX_SIGNATURE_INVALID;
+    case FailureReason::CRX_SIGNATURE_VERIFICATION_INITIALIZATION_FAILED:
+      return em::ExtensionInstallReportLogEvent::
+          CRX_SIGNATURE_VERIFICATION_INITIALIZATION_FAILED;
+    case FailureReason::CRX_SIGNATURE_VERIFICATION_FAILED:
+      return em::ExtensionInstallReportLogEvent::
+          CRX_SIGNATURE_VERIFICATION_FAILED;
+    case FailureReason::ERROR_SERIALIZING_MANIFEST_JSON:
+      return em::ExtensionInstallReportLogEvent::
+          ERROR_SERIALIZING_MANIFEST_JSON;
+    case FailureReason::ERROR_SAVING_MANIFEST_JSON:
+      return em::ExtensionInstallReportLogEvent::ERROR_SAVING_MANIFEST_JSON;
+    case FailureReason::COULD_NOT_READ_IMAGE_DATA_FROM_DISK_UNUSED:
+      return em::ExtensionInstallReportLogEvent::
+          COULD_NOT_READ_IMAGE_DATA_FROM_DISK_UNUSED;
+    case FailureReason::DECODED_IMAGES_DO_NOT_MATCH_THE_MANIFEST_UNUSED:
+      return em::ExtensionInstallReportLogEvent::
+          DECODED_IMAGES_DO_NOT_MATCH_THE_MANIFEST_UNUSED;
+    case FailureReason::INVALID_PATH_FOR_BROWSER_IMAGE:
+      return em::ExtensionInstallReportLogEvent::INVALID_PATH_FOR_BROWSER_IMAGE;
+    case FailureReason::ERROR_REMOVING_OLD_IMAGE_FILE:
+      return em::ExtensionInstallReportLogEvent::ERROR_REMOVING_OLD_IMAGE_FILE;
+    case FailureReason::INVALID_PATH_FOR_BITMAP_IMAGE:
+      return em::ExtensionInstallReportLogEvent::INVALID_PATH_FOR_BITMAP_IMAGE;
+    case FailureReason::ERROR_RE_ENCODING_THEME_IMAGE:
+      return em::ExtensionInstallReportLogEvent::ERROR_RE_ENCODING_THEME_IMAGE;
+    case FailureReason::ERROR_SAVING_THEME_IMAGE:
+      return em::ExtensionInstallReportLogEvent::ERROR_SAVING_THEME_IMAGE;
+    case FailureReason::DEPRECATED_ABORTED_DUE_TO_SHUTDOWN:
+      return em::ExtensionInstallReportLogEvent::
+          DEPRECATED_ABORTED_DUE_TO_SHUTDOWN;
+    case FailureReason::COULD_NOT_READ_CATALOG_DATA_FROM_DISK_UNUSED:
+      return em::ExtensionInstallReportLogEvent::
+          COULD_NOT_READ_CATALOG_DATA_FROM_DISK_UNUSED;
+    case FailureReason::INVALID_CATALOG_DATA:
+      return em::ExtensionInstallReportLogEvent::INVALID_CATALOG_DATA;
+    case FailureReason::INVALID_PATH_FOR_CATALOG_UNUSED:
+      return em::ExtensionInstallReportLogEvent::
+          INVALID_PATH_FOR_CATALOG_UNUSED;
+    case FailureReason::ERROR_SERIALIZING_CATALOG:
+      return em::ExtensionInstallReportLogEvent::ERROR_SERIALIZING_CATALOG;
+    case FailureReason::ERROR_SAVING_CATALOG:
+      return em::ExtensionInstallReportLogEvent::ERROR_SAVING_CATALOG;
+    case FailureReason::CRX_HASH_VERIFICATION_FAILED:
+      return em::ExtensionInstallReportLogEvent::CRX_HASH_VERIFICATION_FAILED;
+    case FailureReason::UNZIP_FAILED:
+      return em::ExtensionInstallReportLogEvent::UNZIP_FAILED;
+    case FailureReason::DIRECTORY_MOVE_FAILED:
+      return em::ExtensionInstallReportLogEvent::DIRECTORY_MOVE_FAILED;
+    case FailureReason::CRX_FILE_IS_DELTA_UPDATE:
+      return em::ExtensionInstallReportLogEvent::CRX_FILE_IS_DELTA_UPDATE;
+    case FailureReason::CRX_EXPECTED_HASH_INVALID:
+      return em::ExtensionInstallReportLogEvent::CRX_EXPECTED_HASH_INVALID;
+    case FailureReason::DEPRECATED_ERROR_PARSING_DNR_RULESET:
+      return em::ExtensionInstallReportLogEvent::
+          DEPRECATED_ERROR_PARSING_DNR_RULESET;
+    case FailureReason::ERROR_INDEXING_DNR_RULESET:
+      return em::ExtensionInstallReportLogEvent::ERROR_INDEXING_DNR_RULESET;
+    case FailureReason::CRX_REQUIRED_PROOF_MISSING:
+      return em::ExtensionInstallReportLogEvent::CRX_REQUIRED_PROOF_MISSING;
+    default:
+      NOTREACHED();
+      return em::ExtensionInstallReportLogEvent::
+          SANDBOXED_UNPACKER_FAILURE_REASON_UNKNOWN;
+  }
+}
+
 }  // namespace
 
 ExtensionInstallEventLogCollector::ExtensionInstallEventLogCollector(
@@ -359,6 +472,10 @@ void ExtensionInstallEventLogCollector::OnExtensionInstallationFailed(
   if (data.extension_type) {
     event->set_extension_type(enterprise_reporting::ConvertExtensionTypeToProto(
         data.extension_type.value()));
+  }
+  if (data.unpacker_failure_reason) {
+    event->set_unpacker_failure_reason(ConvertUnpackerFailureReasonToProto(
+        data.unpacker_failure_reason.value()));
   }
   extensions::ForceInstalledTracker* force_installed_tracker =
       extensions::ExtensionSystem::Get(profile_)

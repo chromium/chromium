@@ -484,6 +484,30 @@ TEST_F(ExtensionInstallEventLogCollectorTest, ExtensionInstallFailedWithType) {
             delegate()->last_request().event.extension_type());
 }
 
+// Verifies that a new event is created when the extension failed to unpack.
+TEST_F(ExtensionInstallEventLogCollectorTest,
+       ExtensionInstallFailedWithUnpackFailure) {
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
+
+  extensions::InstallStageTracker* tracker =
+      extensions::InstallStageTracker::Get(profile());
+
+  // One extension failed.
+  tracker->ReportSandboxedUnpackerFailureReason(
+      kExtensionId1,
+      extensions::SandboxedUnpackerFailureReason::CRX_HEADER_INVALID);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,
+            delegate()->last_request().event.event_type());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::
+                CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE,
+            delegate()->last_request().event.failure_reason());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::CRX_HEADER_INVALID,
+            delegate()->last_request().event.unpacker_failure_reason());
+}
+
 TEST_F(ExtensionInstallEventLogCollectorTest, InstallExtension) {
   std::unique_ptr<ExtensionInstallEventLogCollector> collector =
       std::make_unique<ExtensionInstallEventLogCollector>(

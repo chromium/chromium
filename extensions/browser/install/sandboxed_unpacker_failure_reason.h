@@ -9,6 +9,10 @@ namespace extensions {
 
 // Enumerate all the ways SandboxedUnpacker can fail.
 // Don't change the order or change the value of the enums.
+// Don't forget to update device_management_backend.proto (name:
+// ExtensionInstallReportLogEvent::SandboxedUnpackerFailureReason) when adding
+// new entries. Don't forget to update ConvertUnpackerFailureReasonToProto
+// method in ExtensionInstallEventLogCollector.
 enum class SandboxedUnpackerFailureReason {
   // SandboxedUnpacker::CreateTempDirectory()
   COULD_NOT_GET_TEMP_DIRECTORY = 0,

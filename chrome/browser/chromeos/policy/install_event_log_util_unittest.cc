@@ -49,6 +49,7 @@ constexpr char kIsNewUser[] = "isNewUser";
 constexpr char kIsMisconfigurationFailure[] = "isMisconfigurationFailure";
 constexpr char kInstallCreationStage[] = "installCreationStage";
 constexpr char kDownloadCacheStatus[] = "downloadCacheStatus";
+constexpr char kUnpackerFailureReason[] = "unpackerFailureReason";
 
 void ConvertToValueAndVerify(const em::ExtensionInstallReportLogEvent& event,
                              const std::vector<std::string>& keys) {
@@ -96,6 +97,22 @@ TEST_F(ExtensionInstallEventLogUtilTest, FailureReasonEvent) {
   ConvertToValueAndVerify(
       event_, {kEventType, kFailureReason, kIsMisconfigurationFailure,
                kExtensionType, kStatefulTotal, kStatefulFree});
+}
+
+// Verifies that an event reporting extension unpack failure is successfully
+// parsed.
+TEST_F(ExtensionInstallEventLogUtilTest, UnpackerFailureReasonEvent) {
+  event_.set_event_type(
+      em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED);
+  event_.set_failure_reason(em::ExtensionInstallReportLogEvent::
+                                CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE);
+  event_.set_unpacker_failure_reason(
+      em::ExtensionInstallReportLogEvent::CRX_HEADER_INVALID);
+  event_.set_stateful_total(kDiskSpaceTotalBytes);
+  event_.set_stateful_free(kDiskSpaceFreeBytes);
+  ConvertToValueAndVerify(event_,
+                          {kEventType, kFailureReason, kUnpackerFailureReason,
+                           kStatefulTotal, kStatefulFree});
 }
 
 // Verifies that an event reporting extension installation stage is successfully
