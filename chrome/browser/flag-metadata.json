@@ -2449,6 +2449,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "enterprise-reporting-api-keychain-recreation",
+    "owners": ["zmin", "sacomoto"],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enterprise-reporting-in-chromeos",
     "owners": [ "anqing" ],
     "expiry_milestone": 87

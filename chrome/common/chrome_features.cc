@@ -348,6 +348,12 @@ const base::Feature kEnableIncognitoShortcutOnDesktop{
     "EnableIncognitoShortcutOnDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_MAC)
+const base::Feature kEnterpriseReportingApiKeychainRecreation{
+    "EnterpriseReportingApiKeychainRecreation",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_CHROMEOS)
 // Upload enterprise cloud reporting from Chrome OS.
 const base::Feature kEnterpriseReportingInChromeOS{
