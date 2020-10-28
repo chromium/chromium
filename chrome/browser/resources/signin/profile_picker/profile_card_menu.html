@@ -35,6 +35,10 @@
     white-space: nowrap;
   }
 
+  #userName {
+    overflow-wrap: break-word;
+  }
+
   .key-text {
     font-weight: 500;
   }
@@ -109,9 +113,9 @@
     </div>
     <div class="warning-message">
       [[removeWarningText_]]
-      <span hidden$="[[!profileState.isSyncing]]" class="key-text">
+      <div id="userName" hidden$="[[!profileState.isSyncing]]" class="key-text">
         [[profileState.userName]]
-      </span>
+      </div>
     </div>
     <table class="statistics">
       <template is="dom-repeat" items="[[profileStatistics_]]">

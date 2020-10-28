@@ -18,6 +18,7 @@
       position: absolute;
       top: 0;
       width: 100%;
+      z-index: 0;
     }
 
     #backButton {
@@ -26,6 +27,8 @@
       --cr-icon-button-margin-start: 4px;
       --cr-icon-button-size: 36px;
       margin-top: 4px;
+      position: relative;
+      z-index: 1;
     }
 
     .avatar {
@@ -38,6 +41,7 @@
       position: absolute;
       right: 0;
       width: var(--avatar-size);
+      z-index: 1;
     }
   </style>
 </template>

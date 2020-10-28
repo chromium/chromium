@@ -128,7 +128,8 @@
   <div id="wrapper">
     <cr-input id="nameInput" value="{{profileName_}}" pattern="[[pattern_]]"
         placeholder="$i18n{createProfileNamePlaceholder}"
-        auto-validate spellcheck="false">
+        on-blur="onProfileNameInputBlur_"
+        auto-validate spellcheck="false" required>
     </cr-input>
 
     <div id="colorPickerContainer">

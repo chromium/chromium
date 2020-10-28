@@ -103,6 +103,9 @@ Polymer({
    * @private
    */
   async initializeNewProfileThemeInfo_() {
+    if (this.newProfileThemeInfo) {
+      return Promise.resolve();
+    }
     this.newProfileThemeInfo = await this.manageProfilesBrowserProxy_
                                    .getNewProfileSuggestedThemeInfo();
   },
