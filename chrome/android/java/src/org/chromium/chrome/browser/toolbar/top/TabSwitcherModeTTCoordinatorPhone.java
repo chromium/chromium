@@ -125,24 +125,8 @@ class TabSwitcherModeTTCoordinatorPhone {
             mTabSwitcherModeToolbar.setTabModelSelector(selector);
         }
 
-        if (isNewTabVariationEnabled()) {
-            mIncognitoTabModelObserver = new IncognitoTabModelObserver() {
-                @Override
-                public void wasFirstTabCreated() {
-                    mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(true);
-                }
-
-                @Override
-                public void didBecomeEmpty() {
-                    mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(false);
-                }
-            };
-            mTabModelSelector.addIncognitoTabModelObserver(mIncognitoTabModelObserver);
-            if (mTabSwitcherModeToolbar != null) {
-                boolean doesExist = mTabModelSelector.getModel(true).getCount() != 0;
-                mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(doesExist);
-            }
-        }
+        maybeInitializeIncognitoTabModelObserver();
+        maybeNotifyOnIncognitoTabsExistenceChanged();
     }
 
     /**
@@ -184,10 +168,8 @@ class TabSwitcherModeTTCoordinatorPhone {
         assert mIncognitoStateProvider != null;
         mTabSwitcherModeToolbar.setIncognitoStateProvider(mIncognitoStateProvider);
 
-        if (isNewTabVariationEnabled()) {
-            boolean doesExist = mTabModelSelector.getModel(true).getCount() != 0;
-            mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(doesExist);
-        }
+        maybeInitializeIncognitoTabModelObserver();
+        maybeNotifyOnIncognitoTabsExistenceChanged();
 
         if (mAccessibilityEnabled) {
             mTabSwitcherModeToolbar.onAccessibilityStatusChanged(mAccessibilityEnabled);
@@ -209,5 +191,46 @@ class TabSwitcherModeTTCoordinatorPhone {
     void setNewTabButtonHighlight(boolean highlight) {
         assert mTabSwitcherModeToolbar != null;
         mTabSwitcherModeToolbar.setNewTabButtonHighlight(highlight);
+    }
+
+    /**
+     * Initialize {@link IncognitoTabModelObserver}, if the new tab variation is enabled. This
+     * function will initialize observer, if it is not initialized before.
+     */
+    private void maybeInitializeIncognitoTabModelObserver() {
+        if (mTabModelSelector == null || mTabSwitcherModeToolbar == null
+                || !isNewTabVariationEnabled() || mIncognitoTabModelObserver != null) {
+            return;
+        }
+
+        mIncognitoTabModelObserver = new IncognitoTabModelObserver() {
+            @Override
+            public void wasFirstTabCreated() {
+                if (mTabSwitcherModeToolbar != null) {
+                    mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(true);
+                }
+            }
+
+            @Override
+            public void didBecomeEmpty() {
+                if (mTabSwitcherModeToolbar != null) {
+                    mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(false);
+                }
+            }
+        };
+        mTabModelSelector.addIncognitoTabModelObserver(mIncognitoTabModelObserver);
+    }
+
+    /**
+     * Update incognito logo visibility on toolbar, if the new tab variation is enabled.
+     */
+    private void maybeNotifyOnIncognitoTabsExistenceChanged() {
+        if (mTabModelSelector == null || mTabSwitcherModeToolbar == null
+                || !isNewTabVariationEnabled()) {
+            return;
+        }
+
+        boolean doesExist = mTabModelSelector.getModel(true).getCount() != 0;
+        mTabSwitcherModeToolbar.onIncognitoTabsExistenceChanged(doesExist);
     }
 }
