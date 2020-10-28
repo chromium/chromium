@@ -6,6 +6,8 @@ package org.chromium.components.messages;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.ui.util.TokenHolder;
+
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +22,12 @@ class MessageQueueManager {
     private final Map<Object, MessageStateHandler> mMessageMap = new HashMap<>();
     @Nullable
     private MessageStateHandler mCurrentDisplayedMessage;
+    private MessageQueueDelegate mMessageQueueDelegate;
+    private final TokenHolder mTokenHolder;
 
-    public MessageQueueManager() {}
+    public MessageQueueManager() {
+        mTokenHolder = new TokenHolder(this::updateCurrentDisplayedMessage);
+    }
 
     /**
      * Enqueues a message. Associates the message with its key; the key is used later to dismiss the
@@ -49,17 +55,43 @@ class MessageQueueManager {
         mMessageMap.remove(key);
         mMessageQueue.remove(message);
         if (mCurrentDisplayedMessage == message) {
-            mCurrentDisplayedMessage.hide();
-            mCurrentDisplayedMessage = null;
+            mMessageQueueDelegate.prepareToHide(() -> {
+                mCurrentDisplayedMessage.hide();
+                mCurrentDisplayedMessage = null;
+            });
         }
         message.dismiss();
         updateCurrentDisplayedMessage();
     }
 
+    public int suspend() {
+        return mTokenHolder.acquireToken();
+    }
+
+    public void resume(int token) {
+        mTokenHolder.releaseToken(token);
+    }
+
+    public void setDelegate(MessageQueueDelegate delegate) {
+        mMessageQueueDelegate = delegate;
+    }
+
     private void updateCurrentDisplayedMessage() {
-        if (mCurrentDisplayedMessage != null) return;
-        if (mMessageQueue.isEmpty()) return;
-        mCurrentDisplayedMessage = mMessageQueue.element();
-        mCurrentDisplayedMessage.show();
+        // TODO(crbug.com/1123947): may only call delegate when message system goes from
+        //                            no shown message to showing first message or the opposite.
+        if (mMessageQueue.isEmpty()) {
+            assert mCurrentDisplayedMessage
+                    == null : "No message should be displayed when the queue is empty.";
+            return;
+        }
+        if (mCurrentDisplayedMessage == null && !mTokenHolder.hasTokens()) {
+            mCurrentDisplayedMessage = mMessageQueue.element();
+            mMessageQueueDelegate.prepareToShow(() -> mCurrentDisplayedMessage.show());
+        } else if (mCurrentDisplayedMessage != null && mTokenHolder.hasTokens()) {
+            mMessageQueueDelegate.prepareToHide(() -> {
+                mCurrentDisplayedMessage.hide();
+                mCurrentDisplayedMessage = null;
+            });
+        }
     }
 }

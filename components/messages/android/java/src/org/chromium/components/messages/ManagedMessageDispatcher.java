@@ -8,4 +8,22 @@ package org.chromium.components.messages;
  * An interface for the MessageDispatcher owning object.
  */
 public interface ManagedMessageDispatcher
-        extends MessageDispatcher, MessageDispatcherProvider.Unowned {}
+        extends MessageDispatcher, MessageDispatcherProvider.Unowned {
+    /**
+     * Suspend the dispatcher to prevent Messages from being displayed.
+     * @return A token required to resume the dispatcher.
+     */
+    int suspend();
+
+    /**
+     * Resume the dispatcher to allow to show new messages.
+     * @param token A token returned by {@link #suspend()};
+     */
+    void resume(int token);
+
+    /**
+     * Set a {@link MessageQueueDelegate} to do show/hide related preparation work.
+     * @param delegate The {@link MessageQueueDelegate}.
+     */
+    void setDelegate(MessageQueueDelegate delegate);
+}

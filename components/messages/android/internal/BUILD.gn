@@ -30,6 +30,7 @@ java_library("junit") {
   deps = [
     ":java",
     "..:java",
+    "..:manager_java",
     "//base:base_junit_test_support",
     "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/junit",

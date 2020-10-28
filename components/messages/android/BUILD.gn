@@ -44,6 +44,7 @@ android_resources("java_resources") {
 android_library("manager_java") {
   sources = [
     "java/src/org/chromium/components/messages/ManagedMessageDispatcher.java",
+    "java/src/org/chromium/components/messages/MessageQueueDelegate.java",
   ]
   deps = [ ":java" ]
 }

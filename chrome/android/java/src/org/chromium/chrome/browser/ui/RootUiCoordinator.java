@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.messages.ChromeMessageQueueMediator;
 import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -169,6 +170,8 @@ public class RootUiCoordinator
     private ManagedMessageDispatcher mMessageDispatcher;
     @Nullable
     private MessageContainerCoordinator mMessageContainerCoordinator;
+    @Nullable
+    private ChromeMessageQueueMediator mMessageQueueMediator;
     private LayoutManager mLayoutManager;
     protected OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
     // This supplier only ever updated when feature TOOLBAR_IPH_ANDROID is enabled.
@@ -257,6 +260,11 @@ public class RootUiCoordinator
         if (mMessageDispatcher != null) {
             MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
             mMessageDispatcher = null;
+        }
+
+        if (mMessageQueueMediator != null) {
+            mMessageQueueMediator.destroy();
+            mMessageQueueMediator = null;
         }
 
         if (mMessageContainerCoordinator != null) {
@@ -399,7 +407,11 @@ public class RootUiCoordinator
             MessageContainer container = mActivity.findViewById(R.id.message_container);
             mMessageContainerCoordinator =
                     new MessageContainerCoordinator(container, getBrowserControlsManager());
+            mMessageQueueMediator = new ChromeMessageQueueMediator(
+                    mActivity.getBrowserControlsManager(), mMessageContainerCoordinator,
+                    mActivity.getFullscreenManager(), mMessageDispatcher);
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(container);
+            mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(
                     mActivity.getWindowAndroid(), mMessageDispatcher);
         }

@@ -21,6 +21,18 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MessageQueueManagerTest {
+    // TODO(crbug.com/1123947): test on suspending and resuming.
+    private MessageQueueDelegate mEmptyDelegate = new MessageQueueDelegate() {
+        @Override
+        public void prepareToShow(Runnable callback) {
+            callback.run();
+        }
+
+        @Override
+        public void prepareToHide(Runnable callback) {
+            callback.run();
+        }
+    };
     /**
      * Tests lifecycle of a single message:
      *   - enqueueMessage() calls show()
@@ -30,6 +42,7 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testEnqueueMessage() {
         MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
 
@@ -53,6 +66,7 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testOneMessageShownAtATime() {
         MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
 
@@ -75,6 +89,7 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testDismissBeforeShow() {
         MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
 
@@ -99,6 +114,7 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testEnqueueDuplicateKey() {
         MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
         Object key = new Object();
@@ -114,6 +130,7 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testDismissMessageTwice() {
         MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         queueManager.enqueueMessage(m1, m1);
         queueManager.dismissMessage(m1);

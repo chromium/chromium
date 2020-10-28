@@ -33,4 +33,19 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     public void dismissMessage(PropertyModel messageProperties) {
         mMessageQueueManager.dismissMessage(messageProperties);
     }
+
+    @Override
+    public int suspend() {
+        return mMessageQueueManager.suspend();
+    }
+
+    @Override
+    public void resume(int token) {
+        mMessageQueueManager.resume(token);
+    }
+
+    @Override
+    public void setDelegate(MessageQueueDelegate delegate) {
+        mMessageQueueManager.setDelegate(delegate);
+    }
 }

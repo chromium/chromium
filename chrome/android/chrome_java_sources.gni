@@ -897,6 +897,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerDelegate.java",
   "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationManager.java",
   "java/src/org/chromium/chrome/browser/media/ui/MediaSessionTabHelper.java",
+  "java/src/org/chromium/chrome/browser/messages/ChromeMessageQueueMediator.java",
   "java/src/org/chromium/chrome/browser/messages/MessageContainerCoordinator.java",
   "java/src/org/chromium/chrome/browser/metrics/ActivityTabStartupMetricsTracker.java",
   "java/src/org/chromium/chrome/browser/metrics/BackgroundTaskMemoryMetricsEmitter.java",
