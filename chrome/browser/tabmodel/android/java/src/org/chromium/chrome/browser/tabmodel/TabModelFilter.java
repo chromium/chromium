@@ -54,7 +54,7 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     public boolean isCurrentlySelectedFilter() {
-        return getTabModel().isCurrentModel();
+        return getTabModel().isActiveModel();
     }
 
     /**

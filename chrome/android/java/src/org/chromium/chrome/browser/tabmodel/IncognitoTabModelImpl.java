@@ -197,7 +197,7 @@ public class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public boolean isCurrentModel() {
+    public boolean isActiveModel() {
         return mDelegate.isCurrentModel(this);
     }
 

@@ -147,7 +147,7 @@ public interface TabModel extends TabList {
      * @return Whether this tab model is currently selected in the correspond
      *         {@link TabModelSelector}.
      */
-    boolean isCurrentModel();
+    boolean isActiveModel();
 
     /**
      * Moves a tab to a new index.

@@ -136,7 +136,7 @@ class TestTabModel : public TabModel {
     return nullptr;
   }
   bool IsSessionRestoreInProgress() const override { return false; }
-  bool IsCurrentModel() const override { return false; }
+  bool IsActiveModel() const override { return false; }
   void AddObserver(TabModelObserver* observer) override {}
   void RemoveObserver(TabModelObserver* observer) override {}
 

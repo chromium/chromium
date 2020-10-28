@@ -19,7 +19,7 @@ namespace chrome_test_utils {
 content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test) {
 #if defined(OS_ANDROID)
   for (size_t i = 0; i < TabModelList::size(); ++i) {
-    if (TabModelList::get(i)->IsCurrentModel())
+    if (TabModelList::get(i)->IsActiveModel())
       return TabModelList::get(i)->GetActiveWebContents();
   }
   NOTREACHED() << "No active TabModel??";

@@ -140,7 +140,7 @@ class TabModel {
 
   // Return true if this class is the currently selected in the correspond
   // tab model selector.
-  virtual bool IsCurrentModel() const = 0;
+  virtual bool IsActiveModel() const = 0;
 
   // Adds an observer to this TabModel.
   virtual void AddObserver(TabModelObserver* observer) = 0;

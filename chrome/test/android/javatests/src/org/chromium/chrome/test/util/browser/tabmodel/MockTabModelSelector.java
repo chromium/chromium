@@ -68,6 +68,6 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     @Override
     public void selectModel(boolean incognito) {
         super.selectModel(incognito);
-        ((MockTabModel) getModel(incognito)).setAsCurrentModelForTesting();
+        ((MockTabModel) getModel(incognito)).setAsActiveModelForTesting();
     }
 }

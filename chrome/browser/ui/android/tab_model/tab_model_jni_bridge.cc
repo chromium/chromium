@@ -174,9 +174,9 @@ bool TabModelJniBridge::IsSessionRestoreInProgress() const {
       env, java_object_.get(env));
 }
 
-bool TabModelJniBridge::IsCurrentModel() const {
+bool TabModelJniBridge::IsActiveModel() const {
   JNIEnv* env = AttachCurrentThread();
-  return Java_TabModelJniBridge_isCurrentModel(env, java_object_.get(env));
+  return Java_TabModelJniBridge_isActiveModel(env, java_object_.get(env));
 }
 
 void TabModelJniBridge::AddObserver(TabModelObserver* observer) {

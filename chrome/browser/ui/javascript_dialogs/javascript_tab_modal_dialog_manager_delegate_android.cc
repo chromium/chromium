@@ -47,7 +47,7 @@ void JavaScriptTabModalDialogManagerDelegateAndroid::SetTabNeedsAttention(
 bool JavaScriptTabModalDialogManagerDelegateAndroid::IsWebContentsForemost() {
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents_);
   if (tab_model) {
-    return tab_model->IsCurrentModel() &&
+    return tab_model->IsActiveModel() &&
            tab_model->GetActiveWebContents() == web_contents_;
   } else {
     // If tab model is not found (e.g. single tab model), fall back to check
