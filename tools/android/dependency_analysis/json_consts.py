@@ -12,7 +12,13 @@ EDGES = 'edges'
 BEGIN = 'begin'
 END = 'end'
 
+# Build metadata attributes.
+COMMIT_HASH = 'commit_hash'
+COMMIT_CR_POSITION = 'commit_cr_position'
+COMMIT_TIME = 'commit_time'
+
 # Miscellaneous attributes.
 PACKAGE_GRAPH = 'package_graph'
 CLASS_GRAPH = 'class_graph'
+BUILD_METADATA = 'build_metadata'
 META = 'meta'

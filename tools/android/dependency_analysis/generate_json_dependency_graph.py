@@ -10,14 +10,13 @@ import math
 import multiprocessing
 import pathlib
 import os
-import subprocess
-import sys
 
 from typing import List, Tuple
 
 import class_dependency
 import package_dependency
 import serialization
+import subprocess_utils
 
 SRC_PATH = pathlib.Path(__file__).resolve().parents[3]  # src/
 JDEPS_PATH = SRC_PATH.joinpath('third_party/jdk/current/bin/jdeps')
@@ -89,28 +88,11 @@ class JavaClassJdepsParser(object):
             from_node.add_nested_class(nested_to)
 
 
-
-def _run_command(command: List[str]) -> str:
-    """Runs a command and returns the output.
-
-    Raises an exception and prints the command output if the command fails."""
-    try:
-        run_result = subprocess.run(command,
-                                    capture_output=True,
-                                    text=True,
-                                    check=True)
-    except subprocess.CalledProcessError as e:
-        print(f'{command} failed with code {e.returncode}.', file=sys.stderr)
-        print(f'\nSTDERR:\n{e.stderr}', file=sys.stderr)
-        print(f'\nSTDOUT:\n{e.stdout}', file=sys.stderr)
-        raise
-    return run_result.stdout
-
-
 def _run_jdeps(jdeps_path: str, filepath: pathlib.Path) -> str:
     """Runs jdeps on the given filepath and returns the output."""
     print(f'Running jdeps and parsing output for {filepath}')
-    return _run_command([jdeps_path, '-R', '-verbose:class', filepath])
+    return subprocess_utils.run_command(
+        [jdeps_path, '-R', '-verbose:class', filepath])
 
 
 def _run_gn_desc_list_dependencies(build_output_dir: str, target: str,
@@ -118,7 +100,7 @@ def _run_gn_desc_list_dependencies(build_output_dir: str, target: str,
     """Runs gn desc to list all jars that a target depends on.
 
     This includes direct and indirect dependencies."""
-    return _run_command(
+    return subprocess_utils.run_command(
         [gn_path, 'desc', '--all', build_output_dir, target, 'deps'])
 
 
@@ -191,7 +173,7 @@ def main():
                             help='Path to the gn executable.')
     arguments = arg_parser.parse_args()
 
-    # gn must be run from inside the git checkout.
+    # gn and git must be run from inside the git checkout.
     os.chdir(SRC_PATH)
 
     print('Getting list of dependency jars...')

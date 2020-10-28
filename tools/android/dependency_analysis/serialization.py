@@ -8,6 +8,7 @@ from typing import Dict, Tuple
 
 import class_dependency
 import class_json_consts
+import git_utils
 import graph
 import json_consts
 import package_dependency
@@ -92,6 +93,17 @@ def create_class_graph_from_json_obj(
     return class_graph
 
 
+def create_build_metadata() -> Dict:
+    """Creates metadata about the build the graph was extracted from.
+    """
+    return {
+        json_consts.COMMIT_HASH: git_utils.get_last_commit_hash(),
+        json_consts.COMMIT_CR_POSITION:
+        git_utils.get_last_commit_cr_position(),
+        json_consts.COMMIT_TIME: git_utils.get_last_commit_time(),
+    }
+
+
 def dump_class_and_package_graphs_to_file(
         class_graph: class_dependency.JavaClassDependencyGraph,
         package_graph: package_dependency.JavaPackageDependencyGraph,
@@ -113,6 +125,7 @@ def dump_class_and_package_graphs_to_file(
     json_obj = {
         json_consts.CLASS_GRAPH: create_json_obj_from_graph(class_graph),
         json_consts.PACKAGE_GRAPH: create_json_obj_from_graph(package_graph),
+        json_consts.BUILD_METADATA: create_build_metadata(),
     }
     with open(filename, 'w') as json_file:
         json.dump(json_obj, json_file, separators=(',', ':'))
