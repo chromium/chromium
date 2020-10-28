@@ -710,9 +710,11 @@ bool PrintViewManagerBase::RenderAllMissingPagesNow() {
   }
 
   // We can't print if there is no renderer.
-  if (!web_contents() ||
-      !web_contents()->GetRenderViewHost() ||
-      !web_contents()->GetRenderViewHost()->IsRenderViewLive()) {
+  if (!web_contents() || !web_contents()->GetMainFrame()->GetRenderViewHost() ||
+      !web_contents()
+           ->GetMainFrame()
+           ->GetRenderViewHost()
+           ->IsRenderViewLive()) {
     return false;
   }
 
@@ -756,8 +758,11 @@ bool PrintViewManagerBase::CreateNewPrintJob(
   DisconnectFromCurrentPrintJob();
 
   // We can't print if there is no renderer.
-  if (!web_contents()->GetRenderViewHost() ||
-      !web_contents()->GetRenderViewHost()->IsRenderViewLive()) {
+  if (!web_contents()->GetMainFrame()->GetRenderViewHost() ||
+      !web_contents()
+           ->GetMainFrame()
+           ->GetRenderViewHost()
+           ->IsRenderViewLive()) {
     return false;
   }
 
