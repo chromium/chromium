@@ -2600,7 +2600,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
+crbug.com/626703 [ Mac ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 crbug.com/626703 external/wpt/editing/other/select-all-and-delete-in-html-element-having-contenteditable.html [ Timeout ]
 crbug.com/626703 external/wpt/paint-timing/with-first-paint/first-contentful-image.html [ Timeout ]
 crbug.com/626703 external/wpt/paint-timing/with-first-paint/mask-image.html [ Timeout ]
