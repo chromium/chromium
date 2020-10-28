@@ -6,19 +6,30 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/cros_disks_client.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
 using apps::mojom::Condition;
@@ -179,6 +190,41 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, PopulateIntentFilters) {
   CheckShareFileFilter(
       target[1], content_types,
       /*different_content_type=*/"application/vnd.android.package-archive");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url(
+      embedded_test_server()->GetURL("/web_share_target/charts.html"));
+  Profile* const profile = browser()->profile();
+  const web_app::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
+
+  base::RunLoop run_loop;
+  web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
+            EXPECT_EQ(*params.intent->action, apps_util::kIntentActionSend);
+            EXPECT_EQ(*params.intent->mime_type, "text/csv");
+            EXPECT_EQ(params.intent->file_urls->size(), 1U);
+            run_loop.Quit();
+            return nullptr;
+          }));
+
+  std::vector<base::FilePath> file_paths(
+      {chromeos::CrosDisksClient::GetArchiveMountPoint().Append(
+          "numbers.csv")});
+  std::vector<std::string> content_types({"text/csv"});
+  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
+      profile, std::move(file_paths), std::move(content_types));
+  const int32_t event_flags =
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                          WindowOpenDisposition::NEW_WINDOW,
+                          /*prefer_container=*/true);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+      app_id, event_flags, std::move(intent),
+      apps::mojom::LaunchSource::kFromSharesheet, display::kDefaultDisplayId);
+  run_loop.Run();
 }
 
 }  // namespace apps

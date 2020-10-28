@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_MANAGER_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_MANAGER_H_
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -34,13 +35,16 @@ class WebAppProvider;
 // Web applications have type AppType::kWeb in the app registry.
 class WebAppLaunchManager {
  public:
+  using OpenApplicationCallback = base::RepeatingCallback<content::WebContents*(
+      apps::AppLaunchParams&& params)>;
+
   explicit WebAppLaunchManager(Profile* profile);
   WebAppLaunchManager(const WebAppLaunchManager&) = delete;
   WebAppLaunchManager& operator=(const WebAppLaunchManager&) = delete;
   ~WebAppLaunchManager();
 
   // apps::LaunchManager:
-  content::WebContents* OpenApplication(const apps::AppLaunchParams& params);
+  content::WebContents* OpenApplication(apps::AppLaunchParams&& params);
 
   void LaunchApplication(
       const std::string& app_id,
@@ -50,12 +54,17 @@ class WebAppLaunchManager {
                               apps::mojom::LaunchContainer container)>
           callback);
 
+  static void SetOpenApplicationCallbackForTesting(
+      OpenApplicationCallback callback);
+
  private:
   void LaunchWebApplication(
-      apps::AppLaunchParams params,
+      apps::AppLaunchParams&& params,
       base::OnceCallback<void(Browser* browser,
                               apps::mojom::LaunchContainer container)>
           callback);
+
+  static OpenApplicationCallback& GetOpenApplicationCallback();
 
   Profile* const profile_;
   WebAppProvider* const provider_;

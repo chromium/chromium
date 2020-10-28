@@ -274,7 +274,7 @@ void LauncherControllerHelper::LaunchApp(const ash::ShelfID& id,
   }
   params.launch_id = id.launch_id;
 
-  proxy->BrowserAppLauncher()->LaunchAppWithParams(params);
+  proxy->BrowserAppLauncher()->LaunchAppWithParams(std::move(params));
 }
 
 ArcAppListPrefs* LauncherControllerHelper::GetArcAppListPrefs() const {

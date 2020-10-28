@@ -188,9 +188,9 @@ content::WebContents* WebAppsBase::LaunchAppWithIntentImpl(
       app_id, event_flags, GetAppLaunchSource(launch_source), display_id,
       web_app::ConvertDisplayModeToAppLaunchContainer(
           GetRegistrar()->GetAppEffectiveDisplayMode(app_id)),
-      intent);
+      std::move(intent));
   params.launch_source = launch_source;
-  return web_app_launch_manager_->OpenApplication(params);
+  return web_app_launch_manager_->OpenApplication(std::move(params));
 }
 
 void WebAppsBase::Initialize(
@@ -308,7 +308,7 @@ void WebAppsBase::Launch(const std::string& app_id,
   // record the launch metrics as part of the call to LaunchSystemWebApp.
   params.launch_source = launch_source;
   // The app will be created for the currently active profile.
-  web_app_launch_manager_->OpenApplication(params);
+  web_app_launch_manager_->OpenApplication(std::move(params));
 }
 
 void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
@@ -325,7 +325,7 @@ void WebAppsBase::LaunchAppWithFiles(const std::string& app_id,
   }
 
   // The app will be created for the currently active profile.
-  web_app_launch_manager_->OpenApplication(params);
+  web_app_launch_manager_->OpenApplication(std::move(params));
 }
 
 void WebAppsBase::LaunchAppWithIntent(const std::string& app_id,

@@ -274,7 +274,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     params.current_directory = test_data_dir_;
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(params);
+        ->LaunchAppWithParams(std::move(params));
 
     if (!catcher.GetNextResult()) {
       message_ = catcher.message();

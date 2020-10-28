@@ -63,7 +63,7 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
   // Launch the given System App from |params|, and wait for the application to
   // finish loading. If |browser| is not nullptr, it will store the Browser*
   // that hosts the launched application.
-  content::WebContents* LaunchApp(const apps::AppLaunchParams& params,
+  content::WebContents* LaunchApp(apps::AppLaunchParams&& params,
                                   Browser** browser = nullptr);
 
   // Launch the given System App |type| with default AppLaunchParams, and wait
@@ -75,9 +75,8 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
   // Launch the given System App from |params|, without waiting for the
   // application to finish loading. If |browser| is not nullptr, it will store
   // the Browser* that hosts the launched application.
-  content::WebContents* LaunchAppWithoutWaiting(
-      const apps::AppLaunchParams& params,
-      Browser** browser = nullptr);
+  content::WebContents* LaunchAppWithoutWaiting(apps::AppLaunchParams&& params,
+                                                Browser** browser = nullptr);
 
   // Launch the given System App |type| with default AppLaunchParams, without
   // waiting for the application to finish loading. If |browser| is not nullptr,
@@ -95,7 +94,7 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
   // true, returns after the application finishes loading. Otherwise, returns
   // immediately. If |browser| is not nullptr, it will store the Browser* that
   // hosts the launched application.
-  content::WebContents* LaunchApp(const apps::AppLaunchParams& params,
+  content::WebContents* LaunchApp(apps::AppLaunchParams&& params,
                                   bool wait_for_load,
                                   Browser** out_browser);
 };

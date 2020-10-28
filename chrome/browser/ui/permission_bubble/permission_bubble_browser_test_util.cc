@@ -72,7 +72,7 @@ content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {
   content::WebContents* app_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(params);
+          ->LaunchAppWithParams(std::move(params));
   CHECK(app_contents);
   return app_contents;
 }

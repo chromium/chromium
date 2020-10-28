@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     content::WebContents* contents =
         apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
             ->BrowserAppLauncher()
-            ->LaunchAppWithParams(params);
+            ->LaunchAppWithParams(std::move(params));
     controller = chrome::FindBrowserWithWebContents(contents)
                      ->app_controller()
                      ->AsWebAppBrowserController();

@@ -18,7 +18,8 @@ AppLaunchParams::AppLaunchParams(const std::string& app_id,
       source(source),
       display_id(display_id) {}
 
-AppLaunchParams::AppLaunchParams(const AppLaunchParams& other) = default;
+AppLaunchParams::AppLaunchParams(AppLaunchParams&&) = default;
+AppLaunchParams& AppLaunchParams::operator=(AppLaunchParams&&) = default;
 
 AppLaunchParams::~AppLaunchParams() = default;
 

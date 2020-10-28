@@ -188,7 +188,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
   bool RunExtensionEnableFlow(const std::string& app_id,
                               base::OnceClosure callback);
 
-  content::WebContents* LaunchImpl(const AppLaunchParams& params);
+  content::WebContents* LaunchImpl(AppLaunchParams&& params);
 
   virtual bool ShouldShownInLauncher(
       const extensions::Extension* extension) = 0;

@@ -46,7 +46,7 @@ class BrowserAppLauncher {
   BrowserAppLauncher& operator=(const BrowserAppLauncher&) = delete;
 
   // Launches an app for the given |app_id| in a way specified by |params|.
-  content::WebContents* LaunchAppWithParams(const AppLaunchParams& params);
+  content::WebContents* LaunchAppWithParams(AppLaunchParams&& params);
 
   // Attempts to open |app_id| in a new window or tab. Open an empty browser
   // window if unsuccessful. The user's preferred launch container for the app

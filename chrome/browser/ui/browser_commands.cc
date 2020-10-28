@@ -622,12 +622,12 @@ void NewWindow(Browser* browser) {
         blink::mojom::DisplayMode::kBrowser) {
       launch_container = apps::mojom::LaunchContainer::kLaunchContainerTab;
     }
-    const apps::AppLaunchParams params = apps::AppLaunchParams(
+    apps::AppLaunchParams params = apps::AppLaunchParams(
         app_id, launch_container, WindowOpenDisposition::NEW_WINDOW,
         apps::mojom::AppLaunchSource::kSourceKeyboard);
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(params);
+        ->LaunchAppWithParams(std::move(params));
     return;
   }
 

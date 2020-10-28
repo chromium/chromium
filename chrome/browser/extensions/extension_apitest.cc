@@ -302,7 +302,7 @@ bool ExtensionApiTest::RunExtensionTestImpl(const std::string& extension_name,
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(params);
+        ->LaunchAppWithParams(std::move(params));
   }
 
   if (!catcher.GetNextResult()) {

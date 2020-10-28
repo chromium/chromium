@@ -299,7 +299,7 @@ WebContents* OpenApplicationTab(Profile* profile,
 }
 
 WebContents* OpenEnabledApplication(Profile* profile,
-                                    const apps::AppLaunchParams& params) {
+                                    apps::AppLaunchParams&& params) {
   const Extension* extension = GetExtension(profile, params);
   if (!extension)
     return NULL;
@@ -336,8 +336,8 @@ WebContents* OpenEnabledApplication(Profile* profile,
   base::Optional<web_app::SystemAppType> system_app_type =
       web_app::GetSystemWebAppTypeForAppId(profile, extension->id());
   if (system_app_type) {
-    Browser* browser =
-        web_app::LaunchSystemWebApp(profile, *system_app_type, url, params);
+    Browser* browser = web_app::LaunchSystemWebApp(profile, *system_app_type,
+                                                   url, std::move(params));
     return browser->tab_strip_model()->GetActiveWebContents();
   }
 
@@ -395,9 +395,8 @@ WebContents* OpenEnabledApplication(Profile* profile,
 
 }  // namespace
 
-WebContents* OpenApplication(Profile* profile,
-                             const apps::AppLaunchParams& params) {
-  return OpenEnabledApplication(profile, params);
+WebContents* OpenApplication(Profile* profile, apps::AppLaunchParams&& params) {
+  return OpenEnabledApplication(profile, std::move(params));
 }
 
 Browser* CreateApplicationWindow(Profile* profile,
@@ -493,7 +492,7 @@ WebContents* OpenApplicationWindow(Profile* profile,
 }
 
 void OpenApplicationWithReenablePrompt(Profile* profile,
-                                       const apps::AppLaunchParams& params) {
+                                       apps::AppLaunchParams&& params) {
   const Extension* extension = GetExtension(profile, params);
   if (!extension)
     return;
@@ -510,12 +509,12 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
     (new EnableViaDialogFlow(
          service, registry, profile, extension->id(),
          base::Bind(base::IgnoreResult(OpenEnabledApplication), profile,
-                    params)))
+                    base::Passed(std::move(params)))))
         ->Run();
     return;
   }
 
-  OpenEnabledApplication(profile, params);
+  OpenEnabledApplication(profile, std::move(params));
 }
 
 WebContents* OpenAppShortcutWindow(Profile* profile, const GURL& url) {

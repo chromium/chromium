@@ -2815,7 +2815,7 @@ void RenderViewContextMenu::ExecOpenWebApp() {
   launch_params.override_url = params_.link_url;
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(launch_params);
+      ->LaunchAppWithParams(std::move(launch_params));
 }
 
 void RenderViewContextMenu::ExecProtocolHandler(int event_flags,

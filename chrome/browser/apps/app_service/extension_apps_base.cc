@@ -405,9 +405,9 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
       app_id, event_flags, GetAppLaunchSource(launch_source), display_id,
       extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
                                      extension),
-      intent);
+      std::move(intent));
   params.launch_source = launch_source;
-  return LaunchImpl(params);
+  return LaunchImpl(std::move(params));
 }
 
 const extensions::Extension* ExtensionAppsBase::MaybeGetExtension(
@@ -554,7 +554,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
         extension_url, extension_urls::kWebstoreSourceField, source_value);
   }
 
-  LaunchImpl(params);
+  LaunchImpl(std::move(params));
 }
 
 void ExtensionAppsBase::LaunchAppWithFiles(
@@ -570,7 +570,7 @@ void ExtensionAppsBase::LaunchAppWithFiles(
   for (const auto& file_path : file_paths->file_paths) {
     params.launch_files.push_back(file_path);
   }
-  LaunchImpl(params);
+  LaunchImpl(std::move(params));
 }
 
 void ExtensionAppsBase::LaunchAppWithIntent(
@@ -895,10 +895,9 @@ bool ExtensionAppsBase::RunExtensionEnableFlow(const std::string& app_id,
   return true;
 }
 
-content::WebContents* ExtensionAppsBase::LaunchImpl(
-    const AppLaunchParams& params) {
+content::WebContents* ExtensionAppsBase::LaunchImpl(AppLaunchParams&& params) {
   if (web_app_launch_manager_) {
-    return web_app_launch_manager_->OpenApplication(params);
+    return web_app_launch_manager_->OpenApplication(std::move(params));
   }
 
   if (params.container ==
@@ -907,7 +906,7 @@ content::WebContents* ExtensionAppsBase::LaunchImpl(
     web_app::RecordAppWindowLaunch(profile_, params.app_id);
   }
 
-  return ::OpenApplication(profile_, params);
+  return ::OpenApplication(profile_, std::move(params));
 }
 
 // static

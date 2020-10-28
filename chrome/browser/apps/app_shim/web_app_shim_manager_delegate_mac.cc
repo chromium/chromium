@@ -102,7 +102,7 @@ void WebAppShimManagerDelegate::LaunchApp(
   params.launch_files = files;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(params);
+      ->LaunchAppWithParams(std::move(params));
 }
 
 void WebAppShimManagerDelegate::LaunchShim(

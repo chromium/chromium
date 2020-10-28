@@ -177,7 +177,7 @@ content::WebContents* LaunchApplication(
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(params);
+          ->LaunchAppWithParams(std::move(params));
 
   navigation_observer.Wait();
 

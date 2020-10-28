@@ -87,10 +87,14 @@ Browser* LaunchTerminal(Profile* profile,
                         const std::vector<std::string>& terminal_args) {
   GURL vsh_in_crosh_url =
       GenerateVshInCroshUrl(profile, container_id, cwd, terminal_args);
-  return web_app::LaunchSystemWebApp(
-      profile, web_app::SystemAppType::TERMINAL, vsh_in_crosh_url,
-      web_app::CreateSystemWebAppLaunchParams(
-          profile, web_app::SystemAppType::TERMINAL, display_id));
+  auto params = web_app::CreateSystemWebAppLaunchParams(
+      profile, web_app::SystemAppType::TERMINAL, display_id);
+  if (!params.has_value()) {
+    LOG(WARNING) << "Empty launch params for terminal";
+    return nullptr;
+  }
+  return web_app::LaunchSystemWebApp(profile, web_app::SystemAppType::TERMINAL,
+                                     vsh_in_crosh_url, std::move(*params));
 }
 
 Browser* LaunchTerminalSettings(Profile* profile, int64_t display_id) {
@@ -106,7 +110,7 @@ Browser* LaunchTerminalSettings(Profile* profile, int64_t display_id) {
   return web_app::LaunchSystemWebApp(
       profile, web_app::SystemAppType::TERMINAL,
       GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL, path})),
-      std::move(params));
+      std::move(*params));
 }
 
 void RecordTerminalSettingsChangesUMAs(Profile* profile) {

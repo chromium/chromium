@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DirectNavigation) {
   auto params = LaunchParamsForApp(web_app::SystemAppType::HELP);
   params.override_url = GURL("chrome://help-app/help/");
 
-  content::WebContents* web_contents = LaunchApp(params);
+  content::WebContents* web_contents = LaunchApp(std::move(params));
 
   // The inner frame should have the same pathname as the launch URL.
   EXPECT_EQ("chrome-untrusted://help-app/help/",

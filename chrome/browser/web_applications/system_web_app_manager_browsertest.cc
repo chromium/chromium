@@ -123,15 +123,16 @@ apps::AppLaunchParams SystemWebAppManagerBrowserTestBase::LaunchParamsForApp(
 }
 
 content::WebContents* SystemWebAppManagerBrowserTestBase::LaunchApp(
-    const apps::AppLaunchParams& params,
+    apps::AppLaunchParams&& params,
     bool wait_for_load,
     Browser** out_browser) {
   content::TestNavigationObserver navigation_observer(GetStartUrl(params));
   navigation_observer.StartWatchingNewWebContents();
 
-  content::WebContents* web_contents = GetAppServiceProxy(browser()->profile())
-                                           ->BrowserAppLauncher()
-                                           ->LaunchAppWithParams(params);
+  content::WebContents* web_contents =
+      GetAppServiceProxy(browser()->profile())
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParams(std::move(params));
 
   if (wait_for_load)
     navigation_observer.Wait();
@@ -143,9 +144,9 @@ content::WebContents* SystemWebAppManagerBrowserTestBase::LaunchApp(
 }
 
 content::WebContents* SystemWebAppManagerBrowserTestBase::LaunchApp(
-    const apps::AppLaunchParams& params,
+    apps::AppLaunchParams&& params,
     Browser** browser) {
-  return LaunchApp(params, /* wait_for_load */ true, browser);
+  return LaunchApp(std::move(params), /* wait_for_load */ true, browser);
 }
 
 content::WebContents* SystemWebAppManagerBrowserTestBase::LaunchApp(
@@ -156,9 +157,9 @@ content::WebContents* SystemWebAppManagerBrowserTestBase::LaunchApp(
 
 content::WebContents*
 SystemWebAppManagerBrowserTestBase::LaunchAppWithoutWaiting(
-    const apps::AppLaunchParams& params,
+    apps::AppLaunchParams&& params,
     Browser** browser) {
-  return LaunchApp(params, /* wait_for_load */ false, browser);
+  return LaunchApp(std::move(params), /* wait_for_load */ false, browser);
 }
 
 content::WebContents*
@@ -306,7 +307,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest,
   navigation_observer.StartWatchingNewWebContents();
 
   LaunchSystemWebApp(browser()->profile(), GetMockAppType(),
-                     maybe_installation_->GetAppUrl(), params);
+                     maybe_installation_->GetAppUrl(), std::move(params));
 
   navigation_observer.Wait();
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);
@@ -387,7 +388,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
     params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
     params.launch_files = launch_files;
 
-    return SystemWebAppManagerBrowserTestBase::LaunchApp(params);
+    return SystemWebAppManagerBrowserTestBase::LaunchApp(std::move(params));
   }
 
   content::WebContents* LaunchAppWithoutWaiting(
@@ -396,7 +397,8 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
     params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
     params.launch_files = launch_files;
 
-    return SystemWebAppManagerBrowserTestBase::LaunchAppWithoutWaiting(params);
+    return SystemWebAppManagerBrowserTestBase::LaunchAppWithoutWaiting(
+        std::move(params));
   }
 
   // Must be called before WaitAndExposeLaunchParamsToWindow. This sets up the
@@ -932,7 +934,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
     params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
     params.launch_files = {temp_file_path};
 
-    return SystemWebAppManagerBrowserTestBase::LaunchApp(params);
+    return SystemWebAppManagerBrowserTestBase::LaunchApp(std::move(params));
   }
 
   bool WaitForLaunchParam(content::WebContents* web_contents) {

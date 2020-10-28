@@ -28,11 +28,11 @@ enum class WindowOpenDisposition;
 
 // Opens the application, possibly prompting the user to re-enable it.
 void OpenApplicationWithReenablePrompt(Profile* profile,
-                                       const apps::AppLaunchParams& params);
+                                       apps::AppLaunchParams&& params);
 
 // Open the application in a way specified by |params|.
 content::WebContents* OpenApplication(Profile* profile,
-                                      const apps::AppLaunchParams& params);
+                                      apps::AppLaunchParams&& params);
 
 // Create the application in a way specified by |params| in a new window but
 // delaying activating and showing it.

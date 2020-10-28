@@ -25,7 +25,10 @@ struct AppLaunchParams {
                   apps::mojom::AppLaunchSource source,
                   int64_t display_id = display::kInvalidDisplayId);
 
-  AppLaunchParams(const AppLaunchParams& other);
+  AppLaunchParams(const AppLaunchParams&) = delete;
+  AppLaunchParams& operator=(const AppLaunchParams&) = delete;
+  AppLaunchParams(AppLaunchParams&&);
+  AppLaunchParams& operator=(AppLaunchParams&&);
 
   ~AppLaunchParams();
 
@@ -78,6 +81,10 @@ struct AppLaunchParams {
   // The files the application was launched with. Empty if the application was
   // not launched with files.
   std::vector<base::FilePath> launch_files;
+
+  // The intent the application was launched with. Empty if the application was
+  // not launched with intent.
+  apps::mojom::IntentPtr intent;
 };
 
 }  // namespace apps

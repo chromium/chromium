@@ -114,10 +114,11 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
     auto params = web_app::CreateSystemWebAppLaunchParams(
         browser()->profile(), test_system_web_app_installation_->GetType(),
         display::kInvalidDisplayId);
+    EXPECT_TRUE(params.has_value());
     params->disposition = WindowOpenDisposition::NEW_POPUP;
     app_browser_ = web_app::LaunchSystemWebApp(
         browser()->profile(), test_system_web_app_installation_->GetType(),
-        test_system_web_app_installation_->GetAppUrl(), *params);
+        test_system_web_app_installation_->GetAppUrl(), std::move(*params));
   }
 
   GURL GetActiveTabURL() {

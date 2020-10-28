@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppPpapiTest, SendFilesystem) {
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(params);
+      ->LaunchAppWithParams(std::move(params));
 
   bool result = true;
   if (!catcher.GetNextResult()) {

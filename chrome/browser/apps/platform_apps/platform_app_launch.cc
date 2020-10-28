@@ -86,7 +86,8 @@ bool OpenExtensionApplicationWindow(Profile* profile,
   if (app->from_bookmark()) {
     params.launch_files = GetLaunchFilesFromCommandLine(command_line);
   }
-  content::WebContents* tab_in_app_window = ::OpenApplication(profile, params);
+  content::WebContents* tab_in_app_window =
+      ::OpenApplication(profile, std::move(params));
 
   // Platform apps fire off a launch event which may or may not open a window.
   return tab_in_app_window != nullptr || ::CanLaunchViaEvent(app);
@@ -127,7 +128,7 @@ bool OpenExtensionApplicationWithReenablePrompt(
       extensions::AppLaunchSource::kSourceCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
-  ::OpenApplicationWithReenablePrompt(profile, params);
+  ::OpenApplicationWithReenablePrompt(profile, std::move(params));
   return true;
 }
 

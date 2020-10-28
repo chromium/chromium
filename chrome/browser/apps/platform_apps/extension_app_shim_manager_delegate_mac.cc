@@ -193,7 +193,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
     params.launch_files = files;
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(params);
+        ->LaunchAppWithParams(std::move(params));
     return;
   }
   if (files.empty()) {

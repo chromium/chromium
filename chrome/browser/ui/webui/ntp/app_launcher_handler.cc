@@ -792,7 +792,7 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
     params.override_url = override_url;
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(params);
+        ->LaunchAppWithParams(std::move(params));
   } else {
     // To give a more "launchy" experience when using the NTP launcher, we close
     // it automatically.
@@ -811,7 +811,7 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
     WebContents* new_contents =
         apps::AppServiceProxyFactory::GetForProfile(profile)
             ->BrowserAppLauncher()
-            ->LaunchAppWithParams(params);
+            ->LaunchAppWithParams(std::move(params));
 
     // This will also destroy the handler, so do not perform any actions after.
     if (new_contents != old_contents && browser &&
