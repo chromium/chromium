@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
+#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/selection_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
@@ -166,7 +166,7 @@ TextPaintStyle TextPainterBase::SelectionPaintingStyle(
     bool have_selection,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  return SelectionPaintingUtils::SelectionPaintingStyle(
+  return HighlightPaintingUtils::SelectionPaintingStyle(
       document, style, node, have_selection, text_style, paint_info);
 }
 

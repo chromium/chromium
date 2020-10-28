@@ -19,9 +19,9 @@
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
+#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
-#include "third_party/blink/renderer/core/paint/selection_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -787,7 +787,7 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
     Color text_color,
     LayoutTextCombine* combined_text) {
   auto layout_item = inline_text_box_.GetLineLayoutItem();
-  Color c = SelectionPaintingUtils::SelectionBackgroundColor(
+  Color c = HighlightPaintingUtils::SelectionBackgroundColor(
       layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode());
   if (!c.Alpha())
     return PhysicalRect();

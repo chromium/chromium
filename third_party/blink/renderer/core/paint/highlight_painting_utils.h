@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SELECTION_PAINTING_UTILS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SELECTION_PAINTING_UTILS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTING_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTING_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -20,8 +20,8 @@ class Node;
 struct TextPaintStyle;
 struct PaintInfo;
 
-class CORE_EXPORT SelectionPaintingUtils {
-  STATIC_ONLY(SelectionPaintingUtils);
+class CORE_EXPORT HighlightPaintingUtils {
+  STATIC_ONLY(HighlightPaintingUtils);
 
  public:
   static base::Optional<AppliedTextDecoration> SelectionTextDecoration(
@@ -48,4 +48,4 @@ class CORE_EXPORT SelectionPaintingUtils {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SELECTION_PAINTING_UTILS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTING_UTILS_H_

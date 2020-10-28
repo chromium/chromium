@@ -17,11 +17,11 @@
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
-#include "third_party/blink/renderer/core/paint/selection_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
@@ -221,7 +221,7 @@ void SVGInlineTextBoxPainter::PaintSelectionBackground(
     return;
 
   auto layout_item = svg_inline_text_box_.GetLineLayoutItem();
-  Color background_color = SelectionPaintingUtils::SelectionBackgroundColor(
+  Color background_color = HighlightPaintingUtils::SelectionBackgroundColor(
       layout_item.GetDocument(), layout_item.StyleRef(), layout_item.GetNode());
   if (!background_color.Alpha())
     return;

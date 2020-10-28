@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/selection_painting_utils.h"
+#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -19,9 +19,9 @@
 
 namespace blink {
 
-class SelectionPaintingUtilsTest : public SimTest {};
+class HighlightPaintingUtilsTest : public SimTest {};
 
-TEST_F(SelectionPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
+TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   // Test that we are only caching active selection styles as so that we don't
   // incorrectly use a cached ComputedStyle when the active state changes.
 
@@ -57,13 +57,13 @@ TEST_F(SelectionPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   EXPECT_FALSE(body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 
   EXPECT_FALSE(GetPage().IsActive());
-  EXPECT_EQ(Color(255, 0, 0), SelectionPaintingUtils::SelectionForegroundColor(
+  EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::SelectionForegroundColor(
                                   GetDocument(), text_style, text_node, flags));
 
   // Focus the window.
   GetPage().SetActive(true);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), SelectionPaintingUtils::SelectionForegroundColor(
+  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::SelectionForegroundColor(
                                   GetDocument(), text_style, text_node, flags));
   const ComputedStyle* active_style =
       body_style.GetCachedPseudoElementStyle(kPseudoIdSelection);
@@ -72,13 +72,13 @@ TEST_F(SelectionPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
   // Unfocus the window.
   GetPage().SetActive(false);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(255, 0, 0), SelectionPaintingUtils::SelectionForegroundColor(
+  EXPECT_EQ(Color(255, 0, 0), HighlightPaintingUtils::SelectionForegroundColor(
                                   GetDocument(), text_style, text_node, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }
 
-TEST_F(SelectionPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
+TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
   // Test that we share a cached ComputedStyle for active and inactive
   // selections when there are no :window-inactive styles.
 
@@ -116,13 +116,13 @@ TEST_F(SelectionPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
   EXPECT_TRUE(active_style);
 
   EXPECT_FALSE(GetPage().IsActive());
-  EXPECT_EQ(Color(0, 128, 0), SelectionPaintingUtils::SelectionForegroundColor(
+  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::SelectionForegroundColor(
                                   GetDocument(), text_style, text_node, flags));
 
   // Focus the window.
   GetPage().SetActive(true);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), SelectionPaintingUtils::SelectionForegroundColor(
+  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::SelectionForegroundColor(
                                   GetDocument(), text_style, text_node, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
@@ -130,13 +130,13 @@ TEST_F(SelectionPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
   // Unfocus the window.
   GetPage().SetActive(false);
   Compositor().BeginFrame();
-  EXPECT_EQ(Color(0, 128, 0), SelectionPaintingUtils::SelectionForegroundColor(
+  EXPECT_EQ(Color(0, 128, 0), HighlightPaintingUtils::SelectionForegroundColor(
                                   GetDocument(), text_style, text_node, flags));
   EXPECT_EQ(active_style,
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }
 
-TEST_F(SelectionPaintingUtilsTest, SelectedTextInputShadow) {
+TEST_F(HighlightPaintingUtilsTest, SelectedTextInputShadow) {
   // Test that we apply input ::selection style to the value text.
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
@@ -168,7 +168,7 @@ TEST_F(SelectionPaintingUtilsTest, SelectedTextInputShadow) {
                        kGlobalPaintNormalPhase, 0 /* paint_flags */);
   TextPaintStyle paint_style;
 
-  paint_style = SelectionPaintingUtils::SelectionPaintingStyle(
+  paint_style = HighlightPaintingUtils::SelectionPaintingStyle(
       GetDocument(), text_style, text_node, true /* have_selection */,
       paint_style, paint_info);
 
