@@ -16,7 +16,6 @@ class Args(object):
     self.dump_json = ''
     self.multiple_trigger_configs = None
     self.multiple_dimension_script_verbose = False
-    self.use_swarming_go = False
 
 
 class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
@@ -25,7 +24,6 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     self._swarming_runs = []
     self._files = files
     self._temp_file_id = 0
-    self._triggered_with_swarming_go = 0
     super(FakeTriggerer, self).__init__(args, swarming_args)
 
 
@@ -53,21 +51,14 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     del verbose #unused
     self._swarming_runs.append(args)
 
-  def run_swarming_go(self, args, verbose):
-    self._triggered_with_swarming_go += 1
-    self.run_swarming(args, verbose)
 
 class UnitTest(unittest.TestCase):
-  def setup_and_trigger(self,
-                        previous_task_assignment_map,
-                        alive_bots,
-                        dead_bots,
-                        use_swarming_go=False):
+  def setup_and_trigger(
+      self, previous_task_assignment_map, alive_bots, dead_bots):
     args = Args()
     args.shards = len(previous_task_assignment_map)
     args.dump_json = 'output.json'
     args.multiple_dimension_script_verbose = True
-    args.use_swarming_go = use_swarming_go
     swarming_args = [
         'trigger',
         '--swarming',
@@ -299,15 +290,6 @@ class UnitTest(unittest.TestCase):
     # It also replaces the dead 'build6' bot.
     self.assertEquals(set(expected_task_assignment.values()),
         {'build3', 'build4', 'build5', 'build7'})
-
-  def test_use_swarming_go_to_trigger(self):
-    triggerer = self.setup_and_trigger(
-        previous_task_assignment_map={0: 'build1'},
-        alive_bots=['build1'],
-        dead_bots=[],
-        use_swarming_go=True)
-
-    self.assertEquals(triggerer._triggered_with_swarming_go, 1)
 
 
 if __name__ == '__main__':
