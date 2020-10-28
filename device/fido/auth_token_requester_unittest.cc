@@ -42,7 +42,8 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   base::Optional<pin::TokenResponse>& response() { return response_; }
   bool pin_was_set() { return pin_was_set_; }
   bool pin_was_collected() { return pin_was_collected_; }
-  bool internal_uv_was_prompted() { return internal_uv_was_prompted_; }
+  bool internal_uv_was_retried() { return internal_uv_num_retries_ > 0u; }
+  size_t internal_uv_num_retries() { return internal_uv_num_retries_; }
   bool internal_uv_was_locked() { return internal_uv_was_locked_; }
 
  private:
@@ -61,7 +62,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
     std::move(provide_pin_cb).Run(pin_);
   }
   void PromptForInternalUVRetry(int attempts) override {
-    internal_uv_was_prompted_ = true;
+    internal_uv_num_retries_++;
   }
   void InternalUVLockedForAuthToken() override {
     internal_uv_was_locked_ = true;
@@ -83,7 +84,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
 
   bool pin_was_collected_ = false;
   bool pin_was_set_ = false;
-  bool internal_uv_was_prompted_ = false;
+  size_t internal_uv_num_retries_ = 0u;
   bool internal_uv_was_locked_ = false;
 
   base::RunLoop wait_for_result_loop_;
@@ -225,7 +226,7 @@ TEST_F(AuthTokenRequesterTest, AuthenticatorWithoutUVTokenSupport) {
       EXPECT_FALSE(delegate_->pin_was_set());
       EXPECT_FALSE(delegate_->pin_was_collected());
     }
-    EXPECT_FALSE(delegate_->internal_uv_was_prompted());
+    EXPECT_FALSE(delegate_->internal_uv_was_retried());
     EXPECT_FALSE(delegate_->internal_uv_was_locked());
   }
 }
@@ -305,9 +306,7 @@ TEST_F(AuthTokenRequesterTest, AuthenticatorWithUVTokenSupport) {
                 t.client_pin == ClientPinAvailability::kSupportedAndPinSet &&
                     t.user_verification !=
                         UserVerificationAvailability::kSupportedAndConfigured);
-      EXPECT_EQ(delegate_->internal_uv_was_prompted(),
-                t.user_verification ==
-                    UserVerificationAvailability::kSupportedAndConfigured);
+      EXPECT_FALSE(delegate_->internal_uv_was_retried());
       EXPECT_FALSE(delegate_->internal_uv_was_locked());
     } else {
       EXPECT_EQ(*delegate_->result(),
@@ -315,7 +314,7 @@ TEST_F(AuthTokenRequesterTest, AuthenticatorWithUVTokenSupport) {
       EXPECT_FALSE(delegate_->response());
       EXPECT_FALSE(delegate_->pin_was_set());
       EXPECT_FALSE(delegate_->pin_was_collected());
-      EXPECT_FALSE(delegate_->internal_uv_was_prompted());
+      EXPECT_FALSE(delegate_->internal_uv_was_retried());
       EXPECT_FALSE(delegate_->internal_uv_was_locked());
     }
   }
@@ -341,7 +340,7 @@ TEST_F(AuthTokenRequesterTest, PINSoftLock) {
   EXPECT_FALSE(delegate_->response());
   EXPECT_FALSE(delegate_->pin_was_set());
   EXPECT_TRUE(delegate_->pin_was_collected());
-  EXPECT_FALSE(delegate_->internal_uv_was_prompted());
+  EXPECT_FALSE(delegate_->internal_uv_was_retried());
   EXPECT_FALSE(delegate_->internal_uv_was_locked());
 }
 
@@ -365,7 +364,7 @@ TEST_F(AuthTokenRequesterTest, PINHardLock) {
   EXPECT_FALSE(delegate_->response());
   EXPECT_FALSE(delegate_->pin_was_set());
   EXPECT_FALSE(delegate_->pin_was_collected());
-  EXPECT_FALSE(delegate_->internal_uv_was_prompted());
+  EXPECT_FALSE(delegate_->internal_uv_was_retried());
   EXPECT_FALSE(delegate_->internal_uv_was_locked());
 }
 
@@ -374,8 +373,9 @@ TEST_F(AuthTokenRequesterTest, UVLockedPINFallback) {
   config.pin_uv_auth_token_support = true;
   config.ctap2_versions = {std::begin(kCtap2Versions2_1),
                            std::end(kCtap2Versions2_1)};
+  config.user_verification_succeeds = false;
   auto state = base::MakeRefCounted<VirtualFidoDevice::State>();
-  state->uv_retries = 0;
+  state->uv_retries = 3;
 
   RunTestCase(std::move(config), state,
               TestCase{
@@ -388,7 +388,7 @@ TEST_F(AuthTokenRequesterTest, UVLockedPINFallback) {
   EXPECT_TRUE(delegate_->response());
   EXPECT_FALSE(delegate_->pin_was_set());
   EXPECT_TRUE(delegate_->pin_was_collected());
-  EXPECT_FALSE(delegate_->internal_uv_was_prompted());
+  EXPECT_EQ(delegate_->internal_uv_num_retries(), 2u);
   EXPECT_TRUE(delegate_->internal_uv_was_locked());
 }
 

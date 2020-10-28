@@ -164,6 +164,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
   Options options_;
 
   bool authenticator_was_selected_ = false;
+  bool is_internal_uv_retry_ = false;
 
   base::WeakPtrFactory<AuthTokenRequester> weak_factory_{this};
 };

@@ -138,7 +138,9 @@ void AuthTokenRequester::OnGetUVRetries(
     return;
   }
 
-  delegate_->PromptForInternalUVRetry(response->retries);
+  if (is_internal_uv_retry_) {
+    delegate_->PromptForInternalUVRetry(response->retries);
+  }
   authenticator_->GetUvToken({std::begin(options_.token_permissions),
                               std::end(options_.token_permissions)},
                              options_.rp_id,
@@ -178,6 +180,7 @@ void AuthTokenRequester::OnGetUVToken(
 
   if (status == CtapDeviceResponseCode::kCtap2ErrUvInvalid) {
     // The attempt failed, but a retry is possible.
+    is_internal_uv_retry_ = true;
     ObtainTokenFromInternalUV();
     return;
   }
