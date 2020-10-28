@@ -9,6 +9,7 @@ namespace sql {
 
 namespace test {
 struct ColumnInfo;
+bool CorruptSizeInHeader(const base::FilePath&);
 }  // namespace test
 
 // Restricts access to APIs internal to the //sql package.
@@ -23,6 +24,7 @@ class InternalApiToken {
   friend class DatabaseTestPeer;
   friend class Recovery;
   friend struct test::ColumnInfo;
+  friend bool test::CorruptSizeInHeader(const base::FilePath&);
 };
 
 }  // namespace sql
