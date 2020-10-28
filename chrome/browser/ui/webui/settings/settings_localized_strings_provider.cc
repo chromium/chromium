@@ -1410,47 +1410,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC},
       {"networkPredictionEnabledDescCookiesPage",
        IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC_COOKIES_PAGE},
-      {"safetyCheckSectionTitle", IDS_SETTINGS_SAFETY_CHECK_SECTION_TITLE},
-      {"safetyCheckParentPrimaryLabelBefore",
-       IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_BEFORE},
-      {"safetyCheckRunning", IDS_SETTINGS_SAFETY_CHECK_RUNNING},
-      {"safetyCheckParentPrimaryLabelAfter",
-       IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_AFTER},
-      {"safetyCheckAriaLiveRunning",
-       IDS_SETTINGS_SAFETY_CHECK_ARIA_LIVE_RUNNING},
-      {"safetyCheckAriaLiveAfter", IDS_SETTINGS_SAFETY_CHECK_ARIA_LIVE_AFTER},
-      {"safetyCheckParentButton", IDS_SETTINGS_SAFETY_CHECK_PARENT_BUTTON},
-      {"safetyCheckParentButtonAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_PARENT_BUTTON_ARIA_LABEL},
-      {"safetyCheckParentButtonAriaLabelReload",
-       IDS_SETTINGS_CHECK_PASSWORDS_AGAIN},
-      {"safetyCheckIconRunningAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_ICON_RUNNING_ARIA_LABEL},
-      {"safetyCheckIconSafeAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_ICON_SAFE_ARIA_LABEL},
-      {"safetyCheckIconInfoAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_ICON_INFO_ARIA_LABEL},
-      {"safetyCheckIconWarningAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_ICON_WARNING_ARIA_LABEL},
-      {"safetyCheckReview", IDS_SETTINGS_SAFETY_CHECK_REVIEW},
-      {"safetyCheckUpdatesPrimaryLabel",
-       IDS_SETTINGS_SAFETY_CHECK_UPDATES_PRIMARY_LABEL},
-      {"safetyCheckUpdatesButtonAriaLabel",
-       IDS_UPDATE_RECOMMENDED_DIALOG_TITLE},
-      {"safetyCheckPasswordsButtonAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_BUTTON_ARIA_LABEL},
-      {"safetyCheckSafeBrowsingButton",
-       IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_BUTTON},
-      {"safetyCheckSafeBrowsingButtonAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_BUTTON_ARIA_LABEL},
-      {"safetyCheckExtensionsPrimaryLabel",
-       IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_PRIMARY_LABEL},
-      {"safetyCheckExtensionsButtonAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BUTTON_ARIA_LABEL},
-      {"safetyCheckChromeCleanerPrimaryLabel",
-       IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_PRIMARY_LABEL},
-      {"safetyCheckChromeCleanerButtonAriaLabel",
-       IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_BUTTON_ARIA_LABEL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
@@ -1494,6 +1453,53 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
                          advanced_protection_url.spec());
 
   AddPersonalizationOptionsStrings(html_source);
+}
+
+void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"safetyCheckSectionTitle", IDS_SETTINGS_SAFETY_CHECK_SECTION_TITLE},
+      {"safetyCheckParentPrimaryLabelBefore",
+       IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_BEFORE},
+      {"safetyCheckRunning", IDS_SETTINGS_SAFETY_CHECK_RUNNING},
+      {"safetyCheckParentPrimaryLabelAfter",
+       IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_AFTER},
+      {"safetyCheckAriaLiveRunning",
+       IDS_SETTINGS_SAFETY_CHECK_ARIA_LIVE_RUNNING},
+      {"safetyCheckAriaLiveAfter", IDS_SETTINGS_SAFETY_CHECK_ARIA_LIVE_AFTER},
+      {"safetyCheckParentButton", IDS_SETTINGS_SAFETY_CHECK_PARENT_BUTTON},
+      {"safetyCheckParentButtonAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_PARENT_BUTTON_ARIA_LABEL},
+      {"safetyCheckParentButtonAriaLabelReload",
+       IDS_SETTINGS_CHECK_PASSWORDS_AGAIN},
+      {"safetyCheckIconRunningAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_ICON_RUNNING_ARIA_LABEL},
+      {"safetyCheckIconSafeAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_ICON_SAFE_ARIA_LABEL},
+      {"safetyCheckIconInfoAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_ICON_INFO_ARIA_LABEL},
+      {"safetyCheckIconWarningAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_ICON_WARNING_ARIA_LABEL},
+      {"safetyCheckReview", IDS_SETTINGS_SAFETY_CHECK_REVIEW},
+      {"safetyCheckUpdatesPrimaryLabel",
+       IDS_SETTINGS_SAFETY_CHECK_UPDATES_PRIMARY_LABEL},
+      {"safetyCheckUpdatesButtonAriaLabel",
+       IDS_UPDATE_RECOMMENDED_DIALOG_TITLE},
+      {"safetyCheckPasswordsButtonAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_BUTTON_ARIA_LABEL},
+      {"safetyCheckSafeBrowsingButton",
+       IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_BUTTON},
+      {"safetyCheckSafeBrowsingButtonAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_BUTTON_ARIA_LABEL},
+      {"safetyCheckExtensionsPrimaryLabel",
+       IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_PRIMARY_LABEL},
+      {"safetyCheckExtensionsButtonAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BUTTON_ARIA_LABEL},
+      {"safetyCheckChromeCleanerPrimaryLabel",
+       IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_PRIMARY_LABEL},
+      {"safetyCheckChromeCleanerButtonAriaLabel",
+       IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_BUTTON_ARIA_LABEL},
+  };
+  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 }
 
 void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
@@ -2455,6 +2461,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddPeopleStrings(html_source, profile);
   AddPrintingStrings(html_source, profile);
   AddPrivacyStrings(html_source, profile);
+  AddSafetyCheckStrings(html_source);
   AddResetStrings(html_source, profile);
   AddSearchEnginesStrings(html_source);
   AddSearchInSettingsStrings(html_source);
