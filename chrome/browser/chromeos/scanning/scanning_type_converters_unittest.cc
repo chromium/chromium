@@ -190,8 +190,8 @@ INSTANTIATE_TEST_SUITE_P(
                                            297},
                     ScanSettingsTestParams{mojo_ipc::ColorMode::kGrayscale,
                                            lorgnette::MODE_GRAYSCALE,
-                                           mojo_ipc::PageSize::kNaLetter, 216,
-                                           279},
+                                           mojo_ipc::PageSize::kNaLetter, 215.9,
+                                           279.4},
                     ScanSettingsTestParams{mojo_ipc::ColorMode::kColor,
                                            lorgnette::MODE_COLOR,
                                            mojo_ipc::PageSize::kMax, 0, 0}));

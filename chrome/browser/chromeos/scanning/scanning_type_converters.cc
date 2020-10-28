@@ -13,10 +13,14 @@ namespace {
 
 namespace mojo_ipc = chromeos::scanning::mojom;
 
+// The margin allowed when comparing a scannable area dimension to a page size
+// dimension. Accounts for differences due to rounding.
+constexpr double kMargin = 1;
+
 // POD struct for page size dimensions in mm.
 struct PageSize {
-  int width;
-  int height;
+  double width;
+  double height;
 };
 
 // ISO A4: 210 x 297 mm.
@@ -25,16 +29,17 @@ constexpr PageSize kIsoA4PageSize = {
     297,
 };
 
-// NA Letter: 216 x 279 mm.
+// NA Letter: 215.9 x 279.4 mm.
 constexpr PageSize kNaLetterPageSize = {
-    216,
-    279,
+    215.9,
+    279.4,
 };
 
 // Returns true if |area| is large enough to support |page_size|.
 bool AreaSupportsPageSize(const lorgnette::ScannableArea& area,
                           const PageSize& page_size) {
-  return area.width() >= page_size.width && area.height() >= page_size.height;
+  return area.width() + kMargin >= page_size.width &&
+         area.height() + kMargin >= page_size.height;
 }
 
 // Returns the page sizes the given |area| supports.
