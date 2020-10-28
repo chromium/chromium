@@ -104,19 +104,10 @@ class FrameTreeVisualizer {
 };
 
 // Uses window.open to open a popup from the frame |opener| with the specified
-// |url|, |name| and window |features|. |expect_return_from_window_open| is used
-// to indicate if the caller expects window.open() to return a non-null value.
-// Waits for the navigation to |url| to finish and then returns the new popup's
-// Shell.  Note that since this navigation to |url| is renderer-initiated, it
-// won't cause a process swap unless used in --site-per-process mode.
-Shell* OpenPopup(const ToRenderFrameHost& opener,
-                 const GURL& url,
-                 const std::string& name,
-                 const std::string& features,
-                 bool expect_return_from_window_open);
-
-// Same as above, but with an empty |features| and
-// |expect_return_from_window_open| assumed to be true..
+// |url| and |name|.   Waits for the navigation to |url| to finish and then
+// returns the new popup's Shell.  Note that since this navigation to |url| is
+// renderer-initiated, it won't cause a process swap unless used in
+// --site-per-process mode.
 Shell* OpenPopup(const ToRenderFrameHost& opener,
                  const GURL& url,
                  const std::string& name);

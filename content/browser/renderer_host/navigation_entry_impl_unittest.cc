@@ -80,17 +80,15 @@ class NavigationEntryTest : public testing::Test {
 
   void TearDown() override {}
 
- private:
-  BrowserTaskEnvironment task_environment_;
-  TestBrowserContext browser_context_;
-
  protected:
-  // Destructors for SiteInstances must run before |task_environment_| shuts
-  // down.
   std::unique_ptr<NavigationEntryImpl> entry1_;
   std::unique_ptr<NavigationEntryImpl> entry2_;
   // SiteInstances are deleted when their NavigationEntries are gone.
   scoped_refptr<SiteInstanceImpl> instance_;
+
+ private:
+  BrowserTaskEnvironment task_environment_;
+  TestBrowserContext browser_context_;
 };
 
 // Test unique ID accessors
