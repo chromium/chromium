@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/account_manager/child_account_type_changed_user_data.h"
 #include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/account_manager_core/account.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -37,7 +38,7 @@ class AccountManagerPolicyController : public KeyedService {
 
  private:
   // Callback handler for |AccountManager::GetAccounts|.
-  void RemoveSecondaryAccounts(const std::vector<AccountManager::Account>&);
+  void RemoveSecondaryAccounts(const std::vector<::account_manager::Account>&);
 
   // Callback for handling changes in |kSecondaryGoogleAccountSigninAllowed|
   // pref.
@@ -56,7 +57,7 @@ class AccountManagerPolicyController : public KeyedService {
   // Invalidates all secondary accounts and updates consent text version.
   void InvalidateSecondaryAccountsOnEduConsentChange(
       const std::string& new_invalidation_version,
-      const std::vector<AccountManager::Account>& accounts);
+      const std::vector<::account_manager::Account>& accounts);
 
   // KeyedService implementation.
   void Shutdown() override;

@@ -129,6 +129,7 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
+#include "components/account_manager_core/account.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/flags_ui/flags_ui_metrics.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
@@ -1334,7 +1335,7 @@ void UserSessionManager::InitProfilePreferences(
     // callback and continue.
     DCHECK(account_manager->IsInitialized());
 
-    const AccountManager::AccountKey account_key{
+    const ::account_manager::AccountKey account_key{
         gaia_id, account_manager::AccountType::ACCOUNT_TYPE_GAIA};
 
     // 1. Make sure that the account is present in `AccountManager`.

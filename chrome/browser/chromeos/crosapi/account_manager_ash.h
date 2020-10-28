@@ -7,6 +7,7 @@
 
 #include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "components/account_manager_core/account.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -30,20 +31,18 @@ class AccountManagerAsh : public mojom::AccountManager,
   void AddObserver(AddObserverCallback callback) override;
 
   // chromeos::AccountManager::Observer:
-  void OnTokenUpserted(
-      const chromeos::AccountManager::Account& account) override;
-  void OnAccountRemoved(
-      const chromeos::AccountManager::Account& account) override;
+  void OnTokenUpserted(const account_manager::Account& account) override;
+  void OnAccountRemoved(const account_manager::Account& account) override;
 
  private:
   friend class AccountManagerAshTest;
   friend class TestAccountManagerObserver;
 
   // Following util functions are static for ease of testing.
-  static chromeos::AccountManager::Account FromMojoAccount(
+  static account_manager::Account FromMojoAccount(
       const mojom::AccountPtr& mojom_account);
   static mojom::AccountPtr ToMojoAccount(
-      const chromeos::AccountManager::Account& account);
+      const account_manager::Account& account);
   static chromeos::account_manager::AccountType FromMojoAccountType(
       const mojom::AccountType& account_type);
   static mojom::AccountType ToMojoAccountType(

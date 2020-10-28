@@ -83,15 +83,15 @@ DeviceAccountInfo GetChildDeviceAccountInfo() {
           "device-account-token" /*token*/};
 }
 
-chromeos::AccountManager::Account GetAccountByKey(
-    std::vector<chromeos::AccountManager::Account> accounts,
-    chromeos::AccountManager::AccountKey key) {
-  for (const chromeos::AccountManager::Account& account : accounts) {
+account_manager::Account GetAccountByKey(
+    std::vector<account_manager::Account> accounts,
+    account_manager::AccountKey key) {
+  for (const account_manager::Account& account : accounts) {
     if (account.key == key) {
       return account;
     }
   }
-  return chromeos::AccountManager::Account();
+  return account_manager::Account();
 }
 
 std::string ValueOrEmpty(const std::string* str) {
@@ -169,8 +169,8 @@ class AccountManagerUIHandlerTest
     account_manager_ = factory->GetAccountManager(profile_->GetPath().value());
 
     account_manager_->UpsertAccount(
-        AccountManager::AccountKey{GetDeviceAccountInfo().id,
-                                   GetDeviceAccountInfo().account_type},
+        ::account_manager::AccountKey{GetDeviceAccountInfo().id,
+                                      GetDeviceAccountInfo().account_type},
         GetDeviceAccountInfo().email, GetDeviceAccountInfo().token);
 
     handler_ = std::make_unique<TestingAccountManagerUIHandler>(
@@ -191,19 +191,20 @@ class AccountManagerUIHandlerTest
 
   void UpsertAccount(std::string email) {
     account_manager_->UpsertAccount(
-        AccountManager::AccountKey{
+        ::account_manager::AccountKey{
             signin::GetTestGaiaIdForEmail(email),
             chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA},
         email, AccountManager::kInvalidToken);
   }
 
-  std::vector<AccountManager::Account> GetAccountsFromAccountManager() const {
-    std::vector<AccountManager::Account> accounts;
+  std::vector<::account_manager::Account> GetAccountsFromAccountManager()
+      const {
+    std::vector<::account_manager::Account> accounts;
 
     base::RunLoop run_loop;
     account_manager_->GetAccounts(base::BindLambdaForTesting(
         [&accounts, &run_loop](
-            const std::vector<AccountManager::Account>& stored_accounts) {
+            const std::vector<::account_manager::Account>& stored_accounts) {
           accounts = stored_accounts;
           run_loop.Quit();
         }));
@@ -212,7 +213,7 @@ class AccountManagerUIHandlerTest
     return accounts;
   }
 
-  bool HasDummyGaiaToken(const AccountManager::AccountKey& account_key) {
+  bool HasDummyGaiaToken(const ::account_manager::AccountKey& account_key) {
     bool has_dummy_token_result;
 
     base::RunLoop run_loop;
@@ -252,7 +253,7 @@ class AccountManagerUIHandlerTest
 
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
                        OnGetAccountsNoSecondaryAccounts) {
-  const std::vector<AccountManager::Account> account_manager_accounts =
+  const std::vector<::account_manager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   // Only Primary account.
   ASSERT_EQ(1UL, account_manager_accounts.size());
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
                        OnGetAccountsWithSecondaryAccounts) {
   UpsertAccount("secondary1@example.com");
   UpsertAccount("secondary2@example.com");
-  const std::vector<AccountManager::Account> account_manager_accounts =
+  const std::vector<::account_manager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   ASSERT_EQ(3UL, account_manager_accounts.size());
 
@@ -344,7 +345,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
       continue;
     EXPECT_FALSE(account.FindBoolKey("isDeviceAccount").value());
 
-    AccountManager::Account expected_account =
+    ::account_manager::Account expected_account =
         GetAccountByKey(account_manager_accounts,
                         {ValueOrEmpty(account.FindStringKey("id")),
                          account_manager::AccountType::ACCOUNT_TYPE_GAIA});

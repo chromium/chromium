@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/account_manager_core/account.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -39,8 +40,8 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
   // |AccountManager::Observer| overrides.
   // |AccountManager| is considered to be the source of truth for account
   // information.
-  void OnTokenUpserted(const AccountManager::Account& account) override;
-  void OnAccountRemoved(const AccountManager::Account& account) override;
+  void OnTokenUpserted(const ::account_manager::Account& account) override;
+  void OnAccountRemoved(const ::account_manager::Account& account) override;
 
   // |signin::IdentityManager::Observer| overrides.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
@@ -74,7 +75,7 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
   // |AccountManager::CheckDummyGaiaTokenForAllAccounts| callback.
   void OnCheckDummyGaiaTokenForAllAccounts(
       base::Value callback_id,
-      const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+      const std::vector<std::pair<::account_manager::Account, bool>>&
           account_dummy_token_list);
 
   // Returns secondary Gaia accounts from |stored_accounts| list. If the Device
@@ -84,7 +85,7 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
   // in this case "unmigrated" property will be always false for secondary
   // accounts.
   base::ListValue GetSecondaryGaiaAccounts(
-      const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+      const std::vector<std::pair<::account_manager::Account, bool>>&
           account_dummy_token_list,
       const AccountId device_account_id,
       const bool is_child_user,

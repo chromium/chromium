@@ -61,6 +61,7 @@
 #if defined(OS_CHROMEOS)
 #include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account.h"
 #include "components/signin/internal/identity_manager/test_profile_oauth2_token_service_delegate_chromeos.h"
 #endif
 
@@ -307,7 +308,7 @@ class IdentityManagerTest : public testing::Test {
                          std::string token) {
 #if defined(OS_CHROMEOS)
     identity_manager()->GetChromeOSAccountManager()->UpsertAccount(
-        chromeos::AccountManager::AccountKey{
+        ::account_manager::AccountKey{
             gaia_id, chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA},
         email, token);
 #else
@@ -318,7 +319,7 @@ class IdentityManagerTest : public testing::Test {
   void RevokeCredentials(const CoreAccountId& account_id, std::string gaia_id) {
 #if defined(OS_CHROMEOS)
     identity_manager()->GetChromeOSAccountManager()->RemoveAccount(
-        chromeos::AccountManager::AccountKey{
+        ::account_manager::AccountKey{
             gaia_id,
             chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA});
 #else

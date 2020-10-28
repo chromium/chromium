@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/notreached.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
@@ -37,21 +36,21 @@ void AccountManagerAsh::AddObserver(AddObserverCallback callback) {
 }
 
 void AccountManagerAsh::OnTokenUpserted(
-    const chromeos::AccountManager::Account& account) {
+    const account_manager::Account& account) {
   for (auto& observer : observers_)
     observer->OnTokenUpserted(ToMojoAccount(account));
 }
 
 void AccountManagerAsh::OnAccountRemoved(
-    const chromeos::AccountManager::Account& account) {
+    const account_manager::Account& account) {
   for (auto& observer : observers_)
     observer->OnAccountRemoved(ToMojoAccount(account));
 }
 
 // static
-chromeos::AccountManager::Account AccountManagerAsh::FromMojoAccount(
+account_manager::Account AccountManagerAsh::FromMojoAccount(
     const mojom::AccountPtr& mojom_account) {
-  chromeos::AccountManager::Account account;
+  account_manager::Account account;
 
   account.key.id = mojom_account->key->id;
   account.key.account_type =
@@ -63,7 +62,7 @@ chromeos::AccountManager::Account AccountManagerAsh::FromMojoAccount(
 
 // static
 mojom::AccountPtr AccountManagerAsh::ToMojoAccount(
-    const chromeos::AccountManager::Account& account) {
+    const account_manager::Account& account) {
   mojom::AccountPtr mojom_account = mojom::Account::New();
 
   mojom_account->key = mojom::AccountKey::New();

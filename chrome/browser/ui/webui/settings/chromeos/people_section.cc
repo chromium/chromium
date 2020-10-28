@@ -684,7 +684,7 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
                          tooltip);
 }
 
-bool IsSameAccount(const AccountManager::AccountKey& account_key,
+bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   switch (account_key.account_type) {
     case account_manager::AccountType::ACCOUNT_TYPE_GAIA:
@@ -1038,16 +1038,17 @@ void PeopleSection::FetchAccounts() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void PeopleSection::OnTokenUpserted(const AccountManager::Account& account) {
+void PeopleSection::OnTokenUpserted(const ::account_manager::Account& account) {
   FetchAccounts();
 }
 
-void PeopleSection::OnAccountRemoved(const AccountManager::Account& account) {
+void PeopleSection::OnAccountRemoved(
+    const ::account_manager::Account& account) {
   FetchAccounts();
 }
 
 void PeopleSection::UpdateAccountManagerSearchTags(
-    const std::vector<AccountManager::Account>& accounts) {
+    const std::vector<::account_manager::Account>& accounts) {
   DCHECK(IsAccountManagerAvailable(profile()));
 
   // Start with no Account Manager search tags.
@@ -1057,7 +1058,7 @@ void PeopleSection::UpdateAccountManagerSearchTags(
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile());
   DCHECK(user);
 
-  for (const AccountManager::Account& account : accounts) {
+  for (const ::account_manager::Account& account : accounts) {
     if (IsSameAccount(account.key, user->GetAccountId()))
       continue;
 

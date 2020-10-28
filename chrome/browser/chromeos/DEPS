@@ -7,6 +7,7 @@ include_rules = [
 
   "+chrome/services/keymaster/public",
   "+chrome/services/wilco_dtc_supportd/public",
+  "+components/account_manager_core",
   "+components/guest_os",
   "+components/services/app_service/public",
   "+cros",

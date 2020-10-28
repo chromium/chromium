@@ -19,7 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "chromeos/components/account_manager/tokens.pb.h"
+#include "components/account_manager_core/account.h"
 
 class OAuth2AccessTokenFetcher;
 class OAuth2AccessTokenConsumer;
@@ -59,32 +59,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // See |AccountManager::UpsertToken|.
   static const char* const kInvalidToken;
 
-  struct AccountKey {
-    // |id| is obfuscated GAIA id for |AccountType::ACCOUNT_TYPE_GAIA|.
-    // |id| is object GUID (|AccountId::GetObjGuid|) for
-    // |AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY|.
-    std::string id;
-    account_manager::AccountType account_type;
-
-    bool IsValid() const;
-
-    bool operator<(const AccountKey& other) const;
-    bool operator==(const AccountKey& other) const;
-    bool operator!=(const AccountKey& other) const;
-  };
-
-  // Publicly viewable information about an account.
-  struct Account {
-    // A unique identifier for this account.
-    AccountKey key;
-
-    // The raw, un-canonicalized email id for this account.
-    std::string raw_email;
-  };
-
   // Callback used for the (asynchronous) GetAccounts() call.
   using AccountListCallback =
-      base::OnceCallback<void(const std::vector<Account>&)>;
+      base::OnceCallback<void(const std::vector<::account_manager::Account>&)>;
 
   using DelayNetworkCallRunner =
       base::RepeatingCallback<void(base::OnceClosure)>;
@@ -104,13 +81,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
     // Note: |Observer|s which register with |AccountManager| after its
     // initialization is complete will not get an immediate
     // notification-on-registration.
-    virtual void OnTokenUpserted(const Account& account) = 0;
+    virtual void OnTokenUpserted(const ::account_manager::Account& account) = 0;
 
     // Called when an account has been removed from AccountManager.
     // Observers that may have cached access tokens (fetched via
     // |AccountManager::CreateAccessTokenFetcher|), must clear their cache entry
     // for this |account| on receiving this callback.
-    virtual void OnAccountRemoved(const Account& account) = 0;
+    virtual void OnAccountRemoved(
+        const ::account_manager::Account& account) = 0;
   };
 
   // Note: |Initialize| MUST be called at least once on this object.
@@ -177,7 +155,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // Gets (async) the raw, un-canonicalized email id corresponding to
   // |account_key|. |callback| is called with an empty string if |account_key|
   // is not known to Account Manager.
-  void GetAccountEmail(const AccountKey& account_key,
+  void GetAccountEmail(const ::account_manager::AccountKey& account_key,
                        base::OnceCallback<void(const std::string&)> callback);
 
   // Removes an account. Does not do anything if |account_key| is not known by
@@ -187,7 +165,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // If the account being removed is a GAIA account, a token revocation with
   // GAIA is also attempted, on a best effort basis. Even if token revocation
   // with GAIA fails, AccountManager will forget the account.
-  void RemoveAccount(const AccountKey& account_key);
+  void RemoveAccount(const ::account_manager::AccountKey& account_key);
 
   // Similar to |RemoveAccount(AccountKey)| except that it accepts |email| as
   // the account identifier instead of |account_key|. |email| can be the raw
@@ -200,7 +178,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // Directory accounts, and |AccountManager::kInvalidToken| for Gaia accounts
   // with unknown tokens.
   // Note: This API is idempotent.
-  void UpsertAccount(const AccountKey& account_key,
+  void UpsertAccount(const ::account_manager::AccountKey& account_key,
                      const std::string& raw_email,
                      const std::string& token);
 
@@ -208,12 +186,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // The account must be known to Account Manager. See |UpsertAccount| for
   // information about adding an account.
   // Note: This API is idempotent.
-  void UpdateToken(const AccountKey& account_key, const std::string& token);
+  void UpdateToken(const ::account_manager::AccountKey& account_key,
+                   const std::string& token);
 
   // Updates the email associated with |account_key|. The account must be known
   // to Account Manager. See |UpsertAccount| for information about adding an
   // account.
-  void UpdateEmail(const AccountKey& account_key, const std::string& raw_email);
+  void UpdateEmail(const ::account_manager::AccountKey& account_key,
+                   const std::string& raw_email);
 
   // Add a non owning pointer to an |AccountManager::Observer|.
   void AddObserver(Observer* observer);
@@ -230,7 +210,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // stored for |account_key|. |IsTokenAvailable| should be |true| for
   // |account_key|, otherwise a |nullptr| is returned.
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
-      const AccountKey& account_key,
+      const ::account_manager::AccountKey& account_key,
       OAuth2AccessTokenConsumer* consumer) const;
 
   // Returns |true| if an LST is available for |account_key|. Note that
@@ -239,11 +219,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // Note: Always returns false for Active Directory accounts.
   // Note: This method will return |false| if |AccountManager| has not been
   // initialized yet.
-  bool IsTokenAvailable(const AccountKey& account_key) const;
+  bool IsTokenAvailable(const ::account_manager::AccountKey& account_key) const;
 
   // Calls the |callback| with true if the token stored against |account_key| is
   // a dummy Gaia token.
-  void HasDummyGaiaToken(const AccountKey& account_key,
+  void HasDummyGaiaToken(const ::account_manager::AccountKey& account_key,
                          base::OnceCallback<void(bool)> callback) const;
 
   // Calls the |callback| with a list of pairs of |account_key| and boolean
@@ -251,7 +231,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // Gaia token, for all accounts stored in AccountManager. See
   // |HasDummyGaiaToken|.
   void CheckDummyGaiaTokenForAllAccounts(
-      base::OnceCallback<void(const std::vector<std::pair<Account, bool>>&)>
+      base::OnceCallback<
+          void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
           callback) const;
 
  private:
@@ -279,7 +260,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   FRIEND_TEST_ALL_PREFIXES(AccountManagerTest,
                            UpdatingTokensShouldNotOverwriteAccountEmail);
 
-  using AccountMap = std::map<AccountKey, AccountInfo>;
+  using AccountMap = std::map<::account_manager::AccountKey, AccountInfo>;
 
   // Same as the public |Initialize| except for a |task_runner|.
   void Initialize(
@@ -313,12 +294,12 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // Does the actual work of fetching the email for |account_key|. Assumes that
   // |AccountManager| initialization (|init_state_|) is complete.
   void GetAccountEmailInternal(
-      const AccountKey& account_key,
+      const ::account_manager::AccountKey& account_key,
       base::OnceCallback<void(const std::string&)> callback);
 
   // Does the actual work of removing an account. Assumes that
   // |AccountManager| initialization (|init_state_|) is complete.
-  void RemoveAccountInternal(const AccountKey& account_key);
+  void RemoveAccountInternal(const ::account_manager::AccountKey& account_key);
 
   // Does the actual work of removing an account. Assumes that |AccountManager|
   // initialization (|init_state_|) is complete. |email| can be the raw email or
@@ -326,18 +307,18 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   void RemoveAccountByEmailInternal(const std::string& email);
 
   // Assumes that |AccountManager| initialization (|init_state_|) is complete.
-  void UpdateTokenInternal(const AccountKey& account_key,
+  void UpdateTokenInternal(const ::account_manager::AccountKey& account_key,
                            const std::string& token);
 
   // Assumes that |AccountManager| initialization (|init_state_|) is complete.
-  void UpdateEmailInternal(const AccountKey& account_key,
+  void UpdateEmailInternal(const ::account_manager::AccountKey& account_key,
                            const std::string& raw_email);
 
   // Does the actual work of upserting an account and performing related tasks
   // like revoking old tokens and informing observers. All account updates
   // funnel through to this method. Assumes that |AccountManager| initialization
   // (|init_state_|) is complete.
-  void UpsertAccountInternal(const AccountKey& account_key,
+  void UpsertAccountInternal(const ::account_manager::AccountKey& account_key,
                              const AccountInfo& account);
 
   // Posts a task on |task_runner_|, which is usually a background thread, to
@@ -348,21 +329,22 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   std::string GetSerializedAccounts();
 
   // Gets the publicly viewable information stored in |accounts_|.
-  std::vector<Account> GetAccounts();
+  std::vector<::account_manager::Account> GetAccounts();
 
   // Notifies |Observer|s about a token update for |account|.
-  void NotifyTokenObservers(const Account& account);
+  void NotifyTokenObservers(const ::account_manager::Account& account);
 
   // Notifies |Observer|s about an |account| removal.
-  void NotifyAccountRemovalObservers(const Account& account);
+  void NotifyAccountRemovalObservers(const ::account_manager::Account& account);
 
   // Revokes |account_key|'s token on the relevant backend.
   // Note: Does not do anything if the |account_manager::AccountType|
   // of |account_key| does not support server token revocation.
   // Note: |account_key| may or may not be present in |accounts_|. Call this
   // method *after* modifying or deleting old tokens from |accounts_|.
-  void MaybeRevokeTokenOnServer(const AccountKey& account_key,
-                                const std::string& old_token);
+  void MaybeRevokeTokenOnServer(
+      const ::account_manager::AccountKey& account_key,
+      const std::string& old_token);
 
   // Revokes |refresh_token| with GAIA. Virtual for testing.
   virtual void RevokeGaiaTokenOnServer(const std::string& refresh_token);
@@ -423,11 +405,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
 
   base::WeakPtrFactory<AccountManager> weak_factory_{this};
 };
-
-// For logging.
-COMPONENT_EXPORT(ACCOUNT_MANAGER)
-std::ostream& operator<<(std::ostream& os,
-                         const AccountManager::AccountKey& account_key);
 
 }  // namespace chromeos
 

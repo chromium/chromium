@@ -55,7 +55,7 @@ std::string GetEnterpriseDomainFromUsername(const std::string& username) {
   return gaia::ExtractDomainName(username);
 }
 
-AccountManager::AccountKey GetAccountKeyFromJsCallback(
+::account_manager::AccountKey GetAccountKeyFromJsCallback(
     const base::DictionaryValue* const dictionary) {
   const base::Value* id_value = dictionary->FindKey("id");
   DCHECK(id_value);
@@ -72,10 +72,10 @@ AccountManager::AccountKey GetAccountKeyFromJsCallback(
   const account_manager::AccountType account_type =
       static_cast<account_manager::AccountType>(account_type_int);
 
-  return AccountManager::AccountKey{id, account_type};
+  return ::account_manager::AccountKey{id, account_type};
 }
 
-bool IsSameAccount(const AccountManager::AccountKey& account_key,
+bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   switch (account_key.account_type) {
     case chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA:
@@ -237,7 +237,7 @@ void AccountManagerUIHandler::HandleGetAccounts(const base::ListValue* args) {
 
 void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
     base::Value callback_id,
-    const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+    const std::vector<std::pair<::account_manager::Account, bool>>&
         account_dummy_token_list) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
@@ -292,15 +292,15 @@ void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
 }
 
 base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
-    const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+    const std::vector<std::pair<::account_manager::Account, bool>>&
         account_dummy_token_list,
     const AccountId device_account_id,
     const bool is_child_user,
     base::DictionaryValue* device_account) {
   base::ListValue accounts;
   for (const auto& account_token_pair : account_dummy_token_list) {
-    const AccountManager::Account& stored_account = account_token_pair.first;
-    const AccountManager::AccountKey& account_key = stored_account.key;
+    const ::account_manager::Account& stored_account = account_token_pair.first;
+    const ::account_manager::AccountKey& account_key = stored_account.key;
     // We are only interested in listing GAIA accounts.
     if (account_key.account_type !=
         account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
@@ -382,7 +382,7 @@ void AccountManagerUIHandler::HandleRemoveAccount(const base::ListValue* args) {
 
   const AccountId device_account_id =
       ProfileHelper::Get()->GetUserByProfile(profile_)->GetAccountId();
-  const AccountManager::AccountKey account_key =
+  const ::account_manager::AccountKey account_key =
       GetAccountKeyFromJsCallback(dictionary);
   if (IsSameAccount(account_key, device_account_id)) {
     // It should not be possible to remove a device account.
@@ -422,12 +422,12 @@ void AccountManagerUIHandler::OnJavascriptDisallowed() {
 // guarantee that |AccountManager| (our source of truth) will have a newly added
 // account by the time |IdentityManager| has it.
 void AccountManagerUIHandler::OnTokenUpserted(
-    const AccountManager::Account& account) {
+    const ::account_manager::Account& account) {
   RefreshUI();
 }
 
 void AccountManagerUIHandler::OnAccountRemoved(
-    const AccountManager::Account& account) {
+    const ::account_manager::Account& account) {
   RefreshUI();
 }
 

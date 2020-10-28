@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/components/account_manager/tokens.pb.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -52,13 +51,13 @@ class TestAccountManagerObserver
 
   int GetNumOnTokenUpsertedCalls() { return num_token_upserted_calls_; }
 
-  chromeos::AccountManager::Account GetLastUpsertedAccount() {
+  account_manager::Account GetLastUpsertedAccount() {
     return last_upserted_account_;
   }
 
   int GetNumOnAccountRemovedCalls() { return num_account_removed_calls_; }
 
-  chromeos::AccountManager::Account GetLastRemovedAccount() {
+  account_manager::Account GetLastRemovedAccount() {
     return last_removed_account_;
   }
 
@@ -80,8 +79,8 @@ class TestAccountManagerObserver
 
   int num_token_upserted_calls_ = 0;
   int num_account_removed_calls_ = 0;
-  chromeos::AccountManager::Account last_upserted_account_;
-  chromeos::AccountManager::Account last_removed_account_;
+  account_manager::Account last_upserted_account_;
+  account_manager::Account last_removed_account_;
   mojo::Receiver<mojom::AccountManagerObserver> receiver_;
 };
 
@@ -168,7 +167,7 @@ TEST_F(AccountManagerAshTest,
 }
 
 TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountUpdates) {
-  const chromeos::AccountManager::AccountKey kTestAccountKey{
+  const account_manager::AccountKey kTestAccountKey{
       kFakeGaiaId, chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA};
   ASSERT_TRUE(InitializeAccountManager());
   TestAccountManagerObserver observer;
@@ -184,7 +183,7 @@ TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountUpdates) {
 }
 
 TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountRemovals) {
-  const chromeos::AccountManager::AccountKey kTestAccountKey{
+  const account_manager::AccountKey kTestAccountKey{
       kFakeGaiaId, chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA};
   ASSERT_TRUE(InitializeAccountManager());
   TestAccountManagerObserver observer;

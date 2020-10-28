@@ -66,12 +66,12 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
 
     // Add accounts in Account Manager.
     account_manager_->UpsertAccount(
-        AccountManager::AccountKey{
+        ::account_manager::AccountKey{
             primary_account_info.gaia,
             account_manager::AccountType::ACCOUNT_TYPE_GAIA},
         primary_account_info.email, AccountManager::kInvalidToken);
     account_manager_->UpsertAccount(
-        AccountManager::AccountKey{
+        ::account_manager::AccountKey{
             kFakeSecondaryGaiaId,
             account_manager::AccountType::ACCOUNT_TYPE_GAIA},
         kFakeSecondaryUsername, AccountManager::kInvalidToken);
@@ -87,14 +87,14 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     scoped_user_manager_.reset();
   }
 
-  std::vector<AccountManager::Account> GetAccountManagerAccounts() {
+  std::vector<::account_manager::Account> GetAccountManagerAccounts() {
     DCHECK(account_manager_);
 
-    std::vector<AccountManager::Account> accounts;
+    std::vector<::account_manager::Account> accounts;
     base::RunLoop run_loop;
     account_manager_->GetAccounts(base::BindLambdaForTesting(
         [&accounts, &run_loop](
-            const std::vector<AccountManager::Account>& stored_accounts) {
+            const std::vector<::account_manager::Account>& stored_accounts) {
           accounts = stored_accounts;
           run_loop.Quit();
         }));
@@ -124,10 +124,11 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,
                        ExistingSecondaryAccountsAreNotRemovedIfPolicyIsNotSet) {
-  std::vector<AccountManager::Account> accounts = GetAccountManagerAccounts();
+  std::vector<::account_manager::Account> accounts =
+      GetAccountManagerAccounts();
   // We should have at least 1 Secondary Account.
-  const std::vector<AccountManager::Account>::size_type initial_num_accounts =
-      accounts.size();
+  const std::vector<::account_manager::Account>::size_type
+      initial_num_accounts = accounts.size();
   ASSERT_GT(initial_num_accounts, 1UL);
 
   // Use default policy value for |kSecondaryGoogleAccountSigninAllowed|
@@ -145,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,
 IN_PROC_BROWSER_TEST_F(
     AccountManagerPolicyControllerTest,
     ExistingSecondaryAccountsAreRemovedAfterPolicyApplication) {
-  std::vector<AccountManager::Account> accounts = GetAccountManagerAccounts();
+  std::vector<::account_manager::Account> accounts =
+      GetAccountManagerAccounts();
   // We should have at least 1 Secondary Account.
   ASSERT_GT(accounts.size(), 1UL);
 
@@ -173,9 +175,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     AccountManagerPolicyControllerTest,
     SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled) {
-  std::vector<AccountManager::Account> accounts = GetAccountManagerAccounts();
-  const std::vector<AccountManager::Account>::size_type initial_num_accounts =
-      accounts.size();
+  std::vector<::account_manager::Account> accounts =
+      GetAccountManagerAccounts();
+  const std::vector<::account_manager::Account>::size_type
+      initial_num_accounts = accounts.size();
   // We should have at least 1 Secondary Account.
   ASSERT_GT(initial_num_accounts, 1UL);
 

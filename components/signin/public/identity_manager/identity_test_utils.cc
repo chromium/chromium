@@ -23,6 +23,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/components/account_manager/account_manager.h"
+#include "components/account_manager_core/account.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -84,7 +85,7 @@ void UpdateRefreshTokenForAccount(
 
   DCHECK(account_manager);
   account_manager->UpsertAccount(
-      chromeos::AccountManager::AccountKey{
+      account_manager::AccountKey{
           account_info.gaia,
           chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA},
       account_info.email, new_token);
@@ -336,7 +337,7 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
       identity_manager->GetAccountTrackerService()->GetAccountInfo(account_id);
 
   identity_manager->GetChromeOSAccountManager()->RemoveAccount(
-      chromeos::AccountManager::AccountKey{
+      account_manager::AccountKey{
           account_info.gaia,
           chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA});
 #else

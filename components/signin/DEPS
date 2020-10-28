@@ -1,5 +1,6 @@
 include_rules = [
   "+chromeos/components/account_manager",
+  "+components/account_manager_core",
   "+components/content_settings",
   "+components/google/core",
   "+components/image_fetcher/core",

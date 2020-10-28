@@ -34,13 +34,14 @@ namespace {
 constexpr char kGaiaToken[] = "gaia_token";
 constexpr char kNewGaiaToken[] = "new_gaia_token";
 constexpr char kRawUserEmail[] = "user@example.com";
-const AccountManager::AccountKey kGaiaAccountKey = {
+const ::account_manager::AccountKey kGaiaAccountKey = {
     "gaia_id", account_manager::AccountType::ACCOUNT_TYPE_GAIA};
-const AccountManager::AccountKey kActiveDirectoryAccountKey = {
+const ::account_manager::AccountKey kActiveDirectoryAccountKey = {
     "object_guid", account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY};
 
-bool IsAccountKeyPresent(const std::vector<AccountManager::Account>& accounts,
-                         const AccountManager::AccountKey& account_key) {
+bool IsAccountKeyPresent(
+    const std::vector<::account_manager::Account>& accounts,
+    const ::account_manager::AccountKey& account_key) {
   for (const auto& account : accounts) {
     if (account.key == account_key) {
       return true;
@@ -77,19 +78,19 @@ class AccountManagerTest : public testing::Test {
   }
 
   // Gets the list of accounts stored in |account_manager_|.
-  std::vector<AccountManager::Account> GetAccountsBlocking() {
+  std::vector<::account_manager::Account> GetAccountsBlocking() {
     return GetAccountsBlocking(account_manager_.get());
   }
 
   // Gets the list of accounts stored in |account_manager|.
-  std::vector<AccountManager::Account> GetAccountsBlocking(
+  std::vector<::account_manager::Account> GetAccountsBlocking(
       AccountManager* const account_manager) {
-    std::vector<AccountManager::Account> accounts;
+    std::vector<::account_manager::Account> accounts;
 
     base::RunLoop run_loop;
     account_manager->GetAccounts(base::BindLambdaForTesting(
         [&accounts, &run_loop](
-            const std::vector<AccountManager::Account>& stored_accounts) {
+            const std::vector<::account_manager::Account>& stored_accounts) {
           accounts = stored_accounts;
           run_loop.Quit();
         }));
@@ -100,7 +101,7 @@ class AccountManagerTest : public testing::Test {
 
   // Gets the raw email for |account_key|.
   std::string GetAccountEmailBlocking(
-      const AccountManager::AccountKey& account_key) {
+      const ::account_manager::AccountKey& account_key) {
     std::string raw_email;
 
     base::RunLoop run_loop;
@@ -117,7 +118,7 @@ class AccountManagerTest : public testing::Test {
   }
 
   bool HasDummyGaiaTokenBlocking(
-      const AccountManager::AccountKey& account_key) {
+      const ::account_manager::AccountKey& account_key) {
     bool has_dummy_token_result = false;
 
     base::RunLoop run_loop;
@@ -224,14 +225,14 @@ class AccountManagerObserver : public AccountManager::Observer {
   AccountManagerObserver& operator=(const AccountManagerObserver&) = delete;
   ~AccountManagerObserver() override = default;
 
-  void OnTokenUpserted(const AccountManager::Account& account) override {
+  void OnTokenUpserted(const ::account_manager::Account& account) override {
     is_token_upserted_callback_called_ = true;
     accounts_.insert(account.key);
     last_upserted_account_key_ = account.key;
     last_upserted_account_email_ = account.raw_email;
   }
 
-  void OnAccountRemoved(const AccountManager::Account& account) override {
+  void OnAccountRemoved(const ::account_manager::Account& account) override {
     is_account_removed_callback_called_ = true;
     accounts_.erase(account.key);
     last_removed_account_key_ = account.key;
@@ -241,9 +242,9 @@ class AccountManagerObserver : public AccountManager::Observer {
   void Reset() {
     is_token_upserted_callback_called_ = false;
     is_account_removed_callback_called_ = false;
-    last_upserted_account_key_ = AccountManager::AccountKey{};
+    last_upserted_account_key_ = ::account_manager::AccountKey{};
     last_upserted_account_email_.clear();
-    last_removed_account_key_ = AccountManager::AccountKey{};
+    last_removed_account_key_ = ::account_manager::AccountKey{};
     last_removed_account_email_.clear();
     accounts_.clear();
   }
@@ -256,7 +257,7 @@ class AccountManagerObserver : public AccountManager::Observer {
     return is_account_removed_callback_called_;
   }
 
-  const AccountManager::AccountKey& last_upserted_account_key() const {
+  const ::account_manager::AccountKey& last_upserted_account_key() const {
     return last_upserted_account_key_;
   }
 
@@ -264,7 +265,7 @@ class AccountManagerObserver : public AccountManager::Observer {
     return last_upserted_account_email_;
   }
 
-  const AccountManager::AccountKey& last_removed_account_key() const {
+  const ::account_manager::AccountKey& last_removed_account_key() const {
     return last_removed_account_key_;
   }
 
@@ -272,30 +273,30 @@ class AccountManagerObserver : public AccountManager::Observer {
     return last_removed_account_email_;
   }
 
-  const std::set<AccountManager::AccountKey>& accounts() const {
+  const std::set<::account_manager::AccountKey>& accounts() const {
     return accounts_;
   }
 
  private:
   bool is_token_upserted_callback_called_ = false;
   bool is_account_removed_callback_called_ = false;
-  AccountManager::AccountKey last_upserted_account_key_;
+  ::account_manager::AccountKey last_upserted_account_key_;
   std::string last_upserted_account_email_;
-  AccountManager::AccountKey last_removed_account_key_;
+  ::account_manager::AccountKey last_removed_account_key_;
   std::string last_removed_account_email_;
-  std::set<AccountManager::AccountKey> accounts_;
+  std::set<::account_manager::AccountKey> accounts_;
 };
 
 TEST(AccountManagerKeyTest, TestValidity) {
-  AccountManager::AccountKey key1{
+  ::account_manager::AccountKey key1{
       std::string(), account_manager::AccountType::ACCOUNT_TYPE_GAIA};
   EXPECT_FALSE(key1.IsValid());
 
-  AccountManager::AccountKey key2{
+  ::account_manager::AccountKey key2{
       "abc", account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED};
   EXPECT_FALSE(key2.IsValid());
 
-  AccountManager::AccountKey key3{
+  ::account_manager::AccountKey key3{
       "abc", account_manager::AccountType::ACCOUNT_TYPE_GAIA};
   EXPECT_TRUE(key3.IsValid());
 }
@@ -345,7 +346,7 @@ TEST_F(AccountManagerTest,
 TEST_F(AccountManagerTest, TestUpsert) {
   account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
 
-  std::vector<AccountManager::Account> accounts = GetAccountsBlocking();
+  std::vector<::account_manager::Account> accounts = GetAccountsBlocking();
 
   EXPECT_EQ(1UL, accounts.size());
   EXPECT_EQ(kGaiaAccountKey, accounts[0].key);
@@ -358,7 +359,7 @@ TEST_F(AccountManagerTest, TestTokenPersistence) {
   RunAllPendingTasks();
 
   ResetAndInitializeAccountManager();
-  std::vector<AccountManager::Account> accounts = GetAccountsBlocking();
+  std::vector<::account_manager::Account> accounts = GetAccountsBlocking();
 
   EXPECT_EQ(1UL, accounts.size());
   EXPECT_EQ(kGaiaAccountKey, accounts[0].key);
@@ -383,7 +384,7 @@ TEST_F(AccountManagerTest, TestTokenTransience) {
   AccountManager account_manager;
   InitializeAccountManager(&account_manager, home_dir);
 
-  std::vector<AccountManager::Account> accounts =
+  std::vector<::account_manager::Account> accounts =
       GetAccountsBlocking(&account_manager);
   EXPECT_EQ(0UL, accounts.size());
 }
@@ -401,7 +402,7 @@ TEST_F(AccountManagerTest, TestEphemeralMode) {
   AccountManager account_manager;
   InitializeEphemeralAccountManager(&account_manager);
 
-  std::vector<AccountManager::Account> accounts =
+  std::vector<::account_manager::Account> accounts =
       GetAccountsBlocking(&account_manager);
   EXPECT_EQ(0UL, accounts.size());
 }

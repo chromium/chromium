@@ -65,7 +65,7 @@ void HandleDeviceAccountReauthNotificationClick(
 }
 
 bool AreAllAccountsMigrated(
-    const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+    const std::vector<std::pair<account_manager::Account, bool>>&
         account_dummy_token_list) {
   for (const auto& account : account_dummy_token_list) {
     if (account.second) {
@@ -202,7 +202,7 @@ void SigninErrorNotifier::OnErrorChanged() {
 
 void SigninErrorNotifier::HandleDeviceAccountError() {
   // If this error has occurred because a user's account has just been converted
-  // to a Family Link Supervised account, then suppress the notificaiton.
+  // to a Family Link Supervised account, then suppress the notification.
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   if (service->signout_required_after_supervision_enabled())
@@ -257,7 +257,7 @@ void SigninErrorNotifier::HandleSecondaryAccountError(
 }
 
 void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
-    const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+    const std::vector<std::pair<account_manager::Account, bool>>&
         account_dummy_token_list) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,

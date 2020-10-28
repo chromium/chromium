@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/login/signin/token_handle_util.h"
 #include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/account_manager_core/account.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 
@@ -57,7 +58,7 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // `chromeos::AccountManager::CheckDummyGaiaTokenForAllAccounts` callback
   // handler.
   void OnCheckDummyGaiaTokenForAllAccounts(
-      const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+      const std::vector<std::pair<account_manager::Account, bool>>&
           account_dummy_token_list);
 
   void OnTokenHandleCheck(const AccountId& account_id,

@@ -214,9 +214,9 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     // Will result in chromeos::AccountManager calling
     // |ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted|.
     account_manager_.UpsertAccount(
-        chromeos::AccountManager::AccountKey{
-            gaia_id, chromeos::account_manager::AccountType::
-                         ACCOUNT_TYPE_GAIA} /* account_key */,
+        account_manager::AccountKey{gaia_id,
+                                    chromeos::account_manager::AccountType::
+                                        ACCOUNT_TYPE_GAIA} /* account_key */,
         email /* email */, refresh_token);
   }
 
@@ -224,8 +224,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
   base::ScopedTempDir tmp_dir_;
   AccountInfo account_info_;
-  chromeos::AccountManager::AccountKey gaia_account_key_;
-  chromeos::AccountManager::AccountKey ad_account_key_;
+  account_manager::AccountKey gaia_account_key_;
+  account_manager::AccountKey ad_account_key_;
   AccountTrackerService account_tracker_service_;
   chromeos::AccountManager account_manager_;
   std::unique_ptr<ProfileOAuth2TokenServiceDelegateChromeOS> delegate_;
@@ -365,7 +365,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   UpdateCredentials(account_info_.gaia, account_info_.email, kGaiaToken);
   // Deliberately add an error.
   delegate_->UpdateAuthError(account_info_.account_id, error);
-  account_manager_.RemoveAccount(chromeos::AccountManager::AccountKey{
+  account_manager_.RemoveAccount(account_manager::AccountKey{
       account_info_.gaia,
       chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA});
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
@@ -439,10 +439,10 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   account_tracker_service_.SeedAccountInfo(account1);
   account_tracker_service_.SeedAccountInfo(account2);
   account_manager_.UpsertAccount(
-      chromeos::AccountManager::AccountKey{account1.gaia, ACCOUNT_TYPE_GAIA},
+      account_manager::AccountKey{account1.gaia, ACCOUNT_TYPE_GAIA},
       "user1@example.com", "token1");
   account_manager_.UpsertAccount(
-      chromeos::AccountManager::AccountKey{account2.gaia, ACCOUNT_TYPE_GAIA},
+      account_manager::AccountKey{account2.gaia, ACCOUNT_TYPE_GAIA},
       "user2@example.com", "token2");
   task_environment_.RunUntilIdle();
 
@@ -532,8 +532,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   // accounts, 1 has a valid refresh token and 1 has a dummy token.
   account_manager_.UpsertAccount(gaia_account_key_, kUserEmail, kGaiaToken);
 
-  chromeos::AccountManager::AccountKey gaia_account_key2{"random-gaia-id",
-                                                         ACCOUNT_TYPE_GAIA};
+  account_manager::AccountKey gaia_account_key2{"random-gaia-id",
+                                                ACCOUNT_TYPE_GAIA};
   account_tracker_service_.SeedAccountInfo(
       CreateAccountInfoTestFixture(gaia_account_key2.id, kUserEmail2));
   account_manager_.UpsertAccount(gaia_account_key2, kUserEmail2,

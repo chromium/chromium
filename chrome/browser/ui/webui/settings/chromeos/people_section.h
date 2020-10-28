@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "chromeos/components/account_manager/account_manager.h"
+#include "components/account_manager_core/account.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -67,8 +68,8 @@ class PeopleSection : public OsSettingsSection,
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // AccountManager::Observer:
-  void OnTokenUpserted(const AccountManager::Account& account) override;
-  void OnAccountRemoved(const AccountManager::Account& account) override;
+  void OnTokenUpserted(const ::account_manager::Account& account) override;
+  void OnAccountRemoved(const ::account_manager::Account& account) override;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
@@ -81,7 +82,7 @@ class PeopleSection : public OsSettingsSection,
   bool AreFingerprintSettingsAllowed();
   void FetchAccounts();
   void UpdateAccountManagerSearchTags(
-      const std::vector<AccountManager::Account>& accounts);
+      const std::vector<::account_manager::Account>& accounts);
   void UpdateRemoveFingerprintSearchTags();
 
   AccountManager* account_manager_ = nullptr;

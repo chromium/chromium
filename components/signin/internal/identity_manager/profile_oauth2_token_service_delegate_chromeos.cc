@@ -43,7 +43,7 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 // |account_keys| is the set of accounts that need to be translated.
 // |account_tracker_service| is an unowned pointer.
 std::vector<CoreAccountId> GetOAuthAccountIdsFromAccountKeys(
-    const std::set<chromeos::AccountManager::AccountKey>& account_keys,
+    const std::set<account_manager::AccountKey>& account_keys,
     const AccountTrackerService* const account_tracker_service) {
   std::vector<CoreAccountId> accounts;
   for (auto& account_key : account_keys) {
@@ -120,7 +120,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
   }
 
   return account_manager_->CreateAccessTokenFetcher(
-      chromeos::AccountManager::AccountKey{
+      account_manager::AccountKey{
           account_tracker_service_->GetAccountInfo(account_id).gaia,
           chromeos::account_manager::AccountType::
               ACCOUNT_TYPE_GAIA} /* account_key */,
@@ -257,7 +257,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::GetURLLoaderFactory() const {
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts(
-    const std::vector<chromeos::AccountManager::Account>& accounts) {
+    const std::vector<account_manager::Account>& accounts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This callback should only be triggered during |LoadCredentials|, which
@@ -310,7 +310,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::ContinueTokenUpsertProcessing(
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted(
-    const chromeos::AccountManager::Account& account) {
+    const account_manager::Account& account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   account_keys_.insert(account.key);
 
@@ -333,7 +333,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted(
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
-    const chromeos::AccountManager::Account& account) {
+    const account_manager::Account& account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,

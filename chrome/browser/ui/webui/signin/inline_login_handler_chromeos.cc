@@ -102,7 +102,7 @@ class SigninHelper : public GaiaAuthConsumer {
         gaia_auth_fetcher_(this,
                            gaia::GaiaSource::kChrome,
                            url_loader_factory) {
-    account_key_ = chromeos::AccountManager::AccountKey{
+    account_key_ = ::account_manager::AccountKey{
         gaia_id, chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA};
 
     DCHECK(!signin_scoped_device_id.empty());
@@ -165,7 +165,7 @@ class SigninHelper : public GaiaAuthConsumer {
   // A closure to close the hosting dialog window.
   base::RepeatingClosure close_dialog_closure_;
   // The user's AccountKey for which |this| object has been created.
-  chromeos::AccountManager::AccountKey account_key_;
+  ::account_manager::AccountKey account_key_;
   // The user's email for which |this| object has been created.
   const std::string email_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -474,7 +474,7 @@ void InlineLoginHandlerChromeOS::GetAccountsInSession(
 
 void InlineLoginHandlerChromeOS::OnGetAccounts(
     const std::string& callback_id,
-    const std::vector<AccountManager::Account>& accounts) {
+    const std::vector<::account_manager::Account>& accounts) {
   base::ListValue account_emails;
   for (const auto& account : accounts) {
     if (account.key.account_type ==
