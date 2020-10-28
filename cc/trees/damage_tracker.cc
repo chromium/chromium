@@ -435,6 +435,21 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
       gfx::ToEnclosingRect(render_surface->DrawableContentRect());
   data.Update(surface_rect_in_target_space, mailboxId_);
 
+  const FilterOperations& backdrop_filters = render_surface->BackdropFilters();
+  if (!surface_is_new &&
+      backdrop_filters.HasFilterOfType(FilterOperation::BLUR)) {
+    gfx::Rect damage_on_target;
+    bool valid = damage_for_this_update_.GetAsRect(&damage_on_target);
+    if (!valid || damage_on_target.Intersects(surface_rect_in_target_space)) {
+      render_surface->set_can_use_cached_backdrop_filtered_result(false);
+    } else {
+      surfaces_with_backdrop_blur_filter.emplace_back(
+          std::make_pair(render_surface, surface_rect_in_target_space));
+    }
+  } else {
+    render_surface->set_can_use_cached_backdrop_filtered_result(false);
+  }
+
   if (surface_is_new || render_surface->SurfacePropertyChanged()) {
     // The entire surface contributes damage.
     damage_for_this_update_.Union(surface_rect_in_target_space);
@@ -458,21 +473,6 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
     } else if (!is_valid_rect) {
       damage_for_this_update_.Union(surface_rect_in_target_space);
     }
-  }
-
-  const FilterOperations& backdrop_filters = render_surface->BackdropFilters();
-  if (!surface_is_new &&
-      backdrop_filters.HasFilterOfType(FilterOperation::BLUR)) {
-    gfx::Rect damage_on_target;
-    bool valid = damage_for_this_update_.GetAsRect(&damage_on_target);
-    if (!valid || damage_on_target.Intersects(surface_rect_in_target_space)) {
-      render_surface->set_can_use_cached_backdrop_filtered_result(false);
-    } else {
-      surfaces_with_backdrop_blur_filter.push_back(
-          std::make_pair(render_surface, surface_rect_in_target_space));
-    }
-  } else {
-    render_surface->set_can_use_cached_backdrop_filtered_result(false);
   }
 
   // True if any changes from contributing render surface.

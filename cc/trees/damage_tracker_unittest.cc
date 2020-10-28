@@ -2059,7 +2059,8 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
       GetRenderSurface(child1_)->can_use_cached_backdrop_filtered_result());
 
   EmulateDrawingOneFrame(root);
-  EXPECT_FALSE(
+  // No change under child1_.
+  EXPECT_TRUE(
       GetRenderSurface(child1_)->can_use_cached_backdrop_filtered_result());
 
   // Let run for one update and there should be no damage left.
