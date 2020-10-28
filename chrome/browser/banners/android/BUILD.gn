@@ -1,0 +1,82 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpController.java",
+    "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpControllerFactory.java",
+    "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpControllerProvider.java",
+    "java/src/org/chromium/chrome/browser/banners/AppBannerManager.java",
+    "java/src/org/chromium/chrome/browser/banners/AppData.java",
+    "java/src/org/chromium/chrome/browser/banners/AppDetailsDelegate.java",
+  ]
+  deps = [
+    ":java_resources",
+    ":jni_headers",
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/user_education:java",
+    "//components/feature_engagement/public:public_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.banners"
+}
+
+android_resources("java_resources") {
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/banners/AppBannerManager.java" ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/banners/AppBannerManagerTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_java",
+    "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/engagement/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/appmenu/test:test_support_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/feature_engagement/public:public_java",
+    "//components/infobars/android:java",
+    "//components/signin/core/browser/android:java",
+    "//components/signin/core/browser/android:signin_java_test_support",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
+    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//third_party/ub-uiautomator:ub_uiautomator_java",
+    "//ui/android:ui_full_java",
+  ]
+}

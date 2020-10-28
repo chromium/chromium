@@ -11,16 +11,13 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.WebContents;
@@ -62,33 +59,10 @@ public class AppBannerManager {
     /** Retrieves information about a given package. */
     private static AppDetailsDelegate sAppDetailsDelegate;
 
-    /** Whether add to home screen is permitted by the system. */
-    private static Boolean sIsSupported;
+    private static Function<Profile, Tracker> sTrackerFromProfileFactory;
 
     /** Pointer to the native side AppBannerManager. */
     private long mNativePointer;
-
-    /**
-     * Checks if the add to home screen intent is supported.
-     * @return true if add to home screen is supported, false otherwise.
-     */
-    public static boolean isSupported() {
-        // TODO(mthiesse, https://crbug.com/840811): Support the app banner dialog in VR.
-        if (VrModuleProvider.getDelegate().isInVr()) return false;
-        if (sIsSupported == null) {
-            sIsSupported = ShortcutHelper.isAddToHomeIntentSupported();
-        }
-        return sIsSupported;
-    }
-
-    /**
-     * Checks if app banners are enabled for the tab which this manager is attached to.
-     * @return true if app banners can be shown for this tab, false otherwise.
-     */
-    @CalledByNative
-    private boolean isEnabledForTab() {
-        return isSupported();
-    }
 
     /**
      * Sets the delegate that provides information about a given package.
@@ -97,6 +71,15 @@ public class AppBannerManager {
     public static void setAppDetailsDelegate(AppDetailsDelegate delegate) {
         if (sAppDetailsDelegate != null) sAppDetailsDelegate.destroy();
         sAppDetailsDelegate = delegate;
+    }
+
+    /**
+     * Sets the factory to obtain a Tracker from.
+     * @param trackerFromProfileFactory The factory to use.
+     */
+    public static void setTrackerFromProfileFactory(
+            Function<Profile, Tracker> trackerFromProfileFactory) {
+        sTrackerFromProfileFactory = trackerFromProfileFactory;
     }
 
     /**
@@ -128,8 +111,8 @@ public class AppBannerManager {
         if (sAppDetailsDelegate == null) return;
 
         Context context = ContextUtils.getApplicationContext();
-        int iconSizeInPx = Math.round(
-                context.getResources().getDisplayMetrics().density * iconSizeInDp);
+        int iconSizeInPx =
+                Math.round(context.getResources().getDisplayMetrics().density * iconSizeInDp);
         sAppDetailsDelegate.getAppDetailsAsynchronously(
                 createAppDetailsObserver(), url, packageName, referrer, iconSizeInPx);
     }
@@ -142,7 +125,8 @@ public class AppBannerManager {
     @CalledByNative
     private String showInProductHelp(WebContents webContents) {
         // Consult the tracker to see if the IPH can be shown.
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.fromWebContents(webContents));
+        final Tracker tracker =
+                sTrackerFromProfileFactory.apply(Profile.fromWebContents(webContents));
         if (!tracker.wouldTriggerHelpUI(FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE)) {
             // Tracker replied that the request to show will not be honored. Return whether the
             // limit of how often to show has been exceeded.
@@ -188,12 +172,6 @@ public class AppBannerManager {
         } else {
             return NON_PWA_PAIR;
         }
-    }
-
-    /** Overrides whether the system supports add to home screen. Used in testing. */
-    @VisibleForTesting
-    public static void setIsSupported(boolean state) {
-        sIsSupported = state;
     }
 
     /** Sets the app-banner-showing logic to ignore the Chrome channel. */

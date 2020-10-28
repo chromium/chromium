@@ -3123,6 +3123,7 @@ static_library("browser") {
       "//chrome/android:jni_headers",
       "//chrome/android/modules/extra_icu/provider:native",
       "//chrome/browser/android/webapk:proto",
+      "//chrome/browser/banners/android:jni_headers",
       "//chrome/browser/endpoint_fetcher:jni_headers",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/notifications/chime/android",
