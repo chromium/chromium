@@ -8,8 +8,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/phonehub/mutable_phone_model.h"
-#include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -114,11 +112,9 @@ class TetherControllerImplTest : public testing::Test {
             "Connectable": true})",
                 kWifiGuid));
 
-    fake_phone_model_.SetPhoneStatusModel(CreateFakePhoneStatusModel());
-
     controller_ =
         base::WrapUnique<TetherControllerImpl>(new TetherControllerImpl(
-            &fake_phone_model_, &fake_multidevice_setup_client_,
+            &fake_multidevice_setup_client_,
             std::make_unique<FakeTetherNetworkConnector>()));
     controller_->AddObserver(&fake_observer_);
   }
@@ -217,14 +213,11 @@ class TetherControllerImplTest : public testing::Test {
     return fake_observer_.num_scan_failed();
   }
 
-  MutablePhoneModel* phone_model() { return &fake_phone_model_; }
-
  private:
   base::test::TaskEnvironment task_environment_;
   network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
   std::string service_path_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
-  MutablePhoneModel fake_phone_model_;
   FakeObserver fake_observer_;
   std::unique_ptr<TetherControllerImpl> controller_;
 };
@@ -261,23 +254,6 @@ TEST_F(TetherControllerImplTest, ExternalTetherChangesReflectToStatus) {
   RemoveVisibleTetherNetwork();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
   EXPECT_EQ(GetNumObserverStatusChanged(), 6U);
-
-  // Phone status changed to no reception.
-  phone_model()->SetPhoneStatusModel(CreateFakePhoneStatusModel(
-      PhoneStatusModel::MobileStatus::kSimButNoReception));
-  EXPECT_EQ(GetStatus(), TetherController::Status::kIneligibleForFeature);
-  EXPECT_EQ(GetNumObserverStatusChanged(), 7U);
-
-  // Phone status changed to having reception. Connection is still unavailable.
-  phone_model()->SetPhoneStatusModel(CreateFakePhoneStatusModel(
-      PhoneStatusModel::MobileStatus::kSimWithReception));
-  EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
-  EXPECT_EQ(GetNumObserverStatusChanged(), 8U);
-
-  // Phone Model is lost.
-  phone_model()->SetPhoneStatusModel(base::nullopt);
-  EXPECT_EQ(GetStatus(), TetherController::Status::kIneligibleForFeature);
-  EXPECT_EQ(GetNumObserverStatusChanged(), 9U);
 }
 
 TEST_F(TetherControllerImplTest, AttemptConnectDisconnect) {

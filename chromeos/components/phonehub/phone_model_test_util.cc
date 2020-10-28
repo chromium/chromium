@@ -21,10 +21,10 @@ CreateFakeMobileConnectionMetadata() {
   return *fake_mobile_connection_metadata;
 }
 
-const PhoneStatusModel& CreateFakePhoneStatusModel(
-    PhoneStatusModel::MobileStatus mobile_status) {
-  const base::NoDestructor<PhoneStatusModel> fake_phone_status_model{
-      mobile_status, CreateFakeMobileConnectionMetadata(),
+const PhoneStatusModel& CreateFakePhoneStatusModel() {
+  static const base::NoDestructor<PhoneStatusModel> fake_phone_status_model{
+      PhoneStatusModel::MobileStatus::kSimWithReception,
+      CreateFakeMobileConnectionMetadata(),
       PhoneStatusModel::ChargingState::kNotCharging,
       PhoneStatusModel::BatterySaverState::kOff,
       /*battery_percentage=*/100u};
