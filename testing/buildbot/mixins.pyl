@@ -578,6 +578,14 @@
       ],
     },
   },
+  'mac_mini_intel_uhd_630_gpu_stable': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '8086:3e9b',
+        'os': 'Mac-10.15.5',
+      },
+    },
+  },
   'mac_pro_amd_gpu': {
     'swarming': {
       'dimensions': {

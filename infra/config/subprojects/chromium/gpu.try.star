@@ -295,6 +295,11 @@ gpu_mac_builder(
 )
 
 gpu_mac_builder(
+    name = "gpu-fyi-try-mac-intel-uhd-630-rel",
+    pool = "luci.chromium.gpu.mac.mini.intel.uhd630.try",
+)
+
+gpu_mac_builder(
     name = "gpu-fyi-try-mac-nvidia-retina-dbg",
     pool = "luci.chromium.gpu.mac.retina.nvidia.try",
 )

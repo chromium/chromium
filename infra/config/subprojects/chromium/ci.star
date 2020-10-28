@@ -3679,6 +3679,15 @@ ci.gpu_fyi_thin_tester(
 )
 
 ci.gpu_fyi_thin_tester(
+    name = "Mac FYI Release (Intel UHD 630)",
+    console_view_entry = ci.console_view_entry(
+        category = "Mac|Intel",
+        short_name = "uhd",
+    ),
+    triggered_by = ["GPU FYI Mac Builder"],
+)
+
+ci.gpu_fyi_thin_tester(
     name = "Mac FYI Retina Debug (AMD)",
     console_view_entry = ci.console_view_entry(
         category = "Mac|AMD|Retina",
