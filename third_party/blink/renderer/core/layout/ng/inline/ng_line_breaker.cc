@@ -1221,6 +1221,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     // instead.
     DCHECK(shape_result);
     NGInlineItemResult* item_result = AddItem(item, end, line_info);
+    item_result->should_create_line_box = true;
     item_result->non_hangable_run_end = offset_;
     item_result->has_only_trailing_spaces = true;
     item_result->shape_result = ShapeResultView::Create(shape_result);
