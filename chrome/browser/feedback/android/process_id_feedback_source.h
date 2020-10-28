@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_FEEDBACK_PROCESS_ID_FEEDBACK_SOURCE_H_
-#define CHROME_BROWSER_ANDROID_FEEDBACK_PROCESS_ID_FEEDBACK_SOURCE_H_
+#ifndef CHROME_BROWSER_FEEDBACK_ANDROID_PROCESS_ID_FEEDBACK_SOURCE_H_
+#define CHROME_BROWSER_FEEDBACK_ANDROID_PROCESS_ID_FEEDBACK_SOURCE_H_
 
 #include <map>
 
@@ -45,4 +45,4 @@ class ProcessIdFeedbackSource
 }  // namespace android
 }  // namespace chrome
 
-#endif  // CHROME_BROWSER_ANDROID_FEEDBACK_PROCESS_ID_FEEDBACK_SOURCE_H_
+#endif  // CHROME_BROWSER_FEEDBACK_ANDROID_PROCESS_ID_FEEDBACK_SOURCE_H_

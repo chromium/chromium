@@ -29,7 +29,7 @@ import org.chromium.ui.base.WindowAndroid;
  * A utility class to take a feedback-formatted screenshot of an {@link Activity}.
  */
 @JNINamespace("chrome::android")
-final class ScreenshotTask implements ScreenshotSource {
+public final class ScreenshotTask implements ScreenshotSource {
     /**
      * Maximum dimension for the screenshot to be sent to the feedback handler.  This size
      * ensures the size of bitmap < 1MB, which is a requirement of the handler.

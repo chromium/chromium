@@ -13,8 +13,5 @@ public interface FeedbackReporter {
      *
      * @param collector the {@link FeedbackCollector} to use for extra data.
      */
-    // clang-format off
-    // TODO(crbug.com/781015): Clang isn't formatting this correctly.
     default void reportFeedback(FeedbackCollector collector) {}
-        // clang-format on
 }

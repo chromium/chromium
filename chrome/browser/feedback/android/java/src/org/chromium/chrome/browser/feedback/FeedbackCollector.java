@@ -53,7 +53,8 @@ public abstract class FeedbackCollector<T> implements Runnable {
     }
 
     // Subclasses must invoke init() at construction time.
-    protected void init(Activity activity, boolean takeScreenshot, T initParams) {
+    protected void init(
+            Activity activity, @Nullable ScreenshotSource screenshotTask, T initParams) {
         // 1. Build all synchronous and asynchronous sources.
         mSynchronousSources = buildSynchronousFeedbackSources(initParams);
         mAsynchronousSources = buildAsynchronousFeedbackSources(initParams);
@@ -63,8 +64,8 @@ public abstract class FeedbackCollector<T> implements Runnable {
             assert !(source instanceof AsyncFeedbackSource);
         }
 
-        // 2. Build the screenshot task if necessary.
-        if (takeScreenshot) mScreenshotTask = buildScreenshotSource(activity);
+        // 2. Set |mScreenshotTask| if not null.
+        if (screenshotTask != null) mScreenshotTask = screenshotTask;
 
         // 3. Start all asynchronous sources and the screenshot task.
         CollectionUtil.forEach(mAsynchronousSources, source -> source.start(this));
@@ -84,11 +85,6 @@ public abstract class FeedbackCollector<T> implements Runnable {
     @VisibleForTesting
     @NonNull
     protected abstract List<AsyncFeedbackSource> buildAsynchronousFeedbackSources(T initParams);
-
-    @VisibleForTesting
-    protected ScreenshotSource buildScreenshotSource(Activity activity) {
-        return new ScreenshotTask(activity);
-    }
 
     /** @return The category tag for this feedback report. */
     public String getCategoryTag() {

@@ -86,9 +86,9 @@ public class FeedFeedbackCollectorTest {
     private static class EmptyFeedFeedbackCollector extends FeedFeedbackCollector {
         EmptyFeedFeedbackCollector(Activity activity, Profile profile, @Nullable String url,
                 @Nullable String categoryTag, @Nullable String description,
-                @Nullable String feedbackContext, boolean takeScreenshot,
+                @Nullable String feedbackContext, @Nullable ScreenshotSource screenshotSource,
                 @Nullable Map<String, String> feedContext, Callback<FeedbackCollector> callback) {
-            super(activity, categoryTag, description, feedbackContext, takeScreenshot,
+            super(activity, categoryTag, description, feedbackContext, screenshotSource,
                     new FeedFeedbackCollector.InitParams(profile, url, feedContext), callback);
         }
 
@@ -125,7 +125,7 @@ public class FeedFeedbackCollectorTest {
 
         FeedFeedbackCollector collector =
                 new EmptyFeedFeedbackCollector(mActivity, mProfile, null, CATEGORY_TAG, DESCRIPTION,
-                        null, false, feedContext, (result) -> callback.onResult(result));
+                        null, null, feedContext, (result) -> callback.onResult(result));
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(callback, times(1)).onResult(collector);

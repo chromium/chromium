@@ -89,7 +89,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
             @Nullable String url) {
         RecordUserAction.record("MobileHelpAndFeedback");
         new ChromeFeedbackCollector(activity, null /* categoryTag */, null /* description */,
-                true /* takeScreenshot */,
+                new ScreenshotTask(activity),
                 new ChromeFeedbackCollector.InitParams(profile, url, helpContext),
                 collector -> show(activity, helpContext, collector));
     }
@@ -107,7 +107,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     public void showFeedback(final Activity activity, Profile profile, @Nullable String url,
             @Nullable final String categoryTag) {
         new ChromeFeedbackCollector(activity, categoryTag, null /* description */,
-                true /* takeScreenshot */,
+                new ScreenshotTask(activity),
                 new ChromeFeedbackCollector.InitParams(profile, url, null),
                 collector -> showFeedback(activity, collector));
     }
@@ -127,7 +127,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
             @Nullable final String categoryTag, @Nullable final Map<String, String> feedContext,
             @Nullable final String feedbackContext) {
         new FeedFeedbackCollector(activity, categoryTag, null /* description */, feedbackContext,
-                true /* takeScreenshot */,
+                new ScreenshotTask(activity),
                 new FeedFeedbackCollector.InitParams(profile, url, feedContext),
                 collector -> showFeedback(activity, collector));
     }

@@ -11,6 +11,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.feedback.ChromeFeedbackCollector;
 import org.chromium.chrome.browser.feedback.FeedbackReporter;
+import org.chromium.chrome.browser.feedback.ScreenshotTask;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -28,7 +29,7 @@ public final class ChildAccountFeedbackReporter {
         }
 
         new ChromeFeedbackCollector(activity, null /* categoryTag */, description,
-                true /* takeScreenshot */,
+                new ScreenshotTask(activity),
                 new ChromeFeedbackCollector.InitParams(profile, url, null),
                 collector -> { sFeedbackReporter.reportFeedback(collector); });
     }

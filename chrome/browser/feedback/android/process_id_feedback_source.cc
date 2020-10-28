@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/feedback/process_id_feedback_source.h"
+#include "chrome/browser/feedback/android/process_id_feedback_source.h"
 
-#include "chrome/android/chrome_jni_headers/ProcessIdFeedbackSource_jni.h"
+#include "chrome/browser/feedback/android/jni_headers/ProcessIdFeedbackSource_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 
 #include "base/android/jni_array.h"
