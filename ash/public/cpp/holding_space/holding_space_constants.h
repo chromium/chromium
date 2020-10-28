@@ -37,6 +37,7 @@ constexpr gfx::Size kHoldingSpaceScreenCaptureSize(104, 80);
 constexpr gfx::Insets kHoldingSpaceScreenCapturesContainerPadding(8, 0);
 constexpr float kHoldingSpaceSelectedOverlayOpacity = 0.24f;
 constexpr int kHoldingSpaceTrayIconMainAxisMargin = 6;
+constexpr int kHoldingSpaceTrayIconMaxVisibleItems = 3;
 constexpr int kHoldingSpaceTrayIconSize = 20;
 
 // Context menu commands.

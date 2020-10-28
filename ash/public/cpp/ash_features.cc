@@ -138,6 +138,10 @@ const base::Feature kMaintainShelfStateWhenEnteringOverview{
 const base::Feature kTemporaryHoldingSpace{"TemporaryHoldingSpace",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::FeatureParam<bool>
+    kTemporaryHoldingSpaceContentForwardEntryPointEnabled{
+        &kTemporaryHoldingSpace, "content-forward-entry-point-enabled", false};
+
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -291,6 +295,10 @@ bool IsMaintainShelfStateWhenEnteringOverviewEnabled() {
 
 bool IsTemporaryHoldingSpaceEnabled() {
   return base::FeatureList::IsEnabled(kTemporaryHoldingSpace);
+}
+
+bool IsTemporaryHoldingSpaceContentForwardEntryPointEnabled() {
+  return kTemporaryHoldingSpaceContentForwardEntryPointEnabled.Get();
 }
 
 bool IsDragUnpinnedAppToPinEnabled() {

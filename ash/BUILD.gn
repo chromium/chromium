@@ -973,6 +973,8 @@ component("ash") {
     "system/holding_space/holding_space_tray_bubble.h",
     "system/holding_space/holding_space_tray_icon.cc",
     "system/holding_space/holding_space_tray_icon.h",
+    "system/holding_space/holding_space_tray_icon_item.cc",
+    "system/holding_space/holding_space_tray_icon_item.h",
     "system/holding_space/pinned_files_container.cc",
     "system/holding_space/pinned_files_container.h",
     "system/holding_space/recent_files_container.cc",

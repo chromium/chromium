@@ -254,6 +254,8 @@ ASH_PUBLIC_EXPORT bool IsMaintainShelfStateWhenEnteringOverviewEnabled();
 
 ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpaceEnabled();
 
+ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpaceContentForwardEntryPointEnabled();
+
 ASH_PUBLIC_EXPORT bool IsDragUnpinnedAppToPinEnabled();
 
 // These two functions are supposed to be temporary functions to set or get

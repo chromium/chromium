@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/holding_space/holding_space_tray.h"
+
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
