@@ -1938,7 +1938,7 @@ template("ios_xcuitest_test_runner_bundle") {
   }
 
   _xctrunner_path =
-      "$ios_sdk_platform_abs_path/Developer/Library/Xcode/Agents/XCTRunner.app"
+      "$ios_sdk_platform_path/Developer/Library/Xcode/Agents/XCTRunner.app"
 
   _info_plist_merge_plist = _target_name + "_info_plist_merge_plist"
   _info_plist_target = _target_name + "_info_plist"

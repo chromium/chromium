@@ -146,7 +146,6 @@ if (ios_sdk_path == "") {
   }
   script_name = "//build/config/mac/sdk_info.py"
   _ios_sdk_result = exec_script(script_name, ios_sdk_info_args, "scope")
-  ios_sdk_platform_abs_path = _ios_sdk_result.sdk_platform_path
   ios_sdk_path = _ios_sdk_result.sdk_path
   ios_sdk_platform_path = _ios_sdk_result.sdk_platform_path
   ios_sdk_version = _ios_sdk_result.sdk_version
