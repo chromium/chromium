@@ -7761,10 +7761,10 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
   auto& previous_overflow = GetLayoutBox().overflow_->previous_overflow_data;
   if (!previous_overflow)
     previous_overflow.emplace();
-  previous_overflow->previously_had_non_visible_overflow =
-      GetLayoutBox().HasNonVisibleOverflow();
   previous_overflow->previous_physical_layout_overflow_rect =
       GetLayoutBox().PhysicalLayoutOverflowRect();
+  previous_overflow->previous_physical_visual_overflow_rect =
+      GetLayoutBox().PhysicalVisualOverflowRect();
   previous_overflow->previous_physical_self_visual_overflow_rect =
       GetLayoutBox().PhysicalSelfVisualOverflowRect();
 }
@@ -7772,13 +7772,10 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
 void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(
     const PhysicalOffset& paint_offset,
     const LayoutSize& size,
-    bool has_overflow_clip,
-    const PhysicalRect& layout_overflow_rect) {
+    const PhysicalRect& visual_overflow_rect) {
   FirstFragment().SetPaintOffset(paint_offset);
   GetLayoutBox().previous_size_ = size;
-  if (has_overflow_clip)
-    return;
-  if (PhysicalRect(PhysicalOffset(), size).Contains(layout_overflow_rect))
+  if (PhysicalRect(PhysicalOffset(), size).Contains(visual_overflow_rect))
     return;
 
   if (!GetLayoutBox().overflow_)
@@ -7786,11 +7783,10 @@ void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(
   auto& previous_overflow = GetLayoutBox().overflow_->previous_overflow_data;
   if (!previous_overflow)
     previous_overflow.emplace();
-  previous_overflow->previous_physical_layout_overflow_rect =
-      layout_overflow_rect;
-  // previous_physical_self_visual_overflow_rect doesn't matter because it is
-  // used for paint invalidation and we always do full paint invalidation on
-  // reattachment.
+  previous_overflow->previous_physical_visual_overflow_rect =
+      visual_overflow_rect;
+  // Other previous rects don't matter because they are used for paint
+  // invalidation and we always do full paint invalidation on reattachment.
 }
 
 RasterEffectOutset LayoutBox::VisualRectOutsetForRasterEffects() const {

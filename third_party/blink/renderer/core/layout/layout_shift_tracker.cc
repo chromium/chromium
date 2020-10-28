@@ -689,12 +689,11 @@ void ReattachHookScope::NotifyDetach(const Node& node) {
 
   // Save the visual rect for restoration on future reattachment.
   const auto& box = ToLayoutBox(*layout_object);
-  PhysicalRect layout_overflow_rect = box.PreviousPhysicalLayoutOverflowRect();
-  if (layout_overflow_rect.IsEmpty() && box.PreviousSize().IsEmpty())
+  PhysicalRect visual_overflow_rect = box.PreviousPhysicalVisualOverflowRect();
+  if (visual_overflow_rect.IsEmpty() && box.PreviousSize().IsEmpty())
     return;
   map.Set(&node, Geometry{fragment.PaintOffset(), box.PreviousSize(),
-                          box.PreviouslyHadNonVisibleOverflow(),
-                          layout_overflow_rect});
+                          visual_overflow_rect});
 }
 
 void ReattachHookScope::NotifyAttach(const Node& node) {
@@ -714,7 +713,7 @@ void ReattachHookScope::NotifyAttach(const Node& node) {
       ->GetMutableForPainting()
       .SetPreviousGeometryForLayoutShiftTracking(
           iter->value.paint_offset, iter->value.size,
-          iter->value.has_overflow_clip, iter->value.layout_overflow_rect);
+          iter->value.visual_overflow_rect);
 }
 
 }  // namespace blink

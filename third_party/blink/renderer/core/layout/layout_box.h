@@ -1935,8 +1935,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     void SetPreviousGeometryForLayoutShiftTracking(
         const PhysicalOffset& paint_offset,
         const LayoutSize& size,
-        bool has_overflow_clip,
-        const PhysicalRect& layout_overflow_rect);
+        const PhysicalRect& visual_overflow_rect);
 
    protected:
     friend class LayoutBox;
@@ -1962,11 +1961,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                ? rare_data_->previous_physical_content_box_rect_
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
-  bool PreviouslyHadNonVisibleOverflow() const {
+  PhysicalRect PreviousPhysicalVisualOverflowRect() const {
     NOT_DESTROYED();
-    return overflow_ && overflow_->previous_overflow_data &&
-           overflow_->previous_overflow_data
-               ->previously_had_non_visible_overflow;
+    return overflow_ && overflow_->previous_overflow_data
+               ? overflow_->previous_overflow_data
+                     ->previous_physical_visual_overflow_rect
+               : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
   PhysicalRect PreviousPhysicalLayoutOverflowRect() const {
     NOT_DESTROYED();

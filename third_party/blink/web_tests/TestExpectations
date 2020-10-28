@@ -454,6 +454,8 @@ crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Pass Fa
 
 # ====== Paint team owned tests to here ======
 
+crbug.com/1142958 external/wpt/layout-instability/absolute-child-shift-with-parent-will-change.html [ Failure ]
+
 crbug.com/922249 virtual/android/fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure Pass ]
 
 # ====== Layout team owned tests from here ======
