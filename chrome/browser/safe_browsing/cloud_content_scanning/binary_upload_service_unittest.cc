@@ -486,7 +486,9 @@ TEST_F(BinaryUploadServiceTest, ReturnsAsynchronouslyWithNoFCM) {
 TEST_F(BinaryUploadServiceTest, IsAuthorizedValidTimer) {
   // The 24 hours timer should be started on the first IsAuthorized call.
   ValidateAuthorizationTimerIdle();
-  service_->IsAuthorized(GURL(), base::DoNothing());
+  service_->IsAuthorized(
+      GURL(), base::DoNothing(),
+      enterprise_connectors::AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED);
   ValidateAuthorizationTimerStarted();
 }
 

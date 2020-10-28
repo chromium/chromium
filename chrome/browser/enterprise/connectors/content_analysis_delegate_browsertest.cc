@@ -83,8 +83,10 @@ class FakeBinaryUploadService : public BinaryUploadService {
 
  private:
   void UploadForDeepScanning(std::unique_ptr<Request> request) override {
-    // The first uploaded request is the authentication one.
-    if (++requests_count_ == 1) {
+    ++requests_count_;
+
+    // A request without tags indicates that it's used for authentication
+    if (request->content_analysis_request().tags().empty()) {
       authorization_request_.swap(request);
 
       if (should_automatically_authorize_)
@@ -288,8 +290,9 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Unauthorized) {
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // Only 1 request (the authentication one) should have been uploaded.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
+  // 1 request to authenticate for upload,
+  // and 1 request to authenticate for reporting.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Files) {
@@ -370,8 +373,10 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Files) {
 
   EXPECT_TRUE(called);
 
-  // There should have been 1 request per file and 1 for authentication.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  // There should have been 1 request per file (2 files) and 1 for
+  // authentication, and 1 more for final request to validate reporting
+  // authentication with the corresponding request type.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 4);
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Texts) {
@@ -451,8 +456,10 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Texts) {
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // There should have been 1 request for all texts and 1 for authentication.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
+  // There should have been 1 request for all texts,
+  // 1 for authentication of the scanning request,
+  // and 1 for final request to validate reporting authentication.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
 }
 
 class ContentAnalysisDelegatePasswordProtectedFilesBrowserTest
@@ -881,8 +888,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDelayDeliveryUntilVerdictTest,
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // Expect 1 request for authentication and 1 to scan the file in all cases.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
+  // Expect 1 request for initial authentication (unspecified type, to be
+  // removed for crbug.com/1090088, then count should be 2), 1 to scan the file
+  // in all cases, and 1 more for final request to validate reportin
+  // authentication with the corresponding request type.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
 }
 
 INSTANTIATE_TEST_SUITE_P(
