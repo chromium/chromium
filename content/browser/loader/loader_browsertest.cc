@@ -75,6 +75,17 @@ class LoaderBrowserTest : public ContentBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  void WaitForTitleTest(const base::string16& expected_title,
+                        const std::vector<base::string16> additional_titles) {
+    TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+
+    for (const auto& title : additional_titles) {
+      title_watcher.AlsoWaitForTitle(title);
+    }
+    base::string16 actual_title = title_watcher.WaitAndGetTitle();
+    EXPECT_EQ(expected_title, actual_title);
+  }
+
   void CheckTitleTest(const GURL& url, const std::string& expected_title) {
     base::string16 expected_title16(ASCIIToUTF16(expected_title));
     TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
@@ -641,8 +652,7 @@ namespace {
 // Creates a valid filesystem URL.
 GURL CreateFileSystemURL(Shell* window) {
   std::string filesystem_url_string;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractString(window, R"(
+  EXPECT_TRUE(ExecuteScriptAndExtractString(window, R"(
       var blob = new Blob(['<html><body>hello</body></html>'],
                           {type: 'text/html'});
       window.webkitRequestFileSystem(TEMPORARY, blob.size, fs => {
@@ -654,7 +664,8 @@ GURL CreateFileSystemURL(Shell* window) {
             }
           });
         });
-      });)", &filesystem_url_string));
+      });)",
+                                            &filesystem_url_string));
   GURL filesystem_url(filesystem_url_string);
   EXPECT_TRUE(filesystem_url.is_valid());
   EXPECT_TRUE(filesystem_url.SchemeIsFileSystem());
@@ -1264,6 +1275,33 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleRedirectModify) {
   }
 
   SetBrowserClientForTesting(old_content_browser_client);
+}
+
+IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, FetchUpload150MB) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_EQ(shell()->web_contents()->GetTitle(), ASCIIToUTF16("Title Of Awesomeness"));
+
+  ASSERT_TRUE(ExecuteScript(
+      shell(), base::StringPrintf(R"JS(
+    const length = 150*1000*1000; // 150 MB;
+    async function run() {
+      const array = new Uint8Array(length);
+      const response = await fetch('%s', { method: 'POST', body: array });
+      const text = await response.text();
+      if (text != length.toString())
+        throw `Content-Length actual:${text}, expected:${length.toString()}.`
+    };
+    run().then(() => { document.title = 'PASS'; },
+            (e) => { console.log(e); document.title = 'FAIL'; });
+)JS",
+                                  embedded_test_server()
+                                      ->GetURL("/echoheader?Content-Length")
+                                      .spec()
+                                      .c_str())));
+
+  WaitForTitleTest(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")});
 }
 
 }  // namespace content
