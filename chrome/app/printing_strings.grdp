@@ -302,6 +302,9 @@
       These settings are enforced by your administrator
     </message>
     <if expr="chromeos">
+      <message name="IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER" desc="Text to put in a print server search box when user has not entered a search query.">
+        Print servers
+      </message>
       <message name="IDS_PRINT_PREVIEW_OPTION_PIN" desc="Option to print with pin.">
         Enable user pin
       </message>
