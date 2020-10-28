@@ -37,6 +37,7 @@ class LocatedEvent;
 namespace ash {
 class DragDropTracker;
 class DragDropTrackerDelegate;
+class ToplevelWindowDragDelegate;
 
 class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
                                       public ui::EventHandler,
@@ -52,6 +53,10 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   }
 
   void set_enabled(bool enabled) { enabled_ = enabled; }
+
+  void set_toplevel_window_drag_delegate(ToplevelWindowDragDelegate* delegate) {
+    toplevel_window_drag_delegate_ = delegate;
+  }
 
   // Overridden from aura::client::DragDropClient:
   int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
@@ -159,6 +164,8 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
 
   base::ObserverList<aura::client::DragDropClientObserver>::Unchecked
       observers_;
+
+  ToplevelWindowDragDelegate* toplevel_window_drag_delegate_ = nullptr;
 
   base::WeakPtrFactory<DragDropController> weak_factory_{this};
 

@@ -9,6 +9,7 @@
 
 #include "ash/drag_drop/drag_drop_tracker.h"
 #include "ash/drag_drop/drag_image_view.h"
+#include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -200,6 +201,11 @@ int DragDropController::StartDragAndDrop(
   for (aura::client::DragDropClientObserver& observer : observers_)
     observer.OnDragStarted();
 
+  if (toplevel_window_drag_delegate_) {
+    toplevel_window_drag_delegate_->OnToplevelWindowDragStarted(
+        gfx::PointF(start_location_), source);
+  }
+
   if (TabDragDropDelegate::IsChromeTabDrag(*drag_data_)) {
     DCHECK(!tab_drag_drop_delegate_);
     tab_drag_drop_delegate_.emplace(root_window, drag_source_window_,
@@ -321,6 +327,10 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
       // (aura::RootWindow::PostMouseMoveEventAfterWindowChange).
       break;
   }
+
+  if (toplevel_window_drag_delegate_)
+    toplevel_window_drag_delegate_->OnToplevelWindowDragEvent(event);
+
   event->StopPropagation();
 }
 
@@ -535,6 +545,11 @@ void DragDropController::Drop(aura::Window* target,
     drag_image_widget_.reset();
   }
 
+  if (toplevel_window_drag_delegate_) {
+    drag_operation_ =
+        toplevel_window_drag_delegate_->OnToplevelWindowDragDropped();
+  }
+
   Cleanup();
   if (should_block_during_drag_drop_)
     std::move(quit_closure_).Run();
@@ -575,6 +590,9 @@ void DragDropController::DoDragCancel(
       drag_window_ ? aura::client::GetDragDropDelegate(drag_window_) : nullptr;
   if (delegate)
     delegate->OnDragExited();
+
+  if (toplevel_window_drag_delegate_)
+    toplevel_window_drag_delegate_->OnToplevelWindowDragCancelled();
 
   Cleanup();
   drag_operation_ = 0;
