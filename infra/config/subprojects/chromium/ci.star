@@ -3142,6 +3142,7 @@ ci.fyi_windows_builder(
 
 ci.fyi_windows_builder(
     name = "win10-inverse-fieldtrials-fyi-rel",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "win10",
         short_name = "IFT",
