@@ -1041,7 +1041,8 @@ class BottomSheet extends FrameLayout
         }
 
         mSheetContent.getContentView().measure(
-                MeasureSpec.makeMeasureSpec(mContainerWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(
+                        mBottomSheetContentContainer.getMeasuredWidth(), MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(getMaxContentHeight(), MeasureSpec.AT_MOST));
         mContentDesiredHeight = mSheetContent.getContentView().getMeasuredHeight();
     }
