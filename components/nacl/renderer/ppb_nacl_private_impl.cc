@@ -318,7 +318,7 @@ class ManifestServiceProxy : public ManifestServiceChannel::Delegate {
   DISALLOW_COPY_AND_ASSIGN(ManifestServiceProxy);
 };
 
-blink::WebAssociatedURLLoader* CreateAssociatedURLLoader(
+std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
     const blink::WebDocument& document,
     const GURL& gurl) {
   blink::WebAssociatedURLLoaderOptions options;

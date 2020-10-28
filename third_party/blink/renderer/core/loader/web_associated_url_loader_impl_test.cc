@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,7 +118,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
   std::unique_ptr<WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions options =
           WebAssociatedURLLoaderOptions()) {
-    return base::WrapUnique(MainFrame()->CreateAssociatedURLLoader(options));
+    return MainFrame()->CreateAssociatedURLLoader(options);
   }
 
   // WebAssociatedURLLoaderClient implementation.

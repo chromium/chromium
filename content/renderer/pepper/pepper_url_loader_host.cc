@@ -300,7 +300,7 @@ int32_t PepperURLLoaderHost::InternalOnHostMsgOpen(
     }
   }
 
-  loader_.reset(frame->CreateAssociatedURLLoader(options));
+  loader_ = frame->CreateAssociatedURLLoader(options);
   if (!loader_.get())
     return PP_ERROR_FAILED;
 

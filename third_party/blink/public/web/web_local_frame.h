@@ -631,7 +631,7 @@ class WebLocalFrame : public WebFrame {
   // loader will, for example, be cancelled when StopLoading is called.
   //
   // FIXME: StopLoading does not yet cancel an associated loader!!
-  virtual WebAssociatedURLLoader* CreateAssociatedURLLoader(
+  virtual std::unique_ptr<WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions&) = 0;
 
   // This API is deprecated and only required by PepperURLLoaderHost::Close()

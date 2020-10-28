@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task_runner_util.h"
@@ -118,7 +117,7 @@ class FrameFetchContext : public media::ResourceFetchContext {
   // media::ResourceFetchContext implementation.
   std::unique_ptr<blink::WebAssociatedURLLoader> CreateUrlLoader(
       const blink::WebAssociatedURLLoaderOptions& options) override {
-    return base::WrapUnique(frame_->CreateAssociatedURLLoader(options));
+    return frame_->CreateAssociatedURLLoader(options);
   }
 
  private:

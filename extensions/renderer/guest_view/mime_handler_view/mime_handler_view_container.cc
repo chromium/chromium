@@ -354,7 +354,7 @@ void MimeHandlerViewContainer::SendResourceRequest() {
 
   blink::WebAssociatedURLLoaderOptions options;
   DCHECK(!loader_);
-  loader_.reset(frame->CreateAssociatedURLLoader(options));
+  loader_ = frame->CreateAssociatedURLLoader(options);
 
   // The embedded plugin is allowed to be cross-origin and we should always
   // send credentials/cookies with the request. So, use the default mode

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
@@ -320,11 +319,9 @@ void PdfViewWebPlugin::SetReferrerForRequest(
 std::unique_ptr<blink::WebAssociatedURLLoader>
 PdfViewWebPlugin::CreateAssociatedURLLoader(
     const blink::WebAssociatedURLLoaderOptions& options) {
-  // TODO(crbug.com/1127146): blink::WebLocalFrame::CreateAssociatedURLLoader()
-  // really should return a std::unique_ptr instead.
   DCHECK(IsValid());
-  return base::WrapUnique(
-      container_->GetDocument().GetFrame()->CreateAssociatedURLLoader(options));
+  return container_->GetDocument().GetFrame()->CreateAssociatedURLLoader(
+      options);
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
