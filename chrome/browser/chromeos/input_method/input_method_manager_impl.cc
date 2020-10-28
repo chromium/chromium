@@ -90,7 +90,8 @@ InputMethodCategory GetInputMethodCategory(const std::string& input_method_id) {
                               base::CompareCase::SENSITIVE)) {
     category = INPUT_METHOD_CATEGORY_JA;
   } else if (base::StartsWith(component_id, "hangul_",
-                              base::CompareCase::SENSITIVE)) {
+                              base::CompareCase::SENSITIVE) ||
+             component_id == "ko-t-i0-und") {
     category = INPUT_METHOD_CATEGORY_KO;
   } else if (base::StartsWith(component_id, "vkd_",
                               base::CompareCase::SENSITIVE)) {
