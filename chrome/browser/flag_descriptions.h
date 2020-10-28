@@ -1557,6 +1557,9 @@ extern const char kShareButtonInTopToolbarDescription[];
 extern const char kChromeShareHighlightsAndroidName[];
 extern const char kChromeShareHighlightsAndroidDescription[];
 
+extern const char kChromeShareLongScreenshotName[];
+extern const char kChromeShareLongScreenshotDescription[];
+
 extern const char kChromeShareQRCodeName[];
 extern const char kChromeShareQRCodeDescription[];
 

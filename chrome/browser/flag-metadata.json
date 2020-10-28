@@ -467,6 +467,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "chrome-share-long-screenshot",
+    "owners": [ "tgupta", "kmilka" ],
+    "expiry_milestone": 91
+  },
+  {
     "name": "chrome-share-qr-code",
     "owners": [ "kmilka", "tgupta" ],
     "expiry_milestone": 88

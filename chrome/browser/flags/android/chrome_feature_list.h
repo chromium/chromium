@@ -37,6 +37,7 @@ extern const base::Feature kCCTReportParallelRequestStatus;
 extern const base::Feature kCCTResourcePrefetch;
 extern const base::Feature kDontAutoHideBrowserControls;
 extern const base::Feature kChromeShareHighlightsAndroid;
+extern const base::Feature kChromeShareLongScreenshot;
 extern const base::Feature kChromeShareQRCode;
 extern const base::Feature kChromeShareScreenshot;
 extern const base::Feature kChromeSharingHub;

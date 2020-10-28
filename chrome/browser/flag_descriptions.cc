@@ -2671,6 +2671,10 @@ const char kChromeShareHighlightsAndroidName[] =
 const char kChromeShareHighlightsAndroidDescription[] =
     "Enables UI to generate and share link to text highlights on Android";
 
+const char kChromeShareLongScreenshotName[] = "Chrome Share Long Screenshots";
+const char kChromeShareLongScreenshotDescription[] =
+    "Enables UI to edit and share long screenshots on Android";
+
 const char kChromeShareQRCodeName[] = "Chrome Share QRCodes";
 const char kChromeShareQRCodeDescription[] =
     "Enables UI to generate and scan QR Codes on Android";

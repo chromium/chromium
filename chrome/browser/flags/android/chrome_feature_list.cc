@@ -129,6 +129,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kDarkenWebsitesCheckboxInThemesSetting,
     &kDontAutoHideBrowserControls,
     &kChromeShareHighlightsAndroid,
+    &kChromeShareLongScreenshot,
     &kChromeShareQRCode,
     &kChromeShareScreenshot,
     &kChromeSharingHub,
@@ -369,6 +370,9 @@ const base::Feature kDontAutoHideBrowserControls{
 
 const base::Feature kChromeShareHighlightsAndroid{
     "ChromeShareHighlightsAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kChromeShareLongScreenshot{
+    "ChromeShareLongScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kChromeShareQRCode{"ChromeShareQRCode",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
