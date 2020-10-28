@@ -111,7 +111,7 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
     builder.SetHideTableCellIfEmpty(
         cell_style.EmptyCells() == EEmptyCells::kHide &&
         table_style.BorderCollapse() == EBorderCollapse::kSeparate);
-    builder.SetHasTableCellCollapsedBorder(
+    builder.SetIsTableCellWithCollapsedBorders(
         cell_block.Parent()->Parent()->Parent()->StyleRef().BorderCollapse() ==
         EBorderCollapse::kCollapse);
   }

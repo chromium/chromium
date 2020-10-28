@@ -328,16 +328,21 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     DCHECK(!is_table_cell_hidden_for_paint_set_);
     is_table_cell_hidden_for_paint_set_ = true;
 #endif
-    space_.EnsureRareData()->SetIsTableCellHiddenForPaint(is_hidden_for_paint);
+    if (is_hidden_for_paint) {
+      space_.EnsureRareData()->SetIsTableCellHiddenForPaint(
+          is_hidden_for_paint);
+    }
   }
 
-  void SetHasTableCellCollapsedBorder(bool is_collapsed_border) {
+  void SetIsTableCellWithCollapsedBorders(bool has_collapsed_borders) {
 #if DCHECK_IS_ON()
-    DCHECK(!is_table_cell_collapsed_border_set_);
-    is_table_cell_collapsed_border_set_ = true;
+    DCHECK(!is_table_cell_with_collapsed_borders_set_);
+    is_table_cell_with_collapsed_borders_set_ = true;
 #endif
-    space_.EnsureRareData()->SetIsTableCellWithCollapsedBorders(
-        is_collapsed_border);
+    if (has_collapsed_borders) {
+      space_.EnsureRareData()->SetIsTableCellWithCollapsedBorders(
+          has_collapsed_borders);
+    }
   }
 
   void SetTableCellChildLayoutMode(
@@ -463,7 +468,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   bool is_table_cell_alignment_baseline_set_ = false;
   bool is_table_cell_column_index_set_ = false;
   bool is_table_cell_hidden_for_paint_set_ = false;
-  bool is_table_cell_collapsed_border_set_ = false;
+  bool is_table_cell_with_collapsed_borders_set_ = false;
   bool is_custom_layout_data_set_ = false;
   bool is_lines_until_clamp_set_ = false;
   bool is_table_row_data_set_ = false;

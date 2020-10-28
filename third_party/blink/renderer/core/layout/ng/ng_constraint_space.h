@@ -977,11 +977,11 @@ class CORE_EXPORT NGConstraintSpace final {
 
     bool IsTableCellWithCollapsedBorders() const {
       return data_union_type == kTableCellData &&
-             table_cell_data_.has_collapsed_border;
+             table_cell_data_.has_collapsed_borders;
     }
 
-    void SetIsTableCellWithCollapsedBorders(bool has_collapsed_border) {
-      EnsureTableCellData()->has_collapsed_border = has_collapsed_border;
+    void SetIsTableCellWithCollapsedBorders(bool has_collapsed_borders) {
+      EnsureTableCellData()->has_collapsed_borders = has_collapsed_borders;
     }
 
     void SetTableRowData(
@@ -1095,25 +1095,24 @@ class CORE_EXPORT NGConstraintSpace final {
 
     struct TableCellData {
       bool MaySkipLayout(const TableCellData& other) const {
+        // NOTE: We don't compare |table_cell_alignment_baseline| as it is
+        // still possible to hit the cache if this differs.
         return table_cell_borders == other.table_cell_borders &&
                table_cell_intrinsic_padding_block_start ==
                    other.table_cell_intrinsic_padding_block_start &&
                table_cell_intrinsic_padding_block_end ==
                    other.table_cell_intrinsic_padding_block_end &&
-               table_cell_alignment_baseline ==
-                   other.table_cell_alignment_baseline &&
                table_cell_column_index == other.table_cell_column_index &&
                is_hidden_for_paint == other.is_hidden_for_paint &&
-               has_collapsed_border == other.has_collapsed_border;
+               has_collapsed_borders == other.has_collapsed_borders;
       }
 
       bool IsInitialForMaySkipLayout() const {
         return table_cell_borders == NGBoxStrut() &&
                table_cell_intrinsic_padding_block_start == LayoutUnit() &&
                table_cell_intrinsic_padding_block_end == LayoutUnit() &&
-               table_cell_column_index == kNotFound &&
-               table_cell_alignment_baseline == base::nullopt &&
-               !is_hidden_for_paint && !has_collapsed_border;
+               table_cell_column_index == kNotFound && !is_hidden_for_paint &&
+               !has_collapsed_borders;
       }
 
       NGBoxStrut table_cell_borders;
@@ -1122,13 +1121,13 @@ class CORE_EXPORT NGConstraintSpace final {
       wtf_size_t table_cell_column_index = kNotFound;
       base::Optional<LayoutUnit> table_cell_alignment_baseline;
       bool is_hidden_for_paint = false;
-      bool has_collapsed_border = false;
+      bool has_collapsed_borders = false;
     };
 
     struct TableRowData {
       bool MaySkipLayout(const TableRowData& other) const {
-        return table_data->EqualTableSpecificData(other.table_data.get()) &&
-               table_data->MaySkipRowLayout(other.table_data.get(), row_index);
+        return table_data->IsTableSpecificDataEqual(*other.table_data) &&
+               table_data->MaySkipRowLayout(*other.table_data, row_index);
       }
       bool IsInitialForMaySkipLayout() const {
         return !table_data && row_index == kNotFound;
@@ -1140,8 +1139,8 @@ class CORE_EXPORT NGConstraintSpace final {
 
     struct TableSectionData {
       bool MaySkipLayout(const TableSectionData& other) const {
-        return table_data->EqualTableSpecificData(other.table_data.get()) &&
-               table_data->MaySkipSectionLayout(other.table_data.get(),
+        return table_data->IsTableSpecificDataEqual(*other.table_data) &&
+               table_data->MaySkipSectionLayout(*other.table_data,
                                                 section_index);
       }
       bool IsInitialForMaySkipLayout() const {

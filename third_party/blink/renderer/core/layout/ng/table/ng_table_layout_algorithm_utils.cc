@@ -72,7 +72,7 @@ void ApplyCellConstraintsToColumnConstraints(
 NGTableTypes::Row ComputeMinimumRowBlockSize(
     const NGBlockNode& row,
     const LayoutUnit cell_percentage_inline_size,
-    const bool is_restricted_block_size_table,
+    const bool is_table_block_size_specified,
     const NGTableTypes::ColumnLocations& column_locations,
     const NGTableBorders& table_borders,
     wtf_size_t row_index,
@@ -83,51 +83,35 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     NGColspanCellTabulator* colspan_cell_tabulator) {
   const WritingDirectionMode table_writing_direction =
       row.Style().GetWritingDirection();
+  const bool has_collapsed_borders = table_borders.IsCollapsed();
 
   auto CreateCellConstraintSpace = [&column_locations, &table_writing_direction,
-                                    &is_restricted_block_size_table,
+                                    &is_table_block_size_specified,
+                                    &has_collapsed_borders,
                                     &cell_percentage_inline_size](
                                        const NGBlockNode& cell,
                                        wtf_size_t start_column_index,
                                        const NGBoxStrut& cell_borders) {
-    wtf_size_t start_column = start_column_index;
-    wtf_size_t end_column = std::min(start_column + cell.TableCellColspan() - 1,
-                                     column_locations.size() - 1);
-    LayoutUnit cell_inline_size = column_locations[end_column].offset +
-                                  column_locations[end_column].size -
-                                  column_locations[start_column].offset;
-    // TODO(crbug.com/736072): Support orthogonal table cells.
-    // See http://wpt.live/css/css-writing-modes/table-cell-001.html
-    NGConstraintSpaceBuilder builder(table_writing_direction.GetWritingMode(),
-                                     cell.Style().GetWritingMode(),
-                                     /* is_new_fc */ true);
-    builder.SetTextDirection(cell.Style().Direction());
-    builder.SetTableCellBorders(cell_borders);
-    if (!IsParallelWritingMode(table_writing_direction.GetWritingMode(),
-                               cell.Style().GetWritingMode())) {
-      PhysicalSize icb_size = cell.InitialContainingBlockSize();
-      builder.SetOrthogonalFallbackInlineSize(
-          IsHorizontalWritingMode(table_writing_direction.GetWritingMode())
-              ? icb_size.height
-              : icb_size.width);
+    const wtf_size_t start_column = start_column_index;
+    const wtf_size_t end_column =
+        std::min(start_column + cell.TableCellColspan() - 1,
+                 column_locations.size() - 1);
+    const LayoutUnit cell_inline_size = column_locations[end_column].offset +
+                                        column_locations[end_column].size -
+                                        column_locations[start_column].offset;
 
-      builder.SetIsShrinkToFit(cell.Style().LogicalWidth().IsAuto());
-    }
-
-    builder.SetAvailableSize(LogicalSize(cell_inline_size, kIndefiniteSize));
-    // Standard:
-    // https://www.w3.org/TR/css-tables-3/#computing-the-table-height "the
-    // computed height (if definite, percentages being considered 0px)"
-    LogicalSize percentage_resolution_size(cell_percentage_inline_size,
-                                           kIndefiniteSize);
-    builder.SetPercentageResolutionSize(percentage_resolution_size);
-    builder.SetReplacedPercentageResolutionSize(percentage_resolution_size);
-    builder.SetIsFixedInlineSize(true);
-    builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
-    builder.SetIsRestrictedBlockSizeTableCell(is_restricted_block_size_table);
-    builder.SetNeedsBaseline(true);
-    builder.SetCacheSlot(NGCacheSlot::kMeasure);
-    return builder.ToConstraintSpace();
+    // Typically we want these values to match the "layout" pass as close as
+    // possible. The one exception is "is_hidden_for_paint". This is set to
+    // true if a cell should be hidden within a collapsed column. If this is
+    // the case, the size is almost certainly different causing a second layout.
+    return NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
+        table_writing_direction, cell, cell_borders,
+        {cell_inline_size, kIndefiniteSize}, cell_percentage_inline_size,
+        /* alignment_baseline */ base::nullopt, start_column,
+        /* is_fixed_block_size_indefinite */ false,
+        is_table_block_size_specified,
+        /* is_hidden_for_paint */ false, has_collapsed_borders,
+        NGCacheSlot::kMeasure);
   };
 
   // TODO(layout-ng) Scrollbars should be frozen when computing row sizes.
@@ -389,6 +373,63 @@ void ComputeSectionInlineConstraints(
 
 }  // namespace
 
+// static
+NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
+    const WritingDirectionMode table_writing_direction,
+    const NGBlockNode cell,
+    const NGBoxStrut& cell_borders,
+    LogicalSize cell_size,
+    LayoutUnit percentage_inline_size,
+    base::Optional<LayoutUnit> alignment_baseline,
+    wtf_size_t column_index,
+    bool is_fixed_block_size_indefinite,
+    bool is_table_block_size_specified,
+    bool is_hidden_for_paint,
+    bool has_collapsed_borders,
+    NGCacheSlot cache_slot) {
+  const auto& cell_style = cell.Style();
+  const auto table_writing_mode = table_writing_direction.GetWritingMode();
+  const auto cell_writing_mode = cell_style.GetWritingMode();
+  NGConstraintSpaceBuilder builder(table_writing_mode, cell_writing_mode,
+                                   /* is_new_fc */ true);
+  builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
+  builder.SetTextDirection(cell_style.Direction());
+
+  if (!IsParallelWritingMode(table_writing_mode, cell_writing_mode)) {
+    const PhysicalSize icb_size = cell.InitialContainingBlockSize();
+    builder.SetOrthogonalFallbackInlineSize(
+        table_writing_direction.IsHorizontal() ? icb_size.height
+                                               : icb_size.width);
+    builder.SetIsShrinkToFit(cell.Style().LogicalWidth().IsAuto());
+  }
+
+  builder.SetAvailableSize(cell_size);
+  builder.SetIsFixedInlineSize(true);
+  if (cell_size.block_size != kIndefiniteSize) {
+    builder.SetIsFixedBlockSize(true);
+    builder.SetIsFixedBlockSizeIndefinite(is_fixed_block_size_indefinite);
+  }
+
+  // Standard:
+  // https://www.w3.org/TR/css-tables-3/#computing-the-table-height "the
+  // computed height (if definite, percentages being considered 0px)"
+  builder.SetPercentageResolutionSize(
+      {percentage_inline_size, kIndefiniteSize});
+
+  builder.SetTableCellBorders(cell_borders);
+  builder.SetTableCellAlignmentBaseline(alignment_baseline);
+  builder.SetTableCellColumnIndex(column_index);
+  builder.SetIsRestrictedBlockSizeTableCell(is_table_block_size_specified);
+  builder.SetIsTableCellHiddenForPaint(is_hidden_for_paint);
+  builder.SetIsTableCellWithCollapsedBorders(has_collapsed_borders);
+  builder.SetHideTableCellIfEmpty(
+      !has_collapsed_borders && cell_style.EmptyCells() == EEmptyCells::kHide);
+  builder.SetNeedsBaseline(true);
+  builder.SetCacheSlot(cache_slot);
+
+  return builder.ToConstraintSpace();
+}
+
 scoped_refptr<NGTableTypes::Columns>
 NGTableAlgorithmUtils::ComputeColumnConstraints(
     const NGBlockNode& table,
@@ -431,7 +472,7 @@ NGTableAlgorithmUtils::ComputeColumnConstraints(
 void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
     const NGBlockNode& section,
     const LayoutUnit cell_percentage_inline_size,
-    const bool is_restricted_block_size_table,
+    const bool is_table_block_size_restricted,
     const NGTableTypes::ColumnLocations& column_locations,
     const NGTableBorders& table_borders,
     const LayoutUnit block_border_spacing,
@@ -452,7 +493,7 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
        row = To<NGBlockNode>(row.NextSibling())) {
     colspan_cell_tabulator.StartRow();
     NGTableTypes::Row row_constraint = ComputeMinimumRowBlockSize(
-        row, cell_percentage_inline_size, is_restricted_block_size_table,
+        row, cell_percentage_inline_size, is_table_block_size_restricted,
         column_locations, table_borders, current_row++, section_index,
         /* is_section_collapsed */ section.Style().Visibility() ==
             EVisibility::kCollapse,

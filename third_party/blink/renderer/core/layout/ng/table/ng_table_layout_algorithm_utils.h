@@ -10,6 +10,9 @@
 
 namespace blink {
 
+struct LogicalSize;
+enum class NGCacheSlot;
+class NGConstraintSpace;
 class NGTableBorders;
 class NGBlockNode;
 
@@ -24,6 +27,24 @@ class NGTableAlgorithmUtils {
            align == EVerticalAlign::kTextBottom ||
            align == EVerticalAlign::kLength;
   }
+
+  // Creates a constraint-space for a table-cell.
+  //
+  // In order to make the cache as effective as possible, we try and keep
+  // creating the constraint-space for table-cells as consistent as possible.
+  static NGConstraintSpace CreateTableCellConstraintSpace(
+      const WritingDirectionMode table_writing_direction,
+      const NGBlockNode cell,
+      const NGBoxStrut& cell_borders,
+      LogicalSize cell_size,
+      LayoutUnit percentage_inline_size,
+      base::Optional<LayoutUnit> alignment_baseline,
+      wtf_size_t column_index,
+      bool is_fixed_block_size_indefinite,
+      bool is_restricted_block_size_table,
+      bool is_hidden_for_paint,
+      bool has_collapsed_borders,
+      NGCacheSlot);
 
   static scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
       const NGBlockNode& table,

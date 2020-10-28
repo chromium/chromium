@@ -103,7 +103,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     bool is_fixed_layout,
     const NGBoxStrut& cell_border,
     const NGBoxStrut& cell_padding,
-    bool is_collapsed) {
+    bool has_collapsed_borders) {
   base::Optional<LayoutUnit> css_inline_size;
   base::Optional<LayoutUnit> css_min_inline_size;
   base::Optional<LayoutUnit> css_max_inline_size;
@@ -120,7 +120,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
 
   MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kIntrinsic);
   MinMaxSizesResult min_max_size;
-  bool need_constraint_space = is_collapsed || !is_parallel;
+  bool need_constraint_space = has_collapsed_borders || !is_parallel;
   if (need_constraint_space) {
     NGConstraintSpaceBuilder builder(table_writing_mode,
                                      node.Style().GetWritingMode(),

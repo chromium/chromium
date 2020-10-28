@@ -124,7 +124,7 @@ LayoutUnit ComputeEmptyTableInlineSize(
     const LayoutUnit undistributable_space,
     const NGTableTypes::Caption& caption_constraint,
     const NGBoxStrut& table_border_padding,
-    const bool is_collapsed) {
+    const bool has_collapsed_borders) {
   // If table has a css inline size, use that.
   if (space.IsFixedInlineSize() || !table_style.LogicalWidth().IsAuto() ||
       !table_style.LogicalMinWidth().IsAuto()) {
@@ -136,7 +136,7 @@ LayoutUnit ComputeEmptyTableInlineSize(
                     table_border_padding.InlineSum());
   }
   // Table is defined by its border/padding.
-  if (is_collapsed) {
+  if (has_collapsed_borders) {
     return LayoutUnit();
   }
   return assignable_table_inline_size + table_border_padding.InlineSum();
@@ -150,8 +150,7 @@ LayoutUnit ComputeAssignableTableInlineSize(
     const NGTableTypes::Caption& caption_constraint,
     const LayoutUnit undistributable_space,
     const NGBoxStrut& table_border_padding,
-    const bool is_fixed_layout,
-    const bool is_collapsed) {
+    const bool is_fixed_layout) {
   if (space.IsFixedInlineSize()) {
     return (space.AvailableSize().inline_size - undistributable_space)
         .ClampNegativeToZero();
@@ -243,7 +242,7 @@ scoped_refptr<NGTableConstraintSpaceData> CreateConstraintSpaceData(
   data->table_inline_size = table_inline_size;
   data->table_writing_direction = style.GetWritingDirection();
   data->table_border_spacing = border_spacing;
-  data->treat_table_block_size_as_constrained = !style.LogicalHeight().IsAuto();
+  data->is_table_block_size_specified = !style.LogicalHeight().IsAuto();
   data->hide_table_cell_if_empty =
       style.EmptyCells() == EEmptyCells::kHide &&
       style.BorderCollapse() == EBorderCollapse::kSeparate;
@@ -434,8 +433,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
   const LayoutUnit assignable_table_inline_size =
       ComputeAssignableTableInlineSize(
           table, space, *column_constraints, caption_constraint,
-          undistributable_space, table_border_padding, is_fixed_layout,
-          table_borders->IsCollapsed());
+          undistributable_space, table_border_padding, is_fixed_layout);
   if (column_constraints->data.IsEmpty()) {
     return ComputeEmptyTableInlineSize(
         space, table.Style(), assignable_table_inline_size,
@@ -499,8 +497,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
   const LayoutUnit assignable_table_inline_size =
       ComputeAssignableTableInlineSize(
           Node(), ConstraintSpace(), *column_constraints, caption_constraint,
-          undistributable_space, border_padding, is_fixed_layout,
-          table_borders->IsCollapsed());
+          undistributable_space, border_padding, is_fixed_layout);
 
   // Distribute assignable table width.
   const Vector<LayoutUnit> column_sizes =
@@ -673,13 +670,12 @@ void NGTableLayoutAlgorithm::ComputeRows(
       ConstraintSpace(), Style(), table_border_padding, kIndefiniteSize,
       table_grid_inline_size);
 
+  const bool is_table_block_size_specified = !Style().LogicalHeight().IsAuto();
   LayoutUnit total_table_block_size;
   wtf_size_t section_index = 0;
   for (const NGBlockNode& section : grouped_children) {
     NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
-        section, table_grid_inline_size,
-        /* is_restricted_block_size_table */ css_table_block_size !=
-            kIndefiniteSize,
+        section, table_grid_inline_size, is_table_block_size_specified,
         column_locations, table_borders, border_spacing.block_size,
         section_index++, sections, rows, cell_block_constraints);
     total_table_block_size += sections->back().block_size;

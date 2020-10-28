@@ -1699,5 +1699,39 @@ TEST_F(NGLayoutResultCachingTest, HitOrthogonalRoot) {
   EXPECT_NE(result.get(), nullptr);
 }
 
+TEST_F(NGLayoutResultCachingTest, SimpleTable) {
+  ScopedLayoutNGTableForTest table_ng(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <table>
+      <td id="target1">abc</td>
+      <td id="target2">abc</td>
+    </table>
+  )HTML");
+
+  auto* target1 = To<LayoutBlock>(GetLayoutObjectByElementId("target1"));
+  auto* target2 = To<LayoutBlock>(GetLayoutObjectByElementId("target2"));
+
+  // Both "target1", and "target1" should have  only had one "measure" pass
+  // performed.
+  scoped_refptr<const NGLayoutResult> result1 =
+      target1->GetCachedLayoutResult();
+  scoped_refptr<const NGLayoutResult> measure1 =
+      target1->GetCachedMeasureResult();
+  EXPECT_EQ(result1->GetConstraintSpaceForCaching().CacheSlot(),
+            NGCacheSlot::kMeasure);
+  EXPECT_NE(result1.get(), nullptr);
+  EXPECT_EQ(result1.get(), measure1.get());
+
+  scoped_refptr<const NGLayoutResult> result2 =
+      target2->GetCachedLayoutResult();
+  scoped_refptr<const NGLayoutResult> measure2 =
+      target2->GetCachedMeasureResult();
+  EXPECT_EQ(result2->GetConstraintSpaceForCaching().CacheSlot(),
+            NGCacheSlot::kMeasure);
+  EXPECT_NE(result2.get(), nullptr);
+  EXPECT_EQ(result2.get(), measure2.get());
+}
+
 }  // namespace
 }  // namespace blink

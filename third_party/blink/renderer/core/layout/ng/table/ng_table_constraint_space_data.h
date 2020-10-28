@@ -104,36 +104,36 @@ class NGTableConstraintSpaceData
     bool is_constrained;
   };
 
-  bool EqualTableSpecificData(const NGTableConstraintSpaceData* other) const {
-    return table_inline_size == other->table_inline_size &&
-           table_writing_direction == other->table_writing_direction &&
-           table_border_spacing == other->table_border_spacing &&
-           treat_table_block_size_as_constrained ==
-               other->treat_table_block_size_as_constrained &&
-           hide_table_cell_if_empty == other->hide_table_cell_if_empty &&
-           column_locations == other->column_locations;
+  bool IsTableSpecificDataEqual(const NGTableConstraintSpaceData& other) const {
+    return table_inline_size == other.table_inline_size &&
+           table_writing_direction == other.table_writing_direction &&
+           table_border_spacing == other.table_border_spacing &&
+           is_table_block_size_specified ==
+               other.is_table_block_size_specified &&
+           hide_table_cell_if_empty == other.hide_table_cell_if_empty &&
+           column_locations == other.column_locations;
   }
 
-  bool MaySkipRowLayout(const NGTableConstraintSpaceData* other,
+  bool MaySkipRowLayout(const NGTableConstraintSpaceData& other,
                         wtf_size_t row_index) const {
-    if (other->rows.size() <= row_index)
+    if (other.rows.size() <= row_index)
       return false;
-    if (rows[row_index] != other->rows[row_index])
+    if (rows[row_index] != other.rows[row_index])
       return false;
     DCHECK_LT(row_index, rows.size());
     wtf_size_t end_index =
         rows[row_index].start_cell_index + rows[row_index].cell_count;
     for (wtf_size_t cell_index = rows[row_index].start_cell_index;
          cell_index < end_index; ++cell_index) {
-      if (cells[cell_index] != other->cells[cell_index])
+      if (cells[cell_index] != other.cells[cell_index])
         return false;
     }
     return true;
   }
 
-  bool MaySkipSectionLayout(const NGTableConstraintSpaceData* other,
+  bool MaySkipSectionLayout(const NGTableConstraintSpaceData& other,
                             wtf_size_t section_index) const {
-    if (other->sections.size() <= section_index)
+    if (other.sections.size() <= section_index)
       return false;
     DCHECK_LT(section_index, sections.size());
     wtf_size_t end_index = sections[section_index].start_row_index +
@@ -154,7 +154,9 @@ class NGTableConstraintSpaceData
   WritingDirectionMode table_writing_direction =
       WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr);
   LogicalSize table_border_spacing;
-  bool treat_table_block_size_as_constrained;
+
+  // If the block-size of the table is specified (not 'auto').
+  bool is_table_block_size_specified;
   bool hide_table_cell_if_empty;  // currently on regular constraint space.
   bool has_collapsed_borders;
 };
