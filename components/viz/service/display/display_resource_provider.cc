@@ -966,16 +966,13 @@ DisplayResourceProvider::ScopedReadLockSharedImage::ScopedReadLockSharedImage(
 
 DisplayResourceProvider::ScopedReadLockSharedImage::
     ~ScopedReadLockSharedImage() {
-  if (!resource_provider_)
-    return;
-  DCHECK(resource_->lock_for_overlay_count);
-  resource_->lock_for_overlay_count--;
-  resource_provider_->TryReleaseResource(resource_id_, resource_);
+  Reset();
 }
 
 DisplayResourceProvider::ScopedReadLockSharedImage&
 DisplayResourceProvider::ScopedReadLockSharedImage::operator=(
     ScopedReadLockSharedImage&& other) {
+  Reset();
   resource_provider_ = other.resource_provider_;
   resource_id_ = other.resource_id_;
   resource_ = other.resource_;
@@ -983,6 +980,17 @@ DisplayResourceProvider::ScopedReadLockSharedImage::operator=(
   other.resource_id_ = kInvalidResourceId;
   other.resource_ = nullptr;
   return *this;
+}
+
+void DisplayResourceProvider::ScopedReadLockSharedImage::Reset() {
+  if (!resource_provider_)
+    return;
+  DCHECK(resource_->lock_for_overlay_count);
+  resource_->lock_for_overlay_count--;
+  resource_provider_->TryReleaseResource(resource_id_, resource_);
+  resource_provider_ = nullptr;
+  resource_id_ = kInvalidResourceId;
+  resource_ = nullptr;
 }
 
 DisplayResourceProvider::LockSetForExternalUse::LockSetForExternalUse(

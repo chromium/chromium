@@ -756,7 +756,7 @@ void SkiaRenderer::SwapBuffersSkipped() {
 }
 
 void SkiaRenderer::SwapBuffersComplete() {
-  // Right now, only macOS needs to return maliboxes of released overlays, so
+  // Right now, only macOS needs to return mailboxes of released overlays, so
   // we should not release |committed_overlay_locks_| here. The resources in it
   // will be released by DidReceiveReleasedOverlays() later.
 #if defined(OS_APPLE)

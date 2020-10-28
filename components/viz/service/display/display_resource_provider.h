@@ -237,9 +237,11 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     }
 
    private:
-    DisplayResourceProvider* resource_provider_;
-    ResourceId resource_id_;
-    ChildResource* resource_;
+    void Reset();
+
+    DisplayResourceProvider* resource_provider_ = nullptr;
+    ResourceId resource_id_ = kInvalidResourceId;
+    ChildResource* resource_ = nullptr;
   };
 
   // Maintains set of resources locked for external use by SkiaRenderer.
