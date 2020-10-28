@@ -1123,4 +1123,38 @@ TEST_F(RenderFrameRemoteInterfacesTest, ReusedOnSameDocumentNavigation) {
       {{GURL(kTestFirstURL), kFrameEventDidCommitSameDocumentLoad}});
 }
 
+TEST_F(RenderFrameImplTest, LastCommittedUrlForUKM) {
+  // Test the case where we have a data url with a base_url.
+  GURL data_url = GURL("data:text/html,");
+  auto common_params = CreateCommonNavigationParams();
+  common_params->url = data_url;
+  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->transition = ui::PAGE_TRANSITION_TYPED;
+  common_params->base_url_for_data_url = GURL("about:blank");
+  common_params->history_url_for_data_url = GURL("about:blank");
+  auto commit_params = CreateCommitNavigationParams();
+  auto waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
+  GetMainRenderFrame()->Navigate(std::move(common_params),
+                                 std::move(commit_params));
+  waiter->Wait();
+  EXPECT_EQ(GURL(GetMainRenderFrame()->LastCommittedUrlForUKM()), data_url);
+
+  // Test the case where we have an unreachable URL.
+  GURL unreachable_url = GURL("http://www.example.com");
+  waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
+  GetMainRenderFrame()->LoadHTMLString("test", data_url, "UTF-8",
+                                       unreachable_url,
+                                       false /* replace_current_item */);
+  waiter->Wait();
+  EXPECT_EQ(GURL(GetMainRenderFrame()->LastCommittedUrlForUKM()),
+            unreachable_url);
+
+  // Test the base case, normal load.
+  GURL override_url = GURL("http://example.com");
+  waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
+  LoadHTMLWithUrlOverride("Test", "http://example.com");
+  waiter->Wait();
+  EXPECT_EQ(GURL(GetMainRenderFrame()->LastCommittedUrlForUKM()), override_url);
+}
+
 }  // namespace content

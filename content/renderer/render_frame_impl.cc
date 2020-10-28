@@ -4289,14 +4289,6 @@ void RenderFrameImpl::DidCommitNavigation(
   // Generate a new embedding token on each document change.
   GetWebFrame()->SetEmbeddingToken(base::UnguessableToken::Create());
 
-  // Navigations that change the document represent a new content source.  Keep
-  // track of that on the widget to help the browser process detect when stale
-  // compositor frames are being shown after a commit.
-  if (is_main_frame_) {
-    GetLocalRootRenderWidget()->DidNavigate(
-        frame_->GetDocument().GetUkmSourceId(), GetLoadingUrl());
-  }
-
   mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
       remote_interface_provider_receiver;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
@@ -5309,7 +5301,7 @@ void RenderFrameImpl::UpdateStateForCommit(
     RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
     if (render_thread_impl) {  // Can be NULL in tests.
       render_thread_impl->histogram_customizer()->RenderViewNavigatedToHost(
-          GURL(GetLoadingUrl()).host(), RenderView::GetRenderViewCount());
+          GetLoadingUrl().host(), RenderView::GetRenderViewCount());
     }
   }
 
@@ -6308,6 +6300,10 @@ void RenderFrameImpl::SendUpdateState() {
 
   GetFrameHost()->UpdateState(
       SingleHistoryItemToPageState(current_history_item_));
+}
+
+blink::WebURL RenderFrameImpl::LastCommittedUrlForUKM() {
+  return GetLoadingUrl();
 }
 
 GURL RenderFrameImpl::GetLoadingUrl() const {

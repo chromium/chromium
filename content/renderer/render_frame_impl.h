@@ -733,6 +733,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void WasShown() override;
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
+  blink::WebURL LastCommittedUrlForUKM() override;
 
   // Binds to the fullscreen service in the browser.
   void BindFullscreen(

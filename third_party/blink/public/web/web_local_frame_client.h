@@ -711,6 +711,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   // tracking smoothness via UKM.
   virtual void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) {}
+
+  // Returns the last commited URL used for UKM. This is slightly different
+  // than the document's URL because it will contain a data URL if a base URL
+  // was used for its load or if an unreachable URL was used.
+  virtual WebURL LastCommittedUrlForUKM() { return WebURL(); }
 };
 
 }  // namespace blink

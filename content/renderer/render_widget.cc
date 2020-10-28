@@ -258,11 +258,4 @@ viz::FrameSinkId RenderWidget::GetFrameSinkId() {
   return viz::FrameSinkId(RenderThread::Get()->GetClientId(), routing_id());
 }
 
-void RenderWidget::DidNavigate(ukm::SourceId source_id, const GURL& url) {
-  // Update the URL and the document source id used to key UKM metrics in the
-  // compositor. Note that the metrics for all frames are keyed to the main
-  // frame's URL.
-  layer_tree_host_->SetSourceURL(source_id, url);
-}
-
 }  // namespace content
