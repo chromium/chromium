@@ -87,7 +87,7 @@ TEST(StructTraitsTest, Bitmap) {
 
 TEST(StructTraitsTest, BitmapTooWideToSerialize) {
   SkBitmap input;
-  constexpr int kTooWide = 32 * 1024 + 1;
+  constexpr int kTooWide = 64 * 1024 + 1;
   input.allocPixels(
       SkImageInfo::MakeN32(kTooWide, 1, SkAlphaType::kUnpremul_SkAlphaType));
   input.eraseColor(SK_ColorYELLOW);
@@ -98,7 +98,7 @@ TEST(StructTraitsTest, BitmapTooWideToSerialize) {
 
 TEST(StructTraitsTest, BitmapTooTallToSerialize) {
   SkBitmap input;
-  constexpr int kTooTall = 32 * 1024 + 1;
+  constexpr int kTooTall = 64 * 1024 + 1;
   input.allocPixels(
       SkImageInfo::MakeN32(1, kTooTall, SkAlphaType::kUnpremul_SkAlphaType));
   input.eraseColor(SK_ColorYELLOW);

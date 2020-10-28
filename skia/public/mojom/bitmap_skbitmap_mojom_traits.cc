@@ -10,9 +10,11 @@ namespace mojo {
 namespace {
 
 // Maximum reasonable width and height. We don't try to deserialize bitmaps
-// bigger than these dimensions. Arbitrarily chosen.
-constexpr int kMaxWidth = 32 * 1024;
-constexpr int kMaxHeight = 32 * 1024;
+// bigger than these dimensions.
+// These limits are fairly large to accommodate images from the largest possible
+// canvas.
+constexpr int kMaxWidth = 64 * 1024;
+constexpr int kMaxHeight = 64 * 1024;
 
 // A custom SkPixelRef subclass to wrap a BigBuffer storing the pixel data.
 class BigBufferPixelRef final : public SkPixelRef {
