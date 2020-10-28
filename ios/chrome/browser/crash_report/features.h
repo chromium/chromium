@@ -9,4 +9,9 @@
 
 extern const base::Feature kSyntheticCrashReportsForUte;
 
+// Returns true if kSyntheticCrashReportsForUte and kLogBreadcrumbs features are
+// both enabled. There is not much value in uploading Synthetic Crash Reports
+// without Breadcrumbs.
+bool EnableSyntheticCrashReportsForUte();
+
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_FEATURES_H_

@@ -5,8 +5,10 @@
 #include "components/previous_session_info/previous_session_info.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "components/previous_session_info/previous_session_info_private.h"
 #include "components/version_info/version_info.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -15,6 +17,7 @@
 #error "This file requires ARC support."
 #endif
 
+using previous_session_info_constants::kPreviousSessionInfoMemoryFootprint;
 using previous_session_info_constants::kPreviousSessionInfoRestoringSession;
 using previous_session_info_constants::
     kPreviousSessionInfoConnectedSceneSessionIDs;
@@ -550,6 +553,43 @@ TEST_F(PreviousSessionInfoTest, ReportParameters) {
   [PreviousSessionInfo resetSharedInstanceForTesting];
   EXPECT_FALSE([[PreviousSessionInfo sharedInstance] reportParameters]);
   [PreviousSessionInfo resetSharedInstanceForTesting];
+}
+
+// Tests that memory footprint gets written to NSUserDefaults after
+// startRecordingMemoryFootprintWithInterval: call.
+TEST_F(PreviousSessionInfoTest, MemoryFootprintRecording) {
+  web::WebTaskEnvironment task_environment;
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  [NSUserDefaults.standardUserDefaults
+      removeObjectForKey:kPreviousSessionInfoMemoryFootprint];
+
+  [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+  [[PreviousSessionInfo sharedInstance]
+      startRecordingMemoryFootprintWithInterval:base::TimeDelta::
+                                                    FromMilliseconds(1)];
+
+  // Memory footprint should be updated after timeout.
+  EXPECT_FALSE([NSUserDefaults.standardUserDefaults
+      objectForKey:kPreviousSessionInfoMemoryFootprint]);
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(1, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return
+        [[NSUserDefaults.standardUserDefaults
+            objectForKey:kPreviousSessionInfoMemoryFootprint] integerValue] > 0;
+  }));
+}
+
+// Tests memoryFootprint property.
+TEST_F(PreviousSessionInfoTest, MemoryFootprint) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  NSInteger kMemoryFootprint = 1869;
+  [NSUserDefaults.standardUserDefaults
+      setInteger:kMemoryFootprint
+          forKey:kPreviousSessionInfoMemoryFootprint];
+
+  [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+  EXPECT_EQ(kMemoryFootprint,
+            [PreviousSessionInfo sharedInstance].memoryFootprint);
 }
 
 // Tests data collection pausing.

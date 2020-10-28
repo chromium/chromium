@@ -33,6 +33,7 @@
 #include "ios/chrome/browser/crash_report/breakpad_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
+#include "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_config.h"
@@ -74,6 +75,10 @@ void PostTaskOnUIThread(base::OnceClosure closure) {
   base::PostTask(FROM_HERE, {web::WebThread::UI}, std::move(closure));
 }
 NSString* const kStartupAttemptReset = @"StartupAttempReset";
+
+// Time interval used for startRecordingMemoryFootprintWithInterval:
+const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
+
 }  // namespace
 
 #pragma mark - AppStateObserverList
@@ -296,6 +301,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [MetricsMediator logDateInUserDefaults];
   // Clear the memory warning flag since the app is now safely in background.
   [[PreviousSessionInfo sharedInstance] resetMemoryWarningFlag];
+  [[PreviousSessionInfo sharedInstance] stopRecordingMemoryFootprint];
 
   // Turn off uploading of crash reports and metrics, in case the method of
   // communication changes while in the background.
@@ -365,6 +371,13 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 
   base::RecordAction(base::UserMetricsAction("MobileWillEnterForeground"));
+
+  if (EnableSyntheticCrashReportsForUte()) {
+    [[PreviousSessionInfo sharedInstance]
+        startRecordingMemoryFootprintWithInterval:
+            base::TimeDelta::FromSeconds(
+                kMemoryFootprintRecordingTimeInterval)];
+  }
 }
 
 - (void)resumeSessionWithTabOpener:(id<TabOpening>)tabOpener
@@ -652,6 +665,15 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // -startUpBrowserForegroundInitialization.
   DCHECK([self.startupInformation isColdStart]);
   [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
+
+  if (EnableSyntheticCrashReportsForUte()) {
+    // Must be called after sequenced context creation, which happens in
+    // startUpBrowserToStage: method called above.
+    [[PreviousSessionInfo sharedInstance]
+        startRecordingMemoryFootprintWithInterval:
+            base::TimeDelta::FromSeconds(
+                kMemoryFootprintRecordingTimeInterval)];
+  }
 }
 
 - (void)saveLaunchDetailsToDefaults {

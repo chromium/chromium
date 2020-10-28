@@ -23,6 +23,7 @@
 @property(nonatomic, assign) BOOL terminatedDuringSessionRestoration;
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 @property(nonatomic, copy) NSDictionary<NSString*, NSString*>* reportParameters;
+@property(nonatomic, assign) NSInteger memoryFootprint;
 
 + (void)resetSharedInstanceForTesting;
 

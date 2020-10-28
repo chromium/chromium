@@ -4,11 +4,14 @@
 
 #import "components/previous_session_info/previous_session_info.h"
 
+#include <mach/mach.h>
+
 #import <UIKit/UIKit.h>
 
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/timer/timer.h"
 #import "components/previous_session_info/previous_session_info_private.h"
 #include "components/version_info/version_info.h"
 
@@ -106,6 +109,8 @@ NSString* const kPreviousSessionInfoRestoringSession =
 NSString* const kPreviousSessionInfoConnectedSceneSessionIDs =
     @"PreviousSessionInfoConnectedSceneSessionIDs";
 NSString* const kPreviousSessionInfoParams = @"PreviousSessionInfoParams";
+NSString* const kPreviousSessionInfoMemoryFootprint =
+    @"PreviousSessionInfoMemoryFootprint";
 }  // namespace previous_session_info_constants
 
 @interface PreviousSessionInfo ()
@@ -137,11 +142,12 @@ NSString* const kPreviousSessionInfoParams = @"PreviousSessionInfoParams";
 @property(nonatomic, assign) BOOL terminatedDuringSessionRestoration;
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 @property(nonatomic, copy) NSDictionary<NSString*, NSString*>* reportParameters;
-
+@property(nonatomic, assign) NSInteger memoryFootprint;
 @end
 
 @implementation PreviousSessionInfo {
   std::unique_ptr<UIApplicationState> _applicationState;
+  base::RepeatingTimer _memoryFootprintUpdateTimer;
 }
 
 // Singleton PreviousSessionInfo.
@@ -227,6 +233,10 @@ static PreviousSessionInfo* gSharedInstance = nil;
     gSharedInstance.reportParameters =
         [defaults dictionaryForKey:previous_session_info_constants::
                                        kPreviousSessionInfoParams];
+
+    gSharedInstance.memoryFootprint =
+        [defaults integerForKey:previous_session_info_constants::
+                                    kPreviousSessionInfoMemoryFootprint];
   }
   return gSharedInstance;
 }
@@ -326,6 +336,15 @@ static PreviousSessionInfo* gSharedInstance = nil;
   [self resumeRecordingCurrentSession];
 }
 
+- (void)startRecordingMemoryFootprintWithInterval:(base::TimeDelta)interval {
+  _memoryFootprintUpdateTimer.Start(FROM_HERE, interval, base::BindRepeating(^{
+                                      [self updateMemoryFootprint];
+                                    }));
+}
+
+- (void)stopRecordingMemoryFootprint {
+  _memoryFootprintUpdateTimer.Stop();
+}
 - (void)resumeRecordingCurrentSession {
   if (self.recordingCurrentSession)
     return;
@@ -439,6 +458,24 @@ static PreviousSessionInfo* gSharedInstance = nil;
           forKey:kPreviousSessionInfoThermalState];
 
   [self updateSessionEndTime];
+}
+
+- (void)updateMemoryFootprint {
+  if (!self.recordingCurrentSession)
+    return;
+
+  task_vm_info taskInfoData;
+  mach_msg_type_number_t count = sizeof(task_vm_info) / sizeof(natural_t);
+  kern_return_t result =
+      task_info(mach_task_self(), TASK_VM_INFO,
+                reinterpret_cast<task_info_t>(&taskInfoData), &count);
+  if (result == KERN_SUCCESS) {
+    [NSUserDefaults.standardUserDefaults
+        setInteger:taskInfoData.phys_footprint
+            forKey:previous_session_info_constants::
+                       kPreviousSessionInfoMemoryFootprint];
+    [self updateSessionEndTime];
+  }
 }
 
 - (void)setMemoryWarningFlag {

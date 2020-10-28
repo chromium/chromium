@@ -38,6 +38,7 @@ source_set("crash_report") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report/breadcrumbs",
+    "//ios/chrome/browser/crash_report/breadcrumbs:feature_flags",
     "//ios/web",
     "//third_party/breakpad:client",
   ]

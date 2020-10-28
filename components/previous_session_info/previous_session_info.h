@@ -26,6 +26,8 @@ extern NSString* const kPreviousSessionInfoRestoringSession;
 extern NSString* const kPreviousSessionInfoConnectedSceneSessionIDs;
 // Key in the UserDefaults for a dictionary with session info params.
 extern NSString* const kPreviousSessionInfoParams;
+// Key in the UserDefaults for the memory footprint of the browser process.
+extern NSString* const kPreviousSessionInfoMemoryFootprint;
 
 // The values of this enum are persisted (both to NSUserDefaults and logs) and
 // represent the state of the last session (which may have been running a
@@ -134,6 +136,9 @@ enum class DeviceBatteryState {
 @property(nonatomic, readonly)
     NSDictionary<NSString*, NSString*>* reportParameters;
 
+// Memory footprint in bytes of the browser process.
+@property(nonatomic, readonly) NSInteger memoryFootprint;
+
 // Singleton PreviousSessionInfo. During the lifetime of the app, the returned
 // object is the same, and describes the previous session, even after a new
 // session has started (by calling beginRecordingCurrentSession).
@@ -142,6 +147,13 @@ enum class DeviceBatteryState {
 // Clears the persisted information about the previous session and starts
 // persisting information about the current session, for use in a next session.
 - (void)beginRecordingCurrentSession;
+
+// Starts memory usage data recording with given |interval|.
+- (void)startRecordingMemoryFootprintWithInterval:(base::TimeDelta)interval;
+
+// Stops memory usage data recording. No-op if
+// startRecordingMemoryFootprintWithInterval was no called.
+- (void)stopRecordingMemoryFootprint;
 
 // Updates the currently available device storage, in kilobytes.
 - (void)updateAvailableDeviceStorage:(NSInteger)availableStorage;

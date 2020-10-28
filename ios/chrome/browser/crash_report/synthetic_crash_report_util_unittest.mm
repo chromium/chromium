@@ -46,6 +46,8 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   const NSTimeInterval kUptimeMs = 5000;
   previous_session.sessionEndTime = [previous_session.sessionStartTime
       dateByAddingTimeInterval:kUptimeMs / 1000];
+  const NSInteger kMemoryFootprint = 1278759;
+  previous_session.memoryFootprint = kMemoryFootprint;
 
   // Create crash report.
   base::ScopedTempDir temp_dir;
@@ -107,7 +109,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
 
   // Verify config file content. Config file has the following format:
   // <Key1>\n<Value1Length>\n<Value1>\n...<KeyN>\n<ValueNLength>\n<ValueN>
-  ASSERT_EQ(55U, config_lines.size())
+  ASSERT_EQ(58U, config_lines.size())
       << "<content>" << config_content << "</content>";
 
   EXPECT_EQ("MinidumpDir", config_lines[0]);
@@ -195,6 +197,11 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   EXPECT_EQ(base::NumberToString(base::NumberToString(kUptimeMs).size()),
             config_lines[53]);
   EXPECT_EQ(base::NumberToString(kUptimeMs), config_lines[54]);
+
+  EXPECT_EQ("memory_footprint", config_lines[55]);
+  EXPECT_EQ(base::NumberToString(base::NumberToString(kMemoryFootprint).size()),
+            config_lines[56]);
+  EXPECT_EQ(base::NumberToString(kMemoryFootprint), config_lines[57]);
 
   // Read minidump file. It must be empty as there is no stack trace, but
   // Breakpad will not upload config without minidump file.

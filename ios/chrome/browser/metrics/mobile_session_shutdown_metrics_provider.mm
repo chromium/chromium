@@ -310,9 +310,7 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
         GetMobileSessionAppState(possible_explanation),
         MobileSessionAppState::kMaxValue);
 
-    if (!possible_explanation &&
-        base::FeatureList::IsEnabled(kSyntheticCrashReportsForUte) &&
-        base::FeatureList::IsEnabled(kLogBreadcrumbs) &&
+    if (!possible_explanation && EnableSyntheticCrashReportsForUte() &&
         GetApplicationContext()->GetLocalState()->GetBoolean(
             metrics::prefs::kMetricsReportingEnabled)) {
       // UTEs are so common that there will be a little or no value from
