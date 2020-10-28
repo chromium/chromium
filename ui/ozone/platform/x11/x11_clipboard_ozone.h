@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xproto.h"

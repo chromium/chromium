@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted_memory.h"
-#include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace ui {
 class SelectionData;

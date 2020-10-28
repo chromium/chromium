@@ -6,7 +6,6 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"

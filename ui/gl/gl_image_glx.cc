@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_glx.h"

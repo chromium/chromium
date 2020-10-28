@@ -14,7 +14,6 @@
 #include "ui/base/x/x11_drag_context.h"
 #include "ui/base/x/x11_topmost_window_finder.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

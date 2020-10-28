@@ -19,7 +19,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 
 namespace ui {

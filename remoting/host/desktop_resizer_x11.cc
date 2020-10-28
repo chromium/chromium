@@ -14,7 +14,6 @@
 #include "remoting/host/linux/x11_util.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/scoped_ignore_errors.h"
-#include "ui/gfx/x/x11.h"
 
 // On Linux, we use the xrandr extension to change the desktop resolution. In
 // curtain mode, we do exact resize where supported (currently only using a

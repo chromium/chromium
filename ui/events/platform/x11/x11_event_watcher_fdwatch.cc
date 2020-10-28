@@ -5,7 +5,6 @@
 #include "ui/events/platform/x11/x11_event_watcher_fdwatch.h"
 
 #include "base/task/current_thread.h"
-#include "ui/gfx/x/x11.h"
 
 namespace ui {
 

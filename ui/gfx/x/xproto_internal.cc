@@ -8,7 +8,6 @@
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
 
-#include "ui/gfx/x/x11.h"
 
 namespace x11 {
 

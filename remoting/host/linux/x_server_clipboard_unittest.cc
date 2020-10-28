@@ -11,7 +11,6 @@
 #include "remoting/host/linux/x_server_clipboard.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 
 namespace remoting {
 

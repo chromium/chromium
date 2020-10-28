@@ -21,7 +21,6 @@
 #include "ui/events/devices/x11/xinput_util.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xinput.h"
 
 namespace remoting {

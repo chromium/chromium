@@ -11,7 +11,6 @@
 #include "base/threading/thread_checker.h"
 #include "ui/events/keyboard_hook_base.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 
 namespace ui {

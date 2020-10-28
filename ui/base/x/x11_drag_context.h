@@ -13,7 +13,6 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

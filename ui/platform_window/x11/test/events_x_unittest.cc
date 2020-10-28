@@ -33,7 +33,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

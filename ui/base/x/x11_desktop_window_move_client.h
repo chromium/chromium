@@ -11,7 +11,6 @@
 #include "ui/base/x/x11_move_loop_delegate.h"
 #include "ui/base/x/x11_whole_screen_move_loop.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/x/x11.h"
 
 namespace ui {
 

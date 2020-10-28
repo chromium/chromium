@@ -9,7 +9,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_x11_gles2.h"

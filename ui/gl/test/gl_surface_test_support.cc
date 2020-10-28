@@ -23,7 +23,6 @@
 #endif
 
 #if defined(USE_X11)
-#include "ui/gfx/x/x11.h"  // nogncheck
 #endif
 
 #if defined(USE_X11) || defined(USE_OZONE)
@@ -35,14 +34,6 @@ namespace gl {
 namespace {
 void InitializeOneOffHelper(bool init_extensions) {
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
-
-  // TODO(https://crbug.com/1036285): delete this once USE_X11 is removed. If
-  // Ozone/X11 is used, XThreads are initialized with the
-  // OzonePlatform::InitializeForGPU call.
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    XInitThreads();
-#endif
 
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {

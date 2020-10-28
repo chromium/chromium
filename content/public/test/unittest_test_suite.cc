@@ -25,7 +25,6 @@
 
 #if defined(USE_X11)
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/x/x11.h"  // nogncheck
 #endif
 
 #if defined(OS_FUCHSIA)
@@ -105,10 +104,6 @@ UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
     command_line->AppendSwitchASCII(switches::kOzonePlatform, "headless");
 #endif
 
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    XInitThreads();
-#endif
   DCHECK(test_suite);
   blink_test_support_.reset(new TestBlinkWebUnitTestSupport);
   test_host_resolver_ = std::make_unique<TestHostResolver>();

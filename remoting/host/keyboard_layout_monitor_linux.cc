@@ -19,7 +19,6 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"

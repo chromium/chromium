@@ -32,7 +32,6 @@
 #include "ui/events/platform_event.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto_types.h"
 

@@ -18,7 +18,6 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/x/x11.h"
 #include "url/gurl.h"
 
 namespace ui {

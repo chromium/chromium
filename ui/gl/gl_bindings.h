@@ -54,7 +54,6 @@ using GLXContext = struct __GLXcontextRec*;
 using GLXFBConfig = struct __GLXFBConfigRec*;
 struct XVisualInfo;
 
-#include "ui/gfx/x/x11.h"
 
 #include <GL/glxext.h>
 #include <GL/glxtokens.h>

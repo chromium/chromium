@@ -22,7 +22,6 @@
 #include "ui/gfx/linux/gbm_wrapper.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/dri3.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 
 namespace ui {

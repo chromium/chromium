@@ -5,7 +5,6 @@
 #include "remoting/host/linux/x11_util.h"
 
 #include "base/bind.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xtest.h"
 
 namespace remoting {

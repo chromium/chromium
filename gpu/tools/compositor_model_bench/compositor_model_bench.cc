@@ -37,7 +37,6 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/glx.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/glx_util.h"
@@ -76,9 +75,8 @@ class Simulator {
     glXMakeCurrent(display_, 0, nullptr);
     glXDestroyContext(display_, gl_context_);
 
-    // Destroy window and display.
-    connection_->DestroyWindow({window_});
-    XCloseDisplay(display_);
+    // The window and X11 connection will be cleaned up when connection_ is
+    // destroyed.
   }
 
   void QueueTest(const base::FilePath& path) {

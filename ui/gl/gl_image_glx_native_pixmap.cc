@@ -8,7 +8,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/x/dri3.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto_types.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"

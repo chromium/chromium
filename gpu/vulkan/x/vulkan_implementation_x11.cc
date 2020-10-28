@@ -20,7 +20,6 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 
 namespace gpu {

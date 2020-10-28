@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/memory/singleton.h"
-#include "ui/gfx/x/x11.h"
 
 namespace ui {
 

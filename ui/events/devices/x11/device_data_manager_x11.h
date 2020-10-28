@@ -20,7 +20,6 @@
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xinput.h"
 

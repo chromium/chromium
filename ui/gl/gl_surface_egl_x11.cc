@@ -8,7 +8,6 @@
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/egl_util.h"

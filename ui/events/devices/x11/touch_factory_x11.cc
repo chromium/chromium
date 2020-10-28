@@ -20,7 +20,6 @@
 #include "ui/events/devices/x11/xinput_util.h"
 #include "ui/events/event_switches.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 
 namespace ui {
 namespace {

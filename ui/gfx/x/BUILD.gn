@@ -104,7 +104,6 @@ component("xprotos") {
               "scoped_ignore_errors.cc",
               "x11_switches.cc",
               "x11_switches.h",
-              "x11.h",
             ]
   configs += [
     ":x11_private_config",

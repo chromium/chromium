@@ -18,7 +18,6 @@
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/transform.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -202,11 +201,13 @@ class X11WindowTest : public testing::Test {
 
     // Make X11 synchronous for our display connection. This does not force the
     // window manager to behave synchronously.
-    XSynchronize(gfx::GetXDisplay(), true);
+    connection->SynchronizeForTest(true);
   }
 
  protected:
-  void TearDown() override { XSynchronize(gfx::GetXDisplay(), false); }
+  void TearDown() override {
+    x11::Connection::Get()->SynchronizeForTest(false);
+  }
 
   std::unique_ptr<X11Window> CreateX11Window(
       PlatformWindowDelegate* delegate,

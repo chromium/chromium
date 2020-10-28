@@ -14,7 +14,6 @@
 
 #include "base/linux_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/x11.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 int main(int argc, const char** argv) {
@@ -23,9 +22,6 @@ int main(int argc, const char** argv) {
   remoting::test::It2MeStandaloneHost host;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // Required in order for us to run multiple X11 threads.
-  XInitThreads();
-
   // Create an X11EventSource so the global X11 connection
   // (x11::Connection::Get()) can dispatch X events.
   auto event_source =

@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 
 namespace ui {

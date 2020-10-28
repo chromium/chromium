@@ -30,7 +30,6 @@
 #include "ui/gfx/x/dri2.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/present.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xf86vidmode.h"
 #include "ui/gfx/x/xproto.h"

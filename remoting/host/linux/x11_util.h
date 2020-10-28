@@ -13,7 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/connection.h"
 
 namespace remoting {
 

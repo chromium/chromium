@@ -19,7 +19,6 @@
 #include "ui/events/keycodes/keysym_to_unicode.h"
 #include "ui/events/keycodes/xkb_keysym.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"

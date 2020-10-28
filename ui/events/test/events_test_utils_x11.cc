@@ -16,7 +16,6 @@
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xproto.h"
 

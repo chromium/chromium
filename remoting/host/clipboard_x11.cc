@@ -14,7 +14,6 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto_types.h"
 
 namespace remoting {

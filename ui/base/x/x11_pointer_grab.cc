@@ -12,7 +12,6 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xproto.h"
 

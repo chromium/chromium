@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "ui/base/test/ui_controls_aura.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11.h"
 
 namespace gfx {
 class Point;

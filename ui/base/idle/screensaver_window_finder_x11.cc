@@ -10,7 +10,6 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/scoped_ignore_errors.h"
 #include "ui/gfx/x/screensaver.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 
 namespace ui {

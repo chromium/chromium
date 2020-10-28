@@ -17,7 +17,6 @@
 #include "ui/events/types/event_type.h"
 #include "ui/events/x/events_x_utils.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 
 #if defined(USE_OZONE)

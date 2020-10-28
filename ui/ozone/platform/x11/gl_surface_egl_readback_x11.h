@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_X11_GL_SURFACE_EGL_READBACK_X11_H_
 #define UI_OZONE_PLATFORM_X11_GL_SURFACE_EGL_READBACK_X11_H_
 
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/common/gl_surface_egl_readback.h"
 

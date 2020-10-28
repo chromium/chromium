@@ -128,7 +128,6 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/events/x/x11_event_translation.h"
-#include "ui/gfx/x/x11.h"  // nogncheck
 #endif
 
 #if defined(USE_OZONE)

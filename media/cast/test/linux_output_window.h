@@ -13,7 +13,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/connection.h"
 
 namespace ui {
 class X11SoftwareBitmapPresenter;

@@ -18,7 +18,6 @@
 #if defined(USE_X11)
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"  // nogncheck
 #include "ui/events/keycodes/keysym_to_unicode.h"           // nogncheck
-#include "ui/gfx/x/x11.h"                                   // nogncheck
 #endif
 
 #if defined(USE_OZONE)

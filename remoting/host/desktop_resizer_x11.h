@@ -15,7 +15,6 @@
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11.h"
 
 namespace remoting {
 

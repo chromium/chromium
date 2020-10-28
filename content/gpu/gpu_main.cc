@@ -81,7 +81,6 @@
 #include "ui/base/x/x11_ui_thread.h"                     // nogncheck
 #include "ui/base/x/x11_util.h"                          // nogncheck
 #include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"  // nogncheck
-#include "ui/gfx/x/x11.h"                                // nogncheck
 #include "ui/gfx/x/x11_switches.h"                       // nogncheck
 #include "ui/gfx/x/x11_types.h"                          // nogncheck
 #endif

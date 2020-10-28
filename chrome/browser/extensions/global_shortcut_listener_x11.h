@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
-#include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/connection.h"
 
 namespace ui {
 class KeyEvent;

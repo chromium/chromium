@@ -26,7 +26,6 @@
 #if defined(USE_X11)
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/events/x/events_x_utils.h"
-#include "ui/gfx/x/x11.h"
 #endif
 
 #if defined(OS_WIN)

@@ -11,7 +11,6 @@
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/x/event.h"
-#include "ui/gfx/x/x11.h"
 
 namespace ui {
 

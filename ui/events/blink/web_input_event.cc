@@ -18,7 +18,6 @@
 #endif
 
 #if defined(USE_X11)
-#include "ui/gfx/x/x11.h"  // nogncheck
 #endif
 
 namespace ui {

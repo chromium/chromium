@@ -13,6 +13,7 @@
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace media {

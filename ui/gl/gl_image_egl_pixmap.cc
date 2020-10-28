@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_glx.h"

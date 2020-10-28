@@ -30,7 +30,6 @@
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_utils.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_types.h"
 #include "ui/gfx/x/xproto.h"

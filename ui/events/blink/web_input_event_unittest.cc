@@ -27,7 +27,6 @@
 #include "ui/events/x/x11_event_translation.h"     // nogncheck
 #include "ui/gfx/x/event.h"                        // nogncheck
 #include "ui/gfx/x/keysyms/keysyms.h"              // nogncheck
-#include "ui/gfx/x/x11.h"                          // nogncheck
 #include "ui/gfx/x/x11_types.h"                    // nogncheck
 #include "ui/gfx/x/xproto.h"                       // nogncheck
 #endif

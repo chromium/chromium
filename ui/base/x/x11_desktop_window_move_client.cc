@@ -7,7 +7,6 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/base/x/x11_window.h"
 #include "ui/events/event.h"
-#include "ui/gfx/x/x11.h"
 
 namespace ui {
 

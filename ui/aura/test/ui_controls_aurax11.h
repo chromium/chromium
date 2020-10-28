@@ -21,7 +21,6 @@
 #include "ui/base/test/ui_controls_aura.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/test/x11_event_waiter.h"
-#include "ui/gfx/x/x11.h"
 
 namespace aura {
 namespace test {

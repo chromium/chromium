@@ -11,7 +11,6 @@
 #include "ui/events/platform/scoped_event_dispatcher.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/x11_window_event_manager.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 

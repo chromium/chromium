@@ -28,7 +28,6 @@
 #include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

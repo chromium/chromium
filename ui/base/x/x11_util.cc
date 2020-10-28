@@ -68,7 +68,6 @@
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/sync.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"

@@ -24,7 +24,6 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/x11_event_translation.h"
 #include "ui/events/x/x11_window_event_manager.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"

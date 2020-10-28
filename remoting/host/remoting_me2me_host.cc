@@ -125,7 +125,6 @@
 #include "remoting/host/audio_capturer_linux.h"
 #include "remoting/host/linux/certificate_watcher.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/x11.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
@@ -1691,9 +1690,6 @@ int HostProcessMain() {
   std::unique_ptr<ui::X11EventSource> event_source;
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           kReportOfflineReasonSwitchName)) {
-    // Required in order for us to run multiple X11 threads.
-    XInitThreads();
-
     // Create an X11EventSource so the global X11 connection
     // (x11::Connection::Get()) can dispatch X events.
     event_source = std::make_unique<ui::X11EventSource>(x11::Connection::Get());

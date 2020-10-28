@@ -21,7 +21,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/shm.h"
-#include "ui/gfx/x/x11.h"
 
 namespace ui {
 

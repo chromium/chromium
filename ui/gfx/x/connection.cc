@@ -20,12 +20,25 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/keyboard_state.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_switches.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_internal.h"
 #include "ui/gfx/x/xproto_types.h"
+
+// Some Xlib features are temporarily declared here.
+// TODO(https://crbug.com/1066670): remove these.
+extern "C" {
+enum XEventQueueOwner { XlibOwnsEventQueue = 0, XCBOwnsEventQueue };
+
+int XInitThreads(void);
+struct _XDisplay* XOpenDisplay(const char*);
+int XCloseDisplay(struct _XDisplay*);
+int XFlush(struct _XDisplay*);
+struct xcb_connection_t* XGetXCBConnection(struct _XDisplay* dpy);
+void XSetEventQueueOwner(struct _XDisplay* dpy, enum XEventQueueOwner owner);
+int (*XSynchronize(struct _XDisplay*, int))(struct _XDisplay*);
+}
 
 namespace x11 {
 

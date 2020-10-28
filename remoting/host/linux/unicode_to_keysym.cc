@@ -8,7 +8,6 @@
 
 #include "base/stl_util.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
-#include "ui/gfx/x/x11.h"
 
 namespace remoting {
 

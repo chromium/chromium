@@ -16,7 +16,6 @@
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
-#include "ui/gfx/x/x11.h"
 
 namespace {
 
