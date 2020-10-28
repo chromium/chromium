@@ -355,7 +355,7 @@ bool FtpUtil::WindowsDateListingToTime(const base::string16& date,
 // static
 base::string16 FtpUtil::GetStringPartAfterColumns(const base::string16& text,
                                                   int columns) {
-  base::i18n::UTF16CharIterator iter(&text);
+  base::i18n::UTF16CharIterator iter(text);
 
   for (int i = 0; i < columns; i++) {
     // Skip the leading whitespace.

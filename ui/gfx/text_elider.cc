@@ -442,10 +442,10 @@ void RectangleString::AddWord(const base::string16& word) {
     Append(word);
   } else {
     // Word is so big that it must be fragmented.
-    int array_start = 0;
+    size_t array_start = 0;
     int char_start = 0;
-    base::i18n::UTF16CharIterator chars(&word);
-    while (!chars.end()) {
+    base::i18n::UTF16CharIterator chars(word);
+    for (; !chars.end(); chars.Advance()) {
       // When boundary is hit, add as much as will fit on this line.
       if (current_col_ + (chars.char_offset() - char_start) >= max_cols_) {
         Append(word.substr(array_start, chars.array_pos() - array_start));
@@ -453,7 +453,6 @@ void RectangleString::AddWord(const base::string16& word) {
         array_start = chars.array_pos();
         char_start = chars.char_offset();
       }
-      chars.Advance();
     }
     // Add the last remaining fragment, if any.
     if (array_start != chars.array_pos())

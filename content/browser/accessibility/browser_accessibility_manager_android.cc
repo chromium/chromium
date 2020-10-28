@@ -330,9 +330,11 @@ bool BrowserAccessibilityManagerAndroid::NextAtGranularity(
       base::string16 text = node->GetInnerText();
       if (cursor_index >= static_cast<int32_t>(text.length()))
         return false;
-      base::i18n::UTF16CharIterator iter(text.data(), text.size());
-      while (!iter.end() && iter.array_pos() <= cursor_index)
+      base::i18n::UTF16CharIterator iter(text);
+      while (!iter.end() &&
+             static_cast<int32_t>(iter.array_pos()) <= cursor_index) {
         iter.Advance();
+      }
       *end_index = iter.array_pos();
       iter.Rewind();
       *start_index = iter.array_pos();
@@ -375,9 +377,10 @@ bool BrowserAccessibilityManagerAndroid::PreviousAtGranularity(
       if (cursor_index <= 0)
         return false;
       base::string16 text = node->GetInnerText();
-      base::i18n::UTF16CharIterator iter(text.data(), text.size());
+      base::i18n::UTF16CharIterator iter(text);
       int previous_index = 0;
-      while (!iter.end() && iter.array_pos() < cursor_index) {
+      while (!iter.end() &&
+             static_cast<int32_t>(iter.array_pos()) < cursor_index) {
         previous_index = iter.array_pos();
         iter.Advance();
       }

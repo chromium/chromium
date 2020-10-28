@@ -1491,8 +1491,8 @@ TEST_P(RenderTextTestWithTextIndexConversionCase, TextIndexConversion) {
   U16_SET_CP_START(text.c_str(), 0, reveal_index);
 
   // Validate that codepoints still match.
-  base::i18n::UTF16CharIterator iter(&render_text->text());
-  while (!iter.end()) {
+  for (base::i18n::UTF16CharIterator iter(render_text->text()); !iter.end();
+       iter.Advance()) {
     size_t text_index = iter.array_pos();
     size_t display_index = test_api()->TextIndexToDisplayIndex(text_index);
     EXPECT_EQ(text_index, test_api()->DisplayIndexToTextIndex(display_index));
@@ -1502,8 +1502,6 @@ TEST_P(RenderTextTestWithTextIndexConversionCase, TextIndexConversion) {
     } else {
       EXPECT_EQ(display_text[display_index], text[text_index]);
     }
-
-    iter.Advance();
   }
 }
 

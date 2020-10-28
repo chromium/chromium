@@ -48,7 +48,7 @@ typedef IMEEngineHandlerInterface::KeyEventDoneCallback KeyEventCallback;
 uint32_t GetOffsetInUTF16(const base::string16& utf16_string,
                           uint32_t utf8_offset) {
   DCHECK_LT(utf8_offset, utf16_string.size());
-  base::i18n::UTF16CharIterator char_iterator(&utf16_string);
+  base::i18n::UTF16CharIterator char_iterator(utf16_string);
   for (size_t i = 0; i < utf8_offset; ++i)
     char_iterator.Advance();
   return char_iterator.array_pos();

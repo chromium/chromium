@@ -23,12 +23,10 @@ namespace gfx {
 namespace {
 
 bool TextSequenceHasEmoji(base::StringPiece16 text) {
-  base::i18n::UTF16CharIterator iter(text.data(), text.length());
-  while (!iter.end()) {
+  for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
     const UChar32 codepoint = iter.get();
     if (u_hasBinaryProperty(codepoint, UCHAR_EMOJI))
       return true;
-    iter.Advance();
   }
   return false;
 }

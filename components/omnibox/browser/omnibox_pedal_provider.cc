@@ -97,7 +97,7 @@ OmniboxPedal::Tokens OmniboxPedalProvider::Tokenize(
   match_tokens.reserve(max_tokens_);
   if (tokenize_characters_.empty()) {
     // Tokenize on Unicode character boundaries when we have no delimiters.
-    base::i18n::UTF16CharIterator char_iter(&reduced_text);
+    base::i18n::UTF16CharIterator char_iter(reduced_text);
     int32_t left = 0;
     while (!char_iter.end()) {
       char_iter.Advance();

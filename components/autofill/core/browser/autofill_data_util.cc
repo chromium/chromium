@@ -185,8 +185,7 @@ bool IsHangulCharacter(UChar32 c) {
 // characters or spaces. |name| should already be confirmed to be a CJK name, as
 // per |IsCJKName()|.
 bool IsHangulName(base::StringPiece16 name) {
-  for (base::i18n::UTF16CharIterator iter(name.data(), name.length());
-       !iter.end(); iter.Advance()) {
+  for (base::i18n::UTF16CharIterator iter(name); !iter.end(); iter.Advance()) {
     UChar32 c = iter.get();
     if (!IsHangulCharacter(c) && !base::IsUnicodeWhitespace(c)) {
       return false;
@@ -367,8 +366,7 @@ bool IsCJKName(base::StringPiece16 name) {
   static const base::char16 kMiddleDot = u'\u00B7';
   bool previous_was_cjk = false;
   size_t word_count = 0;
-  for (base::i18n::UTF16CharIterator iter(name.data(), name.length());
-       !iter.end(); iter.Advance()) {
+  for (base::i18n::UTF16CharIterator iter(name); !iter.end(); iter.Advance()) {
     UChar32 c = iter.get();
     const bool is_cjk = IsCJKCharacter(c);
     if (!is_cjk && !base::IsUnicodeWhitespace(c) && c != kKatakanaMiddleDot &&

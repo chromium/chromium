@@ -30,10 +30,10 @@ void ExtractCompositionTextFromGtkPreedit(const char* utf8_text,
   // conversion here.
   std::vector<size_t> char16_offsets;
   size_t length = composition->text.length();
-  base::i18n::UTF16CharIterator char_iterator(&composition->text);
-  do {
+  for (base::i18n::UTF16CharIterator char_iterator(composition->text);
+       !char_iterator.end(); char_iterator.Advance()) {
     char16_offsets.push_back(char_iterator.array_pos());
-  } while (char_iterator.Advance());
+  }
 
   // The text length in Unicode characters.
   int char_length = static_cast<int>(char16_offsets.size());

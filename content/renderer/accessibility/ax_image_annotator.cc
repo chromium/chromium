@@ -138,11 +138,8 @@ bool AXImageAnnotator::ImageNameHasMostlyStopwords(
     if (AXImageStopwords::GetInstance().IsImageStopword(word.c_str()))
       continue;
 
-    base::i18n::UTF8CharIterator iter(&word);
-    while (!iter.end()) {
+    for (base::i18n::UTF8CharIterator iter(word); !iter.end(); iter.Advance())
       remaining_codepoints++;
-      iter.Advance();
-    }
   }
 
   return (remaining_codepoints <= 3);

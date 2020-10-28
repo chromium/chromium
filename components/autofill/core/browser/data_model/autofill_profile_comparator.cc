@@ -122,7 +122,7 @@ NormalizingIterator::NormalizingIterator(
     : previous_was_skippable_(false),
       collapse_skippable_(whitespace_spec ==
                           AutofillProfileComparator::RETAIN_WHITESPACE),
-      iter_(base::i18n::UTF16CharIterator(text.data(), text.length())) {
+      iter_(text) {
   int32_t character = iter_.get();
 
   while (!iter_.end() && IsPunctuationOrWhitespace(u_charType(character))) {
@@ -282,8 +282,7 @@ base::string16 AutofillProfileComparator::NormalizeForComparison(
   base::string16 result;
   result.reserve(text.length());
   bool previous_was_whitespace = (whitespace_spec == RETAIN_WHITESPACE);
-  for (base::i18n::UTF16CharIterator iter(text.data(), text.length());
-       !iter.end(); iter.Advance()) {
+  for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
     if (IsPunctuationOrWhitespace(u_charType(iter.get()))) {
       if (!previous_was_whitespace && whitespace_spec == RETAIN_WHITESPACE) {
         result.push_back(' ');

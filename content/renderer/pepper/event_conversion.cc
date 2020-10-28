@@ -191,14 +191,14 @@ void AppendCharEvent(const WebInputEvent& event,
     utf16_char_count++;
 
   // Make a separate InputEventData for each Unicode character in the input.
-  base::i18n::UTF16CharIterator iter(key_event.text, utf16_char_count);
-  while (!iter.end()) {
+  for (base::i18n::UTF16CharIterator iter(
+           base::StringPiece16(key_event.text, utf16_char_count));
+       !iter.end(); iter.Advance()) {
     InputEventData result = GetEventWithCommonFieldsAndType(event);
     result.event_modifiers = ConvertEventModifiers(key_event.GetModifiers());
     base::WriteUnicodeCharacter(iter.get(), &result.character_text);
 
     result_events->push_back(result);
-    iter.Advance();
   }
 }
 

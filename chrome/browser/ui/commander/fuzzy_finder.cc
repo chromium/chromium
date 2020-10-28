@@ -79,8 +79,8 @@ double ConsecutiveMatchWithGaps(const base::string16& needle,
     matched_ranges->emplace_back(0, needle.size());
     return kPrefixScore;
   }
-  base::i18n::UTF16CharIterator n_iter(&needle);
-  base::i18n::UTF16CharIterator h_iter(&haystack);
+  base::i18n::UTF16CharIterator n_iter(needle);
+  base::i18n::UTF16CharIterator h_iter(haystack);
 
   std::vector<MatchRecord> matches;
   int gap_size_before_match = 0;

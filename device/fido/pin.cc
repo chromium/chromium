@@ -38,7 +38,7 @@ uint8_t PermissionsToByte(base::span<const pin::Permissions> permissions) {
 // four or more code points. This reflects the "4 Unicode characters"
 // requirement in CTAP2.
 static bool HasAtLeastFourCodepoints(const std::string& pin) {
-  base::i18n::UTF8CharIterator it(&pin);
+  base::i18n::UTF8CharIterator it(pin);
   return it.Advance() && it.Advance() && it.Advance() && it.Advance();
 }
 

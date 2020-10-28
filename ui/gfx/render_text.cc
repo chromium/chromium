@@ -1483,7 +1483,7 @@ void RenderText::EnsureLayoutTextUpdated() const {
 
   // Iterates through graphemes from |text_| and rewrite its codepoints to
   // |layout_text_|.
-  base::i18n::UTF16CharIterator text_iter(&text_);
+  base::i18n::UTF16CharIterator text_iter(text_);
   internal::StyleIterator styles = GetTextStyleIterator();
   bool text_truncated = false;
   while (!text_iter.end() && !text_truncated) {

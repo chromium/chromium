@@ -15,10 +15,8 @@ namespace autofill_assistant {
 std::vector<UChar32> UTF8ToUnicode(const std::string& text) {
   std::vector<UChar32> codepoints;
   codepoints.reserve(text.length());  // upper bound
-  base::i18n::UTF8CharIterator iter(&text);
-  while (!iter.end()) {
+  for (base::i18n::UTF8CharIterator iter(text); !iter.end(); iter.Advance()) {
     codepoints.emplace_back(iter.get());
-    iter.Advance();
   }
   return codepoints;
 }

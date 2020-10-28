@@ -3209,17 +3209,15 @@ void PepperPluginInstanceImpl::HandlePepperImeCommit(
   if (!IsPluginAcceptingCompositionEvents()) {
     // For pepper plugins unable to handle IME events, send the plugin a
     // sequence of characters instead.
-    base::i18n::UTF16CharIterator iterator(&text);
-    int32_t i = 0;
-    while (iterator.Advance()) {
+    size_t i = 0;
+    for (base::i18n::UTF16CharIterator iterator(text); iterator.Advance();) {
       blink::WebKeyboardEvent char_event(blink::WebInputEvent::Type::kChar,
                                          blink::WebInputEvent::kNoModifiers,
                                          ui::EventTimeForNow());
       char_event.windows_key_code = text[i];
       char_event.native_key_code = text[i];
 
-      const int32_t char_start = i;
-      for (; i < iterator.array_pos(); ++i) {
+      for (const size_t char_start = i; i < iterator.array_pos(); ++i) {
         char_event.text[i - char_start] = text[i];
         char_event.unmodified_text[i - char_start] = text[i];
       }

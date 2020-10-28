@@ -775,10 +775,10 @@ void InputMethodChromeOS::ExtractCompositionText(
   // use char16 offset for them. So we need to do conversion here.
   std::vector<size_t> char16_offsets;
   size_t length = out_composition->text.length();
-  base::i18n::UTF16CharIterator char_iterator(&out_composition->text);
-  do {
+  for (base::i18n::UTF16CharIterator char_iterator(out_composition->text);
+       !char_iterator.end(); char_iterator.Advance()) {
     char16_offsets.push_back(char_iterator.array_pos());
-  } while (char_iterator.Advance());
+  }
 
   // The text length in Unicode characters.
   auto char_length = static_cast<uint32_t>(char16_offsets.size());

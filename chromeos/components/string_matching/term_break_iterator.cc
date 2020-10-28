@@ -19,7 +19,7 @@ TermBreakIterator::TermBreakIterator(const base::string16& word)
     : word_(word),
       prev_(npos),
       pos_(0),
-      iter_(new base::i18n::UTF16CharIterator(&word)),
+      iter_(std::make_unique<base::i18n::UTF16CharIterator>(word)),
       state_(STATE_START) {}
 
 TermBreakIterator::~TermBreakIterator() = default;

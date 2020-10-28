@@ -83,8 +83,8 @@ void TokenizedStringCharIterator::CreateTokenCharIterator() {
     return;
   }
 
-  current_token_iter_.reset(
-      new base::i18n::UTF16CharIterator(&tokens_[current_token_]));
+  current_token_iter_ =
+      std::make_unique<base::i18n::UTF16CharIterator>(tokens_[current_token_]);
 }
 
 }  // namespace string_matching

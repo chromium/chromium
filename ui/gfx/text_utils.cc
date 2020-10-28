@@ -48,7 +48,7 @@ base::string16 RemoveAcceleratorChar(const base::string16& s,
   bool escaped = false;
   ptrdiff_t last_char_pos = -1;
   int last_char_span = 0;
-  UTF16CharIterator chars(&s);
+  UTF16CharIterator chars(s);
   base::string16 accelerator_removed;
 
   accelerator_removed.reserve(s.size());
@@ -82,7 +82,7 @@ base::string16 RemoveAcceleratorChar(const base::string16& s,
 size_t FindValidBoundaryBefore(const base::string16& text,
                                size_t index,
                                bool trim_whitespace) {
-  UTF16CharIterator it = UTF16CharIterator::LowerBound(&text, index);
+  UTF16CharIterator it = UTF16CharIterator::LowerBound(text, index);
 
   // First, move left until we're positioned on a code point that is not a
   // combining mark.
@@ -101,7 +101,7 @@ size_t FindValidBoundaryBefore(const base::string16& text,
 size_t FindValidBoundaryAfter(const base::string16& text,
                               size_t index,
                               bool trim_whitespace) {
-  UTF16CharIterator it = UTF16CharIterator::UpperBound(&text, index);
+  UTF16CharIterator it = UTF16CharIterator::UpperBound(text, index);
 
   // First, move right until we're positioned on a code point that is not a
   // combining mark.

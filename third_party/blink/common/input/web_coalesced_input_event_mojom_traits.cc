@@ -15,11 +15,11 @@ namespace mojo {
 namespace {
 
 void CopyString(base::char16* dst, const base::string16& text) {
-  base::i18n::UTF16CharIterator iter(&text);
   size_t pos = 0;
-  while (!iter.end() && pos < blink::WebKeyboardEvent::kTextLengthCap - 1) {
+  for (base::i18n::UTF16CharIterator iter(text);
+       !iter.end() && pos < blink::WebKeyboardEvent::kTextLengthCap - 1;
+       iter.Advance()) {
     dst[pos++] = iter.get();
-    iter.Advance();
   }
   dst[pos] = '\0';
 }

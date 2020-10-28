@@ -191,8 +191,7 @@ GraphemeProperties RetrieveGraphemeProperties(const base::StringPiece16& text,
                                               bool retrieve_block) {
   GraphemeProperties properties;
   bool first_char = true;
-  base::i18n::UTF16CharIterator iter(text.data(), text.length());
-  while (!iter.end()) {
+  for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
     const UChar32 codepoint = iter.get();
 
     if (first_char) {
@@ -209,8 +208,6 @@ GraphemeProperties RetrieveGraphemeProperties(const base::StringPiece16& text,
       properties.has_pictographic = true;
     if (IsEmojiRelatedCodepoint(codepoint))
       properties.has_emoji = true;
-
-    iter.Advance();
   }
 
   return properties;
@@ -311,7 +308,8 @@ size_t ScriptInterval(const base::string16& text,
 
   UScriptCode scripts[kMaxScripts] = { USCRIPT_INVALID_CODE };
 
-  base::i18n::UTF16CharIterator char_iterator(text.c_str() + start, length);
+  base::i18n::UTF16CharIterator char_iterator(
+      base::StringPiece16(text.c_str() + start, length));
   size_t scripts_size = GetScriptExtensions(char_iterator.get(), scripts);
   *script = scripts[0];
 
@@ -1954,8 +1952,8 @@ void RenderTextHarfBuzz::ItemizeTextToRuns(
     for (const auto& iter : *out_commonized_run_map) {
       const internal::TextRunHarfBuzz::FontParams& font_params = iter.first;
       for (const auto* run : iter.second) {
-        base::i18n::UTF16CharIterator text_iter(
-            text.c_str() + run->range.start(), run->range.length());
+        base::i18n::UTF16CharIterator text_iter(base::StringPiece16(
+            text.c_str() + run->range.start(), run->range.length()));
         const UChar32 first_char = text_iter.get();
         const UBlockCode first_block = ublock_getCode(first_char);
         const char* script_name = uscript_getShortName(font_params.script);
