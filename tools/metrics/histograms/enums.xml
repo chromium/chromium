@@ -65456,6 +65456,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="From omnibox"/>
 </enum>
 
+<enum name="SearchTemplateURLEvent">
+  <summary>
+    Events within the TemplateURL system we log, i.e. edge cases.
+  </summary>
+  <int value="0" label="SYNC_DELETE_SUCCESS"/>
+  <int value="1" label="SYNC_DELETE_FAIL_NONEXISTENT_ENGINE"/>
+  <int value="2" label="SYNC_DELETE_FAIL_DEFAULT_SEARCH_PROVIDER"/>
+</enum>
+
 <enum name="SearchWidgetUseInfo">
   <int value="0" label="defunct Present in partnership device"/>
   <int value="1" label="defunct Not present in partnership device"/>

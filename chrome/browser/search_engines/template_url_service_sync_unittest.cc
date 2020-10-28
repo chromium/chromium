@@ -1544,24 +1544,18 @@ TEST_F(TemplateURLServiceSyncTest, DefaultGuidDeletedBeforeNewDSPArrives) {
 
   // Simulate a situation where an ACTION_DELETE on the default arrives before
   // the new default search provider entry. This should fail to delete the
-  // target entry, and instead send up an "undelete" to the server, after
-  // further uniquifying the keyword to avoid infinite sync loops. The synced
-  // default GUID should not be changed so that when the expected default entry
-  // arrives, it can still be set as the default.
+  // target entry. The synced default GUID should not be changed so that when
+  // the expected default entry arrives, it can still be set as the default.
   syncer::SyncChangeList changes1;
   changes1.push_back(CreateTestSyncChange(syncer::SyncChange::ACTION_DELETE,
                                           std::move(turl1)));
-  ProcessAndExpectNotify(changes1, 1);
+  ProcessAndExpectNotify(changes1, 0);
 
-  EXPECT_TRUE(model()->GetTemplateURLForKeyword(ASCIIToUTF16("key1_")));
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(ASCIIToUTF16("key1")));
   EXPECT_EQ(2U, model()->GetAllSyncData(syncer::SEARCH_ENGINES).size());
   EXPECT_EQ("key1", model()->GetDefaultSearchProvider()->sync_guid());
   EXPECT_EQ("newdefault", profile_a()->GetTestingPrefService()->GetString(
       prefs::kSyncedDefaultSearchProviderGUID));
-  syncer::SyncChange undelete = processor()->change_for_guid("key1");
-  EXPECT_EQ(syncer::SyncChange::ACTION_ADD, undelete.change_type());
-  EXPECT_EQ("key1_",
-            undelete.sync_data().GetSpecifics().search_engine().keyword());
 
   // Finally, bring in the expected entry with the right GUID. Ensure that
   // the default has changed to the new search engine.

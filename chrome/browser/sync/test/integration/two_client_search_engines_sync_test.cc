@@ -358,19 +358,30 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
                                                             /*seed=*/2)
                   .Wait());
 
-  // In the receiving end (profile index 1), the deletion cannot be honored as
-  // is, so instead the keyword is changed for the default search engine by
-  // appending an underscore.
+  // In the receiving end (profile index 1), the deletion cannot be honored
+  // since it's the default search provider. Expect that it's preserved.
   EXPECT_TRUE(search_engines_helper::HasSearchEngineWithKeyword(
-      /*profile_index=*/1, ASCIIToUTF16("test0_")));
-  EXPECT_FALSE(search_engines_helper::HasSearchEngineWithKeyword(
       /*profile_index=*/1, ASCIIToUTF16("test0")));
   EXPECT_EQ(
       search_engines_helper::GetDefaultSearchEngineKeyword(/*profile_index=*/1),
-      ASCIIToUTF16("test0_"));
+      ASCIIToUTF16("test0"));
 
-  // The search engine with an underscore should sync back to profile index 0.
-  EXPECT_TRUE(search_engines_helper::HasSearchEngineChecker(
-                  /*profile_index=*/0, ASCIIToUTF16("test0_"))
+  // The search engine that cannot be deleted should not immediately sync back
+  // to profile index 0. Eventually, it likely will during reconciliation on
+  // sync startup, but not immediately. This is unfortunate, but less bad than
+  // sending an immediate undelete or creating an underscore duplicate.
+  // https://crbug.com/1022775
+  //
+  // To test this, we create yet another engine (seed 3) that we wait to be
+  // synced from profile index 1 to profile index 0. Then we verify that "test0"
+  // or "test0_" was not also synced back. (We used to create a duplicate
+  // underscored engine, so we verify we don't do that anymore.)
+  search_engines_helper::AddSearchEngine(/*profile_index=*/1, /*seed=*/3);
+  ASSERT_TRUE(search_engines_helper::HasSearchEngineChecker(/*profile_index=*/0,
+                                                            /*seed=*/3)
                   .Wait());
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineWithKeyword(
+      /*profile_index=*/0, ASCIIToUTF16("test0")));
+  EXPECT_FALSE(search_engines_helper::HasSearchEngineWithKeyword(
+      /*profile_index=*/0, ASCIIToUTF16("test0_")));
 }

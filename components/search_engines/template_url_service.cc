@@ -47,12 +47,24 @@ const char kDeleteSyncedEngineHistogramName[] =
     "Search.DeleteSyncedSearchEngine";
 
 // Values for an enumerated histogram used to track whenever an ACTION_DELETE is
-// sent to the server for search engines.
+// sent to the server for search engines. These are persisted. Do not re-number.
 enum DeleteSyncedSearchEngineEvent {
-  DELETE_ENGINE_USER_ACTION,
-  DELETE_ENGINE_PRE_SYNC,
-  DELETE_ENGINE_EMPTY_FIELD,
+  DELETE_ENGINE_USER_ACTION = 0,
+  DELETE_ENGINE_PRE_SYNC = 1,
+  DELETE_ENGINE_EMPTY_FIELD = 2,
   DELETE_ENGINE_MAX,
+};
+
+const char kSearchTemplateURLEventsHistogramName[] =
+    "Search.TemplateURL.Events";
+
+// Values for an enumerated histogram used to track TemplateURL edge cases.
+// These are persisted. Do not re-number.
+enum SearchTemplateURLEvent {
+  SYNC_DELETE_SUCCESS = 0,
+  SYNC_DELETE_FAIL_NONEXISTENT_ENGINE = 1,
+  SYNC_DELETE_FAIL_DEFAULT_SEARCH_PROVIDER = 2,
+  SEARCH_TEMPLATE_URL_EVENT_MAX,
 };
 
 // Returns true iff the change in |change_list| at index |i| should not be sent
@@ -1005,45 +1017,47 @@ base::Optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       continue;
     }
 
-    // Can't add an already-existing URL, or update/delete a non-existent one.
-    if ((iter->change_type() == syncer::SyncChange::ACTION_ADD)
-            ? !!existing_turl
-            : !existing_turl) {
-      error = sync_error_factory_->CreateAndUploadError(FROM_HERE, error_msg);
+    if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
+      if (!existing_turl) {
+        // Can't DELETE a non-existent engine, although we log it.
+        UMA_HISTOGRAM_ENUMERATION(kSearchTemplateURLEventsHistogramName,
+                                  SYNC_DELETE_FAIL_NONEXISTENT_ENGINE,
+                                  SEARCH_TEMPLATE_URL_EVENT_MAX);
+        error = sync_error_factory_->CreateAndUploadError(FROM_HERE, error_msg);
+        continue;
+      }
+
+      // We can get an ACTION_DELETE for the default search provider if the user
+      // has changed the default search provider on a different machine, and we
+      // get the search engine update before the preference update.
+      //
+      // In this case, ignore the delete, because we never want to reset the
+      // default search provider as a result of ACTION_DELETE. If the preference
+      // update arrives later, we may be stuck with an extra search engine entry
+      // in this edge case, but it's better than most alternatives.
+      //
+      // In the past, we tried re-creating the deleted TemplateURL, but it was
+      // likely a source of duplicate search engine entries. crbug.com/1022775
+      if (existing_turl != GetDefaultSearchProvider()) {
+        Remove(existing_turl);
+        UMA_HISTOGRAM_ENUMERATION(kSearchTemplateURLEventsHistogramName,
+                                  SYNC_DELETE_SUCCESS,
+                                  SEARCH_TEMPLATE_URL_EVENT_MAX);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kSearchTemplateURLEventsHistogramName,
+                                  SYNC_DELETE_FAIL_DEFAULT_SEARCH_PROVIDER,
+                                  SEARCH_TEMPLATE_URL_EVENT_MAX);
+      }
       continue;
     }
 
-    if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
-      if (existing_turl == GetDefaultSearchProvider()) {
-        // The only way Sync can attempt to delete the default search provider
-        // is if we had changed the kSyncedDefaultSearchProviderGUID
-        // preference, but perhaps it has not yet been received. To avoid
-        // situations where this has come in erroneously, we will un-delete
-        // the current default search from the Sync data. If the pref really
-        // does arrive later, then default search will change to the correct
-        // entry, but we'll have this extra entry sitting around. The result is
-        // not ideal, but it prevents a far more severe bug where the default is
-        // unexpectedly swapped to something else. The user can safely delete
-        // the extra entry again later, if they choose. Most users who do not
-        // look at the search engines UI will not notice this.
-        // Note that we append a special character to the end of the keyword in
-        // an attempt to avoid a ping-poinging situation where receiving clients
-        // may try to continually delete the resurrected entry.
-        base::string16 updated_keyword = UniquifyKeyword(*existing_turl, true);
-        TemplateURLData data(existing_turl->data());
-        data.SetKeyword(updated_keyword);
-        TemplateURL new_turl(data);
-        Update(existing_turl, new_turl);
-
-        syncer::SyncData sync_data = CreateSyncDataFromTemplateURL(new_turl);
-        new_changes.push_back(syncer::SyncChange(FROM_HERE,
-                                                 syncer::SyncChange::ACTION_ADD,
-                                                 sync_data));
-        // Ignore the delete attempt. This means we never end up resetting the
-        // default search provider due to an ACTION_DELETE from sync.
-      } else {
-        Remove(existing_turl);
-      }
+    if ((iter->change_type() == syncer::SyncChange::ACTION_ADD &&
+         existing_turl) ||
+        (iter->change_type() == syncer::SyncChange::ACTION_UPDATE &&
+         !existing_turl)) {
+      // Can't ADD an already-existing engine, and can't UPDATE a non-existent
+      // engine. Early exit here to avoid ResolvingSyncKeywordConflict().
+      error = sync_error_factory_->CreateAndUploadError(FROM_HERE, error_msg);
       continue;
     }
 

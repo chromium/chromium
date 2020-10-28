@@ -1436,6 +1436,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Search.TemplateURL.Events" enum="SearchTemplateURLEvent"
+    expires_after="2021-10-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records when TemplateURL encounters specific events, particularly during
+    Sync or startup. There's a bunch of edge cases being handled by complicated
+    code within TemplateURLService, and we'd like to learn how often they
+    actually occur in the wild.
+  </summary>
+</histogram>
+
 <histogram name="SearchAnswer.AnswerVisibleTime" units="ms"
     expires_after="2021-09-01">
   <owner>mmourgos@chromium.org</owner>
