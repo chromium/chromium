@@ -1818,7 +1818,7 @@
   {
     "name": "enable-nacl",
     "owners": [ "dschuff", "native-client-dev@googlegroups.com" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 100
   },
   {
     "name": "enable-native-context-menus",
