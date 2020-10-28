@@ -125,7 +125,7 @@ void RecordFeatureUsage(content::RenderFrameHost* rfh,
 std::string GetHeavyAdReportMessage(const FrameTreeData& frame_data,
                                     bool will_unload_adframe) {
   const char kChromeStatusMessage[] =
-      "See https://www.chromestatus.com/feature/4800491902992384";
+      "See https://www.chromestatus.com/feature/4800491902992384?utm_source=devtools";
   const char kReportingOnlyMessage[] =
       "A future version of Chrome may remove this ad";
   const char kInterventionMessage[] = "Ad was removed";

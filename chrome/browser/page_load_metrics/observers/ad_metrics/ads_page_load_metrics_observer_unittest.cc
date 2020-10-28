@@ -2111,7 +2111,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
 
   const char kInterventionMessage[] =
       "Ad was removed because its network usage exceeded the limit. "
-      "See https://www.chromestatus.com/feature/4800491902992384";
+      "See https://www.chromestatus.com/feature/4800491902992384?utm_source=devtools";
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   EXPECT_EQ(kInterventionMessage, PopLastInterventionReportMessage());
 
@@ -2345,7 +2345,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   const char kReportOnlyMessage[] =
       "Ad was removed because its "
       "total CPU usage exceeded the limit. "
-      "See https://www.chromestatus.com/feature/4800491902992384";
+      "See https://www.chromestatus.com/feature/4800491902992384?utm_source=devtools";
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.InterventionType2"),
@@ -2826,7 +2826,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   const char kReportOnlyMessage[] =
       "A future version of Chrome may remove this ad because its network "
       "usage exceeded the limit. "
-      "See https://www.chromestatus.com/feature/4800491902992384";
+      "See https://www.chromestatus.com/feature/4800491902992384?utm_source=devtools";
 
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   EXPECT_EQ(kReportOnlyMessage, PopLastInterventionReportMessage());
