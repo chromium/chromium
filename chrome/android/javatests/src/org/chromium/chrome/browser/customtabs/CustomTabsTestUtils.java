@@ -279,4 +279,13 @@ public class CustomTabsTestUtils {
         return Bitmap.createBitmap(
                 (int) (widthDp * density), (int) (heightDp * density), Bitmap.Config.ARGB_8888);
     }
+
+    /**
+     * Sets the {@link CustomTabsIntent.ShareState} of the custom tab.
+     * @param intent The intent to modify.
+     * @param shareState The {@link CustomTabsIntent.ShareState} being set.
+     */
+    public static void setShareState(Intent intent, int shareState) {
+        intent.putExtra(CustomTabsIntent.EXTRA_SHARE_STATE, shareState);
+    }
 }

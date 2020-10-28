@@ -862,6 +862,10 @@
         android:exported="false"
         android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver">
     </receiver>  # DIFF-ANCHOR: a31e6ce5
+    <receiver  # DIFF-ANCHOR: 779ee86b
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.customtabs.CustomTabsShareBroadcastReceiver">
+    </receiver>  # DIFF-ANCHOR: 779ee86b
     <receiver  # DIFF-ANCHOR: bccc7d87
         android:exported="false"
         android:name="org.chromium.chrome.browser.locale.LocaleChangedBroadcastReceiver">
