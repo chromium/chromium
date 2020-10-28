@@ -130,7 +130,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 
  private:
   // SandboxHelper:
-  void PreSandboxStartup() override {
+  void PreSandboxStartup(const gpu::GpuPreferences& gpu_prefs) override {
     // Warm up resources that don't need access to GPUInfo.
     {
       TRACE_EVENT0("gpu", "Warm up rand");
@@ -144,8 +144,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #if BUILDFLAG(IS_ASH)
     media::VaapiWrapper::PreSandboxInitialization();
 #else  // For any non-ash chrome (ie: linux or lacros) that can support vaapi.
-    const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-    if (cmd_line->HasSwitch(switches::kEnableAcceleratedVideoDecode))
+    if (!gpu_prefs.disable_accelerated_video_decode)
       media::VaapiWrapper::PreSandboxInitialization();
 #endif
 #endif  // BUILDFLAG(USE_VAAPI)

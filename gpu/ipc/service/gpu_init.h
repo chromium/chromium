@@ -32,7 +32,7 @@ class GPU_IPC_SERVICE_EXPORT GpuSandboxHelper {
  public:
   virtual ~GpuSandboxHelper() = default;
 
-  virtual void PreSandboxStartup() = 0;
+  virtual void PreSandboxStartup(const GpuPreferences& gpu_prefs) = 0;
 
   virtual bool EnsureSandboxInitialized(GpuWatchdogThread* watchdog_thread,
                                         const GPUInfo* gpu_info,

@@ -264,14 +264,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gpu_preferences_.gpu_sandbox_start_early) {
     // The sandbox will be started earlier than usual (i.e. before GL) so
     // execute the pre-sandbox steps now.
-    sandbox_helper_->PreSandboxStartup();
+    sandbox_helper_->PreSandboxStartup(gpu_preferences);
   }
 #else
   // For some reasons MacOSX's VideoToolbox might crash when called after
   // initializing GL, see crbug.com/1047643 and crbug.com/871280. On other
   // operating systems like Windows and Android the pre-sandbox steps have
   // always been executed before initializing GL so keep it this way.
-  sandbox_helper_->PreSandboxStartup();
+  sandbox_helper_->PreSandboxStartup(gpu_preferences);
 #endif
 
   // Start the GPU watchdog only after anything that is expected to be time
@@ -379,7 +379,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       watchdog_thread_->PauseWatchdog();
 
     // The sandbox is not started yet.
-    sandbox_helper_->PreSandboxStartup();
+    sandbox_helper_->PreSandboxStartup(gpu_preferences);
 
     if (watchdog_thread_)
       watchdog_thread_->ResumeWatchdog();
