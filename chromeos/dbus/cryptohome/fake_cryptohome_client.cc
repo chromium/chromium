@@ -332,15 +332,6 @@ bool FakeCryptohomeClient::InstallAttributesIsFirstInstall(
   return true;
 }
 
-void FakeCryptohomeClient::TpmAttestationIsEnrolled(
-    DBusMethodCallback<bool> callback) {
-  auto result = service_is_available_
-                    ? base::make_optional(tpm_attestation_is_enrolled_)
-                    : base::nullopt;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
-}
-
 void FakeCryptohomeClient::AsyncTpmAttestationCreateEnrollRequest(
     chromeos::attestation::PrivacyCAType pca_type,
     AsyncMethodCallback callback) {

@@ -99,7 +99,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   void InstallAttributesIsReady(DBusMethodCallback<bool> callback) override;
   bool InstallAttributesIsInvalid(bool* is_invalid) override;
   bool InstallAttributesIsFirstInstall(bool* is_first_install) override;
-  void TpmAttestationIsEnrolled(DBusMethodCallback<bool> callback) override;
   void AsyncTpmAttestationCreateEnrollRequest(
       chromeos::attestation::PrivacyCAType pca_type,
       AsyncMethodCallback callback) override;
@@ -289,10 +288,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
     cryptohome_error_ = error;
   }
 
-  void set_tpm_attestation_is_enrolled(bool enrolled) {
-    tpm_attestation_is_enrolled_ = enrolled;
-  }
-
   void set_tpm_attestation_does_key_exist_should_succeed(bool should_succeed) {
     tpm_attestation_does_key_exist_should_succeed_ = should_succeed;
   }
@@ -450,7 +445,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
 
   bool needs_dircrypto_migration_ = false;
   bool run_default_dircrypto_migration_ = true;
-  bool tpm_attestation_is_enrolled_ = true;
   bool tpm_attestation_does_key_exist_should_succeed_ = true;
   bool supports_low_entropy_credentials_ = false;
   // Controls if CheckKeyEx actually checks the key.

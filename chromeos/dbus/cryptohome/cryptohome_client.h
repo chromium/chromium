@@ -316,10 +316,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // succeeds. This method blocks until the call returns.
   virtual bool InstallAttributesIsFirstInstall(bool* is_first_install) = 0;
 
-  // Calls the TpmAttestationIsEnrolled dbus method.  The callback is called
-  // when the operation completes.
-  virtual void TpmAttestationIsEnrolled(DBusMethodCallback<bool> callback) = 0;
-
   // Asynchronously creates an attestation enrollment request.  The callback
   // will be called when the dbus call completes.  When the operation completes,
   // the AsyncCallStatusWithDataHandler signal handler is called.  The data that
