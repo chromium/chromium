@@ -14,43 +14,26 @@ crbug.com/901056 virtual/omt-worker-fetch/external/wpt/service-workers/service-w
 #
 # Timeouts
 #
-### fast/css/
-crbug.com/901056 fast/css/fontface-arraybuffer.html [ Timeout ]
-
+# These timeouts are generally because of prefetching errors.
 ### http/tests/loading/sxg/
-crbug.com/901056 http/tests/loading/sxg/sxg-subresource-origin-trial.https.html [ Timeout ]
-
-### http/tests/perf/
-crbug.com/24182 http/tests/perf/large-inlined-script.html [ Timeout ]
+crbug.com/901056 http/tests/loading/sxg/sxg-subresource-origin-trial.https.html [ Timeout Failure ]
 
 ### http/tests/preload/
 crbug.com/901056 http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Timeout ]
 
-### scrollingcoordinator/
-crbug.com/901056 scrollingcoordinator/donot-compute-non-fast-scrollable-region-for-hidden-frames.html [ Timeout Pass ]
+### http/tests/inspector-protocol/issues/
+crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout ]
 
-### virtual/composite-after-paint/scrollingcoordinator/
-crbug.com/901056 virtual/composite-after-paint/scrollingcoordinator/donot-compute-non-fast-scrollable-region-for-hidden-frames.html [ Timeout ]
+### virtual/gpu/fast/canvas/
+crbug.com/901056 virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Timeout ]
 
 ### external/wpt/signed-exchange/subresource/
 crbug.com/901056 external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Timeout ]
 
-### http/tests/devtools/sources/debugger/
-crbug.com/1063051 http/tests/devtools/sources/debugger/debug-inlined-scripts-fragment-id.js [ Timeout ]
-crbug.com/1019613 crbug.com/1063051 http/tests/devtools/sources/debugger/debug-inlined-scripts.js [ Failure Pass Timeout ]
-
-### http/tests/devtools/sources/debugger-breakpoints/
-crbug.com/1063051 http/tests/devtools/sources/debugger-breakpoints/breakpoints-ui-navigation.js [ Timeout ]
-crbug.com/1063051 http/tests/devtools/sources/debugger-breakpoints/provisional-breakpoints.js [ Timeout ]
-
 ### http/tests/inspector-protocol/issues/
 crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-css.js [ Timeout ]
 crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-iframe.js [ Timeout ]
-crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js-within-oopif.js [ Timeout ]
 crbug.com/901056 http/tests/inspector-protocol/issues/mixed-content-issue-creation-js.js [ Timeout ]
-
-### virtual/gpu/fast/canvas/
-crbug.com/901056 virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Timeout ]
 
 #
 # Harness failures
@@ -60,12 +43,16 @@ crbug.com/901056 virtual/gpu/fast/canvas/canvas-drawImage-live-video.html [ Time
 crbug.com/901056 external/wpt/preload/link-header-preload-imagesrcset.html [ Failure ]
 
 ### http/tests/preload/
+# This one happens because HTMLPreloadSanner discards all scanned preloads whenever it sees a <meta> CSP token.
 crbug.com/901056 http/tests/preload/meta-csp.html [ Failure ]
 
 ### media/
+# This one happens because document->GetSettings()->GetViewportMetaEnabled() returns false. It's not clear
+# why this is: layout tests always pass the --enable-viewport flag.
 crbug.com/901056 media/media-controls-overflow-hidden.html [ Failure ]
 
 ### media/controls/
+# Similar viewport-related error to above
 crbug.com/901056 media/controls/rotated-video-has-right-panel-width.html [ Failure ]
 
 ### virtual/omt-worker-fetch/external/wpt/resource-timing/
@@ -111,7 +98,7 @@ crbug.com/901056 http/tests/misc/image-blocked-src-change.html [ Failure ]
 crbug.com/901056 http/tests/misc/image-blocked-src-no-change.html [ Failure ]
 
 ### http/tests/security/contentSecurityPolicy/nonces/
-# Script is no longer preloaded (investigation needed).
+# Script is no longer preloaded. Same underlying cause as meta-csp.
 crbug.com/901056 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
 
 ### paint/invalidation/overflow/
@@ -123,7 +110,7 @@ crbug.com/901056 paint/invalidation/overflow/resize-child-within-overflow.html [
 crbug.com/901056 tables/mozilla_expected_failures/bugs/bug128876.html [ Failure ]
 
 ### virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/
-# Tests fail due to preloading issues (investigation needed).
+# WontFix (AppCache will be removed at some point.)
 crbug.com/901056 virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/appcache-loads-subresource.html [ Failure ]
 crbug.com/901056 virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/preload-does-not-jump-the-queue.html [ Failure ]
 

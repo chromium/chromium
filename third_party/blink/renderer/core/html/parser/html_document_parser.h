@@ -199,13 +199,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void PumpTokenizerIfPossible();
   void DeferredPumpTokenizerIfPossible();
   void SchedulePumpTokenizer();
+  void ScheduleEndIfDelayed();
   void ConstructTreeFromHTMLToken();
   void ConstructTreeFromCompactHTMLToken(const CompactHTMLToken&);
-
-  // ScheduleEndIfDelayed creates a series of asynchronous, budgeted
-  // DeferredPumpTokenizerIfPossible calls, followed by EndIfDelayed when
-  // everything's parsed.
-  void ScheduleEndIfDelayed();
 
   void RunScriptsForPausedTreeBuilder();
   void ResumeParsingAfterPause();

@@ -164,12 +164,17 @@
   },
   {
     "prefix": "synchronous_html_parser",
-    "bases": ["fast/parser",
+    "bases": ["fast/css",
+              "fast/parser",
+              "http/tests/devtools/sources/debugger-breakpoints",
+              "http/tests/inspector-protocol",
               "http/tests/preload",
               "external/wpt/custom-elements/parser",
               "external/wpt/domparsing",
               "external/wpt/html/syntax/parsing",
-              "external/wpt/html/the-xhtml-syntax"],
+              "external/wpt/html/the-xhtml-syntax",
+              "external/wpt/signed-exchange",
+              "scrollingcoordinator"],
     "args": ["--enable-blink-features=ForceSynchronousHTMLParsing"]
   },
   {
