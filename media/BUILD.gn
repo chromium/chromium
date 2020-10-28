@@ -123,6 +123,13 @@ component("media") {
   if (is_apple) {
     public_deps += [ "//media/base/mac" ]
   }
+
+  if (use_x11) {
+    deps += [ "//ui/base/x" ]
+  }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 # Note: This can't be a static_library since it does not have any sources.

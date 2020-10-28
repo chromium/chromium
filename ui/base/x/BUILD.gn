@@ -42,6 +42,8 @@ component("x") {
     "x11_topmost_window_finder.h",
     "x11_ui_thread.cc",
     "x11_ui_thread.h",
+    "x11_user_input_monitor.cc",
+    "x11_user_input_monitor.h",
     "x11_util.cc",
     "x11_util.h",
     "x11_whole_screen_move_loop.cc",

@@ -255,6 +255,11 @@ component("events") {
     ]
   }
 
+  if (is_linux || is_chromeos || is_win) {
+    public += [ "keyboard_event_counter.h" ]
+    sources += [ "keyboard_event_counter.cc" ]
+  }
+
   defines = [ "EVENTS_IMPLEMENTATION" ]
 
   public_deps = [
@@ -578,6 +583,9 @@ if (!is_ios) {
         "win/media_keyboard_hook_win_unittest.cc",
         "win/modifier_keyboard_hook_win_unittest.cc",
       ]
+    }
+    if (is_linux || is_chromeos || is_win) {
+      sources += [ "keyboard_event_counter_unittest.cc" ]
     }
 
     deps = [

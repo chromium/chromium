@@ -30,6 +30,8 @@ source_set("x11") {
     "x11_screen_ozone.h",
     "x11_surface_factory.cc",
     "x11_surface_factory.h",
+    "x11_user_input_monitor.cc",
+    "x11_user_input_monitor.h",
   ]
 
   deps = [

@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -31,6 +32,7 @@ class PlatformClipboard;
 class PlatformGLEGLUtility;
 class PlatformMenuUtils;
 class PlatformScreen;
+class PlatformUserInputMonitor;
 class SurfaceFactoryOzone;
 class SystemInputInjector;
 
@@ -231,6 +233,13 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // implementations to ignore sandboxing and any associated launch ordering
   // issues.
   virtual void AfterSandboxEntry();
+
+  // Creates a user input monitor.
+  // The user input comes from I/O devices and must be handled on the IO thread.
+  // |io_task_runner| must be bound to the IO thread so the implementation could
+  // ensure that calls happen on the right thread.
+  virtual std::unique_ptr<PlatformUserInputMonitor> GetPlatformUserInputMonitor(
+      const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
 
  protected:
   bool has_initialized_ui() const { return initialized_ui_; }

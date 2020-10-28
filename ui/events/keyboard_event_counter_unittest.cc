@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/keyboard_event_counter.h"
+#include "ui/events/keyboard_event_counter.h"
 
 #include <memory>
 
@@ -10,9 +10,8 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkPoint.h"
 
-namespace media {
+namespace ui {
 
 TEST(KeyboardEventCounterTest, KeyPressCounter) {
   KeyboardEventCounter counter;
@@ -35,4 +34,4 @@ TEST(KeyboardEventCounterTest, KeyPressCounter) {
   EXPECT_EQ(2u, counter.GetKeyPressCount());
 }
 
-}  // namespace media
+}  // namespace ui

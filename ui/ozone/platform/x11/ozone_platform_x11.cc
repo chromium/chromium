@@ -32,6 +32,7 @@
 #include "ui/ozone/platform/x11/x11_menu_utils.h"
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
+#include "ui/ozone/platform/x11/x11_user_input_monitor.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -235,6 +236,12 @@ class OzonePlatformX11 : public OzonePlatform,
     // main message loop has started. This will allow us to exit cleanly
     // if X exits before we do.
     x11::Connection::Get()->SetIOErrorHandler(std::move(shutdown_cb));
+  }
+
+  std::unique_ptr<PlatformUserInputMonitor> GetPlatformUserInputMonitor(
+      const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
+      override {
+    return std::make_unique<X11UserInputMonitor>(std::move(io_task_runner));
   }
 
  private:

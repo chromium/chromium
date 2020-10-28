@@ -23,6 +23,7 @@ include_rules = [
   "+third_party/opus",
   "+third_party/skia",
   "+ui/base/ui_base_features.h",
+  "+ui/base/x/x11_user_input_monitor.h",
   "+ui/display",
   "+ui/events",
   "+ui/gfx",

@@ -17,9 +17,21 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"  // nogncheck
+#endif
+
 namespace media {
 
 TEST(UserInputMonitorTest, CreatePlatformSpecific) {
+#if defined(USE_OZONE)
+  // TODO(crbug.com/1109112): enable those tests for Ozone.
+  // Here, the only issue why they don't work is that the Ozone platform is not
+  // initialised.
+  if (features::IsUsingOzonePlatform())
+    return;
+#endif
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
@@ -42,6 +54,14 @@ TEST(UserInputMonitorTest, CreatePlatformSpecific) {
 }
 
 TEST(UserInputMonitorTest, CreatePlatformSpecificWithMapping) {
+#if defined(USE_OZONE)
+  // TODO(crbug.com/1109112): enable those tests for Ozone.
+  // Here, the only issue why they don't work is that the Ozone platform is not
+  // initialised.
+  if (features::IsUsingOzonePlatform())
+    return;
+#endif
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);

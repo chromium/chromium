@@ -17,8 +17,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/win/message_window.h"
-#include "media/base/keyboard_event_counter.h"
 #include "third_party/skia/include/core/SkPoint.h"
+#include "ui/events/keyboard_event_counter.h"
 #include "ui/events/keycodes/keyboard_code_conversion_win.h"
 
 namespace media {
@@ -77,7 +77,7 @@ class UserInputMonitorWinCore
 
   // These members are only accessed on the UI thread.
   std::unique_ptr<base::win::MessageWindow> window_;
-  KeyboardEventCounter counter_;
+  ui::KeyboardEventCounter counter_;
 
   DISALLOW_COPY_AND_ASSIGN(UserInputMonitorWinCore);
 };
