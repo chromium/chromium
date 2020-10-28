@@ -27,6 +27,9 @@ class ReadingListManagerImpl : public ReadingListManager,
  private:
   // ReadingListModelObserver overrides.
   void ReadingListModelLoaded(const ReadingListModel* model) override;
+  void ReadingListDidAddEntry(const ReadingListModel* model,
+                              const GURL& url,
+                              reading_list::EntrySource source) override;
 
   // ReadingListManager implementation.
   void AddObserver(Observer* observer) override;

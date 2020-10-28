@@ -197,4 +197,16 @@ TEST_F(ReadingListManagerImplTest, ReadStatus) {
   EXPECT_FALSE(manager()->GetReadStatus(manager()->GetRoot()));
 }
 
+// Verifies ReadingListDidAddEntry() API that is being called after
+// ReadingListModel::AddEntry() is called.
+TEST_F(ReadingListManagerImplTest, ReadingListDidAddEntry) {
+  GURL url(kURL);
+  reading_list_model()->AddEntry(url, kTitle, reading_list::ADDED_VIA_SYNC);
+
+  const auto* node = manager()->Get(url);
+  EXPECT_TRUE(node);
+  EXPECT_EQ(url, node->url());
+  EXPECT_EQ(1u, manager()->size());
+}
+
 }  // namespace
