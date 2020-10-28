@@ -78,6 +78,7 @@
       "scripts": [
         "chrome://resources/js/cr.js",
         "chrome://resources/js/cr/event_target.js",
+        "chrome://resources/js/assert.js",
         "chrome://resources/js/cr/ui/array_data_model.js",
         "chrome://resources/js/load_time_data.js",
         "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background_common_scripts.js",
