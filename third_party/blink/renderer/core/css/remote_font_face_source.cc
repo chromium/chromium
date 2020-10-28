@@ -31,7 +31,7 @@
 namespace blink {
 
 bool RemoteFontFaceSource::NeedsInterventionToAlignWithLCPGoal() const {
-  DCHECK_EQ(display_, kFontDisplayAuto);
+  DCHECK_EQ(display_, FontDisplay::kAuto);
   if (!base::FeatureList::IsEnabled(
           features::kAlignFontDisplayAutoTimeoutWithLCPGoal)) {
     return false;
@@ -51,7 +51,7 @@ bool RemoteFontFaceSource::NeedsInterventionToAlignWithLCPGoal() const {
 
 RemoteFontFaceSource::DisplayPeriod
 RemoteFontFaceSource::ComputeFontDisplayAutoPeriod() const {
-  DCHECK_EQ(display_, kFontDisplayAuto);
+  DCHECK_EQ(display_, FontDisplay::kAuto);
   if (NeedsInterventionToAlignWithLCPGoal()) {
     using Mode = features::AlignFontDisplayAutoTimeoutWithLCPGoalMode;
     Mode mode =
@@ -79,9 +79,9 @@ RemoteFontFaceSource::ComputeFontDisplayAutoPeriod() const {
 RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
     const {
   switch (display_) {
-    case kFontDisplayAuto:
+    case FontDisplay::kAuto:
       return ComputeFontDisplayAutoPeriod();
-    case kFontDisplayBlock:
+    case FontDisplay::kBlock:
       switch (phase_) {
         case kNoLimitExceeded:
         case kShortLimitExceeded:
@@ -90,10 +90,10 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
           return kSwapPeriod;
       }
 
-    case kFontDisplaySwap:
+    case FontDisplay::kSwap:
       return kSwapPeriod;
 
-    case kFontDisplayFallback:
+    case FontDisplay::kFallback:
       switch (phase_) {
         case kNoLimitExceeded:
           return kBlockPeriod;
@@ -103,7 +103,7 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
           return kFailurePeriod;
       }
 
-    case kFontDisplayOptional: {
+    case FontDisplay::kOptional: {
       const bool use_phase_value =
           !base::FeatureList::IsEnabled(
               features::kFontPreloadingDelaysRendering) ||
@@ -132,9 +132,6 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
 
       return kSwapPeriod;
     }
-    case kFontDisplayEnumMax:
-      NOTREACHED();
-      break;
   }
   NOTREACHED();
   return kSwapPeriod;
@@ -295,11 +292,11 @@ FontDisplay RemoteFontFaceSource::GetFontDisplayWithDocumentPolicyCheck(
     const FontSelector* font_selector,
     ReportOptions report_option) const {
   ExecutionContext* context = font_selector->GetExecutionContext();
-  if (display != kFontDisplayFallback && display != kFontDisplayOptional &&
+  if (display != FontDisplay::kFallback && display != FontDisplay::kOptional &&
       context && context->IsWindow() &&
       !context->IsFeatureEnabled(
           mojom::blink::DocumentPolicyFeature::kFontDisplay, report_option)) {
-    return kFontDisplayOptional;
+    return FontDisplay::kOptional;
   }
   return display;
 }
@@ -315,7 +312,7 @@ bool RemoteFontFaceSource::ShouldTriggerWebFontsIntervention() {
       WebEffectiveConnectionType::kTypeOffline <= connection_type &&
       connection_type <= WebEffectiveConnectionType::kType3G;
 
-  return network_is_slow && display_ == kFontDisplayAuto;
+  return network_is_slow && display_ == FontDisplay::kAuto;
 }
 
 bool RemoteFontFaceSource::IsLowPriorityLoadingAllowedForRemoteFont() const {

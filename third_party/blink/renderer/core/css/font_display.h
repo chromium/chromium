@@ -9,13 +9,15 @@ namespace blink {
 
 class CSSValue;
 
-enum FontDisplay {
-  kFontDisplayAuto,
-  kFontDisplayBlock,
-  kFontDisplaySwap,
-  kFontDisplayFallback,
-  kFontDisplayOptional,
-  kFontDisplayEnumMax,
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FontDisplay {
+  kAuto,
+  kBlock,
+  kSwap,
+  kFallback,
+  kOptional,
+  kMaxValue = kOptional,
 };
 
 FontDisplay CSSValueToFontDisplay(const CSSValue*);
