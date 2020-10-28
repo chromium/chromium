@@ -9,7 +9,10 @@ import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js
 /**
  * The methods to expose to the hosted content via the PostMessageAPI.
  */
-const METHOD_LIST = ['consentValid', 'consentLogged', 'requestClose', 'error'];
+const METHOD_LIST = [
+  'consentValid', 'consentLogged', 'requestClose', 'saveGuestFlowState',
+  'fetchGuestFlowState', 'error'
+];
 
 
 /**
@@ -89,6 +92,15 @@ export class EduCoexistenceController extends PostMessageAPIServer {
         {urls: ['<all_urls>']}, ['blocking', 'requestHeaders']);
 
     /**
+     * The state of the guest content, saved as requested by
+     * the guest content to ensure that its state outlives content
+     * reload events, which destroy the state of the guest content.
+     * The value itself is opaque encoded binary data.
+     * @private {?Uint8Array}
+     */
+    this.guestFlowState_ = null;
+
+    /**
      * The auth extension host instance.
      * @private {Authenticator}
      */
@@ -125,6 +137,10 @@ export class EduCoexistenceController extends PostMessageAPIServer {
     this.registerMethod('consentLogged', this.consentLogged_.bind(this));
     this.registerMethod('requestClose', this.requestClose_.bind(this));
     this.registerMethod('reportError', this.reportError_.bind(this));
+    this.registerMethod(
+        'saveGuestFlowState', this.saveGuestFlowState_.bind(this));
+    this.registerMethod(
+        'fetchGuestFlowState', this.fetchGuestFlowState_.bind(this));
 
     // Add listeners for Authenticator.
     this.addAuthExtHostListeners_();
@@ -219,6 +235,24 @@ export class EduCoexistenceController extends PostMessageAPIServer {
    */
   requestClose_() {
     this.browserProxy_.dialogClose();
+  }
+
+  /*
+   * @private
+   * @param {!Array<Uint8Array>} An array that contains guest flow state in its
+   *    first element.
+   */
+  saveGuestFlowState_(guestFlowState) {
+    this.guestFlowState_ = guestFlowState[0];
+  }
+
+  /**
+   * @param {!Array} unused Placeholder unused empty parameter.
+   * @return {?Object}  The guest flow state previously saved
+   *     using saveGuestFlowState().
+   */
+  fetchGuestFlowState_(unused) {
+    return {'state': this.guestFlowState_};
   }
 
   /**
