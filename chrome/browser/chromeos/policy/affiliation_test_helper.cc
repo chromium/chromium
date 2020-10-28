@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"

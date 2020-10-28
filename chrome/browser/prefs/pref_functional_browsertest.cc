@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"

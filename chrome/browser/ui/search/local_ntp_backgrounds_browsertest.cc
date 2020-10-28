@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/files/file_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"

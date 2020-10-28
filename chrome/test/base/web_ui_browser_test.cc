@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
