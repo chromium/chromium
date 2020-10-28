@@ -6,8 +6,10 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/composition_text.h"
@@ -28,8 +30,16 @@
 namespace ui {
 namespace {
 
-size_t OffsetFromUTF8Offset(const base::StringPiece& text, uint32_t offset) {
-  return base::UTF8ToUTF16(text.substr(0, offset)).size();
+base::Optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
+                                            uint32_t offset) {
+  if (offset > text.length())
+    return base::nullopt;
+
+  base::string16 converted;
+  if (!base::UTF8ToUTF16(text.data(), offset, &converted))
+    return base::nullopt;
+
+  return converted.size();
 }
 
 }  // namespace
@@ -132,18 +142,67 @@ void WaylandInputMethodContext::SetSurroundingText(
     text_input_->SetSurroundingText(text, selection_range);
 }
 
-void WaylandInputMethodContext::OnPreeditString(const std::string& text,
-                                                int32_t preedit_cursor) {
+void WaylandInputMethodContext::OnPreeditString(
+    base::StringPiece text,
+    const std::vector<SpanStyle>& spans,
+    int32_t preedit_cursor) {
   ui::CompositionText composition_text;
   composition_text.text = base::UTF8ToUTF16(text);
-  composition_text.selection =
-      (preedit_cursor >= 0) ? gfx::Range(OffsetFromUTF8Offset(
-                                  text, static_cast<uint32_t>(preedit_cursor)))
-                            : gfx::Range::InvalidRange();
+  for (const auto& span : spans) {
+    ImeTextSpan text_span;
+    auto start_offset = OffsetFromUTF8Offset(text, span.index);
+    if (!start_offset)
+      continue;
+    text_span.start_offset = *start_offset;
+    auto end_offset = OffsetFromUTF8Offset(text, span.index + span.length);
+    if (!end_offset)
+      continue;
+    text_span.end_offset = *end_offset;
+    bool supported = true;
+    switch (span.style) {
+      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_DEFAULT:
+        break;
+      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_HIGHLIGHT:
+        text_span.thickness = ImeTextSpan::Thickness::kThick;
+        break;
+      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_UNDERLINE:
+        text_span.thickness = ImeTextSpan::Thickness::kThin;
+        break;
+      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_SELECTION:
+        text_span.type = ImeTextSpan::Type::kSuggestion;
+        break;
+      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT:
+        text_span.type = ImeTextSpan::Type::kMisspellingSuggestion;
+        break;
+      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_NONE:
+      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_ACTIVE:
+      case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INACTIVE:
+      default:
+        VLOG(1) << "Unsupported style. Skipped: " << span.style;
+        supported = false;
+        break;
+    }
+    if (!supported)
+      continue;
+    composition_text.ime_text_spans.push_back(std::move(text_span));
+  }
+
+  if (preedit_cursor < 0) {
+    composition_text.selection = gfx::Range::InvalidRange();
+  } else {
+    auto cursor =
+        OffsetFromUTF8Offset(text, static_cast<uint32_t>(preedit_cursor));
+    if (!cursor) {
+      // Invalid cursor position. Do nothing.
+      return;
+    }
+    composition_text.selection = gfx::Range(*cursor);
+  }
+
   ime_delegate_->OnPreeditChanged(composition_text);
 }
 
-void WaylandInputMethodContext::OnCommitString(const std::string& text) {
+void WaylandInputMethodContext::OnCommitString(base::StringPiece text) {
   ime_delegate_->OnCommit(base::UTF8ToUTF16(text));
 }
 

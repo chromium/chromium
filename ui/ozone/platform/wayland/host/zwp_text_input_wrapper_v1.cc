@@ -4,6 +4,9 @@
 
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 
+#include <string>
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,7 +36,6 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
       &ZWPTextInputWrapperV1::OnLanguage,       // text_input_language,
       &ZWPTextInputWrapperV1::OnTextDirection,  // text_input_text_direction
   };
-  ResetInputEventState();
 
   zwp_text_input_v1* text_input =
       zwp_text_input_manager_v1_create_text_input(text_input_manager);
@@ -87,6 +89,7 @@ void ZWPTextInputWrapperV1::SetSurroundingText(
 }
 
 void ZWPTextInputWrapperV1::ResetInputEventState() {
+  spans_.clear();
   preedit_cursor_ = -1;
 }
 
@@ -121,9 +124,10 @@ void ZWPTextInputWrapperV1::OnPreeditString(
     const char* text,
     const char* commit) {
   ZWPTextInputWrapperV1* wti = static_cast<ZWPTextInputWrapperV1*>(data);
+  auto spans = std::move(wti->spans_);
   int32_t preedit_cursor = wti->preedit_cursor_;
   wti->ResetInputEventState();
-  wti->client_->OnPreeditString(std::string(text), preedit_cursor);
+  wti->client_->OnPreeditString(text, spans, preedit_cursor);
 }
 
 void ZWPTextInputWrapperV1::OnPreeditStyling(
@@ -132,7 +136,9 @@ void ZWPTextInputWrapperV1::OnPreeditStyling(
     uint32_t index,
     uint32_t length,
     uint32_t style) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  ZWPTextInputWrapperV1* wti = static_cast<ZWPTextInputWrapperV1*>(data);
+  wti->spans_.push_back(
+      ZWPTextInputWrapperClient::SpanStyle{index, length, style});
 }
 
 void ZWPTextInputWrapperV1::OnPreeditCursor(
@@ -149,7 +155,7 @@ void ZWPTextInputWrapperV1::OnCommitString(void* data,
                                            const char* text) {
   ZWPTextInputWrapperV1* wti = static_cast<ZWPTextInputWrapperV1*>(data);
   wti->ResetInputEventState();
-  wti->client_->OnCommitString(std::string(text));
+  wti->client_->OnCommitString(text);
 }
 
 void ZWPTextInputWrapperV1::OnCursorPosition(

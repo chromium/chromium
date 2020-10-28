@@ -5,9 +5,13 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_TEXT_INPUT_WRAPPER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_ZWP_TEXT_INPUT_WRAPPER_H_
 
-#include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include <stdint.h>
+
+#include <vector>
 
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
+#include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace gfx {
 class Rect;
@@ -22,19 +26,26 @@ class WaylandWindow;
 // Client interface which handles wayland text input callbacks
 class ZWPTextInputWrapperClient {
  public:
-  virtual ~ZWPTextInputWrapperClient() {}
+  struct SpanStyle {
+    uint32_t index;   // Byte offset.
+    uint32_t length;  // Length in bytes.
+    uint32_t style;   // One of preedit_style.
+  };
+
+  virtual ~ZWPTextInputWrapperClient() = default;
 
   // Called when a new composing text (pre-edit) should be set around the
   // current cursor position. Any previously set composing text should
   // be removed.
   // Note that the preedit_cursor is byte-offset.
-  virtual void OnPreeditString(const std::string& text,
+  virtual void OnPreeditString(base::StringPiece text,
+                               const std::vector<SpanStyle>& spans,
                                int32_t preedit_cursor) = 0;
 
   // Called when a complete input sequence has been entered.  The text to
   // commit could be either just a single character after a key press or the
   // result of some composing (pre-edit).
-  virtual void OnCommitString(const std::string& text) = 0;
+  virtual void OnCommitString(base::StringPiece text) = 0;
 
   // Called when client needs to delete all or part of the text surrounding
   // the cursor
@@ -52,7 +63,7 @@ class ZWPTextInputWrapperClient {
 // IME. This interface collects the functionality behind one wrapper API.
 class ZWPTextInputWrapper {
  public:
-  virtual ~ZWPTextInputWrapper() {}
+  virtual ~ZWPTextInputWrapper() = default;
 
   virtual void Initialize(WaylandConnection* connection,
                           ZWPTextInputWrapperClient* client) = 0;

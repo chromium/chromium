@@ -6,9 +6,10 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_INPUT_METHOD_CONTEXT_H_
 
 #include <memory>
-#include <string>
+#include <vector>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
@@ -42,9 +43,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void Blur() override;
 
   // ui::ZWPTextInputWrapperClient
-  void OnPreeditString(const std::string& text,
+  void OnPreeditString(base::StringPiece text,
+                       const std::vector<SpanStyle>& spans,
                        int32_t preedit_cursor) override;
-  void OnCommitString(const std::string& text) override;
+  void OnCommitString(base::StringPiece text) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
   void OnKeysym(uint32_t keysym, uint32_t state, uint32_t modifiers) override;
 
