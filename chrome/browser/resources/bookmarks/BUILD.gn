@@ -4,6 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -107,6 +108,31 @@ html_to_js("web_components") {
     "shared_vars.js",
     "toolbar.js",
   ]
+}
+
+grit("bookmarks_resources") {
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    "-E",
+    "root_src_dir=" + rebase_path("//", root_build_dir),
+  ]
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  defines +=
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
+  source = "$target_gen_dir/bookmarks_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/bookmarks_resources.h",
+    "grit/bookmarks_resources_map.cc",
+    "grit/bookmarks_resources_map.h",
+    "bookmarks_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
 }
 
 js_type_check("closure_compile") {

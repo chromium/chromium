@@ -111,59 +111,6 @@ if (enable_js_type_check) {
 }
 
 if (!is_android) {
-  grit("bookmarks_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    bookmarks_gen_dir = "$root_gen_dir/chrome/browser/resources/bookmarks"
-    source = "$bookmarks_gen_dir/bookmarks_resources.grd"
-    deps = [ "//chrome/browser/resources/bookmarks:build_grd" ]
-
-    outputs = [
-      "grit/bookmarks_resources.h",
-      "grit/bookmarks_resources_map.cc",
-      "grit/bookmarks_resources_map.h",
-      "bookmarks_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("commander_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    commander_gen_dir = "$root_gen_dir/chrome/browser/resources/commander"
-    source = "$commander_gen_dir/commander_resources.grd"
-    deps = [ "//chrome/browser/resources/commander:build_grd" ]
-    outputs = [
-      "grit/commander_resources.h",
-      "grit/commander_resources_map.cc",
-      "grit/commander_resources_map.h",
-      "commander_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
   grit("component_extension_resources") {
     source = "component_extension_resources.grd"
 
@@ -203,33 +150,6 @@ if (!is_android) {
       "grit/gaia_auth_host_resources_map.cc",
       "grit/gaia_auth_host_resources_map.h",
       "gaia_auth_host_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("history_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    history_gen_dir = "$root_gen_dir/chrome/browser/resources/history"
-    source = "$history_gen_dir/history_resources.grd"
-    deps = [ "//chrome/browser/resources/history:build_grd" ]
-
-    outputs = [
-      "grit/history_resources.h",
-      "grit/history_resources_map.cc",
-      "grit/history_resources_map.h",
-      "history_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }
@@ -299,60 +219,6 @@ if (!is_android) {
       "grit/read_later_resources_map.cc",
       "grit/read_later_resources_map.h",
       "read_later_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("settings_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    gen_dir = "$root_gen_dir/chrome/browser/resources/settings"
-    source = "$gen_dir/settings_resources.grd"
-    deps = [ "//chrome/browser/resources/settings:build_grd" ]
-
-    outputs = [
-      "grit/settings_resources.h",
-      "grit/settings_resources_map.cc",
-      "grit/settings_resources_map.h",
-      "settings_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("downloads_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    downloads_gen_dir = "$root_gen_dir/chrome/browser/resources/downloads"
-    source = "$downloads_gen_dir/downloads_resources.grd"
-    deps = [ "//chrome/browser/resources/downloads:build_grd" ]
-
-    outputs = [
-      "grit/downloads_resources.h",
-      "grit/downloads_resources_map.cc",
-      "grit/downloads_resources_map.h",
-      "downloads_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }
@@ -530,90 +396,7 @@ if (is_chromeos) {
   }
 }
 
-if (!is_android && !is_chromeos) {
-  grit("welcome_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    welcome_gen_dir = "$root_gen_dir/chrome/browser/resources/welcome"
-    source = "$welcome_gen_dir/welcome_resources.grd"
-    deps = [ "//chrome/browser/resources/welcome:build_grd" ]
-
-    outputs = [
-      "grit/welcome_resources.h",
-      "grit/welcome_resources_map.cc",
-      "grit/welcome_resources_map.h",
-      "welcome_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("profile_picker_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    signin_gen_dir = "$root_gen_dir/chrome/browser/resources/signin"
-    source = "$signin_gen_dir/profile_picker/profile_picker_resources.grd"
-    deps = [ "//chrome/browser/resources/signin/profile_picker:build_grd" ]
-
-    outputs = [
-      "grit/profile_picker_resources.h",
-      "grit/profile_picker_resources_map.cc",
-      "grit/profile_picker_resources_map.h",
-      "profile_picker_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-}
-
 if (enable_extensions) {
-  grit("extensions_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    extensions_gen_dir = "$root_gen_dir/chrome/browser/resources/extensions"
-    source = "$extensions_gen_dir/extensions_resources.grd"
-    deps = [ "//chrome/browser/resources/extensions:build_grd" ]
-
-    outputs = [
-      "grit/extensions_resources.h",
-      "grit/extensions_resources_map.cc",
-      "grit/extensions_resources_map.h",
-      "extensions_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
   grit("sync_file_system_internals_resources") {
     source =
         "sync_file_system_internals/sync_file_system_internals_resources.grd"
@@ -621,35 +404,6 @@ if (enable_extensions) {
     outputs = [
       "grit/sync_file_system_internals_resources.h",
       "sync_file_system_internals_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-}
-
-if (enable_print_preview) {
-  grit("print_preview_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    print_gen_dir = "$root_gen_dir/chrome/browser/resources/print_preview"
-    source = "$print_gen_dir/print_preview_resources.grd"
-    deps = [ "//chrome/browser/resources/print_preview:build_grd" ]
-
-    outputs = [
-      "grit/print_preview_resources.h",
-      "grit/print_preview_resources_map.cc",
-      "grit/print_preview_resources_map.h",
-      "print_preview_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }
@@ -672,64 +426,6 @@ if (enable_tab_search) {
       "grit/tab_search_resources_map.cc",
       "grit/tab_search_resources_map.h",
       "tab_search_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-}
-
-if (enable_webui_tab_strip) {
-  grit("tab_strip_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    tab_strip_gen_dir = "$root_gen_dir/chrome/browser/resources/tab_strip"
-    source = "$tab_strip_gen_dir/tab_strip_resources.grd"
-    deps = [ "//chrome/browser/resources/tab_strip:build_grd" ]
-
-    outputs = [
-      "grit/tab_strip_resources.h",
-      "grit/tab_strip_resources_map.cc",
-      "grit/tab_strip_resources_map.h",
-      "tab_strip_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-}
-
-if (is_linux || is_chromeos) {
-  grit("webui_js_exception_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = chrome_grit_defines
-
-    # These arguments are needed since the grd is generated at build time.
-    enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
-    js_gen_dir = "$root_gen_dir/chrome/browser/resources/webui_js_exception"
-    source = "$js_gen_dir/webui_js_exception_resources.grd"
-    deps = [ "//chrome/browser/resources/webui_js_exception:build_grd" ]
-
-    outputs = [
-      "grit/webui_js_exception_resources.h",
-      "grit/webui_js_exception_resources_map.cc",
-      "grit/webui_js_exception_resources_map.h",
-      "webui_js_exception_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

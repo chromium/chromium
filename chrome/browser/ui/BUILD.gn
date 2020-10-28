@@ -4548,7 +4548,7 @@ static_library("ui") {
   }
 
   if (enable_webui_tab_strip) {
-    deps += [ "//chrome/browser/resources:tab_strip_resources" ]
+    deps += [ "//chrome/browser/resources/tab_strip:tab_strip_resources" ]
 
     sources += [
       "views/frame/webui_tab_strip_container_view.cc",

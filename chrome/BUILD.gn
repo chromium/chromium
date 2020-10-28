@@ -1346,17 +1346,17 @@ group("extra_resources") {
 
   if (!is_android) {
     public_deps += [
-      "//chrome/browser/resources:bookmarks_resources",
-      "//chrome/browser/resources:commander_resources",
       "//chrome/browser/resources:component_extension_resources",
       "//chrome/browser/resources:dev_ui_paks",
-      "//chrome/browser/resources:downloads_resources",
       "//chrome/browser/resources:gaia_auth_host_resources",
-      "//chrome/browser/resources:history_resources",
       "//chrome/browser/resources:local_ntp_resources",
       "//chrome/browser/resources:new_tab_page_resources",
       "//chrome/browser/resources:read_later_resources",
-      "//chrome/browser/resources:settings_resources",
+      "//chrome/browser/resources/bookmarks:bookmarks_resources",
+      "//chrome/browser/resources/commander:commander_resources",
+      "//chrome/browser/resources/downloads:downloads_resources",
+      "//chrome/browser/resources/history:history_resources",
+      "//chrome/browser/resources/settings:settings_resources",
     ]
   }
 
@@ -1377,25 +1377,26 @@ group("extra_resources") {
   }
 
   if (is_linux || is_chromeos) {
-    public_deps += [ "//chrome/browser/resources:webui_js_exception_resources" ]
+    public_deps += [ "//chrome/browser/resources/webui_js_exception:webui_js_exception_resources" ]
   }
 
   if (!is_android && !is_chromeos) {
     public_deps += [
-      "//chrome/browser/resources:profile_picker_resources",
-      "//chrome/browser/resources:welcome_resources",
+      "//chrome/browser/resources/signin/profile_picker:profile_picker_resources",
+      "//chrome/browser/resources/welcome:welcome_resources",
     ]
   }
 
   if (enable_extensions) {
     public_deps += [
-      "//chrome/browser/resources:extensions_resources",
       "//chrome/browser/resources:sync_file_system_internals_resources",
+      "//chrome/browser/resources/extensions:extensions_resources",
     ]
   }
 
   if (enable_print_preview) {
-    public_deps += [ "//chrome/browser/resources:print_preview_resources" ]
+    public_deps +=
+        [ "//chrome/browser/resources/print_preview:print_preview_resources" ]
   }
 
   if (enable_tab_search) {

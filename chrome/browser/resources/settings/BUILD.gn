@@ -4,6 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/polymer.gni")
@@ -328,9 +329,34 @@ preprocess_grit("preprocess_generated") {
   }
 }
 
+grit("settings_resources") {
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    "-E",
+    "root_src_dir=" + rebase_path("//", root_build_dir),
+  ]
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  defines +=
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
+  source = "$target_gen_dir/settings_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/settings_resources.h",
+    "grit/settings_resources_map.cc",
+    "grit/settings_resources_map.h",
+    "settings_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
 group("closure_compile") {
   deps = [
-    ":settings_resources",
+    ":local_resources",
     "a11y_page:closure_compile",
     "about_page:closure_compile",
     "appearance_page:closure_compile",
@@ -351,7 +377,7 @@ group("closure_compile") {
   }
 }
 
-js_type_check("settings_resources") {
+js_type_check("local_resources") {
   deps = [
     ":extension_control_browser_proxy",
     ":global_scroll_target_behavior",

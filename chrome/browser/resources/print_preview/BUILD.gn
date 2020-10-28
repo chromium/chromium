@@ -4,6 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../optimize_webui.gni")
@@ -185,6 +186,31 @@ preprocess_grit("preprocess_pdf_generated") {
     "pdf/pdf_viewer_pp.js",
     "pdf/elements/viewer-page-indicator.js",
   ]
+}
+
+grit("print_preview_resources") {
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    "-E",
+    "root_src_dir=" + rebase_path("//", root_build_dir),
+  ]
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  defines +=
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
+  source = "$target_gen_dir/print_preview_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/print_preview_resources.h",
+    "grit/print_preview_resources_map.cc",
+    "grit/print_preview_resources_map.h",
+    "print_preview_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
 }
 
 group("closure_compile") {
