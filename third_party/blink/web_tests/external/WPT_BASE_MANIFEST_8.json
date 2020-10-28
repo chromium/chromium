@@ -62215,7 +62215,7 @@
       ]
      ],
      "flex-minimum-width-flex-items-013.html": [
-      "6ee9ed10b5663b381f0238096117e8d70ca0347b",
+      "9f358d66d7f1b5c4ba2e3c6d9ca790b5309d66d4",
       [
        null,
        [
@@ -91125,6 +91125,19 @@
        [
         [
          "/css/css-pseudo/marker-line-break-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "marker-line-height.html": [
+      "8d226e3feaa359fe8ddacfd75610879abe33d955",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-line-height-ref.html",
          "=="
         ]
        ],
@@ -194730,6 +194743,10 @@
       "75625c1ea2895d27baf9ca8afa9f7d32a91f2d14",
       []
      ],
+     "marker-line-height-ref.html": [
+      "64b0d41a38988730b15522a4be57f0f6621f6d18",
+      []
+     ],
      "marker-list-style-position-ref-001.html": [
       "2593194d298fe3ee8bb14ffe9923a654a19d5c8a",
       []
@@ -194784,11 +194801,11 @@
      ],
      "parsing": {
       "marker-supported-properties-expected.txt": [
-       "0eaddccead41084b7c4f512c4b5d9e00f8fe3eb2",
+       "4e3bf4df603c01fdbf6040abbaa78f5168835fc0",
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
-       "9b19d9f118822df7ab446a6fe2764ecadfad623c",
+       "e4d06ec7fb190b3764ab5011cfbdadcfdbb13fad",
        []
       ]
      },
@@ -210936,6 +210953,10 @@
      []
     ],
     "events": {
+     "Event-dispatch-click.tentative-expected.txt": [
+      "dfa29a887db747cc5f1d34aa120b8860fa39a552",
+      []
+     ],
      "Event-dispatch-handlers-changed-expected.txt": [
       "4e26515bae7fe1400cec6129422902d1268de1e2",
       []
@@ -219504,7 +219525,7 @@
          []
         ],
         "drawing-text-to-the-canvas.yaml": [
-         "921464e6bc72ad187cfd2c8955c4a2cc7e9cfb1a",
+         "0f8a118ca8d3f68aea6a0a54a2a5d5524790a34d",
          []
         ],
         "fill-and-stroke-styles.yaml": [
@@ -219598,7 +219619,7 @@
          []
         ],
         "text.yaml": [
-         "16187397eb32aca2a5b5684982fee39bf8146f73",
+         "9a895bc5185a055dc0aa4a4fa86031181454f641",
          []
         ],
         "the-canvas-state.yaml": [
@@ -285394,7 +285415,7 @@
       ]
      ],
      "flex-aspect-ratio-img-column-011.html": [
-      "6a0adb70dfd4886d25036104c1d72be90b564718",
+      "a0f8c1573c414761d718a48ea90c6c71e195c5a9",
       [
        null,
        {}
@@ -289521,6 +289542,13 @@
         {}
        ]
       ],
+      "grid-self-alignment.html": [
+       "56ad9c6a126efcf74a8e1df990c7c902a564a1f9",
+       [
+        null,
+        {}
+       ]
+      ],
       "grid-self-baseline-not-applied-if-sizing-cyclic-dependency-001.html": [
        "dae81ceee1a90c7d0d66fb3a86fdae025d4389cb",
        [
@@ -293640,14 +293668,14 @@
      ],
      "parsing": {
       "marker-supported-properties-in-animation.html": [
-       "5f7dab7a8bfb908d900230cfbf06dacd53a9d693",
+       "df0e9bc6d34b3e8828d886bbe7ad3359f4178756",
        [
         null,
         {}
        ]
       ],
       "marker-supported-properties.html": [
-       "15a4e894ff3a46c632d91de8c27834a5269149eb",
+       "62a54a338b7c401c05c16a59670f9d5cc2f30f8f",
        [
         null,
         {}
@@ -309100,14 +309128,14 @@
       ]
      ],
      "Event-dispatch-click.html": [
-      "148f4f50d417068720088970bda86335e747bb16",
+      "bbc408df88256668e7f4cacc0837065c3c7d1c16",
       [
        null,
        {}
       ]
      ],
      "Event-dispatch-click.tentative.html": [
-      "01ce1936a8b74a8c80c87beb59247ad629bce6c4",
+      "cfdae55ef2ab48df0842c050b7844b3e52996de4",
       [
        null,
        {}
@@ -335175,6 +335203,13 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.fontVariant.settings.html": [
+        "c1d6272aa11e32fe8b17a9d044cfb8edd5f62c91",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.drawing.style.spacing.html": [
         "67092690ed37ba90b79048969a3d6b0de40e93b6",
         [
@@ -349616,6 +349651,20 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.fontVariant.settings.html": [
+        "d4f9413f9544f91a4e909f4c3bd3fe0fc0a1c97d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.fontVariant.settings.worker.js": [
+        "d90bdd5f03286d80868adf8ff87b3132229993ee",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.fontVariant.settings.worker.html",
+         {}
+        ]
+       ],
        "2d.text.drawing.style.spacing.html": [
         "512ed7157c86e3365f959efa393f88e47447efcc",
         [
@@ -358643,6 +358692,13 @@
        ],
        "iframe-loading-lazy-load-event.html": [
         "bf98bf7585cf608e6ebb46d025663e22bce8324c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-multiple-queued-navigations.html": [
+        "0569881ea5e0a566b7e7b4627d0778e3361991f4",
         [
          null,
          {}

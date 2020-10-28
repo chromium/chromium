@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS disabled checkbox should not be checked from label click
+PASS disabled radio should not be checked from label click
+PASS disabled checkbox should not be checked from label click by dispatchEvent
+PASS disabled radio should not be checked from label click by dispatchEvent
+FAIL checkbox morphed into another type should not mutate checked state assert_false: expected false got true
+FAIL radio morphed into another type should not steal the existing checked state assert_false: expected false got true
+Harness: the test ran to completion.
+
