@@ -24,6 +24,9 @@ ASH_EXPORT gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
 // Return whether |position| is a corner.
 ASH_EXPORT bool IsCornerFineTunePosition(FineTunePosition position);
 
+// Return whether drag affordance circles should be hidden.
+ASH_EXPORT bool ShouldHideDragAffordance(FineTunePosition position);
+
 }  // namespace capture_mode_util
 
 }  // namespace ash

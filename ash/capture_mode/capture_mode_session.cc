@@ -507,8 +507,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   if (is_selecting_region_)
     return;
 
-  // Do not show affordance circles when repositioning the whole region.
-  if (fine_tune_position_ == FineTunePosition::kCenter)
+  if (capture_mode_util::ShouldHideDragAffordance(fine_tune_position_))
     return;
 
   // Draw the drag affordance circles.
@@ -709,6 +708,14 @@ void CaptureModeSession::OnLocatedEventPressed(
     is_selecting_region_ = true;
     UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true);
     return;
+  }
+
+  // In order to hide the drag affordance circles on click, we need to repaint
+  // the capture region.
+  if (capture_mode_util::ShouldHideDragAffordance(fine_tune_position_)) {
+    gfx::Rect damage_region = controller_->user_capture_region();
+    damage_region.Inset(gfx::Insets(-kDamageInsetDp));
+    layer()->SchedulePaint(damage_region);
   }
 
   if (fine_tune_position_ != FineTunePosition::kCenter &&
