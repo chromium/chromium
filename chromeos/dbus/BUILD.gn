@@ -190,6 +190,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/dlcservice:test_support",
     "//chromeos/dbus/hermes:test_support",
     "//chromeos/dbus/ip_peripheral:test_support",
+    "//chromeos/dbus/lorgnette_manager:test_support",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
     "//chromeos/dbus/session_manager",

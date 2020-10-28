@@ -15,7 +15,6 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
@@ -65,7 +64,6 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  // LorgnetteManagerClient override.
   void StartScan(
       const std::string& device_name,
       const lorgnette::ScanSettings& settings,
@@ -122,6 +120,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         base::OnceCallback<void(base::Optional<std::string> data)>;
 
     ScanDataReader() = default;
+    ScanDataReader(const ScanDataReader&) = delete;
+    ScanDataReader& operator=(const ScanDataReader&) = delete;
 
     // Creates a pipe to read the scan data from the D-Bus service.
     // Returns a write-side FD.
@@ -175,7 +175,6 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     CompletionCallback callback_;
 
     base::WeakPtrFactory<ScanDataReader> weak_ptr_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(ScanDataReader);
   };
 
   // The state tracked for an in-progress scan job.

@@ -62,6 +62,8 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
   static std::unique_ptr<LorgnetteManagerClient> Create();
 
  protected:
+  friend class LorgnetteManagerClientTest;
+
   // Create() should be used instead.
   LorgnetteManagerClient();
 };

@@ -25,6 +25,20 @@ component("lorgnette_manager") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  public_deps = [ ":lorgnette_manager" ]
+  deps = [
+    ":lorgnette_proto",
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "lorgnette_manager_client_unittest.cc" ]
+}
+
 proto_library("lorgnette_proto") {
   sources =
       [ "//third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto" ]
