@@ -1424,8 +1424,6 @@ bool TileManager::AreRequiredTilesReadyToDraw(
   // draw.
   for (; !raster_priority_queue->IsEmpty(); raster_priority_queue->Pop()) {
     const auto& prioritized_tile = raster_priority_queue->Top();
-    // TODO(vmpstr): Check to debug crbug.com/622080. Remove when fixed.
-    CHECK_EQ(prioritized_tile.priority().priority_bin, TilePriority::NOW);
     if (!prioritized_tile.tile()->draw_info().IsReadyToDraw())
       return false;
   }
