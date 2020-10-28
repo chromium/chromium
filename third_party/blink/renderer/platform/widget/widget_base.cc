@@ -141,12 +141,13 @@ WidgetBase::WidgetBase(
     CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root)
     : client_(client),
-      widget_host_(std::move(widget_host)),
-      receiver_(this, std::move(widget)),
+      widget_host_(std::move(widget_host), task_runner),
+      receiver_(this, std::move(widget), task_runner),
       next_previous_flags_(kInvalidNextPreviousFlagsValue),
       use_zoom_for_dsf_(Platform::Current()->IsUseZoomForDSFEnabled()),
       is_hidden_(hidden),

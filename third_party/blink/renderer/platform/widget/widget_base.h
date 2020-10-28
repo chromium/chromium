@@ -65,6 +65,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool hidden,
       bool never_composited,
       bool is_for_child_local_root);

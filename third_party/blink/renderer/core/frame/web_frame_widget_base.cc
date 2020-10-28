@@ -173,6 +173,7 @@ WebFrameWidgetBase::WebFrameWidgetBase(
     : widget_base_(std::make_unique<WidgetBase>(this,
                                                 std::move(widget_host),
                                                 std::move(widget),
+                                                task_runner,
                                                 hidden,
                                                 never_composited,
                                                 is_for_child_local_root)),

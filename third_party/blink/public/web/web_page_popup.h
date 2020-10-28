@@ -60,7 +60,8 @@ class WebPagePopup : public WebWidget {
           popup_widget_host,
       CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
           widget_host,
-      CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget);
+      CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // The popup's accessibility tree is connected to the main document's
   // accessibility tree. Access to the popup document is needed to ensure the

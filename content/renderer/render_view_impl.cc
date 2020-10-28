@@ -542,7 +542,8 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
   // an owning pointer. It is de-referenced by calling Close().
   blink::WebPagePopup* popup_web_widget = blink::WebPagePopup::Create(
       popup_widget, std::move(blink_popup_widget_host),
-      std::move(blink_widget_host), std::move(blink_widget_receiver));
+      std::move(blink_widget_host), std::move(blink_widget_receiver),
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
   // Adds a self-reference on the |popup_widget| so it will not be destroyed
   // when leaving scope. The WebPagePopup takes responsibility for Close()ing

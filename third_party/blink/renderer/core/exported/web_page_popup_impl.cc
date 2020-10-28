@@ -253,13 +253,15 @@ WebPagePopupImpl::WebPagePopupImpl(
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-        widget)
+        widget,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : web_page_popup_client_(client),
       popup_widget_host_(std::move(popup_widget_host)),
       widget_base_(
           std::make_unique<WidgetBase>(this,
                                        std::move(widget_host),
                                        std::move(widget),
+                                       task_runner,
                                        /*hidden=*/false,
                                        /*never_composited=*/false,
                                        /*is_for_child_local_root=*/false)) {
@@ -980,7 +982,8 @@ WebPagePopup* WebPagePopup::Create(
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-        widget) {
+        widget,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   CHECK(client);
   // A WebPagePopupImpl instance usually has two references.
   //  - One owned by the instance itself. It represents the visible widget.
@@ -988,9 +991,9 @@ WebPagePopup* WebPagePopup::Create(
   //    WebPagePopupImpl to close.
   // We need them because the closing operation is asynchronous and the widget
   // can be closed while the WebViewImpl is unaware of it.
-  auto popup = base::AdoptRef(
-      new WebPagePopupImpl(client, std::move(popup_widget_host),
-                           std::move(widget_host), std::move(widget)));
+  auto popup = base::AdoptRef(new WebPagePopupImpl(
+      client, std::move(popup_widget_host), std::move(widget_host),
+      std::move(widget), task_runner));
   popup->AddRef();
   return popup.get();
 }

@@ -217,7 +217,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-          widget);
+          widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void DestroyPage();
   void SetRootLayer(scoped_refptr<cc::Layer>);
   void SetWebView(WebViewImpl* web_view);
