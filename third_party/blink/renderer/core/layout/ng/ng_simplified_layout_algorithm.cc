@@ -70,8 +70,17 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     if (physical_fragment.LastBaseline())
       container_builder_.SetLastBaseline(*physical_fragment.LastBaseline());
 
-    // TODO(ikilpatrick): Set any fields for table-cells which are also set
-    // within the NGBlockLayoutAlgorithm.
+    if (ConstraintSpace().IsTableCell()) {
+      if (physical_fragment.HasCollapsedBorders())
+        container_builder_.SetHasCollapsedBorders(true);
+
+      if (!ConstraintSpace().IsLegacyTableCell()) {
+        container_builder_.SetTableCellColumnIndex(
+            physical_fragment.TableCellColumnIndex());
+      }
+    } else {
+      DCHECK(!physical_fragment.HasCollapsedBorders());
+    }
   } else {
     // Only block-flow layout sets the following fields.
     DCHECK(physical_fragment.IsFormattingContextRoot());
@@ -104,6 +113,12 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
 
     container_builder_.SetCustomLayoutData(result.CustomLayoutData());
   }
+
+  // TODO(atotic,ikilpatrick): Copy across table related data for table,
+  // table-row, table-section.
+  DCHECK(!physical_fragment.IsTable());
+  DCHECK(!physical_fragment.IsTableRow());
+  DCHECK(!physical_fragment.IsTableSection());
 
   if (physical_fragment.IsHiddenForPaint())
     container_builder_.SetIsHiddenForPaint(true);

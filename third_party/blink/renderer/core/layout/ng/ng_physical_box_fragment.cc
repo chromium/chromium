@@ -797,6 +797,8 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(sub_type_, other.sub_type_);
   DCHECK_EQ(style_variant_, other.style_variant_);
   DCHECK_EQ(is_hidden_for_paint_, other.is_hidden_for_paint_);
+  DCHECK_EQ(is_math_fraction_, other.is_math_fraction_);
+  DCHECK_EQ(is_math_operator_, other.is_math_operator_);
 
   // |has_floating_descendants_for_paint_| can change during simplified layout.
   DCHECK_EQ(may_have_descendant_above_block_start_,
@@ -804,18 +806,17 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(depends_on_percentage_block_size_,
             other.depends_on_percentage_block_size_);
 
+  DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
+  DCHECK_EQ(is_legacy_layout_root_, other.is_legacy_layout_root_);
+  DCHECK_EQ(is_painted_atomically_, other.is_painted_atomically_);
+  DCHECK_EQ(has_collapsed_borders_, other.has_collapsed_borders_);
+
   DCHECK_EQ(is_inline_formatting_context_, other.is_inline_formatting_context_);
   DCHECK_EQ(has_fragment_items_, other.has_fragment_items_);
   DCHECK_EQ(include_border_top_, other.include_border_top_);
   DCHECK_EQ(include_border_right_, other.include_border_right_);
   DCHECK_EQ(include_border_bottom_, other.include_border_bottom_);
   DCHECK_EQ(include_border_left_, other.include_border_left_);
-  DCHECK_EQ(is_math_fraction_, other.is_math_fraction_);
-  DCHECK_EQ(is_math_operator_, other.is_math_operator_);
-
-  DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
-  DCHECK_EQ(is_legacy_layout_root_, other.is_legacy_layout_root_);
-  DCHECK_EQ(is_painted_atomically_, other.is_painted_atomically_);
 
   // The oof_positioned_descendants_ vector can change during "simplified"
   // layout. This occurs when an OOF-descendant changes from "fixed" to
@@ -831,6 +832,16 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
            NGBlockNode(ToLayoutBox(GetMutableLayoutObject()))
                .UseBlockEndMarginEdgeForInlineBlockBaseline());
   }
+
+  // TODO(atotic,ikilpatrick): Enable DCHECKs for:
+  //  - TableGridRect()
+  //  - TableColumnGeometries()
+  //  - TableCollapsedBorders()
+  //  - TableCollapsedBordersGeometry()
+
+  if (IsTableNGCell())
+    DCHECK_EQ(TableCellColumnIndex(), other.TableCellColumnIndex());
+
   DCHECK(Borders() == other.Borders());
   DCHECK(Padding() == other.Padding());
 }
