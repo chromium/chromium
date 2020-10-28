@@ -10,7 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/android/explore_sites/blacklist_site_task.h"
+#include "chrome/browser/android/explore_sites/block_site_task.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/clear_activities_task.h"
 #include "chrome/browser/android/explore_sites/clear_catalog_task.h"
@@ -136,10 +136,10 @@ void ExploreSitesServiceImpl::RecordClick(const std::string& url,
       explore_sites_store_.get(), url, category_type));
 }
 
-void ExploreSitesServiceImpl::BlacklistSite(const std::string& url) {
-  // Add the url to the blacklist table in the database.
+void ExploreSitesServiceImpl::BlockSite(const std::string& url) {
+  // Add the url to the blocklist table in the database.
   task_queue_.AddTask(
-      std::make_unique<BlacklistSiteTask>(explore_sites_store_.get(), url));
+      std::make_unique<BlockSiteTask>(explore_sites_store_.get(), url));
 
   // TODO(https://crbug.com/893845): Remove cached category icon if affected.
 }
@@ -245,7 +245,7 @@ std::unique_ptr<Catalog> ValidateCatalog(std::unique_ptr<Catalog> catalog) {
       Site* new_site = new_category->add_sites();
       new_site->Swap(&site);
 
-      // We want to use a canonicalized URL in the database so that blacklisting
+      // We want to use a canonicalized URL in the database so that blocking
       // will always work.  Typically this will cause a trailing slash to be
       // added if it's missing.
       new_site->set_site_url(url.spec());

@@ -11,7 +11,7 @@
 
 namespace explore_sites {
 
-// Takes a URL that the user has asked us to remove, and adds it to a blacklist
+// Takes a URL that the user has asked us to remove, and adds it to a blocklist
 // of sites we will stop showing in Explore on Sites.
 class MostVisitedClient
     : public ntp_tiles::MostVisitedSites::ExploreSitesClient {

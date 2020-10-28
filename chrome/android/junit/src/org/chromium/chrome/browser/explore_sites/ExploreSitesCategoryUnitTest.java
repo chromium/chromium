@@ -44,8 +44,8 @@ public class ExploreSitesCategoryUnitTest {
         assertEquals(siteId, category.getSites().get(0).getModel().get(ExploreSitesSite.ID_KEY));
         assertEquals(title, category.getSites().get(0).getModel().get(ExploreSitesSite.TITLE_KEY));
         assertEquals(url, category.getSites().get(0).getModel().get(ExploreSitesSite.URL_KEY));
-        assertTrue(category.getSites().get(0).getModel().get(ExploreSitesSite.BLACKLISTED_KEY));
-        assertFalse(category.getSites().get(1).getModel().get(ExploreSitesSite.BLACKLISTED_KEY));
+        assertTrue(category.getSites().get(0).getModel().get(ExploreSitesSite.BLOCKED_KEY));
+        assertFalse(category.getSites().get(1).getModel().get(ExploreSitesSite.BLOCKED_KEY));
     }
 
     @Test
@@ -82,8 +82,8 @@ public class ExploreSitesCategoryUnitTest {
 
         assertEquals(4, category.getSites().size());
         assertEquals(2, category.getNumDisplayed());
-        assertTrue(category.getSites().get(1).getModel().get(ExploreSitesSite.BLACKLISTED_KEY));
-        assertTrue(category.getSites().get(2).getModel().get(ExploreSitesSite.BLACKLISTED_KEY));
+        assertTrue(category.getSites().get(1).getModel().get(ExploreSitesSite.BLOCKED_KEY));
+        assertTrue(category.getSites().get(2).getModel().get(ExploreSitesSite.BLOCKED_KEY));
         // The fourth site should now be at tile index '1' (the second tile).
         assertEquals(1, category.getSites().get(3).getModel().get(ExploreSitesSite.TILE_INDEX_KEY));
     }

@@ -179,7 +179,7 @@ TEST_F(ExploreSitesGetImagesTaskTest, SiteExistsAndHasFavicon) {
   EXPECT_EQ("bytes3", std::string(result3.begin(), result3.end()));
 }
 
-TEST_F(ExploreSitesGetImagesTaskTest, SitesExistAndNotBlacklisted) {
+TEST_F(ExploreSitesGetImagesTaskTest, SitesExistAndNotBlocked) {
   PopulateTestingCatalog();
   GetImagesTask task(store(), 3, 4, StoreResult());
   RunTask(&task);
@@ -191,7 +191,7 @@ TEST_F(ExploreSitesGetImagesTaskTest, SitesExistAndNotBlacklisted) {
   EXPECT_EQ("bytes3", std::string(result2.begin(), result2.end()));
 }
 
-TEST_F(ExploreSitesGetImagesTaskTest, SitesExistAndBlacklisted) {
+TEST_F(ExploreSitesGetImagesTaskTest, SitesExistAndBlocked) {
   PopulateTestingCatalog();
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement insert(db->GetUniqueStatement(R"(

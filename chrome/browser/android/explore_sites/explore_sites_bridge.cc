@@ -62,7 +62,7 @@ void CatalogReady(ScopedJavaGlobalRef<jobject>(j_result_obj),
     for (auto& site : category.sites) {
       Java_ExploreSitesSite_createSiteInCategory(
           env, site.site_id, ConvertUTF8ToJavaString(env, site.title),
-          ConvertUTF8ToJavaString(env, site.url.spec()), site.is_blacklisted,
+          ConvertUTF8ToJavaString(env, site.url.spec()), site.is_blocked,
           j_category);
     }
   }
@@ -259,10 +259,9 @@ void JNI_ExploreSitesBridge_UpdateCatalogFromNetwork(
                      ScopedJavaGlobalRef<jobject>(j_callback_obj)));
 }
 
-void JNI_ExploreSitesBridge_BlacklistSite(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jstring>& j_url) {
+void JNI_ExploreSitesBridge_BlockSite(JNIEnv* env,
+                                      const JavaParamRef<jobject>& j_profile,
+                                      const JavaParamRef<jstring>& j_url) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   std::string url = ConvertJavaStringToUTF8(env, j_url);
   ExploreSitesService* service =
@@ -272,7 +271,7 @@ void JNI_ExploreSitesBridge_BlacklistSite(
     return;
   }
 
-  service->BlacklistSite(url);
+  service->BlockSite(url);
 }
 
 void JNI_ExploreSitesBridge_RecordClick(JNIEnv* env,

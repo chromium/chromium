@@ -71,13 +71,13 @@ bool CreateActivityTable(sql::Database* db) {
   return db->Execute(kActivityTableCreationSql);
 }
 
-static const char kSiteBlacklistTableCreationSql[] =
+static const char kSiteBlocklistTableCreationSql[] =
     "CREATE TABLE IF NOT EXISTS site_blacklist ("
     "url TEXT NOT NULL UNIQUE, "
     "date_removed INTEGER NOT NULL);";  // stored as unix timestamp
 
-bool CreateSiteBlacklistTable(sql::Database* db) {
-  return db->Execute(kSiteBlacklistTableCreationSql);
+bool CreateSiteBlocklistTable(sql::Database* db) {
+  return db->Execute(kSiteBlocklistTableCreationSql);
 }
 
 bool CreateLatestSchema(sql::Database* db) {
@@ -86,7 +86,7 @@ bool CreateLatestSchema(sql::Database* db) {
     return false;
 
   if (!CreateCategoriesTable(db) || !CreateSitesTable(db) ||
-      !CreateSiteBlacklistTable(db) || !CreateActivityTable(db)) {
+      !CreateSiteBlocklistTable(db) || !CreateActivityTable(db)) {
     return false;
   }
 

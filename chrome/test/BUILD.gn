@@ -3784,7 +3784,7 @@ test("unit_tests") {
       "../browser/android/contextualsearch/contextual_search_delegate_unittest.cc",
       "../browser/android/contextualsearch/contextual_search_field_trial_unittest.cc",
       "../browser/android/customtabs/detached_resource_request_unittest.cc",
-      "../browser/android/explore_sites/blacklist_site_task_unittest.cc",
+      "../browser/android/explore_sites/block_site_task_unittest.cc",
       "../browser/android/explore_sites/clear_activities_task_unittest.cc",
       "../browser/android/explore_sites/clear_catalog_task_unittest.cc",
       "../browser/android/explore_sites/explore_sites_feature_unittest.cc",

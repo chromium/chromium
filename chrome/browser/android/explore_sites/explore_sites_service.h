@@ -41,8 +41,8 @@ class ExploreSitesService : public KeyedService {
   // Record the click on a site and category referenced by its type.
   virtual void RecordClick(const std::string& url, int category_type) = 0;
 
-  // Add the url to the blacklist.
-  virtual void BlacklistSite(const std::string& url) = 0;
+  // Add the url to the blocklist.
+  virtual void BlockSite(const std::string& url) = 0;
 
   // Remove the activity history from the specified time range.
   virtual void ClearActivities(base::Time begin,

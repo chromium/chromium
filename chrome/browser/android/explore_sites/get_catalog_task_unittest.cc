@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/android/explore_sites/blacklist_site_task.h"
+#include "chrome/browser/android/explore_sites/block_site_task.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/task/task.h"
 #include "components/offline_pages/task/task_test_base.h"
@@ -42,7 +42,7 @@ void ValidateTestingCatalog(GetCatalogTask::CategoryList* catalog) {
   EXPECT_EQ("https://www.example.com/1", site->url.spec());
   EXPECT_EQ(4, site->category_id);
   EXPECT_EQ("example_1", site->title);
-  EXPECT_FALSE(site->is_blacklisted);
+  EXPECT_FALSE(site->is_blocked);
 
   cat = &catalog->at(1);
   EXPECT_EQ(5, cat->category_id);
@@ -57,11 +57,11 @@ void ValidateTestingCatalog(GetCatalogTask::CategoryList* catalog) {
   EXPECT_EQ("https://www.example.com/2", site->url.spec());
   EXPECT_EQ(5, site->category_id);
   EXPECT_EQ("example_2", site->title);
-  EXPECT_FALSE(site->is_blacklisted);
+  EXPECT_FALSE(site->is_blocked);
 }
 
-// Same as above, sites blacklisted are clearly marked.
-void ValidateBlacklistTestingCatalog(GetCatalogTask::CategoryList* catalog) {
+// Same as above, blocked sites are clearly marked.
+void ValidateBlockedSitesTestingCatalog(GetCatalogTask::CategoryList* catalog) {
   EXPECT_FALSE(catalog == nullptr);
 
   EXPECT_EQ(2U, catalog->size());
@@ -78,7 +78,7 @@ void ValidateBlacklistTestingCatalog(GetCatalogTask::CategoryList* catalog) {
   EXPECT_EQ("https://www.example.com/1", site->url.spec());
   EXPECT_EQ(4, site->category_id);
   EXPECT_EQ("example_1", site->title);
-  EXPECT_FALSE(site->is_blacklisted);
+  EXPECT_FALSE(site->is_blocked);
 
   cat = &catalog->at(1);
   EXPECT_EQ(5, cat->category_id);
@@ -93,7 +93,7 @@ void ValidateBlacklistTestingCatalog(GetCatalogTask::CategoryList* catalog) {
   EXPECT_EQ("https://www.example.com/2", site->url.spec());
   EXPECT_EQ(5, site->category_id);
   EXPECT_EQ("example_2", site->title);
-  EXPECT_TRUE(site->is_blacklisted);
+  EXPECT_TRUE(site->is_blocked);
 }
 
 void ExpectSuccessGetCatalogResult(
@@ -103,11 +103,11 @@ void ExpectSuccessGetCatalogResult(
   ValidateTestingCatalog(catalog.get());
 }
 
-void ExpectBlacklistGetCatalogResult(
+void ExpectBlockedGetCatalogResult(
     GetCatalogStatus status,
     std::unique_ptr<GetCatalogTask::CategoryList> catalog) {
   EXPECT_EQ(GetCatalogStatus::kSuccess, status);
-  ValidateBlacklistTestingCatalog(catalog.get());
+  ValidateBlockedSitesTestingCatalog(catalog.get());
 }
 
 void ExpectEmptyGetCatalogResult(
@@ -151,7 +151,7 @@ class ExploreSitesGetCatalogTaskTest : public TaskTestBase {
   std::pair<std::string, std::string> GetCurrentAndDownloadingVersion();
   int GetNumberOfCategoriesInDB();
   int GetNumberOfSitesInDB();
-  void BlacklistSite(std::string url);
+  void BlockSite(std::string url);
 
  private:
   std::unique_ptr<ExploreSitesStore> store_;
@@ -263,10 +263,10 @@ int ExploreSitesGetCatalogTaskTest::GetNumberOfSitesInDB() {
   return result;
 }
 
-void ExploreSitesGetCatalogTaskTest::BlacklistSite(std::string url) {
-  BlacklistSiteTask task(store(), url);
+void ExploreSitesGetCatalogTaskTest::BlockSite(std::string url) {
+  BlockSiteTask task(store(), url);
   RunTask(&task);
-  // We don't actively wait for completion, so we rely on the blacklist request
+  // We don't actively wait for completion, so we rely on the block request
   // clearing the task queue before the task in the test proper runs.
 }
 
@@ -299,13 +299,13 @@ TEST_F(ExploreSitesGetCatalogTaskTest, SimpleCatalog) {
   EXPECT_EQ(4, GetNumberOfSitesInDB());
 }
 
-// This tests that sites on the blacklist do not show up when we do a get
+// This tests that blocked sites do not show up when we do a get
 // catalog task.
-TEST_F(ExploreSitesGetCatalogTaskTest, BlasklistedSitesMarkedBlacklisted) {
-  BlacklistSite("https://www.example.com/2");
+TEST_F(ExploreSitesGetCatalogTaskTest, BlasklistedSitesMarkedAsBlocked) {
+  BlockSite("https://www.example.com/2");
   PopulateTestingCatalog();
   GetCatalogTask task(store(), false,
-                      base::BindOnce(&ExpectBlacklistGetCatalogResult));
+                      base::BindOnce(&ExpectBlockedGetCatalogResult));
   RunTask(&task);
 }
 

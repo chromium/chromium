@@ -100,10 +100,10 @@ public class ExploreSitesBridge {
     }
 
     /**
-     * Adds a site to the blacklist when the user chooses "remove" from the long press menu.
+     * Adds a site to the blocklist when the user chooses "remove" from the long press menu.
      */
-    public static void blacklistSite(Profile profile, String url) {
-        ExploreSitesBridgeJni.get().blacklistSite(profile, url);
+    public static void blockSite(Profile profile, String url) {
+        ExploreSitesBridgeJni.get().blockSite(profile, url);
     }
 
     /**
@@ -164,7 +164,7 @@ public class ExploreSitesBridge {
         void updateCatalogFromNetwork(
                 Profile profile, boolean isImmediateFetch, Callback<Boolean> callback);
         void getSummaryImage(Profile profile, int pixelSize, Callback<Bitmap> callback);
-        void blacklistSite(Profile profile, String url);
+        void blockSite(Profile profile, String url);
         void recordClick(Profile profile, String url, int type);
         void getCatalog(Profile profile, int source, List<ExploreSitesCategory> result,
                 Callback<List<ExploreSitesCategory>> callback);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/explore_sites/blacklist_site_task.h"
+#include "chrome/browser/android/explore_sites/block_site_task.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -16,7 +16,7 @@
 namespace explore_sites {
 namespace {
 
-static const char kBlacklistSiteSql[] = R"(INSERT INTO site_blacklist
+static const char kBlockSiteSql[] = R"(INSERT INTO site_blacklist
 (url, date_removed)
 VALUES
 (?, ?);)";
@@ -25,7 +25,7 @@ static const char kClearSiteFromActivitySql[] =
     "DELETE FROM activity WHERE url = ?;";
 }  // namespace
 
-bool BlacklistSiteTaskSync(std::string url, sql::Database* db) {
+bool BlockSiteTaskSync(std::string url, sql::Database* db) {
   if (!db || url.empty())
     return false;
 
@@ -42,13 +42,13 @@ bool BlacklistSiteTaskSync(std::string url, sql::Database* db) {
   time_t unix_time = time_now.ToTimeT();
 
   // Then insert the URL.
-  sql::Statement blacklist_statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kBlacklistSiteSql));
+  sql::Statement block_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kBlockSiteSql));
 
   int col = 0;
-  blacklist_statement.BindString(col++, url);
-  blacklist_statement.BindInt64(col++, unix_time);
-  blacklist_statement.Run();
+  block_statement.BindString(col++, url);
+  block_statement.BindInt64(col++, unix_time);
+  block_statement.Run();
 
   // Then clear all matching activity.
   sql::Statement clear_activity_statement(
@@ -60,23 +60,23 @@ bool BlacklistSiteTaskSync(std::string url, sql::Database* db) {
   return transaction.Commit();
 }
 
-BlacklistSiteTask::BlacklistSiteTask(ExploreSitesStore* store, std::string url)
+BlockSiteTask::BlockSiteTask(ExploreSitesStore* store, std::string url)
     : store_(store), url_(url) {}
 
-BlacklistSiteTask::~BlacklistSiteTask() = default;
+BlockSiteTask::~BlockSiteTask() = default;
 
-void BlacklistSiteTask::Run() {
-  store_->Execute(base::BindOnce(&BlacklistSiteTaskSync, url_),
-                  base::BindOnce(&BlacklistSiteTask::FinishedExecuting,
+void BlockSiteTask::Run() {
+  store_->Execute(base::BindOnce(&BlockSiteTaskSync, url_),
+                  base::BindOnce(&BlockSiteTask::FinishedExecuting,
                                  weak_ptr_factory_.GetWeakPtr()),
                   false);
 }
 
-void BlacklistSiteTask::FinishedExecuting(bool result) {
+void BlockSiteTask::FinishedExecuting(bool result) {
   complete_ = true;
   result_ = result;
   TaskComplete();
-  DVLOG(1) << "Finished adding a site to the blacklist, result: " << result;
+  DVLOG(1) << "Finished adding a site to the blocklist, result: " << result;
 }
 
 }  // namespace explore_sites

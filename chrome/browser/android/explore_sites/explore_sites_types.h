@@ -26,7 +26,7 @@ struct ExploreSitesSite {
                    int category_id,
                    GURL url,
                    std::string title,
-                   bool is_blacklisted);
+                   bool is_blocked);
   ExploreSitesSite(ExploreSitesSite&& other);
   virtual ~ExploreSitesSite();
 
@@ -34,7 +34,7 @@ struct ExploreSitesSite {
   int category_id;
   GURL url;
   std::string title;
-  bool is_blacklisted;
+  bool is_blocked;
 
   DISALLOW_COPY_AND_ASSIGN(ExploreSitesSite);
 };
@@ -89,7 +89,7 @@ enum class ExploreSitesRequestStatus {
   // Request failed with error indicating that the request can not be serviced
   // by the server.
   kShouldSuspendBadRequest = 2,
-  // The request was blocked by a URL blacklist configured by the domain
+  // The request was blocked by a URL blocklist configured by the domain
   // administrator.
   kShouldSuspendBlockedByAdministrator = 3,
   // kMaxValue should always be the last type.

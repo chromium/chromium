@@ -98,7 +98,7 @@ VALUES
   std::pair<int, int> GetCatalogSizes() {
     int site_count = -1;
     int category_count = -1;
-    // Check that DB's site_blacklist table is empty.
+    // Check that DB's blocklist table is empty.
     ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
       sql::Statement site_count_s(
           db->GetUniqueStatement("SELECT COUNT(*) FROM sites"));

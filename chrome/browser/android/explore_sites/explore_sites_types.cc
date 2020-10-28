@@ -10,12 +10,12 @@ ExploreSitesSite::ExploreSitesSite(int site_id,
                                    int category_id,
                                    GURL url,
                                    std::string title,
-                                   bool is_blacklisted)
+                                   bool is_blocked)
     : site_id(site_id),
       category_id(category_id),
       url(url),
       title(title),
-      is_blacklisted(is_blacklisted) {}
+      is_blocked(is_blocked) {}
 
 ExploreSitesSite::ExploreSitesSite(ExploreSitesSite&& other) = default;
 

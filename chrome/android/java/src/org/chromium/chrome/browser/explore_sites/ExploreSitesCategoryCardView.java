@@ -112,7 +112,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         @Override
         public void removeItem() {
             // Update the database on the C++ side.
-            ExploreSitesBridge.blacklistSite(mProfile, mSiteUrl);
+            ExploreSitesBridge.blockSite(mProfile, mSiteUrl);
 
             // Remove from model (category).
             mCategory.removeSite(mTileIndex);
@@ -257,8 +257,8 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         for (ExploreSitesSite site : category.getSites()) {
             if (tileIndex >= tileMax) break;
             final PropertyModel siteModel = site.getModel();
-            // Skip blacklisted sites.
-            if (siteModel.get(ExploreSitesSite.BLACKLISTED_KEY)) continue;
+            // Skip blocked sites.
+            if (siteModel.get(ExploreSitesSite.BLOCKED_KEY)) continue;
 
             ExploreSitesTileView tileView = (ExploreSitesTileView) mTileView.getChildAt(tileIndex);
             tileView.initialize(mIconGenerator);
@@ -310,7 +310,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
      * An incomplete row is allowed if any of the following constraints are satisfied:
      *  - There are not enough sites to populate the first row.
      *  - There is more than one site in the last row.
-     *  - There is one site in the last row as a result of the user blacklisting a site.
+     *  - There is one site in the last row as a result of the user blocking a site.
      *
      * @param category The category from which the number of incomplete row will be calculated.
      */

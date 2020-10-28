@@ -24,19 +24,18 @@ public class ExploreSitesSite {
             new PropertyModel.ReadableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<Bitmap> ICON_KEY =
             new PropertyModel.WritableObjectPropertyKey<>();
-    static final PropertyModel.WritableBooleanPropertyKey BLACKLISTED_KEY =
+    static final PropertyModel.WritableBooleanPropertyKey BLOCKED_KEY =
             new PropertyModel.WritableBooleanPropertyKey();
 
     private PropertyModel mModel;
 
-    public ExploreSitesSite(int id, String title, String url, boolean isBlacklisted) {
+    public ExploreSitesSite(int id, String title, String url, boolean isBlocked) {
         mModel = new PropertyModel
-                         .Builder(ID_KEY, TILE_INDEX_KEY, TITLE_KEY, URL_KEY, ICON_KEY,
-                                 BLACKLISTED_KEY)
+                         .Builder(ID_KEY, TILE_INDEX_KEY, TITLE_KEY, URL_KEY, ICON_KEY, BLOCKED_KEY)
                          .with(ID_KEY, id)
                          .with(TITLE_KEY, title)
                          .with(URL_KEY, url)
-                         .with(BLACKLISTED_KEY, isBlacklisted)
+                         .with(BLOCKED_KEY, isBlocked)
                          .with(TILE_INDEX_KEY, DEFAULT_TILE_INDEX)
                          .build();
     }
@@ -47,8 +46,8 @@ public class ExploreSitesSite {
 
     @CalledByNative
     private static void createSiteInCategory(int siteId, String title, String url,
-            boolean isBlacklisted, ExploreSitesCategory category) {
-        ExploreSitesSite site = new ExploreSitesSite(siteId, title, url, isBlacklisted);
+            boolean isBlocked, ExploreSitesCategory category) {
+        ExploreSitesSite site = new ExploreSitesSite(siteId, title, url, isBlocked);
         category.addSite(site);
     }
 }

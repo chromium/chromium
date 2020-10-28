@@ -139,7 +139,7 @@ public class ExploreSitesCategory {
 
     public void addSite(ExploreSitesSite site) {
         mSites.add(site);
-        if (site.getModel().get(ExploreSitesSite.BLACKLISTED_KEY)) {
+        if (site.getModel().get(ExploreSitesSite.BLOCKED_KEY)) {
             mNumRemoved++;
         }
     }
@@ -149,7 +149,7 @@ public class ExploreSitesCategory {
     }
 
     /**
-     * Get the number of rows that could be filled completely with sites, if no site is blacklisted.
+     * Get the number of rows that could be filled completely with sites, if no site is blocked.
      * @param numColumns - number of columns wide the layout holding this category is. This
      *                   parameter must not be zero.
      */
@@ -164,19 +164,19 @@ public class ExploreSitesCategory {
     public boolean removeSite(int tileIndex) {
         if (tileIndex > mSites.size() || tileIndex < 0) return false;
 
-        // Find the siteIndex for the tileIndex by skipping over blacklisted sites.
+        // Find the siteIndex for the tileIndex by skipping over blocked sites.
         int siteIndex = 0;
         int validSiteCount = 0;
         while (siteIndex < mSites.size()) {
-            // Skipping over blacklisted sites, look for the nth unblacklisted site.
-            if (!mSites.get(siteIndex).getModel().get(ExploreSitesSite.BLACKLISTED_KEY)) {
+            // Skipping over blocked sites, look for the nth allowed site.
+            if (!mSites.get(siteIndex).getModel().get(ExploreSitesSite.BLOCKED_KEY)) {
                 validSiteCount++;
             }
 
             // When we find the nth valid site, we have found the site index matching the tile.
             // TileIndex is 0 based, validSiteCount is 1 based, so we add 1 to the tileIndex.
             if (tileIndex + 1 == validSiteCount
-                    && !mSites.get(siteIndex).getModel().get(ExploreSitesSite.BLACKLISTED_KEY)) {
+                    && !mSites.get(siteIndex).getModel().get(ExploreSitesSite.BLOCKED_KEY)) {
                 break;
             }
 
@@ -184,7 +184,7 @@ public class ExploreSitesCategory {
         }
         if (siteIndex >= mSites.size()) return false;
 
-        mSites.get(siteIndex).getModel().set(ExploreSitesSite.BLACKLISTED_KEY, true);
+        mSites.get(siteIndex).getModel().set(ExploreSitesSite.BLOCKED_KEY, true);
 
         // Reset the tile indices to account for removed tile.
         mSites.get(siteIndex).getModel().set(
@@ -192,7 +192,7 @@ public class ExploreSitesCategory {
 
         for (int i = siteIndex; i < mSites.size(); ++i) {
             ExploreSitesSite site = mSites.get(i);
-            if (!mSites.get(i).getModel().get(ExploreSitesSite.BLACKLISTED_KEY)) {
+            if (!mSites.get(i).getModel().get(ExploreSitesSite.BLOCKED_KEY)) {
                 site.getModel().set(ExploreSitesSite.TILE_INDEX_KEY, tileIndex);
                 tileIndex++;
             }

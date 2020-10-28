@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/explore_sites/blacklist_site_task.h"
+#include "chrome/browser/android/explore_sites/block_site_task.h"
 
 #include <memory>
 
@@ -24,10 +24,10 @@ using InitializationStatus = ExploreSitesStore::InitializationStatus;
 
 const char kGoogleUrl[] = "https://www.google.com";
 
-class ExploreSitesBlacklistSiteTest : public TaskTestBase {
+class ExploreSitesBlockSiteTest : public TaskTestBase {
  public:
-  ExploreSitesBlacklistSiteTest() = default;
-  ~ExploreSitesBlacklistSiteTest() override = default;
+  ExploreSitesBlockSiteTest() = default;
+  ~ExploreSitesBlockSiteTest() override = default;
 
   void SetUp() override {
     store_ = std::make_unique<ExploreSitesStore>(task_runner());
@@ -44,7 +44,7 @@ class ExploreSitesBlacklistSiteTest : public TaskTestBase {
     RunUntilIdle();
   }
 
-  void OnAddToBlacklisTaskDone(bool success) {
+  void OnAddToBlocklisTaskDone(bool success) {
     success_ = success;
     callback_called_ = true;
   }
@@ -60,10 +60,10 @@ class ExploreSitesBlacklistSiteTest : public TaskTestBase {
   bool success_;
   bool callback_called_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesBlacklistSiteTest);
+  DISALLOW_COPY_AND_ASSIGN(ExploreSitesBlockSiteTest);
 };
 
-void ExploreSitesBlacklistSiteTest::PopulateActivity() {
+void ExploreSitesBlockSiteTest::PopulateActivity() {
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement insert_activity(db->GetUniqueStatement(R"(
 INSERT INTO activity
@@ -76,10 +76,10 @@ VALUES
   }));
 }
 
-TEST_F(ExploreSitesBlacklistSiteTest, StoreFailure) {
+TEST_F(ExploreSitesBlockSiteTest, StoreFailure) {
   store()->SetInitializationStatusForTesting(InitializationStatus::kFailure,
                                              false);
-  BlacklistSiteTask task(store(), kGoogleUrl);
+  BlockSiteTask task(store(), kGoogleUrl);
   RunTask(&task);
 
   // A database failure should be completed but return with an error.
@@ -87,16 +87,16 @@ TEST_F(ExploreSitesBlacklistSiteTest, StoreFailure) {
   EXPECT_FALSE(task.result());
 }
 
-TEST_F(ExploreSitesBlacklistSiteTest, EmptyUrlTask) {
+TEST_F(ExploreSitesBlockSiteTest, EmptyUrlTask) {
   PopulateActivity();
-  BlacklistSiteTask task(store(), "");
+  BlockSiteTask task(store(), "");
   RunTask(&task);
 
   // The task should be completed but return with an error.
   EXPECT_TRUE(task.complete());
   EXPECT_FALSE(task.result());
 
-  // Check that DB's site_blacklist table is empty
+  // Check that DB's site_blocklist table is empty
   // and that activity table is not modified.
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement cat_count_s(
@@ -113,16 +113,16 @@ TEST_F(ExploreSitesBlacklistSiteTest, EmptyUrlTask) {
   }));
 }
 
-TEST_F(ExploreSitesBlacklistSiteTest, ValidUrlTask) {
+TEST_F(ExploreSitesBlockSiteTest, ValidUrlTask) {
   PopulateActivity();
-  BlacklistSiteTask task(store(), kGoogleUrl);
+  BlockSiteTask task(store(), kGoogleUrl);
   RunTask(&task);
 
   // Task should complete successfully
   EXPECT_TRUE(task.complete());
   EXPECT_TRUE(task.result());
 
-  // Check that DB's site_blacklist table contains kGoogleUrl and that
+  // Check that DB's site_blocklist table contains kGoogleUrl and that
   // kGoogleUrl-related activity is removed from the activity table.
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement cat_count_s(
