@@ -120,8 +120,10 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
     int remaining_size = es_size - offset;
     DCHECK_GE(remaining_size, MPEG1AudioStreamParser::kHeaderSize);
     MPEG1AudioStreamParser::Header header;
-    if (!MPEG1AudioStreamParser::ParseHeader(media_log_, cur_buf, &header))
+    if (!MPEG1AudioStreamParser::ParseHeader(
+            media_log_, &mp3_parse_error_limit_, cur_buf, &header)) {
       continue;
+    }
 
     if (remaining_size < header.frame_size) {
       // Not a full frame: will resume when we have more data.
@@ -160,8 +162,8 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
 bool EsParserMpeg1Audio::UpdateAudioConfiguration(
     const uint8_t* mpeg1audio_header) {
   MPEG1AudioStreamParser::Header header;
-  if (!MPEG1AudioStreamParser::ParseHeader(media_log_, mpeg1audio_header,
-                                           &header)) {
+  if (!MPEG1AudioStreamParser::ParseHeader(media_log_, &mp3_parse_error_limit_,
+                                           mpeg1audio_header, &header)) {
     return false;
   }
 

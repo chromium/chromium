@@ -462,7 +462,7 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
       }
 
       if (packet_end - header_start < MPEG1AudioStreamParser::kHeaderSize ||
-          !MPEG1AudioStreamParser::ParseHeader(nullptr, header_start,
+          !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr, header_start,
                                                nullptr)) {
         LIMITED_MEDIA_LOG(INFO, media_log_, num_discarded_packet_warnings_, 5)
             << "Discarding invalid MP3 packet, ts: "

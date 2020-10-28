@@ -80,6 +80,7 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
 
   // Limits the number of events we send over IPC to one.
   std::unique_ptr<media::MediaLogRecord> last_duration_changed_event_;
+  std::unique_ptr<media::MediaLogRecord> last_buffering_state_event_;
 
   // Holds the earliest MEDIA_ERROR_LOG_ENTRY event added to this log. This is
   // most likely to contain the most specific information available describing

@@ -26,9 +26,11 @@ class MEDIA_EXPORT ADTSStreamParser : public MPEGAudioStreamParserBase {
                        ChannelLayout* channel_layout,
                        int* sample_count,
                        bool* metadata_frame,
-                       std::vector<uint8_t>* extra_data) const override;
+                       std::vector<uint8_t>* extra_data) override;
 
  private:
+  size_t adts_parse_error_limit_ = 0;
+
   DISALLOW_COPY_AND_ASSIGN(ADTSStreamParser);
 };
 

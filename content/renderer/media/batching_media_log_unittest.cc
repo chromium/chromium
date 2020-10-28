@@ -10,6 +10,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "content/common/view_messages.h"
 #include "content/public/test/mock_render_thread.h"
+#include "media/base/buffering_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 
@@ -145,6 +146,41 @@ TEST_F(BatchingMediaLogTest, DurationChanged) {
       base::TimeDelta::FromMilliseconds(2));
   AddEvent<media::MediaLogEvent::kDurationChanged>(
       base::TimeDelta::FromMilliseconds(3));
+
+  EXPECT_EQ(0, message_count());
+  Advance(base::TimeDelta::FromMilliseconds(1000));
+  EXPECT_EQ(1, message_count());
+
+  // Verify contents. There should only be a single buffered extents changed
+  // event.
+  std::vector<media::MediaLogRecord> events = GetMediaLogRecords();
+  ASSERT_EQ(3u, events.size());
+  EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[0].type);
+  EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[1].type);
+  EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[2].type);
+}
+
+TEST_F(BatchingMediaLogTest, BufferingStateChanged) {
+  AddEvent<media::MediaLogEvent::kPlay>();
+  AddEvent<media::MediaLogEvent::kPause>();
+
+  // This event is handled separately and should always appear last regardless
+  // of how many times we see it.
+  AddEvent<media::MediaLogEvent::kBufferingStateChanged>(
+      media::SerializableBufferingState<
+          media::SerializableBufferingStateType::kPipeline>{
+          media::BUFFERING_HAVE_NOTHING, media::BUFFERING_CHANGE_REASON_UNKNOWN,
+          false});
+  AddEvent<media::MediaLogEvent::kBufferingStateChanged>(
+      media::SerializableBufferingState<
+          media::SerializableBufferingStateType::kPipeline>{
+          media::BUFFERING_HAVE_NOTHING, media::BUFFERING_CHANGE_REASON_UNKNOWN,
+          false});
+  AddEvent<media::MediaLogEvent::kBufferingStateChanged>(
+      media::SerializableBufferingState<
+          media::SerializableBufferingStateType::kPipeline>{
+          media::BUFFERING_HAVE_ENOUGH, media::BUFFERING_CHANGE_REASON_UNKNOWN,
+          false});
 
   EXPECT_EQ(0, message_count());
   Advance(base::TimeDelta::FromMilliseconds(1000));

@@ -68,6 +68,8 @@ class MEDIA_EXPORT EsParserMpeg1Audio : public EsParser {
 
   MediaLog* media_log_;
 
+  size_t mp3_parse_error_limit_ = 0;
+
   // Callbacks:
   // - to signal a new audio configuration,
   // - to send ES buffers.

@@ -84,7 +84,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
                                ChannelLayout* channel_layout,
                                int* sample_count,
                                bool* metadata_frame,
-                               std::vector<uint8_t>* extra_data) const = 0;
+                               std::vector<uint8_t>* extra_data) = 0;
 
   MediaLog* media_log() const { return media_log_; }
 
@@ -125,7 +125,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   //       next start code..
   //   0 : If a valid start code was not found and more data is needed.
   // < 0 : An error was encountered during parsing.
-  int FindNextValidStartCode(const uint8_t* data, int size) const;
+  int FindNextValidStartCode(const uint8_t* data, int size);
 
   // Sends the buffers in |buffers| to |new_buffers_cb_| and then clears
   // |buffers|.

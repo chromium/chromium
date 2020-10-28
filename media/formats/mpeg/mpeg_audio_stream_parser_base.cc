@@ -347,7 +347,7 @@ bool MPEGAudioStreamParserBase::ParseSyncSafeInt(BitReader* reader,
 }
 
 int MPEGAudioStreamParserBase::FindNextValidStartCode(const uint8_t* data,
-                                                      int size) const {
+                                                      int size) {
   const uint8_t* start = data;
   const uint8_t* end = data + size;
 

@@ -44,7 +44,8 @@ void Log(media::MediaLogRecord* event) {
 // This string comes from the TypeName template specialization
 // in media_log_type_enforcement.h, it's not encoded anywhere, so it's
 // just typed out here.
-constexpr char duration_changed_message[] = "kDurationChanged";
+constexpr char kDurationChangedMessage[] = "kDurationChanged";
+constexpr char kBufferingStateChangedMessage[] = "kBufferingStateChanged";
 
 }  // namespace
 
@@ -100,17 +101,21 @@ void BatchingMediaLog::AddLogRecordLocked(
         last_pipeline_error_.swap(event);
         break;
 
-      case media::MediaLogRecord::Type::kMediaEventTriggered:
+      case media::MediaLogRecord::Type::kMediaEventTriggered: {
         DCHECK(event->params.HasKey(MediaLog::kEventKey));
-        if (*event->params.FindStringKey(MediaLog::kEventKey) ==
-            duration_changed_message) {
-          // Similar to the extents changed message, this may fire many times
-          // for badly muxed media. Suppress within our rate limits here.
+        const auto* event_key =
+            event->params.FindStringKey(MediaLog::kEventKey);
+        if (*event_key == kDurationChangedMessage) {
+          // This may fire many times for badly muxed media; only keep the last.
           last_duration_changed_event_.swap(event);
+        } else if (*event_key == kBufferingStateChangedMessage) {
+          // This may fire many times on poor networks; only keep the last.
+          last_buffering_state_event_.swap(event);
         } else {
           queued_media_events_.push_back(*std::move(event));
         }
         break;
+      }
 
       case media::MediaLogRecord::Type::kMessage:
         queued_media_events_.push_back(*event);
@@ -208,6 +213,11 @@ void BatchingMediaLog::SendQueuedMediaEvents() {
     if (last_duration_changed_event_) {
       queued_media_events_.push_back(*last_duration_changed_event_);
       last_duration_changed_event_.reset();
+    }
+
+    if (last_buffering_state_event_) {
+      queued_media_events_.push_back(*last_buffering_state_event_);
+      last_buffering_state_event_.reset();
     }
 
     queued_media_events_.swap(events_to_send);
