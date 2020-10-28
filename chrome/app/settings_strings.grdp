@@ -1292,13 +1292,54 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BUTTON_ARIA_LABEL" desc="Accessibility text for the button that allows users to review their extensions settings.">
     Review extensions
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_PRIMARY_LABEL" desc="'Unwanted software protection' is an element in safety check that finds harmful software installed on the computer and allows users to remove it.">
-    Device software
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_BUTTON_ARIA_LABEL" desc="Accessiblity text for the button that allows users to review and remove harmful software found on their computer.">
-    Review device software
-  </message>
-
+  <if expr="is_win and _google_chrome">
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_PRIMARY_LABEL" desc="'Unwanted software protection' is an element in safety check that finds harmful software installed on the computer and allows users to remove it.">
+      Device software
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_BUTTON_ARIA_LABEL" desc="Accessiblity text for the button that allows users to review and remove harmful software found on their computer.">
+      Review device software
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_NO_UWS_WITHOUT_TIMESTAMP" desc="This text describes that Chrome can check if any known harmful software is installed on the user's computer.">
+      Chrome can check your computer for harmful software
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_NO_UWS_WITH_TIMESTAMP_AFTER_SECONDS" desc="This text describes that Chrome did not find any known harmful software installed on the user's computer, and that it checked for harmful softwrae the last time a certain time ago.">
+      Chrome didn't find known harmful software on your computer. Last checked: a moment ago.
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_NO_UWS_WITH_TIMESTAMP_AFTER_MINUTES" desc="This text describes that Chrome did not find any known harmful software installed on the user's computer, and that it checked for harmful softwrae the last time a certain time ago.">
+      {NUM_MINS, plural,
+       =1 {Chrome didn't find known harmful software on your computer. Last checked: 1 minute ago.}
+       other {Chrome didn't find known harmful software on your computer. Last checked: {NUM_MINS} minutes ago.}}
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_NO_UWS_WITH_TIMESTAMP_AFTER_HOURS" desc="This text describes that Chrome did not find any known harmful software installed on the user's computer, and that it checked for harmful softwrae the last time a certain time ago.">
+      {NUM_HOURS, plural,
+       =1 {Chrome didn't find known harmful software on your computer. Last checked: 1 hour ago.}
+       other {Chrome didn't find known harmful software on your computer. Last checked: {NUM_HOURS} hours ago.}}
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_NO_UWS_WITH_TIMESTAMP_YESTERDAY" desc="This text describes that Chrome did not find any known harmful software installed on the user's computer, and that it checked for harmful softwrae the last time a certain time ago.">
+      Chrome didn't find known harmful software on your computer. Last checked: yesterday.
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_NO_UWS_WITH_TIMESTAMP_AFTER_DAYS" desc="This text describes that Chrome did not find any known harmful software installed on the user's computer, and that it checked for harmful softwrae the last time a certain time ago.">
+      {NUM_DAYS, plural,
+       =1 {Chrome didn't find known harmful software on your computer. Last checked: 1 day ago.}
+       other {Chrome didn't find known harmful software on your computer. Last checked: {NUM_DAYS} days ago.}}
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_INFECTED" desc="This text describes that Chrome found harmful software on the computer.">
+      Chrome found harmful software on your computer
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_SCANNING" desc="This text describes that Chrome is currently checking the user's device for unwanted software. This takes a couple of minutes.">
+      Chrome is checking your computer for harmful software...
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_REMOVING" desc="This text describes that Chrome is currently removing unwanted software frrom the user.s device. This takes a couple of minutes.">
+      Chrome is removing harmful software from your computer...
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_DISABLED_BY_ADMIN" desc="This text describes that Chrome can't check for unwanted software because an administrator disabled the feature.">
+      <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Your administrator<ph name="END_LINK">&lt;/a&gt;</ph> has disabled Chrome's check for harmful software
+    </message>
+    <message name="IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_ERROR" desc="This text describes that Chrome can't check for unwanted software due to an error.">
+      An error occurred while Chrome was checking your computer for harmful software
+    </message>
+  </if>
+  
   <message name="IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_LABEL" desc="In the advanced options tab, the text next to the checkbox that enables prediction of network actions.  Actions include browser-initiated DNS prefetching, TCP and SSL preconnection, and prerendering of webpages.">
     Preload pages for faster browsing and searching
   </message>
