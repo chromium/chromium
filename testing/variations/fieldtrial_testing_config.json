@@ -5207,6 +5207,7 @@
                 "android",
                 "android_webview",
                 "chromeos",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -5214,6 +5215,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocGigaCage"
+                    ]
+                },
+                {
+                    "name": "Enabled_V3",
                     "enable_features": [
                         "PartitionAllocGigaCage"
                     ]
