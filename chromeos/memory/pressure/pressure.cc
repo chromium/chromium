@@ -24,6 +24,9 @@ constexpr char kMinFilelist[] = "/proc/sys/vm/min_filelist_kbytes";
 constexpr char kRamVsSwapWeight[] =
     "/sys/kernel/mm/chromeos-low_mem/ram_vs_swap_weight";
 
+// The default value if the ram_vs_swap_weight file is not available.
+constexpr uint64_t kRamVsSwapWeightDefault = 4;
+
 // The extra free to trigger kernel memory reclaim earlier.
 constexpr char kExtraFree[] = "/proc/sys/vm/extra_free_kbytes";
 
@@ -233,6 +236,8 @@ void UpdateMemoryParameters() {
   reserved_free = GetReservedMemoryKB();
   min_filelist = ReadFileToUint64(base::FilePath(kMinFilelist));
   ram_swap_weight = ReadFileToUint64(base::FilePath(kRamVsSwapWeight));
+  if (ram_swap_weight == 0)
+    ram_swap_weight = kRamVsSwapWeightDefault;
 }
 
 }  // namespace pressure
