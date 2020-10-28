@@ -113,8 +113,9 @@ class UpdaterControlImpl
   UpdaterControlImpl& operator=(const UpdaterControlImpl&) = delete;
 
   // Overrides for IUpdaterControl.
-  IFACEMETHODIMP Run(IUpdaterObserver* observer) override;
-  IFACEMETHODIMP InitializeUpdateService(IUpdaterObserver* observer) override;
+  IFACEMETHODIMP Run(IUpdaterControlCallback* callback) override;
+  IFACEMETHODIMP InitializeUpdateService(
+      IUpdaterControlCallback* callback) override;
 
  private:
   ~UpdaterControlImpl() override = default;

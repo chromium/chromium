@@ -73,6 +73,20 @@ typedef interface IAppWeb IAppWeb;
 #endif 	/* __IAppWeb_FWD_DEFINED__ */
 
 
+#ifndef __IUpdaterControlCallback_FWD_DEFINED__
+#define __IUpdaterControlCallback_FWD_DEFINED__
+typedef interface IUpdaterControlCallback IUpdaterControlCallback;
+
+#endif 	/* __IUpdaterControlCallback_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterControl_FWD_DEFINED__
+#define __IUpdaterControl_FWD_DEFINED__
+typedef interface IUpdaterControl IUpdaterControl;
+
+#endif 	/* __IUpdaterControl_FWD_DEFINED__ */
+
+
 #ifndef __IUpdateState_FWD_DEFINED__
 #define __IUpdateState_FWD_DEFINED__
 typedef interface IUpdateState IUpdateState;
@@ -99,13 +113,6 @@ typedef interface IUpdaterObserver IUpdaterObserver;
 typedef interface IUpdater IUpdater;
 
 #endif 	/* __IUpdater_FWD_DEFINED__ */
-
-
-#ifndef __IUpdaterControl_FWD_DEFINED__
-#define __IUpdaterControl_FWD_DEFINED__
-typedef interface IUpdaterControl IUpdaterControl;
-
-#endif 	/* __IUpdaterControl_FWD_DEFINED__ */
 
 
 #ifndef __UpdaterClass_FWD_DEFINED__
@@ -1121,6 +1128,176 @@ EXTERN_C const IID IID_IAppWeb;
 #endif 	/* __IAppWeb_INTERFACE_DEFINED__ */
 
 
+#ifndef __IUpdaterControlCallback_INTERFACE_DEFINED__
+#define __IUpdaterControlCallback_INTERFACE_DEFINED__
+
+/* interface IUpdaterControlCallback */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterControlCallback;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("D272C794-2ACE-4584-B993-3B90C622BE65")
+    IUpdaterControlCallback : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ LONG result) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterControlCallbackVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterControlCallback * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterControlCallback * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterControlCallback * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterControlCallback * This,
+            /* [in] */ LONG result);
+        
+        END_INTERFACE
+    } IUpdaterControlCallbackVtbl;
+
+    interface IUpdaterControlCallback
+    {
+        CONST_VTBL struct IUpdaterControlCallbackVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterControlCallback_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterControlCallback_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterControlCallback_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterControlCallback_Run(This,result)	\
+    ( (This)->lpVtbl -> Run(This,result) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterControlCallback_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterControl_INTERFACE_DEFINED__
+#define __IUpdaterControl_INTERFACE_DEFINED__
+
+/* interface IUpdaterControl */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterControl;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("526DA036-9BD3-4697-865A-DA12D37DFFCA")
+    IUpdaterControl : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ IUpdaterControlCallback *callback) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE InitializeUpdateService( 
+            /* [in] */ IUpdaterControlCallback *callback) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterControlVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterControl * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterControl * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterControl * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterControl * This,
+            /* [in] */ IUpdaterControlCallback *callback);
+        
+        HRESULT ( STDMETHODCALLTYPE *InitializeUpdateService )( 
+            IUpdaterControl * This,
+            /* [in] */ IUpdaterControlCallback *callback);
+        
+        END_INTERFACE
+    } IUpdaterControlVtbl;
+
+    interface IUpdaterControl
+    {
+        CONST_VTBL struct IUpdaterControlVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterControl_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterControl_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterControl_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterControl_Run(This,callback)	\
+    ( (This)->lpVtbl -> Run(This,callback) ) 
+
+#define IUpdaterControl_InitializeUpdateService(This,callback)	\
+    ( (This)->lpVtbl -> InitializeUpdateService(This,callback) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterControl_INTERFACE_DEFINED__ */
+
+
 #ifndef __IUpdateState_INTERFACE_DEFINED__
 #define __IUpdateState_INTERFACE_DEFINED__
 
@@ -1472,7 +1649,7 @@ EXTERN_C const IID IID_IUpdater;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("63B8FFB1-5314-48C9-9C57-93EC8BC6184B")
+    MIDL_INTERFACE("D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83")
     IUpdater : public IUnknown
     {
     public:
@@ -1591,96 +1768,6 @@ EXTERN_C const IID IID_IUpdater;
 #endif 	/* __IUpdater_INTERFACE_DEFINED__ */
 
 
-#ifndef __IUpdaterControl_INTERFACE_DEFINED__
-#define __IUpdaterControl_INTERFACE_DEFINED__
-
-/* interface IUpdaterControl */
-/* [unique][helpstring][uuid][dual][object] */ 
-
-
-EXTERN_C const IID IID_IUpdaterControl;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("526DA036-9BD3-4697-865A-DA12D37DFFCA")
-    IUpdaterControl : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE Run( 
-            /* [in] */ IUpdaterObserver *observer) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE InitializeUpdateService( 
-            /* [in] */ IUpdaterObserver *observer) = 0;
-        
-    };
-    
-    
-#else 	/* C style interface */
-
-    typedef struct IUpdaterControlVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IUpdaterControl * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IUpdaterControl * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IUpdaterControl * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *Run )( 
-            IUpdaterControl * This,
-            /* [in] */ IUpdaterObserver *observer);
-        
-        HRESULT ( STDMETHODCALLTYPE *InitializeUpdateService )( 
-            IUpdaterControl * This,
-            /* [in] */ IUpdaterObserver *observer);
-        
-        END_INTERFACE
-    } IUpdaterControlVtbl;
-
-    interface IUpdaterControl
-    {
-        CONST_VTBL struct IUpdaterControlVtbl *lpVtbl;
-    };
-
-    
-
-#ifdef COBJMACROS
-
-
-#define IUpdaterControl_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
-
-#define IUpdaterControl_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
-
-#define IUpdaterControl_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
-
-
-#define IUpdaterControl_Run(This,observer)	\
-    ( (This)->lpVtbl -> Run(This,observer) ) 
-
-#define IUpdaterControl_InitializeUpdateService(This,observer)	\
-    ( (This)->lpVtbl -> InitializeUpdateService(This,observer) ) 
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-
-#endif 	/* __IUpdaterControl_INTERFACE_DEFINED__ */
-
-
 
 #ifndef __UpdaterLib_LIBRARY_DEFINED__
 #define __UpdaterLib_LIBRARY_DEFINED__
@@ -1701,7 +1788,7 @@ EXTERN_C const CLSID CLSID_UpdaterClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("158428a4-6014-4978-83ba-9fad0dabe791")
+class DECLSPEC_UUID("3d852661-c795-4d20-9b95-5561e9a1d2d9")
 UpdaterClass;
 #endif
 #endif /* __UpdaterLib_LIBRARY_DEFINED__ */

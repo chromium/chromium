@@ -21,58 +21,53 @@
 namespace updater {
 namespace {
 
-using ICompleteStatusPtr = ::Microsoft::WRL::ComPtr<ICompleteStatus>;
 
 static constexpr base::TaskTraits kComClientTraits = {
     base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
-// This class implements the IUpdaterObserver interface and exposes it as a COM
-// object. The class has thread-affinity for the STA thread. However, its
+// This class implements the IUpdaterControlCallback interface and exposes it as
+// a COM object. The class has thread-affinity for the STA thread. However, its
 // functions are invoked directly by COM RPC, and they are not sequenced through
 // the thread task runner. This means that sequence checkers can't be used in
 // this class.
-class UpdaterControlObserver
+class UpdaterControlCallback
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdaterObserver> {
+          IUpdaterControlCallback> {
  public:
-  UpdaterControlObserver(
+  UpdaterControlCallback(
       Microsoft::WRL::ComPtr<IUpdaterControl> updater_control,
       base::OnceClosure callback)
       : com_task_runner_(base::SequencedTaskRunnerHandle::Get()),
         updater_control_(updater_control),
         callback_(std::move(callback)) {}
 
-  UpdaterControlObserver(const UpdaterControlObserver&) = delete;
-  UpdaterControlObserver& operator=(const UpdaterControlObserver&) = delete;
+  UpdaterControlCallback(const UpdaterControlCallback&) = delete;
+  UpdaterControlCallback& operator=(const UpdaterControlCallback&) = delete;
 
-  // Overrides for IUpdaterObserver.
-  IFACEMETHODIMP OnStateChange(IUpdateState* update_state) override {
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP OnComplete(ICompleteStatus* complete_status) override {
-    DCHECK(complete_status);
-    DVLOG(2) << __func__ << " returned " << QueryStatus(complete_status) << ".";
-    com_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&UpdaterControlObserver::OnCompleteOnSTA,
-                                  base::WrapRefCounted(this)));
+  // Overrides for IUpdaterControlCallback.
+  //
+  // Invoked by COM RPC on the apartment thread when the call to any of the
+  // non-blocking `ControlServiceProxy` functions completes.
+  IFACEMETHODIMP Run(LONG result) override {
+    DVLOG(2) << __func__ << " result " << result << ".";
+    com_task_runner_->PostTask(FROM_HERE,
+                               base::BindOnce(&UpdaterControlCallback::RunOnSTA,
+                                              base::WrapRefCounted(this)));
     return S_OK;
   }
 
-  // Disconnects this observer from its subject and ensures the callbacks are
+  // Disconnects this callback from its subject and ensures the callbacks are
   // not posted after this function is called. Returns the completion callback
   // so that the owner of this object can take back the callback ownership.
   base::OnceClosure Disconnect();
 
  private:
-  ~UpdaterControlObserver() override = default;
+  ~UpdaterControlCallback() override = default;
 
   // Called in sequence on the |com_task_runner_|.
-  void OnCompleteOnSTA();
-
-  // Returns the value of the status code.]
-  LONG QueryStatus(ICompleteStatus* complete_status);
+  void RunOnSTA();
 
   // Bound to the STA thread.
   THREAD_CHECKER(thread_checker_);
@@ -84,27 +79,18 @@ class UpdaterControlObserver
   // owned by the COM RPC runtime.
   Microsoft::WRL::ComPtr<IUpdaterControl> updater_control_;
 
-  // Called by IUpdaterObserver::OnComplete when the COM RPC call is done.
+  // Called by IUpdaterControlCallback::Run when the COM RPC call is done.
   base::OnceClosure callback_;
 };
 
-base::OnceClosure UpdaterControlObserver::Disconnect() {
+base::OnceClosure UpdaterControlCallback::Disconnect() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
   updater_control_ = nullptr;
   return std::move(callback_);
 }
 
-LONG UpdaterControlObserver::QueryStatus(ICompleteStatus* complete_status) {
-  DCHECK(complete_status);
-
-  LONG code = 0;
-  CHECK(SUCCEEDED(complete_status->get_statusCode(&code)));
-
-  return code;
-}
-
-void UpdaterControlObserver::OnCompleteOnSTA() {
+void UpdaterControlCallback::RunOnSTA() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   updater_control_ = nullptr;
@@ -113,7 +99,7 @@ void UpdaterControlObserver::OnCompleteOnSTA() {
     DVLOG(2) << "Skipping posting the completion callback.";
     return;
   }
-  com_task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(callback_)));
+  com_task_runner_->PostTask(FROM_HERE, std::move(callback_));
 }
 
 }  // namespace
@@ -157,7 +143,7 @@ void ControlServiceProxy::RunOnSTA(base::OnceClosure callback) {
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the updater control server. " << std::hex
              << hr;
-    std::move(callback).Run();
+    com_task_runner_->PostTask(FROM_HERE, std::move(callback));
     return;
   }
 
@@ -166,30 +152,29 @@ void ControlServiceProxy::RunOnSTA(base::OnceClosure callback) {
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to query the updater_control interface. " << std::hex
              << hr;
-    std::move(callback).Run();
+    com_task_runner_->PostTask(FROM_HERE, std::move(callback));
     return;
   }
 
-  // The COM RPC takes ownership of the |observer| and owns a reference to
-  // the updater object as well. As long as the |observer| retains this
+  // The `rpc_callback` takes ownership of the `callback` and owns a reference
+  // to the updater object as well. As long as the `rpc_callback` retains this
   // reference to the updater control object, then the object is going to stay
   // alive.
-  // The |observer| can drop its reference to the updater control object after
-  // handling the last server callback, then the object model is torn down, and
-  // finally, the execution flow returns back into the App object once the
-  // completion callback is posted.
-  auto observer = Microsoft::WRL::Make<UpdaterControlObserver>(
+  // The `rpc_callback` drops its reference to the updater control object when
+  // handling the last server callback. After that, the object model is torn
+  // down, and the execution flow returns back into the App object when
+  // `callback` is posted.
+  auto rpc_callback = Microsoft::WRL::Make<UpdaterControlCallback>(
       updater_control, std::move(callback));
-  hr = updater_control->Run(observer.Get());
+  hr = updater_control->Run(rpc_callback.Get());
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to call IUpdaterControl::Run" << std::hex << hr;
 
     // Since the RPC call returned an error, it can't be determined what the
-    // state of the update server is. The observer may or may not post any
-    // callback. Disconnecting the observer resolves this ambiguity and
-    // transfers the ownership of the callback back to the owner of the
-    // observer.
-    observer->Disconnect().Run();
+    // state of the update server is. The RPC callback may or may not have run.
+    // Disconnecting the object resolves this ambiguity and transfers the
+    // ownership of the callback back to the caller.
+    com_task_runner_->PostTask(FROM_HERE, rpc_callback->Disconnect());
     return;
   }
 }
@@ -220,7 +205,7 @@ void ControlServiceProxy::InitializeUpdateServiceOnSTA(
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the updater control server. " << std::hex
              << hr;
-    std::move(callback).Run();
+    com_task_runner_->PostTask(FROM_HERE, std::move(callback));
     return;
   }
 
@@ -229,17 +214,17 @@ void ControlServiceProxy::InitializeUpdateServiceOnSTA(
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to query the updater_control interface. " << std::hex
              << hr;
-    std::move(callback).Run();
+    com_task_runner_->PostTask(FROM_HERE, std::move(callback));
     return;
   }
 
-  auto observer = Microsoft::WRL::Make<UpdaterControlObserver>(
+  auto rpc_callback = Microsoft::WRL::Make<UpdaterControlCallback>(
       updater_control, std::move(callback));
-  hr = updater_control->InitializeUpdateService(observer.Get());
+  hr = updater_control->InitializeUpdateService(rpc_callback.Get());
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to call IUpdaterControl::InitializeUpdateService"
              << std::hex << hr;
-    observer->Disconnect().Run();
+    com_task_runner_->PostTask(FROM_HERE, rpc_callback->Disconnect());
     return;
   }
 }

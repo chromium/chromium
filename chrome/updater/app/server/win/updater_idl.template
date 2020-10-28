@@ -211,6 +211,32 @@ interface IAppWeb : IDispatch {
 
 // The new interface definitions. For documentation, see the similar
 // types defined in updater::UpdateService or updater::ControlService.
+
+// UpdaterControl objects.
+[
+  object,
+  dual,
+  uuid(IUPDATERCONTROLCALLBACK_IID),
+  helpstring("IUpdaterControlCallback Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterControlCallback : IUnknown {
+  HRESULT Run([in] LONG result);
+};
+
+[
+  object,
+  dual,
+  uuid(IUPDATERCONTROL_IID),
+  helpstring("IUpdaterControl Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterControl : IUnknown {
+  HRESULT Run([in] IUpdaterControlCallback* callback);
+  HRESULT InitializeUpdateService([in] IUpdaterControlCallback* callback);
+};
+
+// Updater objects.
 [
   object,
   dual,
@@ -272,18 +298,6 @@ interface IUpdater : IUnknown {
   HRESULT Update([ in, string ] const WCHAR* app_id,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver * observer);
-};
-
-[
-  object,
-  dual,
-  uuid(IUPDATERCONTROL_IID),
-  helpstring("IUpdaterControl Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterControl : IUnknown {
-  HRESULT Run([in] IUpdaterObserver* observer);
-  HRESULT InitializeUpdateService([in] IUpdaterObserver* observer);
 };
 
 [
