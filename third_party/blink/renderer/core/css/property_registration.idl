@@ -5,7 +5,7 @@
 // https://drafts.css-houdini.org/css-properties-values-api/#registering-custom-properties
 [
     ImplementedAs=PropertyRegistration
-] partial interface CSS {
+] partial namespace CSS {
     [MeasureAs=CSSRegisterProperty, CallWith=ExecutionContext, RaisesException]
-        static void registerProperty(PropertyDefinition definition);
+        void registerProperty(PropertyDefinition definition);
 };

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 435 tests; 378 PASS, 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 435 tests; 380 PASS, 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface CSSStyleSheet: original interface defined
@@ -417,8 +417,8 @@ PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit p
 PASS CSS namespace: extended attributes
 PASS CSS namespace: property descriptor
 PASS CSS namespace: [[Extensible]] is true
-FAIL CSS namespace: [[Prototype]] is Object.prototype assert_equals: expected (object) object "[object Object]" but got (function) function "function () { [native code] }"
-FAIL CSS namespace: typeof is "object" assert_equals: expected "object" but got "function"
+PASS CSS namespace: [[Prototype]] is Object.prototype
+PASS CSS namespace: typeof is "object"
 PASS CSS namespace: operation escape(CSSOMString)
 PASS SVGElement interface: attribute style
 PASS SVGElement interface: svg_element must inherit property "style" with the proper type

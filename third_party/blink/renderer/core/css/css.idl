@@ -32,8 +32,8 @@
 [
     Exposed=Window,
     ImplementedAs=DOMWindowCSS
-] interface CSS {
-    [CallWith=ExecutionContext] static boolean supports(DOMString property, DOMString value);
-    [CallWith=ExecutionContext] static boolean supports(DOMString conditionText);
-    static DOMString escape(DOMString ident);
+] namespace CSS {
+    [CallWith=ExecutionContext] boolean supports(DOMString property, DOMString value);
+    [CallWith=ExecutionContext] boolean supports(DOMString conditionText);
+    DOMString escape(DOMString ident);
 };

@@ -6,52 +6,52 @@
 
 [
   ImplementedAs=CSSUnitValues
-] partial interface CSS {
-  [NewObject] static CSSUnitValue number(double value);
-  [NewObject] static CSSUnitValue percent(double value);
+] partial namespace CSS {
+  [NewObject] CSSUnitValue number(double value);
+  [NewObject] CSSUnitValue percent(double value);
 
   // <length>
-  [NewObject] static CSSUnitValue em(double value);
-  [NewObject] static CSSUnitValue ex(double value);
-  [NewObject] static CSSUnitValue ch(double value);
-  [NewObject] static CSSUnitValue rem(double value);
-  [NewObject] static CSSUnitValue vw(double value);
-  [NewObject] static CSSUnitValue vh(double value);
-  [NewObject] static CSSUnitValue vmin(double value);
-  [NewObject] static CSSUnitValue vmax(double value);
-  [NewObject] static CSSUnitValue cm(double value);
-  [NewObject] static CSSUnitValue mm(double value);
-  [NewObject] static CSSUnitValue in(double value);
-  [NewObject] static CSSUnitValue pt(double value);
-  [NewObject] static CSSUnitValue pc(double value);
-  [NewObject] static CSSUnitValue px(double value);
-  [NewObject] static CSSUnitValue Q(double value);
+  [NewObject] CSSUnitValue em(double value);
+  [NewObject] CSSUnitValue ex(double value);
+  [NewObject] CSSUnitValue ch(double value);
+  [NewObject] CSSUnitValue rem(double value);
+  [NewObject] CSSUnitValue vw(double value);
+  [NewObject] CSSUnitValue vh(double value);
+  [NewObject] CSSUnitValue vmin(double value);
+  [NewObject] CSSUnitValue vmax(double value);
+  [NewObject] CSSUnitValue cm(double value);
+  [NewObject] CSSUnitValue mm(double value);
+  [NewObject] CSSUnitValue in(double value);
+  [NewObject] CSSUnitValue pt(double value);
+  [NewObject] CSSUnitValue pc(double value);
+  [NewObject] CSSUnitValue px(double value);
+  [NewObject] CSSUnitValue Q(double value);
   // TODO: Currently unsupported length units that are specified
-  // [NewObject] static CSSUnitValue ic(double value);
-  // [NewObject] static CSSUnitValue lh(double value);
-  // [NewObject] static CSSUnitValue rlh(double value);
-  // [NewObject] static CSSUnitValue vi(double value);
-  // [NewObject] static CSSUnitValue vb(double value);
+  // [NewObject] CSSUnitValue ic(double value);
+  // [NewObject] CSSUnitValue lh(double value);
+  // [NewObject] CSSUnitValue rlh(double value);
+  // [NewObject] CSSUnitValue vi(double value);
+  // [NewObject] CSSUnitValue vb(double value);
 
   // <angle>
-  [NewObject] static CSSUnitValue deg(double value);
-  [NewObject] static CSSUnitValue grad(double value);
-  [NewObject] static CSSUnitValue rad(double value);
-  [NewObject] static CSSUnitValue turn(double value);
+  [NewObject] CSSUnitValue deg(double value);
+  [NewObject] CSSUnitValue grad(double value);
+  [NewObject] CSSUnitValue rad(double value);
+  [NewObject] CSSUnitValue turn(double value);
 
   // <time>
-  [NewObject] static CSSUnitValue s(double value);
-  [NewObject] static CSSUnitValue ms(double value);
+  [NewObject] CSSUnitValue s(double value);
+  [NewObject] CSSUnitValue ms(double value);
 
   // <frequency>
-  [NewObject] static CSSUnitValue Hz(double value);
-  [NewObject] static CSSUnitValue kHz(double value);
+  [NewObject] CSSUnitValue Hz(double value);
+  [NewObject] CSSUnitValue kHz(double value);
 
   // <resolution>
-  [NewObject] static CSSUnitValue dpi(double value);
-  [NewObject] static CSSUnitValue dpcm(double value);
-  [NewObject] static CSSUnitValue dppx(double value);
+  [NewObject] CSSUnitValue dpi(double value);
+  [NewObject] CSSUnitValue dpcm(double value);
+  [NewObject] CSSUnitValue dppx(double value);
 
   // <flex>
-  [NewObject] static CSSUnitValue fr(double value);
+  [NewObject] CSSUnitValue fr(double value);
 };

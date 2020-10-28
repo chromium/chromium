@@ -519,8 +519,6 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_count_queuing_strategy.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_csp_violation_report_body.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_csp_violation_report_body.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_animation.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_animation.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_condition_rule.cc",
@@ -1393,7 +1391,10 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_xslt_processor.h",
 ]
 
-generated_namespace_sources_in_core = []
+generated_namespace_sources_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css.h",
+]
 
 # Generated sources for testing
 

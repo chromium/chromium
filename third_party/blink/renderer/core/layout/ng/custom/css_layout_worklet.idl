@@ -9,6 +9,6 @@
     RuntimeEnabled=CSSLayoutAPI,
     MeasureAs=LayoutWorklet,
     SecureContext
-] partial interface CSS {
-    [CallWith=ScriptState] static readonly attribute Worklet layoutWorklet;
+] partial namespace CSS {
+    [CallWith=ScriptState] readonly attribute Worklet layoutWorklet;
 };
