@@ -128,8 +128,8 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
   for (const std::string& mac_address : mac_addresses)
     mac_address_value_list.Append(base::Value(mac_address));
 
-  std::string dm_token;
-  hr = GetDmToken(&dm_token);
+  base::string16 dm_token;
+  hr = GetGCPWDmToken(sid, &dm_token);
   if (FAILED(hr)) {
     LOGFN(WARNING) << "DM token is required to execute periodic tasks hr="
                  << putHR(hr);
@@ -157,7 +157,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
   request_dict_->SetStringKey(kBuiltInAdminNameParameterName,
                               built_in_admin_name);
   request_dict_->SetStringKey(kAdminGroupNameParameterName, admin_group_name);
-  request_dict_->SetStringKey(kDmToken, dm_token);
+  request_dict_->SetStringKey(kDmToken, base::UTF16ToUTF8(dm_token));
 
   base::string16 known_resource_id = GetUserDeviceResourceId(sid);
   if (!known_resource_id.empty()) {

@@ -2060,6 +2060,11 @@ HRESULT CGaiaCredentialBase::PerformActions(const base::Value& properties) {
   if (FAILED(hr) && hr != E_NOTIMPL)
     LOGFN(ERROR) << "StoreWindowsPasswordIfNeeded hr=" << putHR(hr);
 
+  hr = GenerateGCPWDmToken(sid);
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "GenerateGCPWDmToken hr=" << putHR(hr);
+  }
+
   // Upload device details to gem database.
   hr = GemDeviceDetailsManager::Get()->UploadDeviceDetails(access_token, sid,
                                                            username, domain);
