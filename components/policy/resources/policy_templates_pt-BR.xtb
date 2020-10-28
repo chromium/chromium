@@ -982,6 +982,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
        Se a política não for definida, as informações de métrica e dados de diagnóstico ficarão desativados nos dispositivos não gerenciados e ativados nos dispositivos gerenciados.</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
+<translation id="2455033019778127130">Usa o comportamento padrão do navegador, exibe os TOS e espera até eles serem aceitos pelo usuário.</translation>
 <translation id="2456629156652006573">Não listado</translation>
 <translation id="2463034609187171371">Ativar pacotes de criptografia DHE em TLS</translation>
 <translation id="2463365186486772703">Localidade do aplicativo</translation>
@@ -2422,6 +2423,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Quando a política não estiver definida, o padrão será "desativado" para usuários gerenciados por empresa e "ativado" para usuários não gerenciados.</translation>
 <translation id="4555850956567117258">Ativar declaração remota para o usuário</translation>
 <translation id="4557134566541205630">URL da página "Nova guia" do provedor de pesquisa padrão</translation>
+<translation id="4558166110367609724">Ignora os TOS automaticamente e carrega o navegador.</translation>
 <translation id="4562165737444703281">Permitir que os usuários [ativem/configurem] o encaminhamento de portas do Crostini</translation>
 <translation id="456686782928669977">Esta política controla o carregamento das regras da política SiteList do <ph name="IE_PRODUCT_NAME" />.
 
@@ -2618,6 +2620,17 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       Se esta política for desativada ou não for definida, o <ph name="PRODUCT_NAME" /> não informará eventos inseguros.
       </translation>
+<translation id="4892647988357350237">Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", a caixa de diálogo de Termos de Serviço não aparecerá na primeira execução e nas execuções subsequentes. Se ela for definida como "<ph name="STANDARD_TOS_DIALOG" />" ou não for definida, a caixa de diálogo de Termos de Serviço aparecerá na primeira execução. As outras ressalvas são as seguintes:
+
+      - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de gerenciamento unificado de endpoints.
+
+      - Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", a BrowserSignin não terá efeito.
+
+      - Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", as métricas​ não serão enviadas para o servidor.
+
+      - Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", o navegador terá funcionalidade limitada.
+
+      - Se esta política for definida como "<ph name="SKIP_TOS_DIALOG" />", os administradores precisarão informar isso para os usuários finais do dispositivo.</translation>
 <translation id="4894290482695457375">A menos que <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> esteja definida como desativada, definir <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> como ativada irá conectar o <ph name="PRODUCT_NAME" /> aos dispositivos Cast em todos os endereços IP, não apenas no endereço particular RFC1918/RFC4193.
 
       Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193.
@@ -3850,6 +3863,19 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Observação: para instâncias do Windows® que não estão associadas a um domínio do <ph name="MS_AD_NAME" />, a instalação forçada é limitada a apps e extensões listados na Chrome Web Store.</translation>
 <translation id="6598235178374410284">Imagem do avatar do usuário</translation>
 <translation id="6603004149426829878">Sempre enviar qualquer sinal de localização disponível para o servidor ao determinar o fuso horário</translation>
+<translation id="660567106648774919">Esta política está obsoleta. Use a <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Definir esta política como "Desativada" fará com que a caixa de diálogo de Termos de Serviço não apareça na primeira execução e nas execuções subsequentes. Definir a política como "Ativada" ou deixá-la sem definição fará com que a caixa de diálogo de Termos de Serviço apareça na primeira execução. As outras ressalvas são as seguintes:
+
+      - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de gerenciamento unificado de endpoints.
+
+      - Se esta política for desativada, a BrowserSignin não terá efeito.
+
+      - Se esta política for desativada, as métricas​ não serão enviadas para o servidor.
+
+      - Se esta política for desativada, o navegador terá funcionalidade limitada.
+
+      - Se esta política for desativada, os administradores precisarão informar isso para os usuários finais do dispositivo.</translation>
 <translation id="6607920041550065565">
       Quando esta política é definida como falsa, ela não permite que o dispositivo acione um Powerwash. Uma exceção seria se a política <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> estivesse definida com um valor que permitisse a atualização do firmware TPM, e esse firmware não tivesse sido atualizado ainda.
       Quando a política é definida como verdadeira, ela permite que o dispositivo acione um Powerwash.
@@ -4191,6 +4217,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechará a guia depois de mudar para um navegador alternativo, mesmo se essa for a última guia. Isso faz com que o <ph name="PRODUCT_NAME" /> seja completamente fechado.</translation>
 <translation id="7019805045859631636">Rápida</translation>
+<translation id="7025332601572838001">Como configurar o comportamento dos TOS durante a primeira execução do CCT</translation>
 <translation id="7027785306666625591">Configura o gerenciamento de energia no <ph name="PRODUCT_OS_NAME" />.
 
       Essas políticas permitem configurar a forma como o <ph name="PRODUCT_OS_NAME" /> se comporta quando o usuário permanece inativo por um período de tempo específico.</translation>
@@ -4553,17 +4580,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="747014869399137701">Se a política for definida como 1, os sites poderão exibir notificações na área de trabalho. Se a política for definida como 2, as notificações na área de trabalho serão negadas.
 
       Se ela não for definida, a política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
-<translation id="7471828226549672843">Por padrão, os Termos de Serviço são mostrados quando o CCT é executado pela primeira vez. Definir esta política como "Desativada" fará com que a caixa de diálogo de Termos de Serviço não apareça na primeira execução e nas execuções subsequentes. Definir a política como "Ativada" ou deixá-la sem definição fará com que a caixa de diálogo de Termos de Serviço apareça na primeira execução. As outras ressalvas são as seguintes:
-
-      - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de gerenciamento unificado de endpoints.
-
-      - Se esta política for desativada, a BrowserSignin não terá efeito.
-
-      - Se esta política for desativada, as métricas​ não serão enviadas para o servidor.
-
-      - Se esta política for desativada, o navegador terá funcionalidade limitada.
-
-      - Se esta política for desativada, os administradores precisarão informar isso para os usuários finais do dispositivo.</translation>
 <translation id="747275827471712187">Reverter para comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies nesses sites</translation>
 <translation id="7477231245051133709">Ativar o recurso de acessibilidade de áudio mono</translation>
 <translation id="7477239290070847560">Destinos de protocolos baseados em Zeroconf (mDNS + DNS-SD)</translation>

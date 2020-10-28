@@ -995,6 +995,7 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
 
        Si no la estableces, se desactivarán los informes sobre datos de diagnóstico y métricas en dispositivos no administrados y se activarán en dispositivos administrados.</translation>
 <translation id="2454228136871844693">Optimiza la estabilidad.</translation>
+<translation id="2455033019778127130">Utiliza el comportamiento predeterminado del navegador, muestra las Condiciones del Servicio y espera a que el usuario las acepte</translation>
 <translation id="2456629156652006573">Solo privado</translation>
 <translation id="2463034609187171371">Permitir los paquetes de encriptación DHE en TLS</translation>
 <translation id="2463365186486772703">Configuración regional de la aplicación</translation>
@@ -2438,6 +2439,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si no se establece, los usuarios administrados por empresas no podrán usar la configuración predeterminada, pero los usuarios no administrados sí podrán usarla.</translation>
 <translation id="4555850956567117258">Habilita la atestación remota para el usuario.</translation>
 <translation id="4557134566541205630">URL de la página Nueva pestaña del proveedor de búsqueda predeterminado</translation>
+<translation id="4558166110367609724">Omite automáticamente las Condiciones del Servicio y carga el navegador</translation>
 <translation id="4562165737444703281">Permite que los usuarios habiliten o configuren la redirección de puertos de Crostini</translation>
 <translation id="456686782928669977">Esta política controla si se cargan las reglas de la política SiteList de <ph name="IE_PRODUCT_NAME" />.
 
@@ -2634,6 +2636,17 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Si se inhabilita esta política o no se establece, <ph name="PRODUCT_NAME" /> no informará eventos no seguros.
       </translation>
+<translation id="4892647988357350237">De forma predeterminada, se muestran las Condiciones del Servicio cuando se ejecuta CCT por primera vez. Si estableces esta política como <ph name="SKIP_TOS_DIALOG" />, no se mostrará el diálogo de las Condiciones del Servicio en la primera ejecución ni en las subsiguientes. Si la estableces como <ph name="STANDARD_TOS_DIALOG" /> o no la estableces, se mostrará el diálogo de las Condiciones del Servicio en la primera ejecución. Ten en cuenta las siguientes salvedades:
+
+      - Esta política solo funciona en dispositivos Android completamente administrados que pueden ser configurados por proveedores de administración unificada de extremos (UEM).
+
+      - Si estableces esta política como <ph name="SKIP_TOS_DIALOG" />, la política BrowserSignin no tendrá ningún efecto.
+
+      - Si la estableces como <ph name="SKIP_TOS_DIALOG" />, no se enviarán métricas al servidor.
+
+      - Si la estableces como <ph name="SKIP_TOS_DIALOG" />, las funciones del navegador estarán limitadas.
+
+      - Si la estableces como <ph name="SKIP_TOS_DIALOG" />, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="4894290482695457375">A menos que inhabilites <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, si habilitas <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />, se conectará <ph name="PRODUCT_NAME" /> a dispositivos Cast en todas las direcciones IP, no solo en las direcciones privadas RFC1918/RFC4193.
 
       Si inhabilitas la política, se conectará <ph name="PRODUCT_NAME" /> a dispositivos Cast solo en las direcciones RFC1918/RFC4193.
@@ -3880,6 +3893,19 @@ En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instan
       Nota: Para las instancias de Windows® que no están unidas a un dominio de <ph name="MS_AD_NAME" />, solo se pueden instalar de manera automática las apps y extensiones que aparecen en Chrome Web Store.</translation>
 <translation id="6598235178374410284">Imagen de avatar del usuario</translation>
 <translation id="6603004149426829878">Enviar siempre cualquier señal de ubicación disponible al servidor mientras se determina la zona horaria</translation>
+<translation id="660567106648774919">Esta política dejó de estar disponible. En su lugar, utiliza <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      De forma predeterminada, se muestran las Condiciones del Servicio cuando se ejecuta CCT por primera vez. Si inhabilitas esta política, no se mostrará el diálogo de las Condiciones del Servicio en la primera ejecución ni en las subsiguientes. Si la habilitas o no la estableces, se mostrará el diálogo de las Condiciones del Servicio en la primera ejecución. Ten en cuenta las siguientes salvedades:
+
+      - Esta política solo funciona en dispositivos Android completamente administrados que pueden ser configurados por proveedores de administración unificada de extremos (UEM).
+
+      - Si inhabilitas esta política, la política BrowserSignin no tendrá ningún efecto.
+
+      - Si la inhabilitas, no se enviarán métricas al servidor.
+
+      - Si la inhabilitas, las funciones del navegador estarán limitadas.
+
+      - Si la inhabilitas, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="6607920041550065565">
       Si se establece como falsa, esta política no permite que el dispositivo active Powerwash. Ocurrirá una excepción a esta política si se configura la política <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> con un valor que permita la actualización del firmware TPM y todavía no se actualizó este firmware.
       Si se establece como verdadera, permite que el dispositivo active Powerwash.
@@ -4221,6 +4247,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si inhabilitas la política, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cambiará a un navegador alternativo, incluso si se trataba de la última pestaña. En consecuencia, <ph name="PRODUCT_NAME" /> saldrá por completo.</translation>
 <translation id="7019805045859631636">"Fast"</translation>
+<translation id="7025332601572838001">Configura el comportamiento de las Condiciones del Servicio en la primera ejecución para CCT</translation>
 <translation id="7027785306666625591">Configura la administración de energía en <ph name="PRODUCT_OS_NAME" />.
 
       Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante cierta cantidad de tiempo.</translation>
@@ -4583,17 +4610,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
 <translation id="747014869399137701">Si estableces la política en 1, los sitios web podrán mostrar notificaciones de escritorio. Si la estableces en 2, se rechazarán las notificaciones de escritorio.
 
       Si no la estableces, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta configuración.</translation>
-<translation id="7471828226549672843">De forma predeterminada, se muestran las Condiciones del Servicio cuando se ejecuta CCT por primera vez. Si inhabilitas esta política, no se mostrará el diálogo de las Condiciones del Servicio en la primera ejecución ni en las subsiguientes. Si la habilitas o no la estableces, se mostrará el diálogo de las Condiciones del Servicio en la primera ejecución. Ten en cuenta las siguientes salvedades:
-
-      - Esta política solo funciona en dispositivos Android completamente administrados que pueden ser configurados por proveedores de administración unificada de extremos (UEM).
-
-      - Si inhabilitas esta política, la política BrowserSignin no tendrá ningún efecto.
-
-      - Si inhabilitas esta política, no se enviarán métricas al servidor.
-
-      - Si inhabilitas esta política, las funciones del navegador estarán limitadas.
-
-      - Si inhabilitas esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="747275827471712187">Revierte el comportamiento de las cookies en estos sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio mono</translation>
 <translation id="7477239290070847560">Destinos de los protocolos basados en la no configuración (mDNS y DNS-SD)</translation>

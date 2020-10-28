@@ -968,6 +968,7 @@
 
        如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
+<translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>
 <translation id="2456629156652006573">不公開</translation>
 <translation id="2463034609187171371">在傳輸層安全標準 (TLS) 中啟用 DHE 加密套件</translation>
 <translation id="2463365186486772703">應用程式語言代碼</translation>
@@ -2401,6 +2402,7 @@
       如未設定這項政策，在預設情況下，系統會為受企業管理的使用者停用這項政策，而未受管理的使用者則預設為啟用這項政策。</translation>
 <translation id="4555850956567117258">為使用者啟用遠端認證機制</translation>
 <translation id="4557134566541205630">預設搜尋引擎新分頁網址</translation>
+<translation id="4558166110367609724">自動略過《服務條款》並載入瀏覽器。</translation>
 <translation id="4562165737444703281">允許使用者啟用/設定 Crostini 通訊埠轉送</translation>
 <translation id="456686782928669977">這項政策可控管是否要從 <ph name="IE_PRODUCT_NAME" /> 的 SiteList 政策載入規則。
 
@@ -2597,6 +2599,17 @@
 
       如果不設定這項政策或設為停用，<ph name="PRODUCT_NAME" /> 將不會回報不安全的事件。
       </translation>
+<translation id="4892647988357350237">根據預設，系統會在第一次執行 CCT 時顯示《服務條款》。如果將這項政策設為 <ph name="SKIP_TOS_DIALOG" />，系統不會在第一次或後續執行 CCT 時顯示《服務條款》對話方塊。如果將這項政策設為 <ph name="STANDARD_TOS_DIALOG" />或不設定，系統會在第一次執行 CCT 時顯示《服務條款》對話方塊。其他注意事項包含：
+
+      - 這項政策只適用於可由統一端點管理供應商設定的全代管 Android 裝置。
+
+      - 如果將這項政策設為 <ph name="SKIP_TOS_DIALOG" />，BrowserSignin 政策就不會有任何作用。
+
+      - 如果將這項政策設為 <ph name="SKIP_TOS_DIALOG" />，系統不會將指標傳送至伺服器。
+
+      - 如果將這項政策設為 <ph name="SKIP_TOS_DIALOG" />，瀏覽器的功能將受到限制。
+
+      - 如果將這項政策設為 <ph name="SKIP_TOS_DIALOG" />，管理員必須告知裝置使用者。</translation>
 <translation id="4894290482695457375">除非 <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> 已設為停用，否則將 <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> 設為啟用會將 <ph name="PRODUCT_NAME" /> 連線至所有 IP 位址上的 Cast 裝置，而不是只有 RFC1918/RFC4193 私人位址上的 Cast 裝置。
 
       如果將這項政策設為停用，系統只會將 <ph name="PRODUCT_NAME" /> 連線至 RFC1918/RFC4193 上的 Cast 裝置。
@@ -3835,6 +3848,19 @@
       注意：如果是尚未加入 <ph name="MS_AD_NAME" /> 網域的 Windows® 執行個體，系統只會針對 Chrome 線上應用程式商店中的應用程式和擴充功能執行強制安裝作業。</translation>
 <translation id="6598235178374410284">使用者顯示圖片</translation>
 <translation id="6603004149426829878">偵測時區時一律將任何可用的位置標記傳送至伺服器</translation>
+<translation id="660567106648774919">這項政策已遭淘汰，請改用 <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> 政策。
+
+      根據預設，系統會在第一次執行 CCT 時顯示《服務條款》。如果將這項政策設為停用，系統不會在第一次或後續執行 CCT 時顯示《服務條款》對話方塊。如果將這項政策設為啟用或不設定，系統會在第一次執行 CCT 時顯示《服務條款》對話方塊。其他注意事項包含：
+
+      - 這項政策只適用於可由統一端點管理供應商設定的全代管 Android 裝置。
+
+      - 如果停用這項政策，BrowserSignin 政策就不會有任何作用。
+
+      - 如果停用這項政策，系統不會將指標傳送至伺服器。
+
+      - 如果停用這項政策，瀏覽器的功能將受到限制。
+
+      - 如果停用這項政策，管理員必須告知裝置使用者。</translation>
 <translation id="6607920041550065565">
       如果將這項政策設為 False，系統會禁止裝置觸發 Powerwash。除非 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> 政策的值設為允許 TPM 韌體更新，且 TPM 韌體尚未更新，則系統會允許裝置觸發 Powerwash。
       如果將這項政策設為 True，系統會允許裝置觸發 Powerwash。
@@ -4181,6 +4207,7 @@
 
       如果將這項政策設為停用，當 Chrome 分頁改以其他瀏覽器開啟後，<ph name="PRODUCT_NAME" /> 將關閉該分頁，即使該分頁是最後一個分頁也一樣。這會導致 <ph name="PRODUCT_NAME" /> 完全關閉。</translation>
 <translation id="7019805045859631636">快</translation>
+<translation id="7025332601572838001">設定第一次執行 CCT 時的《服務條款》相關行為</translation>
 <translation id="7027785306666625591">設定 <ph name="PRODUCT_OS_NAME" /> 的電源管理。
 
       這些政策可讓你設定當使用者閒置一段時間後，要讓 <ph name="PRODUCT_OS_NAME" /> 採取的動作。</translation>
@@ -4543,17 +4570,6 @@
 <translation id="747014869399137701">如果將這項政策設為 1，網站即可顯示桌面通知。如果將這項政策設為 2，網站將無法顯示桌面通知。
 
       如果不設定，系統會套用 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />，但使用者可以變更這項設定。</translation>
-<translation id="7471828226549672843">根據預設，系統會在第一次執行 CCT 時顯示《服務條款》。如果將這項政策設為停用，系統不會在第一次或後續執行 CCT 時顯示《服務條款》對話方塊。如果將這項政策設為啟用或不設定，系統會在第一次執行 CCT 時顯示《服務條款》對話方塊。其他注意事項包含：
-
-      - 這項政策只適用於可由統一端點管理供應商設定的全代管 Android 裝置。
-
-      - 如果停用這項政策，BrowserSignin 政策就不會有任何作用。
-
-      - 如果停用這項政策，系統不會將指標傳送至伺服器。
-
-      - 如果停用這項政策，瀏覽器的功能將受到限制。
-
-      - 如果停用這項政策，管理員必須告知裝置使用者。</translation>
 <translation id="747275827471712187">將這些網站上的 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為</translation>
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
 <translation id="7477239290070847560">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地</translation>

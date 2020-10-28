@@ -999,6 +999,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
        Jika kebijakan tidak disetel, pelaporan metrik dan data diagnostik akan dinonaktifkan di perangkat yang tidak terkelola dan akan diaktifkan di perangkat terkelola.</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
+<translation id="2455033019778127130">Menggunakan perilaku browser default, menampilkan ToS, dan menunggu penerimaan dari pengguna.</translation>
 <translation id="2456629156652006573">Hanya Pribadi</translation>
 <translation id="2463034609187171371">Mengaktifkan paket penyandian DHE di TLS</translation>
 <translation id="2463365186486772703">Lokal aplikasi</translation>
@@ -2447,6 +2448,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan tidak disetel, setelan defaultnya adalah dinonaktifkan untuk pengguna yang dikelola perusahaan dan diaktifkan untuk pengguna yang tidak dikelola.</translation>
 <translation id="4555850956567117258">Mengaktifkan pengesahan jarak jauh bagi pengguna</translation>
 <translation id="4557134566541205630">URL halaman tab baru penyedia penelusuran default</translation>
+<translation id="4558166110367609724">Otomatis melewati ToS dan memuat browser.</translation>
 <translation id="4562165737444703281">Mengizinkan pengguna untuk [mengaktifkan/mengonfigurasi] penerusan port Crostini</translation>
 <translation id="456686782928669977">Kebijakan ini akan mengontrol apakah untuk memuat aturan dari kebijakan SiteList <ph name="IE_PRODUCT_NAME" /> atau tidak.
 
@@ -2645,6 +2647,17 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan ini ditetapkan ke nonaktif atau tidak ditetapkan, <ph name="PRODUCT_NAME" /> tidak akan melaporkan peristiwa tidak aman.
       </translation>
+<translation id="4892647988357350237">Secara default, Persyaratan Layanan akan ditampilkan saat CCT pertama kali dijalankan. Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, dialog Persyaratan Layanan tidak akan muncul saat pengalaman pertama kali dijalankan atau dijalankan untuk selanjutnya. Jika kebijakan ini disetel ke <ph name="STANDARD_TOS_DIALOG" /> atau tidak disetel, dialog Persyaratan Layanan akan muncul saat pengalaman pertama kali dijalankan. Peringatan lainnya:
+
+      - Kebijakan ini hanya berfungsi pada perangkat Android terkelola sepenuhnya yang dapat dikonfigurasikan oleh vendor Unified Endpoint Management.
+
+      - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, kebijakan BrowserSignin tidak akan berpengaruh.
+
+      - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, metrik​ tidak akan dikirim ke server.
+
+      - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, browser akan memiliki fungsi terbatas.
+
+      - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
 <translation id="4894290482695457375">Kecuali <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> disetel ke Nonaktif, menyetel <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> ke Aktif akan menghubungkan <ph name="PRODUCT_NAME" /> ke perangkat Cast di semua alamat IP, bukan hanya alamat pribadi RFC1918/RFC4193.
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> hanya akan terhubung ke perangkat Cast di RFC1918/RFC4193.
@@ -3895,6 +3908,19 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Catatan: Untuk instances Windows® yang tidak tergabung dalam domain <ph name="MS_AD_NAME" />, penginstalan otomatis dibatasi untuk aplikasi dan ekstensi yang tersedia di Chrome Web Store.</translation>
 <translation id="6598235178374410284">Gambar avatar pengguna</translation>
 <translation id="6603004149426829878">Selalu kirim sinyal lokasi yang tersedia ke server sembari menentukan zona waktu</translation>
+<translation id="660567106648774919">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      Secara default, Persyaratan Layanan akan ditampilkan saat CCT pertama kali dijalankan. Jika kebijakan ini disetel ke Nonaktif, dialog Persyaratan Layanan tidak akan muncul saat pengalaman pertama kali dijalankan atau dijalankan untuk selanjutnya. Jika kebijakan ini disetel ke Aktif atau tidak disetel, dialog Persyaratan Layanan akan muncul saat pengalaman pertama kali dijalankan. Peringatan lainnya:
+
+      - Kebijakan ini hanya berfungsi pada perangkat Android terkelola sepenuhnya yang dapat dikonfigurasikan oleh vendor Unified Endpoint Management.
+
+      - Jika kebijakan ini Dinonaktifkan, kebijakan BrowserSignin tidak akan berpengaruh.
+
+      - Jika kebijakan ini Dinonaktifkan, metrik​ tidak akan dikirim ke server.
+
+      - Jika kebijakan ini Dinonaktifkan, browser akan memiliki fungsi terbatas.
+
+      - Jika kebijakan ini Dinonaktifkan, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
 <translation id="6607920041550065565">
       Jika ditetapkan ke False, kebijakan ini tidak mengizinkan perangkat memicu powerwash. Pengecualiannya adalah jika kebijakan <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> ditetapkan ke nilai yang mengizinkan update firmware TPM dan firmware TPM belum diupdate.
       Jika ditetapkan ke True, kebijakan akan mengizinkan perangkat memicu powerwash.
@@ -4236,6 +4262,7 @@ Kebijakan ini hanya berlaku jika dukungan aplikasi Linux diaktifkan.</translatio
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab setelah beralih ke browser alternatif, meskipun itu adalah tab terakhir. Hal ini menyebabkan <ph name="PRODUCT_NAME" /> keluar sepenuhnya.</translation>
 <translation id="7019805045859631636">Cepat</translation>
+<translation id="7025332601572838001">Mengonfigurasi perilaku ToS saat CCT pertama kali dijalankan</translation>
 <translation id="7027785306666625591">Mengonfigurasi pengelolaan daya di <ph name="PRODUCT_OS_NAME" />.
 
       Kebijakan ini memungkinkan Anda mengonfigurasi cara <ph name="PRODUCT_OS_NAME" /> berperilaku saat pengguna tetap menganggur dalam beberapa waktu.</translation>
@@ -4598,17 +4625,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="747014869399137701">Jika kebijakan disetel ke 1, situs akan dapat menampilkan notifikasi desktop. Jika kebijakan disetel ke 2, notifikasi desktop tidak dapat ditampilkan.
 
       Jika tidak disetel, <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> akan berlaku tetapi pengguna dapat mengubah setelan ini.</translation>
-<translation id="7471828226549672843">Secara default, Persyaratan Layanan akan ditampilkan saat CCT pertama kali dijalankan. Jika kebijakan ini disetel ke Nonaktif, dialog Persyaratan Layanan tidak akan muncul saat pengalaman pertama kali dijalankan atau dijalankan untuk selanjutnya. Jika kebijakan ini disetel ke Aktif atau tidak disetel, dialog Persyaratan Layanan akan muncul saat pengalaman pertama kali dijalankan. Peringatan lainnya:
-
-      - Kebijakan ini hanya berfungsi pada perangkat Android terkelola sepenuhnya yang dapat dikonfigurasikan oleh vendor Unified Endpoint Management.
-
-      - Jika kebijakan ini Dinonaktifkan, kebijakan BrowserSignin tidak akan berpengaruh.
-
-      - Jika kebijakan ini Dinonaktifkan, metrik​ tidak akan dikirim ke server.
-
-      - Jika kebijakan ini Dinonaktifkan, browser akan memiliki fungsi terbatas.
-
-      - Jika kebijakan ini Dinonaktifkan, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
 <translation id="747275827471712187">Mengembalikan cookie di situs ini ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="7477231245051133709">Mengaktifkan fitur aksesibilitas audio mono</translation>
 <translation id="7477239290070847560">Tujuan protokol berbasis Zeroconf (mDNS + DNS-SD)</translation>

@@ -4572,17 +4572,6 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 <translation id="747014869399137701">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Desktop-Benachrichtigungen anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Desktop-Benachrichtigungen blockiert.
 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
-<translation id="7471828226549672843">Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT angezeigt. Wenn diese Richtlinie deaktiviert ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten Ausführung noch bei weiteren angezeigt. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
-
-     – Diese Richtlinie funktioniert nur bei vollständig verwalteten Android-Geräten, die von Unified Endpoint Management-Anbietern konfiguriert werden können.
-
-      – Wenn die Richtlinie deaktiviert ist, hat die BrowserSignin-Richtlinie keine Auswirkungen.
-
-      – Wenn die Richtlinie deaktiviert ist, werden keine Messwerte an den Server gesendet.
-
-      – Wenn die Richtlinie deaktiviert ist, sind die Browserfunktionen eingeschränkt.
-
-      – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
 <translation id="7477239290070847560">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele</translation>

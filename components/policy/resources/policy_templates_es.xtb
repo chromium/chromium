@@ -999,6 +999,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
        Si no se establece la política, se desactivarán las métricas y los datos de diagnóstico en los dispositivos no administrados, y se activarán en los dispositivos administrados.</translation>
 <translation id="2454228136871844693">Optimizar para una mejor estabilidad.</translation>
+<translation id="2455033019778127130">Sigue el comportamiento predeterminado del navegador, muestra los Términos del Servicio y espera a que el usuario los acepte.</translation>
 <translation id="2456629156652006573">Solo para uso privado</translation>
 <translation id="2463034609187171371">Habilita los conjuntos de cifrado DHE en TLS</translation>
 <translation id="2463365186486772703">Configuración regional de la aplicación</translation>
@@ -2447,6 +2448,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Si no se le asigna ningún valor, la búsqueda de elementos compartidos en la red estará inhabilitada de forma predeterminada para los usuarios administrados y estará habilitada para los usuarios no administrados.</translation>
 <translation id="4555850956567117258">Habilitar confirmación remota para el usuario</translation>
 <translation id="4557134566541205630">URL de la página Nueva pestaña del proveedor de búsqueda predeterminado</translation>
+<translation id="4558166110367609724">Omite los Términos del Servicio automáticamente y carga el navegador.</translation>
 <translation id="4562165737444703281">Permitir a los usuarios [habilitar/configurar] la redirección de puertos a Crostini</translation>
 <translation id="456686782928669977">Esta política controla si se cargarán las reglas de la política SiteList de <ph name="IE_PRODUCT_NAME" />.
 
@@ -2644,6 +2646,17 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Si no se define esta política o se inhabilita, <ph name="PRODUCT_NAME" /> no informará sobre los eventos no seguros.
       </translation>
+<translation id="4892647988357350237">De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor <ph name="STANDARD_TOS_DIALOG" /> o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
+
+      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
+
+      - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, la política BrowserSignin no tendrá ningún efecto.
+
+      - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, no se enviarán métricas al servidor.
+
+      - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, las funciones del navegador estarán limitadas.
+
+      - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="4894290482695457375">A no ser que se le asigne el valor "Inhabilitada" a la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, si se le asigna el valor "Habilitada" a <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />,<ph name="PRODUCT_NAME" /> se conectará con todos los dispositivos de emisión de todas las direcciones IP, no solo con las direcciones privadas de RFC 1918 o RFC 4193.
 
       Si se le asigna el valor "Inhabilitada", <ph name="PRODUCT_NAME" /> solo se conectará con dispositivos de emisión en direcciones de RFC 1918 o RFC 4193.
@@ -3900,6 +3913,19 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Nota: Para las instancias de Windows® que no estén conectadas a un dominio de <ph name="MS_AD_NAME" />, la instalación forzada se limitará a las aplicaciones y extensiones disponibles en Chrome Web Store.</translation>
 <translation id="6598235178374410284">Imagen de avatar del usuario</translation>
 <translation id="6603004149426829878">Enviar siempre cualquier señal de ubicación disponible al servidor mientras se detecta la zona horaria</translation>
+<translation id="660567106648774919">Esta política está obsoleta. Se debe usar la política <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> en su lugar.
+
+      De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor "Inhabilitada" a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor "Habilitada" o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
+
+      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
+
+      - Si se inhabilita esta política, la política BrowserSignin no tendrá ningún efecto.
+
+      - Si se inhabilita esta política, no se enviarán métricas al servidor.
+
+      - Si se inhabilita esta política, las funciones del navegador estarán limitadas.
+
+      - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="6607920041550065565">
       Si se asigna el valor "false" a esta política, el dispositivo no podrá activar la función Powerwash. Se produce una excepción si a la política <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> se le asigna un valor que permite la actualización de firmware de TPM y este firmware aún no se ha actualizado.
       Si se le asigna el valor "true", el dispositivo podrá activar la función Powerwash.
@@ -4242,6 +4268,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Si se le asigna el valor "Inhabilitada", <ph name="PRODUCT_NAME" /> cerrará la pestaña después de cambiar a un navegador alternativo, aunque esta sea la última. Esto hará que <ph name="PRODUCT_NAME" /> se cierre por completo.</translation>
 <translation id="7019805045859631636">Rápido</translation>
+<translation id="7025332601572838001">Configuración del comportamiento de los Términos del Servicio durante la primera ejecución de CCT</translation>
 <translation id="7027785306666625591">Configura la administración de energía en <ph name="PRODUCT_OS_NAME" />.
 
 Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante un periodo de tiempo determinado.</translation>
@@ -4607,17 +4634,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="747014869399137701">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar notificaciones de escritorio. Si se le asigna el valor 2, se denegarán las notificaciones de escritorio.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
-<translation id="7471828226549672843">De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor "Inhabilitada" a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor "Habilitada" o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
-
-      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
-
-      - Si se inhabilita esta política, la política BrowserSignin no tendrá ningún efecto.
-
-      - Si se inhabilita esta política, no se enviarán métricas al servidor.
-
-      - Si se inhabilita esta política, las funciones del navegador estarán limitadas.
-
-      - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="747275827471712187">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en estos sitios web</translation>
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio en mono</translation>
 <translation id="7477239290070847560">Destinos de protocolo zeroconf (mDNS y DNS‑SD)</translation>

@@ -979,6 +979,7 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 
        Politika ayarlanmadan bırakılırsa metrikler ve teşhis verisi raporlama, yönetilmeyen cihazlarda devre dışı, yönetilen cihazlarda ise etkin kalır.</translation>
 <translation id="2454228136871844693">Kararlı çalışma için optimize et.</translation>
+<translation id="2455033019778127130">Varsayılan tarayıcı davranışını kullanır, Hizmet Şartları'nı gösterip kullanıcının kabul etmesini bekler.</translation>
 <translation id="2456629156652006573">Yalnızca Özel Kullanım</translation>
 <translation id="2463034609187171371">TLS'deki şifre paketlerini etkinleştir</translation>
 <translation id="2463365186486772703">Uygulama yerel ayarı</translation>
@@ -2424,6 +2425,7 @@ politikayı geçersiz kılamaz.
       Politika ayarlanmadan bırakılırsa varsayılan değer, kurumsal olarak yönetilen kullanıcılar için politikanın devre dışı bırakılması ve yönetilmeyen kullanıcılar için etkinleştirilmesi şeklinde olur.</translation>
 <translation id="4555850956567117258">Kullanıcı için uzaktan doğrulamayı etkinleştir</translation>
 <translation id="4557134566541205630">Varsayılan arama sağlayıcısı yeni sekme sayfası URL'si</translation>
+<translation id="4558166110367609724">Otomatik olarak Hizmet Şartları'nı atlayıp tarayıcıyı yükler.</translation>
 <translation id="4562165737444703281">Kullanıcıların Crostini bağlantı noktası yönlendirmesini [etkinleştirmesine/yapılandırmasına] izin verir</translation>
 <translation id="456686782928669977">Bu politika, <ph name="IE_PRODUCT_NAME" /> tarayıcısının SiteList politikasından kuralların yüklenip yüklenmeyeceğini kontrol eder.
 
@@ -2621,6 +2623,17 @@ politikayı geçersiz kılamaz.
 
       Bu politika hiç ayarlanmazsa veya devre dışı olarak ayarlanırsa <ph name="PRODUCT_NAME" /> güvenli olmayan etkinlikleri bildirmeyecektir.
       </translation>
+<translation id="4892647988357350237">Varsayılan olarak CCT ilk çalıştırıldığında Hizmet Şartları gösterilir. Bu politikanın <ph name="SKIP_TOS_DIALOG" /> değerine ayarlanması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde veya sonraki çalıştırmalarda görünmemesine neden olur. Bu politikanın <ph name="STANDARD_TOS_DIALOG" /> değerine ayarlanması veya ayarlanmadan bırakılması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde görünmesine neden olur. Dikkat edilmesi gereken diğer noktalar:
+
+      - Bu politika Birleşik Uç Nokta Yönetimi tedarikçilerinin yapılandırabildiği, yalnızca tümüyle yönetilen Android cihazlarda çalışır.
+
+      - Bu politika <ph name="SKIP_TOS_DIALOG" /> ise BrowserSignin politikasının hiçbir etkisi olmaz.
+
+      - Bu politika <ph name="SKIP_TOS_DIALOG" /> ise metrikler sunucuya gönderilmez.
+
+      - Bu politika <ph name="SKIP_TOS_DIALOG" /> ise tarayıcının işlevi sınırlı olur.
+
+      - Bu politika <ph name="SKIP_TOS_DIALOG" /> ise yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
 <translation id="4894290482695457375"><ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> politikası Devre dışı değerine ayarlanmadığı sürece, <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> politikası Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnızca RFC1918/RFC4193 özel adreslerinde değil tüm IP adreslerinde yayın cihazlarına bağlanır.
 
       Politika Devre dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnızca RFC1918/RFC4193 adreslerinde yayın cihazlarına bağlanır.
@@ -3866,6 +3879,19 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Not: <ph name="MS_AD_NAME" /> alanına katılmamış Windows® örneklerinde zorunlu yükleme, Chrome Web Mağazası'nda listelenen uygulama ve uzantılarla sınırlıdır.</translation>
 <translation id="6598235178374410284">Kullanıcı avatarı resmi</translation>
 <translation id="6603004149426829878">Saat dilimini çözümlerken kullanılabilir konum sinyallerini her zaman sunucuya gönder</translation>
+<translation id="660567106648774919">Bu politika kullanımdan kaldırıldı. Bunun yerine lütfen "<ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />" politikasını kullanın.
+
+      Varsayılan olarak CCT ilk çalıştırıldığında Hizmet Şartları gösterilir. Bu politikanın Devre Dışı değerine ayarlanması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde veya sonraki çalıştırmalarda görünmemesine neden olur. Bu politikanın Etkin değerine ayarlanması veya ayarlanmadan bırakılması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde görünmesine neden olur. Dikkat edilmesi gereken diğer noktalar:
+
+      - Bu politika Birleşik Uç Nokta Yönetimi tedarikçilerinin yapılandırabildiği, yalnızca tümüyle yönetilen Android cihazlarda çalışır.
+
+      - Bu politika Devre Dışı ise BrowserSignin politikasının hiçbir etkisi olmaz.
+
+      - Bu politika Devre Dışı ise metrikler sunucuya gönderilmez.
+
+      - Bu politika Devre Dışı ise tarayıcının işlevi sınırlı olur.
+
+      - Bu politika Devre Dışı ise yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
 <translation id="6607920041550065565">
       Bu politika False (Yanlış) değerine ayarlandığında, cihazın Powerwash fonksiyonunu tetiklemesine izin vermez. Bu durumun bir istisnası, <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> politikasının TPM donanım yazılımı güncellemesine izin veren bir değere ayarlanması ve TPM donanım yazılımının henüz güncellenmemiş olmasıdır.
       True (Doğru) değerine ayarlanırsa cihazın Powerwash fonksiyonunu tetiklemesine izin verir.
@@ -4208,6 +4234,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Politika Devre dışı değerine ayarlanırsa alternatif tarayıcıya son sekmeden geçilmiş olsa bile <ph name="PRODUCT_NAME" /> o sekmeyi kapatır. Bu da <ph name="PRODUCT_NAME" /> tarayıcısının tamamen çıkış yapmasına neden olur.</translation>
 <translation id="7019805045859631636">Hızlı</translation>
+<translation id="7025332601572838001">CCT için ilk çalıştırma sırasında Hizmet Şartları davranışını yapılandırma</translation>
 <translation id="7027785306666625591"><ph name="PRODUCT_OS_NAME" /> sisteminde güç yönetimini yapılandırın.
 
       Bu politikalar, kullanıcı belirli bir süre boyunca hiçbir şey yapmadığında <ph name="PRODUCT_OS_NAME" /> sisteminin çalışma biçimini yapılandırmanıza olanak verir.</translation>
@@ -4573,17 +4600,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="747014869399137701">Politikayı 1 değerine ayarlamak web sitelerinin masaüstü bildirimlerine izin verir. Politikayı 2 değerine ayarlamak masaüstü bildirimlerini engeller.
 
       Politikayı ayarlamadan bırakırsanız <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> politikası geçerli olur. Kullanıcılar bu ayarı değiştirebilir.</translation>
-<translation id="7471828226549672843">Varsayılan olarak CCT ilk çalıştırıldığında Hizmet Şartları gösterilir. Bu politikanın Devre Dışı değerine ayarlanması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde veya sonraki çalıştırmalarda görünmemesine neden olur. Bu politikanın Etkin değerine ayarlanması veya ayarlanmadan bırakılması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde görünmesine neden olur. Dikkat edilmesi gereken diğer noktalar:
-
-      - Bu politika Birleşik Uç Nokta Yönetimi tedarikçilerinin yapılandırabildiği, yalnızca tümüyle yönetilen Android cihazlarda çalışır.
-
-      - Bu politika Devre Dışı ise BrowserSignin politikasının hiçbir etkisi olmaz.
-
-      - Bu politika Devre Dışı ise metrikler sunucuya gönderilmez.
-
-      - Bu politika Devre Dışı ise tarayıcının işlevi sınırlı olur.
-
-      - Bu politika Devre Dışı ise yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
 <translation id="747275827471712187">Bu sitelerde çerezler için eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> davranışına geri dön</translation>
 <translation id="7477231245051133709">Mono ses erişilebilirlik özelliklerini etkinleştir</translation>
 <translation id="7477239290070847560">Zeroconf tabanlı (mDNS + DNS-SD) protokol hedefleri</translation>

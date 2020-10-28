@@ -999,6 +999,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 
        Nếu bạn không đặt chính sách này, báo cáo số liệu sử dụng và dữ liệu chẩn đoán sẽ tắt trên các thiết bị không được quản lý và sẽ bật trên các thiết bị được quản lý.</translation>
 <translation id="2454228136871844693">Tối ưu hóa cho độ ổn định.</translation>
+<translation id="2455033019778127130">Áp dụng hoạt động mặc định của trình duyệt, hiển thị Điều khoản dịch vụ (ToS) và chờ người dùng chấp nhận.</translation>
 <translation id="2456629156652006573">Riêng tư</translation>
 <translation id="2463034609187171371">Bật bộ thuật toán mật mã DHE trong TLS</translation>
 <translation id="2463365186486772703">Ngôn ngữ của ứng dụng</translation>
@@ -2446,6 +2447,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu không đặt chính sách này, chế độ mặc định sẽ là tắt đối với người dùng do doanh nghiệp quản lý và bật đối với người dùng không được quản lý.</translation>
 <translation id="4555850956567117258">Cho phép chứng thực từ xa cho người dùng</translation>
 <translation id="4557134566541205630">URL trang thẻ mới của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
+<translation id="4558166110367609724">Tự động bỏ qua Điều khoản dịch vụ (ToS) và tải trình duyệt.</translation>
 <translation id="4562165737444703281">Cho phép người dùng [bật/định cấu hình] dịch vụ chuyển tiếp cổng vào Crostini</translation>
 <translation id="456686782928669977">Chính sách này kiểm soát việc có tải các quy tắc từ chính sách SiteList của <ph name="IE_PRODUCT_NAME" /> hay không.
 
@@ -2644,6 +2646,17 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn không đặt hoặc đặt chính sách này thành tắt, thì <ph name="PRODUCT_NAME" /> sẽ không báo cáo các sự kiện không an toàn.
       </translation>
+<translation id="4892647988357350237">Theo mặc định, Điều khoản dịch vụ sẽ hiển thị trong lần chạy đầu tiên của CCT. Nếu bạn đặt chính sách này thành <ph name="SKIP_TOS_DIALOG" />, hộp thoại Điều khoản dịch vụ sẽ không xuất hiện trong lần chạy đầu tiên hoặc những lần chạy tiếp theo. Nếu bạn đặt chính sách này thành <ph name="STANDARD_TOS_DIALOG" /> hoặc không đặt chính sách này, thì hộp thoại Điều khoản dịch vụ sẽ xuất hiện trong lần chạy đầu tiên. Các lưu ý khác:
+
+      – Chính sách này chỉ có trên các thiết bị Android được quản lý hoàn toàn. Đây là những thiết bị mà nhà cung cấp dịch vụ Quản lý thống nhất thiết bị đầu cuối có thể định cấu hình.
+
+      – Nếu bạn đặt chính sách này thành <ph name="SKIP_TOS_DIALOG" />, chính sách BrowserSignin sẽ không có hiệu lực.
+
+      – Nếu bạn đặt chính sách này thành <ph name="SKIP_TOS_DIALOG" />, hệ thống sẽ không gửi các chỉ số​ tới máy chủ.
+
+      – Nếu bạn đặt chính sách này thành <ph name="SKIP_TOS_DIALOG" />, chức năng của trình duyệt sẽ bị hạn chế.
+
+      – Nếu bạn đặt chính sách này thành <ph name="SKIP_TOS_DIALOG" />, quản trị viên sẽ phải thông báo điều này cho người dùng cuối của thiết bị.</translation>
 <translation id="4894290482695457375">Trừ khi bạn đặt <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> thành Tắt, nếu bạn đặt <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> thành Bật, thì <ph name="PRODUCT_NAME" /> sẽ kết nối với các thiết bị truyền trên mọi địa chỉ IP, chứ không chỉ các địa chỉ riêng RFC1918/RFC4193.
 
       Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" /> sẽ chỉ kết nối với các thiết bị truyền trên địa chỉ RFC1918/RFC4193.
@@ -3901,6 +3914,19 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Lưu ý: Đối với các phiên bản Windows® không liên kết với một miền <ph name="MS_AD_NAME" />, việc buộc cài đặt chỉ áp dụng với các ứng dụng và tiện ích có trong Cửa hàng Chrome trực tuyến.</translation>
 <translation id="6598235178374410284">Hình đại diện của người dùng</translation>
 <translation id="6603004149426829878">Luôn gửi mọi tín hiệu vị trí có sẵn cho máy chủ trong khi phân giải múi giờ</translation>
+<translation id="660567106648774919">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      Theo mặc định, Điều khoản dịch vụ sẽ hiển thị trong lần chạy đầu tiên của CCT. Nếu bạn đặt chính sách này thành Tắt, hộp thoại Điều khoản dịch vụ sẽ không xuất hiện trong lần chạy đầu tiên hoặc những lần chạy tiếp theo. Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì hộp thoại Điều khoản dịch vụ sẽ xuất hiện trong lần chạy đầu tiên. Các lưu ý khác:
+
+      – Chính sách này chỉ có trên các thiết bị Android được quản lý hoàn toàn. Đây là những thiết bị mà nhà cung cấp dịch vụ Quản lý thống nhất thiết bị đầu cuối có thể định cấu hình.
+
+      – Nếu bạn đặt chính sách này thành Tắt, chính sách BrowserSignin sẽ không có hiệu lực.
+
+      – Nếu bạn đặt chính sách này thành Tắt, hệ thống sẽ không gửi các chỉ số​ tới máy chủ.
+
+      – Nếu bạn đặt chính sách này thành Tắt, chức năng của trình duyệt sẽ bị hạn chế.
+
+      – Nếu bạn đặt chính sách này thành Tắt, quản trị viên sẽ phải thông báo điều này cho người dùng cuối của thiết bị.</translation>
 <translation id="6607920041550065565">
       Khi bạn đặt chính sách này thành False, thì chính sách này sẽ không cho phép thiết bị kích hoạt chức năng Powerwash. Trường hợp ngoại lệ là nếu chính sách <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> được đặt thành giá trị cho phép cập nhật chương trình cơ sở TPM và chương trình đó chưa được cập nhật.
       Khi bạn đặt chính sách này thành True, thì chính sách này sẽ cho phép thiết bị kích hoạt chức năng Powerwash.
@@ -4244,6 +4270,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" /> sẽ đóng thẻ sau khi chuyển sang trình duyệt thay thế, ngay cả khi đó là thẻ cuối cùng. Điều này sẽ khiến cho <ph name="PRODUCT_NAME" /> thoát hoàn toàn.</translation>
 <translation id="7019805045859631636">Nhanh</translation>
+<translation id="7025332601572838001">Định cấu hình hoạt động của Điều khoản dịch vụ (ToS) trong lần chạy đầu tiên của CCT</translation>
 <translation id="7027785306666625591">Định cấu hình việc quản lý nguồn trong <ph name="PRODUCT_OS_NAME" />.
 
       Những chính sách này cho phép bạn định cấu hình cách <ph name="PRODUCT_OS_NAME" /> hoạt động khi người dùng duy trì chế độ rảnh trong một khoảng thời gian.</translation>
@@ -4608,17 +4635,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="747014869399137701">Nếu bạn đặt chính sách này thành 1, thì trang web có thể hiển thị thông báo trên màn hình. Nếu bạn đặt chính sách này thành 2, thì trang web không thể hiển thị thông báo trên màn hình.
 
       Nếu bạn không đặt chính sách này, thì <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> sẽ áp dụng nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
-<translation id="7471828226549672843">Theo mặc định, Điều khoản dịch vụ sẽ hiển thị khi CCT được chạy lần đầu tiên. Nếu bạn đặt chính sách này thành Tắt, hộp thoại Điều khoản dịch vụ sẽ không xuất hiện trong lần chạy đầu tiên hoặc những lần chạy tiếp theo. Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì hộp thoại Điều khoản dịch vụ sẽ xuất hiện trong lần chạy đầu tiên. Các lưu ý khác:
-
-      – Chính sách này chỉ có trên những thiết bị Android được quản lý hoàn toàn. Những nhà cung cấp dịch vụ Quản lý điểm cuối hợp nhất có thể định cấu hình các thiết bị này.
-
-      – Nếu bạn đặt chính sách này thành Tắt, chính sách BrowserSignin sẽ không có hiệu lực.
-
-      – Nếu bạn đặt chính sách này thành Tắt, hệ thống sẽ không gửi các chỉ số​ tới máy chủ.
-
-      – Nếu bạn đặt chính sách này thành Tắt, chức năng của trình duyệt sẽ bị hạn chế.
-
-      – Nếu bạn đặt chính sách này thành Tắt, quản trị viên sẽ phải thông báo điều này cho người dùng cuối của thiết bị.</translation>
 <translation id="747275827471712187">Quay lại về hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ đối với cookie trên các trang web này</translation>
 <translation id="7477231245051133709">Bật tính năng hỗ trợ tiếp cận về đơn âm</translation>
 <translation id="7477239290070847560">Đích giao thức dựa trên máy in tự động định cấu hình (mDNS + DNS-SD)</translation>

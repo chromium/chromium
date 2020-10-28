@@ -981,6 +981,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
        Se il criterio non viene configurato, la segnalazione di metriche e dati diagnostici rimane disattivata sui dispositivi non gestiti e attiva sui dispositivi gestiti.</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
+<translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
 <translation id="2456629156652006573">Solo Non in elenco</translation>
 <translation id="2463034609187171371">Attiva i pacchetti di crittografia DHE in TLS</translation>
 <translation id="2463365186486772703">Lingua dell'applicazione</translation>
@@ -2427,6 +2428,7 @@ Se questa norma non viene impostata, verranno utilizzate le dimensioni predefini
       Se la norma viene lasciata senza impostazione, per impostazione predefinita la norma sarà disattivata per gli utenti gestiti dall'azienda, mentre sarà attiva per gli utenti non gestiti.</translation>
 <translation id="4555850956567117258">Attivazione dell'attestazione da remoto per l'utente</translation>
 <translation id="4557134566541205630">URL pagina Nuova scheda provider di ricerca predefinito</translation>
+<translation id="4558166110367609724">Salta automaticamente TdS e carica il browser</translation>
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
 <translation id="456686782928669977">Questo criterio consente di stabilire se caricare o meno le regole del criterio SiteList di <ph name="IE_PRODUCT_NAME" />.
 
@@ -2626,6 +2628,17 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Se questo criterio viene disattivato o non viene impostato, <ph name="PRODUCT_NAME" /> non segnalerà alcun evento non sicuro.
       </translation>
+<translation id="4892647988357350237">Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questo criterio viene impostato su <ph name="STANDARD_TOS_DIALOG" /> o se non viene configurato, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
+
+      - Questo criterio funziona solo su dispositivi Android completamente gestiti che possono essere configurati da fornitori dell'Unified Endpoint Management.
+
+      - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, il criterio BrowserSignin non ha effetto.
+
+      - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, le metriche​ non vengono inviate al server.
+
+      - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, il browser ha una funzionalità limitata.
+
+      - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, gli amministratori devono comunicarlo agli utenti finali del dispositivo.</translation>
 <translation id="4894290482695457375">A meno che <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> non sia impostato su Disattivato, l'impostazione di <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> su Attivato connetterà <ph name="PRODUCT_NAME" /> ai dispositivi di trasmissione su tutti gli indirizzi IP e non solo su indirizzi privati RFC1918/RFC4193.
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> si connetterà ai dispositivi di trasmissione solo su indirizzi RFC1918/RFC4193.
@@ -3876,6 +3889,19 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Nota: per le istanze di Windows® che non fanno parte di un dominio <ph name="MS_AD_NAME" />, l'installazione forzata è limitata alle app e alle estensioni elencate nel Chrome Web Store.</translation>
 <translation id="6598235178374410284">Immagine avatar utente</translation>
 <translation id="6603004149426829878">Consente di inviare sempre al server i segnali relativi alla posizione disponibili durante le operazioni per stabilire il fuso orario</translation>
+<translation id="660567106648774919">Questo criterio è deprecato. Utilizza il criterio <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questo criterio viene impostato su Disattivato, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questo criterio viene impostato su Attivato o se non viene configurato, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
+
+      - Questo criterio funziona solo su dispositivi Android completamente gestiti che possono essere configurati da fornitori dell'Unified Endpoint Management.
+
+      - Se questo criterio viene impostato su Disattivato, il criterio BrowserSignin non ha effetto.
+
+      - Se questo criterio viene impostato su Disattivato, le metriche​ non vengono inviate al server.
+
+      - Se questo criterio viene impostato su Disattivato, il browser ha una funzionalità limitata.
+
+      - Se questo criterio viene impostato su Disattivato, gli amministratori devono comunicarlo agli utenti finali del dispositivo.</translation>
 <translation id="6607920041550065565">
       Se viene impostato su false, questo criterio non consente di attivare la funzionalità Powerwash sul dispositivo. Si verifica un'eccezione se il criterio <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> è impostato su un valore che consente l'aggiornamento del firmware TPM e tale firmware non era ancora stato aggiornato.
       Se viene impostato su true, consente di attivare la funzionalità Powerwash sul dispositivo.
@@ -4219,6 +4245,7 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda dopo il passaggio a un browser alternativo, anche se era l'ultima scheda. Questo causa l'uscita da <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7019805045859631636">Veloce</translation>
+<translation id="7025332601572838001">Configurazione del comportamento dei TdS alla prima esecuzione di CCT</translation>
 <translation id="7027785306666625591">Configura la gestione dell'alimentazione in <ph name="PRODUCT_OS_NAME" />.
 
       Queste norme consentono di configurare il comportamento di <ph name="PRODUCT_OS_NAME" /> quando l'utente rimane inattivo per un determinato periodo di tempo.</translation>
@@ -4582,17 +4609,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 <translation id="747014869399137701">Se il criterio è impostato su 1, i siti web possono mostrare le notifiche desktop. Se il criterio è impostato su 2, le notifiche desktop vengono negate.
 
       Se non viene configurato, si applica il criterio <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
-<translation id="7471828226549672843">Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questo criterio viene impostato su Disattivato, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questo criterio viene impostato su Attivato o se non viene configurato, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
-
-      - Questo criterio funziona solo su dispositivi Android completamente gestiti che possono essere configurati da fornitori dell'Unified Endpoint Management.
-
-      - Se questo criterio viene impostato su Disattivato, il criterio BrowserSignin non ha effetto.
-
-      - Se questo criterio viene impostato su Disattivato, le metriche​ non vengono inviate al server.
-
-      - Se questo criterio viene impostato su Disattivato, il browser ha una funzionalità limitata.
-
-      - Se questo criterio viene impostato su Disattivato, gli amministratori devono comunicarlo agli utenti finali del dispositivo.</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
 <translation id="7477239290070847560">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica</translation>

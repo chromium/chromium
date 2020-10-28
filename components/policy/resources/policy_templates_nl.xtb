@@ -976,6 +976,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
        Als je het beleid niet instelt, worden er geen statistieken en diagnostische gegevens gerapporteerd voor onbeheerde apparaten, maar wel voor beheerde apparaten.</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
+<translation id="2455033019778127130">Standaard browsergedrag gebruiken. De servicevoorwaarden worden weergegeven en er wordt gewacht tot de gebruiker ze accepteert.</translation>
 <translation id="2456629156652006573">Alleen privé</translation>
 <translation id="2463034609187171371">DHE-coderingssuites inschakelen in TLS</translation>
 <translation id="2463365186486772703">Landinstelling voor applicatie</translation>
@@ -2417,6 +2418,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
       Als het beleid niet wordt ingesteld, is de functie standaard uitgeschakeld voor gebruikers die op ondernemingsniveau worden beheerd en ingeschakeld voor niet-beheerde gebruikers.</translation>
 <translation id="4555850956567117258">Externe bevestiging van gebruiker inschakelen</translation>
 <translation id="4557134566541205630">URL van standaard zoekprovider voor nieuwe tabbladpagina</translation>
+<translation id="4558166110367609724">De servicevoorwaarden worden automatisch overgeslagen en de browser wordt geladen.</translation>
 <translation id="4562165737444703281">Toestaan dat gebruikers Crostini-poortdoorschakeling [inschakelen/configureren]</translation>
 <translation id="456686782928669977">Met dit beleid wordt bepaald of de regels van het SiteList-beleid van <ph name="IE_PRODUCT_NAME" /> moeten worden geladen.
 
@@ -2614,6 +2616,17 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 
       Als dit beleid is uitgeschakeld of niet is ingesteld, rapporteert <ph name="PRODUCT_NAME" /> geen onveilige gebeurtenissen.
       </translation>
+<translation id="4892647988357350237">De servicevoorwaarden worden standaard weergegeven als CCT voor het eerst wordt uitgevoerd. Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, wordt het dialoogvenster met servicevoorwaarden niet weergegeven tijdens de eerste uitvoering of de daaropvolgende uitvoeringen. Als je dit beleid instelt op <ph name="STANDARD_TOS_DIALOG" /> of niet instelt, wordt het dialoogvenster met servicevoorwaarden weergegeven tijdens de eerste uitvoering. De andere belangrijke aspecten zijn:
+
+      - Dit beleid werkt alleen op volledig beheerde Android-apparaten die kunnen worden geconfigureerd door leveranciers van Unified Endpoint Management.
+
+      - Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, heeft het beleid BrowserSignin geen effect.
+
+      - Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, worden er geen statistieken naar de server gestuurd.
+
+      - Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, beschikt de browser over beperkte functionaliteit.
+
+      - Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
 <translation id="4894290482695457375">Als je <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" /> inschakelt, maakt <ph name="PRODUCT_NAME" /> verbinding met cast-apparaten op alle IP-adressen en niet alleen op RFC1918/RFC4913-privéadressen, tenzij je <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> uitschakelt.
 
       Als je het beleid uitschakelt, maakt <ph name="PRODUCT_NAME" /> alleen verbinding met cast-apparaten op RFC1918/RFC4193.
@@ -3859,6 +3872,19 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Opmerking: Voor Windows®-instanties die niet zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, is afgedwongen installatie beperkt tot apps en extensies die worden vermeld in de Chrome Web Store.</translation>
 <translation id="6598235178374410284">Avatarafbeelding van gebruiker</translation>
 <translation id="6603004149426829878">Beschikbare locatiesignalen altijd verzenden naar de server wanneer de tijdzone wordt bepaald</translation>
+<translation id="660567106648774919">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" />.
+
+      De servicevoorwaarden worden standaard weergegeven als CCT voor het eerst wordt uitgevoerd. Als je dit beleid uitschakelt, wordt het dialoogvenster met servicevoorwaarden niet weergegeven tijdens de eerste uitvoering of de daaropvolgende uitvoeringen. Als je dit beleid inschakelt of niet instelt, wordt het dialoogvenster met servicevoorwaarden weergegeven tijdens de eerste uitvoering. De andere belangrijke aspecten zijn:
+
+      - Dit beleid werkt alleen op volledig beheerde Android-apparaten die kunnen worden geconfigureerd door leveranciers van Unified Endpoint Management.
+
+      - Als je dit beleid uitschakelt, heeft het beleid BrowserSignin geen effect.
+
+      - Als je dit beleid uitschakelt, worden er geen statistieken naar de server gestuurd.
+
+      - Als je dit beleid uitschakelt, beschikt de browser over beperkte functionaliteit.
+
+      - Als je dit beleid uitschakelt, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
 <translation id="6607920041550065565">
       Als dit beleid is ingesteld op False, kan het apparaat Powerwash niet activeren. Een uitzondering hierop is als het beleid <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> is ingesteld op een waarde die de TPM-firmware-update toestaat en de TPM-firmware nog niet is geüpdatet.
       Als het beleid is ingesteld op True, kan het apparaat Powerwash activeren.
@@ -4200,6 +4226,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als je het beleid uitschakelt, sluit <ph name="PRODUCT_NAME" /> het tabblad nadat er is overgeschakeld naar een alternatieve browser, ook als dit het laatste tabblad was. Hierdoor wordt <ph name="PRODUCT_NAME" /> volledig gesloten.</translation>
 <translation id="7019805045859631636">Snel</translation>
+<translation id="7025332601572838001">Het gedrag voor de servicevoorwaarden configureren voor de eerste uitvoering van CCT</translation>
 <translation id="7027785306666625591">Energiebeheer in <ph name="PRODUCT_OS_NAME" /> configureren.
 
       Met dit beleid kun je configureren hoe <ph name="PRODUCT_OS_NAME" /> zich gedraagt wanneer de gebruiker enige tijd inactief is.</translation>
@@ -4565,17 +4592,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="747014869399137701">Als je het beleid instelt op 1, kunnen websites bureaubladmeldingen weergeven. Als je het beleid instelt op 2, worden bureaubladmeldingen geblokkeerd.
 
       Als je het beleid niet instelt, is <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
-<translation id="7471828226549672843">De servicevoorwaarden worden standaard weergegeven als CCT voor het eerst wordt uitgevoerd. Als je dit beleid uitschakelt, wordt het dialoogvenster met servicevoorwaarden niet weergegeven tijdens de eerste uitvoering of de daaropvolgende uitvoeringen. Als je dit beleid inschakelt of niet instelt, wordt het dialoogvenster met servicevoorwaarden weergegeven tijdens de eerste uitvoering. De andere belangrijke aspecten zijn:
-
-      - Dit beleid werkt alleen op volledig beheerde Android-apparaten die kunnen worden geconfigureerd door leveranciers van Unified Endpoint Management.
-
-      - Als je dit beleid uitschakelt, heeft het beleid BrowserSignin geen effect.
-
-      - Als je dit beleid uitschakelt, worden er geen statistieken naar de server gestuurd.
-
-      - Als je dit beleid uitschakelt, beschikt de browser over beperkte functionaliteit.
-
-      - Als je dit beleid uitschakelt, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
 <translation id="747275827471712187">Het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" /> voor cookies op deze sites terugzetten</translation>
 <translation id="7477231245051133709">De toegankelijkheidsfunctie voor monogeluid inschakelen</translation>
 <translation id="7477239290070847560">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen</translation>

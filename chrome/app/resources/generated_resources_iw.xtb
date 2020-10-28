@@ -1015,7 +1015,7 @@
 <translation id="2162155940152307086">הסנכרון יתחיל מיד לאחר היציאה מהגדרות הסנכרון</translation>
 <translation id="2162838847352058695">חסימת האפשרות של אתרים להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="2163470535490402084">התחבר אל האינטרנט כדי להיכנס אל ה-<ph name="DEVICE_TYPE" />.</translation>
-<translation id="2165421703844373933">‏כשאומרים "Ok Google", מתבצעת גישה ל-Assistant. כדי לחסוך בצריכת הסוללה, אפשר לבחור באפשרות "מופעל (מומלץ)". ה-Assistant יגיב רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
+<translation id="2165421703844373933">‏כשאומרים "Hey Google", מתבצעת גישה ל-Assistant. כדי לחסוך בצריכת הסוללה, אפשר לבחור באפשרות "מופעל (מומלץ)". Assistant תגיב רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
 <translation id="2166369534954157698">דג סקרן שט בים זך ולפתע מצא חבורה נחמדה</translation>
 <translation id="2169062631698640254">היכנס בכל זאת</translation>
 <translation id="2172784515318616985">המשך</translation>
@@ -2812,7 +2812,7 @@
 <translation id="4275291496240508082">הפעלת צליל</translation>
 <translation id="4275830172053184480">הפעלת המכשיר מחדש</translation>
 <translation id="4276288850178085042">חסימת האפשרות של אתרים להשתמש במצלמה</translation>
-<translation id="4278101229438943600">‏ה-Assistant מוכנה</translation>
+<translation id="4278101229438943600">‏Assistant מוכנה</translation>
 <translation id="4278390842282768270">מותר</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4282196459431406533">‏Smart Lock מופעל</translation>
@@ -3268,7 +3268,7 @@
 <translation id="4844333629810439236">מקלדות אחרות</translation>
 <translation id="4846680374085650406">הפעילות שלך נעשית בהתאם להמלצה של מנהל המערכת לגבי הגדרה זו.</translation>
 <translation id="4847902821209177679">‏בחרת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> – יש להקיש על Enter כדי לבחור אלבומי <ph name="TOPIC_SOURCE" /></translation>
-<translation id="4848191975108266266">‏קריאה ל-Google Assistant במילים "Ok Google"</translation>
+<translation id="4848191975108266266">‏קריאה ל-Google Assistant במילים "Hey Google"</translation>
 <translation id="4848518990323155912">‏הפעלה של נעילת כרטיס SIM (יש להזין קוד אימות כדי להשתמש בחבילת הגלישה)</translation>
 <translation id="4849286518551984791">‏זמן אוניברסלי מתואם (UTC/‏GMT)</translation>
 <translation id="4849517651082200438">לא להתקין</translation>
@@ -3499,7 +3499,7 @@
 <translation id="512903556749061217">מחובר</translation>
 <translation id="5131591206283983824">הקשה וגרירה בלוח מגע</translation>
 <translation id="5133483819862530305">מהשקיעה ועד לזריחה</translation>
-<translation id="5135085122826131075">‏כשאומרים "Ok Google", מתבצעת גישה ל-Assistant.</translation>
+<translation id="5135085122826131075">‏כשאומרים "Hey Google", מתבצעת גישה ל-Assistant.</translation>
 <translation id="5135533361271311778">לא ניתן ליצור פריט סימניה.</translation>
 <translation id="5136343472380336530">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">מחיקת הפריט הזה</translation>
@@ -5138,7 +5138,7 @@
 <translation id="7088674813905715446">המכשיר הזה הועבר למצב 'ללא הקצאה' על ידי מנהל המערכת. על מנת להפעיל אותו עבור הרשמה, יש לבקש ממנהל המערכת להעביר את המכשיר למצב המתנה.</translation>
 <translation id="7092474863625458670">‏התכונה Voice Match מאפשרת לך לגשת ל-Assistant ישירות באמצעות הקול שלך.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />חשוב לזכור:<ph name="END_BOLD" /> ייתכן שיהיה אפשר לגשת ל-Assistant שלך גם באמצעות קול דומה או הקלטה. אפשר להסיר את ההרשאה של Voice Match בשלב מאוחר יותר. כדי לעשות זאת, יש להשבית את ההרשאה דרך ההגדרות של Assistant.</translation>
+    <ph name="BEGIN_BOLD" />חשוב לזכור:<ph name="END_BOLD" /> ייתכן שיהיה אפשר לגשת ל-Assistant גם באמצעות קול דומה או הקלטה. אפשר להסיר את ההרשאה של Voice Match בשלב מאוחר יותר. כדי לעשות זאת, יש להשבית את ההרשאה דרך ההגדרות של Assistant.</translation>
 <translation id="7093434536568905704">GTK+‎</translation>
 <translation id="7093866338626856921">החלפת נתונים עם המכשירים ששמותיהם: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">‏מכשיר עם יציאת USB-C (יציאה שמאלית מאחור)</translation>
@@ -5314,7 +5314,7 @@
 <translation id="7324297612904500502">פורום ביטא</translation>
 <translation id="7325209047678309347">נייר נתקע</translation>
 <translation id="7325437708553334317">תוסף ניגודיות גבוהה</translation>
-<translation id="7328699668338161242">‏ה-Assistant כבר יודעת לזהות את הקול שלך</translation>
+<translation id="7328699668338161242">‏Assistant כבר יודעת לזהות את הקול שלך</translation>
 <translation id="7328867076235380839">שילוב לא חוקי</translation>
 <translation id="7329154610228416156">הכניסה נכשלה מפני שהוגדר שימוש בכתובת אתר לא מאובטחת (<ph name="BLOCKED_URL" />). צור קשר עם מנהל המערכת.</translation>
 <translation id="7332053360324989309">עובד ייעודי: <ph name="SCRIPT_URL" /></translation>
@@ -5881,7 +5881,7 @@
 <translation id="7959074893852789871">הקובץ הכיל אישורים מרובים, חלקם לא יובאו:</translation>
 <translation id="7961015016161918242">אף פעם</translation>
 <translation id="7963001036288347286">האצת לוח מגע</translation>
-<translation id="7963826112438303517">‏ה-Assistant משתמש בהקלטות האלה ובבקשות קוליות כדי ליצור ולעדכן את תבנית הקול שלך. התבנית נשמרת רק במכשירים שבהם התכונה Voice Match מופעלת. אפשר להציג את הפעילות הקולית או לשמור אותה דרך ההגדרות של Assistant.</translation>
+<translation id="7963826112438303517">‏Assistant משתמשת בהקלטות האלה ובבקשות קוליות כדי ליצור ולעדכן את תבנית הקול שלך. התבנית נשמרת רק במכשירים שבהם התכונה Voice Match מופעלת. אפשר להציג את הפעילות הקולית או לשמור אותה דרך ההגדרות של Assistant.</translation>
 <translation id="7966241909927244760">העתקת כתובת &amp;תמונה</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{פריט אחד ברשימת הסימניות}two{{COUNT} פריטים ברשימת הסימניות}many{{COUNT} פריטים ברשימת הסימניות}other{{COUNT} פריטים ברשימת הסימניות}}</translation>
 <translation id="7968072247663421402">אפשרויות ספק</translation>
@@ -6523,7 +6523,7 @@
 <translation id="8725066075913043281">נסה שוב</translation>
 <translation id="8725178340343806893">מועדפים/סימניות</translation>
 <translation id="8726206820263995930">אירעה שגיאה בעת הבאת הגדרות מדיניות מהשרת: <ph name="CLIENT_ERROR" />.</translation>
-<translation id="8727154974495727220">‏אחרי הגדרת ה-<ph name="DEVICE_TYPE" />, אפשר ללחוץ על לחצן ה-Assistant או להגיד "Ok Google" כדי לקבל עזרה בכל שלב. כדי לבצע שינויים יש לעבור אל הגדרות ה-Assistant.</translation>
+<translation id="8727154974495727220">‏אחרי הגדרת ה-<ph name="DEVICE_TYPE" />, אפשר ללחוץ על לחצן Assistant או להגיד "Hey Google" כדי לקבל עזרה בכל שלב. כדי לבצע שינויים יש לעבור אל הגדרות Assistant.</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8731629443331803108">האתר <ph name="SITE_NAME" /> מבקש את ההרשאה הבאה: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">מספר יציאה</translation>

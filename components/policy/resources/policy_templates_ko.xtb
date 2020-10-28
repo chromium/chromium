@@ -996,6 +996,7 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
 
        정책을 설정하지 않으면 관리되지 않는 기기에서는 측정항목 및 진단 데이터 보고가 사용 중지되고 관리되는 기기에서는 사용 설정됩니다.</translation>
 <translation id="2454228136871844693">안정성에 최적화합니다.</translation>
+<translation id="2455033019778127130">기본 브라우저 동작을 사용하고 서비스 약관을 표시한 다음 사용자가 수락할 때까지 기다림</translation>
 <translation id="2456629156652006573">비공개만 해당</translation>
 <translation id="2463034609187171371">TLS에서 DHE 암호화 기술을 사용 설정합니다.</translation>
 <translation id="2463365186486772703">애플리케이션 언어</translation>
@@ -2442,6 +2443,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
       이 정책이 설정되지 않으면 기본적으로 기업에서 관리하는 사용자에게는 사용 중지되고 관리되지 않는 사용자에게는 사용 설정됩니다.</translation>
 <translation id="4555850956567117258">사용자에 대한 원격 인증을 사용합니다.</translation>
 <translation id="4557134566541205630">기본 검색 공급자 새 탭 페이지 URL</translation>
+<translation id="4558166110367609724">서비스 약관을 자동으로 건너뛰고 브라우저 로드</translation>
 <translation id="4562165737444703281">사용자가 Crostini 포트 전달을 [사용 설정/구성]할 수 있도록 허용</translation>
 <translation id="456686782928669977">이 정책은 <ph name="IE_PRODUCT_NAME" />의 SiteList 정책으로부터 규칙을 로드할지 제어합니다.
 
@@ -2640,6 +2642,17 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 
       이 정책이 사용 중지되거나 설정되지 않으면 <ph name="PRODUCT_NAME" />에서 안전하지 않은 이벤트를 보고하지 않습니다.
       </translation>
+<translation id="4892647988357350237">CCT를 처음 실행할 때 서비스 약관이 기본으로 표시됩니다. 정책을 <ph name="SKIP_TOS_DIALOG" />로 설정하면 첫 실행 환경 또는 이후 실행 중 서비스 약관 대화상자가 나타나지 않습니다. <ph name="STANDARD_TOS_DIALOG" />로 설정하거나 설정하지 않으면 첫 실행 환경에서 서비스 약관 대화상자가 나타납니다. 다른 주의사항은 다음과 같습니다.
+
+      - 이 정책은 Unified Endpoint Management 공급업체에서 구성할 수 있는 완전 관리형 Android 기기에서만 작동합니다.
+
+      - 정책을 <ph name="SKIP_TOS_DIALOG" />로 설정하면 BrowserSignin 정책이 적용되지 않습니다.
+
+      - 정책을 <ph name="SKIP_TOS_DIALOG" />로 설정하면 측정항목이​ 서버로 전송되지 않습니다.
+
+      - 정책을 <ph name="SKIP_TOS_DIALOG" />로 설정하면 브라우저의 기능이 제한됩니다.
+
+      - 정책을 <ph name="SKIP_TOS_DIALOG" />로 설정하면 관리자가 기기의 최종 사용자에게 이를 알려야 합니다.</translation>
 <translation id="4894290482695457375"><ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />이(가) '사용 안함'으로 설정되어 있지 않은 한, <ph name="MEDIA_ROUTER_CAST_ALLOW_ALL_IPS_POLICY_NAME" />을(를) '사용'으로 설정하면 <ph name="PRODUCT_NAME" />이(가) RFC1918/RFC4193 비공개 주소뿐 아니라 모든 IP 주소에서 Cast 기기에 연결됩니다.
 
       정책을 '사용 안함'으로 설정하면 <ph name="PRODUCT_NAME" />이(가) RFC1918/RFC4193에서만 Cast 기기에 연결됩니다.
@@ -3895,6 +3908,19 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
       참고: <ph name="MS_AD_NAME" /> 도메인에 연결되지 않은 Windows® 인스턴스의 경우 강제 설치는 Chrome 웹 스토어에 등록된 앱과 확장 프로그램으로 제한됩니다.</translation>
 <translation id="6598235178374410284">사용자 아바타 이미지</translation>
 <translation id="6603004149426829878">시간대를 파악하는 동안 항상 사용 가능한 위치 신호를 모두 서버로 전송합니다.</translation>
+<translation id="660567106648774919">이 정책은 지원 중단되었으므로 <ph name="TOS_DIALOG_BEHAVIOR_POLICY_NAME" /> 정책을 대신 사용하세요.
+
+      CCT를 처음 실행할 때 서비스 약관이 기본으로 표시됩니다. 정책을 사용 안함으로 설정하면 첫 실행 환경 또는 이후 실행 중 서비스 약관 대화상자가 나타나지 않습니다. 사용으로 설정하거나 설정하지 않으면 첫 실행 환경에서 서비스 약관 대화상자가 나타납니다. 다른 주의사항은 다음과 같습니다.
+
+      - 이 정책은 Unified Endpoint Management 공급업체에서 구성할 수 있는 완전 관리형 Android 기기에서만 작동합니다.
+
+      - 정책을 사용 안함으로 설정하면 BrowserSignin 정책이 적용되지 않습니다.
+
+      - 정책을 사용 안함으로 설정하면 측정항목이​ 서버로 전송되지 않습니다.
+
+      - 정책을 사용 안함으로 설정하면 브라우저의 기능이 제한됩니다.
+
+      - 정책을 사용 안함으로 설정하면 관리자가 기기의 최종 사용자에게 이를 알려야 합니다.</translation>
 <translation id="6607920041550065565">
       이 정책을 false로 설정하면 기기에서 파워워시를 실행할 수 없습니다. <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> 정책이 TPM 펌웨어 업데이트를 허용하는 값으로 설정되어 있으며 TPM 펌웨어가 아직 업데이트되지 않은 경우는 예외입니다.
       true로 설정하면 기기에서 파워워시를 실행할 수 있습니다.
@@ -4238,6 +4264,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 
       정책을 사용 안함으로 설정하면 대체 브라우저로 전환한 후 <ph name="PRODUCT_NAME" />에서 마지막 탭일지라도 모두 닫습니다. 따라서 <ph name="PRODUCT_NAME" />이 완전히 종료됩니다.</translation>
 <translation id="7019805045859631636">Fast</translation>
+<translation id="7025332601572838001">CCT 첫 실행 시 서비스 약관 동작 구성</translation>
 <translation id="7027785306666625591"><ph name="PRODUCT_OS_NAME" />에서 전원 관리를 설정합니다.
 
       이 정책으로 사용자가 일정 시간 동안 유휴 상태일 때 <ph name="PRODUCT_OS_NAME" />에서 수행할 동작을 설정할 수 있습니다.</translation>
@@ -4603,17 +4630,6 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 <translation id="747014869399137701">정책을 1로 설정하면 웹사이트에서 데스크톱 알림을 표시하도록 허용합니다. 정책을 2로 설정하면 데스크톱 알림을 거부합니다.
 
       설정하지 않으면 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> 정책이 적용되지만 사용자가 이 설정을 변경할 수 있습니다.</translation>
-<translation id="7471828226549672843">CCT를 처음 실행할 때 서비스 약관이 기본으로 표시됩니다. 정책을 사용 안함으로 설정하면 첫 실행 환경 또는 이후 실행 중 서비스 약관 대화상자가 나타나지 않습니다. 정책을 사용으로 설정하거나 설정하지 않으면 첫 실행 환경에서 서비스 약관 대화상자가 나타납니다. 다른 주의사항은 다음과 같습니다.
-
-      - 이 정책은 Unified Endpoint Management 공급업체에서 구성할 수 있는 완전 관리형 Android 기기에서만 작동합니다.
-
-      - 정책을 사용 안함으로 설정하면 BrowserSignin 정책이 적용되지 않습니다.
-
-      - 정책을 사용 안함으로 설정하면 측정항목이​ 서버로 전송되지 않습니다.
-
-      - 정책을 사용 안함으로 설정하면 브라우저의 기능이 제한됩니다.
-
-      - 정책을 사용 안함으로 설정하면 관리자가 기기의 최종 사용자에게 이를 알려야 합니다.</translation>
 <translation id="747275827471712187">이 사이트에서 쿠키의 레거시 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 동작으로 되돌리기</translation>
 <translation id="7477231245051133709">모노 오디오 접근성 기능 사용</translation>
 <translation id="7477239290070847560">Zeroconf 기반(mDNS + DNS-SD) 프로토콜 목적지</translation>
