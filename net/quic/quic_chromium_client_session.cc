@@ -1944,6 +1944,9 @@ void QuicChromiumClientSession::OnConnectionClosed(
         connection()->GetStats().crypto_retransmit_count);
   }
 
+  base::UmaHistogramCounts1M(
+      "Net.QuicSession.UndecryptablePacketsReceivedWithDecrypter",
+      connection()->GetStats().num_failed_authentication_packets_received);
   base::UmaHistogramSparse("Net.QuicSession.QuicVersion",
                            connection()->transport_version());
   NotifyFactoryOfSessionGoingAway();

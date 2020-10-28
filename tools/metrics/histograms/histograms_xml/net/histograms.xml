@@ -3789,7 +3789,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of undecryptable packets recevied by a QuicSession when the
-    sesesion is closed.
+    session is closed. Includes packets where a decryption key was not present.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.UndecryptablePacketsReceivedWithDecrypter"
+    units="units" expires_after="2021-05-11">
+  <owner>mattm@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of undecryptable packets recevied by a QuicSession when the
+    session is closed. Only includes packets where a decryption key was present
+    for the packet's encryption level.
   </summary>
 </histogram>
 
