@@ -1,0 +1,45 @@
+<style>
+  :host {
+    align-items: center;
+    box-sizing: border-box;
+    cursor: default;
+    display: flex;
+    height: 48px;
+    padding: 1em;
+    width: 100%;
+  }
+
+  :host(:hover) {
+    background-color: #eee;
+  }
+
+  :host(.focused) {
+    background-color: rgba(var(--google-grey-900-rgb), 6%);
+  }
+
+  .annotation {
+    color: var(--google-blue-600);
+    margin-inline-start: auto;
+  }
+
+  span {
+    white-space: pre;
+  }
+
+  .match {
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  iron-icon {
+    margin-inline-end: .5em;
+    --iron-icon-fill-color: --google-grey-800;
+  }
+</style>
+<iron-icon icon="[[computeIcon_(model.entity)]]"></iron-icon>
+<template is="dom-repeat"
+    items="[[computeMatchSpans_(model.title, model.matchedRanges)]]"
+    as="span">
+  <span class$="[[getClassForMatch(span.isMatch)]]">[[span.text]]</span>
+</template>
+<span class="annotation">[[model.annotation]]</span>

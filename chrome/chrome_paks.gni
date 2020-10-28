@@ -132,6 +132,7 @@ template("chrome_extra_paks") {
       sources += [
         "$root_gen_dir/chrome/bookmarks_resources.pak",
         "$root_gen_dir/chrome/browser/media/kaleidoscope/kaleidoscope_resources.pak",
+        "$root_gen_dir/chrome/commander_resources.pak",
         "$root_gen_dir/chrome/component_extension_resources.pak",
         "$root_gen_dir/chrome/dev_ui_resources.pak",
         "$root_gen_dir/chrome/downloads_resources.pak",
@@ -148,6 +149,7 @@ template("chrome_extra_paks") {
       deps += [
         "//chrome/browser/media/kaleidoscope:kaleidoscope_resources",
         "//chrome/browser/resources:bookmarks_resources",
+        "//chrome/browser/resources:commander_resources",
         "//chrome/browser/resources:component_extension_resources",
         "//chrome/browser/resources:dev_ui_paks",
         "//chrome/browser/resources:downloads_resources",

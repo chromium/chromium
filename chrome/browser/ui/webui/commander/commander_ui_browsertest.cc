@@ -143,17 +143,17 @@ TEST(CommanderHandlerTest, ViewModelPassed) {
       arg->FindPath("options")->GetList()[0].FindPath("title")->GetString());
   EXPECT_EQ(0, arg->FindPath("options")
                    ->GetList()[0]
-                   .FindPath("matched_ranges")
+                   .FindPath("matchedRanges")
                    ->GetList()[0]
                    .GetList()[0]
                    .GetInt());
   EXPECT_EQ(4, arg->FindPath("options")
                    ->GetList()[0]
-                   .FindPath("matched_ranges")
+                   .FindPath("matchedRanges")
                    ->GetList()[0]
                    .GetList()[1]
                    .GetInt());
-  EXPECT_EQ(42, arg->FindPath("result_set_id")->GetInt());
+  EXPECT_EQ(42, arg->FindPath("resultSetId")->GetInt());
 }
 
 TEST(CommanderHandlerTest, Initialize) {

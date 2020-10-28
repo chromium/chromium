@@ -1,9 +1,18 @@
 <!doctype html>
-<html dir="$i18n{textdirection}">
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
  <meta charset="utf-8">
+ <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+ <style>
+   body {
+     margin: 0;
+   }
+ </style>
+ <!-- TODO(lgrey): Localize and pass it in. -->
+ <title>Commander</title>
 </head>
 <body>
-Hello, commander!
+  <commander-app></commander-app>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

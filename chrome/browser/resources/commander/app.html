@@ -1,0 +1,48 @@
+<style>
+  :host {
+    background-color: #fff;
+    overflow: hidden;
+  }
+
+  input {
+    border: 0;
+    box-sizing: border-box;
+    height: 100%;
+    margin:0;
+    padding: 1em 1em 1em .5em;
+    width: 100%;
+  }
+
+  input:focus {
+    outline: none;
+  }
+
+  #input-row {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    height: 48px;
+    width: 100%;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  iron-icon {
+    margin-inline-start: 1em;
+    --iron-icon-fill-color: #999;
+  }
+</style>
+<div id="container">
+  <div id="input-row">
+    <iron-icon icon="cr:search"></iron-icon>
+    <input id="input" type="text" on-input="onInput_"
+        on-keydown="onKeydown_" autofocus></input>
+  </div>
+  <template id="options" is="dom-repeat" on-dom-change="onDomChange_"
+        items="[[options_]]">
+    <commander-option class$="[[getOptionClass_(index, focusedIndex_)]]"
+          model="[[item]]" on-click="onOptionClick_"></commander-option>
+  </template>
+</div>

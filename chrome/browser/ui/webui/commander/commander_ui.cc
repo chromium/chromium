@@ -8,8 +8,11 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/commander/commander_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/commander_resources.h"
+#include "chrome/grit/commander_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 CommanderUI::CommanderUI(content::WebUI* web_ui)
@@ -20,8 +23,9 @@ CommanderUI::CommanderUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUICommanderHost);
-  source->AddResourcePath("index.html", IDR_COMMANDER_HTML);
-  source->SetDefaultResource(IDR_COMMANDER_HTML);
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kCommanderResources, kCommanderResourcesSize), "",
+      IDR_COMMANDER_COMMANDER_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source);

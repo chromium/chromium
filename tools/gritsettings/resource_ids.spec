@@ -120,6 +120,10 @@
   "chrome/browser/resources/chromeos/multidevice_setup/multidevice_setup_resources.grd": {
     "structures": [1400],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commander/commander_resources.grd": {
+    "META": {"sizes": {"includes": [15]}},
+    "includes": [1405],
+  },
   "chrome/browser/resources/component_extension_resources.grd": {
     "includes": [1420],
     "structures": [1440],

@@ -28,6 +28,7 @@ if (enable_js_type_check) {
       deps += [
         "bluetooth_internals:closure_compile",
         "bookmarks:closure_compile",
+        "commander:closure_compile",
         "discards:closure_compile",
         "download_internals:closure_compile",
         "downloads:closure_compile",
@@ -133,6 +134,32 @@ if (!is_android) {
       "grit/bookmarks_resources_map.cc",
       "grit/bookmarks_resources_map.h",
       "bookmarks_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
+  grit("commander_resources") {
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "-E",
+      "root_src_dir=" + rebase_path("//", root_build_dir),
+    ]
+
+    defines = chrome_grit_defines
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                 rebase_path(root_gen_dir, root_build_dir) ]
+    commander_gen_dir = "$root_gen_dir/chrome/browser/resources/commander"
+    source = "$commander_gen_dir/commander_resources.grd"
+    deps = [ "//chrome/browser/resources/commander:build_grd" ]
+    outputs = [
+      "grit/commander_resources.h",
+      "grit/commander_resources_map.cc",
+      "grit/commander_resources_map.h",
+      "commander_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

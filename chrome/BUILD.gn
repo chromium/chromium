@@ -1347,6 +1347,7 @@ group("extra_resources") {
   if (!is_android) {
     public_deps += [
       "//chrome/browser/resources:bookmarks_resources",
+      "//chrome/browser/resources:commander_resources",
       "//chrome/browser/resources:component_extension_resources",
       "//chrome/browser/resources:dev_ui_paks",
       "//chrome/browser/resources:downloads_resources",

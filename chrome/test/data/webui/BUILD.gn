@@ -185,6 +185,10 @@ if (include_js_tests) {
     if (enable_webui_tab_strip) {
       sources += [ "tab_strip/tab_strip_browsertest.js" ]
     }
+    if (!is_android) {
+      sources += [ "commander/commander_browsertest.js" ]
+    }
+
     deps = [
       ":modulize",
       "//build:branding_buildflags",
@@ -504,6 +508,9 @@ group("closure_compile") {
   }
   if (enable_tab_search) {
     deps += [ "tab_search_merge:closure_compile" ]
+  }
+  if (!is_android) {
+    deps += [ "commander:closure_compile" ]
   }
 }
 

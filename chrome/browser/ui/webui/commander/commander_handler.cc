@@ -19,11 +19,11 @@ constexpr char kViewModelUpdatedEvent[] = "view-model-updated";
 constexpr char kInitializeEvent[] = "initialize";
 // View model dictionary keys
 constexpr char kActionKey[] = "action";
-constexpr char kResultSetIdKey[] = "result_set_id";
+constexpr char kResultSetIdKey[] = "resultSetId";
 constexpr char kTitleKey[] = "title";
 constexpr char kEntityKey[] = "entity";
 constexpr char kAnnotationKey[] = "annotation";
-constexpr char kMatchedRangesKey[] = "matched_ranges";
+constexpr char kMatchedRangesKey[] = "matchedRanges";
 constexpr char kOptionsKey[] = "options";
 }  // namespace
 
