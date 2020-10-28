@@ -500,7 +500,9 @@
       'filepath': 'third_party/blink/renderer/core/html/parser/html_preload_scanner',
     },
     'blink_prerender': {
-      'filepath': 'third_party/(WebKit|blink)/.*([Pp]rerender|loader/link_loader|html/html_link_element)'
+      'filepath': 'third_party/blink/renderer/core/.*prerender' \
+                  '|third_party/blink/renderer/core/loader/link_loader' \
+                  '|third_party/blink/public/mojom/prerender/'
     },
     'blink_public_api': {
       'filepath': 'third_party/blink/public'
@@ -1592,7 +1594,9 @@
       'filepath': 'components/search_engines/prepopulated_engines.json',
     },
     'prerender': {
-      'filepath': 'prerender'
+      'filepath': 'chrome/browser/prerender/' \
+                  '|content/browser/prerender/' \
+                  '|components/prerender/'
     },
     'presentation': {
       'filepath': 'content/browser/presentation/' \
@@ -2295,6 +2299,7 @@
                                 'schenney@chromium.org'],
     'blink_preloadScanner': ['yoavweiss@chromium.org'],
     'blink_prerender': ['gavinp+prerender@chromium.org',
+                        'prerendering-reviews@chromium.org',
                         'yoavweiss@chromium.org'],
     'blink_public_api': ['blink-reviews-api@chromium.org'],
     'blink_quota': ['kinuko+fileapi@chromium.org'],
@@ -2725,6 +2730,7 @@
                        'marcinjb+p4watch@google.com'],
     'prepopulated_engines': ['vasilii+watch@chromium.org'],
     'prerender': ['gavinp+prer@chromium.org',
+                  'prerendering-reviews@chromium.org',
                   'tburkard+watch@chromium.org'],
     'presentation': ['mfoltz+watch@chromium.org'],
     'preview_features': ['chrome-lite-pages+watch@google.com'],
