@@ -129,15 +129,8 @@ base::Optional<double> ScrollTimelineOffset::ResolveOffset(
 
     return resolved;
   } else if (element_based_offset_) {
-    // We assume that the root is the target's ancestor in layout tree. Under
-    // this assumption |target.LocalToAncestorRect()| returns the targets's
-    // position relative to the root's border box, while ignoring scroll offset.
-    //
-    // TODO(majidvp): We need to validate this assumption and deal with cases
-    // where it is not true. See the spec discussion here:
-    // https://github.com/w3c/csswg-drafts/issues/4337#issuecomment-610989843
-
-    DCHECK(element_based_offset_->hasTarget());
+    if (!element_based_offset_->hasTarget())
+      return base::nullopt;
     Element* target = element_based_offset_->target();
     const LayoutBox* target_box = target->GetLayoutBox();
 
