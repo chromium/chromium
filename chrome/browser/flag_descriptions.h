@@ -1096,6 +1096,9 @@ extern const char kPrintJobManagementAppDescription[];
 extern const char kPrintSaveToDriveName[];
 extern const char kPrintSaveToDriveDescription[];
 
+extern const char kPrintServerScalingName[];
+extern const char kPrintServerScalingDescription[];
+
 extern const char kPrivacyAdvisorName[];
 extern const char kPrivacyAdvisorDescription[];
 

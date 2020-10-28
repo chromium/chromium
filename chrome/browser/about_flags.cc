@@ -5387,6 +5387,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSelectToSpeakNavigationControlName,
      flag_descriptions::kSelectToSpeakNavigationControlDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kSelectToSpeakNavigationControl)},
+
+    {"print-server-scaling", flag_descriptions::kPrintServerScalingName,
+     flag_descriptions::kPrintServerScalingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kPrintServerScaling)},
 #endif  // OS_CHROMEOS
 
     {"autofill-off-no-server-data",

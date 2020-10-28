@@ -481,6 +481,10 @@ const base::Feature kPrintJobManagementApp{"PrintJobManagementApp",
 const base::Feature kPrintSaveToDrive{"PrintSaveToDrive",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Allows print servers to be selected when beyond a specified limit.
+const base::Feature kPrintServerScaling{"PrintServerScaling",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable quick answers.
 const base::Feature kQuickAnswers{"QuickAnswers",
                                   base::FEATURE_DISABLED_BY_DEFAULT};

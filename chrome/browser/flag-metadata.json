@@ -3831,6 +3831,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "print-server-scaling",
+    "owners": [ "mattme" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "print-with-reduced-rasterization",
     "owners": [ "thestig" ],
     "expiry_milestone": 89

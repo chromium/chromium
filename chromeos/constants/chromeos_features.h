@@ -214,6 +214,8 @@ extern const base::Feature kPrintJobManagementApp;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPrintSaveToDrive;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kPrintServerScaling;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPrinterStatus;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPrinterStatusDialog;
