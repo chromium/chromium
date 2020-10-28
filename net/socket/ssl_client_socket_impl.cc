@@ -1203,7 +1203,8 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
             host_and_port_, server_cert_verify_result_.is_issued_by_known_root,
             server_cert_verify_result_.public_key_hashes, server_cert_.get(),
             server_cert_verify_result_.verified_cert.get(),
-            TransportSecurityState::ENABLE_PIN_REPORTS, &pinning_failure_log_);
+            TransportSecurityState::ENABLE_PIN_REPORTS,
+            ssl_config_.network_isolation_key, &pinning_failure_log_);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
         server_cert_verify_result_.cert_status |=

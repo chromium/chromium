@@ -20,6 +20,7 @@ class GURL;
 
 namespace net {
 
+class NetworkIsolationKey;
 class URLRequestContext;
 
 // ReportSender asynchronously sends serialized reports to a URI.
@@ -27,6 +28,9 @@ class URLRequestContext;
 // the format of the report being sent (JSON, protobuf, etc.) and the particular
 // data that it contains. Multiple reports can be in-flight at once. This class
 // owns inflight requests and cleans them up when necessary.
+//
+// Despite this class's name, it has nothing to do with the Reporting API,
+// which is implemented in net/reporting.
 class NET_EXPORT ReportSender
     : public URLRequest::Delegate,
       public TransportSecurityState::ReportSenderInterface {
@@ -49,6 +53,7 @@ class NET_EXPORT ReportSender
   void Send(const GURL& report_uri,
             base::StringPiece content_type,
             base::StringPiece report,
+            const NetworkIsolationKey& network_isolation_key,
             SuccessCallback success_callback,
             ErrorCallback error_callback) override;
 

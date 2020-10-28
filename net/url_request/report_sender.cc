@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "net/base/elements_upload_data_stream.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -58,6 +59,7 @@ ReportSender::~ReportSender() = default;
 void ReportSender::Send(const GURL& report_uri,
                         base::StringPiece content_type,
                         base::StringPiece report,
+                        const NetworkIsolationKey& network_isolation_key,
                         SuccessCallback success_callback,
                         ErrorCallback error_callback) {
   DCHECK(!content_type.empty());
@@ -66,9 +68,10 @@ void ReportSender::Send(const GURL& report_uri,
   url_request->SetUserData(
       &kUserDataKey, std::make_unique<CallbackInfo>(std::move(success_callback),
                                                     std::move(error_callback)));
-
   url_request->SetLoadFlags(kLoadFlags);
   url_request->set_allow_credentials(false);
+  url_request->set_isolation_info(IsolationInfo::CreatePartial(
+      IsolationInfo::RequestType::kOther, network_isolation_key));
 
   HttpRequestHeaders extra_headers;
   extra_headers.SetHeader(HttpRequestHeaders::kContentType, content_type);

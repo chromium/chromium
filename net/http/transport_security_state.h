@@ -303,6 +303,7 @@ class NET_EXPORT TransportSecurityState {
     virtual void Send(const GURL& report_uri,
                       base::StringPiece content_type,
                       base::StringPiece report,
+                      const NetworkIsolationKey& network_isolation_key,
                       base::OnceCallback<void()> success_callback,
                       base::OnceCallback<void(const GURL&,
                                               int /* net_error */,
@@ -385,6 +386,7 @@ class NET_EXPORT TransportSecurityState {
       const X509Certificate* served_certificate_chain,
       const X509Certificate* validated_certificate_chain,
       const PublicKeyPinReportStatus report_status,
+      const NetworkIsolationKey& network_isolation_key,
       std::string* failure_log);
   bool HasPublicKeyPins(const std::string& host);
 
@@ -606,6 +608,7 @@ class NET_EXPORT TransportSecurityState {
       const X509Certificate* served_certificate_chain,
       const X509Certificate* validated_certificate_chain,
       const PublicKeyPinReportStatus report_status,
+      const NetworkIsolationKey& network_isolation_key,
       std::string* failure_log);
 
   // If a Delegate is present, notify it that the internal state has
@@ -648,6 +651,7 @@ class NET_EXPORT TransportSecurityState {
       const X509Certificate* served_certificate_chain,
       const X509Certificate* validated_certificate_chain,
       const TransportSecurityState::PublicKeyPinReportStatus report_status,
+      const net::NetworkIsolationKey& network_isolation_key,
       std::string* failure_log);
 
   // Returns true and updates |*expect_ct_result| iff there is a static
