@@ -16,18 +16,30 @@ FakeVirtualFileProviderClient::~FakeVirtualFileProviderClient() = default;
 
 void FakeVirtualFileProviderClient::Init(dbus::Bus* bus) {}
 
-void FakeVirtualFileProviderClient::OpenFile(int64_t size,
-                                             OpenFileCallback callback) {
-  std::string id;
-  base::ScopedFD fd;
-  if (size != expected_size_) {
+void FakeVirtualFileProviderClient::GenerateVirtualFileId(
+    int64_t size,
+    GenerateVirtualFileIdCallback callback) {
+  base::Optional<std::string> id;
+  if (size != expected_size_)
     LOG(ERROR) << "Unexpected size " << size << " vs " << expected_size_;
-  } else {
+  else
     id = result_id_;
-    fd = std::move(result_fd_);
-  }
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), id, std::move(fd)));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(id)));
+}
+
+void FakeVirtualFileProviderClient::OpenFileById(
+    const std::string& id,
+    OpenFileByIdCallback callback) {
+  base::ScopedFD fd;
+  if (id != result_id_)
+    LOG(ERROR) << "Unexpected id " << id << " vs " << result_id_;
+  else
+    fd = std::move(result_fd_);
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(fd)));
 }
 
 }  // namespace chromeos

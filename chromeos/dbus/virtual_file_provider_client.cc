@@ -25,15 +25,28 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
   ~VirtualFileProviderClientImpl() override = default;
 
   // VirtualFileProviderClient override:
-  void OpenFile(int64_t size, OpenFileCallback callback) override {
+  void GenerateVirtualFileId(int64_t size,
+                             GenerateVirtualFileIdCallback callback) override {
     dbus::MethodCall method_call(
         virtual_file_provider::kVirtualFileProviderInterface,
-        virtual_file_provider::kOpenFileMethod);
+        virtual_file_provider::kGenerateVirtualFileIdMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendInt64(size);
     proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&VirtualFileProviderClientImpl::OnOpenFile,
+        base::BindOnce(&VirtualFileProviderClientImpl::OnGenerateVirtualFileId,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+  void OpenFileById(const std::string& id,
+                    OpenFileByIdCallback callback) override {
+    dbus::MethodCall method_call(
+        virtual_file_provider::kVirtualFileProviderInterface,
+        virtual_file_provider::kOpenFileByIdMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(std::move(id));
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&VirtualFileProviderClientImpl::OnOpenFileById,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
@@ -47,21 +60,37 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
   }
 
  private:
-  // Runs the callback with OpenFile method call result.
-  void OnOpenFile(OpenFileCallback callback, dbus::Response* response) {
+  // Runs the callback with GenerateVirtualFileId method call result.
+  void OnGenerateVirtualFileId(GenerateVirtualFileIdCallback callback,
+                               dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(std::string(), base::ScopedFD());
+      std::move(callback).Run(base::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     std::string id;
-    base::ScopedFD fd;
-    if (!reader.PopString(&id) || !reader.PopFileDescriptor(&fd)) {
+    if (!reader.PopString(&id)) {
       LOG(ERROR) << "Invalid method call result.";
-      std::move(callback).Run(std::string(), base::ScopedFD());
+      std::move(callback).Run(base::nullopt);
       return;
     }
-    std::move(callback).Run(id, std::move(fd));
+    std::move(callback).Run(std::move(id));
+  }
+
+  // Runs the callback with OpenFileById method call result.
+  void OnOpenFileById(OpenFileByIdCallback callback, dbus::Response* response) {
+    if (!response) {
+      std::move(callback).Run(base::ScopedFD());
+      return;
+    }
+    dbus::MessageReader reader(response);
+    base::ScopedFD fd;
+    if (!reader.PopFileDescriptor(&fd)) {
+      LOG(ERROR) << "Invalid method call result.";
+      std::move(callback).Run(base::ScopedFD());
+      return;
+    }
+    std::move(callback).Run(std::move(fd));
   }
 
   dbus::ObjectProxy* proxy_ = nullptr;

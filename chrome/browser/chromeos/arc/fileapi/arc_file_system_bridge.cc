@@ -244,6 +244,12 @@ void ArcFileSystemBridge::GetFileSize(const std::string& url,
     std::move(callback).Run(-1);
     return;
   }
+
+  GetFileSizeInternal(url_decoded, std::move(callback));
+}
+
+void ArcFileSystemBridge::GetFileSizeInternal(const GURL& url_decoded,
+                                              GetFileSizeCallback callback) {
   scoped_refptr<storage::FileSystemContext> context =
       GetFileSystemContext(profile_, url_decoded);
   file_manager::util::FileSystemURLAndHandle file_system_url_and_handle =
@@ -297,6 +303,24 @@ void ArcFileSystemBridge::OnRootsChanged() {
     observer.OnRootsChanged();
 }
 
+void ArcFileSystemBridge::GetVirtualFileId(const std::string& url,
+                                           GetVirtualFileIdCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  GURL url_decoded = DecodeFromChromeContentProviderUrl(GURL(url));
+  if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
+    LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+
+  GetVirtualFileIdInternal(url_decoded, std::move(callback));
+}
+
+void ArcFileSystemBridge::HandleIdReleased(const std::string& id,
+                                           HandleIdReleasedCallback callback) {
+  std::move(callback).Run(HandleIdReleased(id));
+}
+
 void ArcFileSystemBridge::OpenFileToRead(const std::string& url,
                                          OpenFileToReadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -313,16 +337,25 @@ void ArcFileSystemBridge::OpenFileToRead(const std::string& url,
   // If either DriveFS is not enabled/not mounted, or the URL doesn't represent
   // drivefs file (e.g., FSP, MTP), use VirtualFileProvider instead.
   if (fs_path.empty()) {
-    GetFileSize(url, base::BindOnce(
-                         &ArcFileSystemBridge::OpenFileToReadAfterGetFileSize,
-                         weak_ptr_factory_.GetWeakPtr(), url_decoded,
-                         std::move(callback)));
+    GetVirtualFileIdInternal(
+        url_decoded, base::BindOnce(&ArcFileSystemBridge::OpenFileById,
+                                    weak_ptr_factory_.GetWeakPtr(), url_decoded,
+                                    std::move(callback)));
     return;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&OpenDriveFSFileToRead, fs_path), std::move(callback));
+}
+
+void ArcFileSystemBridge::GetVirtualFileIdInternal(
+    const GURL& url_decoded,
+    GetVirtualFileIdCallback callback) {
+  GetFileSizeInternal(
+      url_decoded, base::BindOnce(&ArcFileSystemBridge::GenerateVirtualFileId,
+                                  weak_ptr_factory_.GetWeakPtr(), url_decoded,
+                                  std::move(callback)));
 }
 
 void ArcFileSystemBridge::SelectFiles(mojom::SelectFilesRequestPtr request,
@@ -352,39 +385,73 @@ void ArcFileSystemBridge::GetFileSelectorElements(
                                                           std::move(callback));
 }
 
-void ArcFileSystemBridge::OpenFileToReadAfterGetFileSize(
+void ArcFileSystemBridge::GenerateVirtualFileId(
     const GURL& url_decoded,
-    OpenFileToReadCallback callback,
+    GenerateVirtualFileIdCallback callback,
     int64_t size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (size < 0) {
     LOG(ERROR) << "Failed to get file size " << url_decoded;
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+  chromeos::DBusThreadManager::Get()
+      ->GetVirtualFileProviderClient()
+      ->GenerateVirtualFileId(
+          size, base::BindOnce(&ArcFileSystemBridge::OnGenerateVirtualFileId,
+                               weak_ptr_factory_.GetWeakPtr(), url_decoded,
+                               std::move(callback)));
+}
+
+void ArcFileSystemBridge::OnGenerateVirtualFileId(
+    const GURL& url_decoded,
+    GenerateVirtualFileIdCallback callback,
+    const base::Optional<std::string>& id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(id.has_value());
+  DCHECK_EQ(id_to_url_.count(id.value()), 0u);
+  id_to_url_[id.value()] = url_decoded;
+
+  std::move(callback).Run(std::move(id));
+}
+
+void ArcFileSystemBridge::OpenFileById(const GURL& url_decoded,
+                                       OpenFileToReadCallback callback,
+                                       const base::Optional<std::string>& id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!id.has_value()) {
+    LOG(ERROR) << "Missing ID";
     std::move(callback).Run(mojo::ScopedHandle());
     return;
   }
-  chromeos::DBusThreadManager::Get()->GetVirtualFileProviderClient()->OpenFile(
-      size, base::BindOnce(&ArcFileSystemBridge::OnOpenFile,
-                           weak_ptr_factory_.GetWeakPtr(), url_decoded,
-                           std::move(callback)));
+
+  chromeos::DBusThreadManager::Get()
+      ->GetVirtualFileProviderClient()
+      ->OpenFileById(id.value(),
+                     base::BindOnce(&ArcFileSystemBridge::OnOpenFileById,
+                                    weak_ptr_factory_.GetWeakPtr(), url_decoded,
+                                    std::move(callback), id.value()));
 }
 
-void ArcFileSystemBridge::OnOpenFile(const GURL& url_decoded,
-                                     OpenFileToReadCallback callback,
-                                     const std::string& id,
-                                     base::ScopedFD fd) {
+void ArcFileSystemBridge::OnOpenFileById(const GURL& url_decoded,
+                                         OpenFileToReadCallback callback,
+                                         const std::string& id,
+                                         base::ScopedFD fd) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!fd.is_valid()) {
     LOG(ERROR) << "Invalid FD";
+    if (!HandleIdReleased(id))
+      LOG(ERROR) << "Cannot release ID: " << id;
     std::move(callback).Run(mojo::ScopedHandle());
     return;
   }
-  DCHECK_EQ(id_to_url_.count(id), 0u);
-  id_to_url_[id] = url_decoded;
 
   mojo::ScopedHandle wrapped_handle =
       mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
   if (!wrapped_handle.is_valid()) {
     LOG(ERROR) << "Failed to wrap handle";
+    if (!HandleIdReleased(id))
+      LOG(ERROR) << "Cannot release ID: " << id;
     std::move(callback).Run(mojo::ScopedHandle());
     return;
   }

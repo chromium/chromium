@@ -22,16 +22,19 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeVirtualFileProviderClient
   void Init(dbus::Bus* bus) override;
 
   // VirtualFileProviderClient overrides:
-  void OpenFile(int64_t size, OpenFileCallback callback) override;
+  void GenerateVirtualFileId(int64_t size,
+                             GenerateVirtualFileIdCallback callback) override;
+  void OpenFileById(const std::string& id,
+                    OpenFileByIdCallback callback) override;
 
   void set_expected_size(int64_t size) { expected_size_ = size; }
   void set_result_id(const std::string& id) { result_id_ = id; }
   void set_result_fd(base::ScopedFD fd) { result_fd_ = std::move(fd); }
 
  private:
-  int64_t expected_size_ = 0;  // Expectation for OpenFile.
-  std::string result_id_;      // Returned by OpenFile.
-  base::ScopedFD result_fd_;   // Returned by OpenFile.
+  int64_t expected_size_ = 0;  // Expectation for GenerateVirtualFileId.
+  std::string result_id_;      // Returned by GenerateVirtualFileId.
+  base::ScopedFD result_fd_;   // Returned by OpenFileById.
 
   DISALLOW_COPY_AND_ASSIGN(FakeVirtualFileProviderClient);
 };

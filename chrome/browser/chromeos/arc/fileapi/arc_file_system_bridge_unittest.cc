@@ -190,6 +190,34 @@ TEST_F(ArcFileSystemBridgeTest, GetFileType) {
   run_loop.Run();
 }
 
+TEST_F(ArcFileSystemBridgeTest, GetVirtualFileId) {
+  // Set up fake virtual file provider client.
+  constexpr char kId[] = "testfile";
+  auto* fake_client = static_cast<chromeos::FakeVirtualFileProviderClient*>(
+      chromeos::DBusThreadManager::Get()->GetVirtualFileProviderClient());
+  fake_client->set_expected_size(kTestFileSize);
+  fake_client->set_result_id(kId);
+
+  // GetVirtualFileId().
+  base::RunLoop run_loop;
+  arc_file_system_bridge_->GetVirtualFileId(
+      EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const char* kId,
+             const base::Optional<std::string>& id) {
+            ASSERT_NE(base::nullopt, id);
+            EXPECT_EQ(kId, id.value());
+            run_loop->Quit();
+          },
+          &run_loop, kId));
+  run_loop.Run();
+
+  content::RunAllTasksUntilIdle();
+
+  // ID is released.
+  EXPECT_TRUE(arc_file_system_bridge_->HandleIdReleased(kId));
+}
+
 TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
   // Set up fake virtual file provider client.
   base::FilePath temp_path;

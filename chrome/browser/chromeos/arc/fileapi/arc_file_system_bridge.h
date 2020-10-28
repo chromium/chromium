@@ -89,6 +89,10 @@ class ArcFileSystemBridge
   void OnDocumentChanged(int64_t watcher_id,
                          storage::WatcherManager::ChangeType type) override;
   void OnRootsChanged() override;
+  void GetVirtualFileId(const std::string& url,
+                        GetVirtualFileIdCallback callback) override;
+  void HandleIdReleased(const std::string& id,
+                        HandleIdReleasedCallback callback) override;
   void OpenFileToRead(const std::string& url,
                       OpenFileToReadCallback callback) override;
   void SelectFiles(mojom::SelectFilesRequestPtr request,
@@ -103,16 +107,37 @@ class ArcFileSystemBridge
   void OnConnectionClosed() override;
 
  private:
-  // Used to implement OpenFileToRead().
-  void OpenFileToReadAfterGetFileSize(const GURL& url_decoded,
-                                      OpenFileToReadCallback callback,
-                                      int64_t size);
+  using GenerateVirtualFileIdCallback =
+      base::OnceCallback<void(const base::Optional<std::string>& id)>;
+
+  // Used to implement GetFileSize().
+  void GetFileSizeInternal(const GURL& url_decoded,
+                           GetFileSizeCallback callback);
+
+  // Used to implement GetVirtualFileId().
+  void GetVirtualFileIdInternal(const GURL& url_decoded,
+                                GetVirtualFileIdCallback callback);
+
+  // Used to implement GetVirtualFileId().
+  void GenerateVirtualFileId(const GURL& url_decoded,
+                             GenerateVirtualFileIdCallback callback,
+                             int64_t size);
+
+  // Used to implement GetVirtualFileId().
+  void OnGenerateVirtualFileId(const GURL& url_decoded,
+                               GenerateVirtualFileIdCallback callback,
+                               const base::Optional<std::string>& id);
 
   // Used to implement OpenFileToRead().
-  void OnOpenFile(const GURL& url_decoded,
-                  OpenFileToReadCallback callback,
-                  const std::string& id,
-                  base::ScopedFD fd);
+  void OpenFileById(const GURL& url_decoded,
+                    OpenFileToReadCallback callback,
+                    const base::Optional<std::string>& id);
+
+  // Used to implement OpenFileToRead().
+  void OnOpenFileById(const GURL& url_decoded,
+                      OpenFileToReadCallback callback,
+                      const std::string& id,
+                      base::ScopedFD fd);
 
   // Called when FileStreamForwarder completes read request.
   void OnReadRequestCompleted(const std::string& id,

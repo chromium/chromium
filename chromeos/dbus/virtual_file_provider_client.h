@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "chromeos/dbus/dbus_client.h"
 
 namespace chromeos {
@@ -26,8 +27,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS) VirtualFileProviderClient
     : public DBusClient {
  public:
-  using OpenFileCallback =
-      base::OnceCallback<void(const std::string& id, base::ScopedFD fd)>;
+  using GenerateVirtualFileIdCallback =
+      base::OnceCallback<void(const base::Optional<std::string>& id)>;
+  using OpenFileByIdCallback = base::OnceCallback<void(base::ScopedFD fd)>;
 
   VirtualFileProviderClient();
   ~VirtualFileProviderClient() override;
@@ -36,10 +38,16 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) VirtualFileProviderClient
   // For normal usage, access the singleton via DBusThreadManager::Get().
   static std::unique_ptr<VirtualFileProviderClient> Create();
 
-  // Creates a new file descriptor and returns it with a unique ID.
-  // |size| will be used to perform boundary check when FD is seeked.
-  // When the FD is read, the read request is forwarded to the request handler.
-  virtual void OpenFile(int64_t size, OpenFileCallback callback) = 0;
+  // Generates and returns a unique ID, to be used by OpenFileById() for FD
+  // creation. |size| will be used to perform boundary check when FD is seeked.
+  virtual void GenerateVirtualFileId(
+      int64_t size,
+      GenerateVirtualFileIdCallback callback) = 0;
+
+  // Given a unique ID, creates a new file descriptor. When the FD is read,
+  // the read request is forwarded to the request handler.
+  virtual void OpenFileById(const std::string& id,
+                            OpenFileByIdCallback callback) = 0;
 };
 
 }  // namespace chromeos
