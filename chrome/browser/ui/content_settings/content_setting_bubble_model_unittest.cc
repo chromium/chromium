@@ -1051,6 +1051,41 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
               l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_NO_ACTION));
     EXPECT_EQ(bubble_content.radio_group.default_item, 1);
   }
+  // Ensure the selecting and committing of a radio button successfully commits
+  // and becomes the default selection next time a bubble is created.
+  {
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
+                                                               web_contents());
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 0);
+    const auto& bubble_content = content_setting_bubble_model->bubble_content();
+    ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2U);
+    EXPECT_EQ(bubble_content.radio_group.default_item, 1);
+
+    owner->SetSelectedRadioOptionAndCommit(0);
+  }
+  {
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
+                                                               web_contents());
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 0);
+    const auto& bubble_content = content_setting_bubble_model->bubble_content();
+    ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2U);
+    EXPECT_EQ(bubble_content.radio_group.default_item, 0);
+    owner->SetSelectedRadioOptionAndCommit(1);
+  }
+  {
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
+                                                               web_contents());
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 0);
+    const auto& bubble_content = content_setting_bubble_model->bubble_content();
+    ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2U);
+    EXPECT_EQ(bubble_content.radio_group.default_item, 1);
+  }
 }
 
 TEST_F(ContentSettingBubbleModelTest, FileURL) {
