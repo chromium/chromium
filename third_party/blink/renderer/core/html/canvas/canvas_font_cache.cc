@@ -91,8 +91,8 @@ MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
     DCHECK(!add_result.is_new_entry);
     parsed_style = i->value;
   } else {
-    parsed_style = CSSParser::ParseFont(
-        font_string, document_->GetExecutionContext()->GetSecureContextMode());
+    parsed_style =
+        CSSParser::ParseFont(font_string, document_->GetExecutionContext());
     if (!parsed_style)
       return nullptr;
     fetched_fonts_.insert(font_string, parsed_style);

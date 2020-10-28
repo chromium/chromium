@@ -18,6 +18,7 @@ class Color;
 class CSSParserObserver;
 class CSSSelectorList;
 class Element;
+class ExecutionContext;
 class ImmutableCSSPropertyValueSet;
 class StyleRuleBase;
 class StyleRuleKeyframe;
@@ -59,14 +60,15 @@ class CORE_EXPORT CSSParser {
       CSSPropertyID unresolved_property,
       const String&,
       bool important,
-      SecureContextMode);
+      const ExecutionContext* execution_context = nullptr);
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,
       CSSPropertyID unresolved_property,
       const String&,
       bool important,
       SecureContextMode,
-      StyleSheetContents*);
+      StyleSheetContents*,
+      const ExecutionContext* execution_context = nullptr);
 
   static MutableCSSPropertyValueSet::SetResult ParseValueForCustomProperty(
       MutableCSSPropertyValueSet*,
@@ -96,7 +98,7 @@ class CORE_EXPORT CSSParser {
   static StyleRuleKeyframe* ParseKeyframeRule(const CSSParserContext*,
                                               const String&);
 
-  static bool ParseSupportsCondition(const String&, SecureContextMode);
+  static bool ParseSupportsCondition(const String&, const ExecutionContext*);
 
   // The color will only be changed when string contains a valid CSS color, so
   // callers can set it to a default color and ignore the boolean result.
@@ -119,7 +121,7 @@ class CORE_EXPORT CSSParser {
   // https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-font
   // https://drafts.csswg.org/css-font-loading/#find-the-matching-font-faces
   static MutableCSSPropertyValueSet* ParseFont(const String&,
-                                               SecureContextMode);
+                                               const ExecutionContext*);
 
  private:
   static MutableCSSPropertyValueSet::SetResult ParseValue(

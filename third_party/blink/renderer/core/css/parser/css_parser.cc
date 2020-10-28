@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -90,10 +91,12 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     CSSPropertyID unresolved_property,
     const String& string,
     bool important,
-    SecureContextMode secure_context_mode) {
-  return ParseValue(declaration, unresolved_property, string, important,
-                    secure_context_mode,
-                    static_cast<StyleSheetContents*>(nullptr));
+    const ExecutionContext* execution_context) {
+  return ParseValue(
+      declaration, unresolved_property, string, important,
+      execution_context ? execution_context->GetSecureContextMode()
+                        : SecureContextMode::kInsecureContext,
+      static_cast<StyleSheetContents*>(nullptr), execution_context);
 }
 
 MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
@@ -102,7 +105,8 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     const String& string,
     bool important,
     SecureContextMode secure_context_mode,
-    StyleSheetContents* style_sheet) {
+    StyleSheetContents* style_sheet,
+    const ExecutionContext* execution_context) {
   if (string.IsEmpty()) {
     bool did_parse = false;
     bool did_change = false;
@@ -123,6 +127,12 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
   if (style_sheet) {
     context =
         MakeGarbageCollected<CSSParserContext>(style_sheet->ParserContext());
+    context->SetMode(parser_mode);
+  } else if (IsA<LocalDOMWindow>(execution_context)) {
+    // Create parser context using document if it exists so it can check for
+    // origin trial enabled property/value.
+    context = MakeGarbageCollected<CSSParserContext>(
+        *To<LocalDOMWindow>(execution_context)->document());
     context->SetMode(parser_mode);
   } else {
     context = MakeGarbageCollected<CSSParserContext>(parser_mode,
@@ -211,13 +221,23 @@ StyleRuleKeyframe* CSSParser::ParseKeyframeRule(const CSSParserContext* context,
   return To<StyleRuleKeyframe>(keyframe);
 }
 
-bool CSSParser::ParseSupportsCondition(const String& condition,
-                                       SecureContextMode secure_context_mode) {
+bool CSSParser::ParseSupportsCondition(
+    const String& condition,
+    const ExecutionContext* execution_context) {
   // window.CSS.supports requires to parse as-if it was wrapped in parenthesis.
   String wrapped_condition = "(" + condition + ")";
   CSSTokenizer tokenizer(wrapped_condition);
   CSSParserTokenStream stream(tokenizer);
-  CSSParserImpl parser(StrictCSSParserContext(secure_context_mode));
+  DCHECK(execution_context);
+  // Create parser context using document so it can check for origin trial
+  // enabled property/value.
+  CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      *To<LocalDOMWindow>(execution_context)->document());
+  // Override the parser mode interpreted from the document as the spec
+  // https://quirks.spec.whatwg.org/#css requires quirky values and colors
+  // must not be supported in CSS.supports() method.
+  context->SetMode(kHTMLStandardMode);
+  CSSParserImpl parser(context);
   CSSSupportsParser::Result result =
       CSSSupportsParser::ConsumeSupportsCondition(stream, parser);
   if (!stream.AtEnd())
@@ -293,11 +313,13 @@ CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
                                                    kValueRangeAll);
 }
 
-MutableCSSPropertyValueSet* CSSParser::ParseFont(const String& string,
-                                                 SecureContextMode mode) {
+MutableCSSPropertyValueSet* CSSParser::ParseFont(
+    const String& string,
+    const ExecutionContext* execution_context) {
   auto* set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  ParseValue(set, CSSPropertyID::kFont, string, true /* important */, mode);
+  ParseValue(set, CSSPropertyID::kFont, string, true /* important */,
+             execution_context);
   if (set->IsEmpty())
     return nullptr;
   const CSSValue* font_size =

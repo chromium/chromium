@@ -52,7 +52,7 @@ class CORE_EXPORT CSSParserContext final
                    SecureContextMode,
                    SelectorProfile = kLiveProfile,
                    const Document* use_counter_document = nullptr);
-  CSSParserContext(const Document&);
+  explicit CSSParserContext(const Document&);
   CSSParserContext(const Document&,
                    const KURL& base_url_override,
                    bool origin_clean,

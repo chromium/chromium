@@ -408,9 +408,8 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
     if (!style)
       return;
 
-    CSSParser::ParseValue(
-        style, CSSPropertyID::kFont, new_font, true,
-        Host()->GetTopExecutionContext()->GetSecureContextMode());
+    CSSParser::ParseValue(style, CSSPropertyID::kFont, new_font, true,
+                          Host()->GetTopExecutionContext());
 
     // According to
     // http://lists.w3.org/Archives/Public/public-html/2009Jul/0947.html,

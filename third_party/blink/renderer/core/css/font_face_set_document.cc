@@ -166,8 +166,7 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
-  auto* parsed_style = CSSParser::ParseFont(
-      font_string, GetExecutionContext()->GetSecureContextMode());
+  auto* parsed_style = CSSParser::ParseFont(font_string, GetExecutionContext());
   if (!parsed_style)
     return false;
 

@@ -67,14 +67,13 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
   auto* dummy_style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   return CSSParser::ParseValue(dummy_style, unresolved_property, value, false,
-                               execution_context->GetSecureContextMode())
+                               execution_context)
       .did_parse;
 }
 
 bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
                             const String& condition_text) {
-  return CSSParser::ParseSupportsCondition(
-      condition_text, execution_context->GetSecureContextMode());
+  return CSSParser::ParseSupportsCondition(condition_text, execution_context);
 }
 
 String DOMWindowCSS::escape(const String& ident) {
