@@ -117,20 +117,22 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_EQ(selectors.size(), results.size());
     size_t pending_number_of_checks = selectors.size();
     for (size_t i = 0; i < selectors.size(); i++) {
-      web_controller_->ElementCheck(
+      web_controller_->FindElement(
           selectors[i], strict,
-          base::BindOnce(&WebControllerBrowserTest::CheckElementVisibleCallback,
+          base::BindOnce(&WebControllerBrowserTest::ElementCheckCallback,
                          base::Unretained(this), run_loop.QuitClosure(),
                          selectors[i], &pending_number_of_checks, results[i]));
     }
     run_loop.Run();
   }
 
-  void CheckElementVisibleCallback(base::OnceClosure done_callback,
-                                   const Selector& selector,
-                                   size_t* pending_number_of_checks_output,
-                                   bool expected_result,
-                                   const ClientStatus& result) {
+  void ElementCheckCallback(
+      base::OnceClosure done_callback,
+      const Selector& selector,
+      size_t* pending_number_of_checks_output,
+      bool expected_result,
+      const ClientStatus& result,
+      std::unique_ptr<ElementFinder::Result> ignored_element) {
     EXPECT_EQ(expected_result, result.ok())
         << "selector: " << selector << " status: " << result;
     *pending_number_of_checks_output -= 1;
@@ -217,7 +219,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   void WaitForElementRemove(const Selector& selector) {
     base::RunLoop run_loop;
-    web_controller_->ElementCheck(
+    web_controller_->FindElement(
         selector, /* strict= */ false,
         base::BindOnce(&WebControllerBrowserTest::OnWaitForElementRemove,
                        base::Unretained(this), run_loop.QuitClosure(),
@@ -225,9 +227,11 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     run_loop.Run();
   }
 
-  void OnWaitForElementRemove(base::OnceClosure done_callback,
-                              const Selector& selector,
-                              const ClientStatus& result) {
+  void OnWaitForElementRemove(
+      base::OnceClosure done_callback,
+      const Selector& selector,
+      const ClientStatus& result,
+      std::unique_ptr<ElementFinder::Result> ignored_element) {
     std::move(done_callback).Run();
     if (result.ok()) {
       WaitForElementRemove(selector);

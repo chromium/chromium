@@ -613,26 +613,6 @@ void WebController::OnDispatchTouchEventEnd(
   std::move(callback).Run(OkClientStatus());
 }
 
-void WebController::ElementCheck(
-    const Selector& selector,
-    bool strict,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  DCHECK(!selector.empty());
-  FindElement(
-      selector, strict,
-      base::BindOnce(&WebController::OnFindElementForCheck,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnFindElementForCheck(
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> result) {
-  VLOG_IF(1, !status.ok() && status.proto_status() != ELEMENT_RESOLUTION_FAILED)
-      << __func__ << ": " << status;
-  std::move(callback).Run(status);
-}
-
 void WebController::WaitForWindowHeightChange(
     base::OnceCallback<void(const ClientStatus&)> callback) {
   devtools_client_->GetRuntime()->Evaluate(

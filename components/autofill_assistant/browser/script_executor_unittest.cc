@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
@@ -42,6 +43,7 @@ using ::testing::SaveArg;
 using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::StrictMock;
+using ::testing::WithArgs;
 
 const char* kScriptPath = "script_path";
 
@@ -63,15 +65,16 @@ class ScriptExecutorTest : public testing::Test,
         /* listener= */ this, &scripts_state_, &ordered_interrupts_,
         /* delegate= */ &delegate_);
 
-    // In this test, "tell" actions always succeed and "click" actions,
-    // preceded by finding the element, always fail. The following makes a
-    // click action fail immediately.
-    ON_CALL(mock_web_controller_, OnFindElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(
-            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+    test_util::MockFindAnyElement(mock_web_controller_);
 
-    ON_CALL(mock_web_controller_, OnElementCheck(_, _))
+    // In this test, "tell" actions always succeed and "click" actions,
+    // always fail. The following makes a click action fail.
+    ON_CALL(mock_web_controller_, OnWaitForDocumentToBecomeInteractive(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, OnScrollIntoView(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, OnClickOrTapElement(_, _))
+        .WillByDefault(RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR)));
   }
 
  protected:
@@ -226,7 +229,7 @@ TEST_F(ScriptExecutorTest, RunOneActionReportAndReturn) {
   executor_->Run(&user_data_, executor_callback_.Get());
 
   ASSERT_EQ(1u, processed_actions_capture.size());
-  EXPECT_EQ(ELEMENT_RESOLUTION_FAILED, processed_actions_capture[0].status());
+  EXPECT_EQ(UNEXPECTED_JS_ERROR, processed_actions_capture[0].status());
   EXPECT_TRUE(processed_actions_capture[0].has_run_time_ms());
   EXPECT_GE(processed_actions_capture[0].run_time_ms(), 0);
 }
@@ -323,7 +326,7 @@ TEST_F(ScriptExecutorTest, InterruptActionListOnError) {
 
   ASSERT_EQ(2u, processed_actions1_capture.size());
   EXPECT_EQ(ACTION_APPLIED, processed_actions1_capture[0].status());
-  EXPECT_EQ(ELEMENT_RESOLUTION_FAILED, processed_actions1_capture[1].status());
+  EXPECT_EQ(UNEXPECTED_JS_ERROR, processed_actions1_capture[1].status());
 
   ASSERT_EQ(1u, processed_actions2_capture.size());
   EXPECT_EQ(ACTION_APPLIED, processed_actions2_capture[0].status());
@@ -511,14 +514,16 @@ TEST_F(ScriptExecutorTest, WaitForDomWaitUntil) {
 
   // First check does not find the element, wait for dom waits 1s, then the
   // element is found, and the action succeeds.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   EXPECT_CALL(executor_callback_, Run(_));
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
@@ -685,12 +690,15 @@ TEST_F(ScriptExecutorTest, DoNotRunInterruptIfPreconditionsDontMatch) {
   SetupInterruptibleScript(kScriptPath, "element");
   SetupInterrupt("interrupt", "interrupt_trigger");
 
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"interrupt_trigger"})), _))
-      .WillRepeatedly(RunOnceCallback<1>(ClientStatus()));
+              OnFindElement(Selector({"interrupt_trigger"}), _))
+      .WillRepeatedly(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
       .WillRepeatedly(RunOnceCallback<5>(net::HTTP_OK, ""));
@@ -810,14 +818,19 @@ TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
           RunOnceCallback<5>(net::HTTP_OK, Serialize(interruptible)));
 
   EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"interrupt_trigger"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()))
+              OnFindElement(Selector({"interrupt_trigger"}), _))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }))
       .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)));
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"end_prompt"})), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"end_prompt"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
 
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
       .WillRepeatedly(RunOnceCallback<5>(net::HTTP_OK, ""));
@@ -890,22 +903,35 @@ TEST_F(ScriptExecutorTest, RunInterruptMultipleTimesDuringPrompt) {
   // interrupt_trigger goes away and come back, which means that the interrupt
   // will be run twice.
   EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"interrupt_trigger"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()))
+              OnFindElement(Selector({"interrupt_trigger"}), _))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }))
       .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)));
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
   // It takes a several rounds for end_prompt to appear, which gives time for
   // the interrupt to run.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"end_prompt"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"end_prompt"}), _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
 
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
       .WillRepeatedly(RunOnceCallback<5>(net::HTTP_OK, ""));
@@ -1111,9 +1137,9 @@ TEST_F(ScriptExecutorTest, PauseWaitForDomWhileNavigating) {
                       RunOnceCallback<5>(net::HTTP_OK, "")));
 
   // First check does not find the element, wait for dom waits 1s.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   executor_->Run(&user_data_, executor_callback_.Get());
 
   // Navigation starts while WaitForDom is waiting. The action doesn't fail,
@@ -1125,9 +1151,11 @@ TEST_F(ScriptExecutorTest, PauseWaitForDomWhileNavigating) {
   }
 
   // The end of navigation un-pauses WaitForDom.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   EXPECT_CALL(executor_callback_, Run(_));
   delegate_.UpdateNavigationState(/* navigating= */ false, /* error= */ false);
 
@@ -1236,9 +1264,9 @@ TEST_F(ScriptExecutorTest, ReportNavigationEnd) {
 
   // WaitForDom does NOT wait for navigation to end, it immediately checks for
   // the element, which fails.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
   // Navigation starts before the script is run.
   delegate_.UpdateNavigationState(/* navigating= */ true, /* error= */ false);
@@ -1247,9 +1275,11 @@ TEST_F(ScriptExecutorTest, ReportNavigationEnd) {
   delegate_.UpdateNavigationState(/* navigating= */ false, /* error= */ false);
 
   // Checking for the element succeeds on the second try.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   ASSERT_THAT(processed_actions_capture, SizeIs(1));
@@ -1272,18 +1302,20 @@ TEST_F(ScriptExecutorTest, ReportUnexpectedNavigationStart) {
                       RunOnceCallback<5>(net::HTTP_OK, "")));
 
   // As the element doesn't exist, WaitForDom returns and waits for 1s.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   EXPECT_CALL(executor_callback_, Run(_));
   executor_->Run(&user_data_, executor_callback_.Get());
 
   delegate_.UpdateNavigationState(/* navigating= */ true, /* error= */ false);
 
   // Navigation end forces a re-check, which succeeds
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   delegate_.UpdateNavigationState(/* navigating= */ false, /* error= */ false);
 
   ASSERT_THAT(processed_actions_capture, SizeIs(1));
@@ -1307,18 +1339,20 @@ TEST_F(ScriptExecutorTest, ReportExpectedNavigationStart) {
                       RunOnceCallback<5>(net::HTTP_OK, "")));
 
   // As the element doesn't exist, WaitForDom returns and waits for 1s.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   EXPECT_CALL(executor_callback_, Run(_));
   executor_->Run(&user_data_, executor_callback_.Get());
 
   delegate_.UpdateNavigationState(/* navigating= */ true, /* error= */ false);
 
   // Navigation end forces a re-check, which succeeds
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   delegate_.UpdateNavigationState(/* navigating= */ false, /* error= */ false);
 
   ASSERT_THAT(processed_actions_capture, SizeIs(2));
@@ -1557,9 +1591,9 @@ TEST_F(ScriptExecutorTest, PauseAndResumeWithOngoingAction) {
       .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
 
   // At first we don't find the element, to keep the |WaitForDomAction| running.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
   executor_->Run(&user_data_, executor_callback_.Get());
   EXPECT_EQ("Tell", delegate_.GetStatusMessage());
@@ -1578,15 +1612,17 @@ TEST_F(ScriptExecutorTest, PauseAndResumeWithOngoingAction) {
   // Resume, this should not restart the |WaitForDomAction|, it should also
   // not advance to the next action (i.e. |PromptAction|), so the status
   // status message is the one from |TellAction|.
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(_, _)).Times(0);
+  EXPECT_CALL(mock_web_controller_, OnFindElement(_, _)).Times(0);
   (*delegate_.GetUserActions())[0].Call(TriggerContext::CreateEmpty());
   EXPECT_EQ("Tell", delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::RUNNING, delegate_.GetState());
 
   // We have resumed, the |WaitForDom| should now finish and advance the script.
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"element"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
   EXPECT_EQ("Prompt", delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::PROMPT, delegate_.GetState());

@@ -51,7 +51,7 @@ void BatchElementChecker::Run(WebController* web_controller) {
       element_check_callbacks_.size() + get_field_value_callbacks_.size() + 1;
 
   for (auto& entry : element_check_callbacks_) {
-    web_controller->ElementCheck(
+    web_controller->FindElement(
         entry.first, /* strict= */ false,
         base::BindOnce(
             &BatchElementChecker::OnElementChecked,
@@ -90,7 +90,8 @@ void BatchElementChecker::Run(WebController* web_controller) {
 
 void BatchElementChecker::OnElementChecked(
     std::vector<ElementCheckCallback>* callbacks,
-    const ClientStatus& element_status) {
+    const ClientStatus& element_status,
+    std::unique_ptr<ElementFinder::Result> ignored_element) {
   for (auto& callback : *callbacks) {
     std::move(callback).Run(element_status);
   }

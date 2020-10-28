@@ -34,6 +34,22 @@ class MockWebController : public WebController {
                void(const Selector& selector,
                     ElementFinder::Callback& callback));
 
+  void WaitForDocumentToBecomeInteractive(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) override {
+    OnWaitForDocumentToBecomeInteractive(element, callback);
+  }
+  MOCK_METHOD2(OnWaitForDocumentToBecomeInteractive,
+               void(const ElementFinder::Result&,
+                    base::OnceCallback<void(const ClientStatus&)>& callback));
+  void ScrollIntoView(
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) override {
+    OnScrollIntoView(element, callback);
+  }
+  MOCK_METHOD2(OnScrollIntoView,
+               void(const ElementFinder::Result&,
+                    base::OnceCallback<void(const ClientStatus&)>&));
   void ClickOrTapElement(
       const ElementFinder::Result& element,
       ClickType click_type,
@@ -55,16 +71,6 @@ class MockWebController : public WebController {
   MOCK_METHOD3(OnScrollToElementPosition,
                void(const ElementFinder::Result& element,
                     const TopPadding& top_padding,
-                    base::OnceCallback<void(const ClientStatus&)>& callback));
-
-  void ElementCheck(
-      const Selector& selector,
-      bool strict,
-      base::OnceCallback<void(const ClientStatus&)> callback) override {
-    OnElementCheck(selector, callback);
-  }
-  MOCK_METHOD2(OnElementCheck,
-               void(const Selector& selector,
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 
   void GetFieldValue(

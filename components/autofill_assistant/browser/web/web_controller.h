@@ -76,6 +76,8 @@ class WebController {
   // Find the element given by |selector|. If multiple elements match
   // |selector| and if |strict_mode| is false, return the first one that is
   // found. Otherwise if |strict-mode| is true, do not return any.
+  //
+  // To check multiple elements, use a BatchElementChecker.
   virtual void FindElement(const Selector& selector,
                            bool strict_mode,
                            ElementFinder::Callback callback);
@@ -223,17 +225,6 @@ class WebController {
   virtual void GetElementRect(const Selector& selector,
                               ElementRectGetter::ElementRectCallback callback);
 
-  // Checks whether an element matches the given selector.
-  //
-  // If strict, there must be exactly one matching element for the check to
-  // pass. Otherwise, there must be at least one.
-  //
-  // To check multiple elements, use a BatchElementChecker.
-  virtual void ElementCheck(
-      const Selector& selector,
-      bool strict,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-
   // Calls the callback once the main document window has been resized.
   virtual void WaitForWindowHeightChange(
       base::OnceCallback<void(const ClientStatus&)> callback);
@@ -335,10 +326,6 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<input::DispatchTouchEventResult> result);
-  void OnFindElementForCheck(
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> result);
   void OnWaitForWindowHeightChange(
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,

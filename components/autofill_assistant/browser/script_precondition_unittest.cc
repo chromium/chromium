@@ -22,8 +22,8 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::WithArgs;
 
 // A callback that expects to be called immediately.
 //
@@ -57,11 +57,15 @@ class DirectCallback {
 class ScriptPreconditionTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"exists"})), _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists"}), _))
+        .WillByDefault(WithArgs<1>([](auto&& callback) {
+          std::move(callback).Run(OkClientStatus(),
+                                  std::make_unique<ElementFinder::Result>());
+        }));
     ON_CALL(mock_web_controller_,
-            OnElementCheck(Eq(Selector({"does_not_exist"})), _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus()));
+            OnFindElement(Selector({"does_not_exist"}), _))
+        .WillByDefault(RunOnceCallback<1>(
+            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
     SetUrl("http://www.example.com/path");
 

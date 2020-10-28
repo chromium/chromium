@@ -63,6 +63,7 @@ using ::testing::Sequence;
 using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
+using ::testing::WithArgs;
 
 namespace {
 
@@ -130,8 +131,8 @@ class ControllerTest : public content::RenderViewHostTestHarness {
 
     ON_CALL(*mock_service_, IsLiteService).WillByDefault(Return(false));
 
-    ON_CALL(*mock_web_controller_, OnElementCheck(_, _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus()));
+    ON_CALL(*mock_web_controller_, OnFindElement(_, _))
+        .WillByDefault(RunOnceCallback<1>(ClientStatus(), nullptr));
 
     ON_CALL(mock_observer_, OnStateChanged(_))
         .WillByDefault(Invoke([this](AutofillAssistantState state) {
@@ -875,8 +876,11 @@ TEST_F(ControllerTest, KeepCheckingForElement) {
     EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
   }
 
-  EXPECT_CALL(*mock_web_controller_, OnElementCheck(_, _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(*mock_web_controller_, OnFindElement(_, _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   EXPECT_EQ(AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT,

@@ -23,25 +23,30 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::Property;
+using ::testing::WithArgs;
 
 class ElementPreconditionTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"exists"})), _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists"}), _))
+        .WillByDefault(WithArgs<1>([](auto&& callback) {
+          std::move(callback).Run(OkClientStatus(),
+                                  std::make_unique<ElementFinder::Result>());
+        }));
+    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists_too"}), _))
+        .WillByDefault(WithArgs<1>([](auto&& callback) {
+          std::move(callback).Run(OkClientStatus(),
+                                  std::make_unique<ElementFinder::Result>());
+        }));
     ON_CALL(mock_web_controller_,
-            OnElementCheck(Eq(Selector({"exists_too"})), _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+            OnFindElement(Selector({"does_not_exist"}), _))
+        .WillByDefault(RunOnceCallback<1>(
+            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
     ON_CALL(mock_web_controller_,
-            OnElementCheck(Eq(Selector({"does_not_exist"})), _))
-        .WillByDefault(
-            RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)));
-    ON_CALL(mock_web_controller_,
-            OnElementCheck(Eq(Selector({"does_not_exist_either"})), _))
-        .WillByDefault(
-            RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)));
+            OnFindElement(Selector({"does_not_exist_either"}), _))
+        .WillByDefault(RunOnceCallback<1>(
+            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   }
 
  protected:

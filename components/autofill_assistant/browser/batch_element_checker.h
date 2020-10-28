@@ -73,8 +73,14 @@ class BatchElementChecker {
       const ElementFinder::Result&,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>)>;
 
+  // Gets called for each ElementCheck.
+  // TODO(b/171782156): The element is currently ignored, it will be forwarded
+  // to the caller through |ElementCheckCallback|.
   void OnElementChecked(std::vector<ElementCheckCallback>* callbacks,
-                        const ClientStatus& element_status);
+                        const ClientStatus& element_status,
+                        std::unique_ptr<ElementFinder::Result> ignored_element);
+
+  // Gets called for each FieldValueCheck.
   void OnFindElementForGetFieldValue(
       FindGetFieldValueCallback perform,
       GetFieldValueCallback done,

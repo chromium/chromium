@@ -23,15 +23,16 @@ using ::testing::ElementsAre;
 using ::testing::Invoke;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::WithArgs;
 
 class WaitForDomActionTest : public testing::Test {
  public:
   WaitForDomActionTest() {}
 
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnElementCheck(_, _))
-        .WillByDefault(
-            RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED)));
+    ON_CALL(mock_web_controller_, OnFindElement(_, _))
+        .WillByDefault(RunOnceCallback<1>(
+            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
     EXPECT_CALL(mock_action_delegate_, OnWaitForDom(_, _, _, _))
         .WillRepeatedly(Invoke(this, &WaitForDomActionTest::FakeWaitForDom));
@@ -99,8 +100,11 @@ TEST_F(WaitForDomActionTest, NoSelectors) {
 }
 
 TEST_F(WaitForDomActionTest, ConditionMet) {
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Selector({"#element"}), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
 
   *proto_.mutable_wait_condition()->mutable_match() =
       ToSelectorProto("#element");
@@ -119,14 +123,22 @@ TEST_F(WaitForDomActionTest, ConditionNotMet) {
 }
 
 TEST_F(WaitForDomActionTest, ReportMatchesToServer) {
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Selector({"#element1"}), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Selector({"#element2"}), _))
-      .WillRepeatedly(RunOnceCallback<1>(ClientStatus()));
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Selector({"#element3"}), _))
-      .WillRepeatedly(RunOnceCallback<1>(ClientStatus()));
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Selector({"#element4"}), _))
-      .WillRepeatedly(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element1"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element2"}), _))
+      .WillRepeatedly(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element3"}), _))
+      .WillRepeatedly(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element4"}), _))
+      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
 
   auto* any_of = proto_.mutable_wait_condition()->mutable_any_of();
   auto* condition1 = any_of->add_conditions();

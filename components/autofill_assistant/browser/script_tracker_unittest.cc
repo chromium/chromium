@@ -21,7 +21,6 @@ namespace autofill_assistant {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
@@ -30,17 +29,22 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
+using ::testing::WithArgs;
 
 class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
  public:
   void SetUp() override {
     delegate_.SetCurrentURL(GURL("http://www.example.com/"));
 
-    ON_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"exists"})), _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists"}), _))
+        .WillByDefault(WithArgs<1>([](auto&& callback) {
+          std::move(callback).Run(OkClientStatus(),
+                                  std::make_unique<ElementFinder::Result>());
+        }));
     ON_CALL(mock_web_controller_,
-            OnElementCheck(Eq(Selector({"does_not_exist"})), _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus()));
+            OnFindElement(Selector({"does_not_exist"}), _))
+        .WillByDefault(RunOnceCallback<1>(
+            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
     // Scripts run, but have no actions.
     ON_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
@@ -264,8 +268,9 @@ TEST_F(ScriptTrackerTest, CheckScriptsAgainAfterScriptEnd) {
 
 TEST_F(ScriptTrackerTest, CheckScriptsAfterDOMChange) {
   EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"maybe_exists"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
+              OnFindElement(Selector({"maybe_exists"}), _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
   InitScriptProto(AddScript(), "script name", "script path", "maybe_exists");
   SetAndCheckScripts();
@@ -275,8 +280,11 @@ TEST_F(ScriptTrackerTest, CheckScriptsAfterDOMChange) {
 
   // DOM has changed; OnElementExists now returns truthy.
   EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"maybe_exists"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+              OnFindElement(Selector({"maybe_exists"}), _))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   tracker_.CheckScripts();
 
   // The script can now run
