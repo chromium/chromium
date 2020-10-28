@@ -68,6 +68,11 @@ const char switches::kTestLauncherPrintTestStdio[] =
 const char switches::kTestLauncherPrintWritablePath[] =
     "test-launcher-print-writable-path";
 
+// Indicate how many retries are left. Tests in general should not pass in this
+// flag. This flag is used for launcher to pass retries-left information
+// to the runner process.
+const char switches::kTestLauncherRetriesLeft[] = "test-launcher-retries-left";
+
 // These two flags has the same effect, but don't use them at the same time.
 // And isolated-script-test-launcher-retry-limit is preferred in the future.
 // Maximum number of times to retry a test after failure.

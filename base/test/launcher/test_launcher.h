@@ -277,6 +277,9 @@ class TestLauncher {
   // likely indicating a more systemic problem if widespread.
   size_t test_broken_count_;
 
+  // How many retries are left.
+  size_t retries_left_;
+
   // Maximum number of retries per iteration.
   size_t retry_limit_;
 

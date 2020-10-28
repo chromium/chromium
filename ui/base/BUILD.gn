@@ -640,6 +640,7 @@ if (is_win || is_mac || (is_linux && !is_chromeos)) {
     ]
     deps = [
       "//base",
+      "//base/test:test_config",
       "//testing/gtest",
       "//ui/gfx",
       "//ui/snapshot",

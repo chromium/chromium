@@ -252,7 +252,8 @@ bool BotModeEnabled(const CommandLine* command_line) {
 // Returns command line command line after gtest-specific processing
 // and applying |wrapper|.
 CommandLine PrepareCommandLineForGTest(const CommandLine& command_line,
-                                       const std::string& wrapper) {
+                                       const std::string& wrapper,
+                                       const size_t retries_left) {
   CommandLine new_command_line(command_line.GetProgram());
   CommandLine::SwitchMap switches = command_line.GetSwitches();
 
@@ -262,6 +263,16 @@ CommandLine PrepareCommandLineForGTest(const CommandLine& command_line,
 
   // Don't try to write the final XML report in child processes.
   switches.erase(kGTestOutputFlag);
+
+  if (switches.find(switches::kTestLauncherRetriesLeft) == switches.end()) {
+    switches[switches::kTestLauncherRetriesLeft] =
+#if defined(OS_WIN)
+        base::NumberToWString(
+#else
+        base::NumberToString(
+#endif
+            retries_left);
+  }
 
   for (CommandLine::SwitchMap::const_iterator iter = switches.begin();
        iter != switches.end(); ++iter) {
@@ -885,6 +896,7 @@ TestLauncher::TestLauncher(TestLauncherDelegate* launcher_delegate,
       test_finished_count_(0),
       test_success_count_(0),
       test_broken_count_(0),
+      retries_left_(0),
       retry_limit_(retry_limit),
       force_run_broken_tests_(false),
       watchdog_timer_(FROM_HERE,
@@ -978,8 +990,8 @@ void TestLauncher::LaunchChildGTestProcess(
       test_names, task_temp_dir, &result_file);
 
   // Record the exact command line used to launch the child.
-  CommandLine new_command_line(
-      PrepareCommandLineForGTest(cmd_line, launcher_delegate_->GetWrapper()));
+  CommandLine new_command_line(PrepareCommandLineForGTest(
+      cmd_line, launcher_delegate_->GetWrapper(), retries_left_));
   LaunchOptions options;
   options.flags = launcher_delegate_->GetLaunchOptions();
 
@@ -1368,6 +1380,7 @@ bool TestLauncher::Init(CommandLine* command_line) {
     retry_limit_ = 0U;
   }
 
+  retries_left_ = retry_limit_;
   force_run_broken_tests_ =
       command_line->HasSwitch(switches::kTestLauncherForceRunBrokenTests);
 
@@ -1810,9 +1823,7 @@ void TestLauncher::PrintFuzzyMatchingTestNames() {
 }
 
 bool TestLauncher::RunRetryTests() {
-  // Number of retries in this iteration.
-  size_t retry_count = 0;
-  while (!tests_to_retry_.empty() && retry_count < retry_limit_) {
+  while (!tests_to_retry_.empty() && retries_left_ > 0) {
     // Retry all tests that depend on a failing test.
     std::vector<std::string> test_names;
     for (const TestInfo& test_info : tests_) {
@@ -1829,12 +1840,12 @@ bool TestLauncher::RunRetryTests() {
       return false;
 
     fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n", retry_started_count,
-            retry_started_count > 1 ? "s" : "", retry_count);
+            retry_started_count > 1 ? "s" : "", retry_limit_ - retries_left_);
     fflush(stdout);
 
+    --retries_left_;
     TestRunner test_runner(this);
     test_runner.Run(test_names);
-    retry_count++;
   }
   return tests_to_retry_.empty();
 }
