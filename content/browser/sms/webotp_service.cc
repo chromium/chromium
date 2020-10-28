@@ -77,11 +77,22 @@ WebOTPService::~WebOTPService() {
 }
 
 // static
-void WebOTPService::Create(
+bool WebOTPService::Create(
     SmsFetcher* fetcher,
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
   DCHECK(host);
+
+  RenderFrameHost* parent = host->GetParent();
+  url::Origin origin = host->GetLastCommittedOrigin();
+  while (parent) {
+    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
+      mojo::ReportBadMessage(
+          "Must have the same origin as the top-level frame.");
+      return false;
+    }
+    parent = parent->GetParent();
+  }
 
   // WebOTPService owns itself. It will self-destruct when a mojo interface
   // error occurs, the render frame host is deleted, or the render frame host
@@ -89,6 +100,7 @@ void WebOTPService::Create(
   new WebOTPService(fetcher, host, std::move(receiver));
   static_cast<RenderFrameHostImpl*>(host)->OnSchedulerTrackedFeatureUsed(
       blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
+  return true;
 }
 
 void WebOTPService::Receive(ReceiveCallback callback) {

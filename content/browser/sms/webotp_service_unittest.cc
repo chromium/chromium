@@ -321,8 +321,8 @@ TEST_F(WebOTPServiceTest, CleansUp) {
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
-  WebOTPService::Create(&fetcher, main_rfh(),
-                        service.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
+                                    service.BindNewPipeAndPassReceiver()));
 
   base::RunLoop navigate;
 
@@ -356,8 +356,8 @@ TEST_F(WebOTPServiceTest, CancelForNoDelegate) {
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
-  WebOTPService::Create(&fetcher, main_rfh(),
-                        service.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
+                                    service.BindNewPipeAndPassReceiver()));
 
   base::RunLoop loop;
 
@@ -411,8 +411,8 @@ TEST_F(WebOTPServiceTest, RecordMetricsForNewPage) {
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
-  WebOTPService::Create(&fetcher, main_rfh(),
-                        service.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
+                                    service.BindNewPipeAndPassReceiver()));
 
   base::RunLoop navigate;
 
@@ -449,8 +449,8 @@ TEST_F(WebOTPServiceTest, RecordMetricsForSamePage) {
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
-  WebOTPService::Create(&fetcher, main_rfh(),
-                        service.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
+                                    service.BindNewPipeAndPassReceiver()));
 
   base::RunLoop navigate;
 
@@ -770,8 +770,8 @@ TEST_F(WebOTPServiceTest, RecordMetricsForExistingPage) {
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
-  WebOTPService::Create(&fetcher, main_rfh(),
-                        service.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
+                                    service.BindNewPipeAndPassReceiver()));
 
   base::RunLoop navigate;
 

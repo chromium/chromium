@@ -37,7 +37,9 @@ class CONTENT_EXPORT WebOTPService
     : public FrameServiceBase<blink::mojom::WebOTPService>,
       public SmsFetcher::Subscriber {
  public:
-  static void Create(SmsFetcher*,
+  // Return value indicates success. Creation can fail if origin requirements
+  // are not met.
+  static bool Create(SmsFetcher*,
                      RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::WebOTPService>);
 

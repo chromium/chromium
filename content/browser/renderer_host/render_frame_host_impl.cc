@@ -7891,14 +7891,9 @@ void RenderFrameHostImpl::BindInputInjectorReceiver(
 
 void RenderFrameHostImpl::BindWebOTPServiceReceiver(
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
-  if (GetParent() && !GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
-                         GetLastCommittedOrigin())) {
-    mojo::ReportBadMessage("Must have the same origin as the top-level frame.");
-    return;
-  }
   auto* fetcher = SmsFetcher::Get(GetProcess()->GetBrowserContext());
-  WebOTPService::Create(fetcher, this, std::move(receiver));
-  document_used_web_otp_ = true;
+  if (WebOTPService::Create(fetcher, this, std::move(receiver)))
+    document_used_web_otp_ = true;
 }
 
 void RenderFrameHostImpl::BindRestrictedCookieManager(

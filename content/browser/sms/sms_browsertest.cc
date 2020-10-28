@@ -715,10 +715,10 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsFetcherUAF) {
   mojo::Remote<blink::mojom::WebOTPService> service2;
 
   RenderFrameHost* render_frame_host = shell()->web_contents()->GetMainFrame();
-  WebOTPService::Create(fetcher, render_frame_host,
-                        service.BindNewPipeAndPassReceiver());
-  WebOTPService::Create(fetcher2, render_frame_host,
-                        service2.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(WebOTPService::Create(fetcher, render_frame_host,
+                                    service.BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(WebOTPService::Create(fetcher2, render_frame_host,
+                                    service2.BindNewPipeAndPassReceiver()));
 
   base::RunLoop navigate;
 
