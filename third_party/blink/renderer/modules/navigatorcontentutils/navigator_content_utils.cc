@@ -28,6 +28,8 @@
 
 #include "base/stl_util.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -47,9 +49,11 @@ namespace {
 
 const char kToken[] = "%s";
 
-static bool VerifyCustomHandlerURLSecurity(const LocalDOMWindow& window,
-                                           const KURL& full_url,
-                                           String& error_message) {
+static bool VerifyCustomHandlerURLSecurity(
+    const LocalDOMWindow& window,
+    const KURL& full_url,
+    String& error_message,
+    ProtocolHandlerSecurityLevel security_level) {
   // Although not required by the spec, the spec allows additional security
   // checks. Bugs have arisen from allowing non-http/https URLs, e.g.
   // https://crbug.com/971917 and it doesn't make a lot of sense to support
@@ -64,7 +68,8 @@ static bool VerifyCustomHandlerURLSecurity(const LocalDOMWindow& window,
 
   // The specification says that the API throws SecurityError exception if the
   // URL's origin differs from the window's origin.
-  if (!window.GetSecurityOrigin()->CanRequest(full_url)) {
+  if (security_level < ProtocolHandlerSecurityLevel::kUntrustedOrigins &&
+      !window.GetSecurityOrigin()->CanRequest(full_url)) {
     error_message =
         "Can only register custom handler in the document's origin.";
     return false;
@@ -73,9 +78,11 @@ static bool VerifyCustomHandlerURLSecurity(const LocalDOMWindow& window,
   return true;
 }
 
-static bool VerifyCustomHandlerURL(const LocalDOMWindow& window,
-                                   const String& user_url,
-                                   ExceptionState& exception_state) {
+static bool VerifyCustomHandlerURL(
+    const LocalDOMWindow& window,
+    const String& user_url,
+    ExceptionState& exception_state,
+    ProtocolHandlerSecurityLevel security_level) {
   KURL full_url = window.CompleteURL(user_url);
   KURL base_url = window.BaseURL();
   String error_message;
@@ -87,7 +94,8 @@ static bool VerifyCustomHandlerURL(const LocalDOMWindow& window,
     return false;
   }
 
-  if (!VerifyCustomHandlerURLSecurity(window, full_url, error_message)) {
+  if (!VerifyCustomHandlerURLSecurity(window, full_url, error_message,
+                                      security_level)) {
     exception_state.ThrowSecurityError(error_message);
     return false;
   }
@@ -182,7 +190,9 @@ void NavigatorContentUtils::registerProtocolHandler(
     return;
   }
 
-  if (!VerifyCustomHandlerURL(*window, url, exception_state))
+  if (!VerifyCustomHandlerURL(
+          *window, url, exception_state,
+          Platform::Current()->GetProtocolHandlerSecurityLevel()))
     return;
 
   // Count usage; perhaps we can forbid this from cross-origin subframes as
@@ -218,7 +228,9 @@ void NavigatorContentUtils::unregisterProtocolHandler(
     return;
   }
 
-  if (!VerifyCustomHandlerURL(*window, url, exception_state))
+  if (!VerifyCustomHandlerURL(
+          *window, url, exception_state,
+          Platform::Current()->GetProtocolHandlerSecurityLevel()))
     return;
 
   NavigatorContentUtils::From(navigator, *window->GetFrame())

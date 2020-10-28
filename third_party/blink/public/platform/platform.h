@@ -50,6 +50,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
@@ -677,6 +678,9 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual bool AllowScriptExtensionForServiceWorker(
       const WebSecurityOrigin& script_origin) {
     return false;
+  }
+  virtual ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel() {
+    return ProtocolHandlerSecurityLevel::kStrict;
   }
   virtual bool IsExcludedHeaderForServiceWorkerFetchEvent(
       const WebString& header_name) {

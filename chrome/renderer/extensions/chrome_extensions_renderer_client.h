@@ -16,6 +16,7 @@
 class GURL;
 
 namespace blink {
+enum class ProtocolHandlerSecurityLevel;
 class WebElement;
 class WebFrame;
 class WebLocalFrame;
@@ -86,6 +87,7 @@ class ChromeExtensionsRendererClient
   bool OverrideCreatePlugin(content::RenderFrame* render_frame,
                             const blink::WebPluginParams& params);
   bool AllowPopup();
+  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel();
   void WillSendRequest(blink::WebLocalFrame* frame,
                        ui::PageTransition transition_type,
                        const blink::WebURL& url,

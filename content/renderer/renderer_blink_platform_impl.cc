@@ -77,6 +77,7 @@
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/platform/blame_context.h"
@@ -903,6 +904,11 @@ bool RendererBlinkPlatformImpl::AllowScriptExtensionForServiceWorker(
     const blink::WebSecurityOrigin& script_origin) {
   return GetContentClient()->renderer()->AllowScriptExtensionForServiceWorker(
       script_origin);
+}
+
+blink::ProtocolHandlerSecurityLevel
+RendererBlinkPlatformImpl::GetProtocolHandlerSecurityLevel() {
+  return GetContentClient()->renderer()->GetProtocolHandlerSecurityLevel();
 }
 
 bool RendererBlinkPlatformImpl::IsExcludedHeaderForServiceWorkerFetchEvent(

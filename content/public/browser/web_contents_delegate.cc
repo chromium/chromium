@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -173,6 +174,11 @@ bool WebContentsDelegate::IsFullscreenForTabOrPending(
 blink::mojom::DisplayMode WebContentsDelegate::GetDisplayMode(
     const WebContents* web_contents) {
   return blink::mojom::DisplayMode::kBrowser;
+}
+
+blink::ProtocolHandlerSecurityLevel
+WebContentsDelegate::GetProtocolHandlerSecurityLevel(RenderFrameHost*) {
+  return blink::ProtocolHandlerSecurityLevel::kStrict;
 }
 
 ColorChooser* WebContentsDelegate::OpenColorChooser(

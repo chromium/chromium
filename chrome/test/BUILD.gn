@@ -1020,6 +1020,7 @@ if (!is_android) {
       "../browser/enterprise/connectors/content_analysis_delegate_browsertest.cc",
       "../browser/enterprise/connectors/content_analysis_dialog_browsertest.cc",
       "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
+      "../browser/extensions/protocol_handler_apitest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/favicon/content_favicon_driver_browsertest.cc",
       "../browser/federated_learning/floc_id_provider_browsertest.cc",

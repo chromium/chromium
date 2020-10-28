@@ -56,6 +56,7 @@ class WebURL;
 class WebURLRequest;
 struct WebPluginParams;
 struct WebURLError;
+enum class ProtocolHandlerSecurityLevel;
 }  // namespace blink
 
 namespace media {
@@ -192,6 +193,9 @@ class CONTENT_EXPORT ContentRendererClient {
 
   // Returns true if a popup window should be allowed.
   virtual bool AllowPopup();
+
+  // Returns the security level to use for Navigator.RegisterProtocolHandler().
+  virtual blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel();
 
 #if defined(OS_ANDROID)
   // TODO(sgurun) This callback is deprecated and will be removed as soon

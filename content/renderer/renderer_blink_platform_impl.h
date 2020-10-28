@@ -40,6 +40,7 @@ class WebThreadScheduler;
 }
 class WebGraphicsContext3DProvider;
 class WebSecurityOrigin;
+enum class ProtocolHandlerSecurityLevel;
 }  // namespace blink
 
 namespace media {
@@ -192,6 +193,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   void WorkerContextCreated(const v8::Local<v8::Context>& worker) override;
   bool AllowScriptExtensionForServiceWorker(
       const blink::WebSecurityOrigin& script_origin) override;
+  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel()
+      override;
   bool IsExcludedHeaderForServiceWorkerFetchEvent(
       const blink::WebString& header_name) override;
   void RecordMetricsForBackgroundedRendererPurge() override;

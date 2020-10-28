@@ -161,6 +161,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -303,9 +304,11 @@ bool FrameCompareDepth(RenderFrameHostImpl* a, RenderFrameHostImpl* b) {
   return a->frame_tree_node()->depth() < b->frame_tree_node()->depth();
 }
 
-bool AreValidRegisterProtocolHandlerArguments(const std::string& protocol,
-                                              const GURL& url,
-                                              const url::Origin& origin) {
+bool AreValidRegisterProtocolHandlerArguments(
+    const std::string& protocol,
+    const GURL& url,
+    const url::Origin& origin,
+    blink::ProtocolHandlerSecurityLevel security_level) {
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   if (policy->IsPseudoScheme(protocol))
@@ -315,7 +318,8 @@ bool AreValidRegisterProtocolHandlerArguments(const std::string& protocol,
   if (url_origin.opaque())
     return false;
 
-  if (!url_origin.IsSameOriginWith(origin))
+  if (security_level < blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins &&
+      !url_origin.IsSameOriginWith(origin))
     return false;
 
   return true;
@@ -5876,8 +5880,11 @@ void WebContentsImpl::RegisterProtocolHandler(RenderFrameHostImpl* source,
   if (!delegate_)
     return;
 
+  blink::ProtocolHandlerSecurityLevel security_level =
+      delegate_->GetProtocolHandlerSecurityLevel(source);
+
   if (!AreValidRegisterProtocolHandlerArguments(
-          protocol, url, source->GetLastCommittedOrigin())) {
+          protocol, url, source->GetLastCommittedOrigin(), security_level)) {
     ReceivedBadMessage(source->GetProcess(),
                        bad_message::REGISTER_PROTOCOL_HANDLER_INVALID_URL);
     return;
@@ -5898,8 +5905,11 @@ void WebContentsImpl::UnregisterProtocolHandler(RenderFrameHostImpl* source,
   if (!delegate_)
     return;
 
+  blink::ProtocolHandlerSecurityLevel security_level =
+      delegate_->GetProtocolHandlerSecurityLevel(source);
+
   if (!AreValidRegisterProtocolHandlerArguments(
-          protocol, url, source->GetLastCommittedOrigin())) {
+          protocol, url, source->GetLastCommittedOrigin(), security_level)) {
     ReceivedBadMessage(source->GetProcess(),
                        bad_message::REGISTER_PROTOCOL_HANDLER_INVALID_URL);
     return;

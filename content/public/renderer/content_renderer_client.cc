@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "media/base/demuxer.h"
 #include "media/base/renderer_factory.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "ui/gfx/icc_profile.h"
@@ -88,6 +89,11 @@ bool ContentRendererClient::RunIdleHandlerWhenWidgetsHidden() {
 
 bool ContentRendererClient::AllowPopup() {
   return false;
+}
+
+blink::ProtocolHandlerSecurityLevel
+ContentRendererClient::GetProtocolHandlerSecurityLevel() {
+  return blink::ProtocolHandlerSecurityLevel::kStrict;
 }
 
 #if defined(OS_ANDROID)

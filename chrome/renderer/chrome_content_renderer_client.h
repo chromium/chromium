@@ -55,6 +55,7 @@ class ThreadProfiler;
 
 namespace blink {
 class WebServiceWorkerContextProxy;
+enum class ProtocolHandlerSecurityLevel;
 }
 
 namespace chrome {
@@ -122,6 +123,8 @@ class ChromeContentRendererClient
       base::SingleThreadTaskRunner* compositor_thread_task_runner) override;
   bool RunIdleHandlerWhenWidgetsHidden() override;
   bool AllowPopup() override;
+  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel()
+      override;
   void WillSendRequest(blink::WebLocalFrame* frame,
                        ui::PageTransition transition_type,
                        const blink::WebURL& url,

@@ -95,6 +95,7 @@ class SurfaceId;
 
 namespace blink {
 class WebGestureEvent;
+enum class ProtocolHandlerSecurityLevel;
 }
 
 namespace content {
@@ -466,6 +467,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   // http://w3c.github.io/manifest/#dfn-display-mode
   virtual blink::mojom::DisplayMode GetDisplayMode(
       const WebContents* web_contents);
+
+  // Returns the security level to use for Navigator.RegisterProtocolHandler().
+  virtual blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
+      RenderFrameHost* requesting_frame);
 
   // Register a new handler for URL requests with the given scheme.
   // |user_gesture| is true if the registration is made in the context of a user

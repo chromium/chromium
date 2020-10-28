@@ -46,6 +46,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -210,6 +211,30 @@ bool ChromeExtensionsRendererClient::AllowPopup() {
       return true;
     case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
       return !current_context->web_frame()->Parent();
+  }
+}
+
+blink::ProtocolHandlerSecurityLevel
+ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
+  // WARNING: This must match the logic of
+  // Browser::GetProtocolHandlerSecurityLevel().
+  extensions::ScriptContext* current_context =
+      extension_dispatcher_->script_context_set().GetCurrent();
+  if (!current_context || !current_context->extension())
+    return blink::ProtocolHandlerSecurityLevel::kStrict;
+
+  switch (current_context->context_type()) {
+    case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
+    case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
+    case extensions::Feature::UNSPECIFIED_CONTEXT:
+    case extensions::Feature::WEBUI_CONTEXT:
+    case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case extensions::Feature::WEB_PAGE_CONTEXT:
+      return blink::ProtocolHandlerSecurityLevel::kStrict;
+    case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
+      return blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins;
   }
 }
 

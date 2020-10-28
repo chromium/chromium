@@ -217,6 +217,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -224,6 +225,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "net/base/filename_util.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
@@ -1964,6 +1966,37 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
   }
 
   return blink::mojom::DisplayMode::kBrowser;
+}
+
+blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
+    content::RenderFrameHost* requesting_frame) {
+  // WARNING: This must match the logic of
+  // ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel().
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(requesting_frame);
+
+  content::BrowserContext* context = web_contents->GetBrowserContext();
+  extensions::ProcessMap* process_map = extensions::ProcessMap::Get(context);
+  const GURL& owner_site_url =
+      requesting_frame->GetSiteInstance()->GetSiteURL();
+  const Extension* owner_extension =
+      extensions::ProcessManager::Get(context)->GetExtensionForRenderFrameHost(
+          requesting_frame);
+  switch (process_map->GetMostLikelyContextType(
+      owner_extension, requesting_frame->GetProcess()->GetID(),
+      &owner_site_url)) {
+    case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
+    case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
+    case extensions::Feature::UNSPECIFIED_CONTEXT:
+    case extensions::Feature::WEBUI_CONTEXT:
+    case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case extensions::Feature::WEB_PAGE_CONTEXT:
+      return blink::ProtocolHandlerSecurityLevel::kStrict;
+    case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
+      return blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins;
+  }
 }
 
 void Browser::RegisterProtocolHandler(

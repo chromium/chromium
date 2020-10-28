@@ -1269,6 +1269,16 @@ bool ChromeContentRendererClient::AllowPopup() {
 #endif
 }
 
+blink::ProtocolHandlerSecurityLevel
+ChromeContentRendererClient::GetProtocolHandlerSecurityLevel() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return ChromeExtensionsRendererClient::GetInstance()
+      ->GetProtocolHandlerSecurityLevel();
+#else
+  return blink::ProtocolHandlerSecurityLevel::kStrict;
+#endif
+}
+
 void ChromeContentRendererClient::WillSendRequest(
     WebLocalFrame* frame,
     ui::PageTransition transition_type,

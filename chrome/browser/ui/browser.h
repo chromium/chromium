@@ -74,6 +74,10 @@ class StatusBubble;
 class TabStripModel;
 class TabStripModelDelegate;
 
+namespace blink {
+enum class ProtocolHandlerSecurityLevel;
+}
+
 namespace chrome {
 class BrowserCommandController;
 }
@@ -824,6 +828,8 @@ class Browser : public TabStripModelObserver,
       const content::WebContents* web_contents) override;
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
+  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
+      content::RenderFrameHost* requesting_frame) override;
   void RegisterProtocolHandler(content::RenderFrameHost* requesting_frame,
                                const std::string& protocol,
                                const GURL& url,

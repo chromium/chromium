@@ -173,6 +173,7 @@ source_set("headers") {
     "permissions/permission_utils.h",
     "renderer_preferences/renderer_preferences.h",
     "scheduler/web_scheduler_tracked_feature.h",
+    "security/protocol_handler_security_level.h",
     "security/security_style.h",
     "security_context/insecure_request_policy.h",
     "service_worker/service_worker_scope_match.h",
