@@ -313,6 +313,12 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // |animation_layer_owner_|.
   std::vector<ui::Layer*> screenshot_layers_;
 
+  // Stores the size of |root_window_| that takes into account all scale factors
+  // by snapping to the edge of the display. This will prevent any 1px gaps we
+  // may see while switching desks. Prefer to use this in all calculations over
+  // |root_window_| get bounds functions.
+  const gfx::Size root_window_size_;
+
   // The amount by which the animation layer will be translated horizontally
   // either startingly or at the end of the animation, depending on the value of
   // of the desk indices.

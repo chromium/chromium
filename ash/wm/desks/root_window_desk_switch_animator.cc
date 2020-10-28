@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/screen_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -131,9 +132,11 @@ RootWindowDeskSwitchAnimator::RootWindowDeskSwitchAnimator(
       ending_desk_index_(ending_desk_index),
       delegate_(delegate),
       animation_layer_owner_(CreateAnimationLayerOwner(root)),
-      x_translation_offset_(root->layer()->size().width() + kDesksSpacing),
+      root_window_size_(
+          screen_util::SnapBoundsToDisplayEdge(root->bounds(), root).size()),
+      x_translation_offset_(root_window_size_.width() + kDesksSpacing),
       edge_padding_width_dp_(
-          std::round(root_window_->bounds().width() * kEdgePaddingRatio)),
+          std::round(root_window_size_.width() * kEdgePaddingRatio)),
       for_remove_(for_remove) {
   DCHECK(root_window_);
   DCHECK_NE(starting_desk_index_, ending_desk_index_);
@@ -253,8 +256,7 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
   // The visible bounds to the user are the root window bounds which always have
   // origin of 0,0. Therefore the rightmost edge of the visible bounds will be
   // the width.
-  const int visible_bounds_width =
-      root_window_->GetBoundsInRootWindow().width();
+  const int visible_bounds_width = root_window_size_.width();
 
   // Append the new offset to the current transform. Clamp the new transform so
   // that we do not swipe past the edges.
@@ -405,7 +407,7 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
   }
 
   CompleteAnimationPhase1WithLayer(CreateLayerFromScreenshotResult(
-      root_window_->bounds().size(), std::move(copy_result)));
+      root_window_size_, std::move(copy_result)));
 }
 
 void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
@@ -427,8 +429,7 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
   }
 
   ui::Layer* ending_desk_screenshot_layer =
-      CreateLayerFromScreenshotResult(root_window_->bounds().size(),
-                                      std::move(copy_result))
+      CreateLayerFromScreenshotResult(root_window_size_, std::move(copy_result))
           .release();
   screenshot_layers_[ending_desk_index_] = ending_desk_screenshot_layer;
   ending_desk_screenshot_layer->SetName(
@@ -444,15 +445,14 @@ void RootWindowDeskSwitchAnimator::OnScreenshotLayerCreated() {
   // Set the layer bounds. |screenshot_layers_| always matches the order of the
   // desks, which is left to right.
   int num_screenshots = 0;
-  const gfx::Size root_window_size = root_window_->bounds().size();
-  DCHECK_EQ(x_translation_offset_, root_window_size.width() + kDesksSpacing);
+  DCHECK_EQ(x_translation_offset_, root_window_size_.width() + kDesksSpacing);
   for (ui::Layer* layer : screenshot_layers_) {
     if (!layer)
       continue;
 
     const int x =
         num_screenshots * x_translation_offset_ + edge_padding_width_dp_;
-    layer->SetBounds(gfx::Rect(gfx::Point(x, 0), root_window_size));
+    layer->SetBounds(gfx::Rect(gfx::Point(x, 0), root_window_size_));
     ++num_screenshots;
   }
 
@@ -462,7 +462,7 @@ void RootWindowDeskSwitchAnimator::OnScreenshotLayerCreated() {
   const gfx::Rect animation_layer_bounds(
       num_screenshots * x_translation_offset_ - kDesksSpacing +
           2 * edge_padding_width_dp_,
-      root_window_size.height());
+      root_window_size_.height());
   auto* animation_layer = animation_layer_owner_->root();
   animation_layer->SetBounds(animation_layer_bounds);
 
