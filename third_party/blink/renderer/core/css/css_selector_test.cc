@@ -123,6 +123,11 @@ TEST(CSSSelector, Specificity_Where) {
       Specificity("*"));
 }
 
+TEST(CSSSelector, Specificity_Slotted) {
+  EXPECT_EQ(Specificity("::slotted(.a)"), Specificity(".a::first-line"));
+  EXPECT_EQ(Specificity("::slotted(*)"), Specificity("::first-line"));
+}
+
 TEST(CSSSelector, HasLinkOrVisited) {
   EXPECT_FALSE(HasLinkOrVisited("tag"));
   EXPECT_FALSE(HasLinkOrVisited("visited"));

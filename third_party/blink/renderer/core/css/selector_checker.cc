@@ -1249,9 +1249,6 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       MatchResult sub_result;
       if (MatchSelector(sub_context, sub_result) != kSelectorMatches)
         return false;
-      result.specificity += sub_context.selector->Specificity() +
-                            sub_result.specificity +
-                            CSSSelector::kTagSpecificity;
       return true;
     }
     case CSSSelector::kPseudoContent:

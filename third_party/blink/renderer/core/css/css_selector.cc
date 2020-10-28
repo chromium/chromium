@@ -146,8 +146,16 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           break;
       }
       return kClassLikeSpecificity;
-    case kClass:
     case kPseudoElement:
+      switch (GetPseudoType()) {
+        case kPseudoSlotted:
+          DCHECK(SelectorList()->HasOneSelector());
+          return kClassLikeSpecificity + SelectorList()->First()->Specificity();
+        default:
+          break;
+      }
+      return kClassLikeSpecificity;
+    case kClass:
     case kAttributeExact:
     case kAttributeSet:
     case kAttributeList:
