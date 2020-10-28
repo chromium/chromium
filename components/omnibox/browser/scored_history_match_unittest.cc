@@ -738,66 +738,20 @@ TEST_F(ScoredHistoryMatchTest, GetTopicalityScore_MidwordMatching) {
         term_vector, term_word_starts, url, title);
   };
 
-  // Check that midword matches are allowed and scored by default.
-  {
-    const float wordstart = Score({"frag"}, {0u});
-    const float midword = Score({"ment"}, {0u});
-    const float wordstart_midword_continuation =
-        Score({"frag", "ment"}, {0u, 0u});
-    const float wordstart_midword_disjoint = Score({"frag", "ent"}, {0u, 0u});
+  // Check that midword matches are allowed and scored.
+  const float wordstart = Score({"frag"}, {0u});
+  const float midword = Score({"ment"}, {0u});
+  const float wordstart_midword_continuation =
+      Score({"frag", "ment"}, {0u, 0u});
+  const float wordstart_midword_disjoint = Score({"frag", "ent"}, {0u, 0u});
 
-    EXPECT_GT(wordstart, 0);
-    // Midword matches should not contribute to the score if they are disjoint.
-    EXPECT_EQ(midword, 0);
-    EXPECT_GT(wordstart_midword_continuation, 0);
-    EXPECT_GT(wordstart_midword_disjoint, 0);
-    // Midword matches should not contribute to the score if they are disjoint.
-    EXPECT_GT(wordstart_midword_continuation, wordstart_midword_disjoint);
-  }
-
-  // Check that midword matches are not allowed when both
-  // kHistoryQuickProviderAllowButDoNotScoreMidwordTerms and
-  // kHistoryQuickProviderAllowMidwordContinuations are disabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {}, {omnibox::kHistoryQuickProviderAllowButDoNotScoreMidwordTerms,
-             omnibox::kHistoryQuickProviderAllowMidwordContinuations});
-
-    const float wordstart = Score({"frag"}, {0u});
-    const float midword = Score({"ment"}, {0u});
-    const float wordstart_midword_continuation =
-        Score({"frag", "ment"}, {0u, 0u});
-    const float wordstart_midword_disjoint = Score({"frag", "ent"}, {0u, 0u});
-
-    EXPECT_GT(wordstart, 0);
-    EXPECT_EQ(midword, 0);
-    EXPECT_EQ(wordstart_midword_continuation, 0);
-    EXPECT_EQ(wordstart_midword_disjoint, 0);
-  }
-
-  // Check that midword matches are allowed but not scored when
-  // kHistoryQuickProviderAllowButDoNotScoreMidwordTerms is enabled but
-  // kHistoryQuickProviderAllowMidwordContinuations is disabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {omnibox::kHistoryQuickProviderAllowButDoNotScoreMidwordTerms},
-        {omnibox::kHistoryQuickProviderAllowMidwordContinuations});
-
-    const float wordstart = Score({"frag"}, {0u});
-    const float midword = Score({"ment"}, {0u});
-    const float wordstart_midword_continuation =
-        Score({"frag", "ment"}, {0u, 0u});
-    const float wordstart_midword_disjoint = Score({"frag", "ent"}, {0u, 0u});
-
-    EXPECT_GT(wordstart, 0);
-    EXPECT_EQ(midword, 0);
-    EXPECT_GT(wordstart_midword_continuation, 0);
-    EXPECT_GT(wordstart_midword_disjoint, 0);
-    EXPECT_GT(wordstart, wordstart_midword_continuation);
-    EXPECT_EQ(wordstart_midword_continuation, wordstart_midword_disjoint);
-  }
+  EXPECT_GT(wordstart, 0);
+  // Midword matches should not contribute to the score if they are disjoint.
+  EXPECT_EQ(midword, 0);
+  EXPECT_GT(wordstart_midword_continuation, 0);
+  EXPECT_GT(wordstart_midword_disjoint, 0);
+  // Midword matches should not contribute to the score if they are disjoint.
+  EXPECT_GT(wordstart_midword_continuation, wordstart_midword_disjoint);
 }
 
 // Test the function GetFinalRelevancyScore().

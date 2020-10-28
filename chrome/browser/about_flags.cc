@@ -3948,23 +3948,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxExperimentalSuggestScoringDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxExperimentalSuggestScoring)},
 
-    {"omnibox-history-quick-provider-allow-but-do-not-score-midword-terms",
-     flag_descriptions::
-         kOmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTermsName,
-     flag_descriptions::
-         kOmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTermsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         omnibox::kHistoryQuickProviderAllowButDoNotScoreMidwordTerms)},
-    {"omnibox-history-quick-provider-allow-midword-continuations",
-     flag_descriptions::
-         kOmniboxHistoryQuickProviderAllowMidwordContinuationsName,
-     flag_descriptions::
-         kOmniboxHistoryQuickProviderAllowMidwordContinuationsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         omnibox::kHistoryQuickProviderAllowMidwordContinuations)},
-
     {"omnibox-trending-zero-prefix-suggestions-on-ntp",
      flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPName,
      flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription,

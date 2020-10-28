@@ -3465,16 +3465,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "omnibox-history-quick-provider-allow-but-do-not-score-midword-terms",
-    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
-    "name": "omnibox-history-quick-provider-allow-midword-continuations",
-    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "omnibox-keyword-search-button",
     "owners": [ "jdonnelly", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 89
