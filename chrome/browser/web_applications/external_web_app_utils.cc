@@ -72,7 +72,12 @@ constexpr char kLaunchContainerTab[] = "tab";
 constexpr char kLaunchContainerWindow[] = "window";
 
 // kLaunchQueryParams is an optional string which specifies query parameters to
-// add to the start_url when launching the app.
+// add to the start_url when launching the app. If the provided params are a
+// substring of start_url's existing params then it will not be added a second
+// time.
+// Note that substring matches include "param=a" matching in "some_param=abc".
+// Extend the implementation in AppRegistrar::GetAppLaunchUrl() if this edge
+// case needs to be handled differently.
 constexpr char kLaunchQueryParams[] = "launch_query_params";
 
 // kLoadAndAwaitServiceWorkerRegistration is an optional bool that specifies

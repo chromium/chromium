@@ -152,6 +152,11 @@ GURL AppRegistrar::GetAppLaunchUrl(const AppId& app_id) const {
     return start_url.ReplaceComponents(replacements);
   }
 
+  if (start_url.query_piece().find(*launch_query_params) !=
+      base::StringPiece::npos) {
+    return start_url;
+  }
+
   std::string query_params = start_url.query() + "&" + *launch_query_params;
   replacements.SetQueryStr(query_params);
   return start_url.ReplaceComponents(replacements);
