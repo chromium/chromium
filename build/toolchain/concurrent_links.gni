@@ -92,8 +92,7 @@ if (concurrent_links == -1) {
     java_cmd_pool_size = _command_dict.secondary_pool_size
   }
 } else {
-  assert(!use_thin_lto || concurrent_links == 1,
-         "can't explicitly set concurrent_links with thinlto")
+  assert(!use_thin_lto, "can't explicitly set concurrent_links with thinlto")
   concurrent_links_logs =
       [ "concurrent_links set by GN arg (value=$concurrent_links)" ]
 }
