@@ -924,7 +924,6 @@ if (!is_android) {
       "../browser/accessibility/caption_controller_browsertest.cc",
       "../browser/accessibility/image_annotation_browsertest.cc",
       "../browser/accessibility/interstitial_accessibility_browsertest.cc",
-      "../browser/app_controller_mac_browsertest.mm",
       "../browser/apps/guest_view/app_view_browsertest.cc",
       "../browser/apps/guest_view/web_view_browsertest.cc",
       "../browser/apps/platform_apps/app_browsertest.cc",
@@ -1387,7 +1386,6 @@ if (!is_android) {
       "../browser/ui/extensions/settings_overridden_params_providers_browsertest.cc",
       "../browser/ui/find_bar/find_bar_controller_browsertest.cc",
       "../browser/ui/find_bar/find_bar_host_browsertest.cc",
-      "../browser/ui/find_bar/find_bar_platform_helper_mac_browsertest.mm",
       "../browser/ui/hats/hats_service_browsertest.cc",
       "../browser/ui/hats/hats_survey_status_checker_browsertest.cc",
       "../browser/ui/javascript_dialogs/javascript_dialog_browsertest.cc",
@@ -1574,9 +1572,11 @@ if (!is_android) {
 
     if (is_mac) {
       sources += [
+        "../browser/app_controller_mac_browsertest.mm",
         "../browser/apps/app_shim/app_shim_listener_browsertest_mac.mm",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.cc",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.h",
+        "../browser/ui/find_bar/find_bar_platform_helper_mac_browsertest.mm",
         "../browser/ui/test/test_browser_dialog_mac.h",
         "../browser/ui/test/test_browser_dialog_mac.mm",
         "../common/mac/app_mode_chrome_locator_browsertest.mm",
@@ -3329,18 +3329,13 @@ test("unit_tests") {
     "../browser/about_flags_unittest.cc",
     "../browser/active_use_util_unittest.cc",
     "../browser/after_startup_task_utils_unittest.cc",
-    "../browser/autofill/automated_tests/cache_replayer_unittest.cc",
-    "../browser/security_events/security_event_recorder_impl_unittest.cc",
-    "../browser/signin/e2e_tests/test_accounts_util_unittest.cc",
-
-    # TODO(newt): move this to test_support_unit?
-    "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
     "../browser/apps/user_type_filter_unittest.cc",
     "../browser/autocomplete/chrome_autocomplete_provider_client_unittest.cc",
     "../browser/autocomplete/chrome_autocomplete_scheme_classifier_unittest.cc",
     "../browser/autocomplete/search_provider_unittest.cc",
     "../browser/autocomplete/shortcuts_provider_extension_unittest.cc",
     "../browser/autofill/autofill_gstatic_reader_unittest.cc",
+    "../browser/autofill/automated_tests/cache_replayer_unittest.cc",
     "../browser/availability/availability_prober_unittest.cc",
     "../browser/background_fetch/background_fetch_delegate_impl_unittest.cc",
     "../browser/background_fetch/background_fetch_permission_context_unittest.cc",
@@ -3628,9 +3623,10 @@ test("unit_tests") {
     "../browser/push_messaging/push_messaging_notification_manager_unittest.cc",
     "../browser/push_messaging/push_messaging_refresher_unittest.cc",
     "../browser/push_messaging/push_messaging_service_unittest.cc",
-    "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unit_test.mm",
     "../browser/resource_coordinator/tab_load_tracker_unittest.cc",
     "../browser/resources_util_unittest.cc",
+    "../browser/security_events/security_event_recorder_impl_unittest.cc",
+    "../browser/signin/e2e_tests/test_accounts_util_unittest.cc",
     "../browser/subresource_redirect/https_image_compression_bypass_decider_unittest.cc",
     "../browser/subresource_redirect/https_image_compression_infobar_decider_unittest.cc",
 
@@ -3877,6 +3873,7 @@ test("unit_tests") {
     sources += [
       "../../testing/gtest_mac_unittest.mm",
       "../browser/app_controller_mac_unittest.mm",
+      "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
       "../browser/mac/exception_processor_unittest.mm",
       "../browser/mac/keystone_glue_unittest.mm",
@@ -3887,6 +3884,7 @@ test("unit_tests") {
       "../browser/notifications/stub_notification_center_mac.h",
       "../browser/notifications/stub_notification_center_mac.mm",
       "../browser/policy/browser_dm_token_storage_mac_unittest.cc",
+      "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unit_test.mm",
       "../browser/service_process/service_process_control_mac_unittest.mm",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../common/mac/mock_launchd.h",
@@ -4505,7 +4503,6 @@ test("unit_tests") {
       "../browser/ui/commander/fuzzy_finder_unittest.cc",
       "../browser/ui/content_settings/content_setting_bubble_model_unittest.cc",
       "../browser/ui/content_settings/content_setting_image_model_unittest.cc",
-      "../browser/ui/content_settings/content_setting_media_image_model_unittest.mm",
       "../browser/ui/exclusive_access/fullscreen_controller_state_unittest.cc",
       "../browser/ui/extensions/extension_action_view_controller_unittest.cc",
       "../browser/ui/extensions/extension_installed_bubble_model_unittest.cc",
@@ -4686,6 +4683,7 @@ test("unit_tests") {
     }
     if (is_mac) {
       sources += [
+        "../browser/ui/content_settings/content_setting_media_image_model_unittest.mm",
         "../utility/importer/firefox_importer_unittest_utils_mac.cc",
         "../utility/importer/safari_importer_unittest.mm",
       ]
@@ -6336,7 +6334,6 @@ if (!is_android) {
       "../browser/extensions/omnibox_focus_interactive_test.cc",
       "../browser/extensions/window_open_interactive_apitest.cc",
       "../browser/focus_ring_browsertest.cc",
-      "../browser/global_keyboard_shortcuts_mac_browsertest.mm",
       "../browser/mouse_events_interactive_uitest.cc",
       "../browser/notifications/platform_notification_service_interactive_uitest.cc",
       "../browser/password_manager/password_generation_interactive_uitest.cc",
@@ -6353,14 +6350,10 @@ if (!is_android) {
       "../browser/sessions/session_restore_interactive_uitest.cc",
       "../browser/site_isolation/site_per_process_interactive_browsertest.cc",
       "../browser/site_isolation/site_per_process_text_input_browsertest.cc",
-      "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",
       "../browser/ui/autofill/autofill_popup_controller_interactive_uitest.cc",
       "../browser/ui/blocked_content/popup_blocker_browsertest.cc",
       "../browser/ui/browser_command_controller_interactive_browsertest.cc",
       "../browser/ui/browser_focus_uitest.cc",
-      "../browser/ui/cocoa/apps/quit_with_apps_controller_mac_interactive_uitest.mm",
-      "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
-      "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
       "../browser/ui/exclusive_access/fullscreen_controller_interactive_browsertest.cc",
       "../browser/ui/exclusive_access/fullscreen_controller_state_interactive_browsertest.cc",
       "../browser/ui/exclusive_access/fullscreen_interactive_browsertest.cc",
@@ -6400,6 +6393,11 @@ if (!is_android) {
       sources += [
         "../browser/apps/platform_apps/app_shim_interactive_uitest_mac.mm",
         "../browser/apps/platform_apps/app_shim_quit_interactive_uitest_mac.mm",
+        "../browser/global_keyboard_shortcuts_mac_browsertest.mm",
+        "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",
+        "../browser/ui/cocoa/apps/quit_with_apps_controller_mac_interactive_uitest.mm",
+        "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
+        "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
         "base/interactive_test_utils_mac.mm",
       ]
     }

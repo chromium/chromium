@@ -109,8 +109,6 @@ static_library("content_shell_app") {
 static_library("content_shell_lib") {
   testonly = true
   sources = [
-    "browser/renderer_host/shell_render_widget_host_view_mac_delegate.h",
-    "browser/renderer_host/shell_render_widget_host_view_mac_delegate.mm",
     "browser/shell.cc",
     "browser/shell.h",
     "browser/shell_browser_context.cc",
@@ -173,6 +171,8 @@ static_library("content_shell_lib") {
 
   if (is_mac) {
     sources += [
+      "browser/renderer_host/shell_render_widget_host_view_mac_delegate.h",
+      "browser/renderer_host/shell_render_widget_host_view_mac_delegate.mm",
       "browser/shell_application_mac.h",
       "browser/shell_application_mac.mm",
       "browser/shell_browser_main_parts_mac.mm",

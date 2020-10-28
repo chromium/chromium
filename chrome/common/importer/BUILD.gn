@@ -92,13 +92,15 @@ source_set("importer") {
     "importer_url_row.cc",
     "importer_url_row.h",
     "pstore_declarations.h",
-    "safari_importer_utils.h",
-    "safari_importer_utils.mm",
   ]
   if (is_chromeos || is_linux) {
     sources += [ "firefox_importer_utils_linux.cc" ]
   } else if (is_mac) {
-    sources += [ "firefox_importer_utils_mac.mm" ]
+    sources += [
+      "firefox_importer_utils_mac.mm",
+      "safari_importer_utils.h",
+      "safari_importer_utils.mm",
+    ]
   } else if (is_win) {
     sources += [
       "edge_importer_utils_win.cc",

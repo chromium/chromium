@@ -137,7 +137,6 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "image_capture_device_manager_unittest.mm",
     "media_storage_util_unittest.cc",
     "storage_info_unittest.cc",
     "storage_monitor_unittest.cc",
@@ -155,7 +154,10 @@ source_set("unit_tests") {
   }
 
   if (is_mac) {
-    sources += [ "storage_monitor_mac_unittest.mm" ]
+    sources += [
+      "image_capture_device_manager_unittest.mm",
+      "storage_monitor_mac_unittest.mm",
+    ]
   }
 
   if (use_dbus) {
