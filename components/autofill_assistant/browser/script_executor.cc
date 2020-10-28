@@ -988,7 +988,17 @@ void ScriptExecutor::CheckElementMatches(
     const Selector& selector,
     BatchElementChecker* checker,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  checker->AddElementCheck(selector, std::move(callback));
+  checker->AddElementCheck(
+      selector,
+      base::BindOnce(&ScriptExecutor::CheckElementMatchesCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ScriptExecutor::CheckElementMatchesCallback(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const ClientStatus& status,
+    const ElementFinder::Result& ignored_element) {
+  std::move(callback).Run(status);
 }
 
 void ScriptExecutor::OnShortWaitForElement(

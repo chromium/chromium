@@ -91,9 +91,9 @@ void BatchElementChecker::Run(WebController* web_controller) {
 void BatchElementChecker::OnElementChecked(
     std::vector<ElementCheckCallback>* callbacks,
     const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> ignored_element) {
+    std::unique_ptr<ElementFinder::Result> element_result) {
   for (auto& callback : *callbacks) {
-    std::move(callback).Run(element_status);
+    std::move(callback).Run(element_status, *element_result);
   }
   callbacks->clear();
   CheckDone();

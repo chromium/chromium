@@ -400,6 +400,10 @@ class ScriptExecutor : public ActionDelegate,
       const Selector& selector,
       BatchElementChecker* checker,
       base::OnceCallback<void(const ClientStatus&)> callback);
+  void CheckElementMatchesCallback(
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      const ClientStatus& status,
+      const ElementFinder::Result& ignored_element);
   void OnShortWaitForElement(
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& element_status,

@@ -34,10 +34,10 @@ void ElementPrecondition::Check(
       // Empty selectors never match.
       continue;
     }
-    base::OnceCallback<void(const ClientStatus&)> callback =
+    batch_checks->AddElementCheck(
+        result.selector,
         base::BindOnce(&ElementPrecondition::OnCheckElementExists,
-                       weak_ptr_factory_.GetWeakPtr(), i);
-    batch_checks->AddElementCheck(result.selector, std::move(callback));
+                       weak_ptr_factory_.GetWeakPtr(), i));
   }
   batch_checks->AddAllDoneCallback(
       base::BindOnce(&ElementPrecondition::OnAllElementChecksDone,
@@ -46,7 +46,8 @@ void ElementPrecondition::Check(
 
 void ElementPrecondition::OnCheckElementExists(
     size_t result_index,
-    const ClientStatus& element_status) {
+    const ClientStatus& element_status,
+    const ElementFinder::Result& element_reference) {
   if (result_index >= results_.size()) {
     NOTREACHED();
     return;
@@ -55,6 +56,7 @@ void ElementPrecondition::OnCheckElementExists(
   result.match = element_status.ok();
   // TODO(szermatt): Consider reporting element_status as an unexpected error
   // right away if it is neither success nor ELEMENT_RESOLUTION_FAILED.
+  // TODO(b/171782156): Store the element, if the status is ok.
 }
 
 void ElementPrecondition::OnAllElementChecksDone(

@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 class BatchElementChecker;
@@ -53,7 +54,8 @@ class ElementPrecondition {
   void AddResults(const ElementConditionProto& proto);
 
   void OnCheckElementExists(size_t result_index,
-                            const ClientStatus& element_status);
+                            const ClientStatus& element_status,
+                            const ElementFinder::Result& element_reference);
 
   void OnAllElementChecksDone(
       base::OnceCallback<void(const ClientStatus&,

@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -37,7 +38,8 @@ class BatchElementCheckerTest : public testing::Test {
   void SetUp() override { test_util::MockFindAnyElement(mock_web_controller_); }
 
   void OnElementExistenceCheck(const std::string& name,
-                               const ClientStatus& result) {
+                               const ClientStatus& result,
+                               const ElementFinder::Result& ignored_element) {
     element_exists_results_[name] = result.ok();
   }
 
@@ -47,8 +49,10 @@ class BatchElementCheckerTest : public testing::Test {
                           base::Unretained(this), name);
   }
 
-  void OnVisibilityRequirementCheck(const std::string& name,
-                                    const ClientStatus& result) {
+  void OnVisibilityRequirementCheck(
+      const std::string& name,
+      const ClientStatus& result,
+      const ElementFinder::Result& ignored_element) {
     element_visible_results_[name] = result.ok();
   }
 
