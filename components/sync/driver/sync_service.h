@@ -28,6 +28,7 @@ namespace syncer {
 class JsController;
 class ProtocolEventObserver;
 class SyncCycleSnapshot;
+struct TypeEntitiesCount;
 struct SyncTokenStatus;
 class SyncUserSettings;
 struct SyncStatus;
@@ -420,6 +421,11 @@ class SyncService : public KeyedService {
   // DictionaryValue in part to make it easier to iterate over its elements when
   // constructing that page.
   virtual std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() = 0;
+
+  // Retrieves the TypeEntitiesCount for all registered data types.
+  virtual void GetEntityCountsForDebugging(
+      base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+      const = 0;
 
   virtual const GURL& GetSyncServiceUrlForDebugging() const = 0;
 

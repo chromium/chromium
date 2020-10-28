@@ -24,6 +24,7 @@
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/js/js_event_details.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync_user_events/user_event_service.h"
@@ -193,7 +194,7 @@ void SyncInternalsMessageHandler::HandleRequestUpdatedAboutInfo(
     const ListValue* args) {
   DCHECK(args->empty());
   AllowJavascript();
-  SendAboutInfo();
+  SendAboutInfoAndEntityCounts();
 }
 
 void SyncInternalsMessageHandler::HandleRequestListOfTypes(
@@ -344,7 +345,7 @@ void SyncInternalsMessageHandler::OnReceivedAllNodes(
 }
 
 void SyncInternalsMessageHandler::OnStateChanged(SyncService* sync) {
-  SendAboutInfo();
+  SendAboutInfoAndEntityCounts();
 }
 
 void SyncInternalsMessageHandler::OnProtocolEvent(
@@ -382,10 +383,39 @@ void SyncInternalsMessageHandler::HandleJsEvent(
   DispatchEvent(name, details.Get());
 }
 
-void SyncInternalsMessageHandler::SendAboutInfo() {
+void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
   std::unique_ptr<DictionaryValue> value =
       about_sync_data_delegate_.Run(GetSyncService(), chrome::GetChannel());
   DispatchEvent(syncer::sync_ui_util::kOnAboutInfoUpdated, *value);
+
+  if (SyncService* service = GetSyncService()) {
+    service->GetEntityCountsForDebugging(
+        BindOnce(&SyncInternalsMessageHandler::OnGotEntityCounts,
+                 weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnGotEntityCounts({});
+  }
+}
+
+void SyncInternalsMessageHandler::OnGotEntityCounts(
+    const std::vector<syncer::TypeEntitiesCount>& entity_counts) {
+  ListValue count_list;
+  for (const syncer::TypeEntitiesCount& count : entity_counts) {
+    DictionaryValue count_dictionary;
+    count_dictionary.SetStringPath(syncer::sync_ui_util::kModelType,
+                                   ModelTypeToString(count.type));
+    count_dictionary.SetIntPath(syncer::sync_ui_util::kEntities,
+                                count.entities);
+    count_dictionary.SetIntPath(syncer::sync_ui_util::kNonTombstoneEntities,
+                                count.non_tombstone_entities);
+    count_list.Append(std::move(count_dictionary));
+  }
+
+  DictionaryValue event_details;
+  event_details.SetPath(syncer::sync_ui_util::kEntityCounts,
+                        std::move(count_list));
+  DispatchEvent(syncer::sync_ui_util::kOnEntityCountsUpdated,
+                std::move(event_details));
 }
 
 SyncService* SyncInternalsMessageHandler::GetSyncService() {

@@ -12,6 +12,7 @@
 #include "components/sync/base/progress_marker_map.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
+#include "components/sync/model/type_entities_count.h"
 
 namespace syncer {
 
@@ -255,6 +256,12 @@ SyncCycleSnapshot TestSyncService::GetLastCycleSnapshotForDebugging() const {
 
 std::unique_ptr<base::Value> TestSyncService::GetTypeStatusMapForDebugging() {
   return std::make_unique<base::ListValue>();
+}
+
+void TestSyncService::GetEntityCountsForDebugging(
+    base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+    const {
+  std::move(callback).Run({});
 }
 
 const GURL& TestSyncService::GetSyncServiceUrlForDebugging() const {

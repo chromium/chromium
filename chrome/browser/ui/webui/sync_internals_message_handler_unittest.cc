@@ -17,6 +17,7 @@
 #include "components/sync/driver/sync_internals_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/js/js_test_util.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync_user_events/fake_user_event_service.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -62,6 +63,12 @@ class TestSyncService : public syncer::FakeSyncService {
     get_all_nodes_callback_ = std::move(callback);
   }
 
+  void GetEntityCountsForDebugging(
+      base::OnceCallback<void(const std::vector<syncer::TypeEntitiesCount>&)>
+          callback) const override {
+    return std::move(callback).Run({{syncer::PASSWORDS, 42, 42}});
+  }
+
   int add_observer_count() const { return add_observer_count_; }
   int remove_observer_count() const { return remove_observer_count_; }
   base::OnceCallback<void(std::unique_ptr<base::ListValue>)>
@@ -95,6 +102,8 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    about_information_.SetString("some_sync_state", "some_value");
+
     web_ui_.set_web_contents(web_contents());
     test_sync_service_ = static_cast<TestSyncService*>(
         ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -106,7 +115,7 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
     handler_ = std::make_unique<TestableSyncInternalsMessageHandler>(
         &web_ui_,
         base::BindRepeating(
-            &SyncInternalsMessageHandlerTest::ConstructAboutInformation,
+            &SyncInternalsMessageHandlerTest::ConstructFakeAboutInformation,
             base::Unretained(this)));
   }
 
@@ -116,40 +125,39 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  std::unique_ptr<DictionaryValue> ConstructAboutInformation(
+  // Returns copies of the same constant dictionary, |about_information_|.
+  std::unique_ptr<DictionaryValue> ConstructFakeAboutInformation(
       SyncService* service,
       version_info::Channel channel) {
     ++about_sync_data_delegate_call_count_;
     last_delegate_sync_service_ = service;
-    auto dictionary = std::make_unique<DictionaryValue>();
-    dictionary->SetString("fake_key", "fake_value");
-    return dictionary;
+    return base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(about_information_.Clone()));
   }
 
   void ValidateAboutInfoCall() {
-    const auto& data_vector = web_ui_.call_data();
-    ASSERT_FALSE(data_vector.empty());
-    EXPECT_EQ(1u, data_vector.size());
+    ASSERT_EQ(2u, web_ui_.call_data().size());
 
-    const content::TestWebUI::CallData& call_data = *data_vector[0];
+    // Check the syncer::sync_ui_util::kOnAboutInfoUpdated event dispatch.
+    const content::TestWebUI::CallData& about_info_call_data =
+        *web_ui_.call_data()[0];
+    EXPECT_EQ(syncer::sync_ui_util::kDispatchEvent,
+              about_info_call_data.function_name());
+    ASSERT_NE(nullptr, about_info_call_data.arg1());
+    EXPECT_EQ(base::Value(syncer::sync_ui_util::kOnAboutInfoUpdated),
+              *about_info_call_data.arg1());
+    ASSERT_NE(nullptr, about_info_call_data.arg2());
+    EXPECT_EQ(about_information_, *about_info_call_data.arg2());
 
-    EXPECT_EQ(syncer::sync_ui_util::kDispatchEvent, call_data.function_name());
-
-    const Value* arg1 = call_data.arg1();
-    ASSERT_TRUE(arg1);
-    std::string event_type;
-    EXPECT_TRUE(arg1->GetAsString(&event_type));
-    EXPECT_EQ(syncer::sync_ui_util::kOnAboutInfoUpdated, event_type);
-
-    const Value* arg2 = call_data.arg2();
-    ASSERT_TRUE(arg2);
-
-    const DictionaryValue* root_dictionary = nullptr;
-    ASSERT_TRUE(arg2->GetAsDictionary(&root_dictionary));
-
-    std::string fake_value;
-    EXPECT_TRUE(root_dictionary->GetString("fake_key", &fake_value));
-    EXPECT_EQ("fake_value", fake_value);
+    // TestSyncService::GetEntityCountsForDebugging() responds synchronously,
+    // so check the syncer::sync_ui_util::kOnEntityCountsUpdated event dispatch.
+    const content::TestWebUI::CallData& entity_counts_updated_call_data =
+        *web_ui_.call_data()[1];
+    EXPECT_EQ(syncer::sync_ui_util::kDispatchEvent,
+              entity_counts_updated_call_data.function_name());
+    ASSERT_NE(nullptr, entity_counts_updated_call_data.arg1());
+    EXPECT_EQ(base::Value(syncer::sync_ui_util::kOnEntityCountsUpdated),
+              *entity_counts_updated_call_data.arg1());
   }
 
   void ValidateEmptyAboutInfoCall() {
@@ -191,6 +199,8 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestableSyncInternalsMessageHandler> handler_;
   int about_sync_data_delegate_call_count_ = 0;
   SyncService* last_delegate_sync_service_ = nullptr;
+  // Fake return value for sync_ui_util::ConstructAboutInformation().
+  base::DictionaryValue about_information_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncInternalsMessageHandlerTest);
 };

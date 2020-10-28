@@ -219,6 +219,7 @@ static_library("rest_of_sync") {
     "model/sync_metadata_store.h",
     "model/syncable_service.h",
     "model/time.h",
+    "model/type_entities_count.h",
     "model_impl/blocking_model_type_store_impl.cc",
     "model_impl/blocking_model_type_store_impl.h",
     "model_impl/client_tag_based_model_type_processor.cc",

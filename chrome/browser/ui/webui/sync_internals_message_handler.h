@@ -22,6 +22,7 @@
 namespace syncer {
 class SyncService;
 class SyncInvalidationsService;
+struct TypeEntitiesCount;
 }  //  namespace syncer
 
 // The implementation for the chrome://sync-internals page.
@@ -42,6 +43,8 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   void HandleRegisterForEvents(const base::ListValue* args);
 
   // Fires an event to send updated info back to the page.
+  // TODO(crbug.com/1138535): Merge this with HandleRegisterForEvents. Same for
+  // the ios/ counterpart.
   void HandleRequestUpdatedAboutInfo(const base::ListValue* args);
 
   // Fires an event to send the list of types back to the page.
@@ -103,9 +106,14 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
       AboutSyncDataDelegate about_sync_data_delegate);
 
  private:
-  // Fetches updated aboutInfo and sends it to the page in the form of an
-  // onAboutInfoUpdated event.
-  void SendAboutInfo();
+  // Synchronously fetches updated aboutInfo and sends it to the page in the
+  // form of an onAboutInfoUpdated event. The entity counts for each data type
+  // are retrieved asynchronously and sent via an onEntityCountsUpdated event
+  // once they are retrieved.
+  void SendAboutInfoAndEntityCounts();
+
+  void OnGotEntityCounts(
+      const std::vector<syncer::TypeEntitiesCount>& entity_counts);
 
   // Gets the ProfileSyncService of the underlying original profile. May return
   // nullptr (e.g. if sync is disabled on the command line).

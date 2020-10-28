@@ -32,6 +32,20 @@ cr.define('chrome.sync.about_tab', function() {
     refreshAboutInfo(e.details);
   }
 
+  function onEntityCountsUpdatedEvent(e) {
+    for (const count of e.details.entityCounts) {
+      const typeStatusRow = chrome.sync.aboutInfo.type_status.find(
+          row => row.name === count.modelType);
+      if (typeStatusRow) {
+        typeStatusRow.num_entries = count.entities;
+        typeStatusRow.num_live = count.nonTombstoneEntities;
+      }
+    }
+    jstProcess(
+        new JsEvalContext({type_status: chrome.sync.aboutInfo.type_status}),
+        $('typeInfo'));
+  }
+
   /**
    * Helper to determine if an element is scrolled to its bottom limit.
    * @param {Element} elem element to check
@@ -154,6 +168,9 @@ cr.define('chrome.sync.about_tab', function() {
           'onAboutInfoUpdated',
           onAboutInfoUpdatedEvent);
 
+      chrome.sync.events.removeEventListener(
+          'onEntityCountsUpdated', onEntityCountsUpdatedEvent);
+
       const aboutInfo = JSON.parse(data);
       refreshAboutInfo(aboutInfo);
     });
@@ -191,6 +208,9 @@ cr.define('chrome.sync.about_tab', function() {
     chrome.sync.events.addEventListener(
         'onAboutInfoUpdated',
         onAboutInfoUpdatedEvent);
+
+    chrome.sync.events.addEventListener(
+        'onEntityCountsUpdated', onEntityCountsUpdatedEvent);
 
     $('request-start').addEventListener('click', function(event) {
       chrome.sync.requestStart();

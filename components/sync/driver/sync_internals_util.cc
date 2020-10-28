@@ -69,8 +69,13 @@ const char kUserEventsVisibilityCallback[] =
 const char kWriteUserEvent[] = "writeUserEvent";
 
 // Other strings.
+const char kEntityCounts[] = "entityCounts";
+const char kEntities[] = "entities";
+const char kNonTombstoneEntities[] = "nonTombstoneEntities";
 const char kIncludeSpecifics[] = "includeSpecifics";
+const char kModelType[] = "modelType";
 const char kOnAboutInfoUpdated[] = "onAboutInfoUpdated";
+const char kOnEntityCountsUpdated[] = "onEntityCountsUpdated";
 const char kOnProtocolEvent[] = "onProtocolEvent";
 const char kOnReceivedIncludeSpecificsInitialState[] =
     "onReceivedIncludeSpecificsInitialState";

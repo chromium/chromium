@@ -53,6 +53,9 @@ class FakeSyncService : public SyncService {
   base::Time GetLastSyncedTimeForDebugging() const override;
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
   std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() override;
+  void GetEntityCountsForDebugging(
+      base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+      const override;
   const GURL& GetSyncServiceUrlForDebugging() const override;
   std::string GetUnrecoverableErrorMessageForDebugging() const override;
   base::Location GetUnrecoverableErrorLocationForDebugging() const override;

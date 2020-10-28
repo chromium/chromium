@@ -4,10 +4,13 @@
 
 #include "components/sync/driver/fake_sync_service.h"
 
+#include <utility>
+
 #include "base/values.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/model/type_entities_count.h"
 
 namespace syncer {
 
@@ -115,6 +118,12 @@ SyncCycleSnapshot FakeSyncService::GetLastCycleSnapshotForDebugging() const {
 
 std::unique_ptr<base::Value> FakeSyncService::GetTypeStatusMapForDebugging() {
   return nullptr;
+}
+
+void FakeSyncService::GetEntityCountsForDebugging(
+    base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+    const {
+  return std::move(callback).Run({});
 }
 
 const GURL& FakeSyncService::GetSyncServiceUrlForDebugging() const {

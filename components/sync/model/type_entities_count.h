@@ -1,0 +1,23 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SYNC_MODEL_TYPE_ENTITIES_COUNT_H_
+#define COMPONENTS_SYNC_MODEL_TYPE_ENTITIES_COUNT_H_
+
+#include "components/sync/base/model_type.h"
+
+namespace syncer {
+
+// Used to track per data-type entity counts for debugging purposes.
+struct TypeEntitiesCount {
+  ModelType type = UNSPECIFIED;
+
+  int entities = 0;
+
+  int non_tombstone_entities = 0;
+};
+
+}  // namespace syncer
+
+#endif  // COMPONENTS_SYNC_MODEL_TYPE_ENTITIES_COUNT_H_

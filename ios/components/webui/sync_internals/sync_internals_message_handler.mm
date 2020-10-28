@@ -18,6 +18,7 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/js/js_event_details.h"
+#include "components/sync/model/type_entities_count.h"
 #include "ios/components/webui/web_ui_provider.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -133,7 +134,7 @@ void SyncInternalsMessageHandler::HandleRegisterForEvents(
 void SyncInternalsMessageHandler::HandleRequestUpdatedAboutInfo(
     const base::ListValue* args) {
   DCHECK(args->empty());
-  SendAboutInfo();
+  SendAboutInfoAndEntityCounts();
 }
 
 void SyncInternalsMessageHandler::HandleRequestListOfTypes(
@@ -248,7 +249,7 @@ void SyncInternalsMessageHandler::OnReceivedAllNodes(
 }
 
 void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
-  SendAboutInfo();
+  SendAboutInfoAndEntityCounts();
 }
 
 void SyncInternalsMessageHandler::OnProtocolEvent(
@@ -266,7 +267,7 @@ void SyncInternalsMessageHandler::HandleJsEvent(
   DispatchEvent(name, details.Get());
 }
 
-void SyncInternalsMessageHandler::SendAboutInfo() {
+void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
   // This class serves to display debug information to the user, so it's fine to
   // include sensitive data in ConstructAboutInformation().
   std::unique_ptr<base::DictionaryValue> value =
@@ -274,6 +275,35 @@ void SyncInternalsMessageHandler::SendAboutInfo() {
           syncer::sync_ui_util::IncludeSensitiveData(true), GetSyncService(),
           web_ui::GetChannel());
   DispatchEvent(syncer::sync_ui_util::kOnAboutInfoUpdated, *value);
+
+  if (syncer::SyncService* service = GetSyncService()) {
+    service->GetEntityCountsForDebugging(
+        BindOnce(&SyncInternalsMessageHandler::OnGotEntityCounts,
+                 weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnGotEntityCounts({});
+  }
+}
+
+void SyncInternalsMessageHandler::OnGotEntityCounts(
+    const std::vector<syncer::TypeEntitiesCount>& entity_counts) {
+  base::ListValue count_list;
+  for (const syncer::TypeEntitiesCount& count : entity_counts) {
+    base::DictionaryValue count_dictionary;
+    count_dictionary.SetStringPath(syncer::sync_ui_util::kModelType,
+                                   ModelTypeToString(count.type));
+    count_dictionary.SetIntPath(syncer::sync_ui_util::kEntities,
+                                count.entities);
+    count_dictionary.SetIntPath(syncer::sync_ui_util::kNonTombstoneEntities,
+                                count.non_tombstone_entities);
+    count_list.Append(std::move(count_dictionary));
+  }
+
+  base::DictionaryValue event_details;
+  event_details.SetPath(syncer::sync_ui_util::kEntityCounts,
+                        std::move(count_list));
+  DispatchEvent(syncer::sync_ui_util::kOnEntityCountsUpdated,
+                std::move(event_details));
 }
 
 // Gets the SyncService of the underlying original profile. May return null.

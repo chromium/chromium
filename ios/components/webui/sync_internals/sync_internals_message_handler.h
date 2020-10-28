@@ -19,6 +19,7 @@
 
 namespace syncer {
 class SyncService;
+struct TypeEntitiesCount;
 }  // namespace syncer
 
 // The implementation for the chrome://sync-internals page.
@@ -78,9 +79,14 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
   void OnProtocolEvent(const syncer::ProtocolEvent& e) override;
 
  private:
-  // Fetches updated aboutInfo and sends it to the page in the form of an
-  // onAboutInfoUpdated event.
-  void SendAboutInfo();
+  // Synchronously fetches updated aboutInfo and sends it to the page in the
+  // form of an onAboutInfoUpdated event. The entity counts for each data type
+  // are retrieved asynchronously and sent via an onEntityCountsUpdated event
+  // once they are retrieved.
+  void SendAboutInfoAndEntityCounts();
+
+  void OnGotEntityCounts(
+      const std::vector<syncer::TypeEntitiesCount>& entity_counts);
 
   syncer::SyncService* GetSyncService();
 

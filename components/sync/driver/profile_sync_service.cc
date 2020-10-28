@@ -44,6 +44,7 @@
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/sync_error.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/version_info/version_info_values.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -1465,6 +1466,13 @@ ProfileSyncService::GetTypeStatusMapForDebugging() {
     result->Append(std::move(type_status));
   }
   return std::move(result);
+}
+
+void ProfileSyncService::GetEntityCountsForDebugging(
+    base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+    const {
+  // TODO(crbug.com/1138535): Retrieve counts from |data_type_controllers_|.
+  std::move(callback).Run({});
 }
 
 void ProfileSyncService::OnSyncManagedPrefChange(bool is_sync_managed) {

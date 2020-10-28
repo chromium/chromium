@@ -15,6 +15,7 @@
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/driver/sync_user_settings_mock.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/model/type_entities_count.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
@@ -105,6 +106,10 @@ class MockSyncService : public SyncService {
               GetTypeStatusMapForDebugging,
               (),
               (override));
+  MOCK_METHOD(void,
+              GetEntityCountsForDebugging,
+              (base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)>),
+              (const override));
   MOCK_METHOD(const GURL&, GetSyncServiceUrlForDebugging, (), (const override));
   MOCK_METHOD(std::string,
               GetUnrecoverableErrorMessageForDebugging,
@@ -133,7 +138,7 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(void, Shutdown, (), (override));
 
  private:
-  testing::NiceMock<syncer::SyncUserSettingsMock> user_settings_;
+  testing::NiceMock<SyncUserSettingsMock> user_settings_;
 };
 
 }  // namespace syncer

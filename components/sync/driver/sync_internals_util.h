@@ -60,9 +60,14 @@ extern const char kUserEventsVisibilityCallback[];
 extern const char kWriteUserEvent[];
 
 // Other strings.
-// Must match the constants used in the resource files.
+// WARNING: Must match the property names used in the resource files.
+extern const char kEntityCounts[];
+extern const char kEntities[];
+extern const char kNonTombstoneEntities[];
 extern const char kIncludeSpecifics[];
+extern const char kModelType[];
 extern const char kOnAboutInfoUpdated[];
+extern const char kOnEntityCountsUpdated[];
 extern const char kOnProtocolEvent[];
 extern const char kOnReceivedIncludeSpecificsInitialState[];
 extern const char kOnReceivedListOfTypes[];
