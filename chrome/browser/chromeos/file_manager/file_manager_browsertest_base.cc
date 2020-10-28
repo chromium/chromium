@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/app_list/search/launcher_search/launcher_search_provider.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -723,6 +724,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(browser)
   PRINT_IF_NOT_DEFAULT(documents_provider)
   PRINT_IF_NOT_DEFAULT(files_ng)
+  PRINT_IF_NOT_DEFAULT(files_swa)
   PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
   PRINT_IF_NOT_DEFAULT(native_smb)
@@ -1648,6 +1650,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesNG);
   }
 
+  if (options.files_swa) {
+    enabled_features.push_back(chromeos::features::kFilesSWA);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesSWA);
+  }
+
   if (options.arc) {
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
@@ -1856,7 +1864,9 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   test::AddDefaultComponentExtensionsOnMainThread(profile());
 
   // Enable System Web Apps if needed.
-  if (options.media_swa) {
+  if (options.media_swa || options.files_swa) {
+    files_app_swa_id_ =
+        web_app::GenerateAppIdFromURL(GURL("chrome://file-manager"));
     auto& system_web_app_manager =
         web_app::WebAppProvider::Get(profile())->system_web_app_manager();
     system_web_app_manager.InstallSystemAppsForTesting();

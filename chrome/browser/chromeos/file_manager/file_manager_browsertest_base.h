@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/file_manager/devtools_listener.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 
 class NotificationDisplayServiceTester;
@@ -76,6 +77,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test needs the files-ng feature.
     bool files_ng = true;
+
+    // Whether test needs the files-swa feature.
+    bool files_swa = false;
 
     // Whether test needs the media-swa apps.
     bool media_swa = false;
@@ -173,6 +177,8 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
   // Called during tests to determine if SMB file shares is enabled.
   bool IsSmbEnabled() const;
+
+  web_app::AppId files_app_swa_id_;
 
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   crostini::FakeCrostiniFeatures crostini_features_;

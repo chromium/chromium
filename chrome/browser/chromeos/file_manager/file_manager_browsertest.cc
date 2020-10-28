@@ -76,6 +76,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& FilesSwa() {
+    options.files_swa = true;
+    return *this;
+  }
+
   TestCase& MediaSwa() {
     options.media_swa = true;
     return *this;
@@ -157,6 +162,9 @@ struct TestCase {
 
     if (!options.files_ng)
       full_name += "_DisableFilesNg";
+
+    if (options.files_swa)
+      full_name += "_FilesSwa";
 
     if (!options.native_smb)
       full_name += "_DisableNativeSmb";
