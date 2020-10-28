@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -126,6 +127,11 @@ public class ChromeApplication extends SplitCompatApplication {
 
                 // Initializes the support for dynamic feature modules (browser only).
                 ModuleUtil.initApplication();
+
+                // Native resources are loaded from the application context in ContextUtils. These
+                // are need for app locale overrides, so ensure SplitCompat.installActivity is
+                // called on this context for bundle builds.
+                AppLocaleUtils.maybeInstallActivitySplitCompat(context);
 
                 // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
                 ChromeBackgroundTaskFactory.setAsDefault();
