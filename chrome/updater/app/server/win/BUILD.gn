@@ -16,8 +16,8 @@ updater_clsid = "3d852661-c795-4d20-9b95-5561e9a1d2d9"
 IUPDATER_IID = "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83"
 
 midl("updater_idl_idl") {
-  dynamic_guid = "$UpdaterClass_replaceable_uuid=$updater_clsid," +
-                 "$IUpdater_replaceable_uuid=$IUPDATER_IID"
+  dynamic_guids = "$UpdaterClass_replaceable_uuid=$updater_clsid," +
+                  "$IUpdater_replaceable_uuid=$IUPDATER_IID"
 
   header_file = "updater_idl.h"
   sources = [ "updater_idl.template" ]

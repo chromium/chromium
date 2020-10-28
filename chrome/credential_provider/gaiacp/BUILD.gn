@@ -237,31 +237,18 @@ process_version_rc_template("version") {
   output = "$root_out_dir/gaia_credential_provider.rc"
 }
 
+GCP_PLACEHOLDER_CLSID = "PLACEHOLDER-GUID-89adae71-aee5-4ee2-bffb-e8424e06f519"
+
 if (is_chrome_branded) {
   gaia_credential_provider_clsid = "0b5bfdf0-4594-47ac-940a-cfc69abc561c"
 } else {
   gaia_credential_provider_clsid = "89adae71-aee5-4ee2-bffb-e8424e06f519"
 }
 
-action("generate_credential_provider_idl_file") {
-  script = "//build/util/version.py"
-
-  inputs = [ "gaia_credential_provider_idl.templ" ]
-  outputs = [ "$target_gen_dir/gaia_credential_provider.idl" ]
-
-  args = [
-    "-e",
-    "GAIA_CREDENTIAL_PROVIDER_CLSID='$gaia_credential_provider_clsid'",
-    rebase_path(inputs[0], root_build_dir),
-    rebase_path(outputs[0], root_build_dir),
-  ]
-}
-
 midl("gaia_credential_provider_idl") {
-  dynamic_guid = gaia_credential_provider_clsid
-  deps = [ ":generate_credential_provider_idl_file" ]
+  dynamic_guids = "$GCP_PLACEHOLDER_CLSID=$gaia_credential_provider_clsid"
   header_file = "gaia_credential_provider_i.h"
-  sources = get_target_outputs(":generate_credential_provider_idl_file")
+  sources = [ "gaia_credential_provider.templ" ]
 }
 
 grit("static_resources") {

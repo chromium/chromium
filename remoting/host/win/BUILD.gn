@@ -176,24 +176,13 @@ source_set("unit_tests") {
   ]
 }
 
-action("generate_idl") {
-  script = "//build/util/version.py"
-
-  inputs = [ "chromoting_lib_idl.templ" ]
-  outputs = [ "$target_gen_dir/chromoting_lib.idl" ]
-
-  args = [
-    "-e",
-    "RDP_DESKTOP_SESSION_CLSID='$rdp_desktop_session_clsid'",
-    rebase_path(inputs[0], root_build_dir),
-    rebase_path(outputs[0], root_build_dir),
-  ]
-}
+RDP_DESKTOP_SESSION_PLACEHOLDER_CLSID =
+    "PLACEHOLDER-GUID-6741fd0a-6a8a-5838-a35e-8088697e2088"
 
 midl("remoting_lib_idl") {
-  sources = get_target_outputs(":generate_idl")
-  dynamic_guid = rdp_desktop_session_clsid
-  deps = [ ":generate_idl" ]
+  sources = [ "chromoting_lib.templ" ]
+  dynamic_guids =
+      "$RDP_DESKTOP_SESSION_PLACEHOLDER_CLSID=$rdp_desktop_session_clsid"
   writes_tlb = true
 }
 
@@ -218,8 +207,8 @@ config("MIDL_config") {
 
 static_library("remoting_lib_ps") {
   sources = [
-    "$root_gen_dir/remoting/host/win/chromoting_lib.dlldata.c",
-    "$root_gen_dir/remoting/host/win/chromoting_lib_p.c",
+    "$target_gen_dir/chromoting_lib.dlldata.c",
+    "$target_gen_dir/chromoting_lib_p.c",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]

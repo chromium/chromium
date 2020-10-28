@@ -99,30 +99,6 @@ def ZapTimestamp(filename):
   open(filename, 'wb').write(contents)
 
 
-def overwrite_cls_guid_h(h_file, dynamic_guid):
-  contents = open(h_file, 'rb').read()
-  contents = re.sub(br'class DECLSPEC_UUID\("[^"]*"\)',
-                    br'class DECLSPEC_UUID("%s")' % str(dynamic_guid).encode(),
-                    contents)
-  open(h_file, 'wb').write(contents)
-
-
-def overwrite_cls_guid_iid(iid_file, dynamic_guid):
-  contents = open(iid_file, 'rb').read()
-  hexuuid = '0x%08x,0x%04x,0x%04x,' % dynamic_guid.fields[0:3]
-
-  # dynamic_guid.bytes is a bytestring in Py3, but a normal string in Py2.
-  if sys.version_info.major == 2:
-    hexuuid += ','.join('0x%02x' % ord(b) for b in dynamic_guid.bytes[8:])
-  else:
-    hexuuid += ','.join('0x%02x' % b for b in dynamic_guid.bytes[8:])
-
-  contents = re.sub(br'MIDL_DEFINE_GUID\(CLSID, ([^,]*),[^)]*\)',
-                    br'MIDL_DEFINE_GUID(CLSID, \1,%s)' % hexuuid.encode(),
-                    contents)
-  open(iid_file, 'wb').write(contents)
-
-
 def get_tlb_contents(tlb_file):
   # See ZapTimestamp() for a short overview of the .tlb format.
   contents = open(tlb_file, 'rb').read()
@@ -158,33 +134,6 @@ def recreate_guid_hashtable(contents, ntypes, guid_off, guid_len):
       '<II', contents, 0x54 + 4*ntypes + 4*16)
   for i, hashval in enumerate(hashtab):
     struct.pack_into('<I', contents, hash_off + 4*i, hashval)
-
-
-def overwrite_cls_guid_tlb(tlb_file, dynamic_guid):
-  contents, ntypes, type_off, guid_off, guid_len = get_tlb_contents(tlb_file)
-
-  # The first type should be a coclass.  It points to the type's GUID in
-  # section 6, the GUID section.
-  coclass, = struct.unpack_from('<B', contents, type_off)
-  assert coclass == 0x25, "expected coclass"
-
-  guidind = struct.unpack_from('<I', contents, type_off + 0x2c)[0]
-  assert guidind + 14 <= guid_len
-  struct.pack_into('<IHH8s', contents, guid_off + guidind,
-                   *(dynamic_guid.fields[0:3] + (dynamic_guid.bytes[8:], )))
-
-  recreate_guid_hashtable(contents, ntypes, guid_off, guid_len)
-  open(tlb_file, 'wb').write(contents)
-
-
-# Handle a single clsid substitution where |dynamic_guid| is of the form
-# "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83".
-def overwrite_cls_guid(h_file, iid_file, tlb_file, dynamic_guid):
-  # Fix up GUID in .h, _i.c, and .tlb.  This function assumes that there is only
-  # one coclass in the idl file, and that that's the type with the dynamic type.
-  overwrite_cls_guid_h(h_file, dynamic_guid)
-  overwrite_cls_guid_iid(iid_file, dynamic_guid)
-  overwrite_cls_guid_tlb(tlb_file, dynamic_guid)
 
 
 def overwrite_guids_h(h_file, dynamic_guids):
@@ -339,8 +288,8 @@ def run_midl(args, env_dict):
   return 0, midl_output_dir
 
 
-def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, clang,
-         idl, *flags):
+def main(arch, gendir, outdir, dynamic_guids, tlb, h, dlldata, iid, proxy,
+         clang, idl, *flags):
   # Copy checked-in outputs to final location.
   source = gendir
   if os.path.isdir(os.path.join(source, os.path.basename(idl))):
@@ -349,18 +298,16 @@ def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, clang,
   source = os.path.normpath(source)
   distutils.dir_util.copy_tree(source, outdir, preserve_times=False)
 
-  dynamic_guids = None
-  if dynamic_guid != 'none':
-    if '=' not in dynamic_guid:
-      overwrite_cls_guid(os.path.join(outdir, h), os.path.join(outdir, iid),
-                         os.path.join(outdir, tlb), uuid.UUID(dynamic_guid))
-    else:
-      dynamic_guids = re.sub('PLACEHOLDER-GUID-', '', dynamic_guid, flags=re.I)
-      dynamic_guids = dynamic_guids.split(',')
-      dynamic_guids = dict(s.split('=') for s in dynamic_guids)
-      overwrite_guids(os.path.join(outdir, h), os.path.join(outdir, iid),
-                      os.path.join(outdir, proxy), os.path.join(outdir, tlb),
-                      dynamic_guids)
+  if dynamic_guids != 'none':
+    assert '=' in dynamic_guids
+    dynamic_guids = re.sub('PLACEHOLDER-GUID-', '', dynamic_guids, flags=re.I)
+    dynamic_guids = dynamic_guids.split(',')
+    dynamic_guids = dict(s.split('=') for s in dynamic_guids)
+    overwrite_guids(os.path.join(outdir, h), os.path.join(outdir, iid),
+                    os.path.join(outdir, proxy), os.path.join(outdir, tlb),
+                    dynamic_guids)
+  else:
+    dynamic_guids = None
 
   # On non-Windows, that's all we can do.
   if sys.platform != 'win32':
@@ -383,7 +330,7 @@ def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, clang,
 
   # On Windows, run midl.exe on the input and check that its outputs are
   # identical to the checked-in outputs (after replacing guids if
-  # |dynamic_guid(s)| is specified).
+  # |dynamic_guids| is specified).
 
   # Read the environment block from the file. This is stored in the format used
   # by CreateProcess. Drop last 2 NULs, one for list terminator, one for
