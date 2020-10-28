@@ -33,7 +33,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.chrome.browser.feed.library.api.host.config.ApplicationInfo;
 import org.chromium.chrome.browser.feed.library.api.host.config.Configuration;
 import org.chromium.chrome.browser.feed.library.api.host.config.Configuration.ConfigKey;
@@ -106,7 +108,7 @@ import java.util.Set;
 
 /** Test of the {@link FeedRequestManagerImpl} class. */
 @RunWith(LocalRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)
 @Features.
 DisableFeatures({ChromeFeatureList.REPORT_FEED_USER_ACTIONS, ChromeFeatureList.INTEREST_FEED_V2})
@@ -242,7 +244,12 @@ public class FeedRequestManagerImplTest {
     }
 
     @Test
-    public void testTriggerRefresh_setNoticeCardPref() throws Exception {
+    public void testTriggerRefresh_setNoticeCardPrefAndRecordHistogram() throws Exception {
+        MetricsUtils.HistogramDelta noticeCardNotFulfilledDelta = new MetricsUtils.HistogramDelta(
+                "ContentSuggestions.Feed.NoticeCardFulfilled", 0 /*false*/);
+        MetricsUtils.HistogramDelta noticeCardFulfilledDelta = new MetricsUtils.HistogramDelta(
+                "ContentSuggestions.Feed.NoticeCardFulfilled", 1 /*true*/);
+
         // Skip the read of the int that determines the length of the encoded proto. This is to
         // avoid having to encode the length which is a feature we don't want to test here.
         Configuration configuration =
@@ -256,6 +263,7 @@ public class FeedRequestManagerImplTest {
                 mApplicationInfo, mFakeMainThreadRunner, mFakeBasicLoggingApi,
                 mFakeTooltipSupportedApi);
 
+        // Trigger a refresh that has a notice card.
         Response response =
                 Response.newBuilder()
                         .setExtension(FeedResponse.feedResponse,
@@ -266,12 +274,25 @@ public class FeedRequestManagerImplTest {
                         .build();
         mFakeNetworkClient.addResponse(new HttpResponse(200, response.toByteArray()));
         mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
-
         verify(mPrefService, times(1)).setBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD, true);
+        assertThat(noticeCardNotFulfilledDelta.getDelta()).isEqualTo(0);
+        assertThat(noticeCardFulfilledDelta.getDelta()).isEqualTo(1);
+
+        // Trigger a refresh that doesn't have a notice card.
+        mFakeNetworkClient.addResponse(
+                new HttpResponse(200, Response.getDefaultInstance().toByteArray()));
+        mRequestManager.triggerRefresh(RequestReason.HOST_REQUESTED, input -> {});
+        assertThat(noticeCardNotFulfilledDelta.getDelta()).isEqualTo(1);
+        assertThat(noticeCardFulfilledDelta.getDelta()).isEqualTo(1);
     }
 
     @Test
-    public void testLoadMore_setNoticeCardPref() throws Exception {
+    public void testLoadMore_dontSetNoticeCardPrefAndDontRecordHistogram() throws Exception {
+        MetricsUtils.HistogramDelta noticeCardNotFulfilledDelta = new MetricsUtils.HistogramDelta(
+                "ContentSuggestions.Feed.NoticeCardFulfilled", 0 /*false*/);
+        MetricsUtils.HistogramDelta noticeCardFulfilledDelta = new MetricsUtils.HistogramDelta(
+                "ContentSuggestions.Feed.NoticeCardFulfilled", 1 /*true*/);
+
         // Skip the read of the int that determines the length of the encoded proto. This is to
         // avoid having to encode the length which is a feature we don't want to test here.
         Configuration configuration =
@@ -295,6 +316,8 @@ public class FeedRequestManagerImplTest {
         mRequestManager.loadMore(token, ConsistencyToken.getDefaultInstance(), input -> {});
 
         verify(mPrefService, never()).setBoolean(Pref.LAST_FETCH_HAD_NOTICE_CARD, true);
+        assertThat(noticeCardNotFulfilledDelta.getDelta()).isEqualTo(0);
+        assertThat(noticeCardFulfilledDelta.getDelta()).isEqualTo(0);
     }
 
     @Test

@@ -295,9 +295,9 @@ public class FeedRequestManagerImpl implements FeedRequestManager {
     private void logServerCapabilities(Response response, boolean isRefreshRequest) {
         FeedResponse feedResponse = response.getExtension(FeedResponse.feedResponse);
         List<Capability> capabilities = feedResponse.getServerCapabilitiesList();
-        RecordHistogram.recordBooleanHistogram("ContentSuggestions.Feed.NoticeCardFulfilled",
-                capabilities.contains(Capability.REPORT_FEED_USER_ACTIONS_NOTICE_CARD));
         if (isRefreshRequest) {
+            RecordHistogram.recordBooleanHistogram("ContentSuggestions.Feed.NoticeCardFulfilled",
+                    capabilities.contains(Capability.REPORT_FEED_USER_ACTIONS_NOTICE_CARD));
             mMainThreadRunner.execute("Update notice card pref",
                     ()
                             -> updateNoticeCardPref(capabilities.contains(
