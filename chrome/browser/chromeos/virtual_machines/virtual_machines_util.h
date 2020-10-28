@@ -11,10 +11,6 @@ namespace virtual_machines {
 // per enterprise policy.
 bool AreVirtualMachinesAllowedByPolicy();
 
-// Whether running virtual machines on Chrome OS is allowed per hard-coded
-// release schedule.
-bool AreVirtualMachinesAllowedByVersionAndChannel();
-
 }  // namespace virtual_machines
 
 #endif  // CHROME_BROWSER_CHROMEOS_VIRTUAL_MACHINES_VIRTUAL_MACHINES_UTIL_H_
